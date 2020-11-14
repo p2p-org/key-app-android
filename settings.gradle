@@ -1,0 +1,6 @@
+include ':sdk'
+include ':entities'
+include ':domain'
+include ':data'
+include ':app'
+rootProject.name = "Wowlet"

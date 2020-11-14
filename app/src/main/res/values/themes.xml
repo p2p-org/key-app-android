@@ -1,0 +1,145 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Wowlet" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+
+    <style name="Black.32.Bold" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/sp_32</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Black.36.Bold" parent="Black.32.Bold">
+        <item name="android:textSize">@dimen/sp_36</item>
+
+    </style>
+
+    <style name="Black.25.Bold" parent="Black.32.Bold">
+        <item name="android:textSize">@dimen/sp_25</item>
+
+    </style>
+    <style name="Black.28.Bold" parent="Black.32.Bold">
+        <item name="android:textSize">@dimen/sp_28</item>
+    </style>
+
+    <style name="Black.27.Bold" parent="Black.32.Bold">
+        <item name="android:textSize">@dimen/sp_27</item>
+    </style>
+
+    <style name="Black.17" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/sp_17</item>
+    </style>
+
+    <style name="Black.15" parent="Black.17">
+        <item name="android:textSize">@dimen/sp_15</item>
+    </style>
+
+    <style name="Black.13" parent="Black.17">
+        <item name="android:textSize">@dimen/sp_13</item>
+    </style>
+    <style name="Black.13.Bold" parent="Black.17.Bold">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/sp_13</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="Grey.13" parent="Black.13">
+        <item name="android:textColor">@color/gray_600</item>
+    </style>
+
+    <style name="Grey.15" parent="Grey.13">
+        <item name="android:textSize">@dimen/sp_15</item>
+    </style>
+
+
+
+    <style name="Grey.17" parent="Grey.13">
+        <item name="android:textSize">@dimen/sp_17</item>
+    </style>
+    <style name="Blue.17" parent="Grey.13">
+        <item name="android:textSize">@dimen/sp_17</item>
+        <item name="android:textColor">@color/blue_500</item>
+    </style>
+
+    <style name="Black.12.Bold" parent="Black.36.Bold">
+        <item name="android:textSize">@dimen/sp_12</item>
+    </style>
+
+    <style name="Grey.12" parent="Grey.13">
+        <item name="android:textSize">@dimen/sp_12</item>
+    </style>
+
+    <style name="Black.12" parent="Grey.15">
+        <item name="android:textSize">@dimen/sp_12</item>
+    </style>
+
+    <style name="Black.15.Bold" parent="Black.15">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="White.17" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/sp_17</item>
+    </style>
+
+    <style name="White.15" parent="White.17">
+        <item name="android:textSize">@dimen/sp_15</item>
+    </style>
+    <style name="White.13" parent="White.15">
+        <item name="android:textSize">@dimen/sp_13</item>
+    </style>
+    <style name="White.21" parent="White.15">
+        <item name="android:textSize">@dimen/sp_21</item>
+    </style>
+
+    <style name="White.17.Bold" parent="White.17">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Black.21.Bold" parent="Black.32.Bold">
+        <item name="android:textSize">@dimen/sp_21</item>
+    </style>
+
+    <style name="Black.21" parent="Black.21.Bold">
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Black.17.Bold" parent="Black.21.Bold">
+        <item name="android:textSize">@dimen/sp_17</item>
+    </style>
+
+    <style name="Widget.Black.Button" parent="TextAppearance.AppCompat">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">@dimen/sp_15</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/bg_create_account</item>
+    </style>
+
+    <style name="Widget.White.Button" parent="TextAppearance.AppCompat">
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">@dimen/sp_15</item>
+        <item name="android:background">@drawable/bg_already_have_account</item>
+    </style>
+
+    <style name="SwitchStyle">
+        <item name="colorControlNormal">@android:color/black</item>
+        <item name="colorControlActivated">@android:color/white</item>
+        <item name="colorSwitchThumbNormal">@android:color/white</item>
+    </style>
+    <style name="Widget.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+    </style>
+</resources>

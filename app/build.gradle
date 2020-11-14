@@ -1,0 +1,103 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+}
+
+android {
+    compileSdkVersion compileVersion
+    buildToolsVersion buildVersion
+
+
+    defaultConfig {
+        applicationId "com.p2p.wowlet"
+        minSdkVersion minVersion
+        targetSdkVersion targetVersion
+        versionCode appVersionCode
+        versionName appVersionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "androidManifestFile": "$projectDir/src/main/AndroidManifest.xml".toString()
+                ]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "Wowlet_${variant.name}_${variant.versionName}.apk"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    dataBinding {
+        enabled true
+    }
+}
+
+dependencies {
+    implementation project(path: ':entities')
+    implementation project(path: ':data')
+    implementation project(path: ':domain')
+    implementation project(path: ':sdk')
+
+    implementation supportDependencies.kotlin
+    implementation supportDependencies.coreKtx
+    implementation supportDependencies.appcompat
+    implementation supportDependencies.material
+    implementation supportDependencies.constraintlayout
+    implementation supportDependencies.legacySupport
+    testImplementation supportDependencies.junit
+    androidTestImplementation supportDependencies.junitAndroid
+    androidTestImplementation supportDependencies.espressoCore
+    //viewPager2
+
+    implementation supportDependencies.viewPager2
+    //coroutine
+    implementation supportDependencies.coroutines
+    implementation supportDependencies.coroutinesAndroid
+    // network call
+    implementation supportDependencies.retrofit
+    implementation supportDependencies.moshiConverter
+    implementation supportDependencies.loggingInterceptor
+    //seed value
+    implementation 'com.github.bitcoinj:bitcoinj:0.15.8'
+    // di koin
+    implementation supportDependencies.koinAndroid
+    implementation supportDependencies.koinViewModel
+    //lifecycle
+    implementation supportDependencies.lifecycleCommon
+    implementation supportDependencies.lifecycleData
+    implementation supportDependencies.lifecycleViewModel
+    // Indicator circle pager
+    implementation supportDependencies.circleIndicator
+    // navigation component
+    implementation supportDependencies.navigationFragment
+    implementation supportDependencies.navigationUi
+    // code input
+    implementation supportDependencies.codeinputview
+    // MPAndroidChart
+    implementation supportDependencies.mpChart
+
+    //fingerprint
+    implementation supportDependencies.biometric
+
+    //qrcode
+    implementation supportDependencies.qrcodeLib
+
+}

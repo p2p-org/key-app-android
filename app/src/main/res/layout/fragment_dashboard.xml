@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_screens"
+        tools:context=".fragment.dashboard.view.DashboardFragment">
+
+        <LinearLayout
+            android:id="@+id/lScannerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_20"
+
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_qr_scaner" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/Black.13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_7"
+                android:onClick="@{()->viewModel.goToScannerFragment()}"
+                android:text="@string/slide_to_scan" />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/dp_75"
+            android:layout_height="@dimen/dp_75"
+            android:padding="@dimen/dp_15"
+            android:onClick="@{()->viewModel.openProfileDialog()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_default_coin" />
+
+        <View
+            android:layout_width="@dimen/dp_8"
+            android:layout_height="@dimen/dp_8"
+            android:layout_marginTop="@dimen/dp_17"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="@drawable/ic_profile_online"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lScannerContainer">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/vPrice"
+                style="@style/Black.36.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_70"
+                android:text="$120,00"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/vPriceInfo"
+                style="@style/Black.15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ 0,16 US$ (0,01%) 24 hrs"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/vPrice" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/lCoinContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_30"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/vPriceInfo">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/White.15"
+                        android:layout_width="@dimen/dp_80"
+                        android:layout_height="@dimen/dp_56"
+                        android:background="@drawable/bg_send_coin_bt"
+                        android:gravity="center"
+                        android:onClick="@{()->viewModel.goToSendCoinFragment()}"
+                        android:text="@string/send" />
+
+                <View
+                    android:layout_width="@dimen/dp_2"
+                    android:layout_height="match_parent"
+                    android:background="@color/background_screens" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/White.15"
+                        android:layout_width="@dimen/dp_80"
+                        android:layout_height="@dimen/dp_56"
+                        android:background="@drawable/bg_receive_coin_bt"
+                        android:gravity="center"
+                        android:onClick="@{()->viewModel.enterWalletDialog()}"
+                        android:text="@string/receive" />
+
+                <View
+                    android:layout_width="@dimen/dp_2"
+                    android:layout_height="match_parent"
+                    android:background="@color/background_screens" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/White.15"
+                        android:layout_width="@dimen/dp_80"
+                        android:layout_height="@dimen/dp_56"
+                        android:background="@drawable/bg_swap_coin_bt"
+                        android:gravity="center"
+                        android:onClick="@{()->viewModel.goToSwapFragment()}"
+                        android:text="@string/swap" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/vWallets"
+                style="@style/Black.17.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_15"
+                android:layout_marginTop="@dimen/dp_30"
+                android:onClick="@{()->viewModel.goToDetailSavingFragment()}"
+                android:text="@string/wallets"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lCoinContainer" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/vRvWallets"
+                adapter_list="@{viewModel.getWalletData}"
+                view_model="@{viewModel}"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_15"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/vWallets" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Black.12.Bold"
+                    android:layout_width="@dimen/dp_120"
+                    android:layout_height="@dimen/dp_36"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:background="@drawable/bg_add_coin_bt"
+                    android:gravity="center"
+                    android:onClick="@{()->viewModel.openAddCoinDialog()}"
+                    android:text="+ Add coin"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/vRvWallets" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
