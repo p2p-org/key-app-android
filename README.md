@@ -1,4 +1,5 @@
 # p2p-wallet-android
+![](https://cdn.discordapp.com/attachments/737610668726812763/777332302057177108/wallets_android2x.png)
 
 ## Getting Started
 1. Download the Android Studio 4.1.1 release.
