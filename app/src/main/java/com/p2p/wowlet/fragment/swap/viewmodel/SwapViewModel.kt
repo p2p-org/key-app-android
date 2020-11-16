@@ -65,4 +65,5 @@ class SwapViewModel : BaseViewModel() {
     fun navigateUp() {
         _command.value = NavigateUpViewCommand(R.id.action_navigation_swap_to_navigation_dashboard)
     }
+
 }

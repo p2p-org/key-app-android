@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogRecoveryPhraseBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
+import kotlinx.android.synthetic.main.dialog_recovery_phrase.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RecoveryPhraseDialog : DialogFragment() {
@@ -40,6 +41,12 @@ class RecoveryPhraseDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vDone.setOnClickListener {
+            dismiss()
+        }
+        vClose.setOnClickListener {
+            dismiss()
+        }
         observe()
     }
 
@@ -55,9 +62,7 @@ class RecoveryPhraseDialog : DialogFragment() {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
-
     }
-
-
 }

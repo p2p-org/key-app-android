@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel" />
+            type="com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +15,7 @@
         android:background="@drawable/bg_radius_top">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/vClose"
+            android:id="@+id/dismissDialog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_18"
@@ -69,7 +69,6 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/vRvAddCoin"
             adapter_list="@{viewModel.getAddCoinData}"
-            view_model="@{viewModel}"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_15"

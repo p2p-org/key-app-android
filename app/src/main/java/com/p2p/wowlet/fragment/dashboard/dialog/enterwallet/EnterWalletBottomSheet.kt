@@ -36,14 +36,15 @@ class EnterWalletBottomSheet : BottomSheetDialogFragment() {
             inflater, R.layout.dialog_enter_wallet, container, false
         )
         binding.viewModel = dashboardViewModel
-
         binding.viewPager.adapter =  EnterWalletPagerAdapter(mutableListOf())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.dismissDialog.setOnClickListener {
+            dismiss()
+        }
         dashboardViewModel.initReceiver()
     }
 
@@ -51,6 +52,7 @@ class EnterWalletBottomSheet : BottomSheetDialogFragment() {
         super.onResume()
         dialog?.run {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 }

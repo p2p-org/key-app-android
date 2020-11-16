@@ -40,7 +40,6 @@ class BackingUpFromKeyDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         vClose.setOnClickListener {
             dismiss()
         }
@@ -48,7 +47,6 @@ class BackingUpFromKeyDialog : DialogFragment() {
             dismiss()
         }
     }
-
     override fun onResume() {
         super.onResume()
         dialog?.run {

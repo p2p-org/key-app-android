@@ -45,7 +45,7 @@
                 android:text="@string/change_pin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/change_email" />
+                tools:text="@string/change_pin" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

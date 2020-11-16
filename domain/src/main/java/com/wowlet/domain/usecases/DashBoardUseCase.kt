@@ -14,7 +14,7 @@ import com.wowlet.entities.local.SecretKeyItem
 class DashBoardUseCase(private val dashboardRepository: DashboardRepository, private val preferenceService: PreferenceService) : DashboardInteractor {
 
     override fun generateQRrCode(): Bitmap {
-        val publickKey=preferenceService.getSecretData()?.publicKey?:""
+        val publickKey=preferenceService.getSecretDataAtFile()?.publicKey?:""
         return dashboardRepository.getQrCode(publickKey)
     }
 }

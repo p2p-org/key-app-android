@@ -11,9 +11,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogChangePhoneEmailBinding
-import com.p2p.wowlet.databinding.DialogCurrencyBinding
-import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
+
 import com.wowlet.entities.enums.MailPhoneType
+import kotlinx.android.synthetic.main.dialog_enter_code.*
 
 class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment() {
 
@@ -30,7 +30,7 @@ class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment
         savedInstanceState: Bundle?
     ): View? {
         val binding: DialogChangePhoneEmailBinding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_change_phone_email, container, false
+            inflater, R.layout.dialog_enter_code, container, false
         )
         binding.dialogType = mailPhoneType
         return binding.root
@@ -38,7 +38,9 @@ class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mailPhoneType
+        icClose.setOnClickListener {
+            dismiss()
+        }
     }
 
     override fun onResume() {
@@ -49,6 +51,7 @@ class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 

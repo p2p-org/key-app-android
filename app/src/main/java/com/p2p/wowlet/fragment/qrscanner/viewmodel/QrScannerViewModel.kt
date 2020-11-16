@@ -9,22 +9,7 @@ import com.wowlet.entities.local.AddCoinItem
 
 class QrScannerViewModel : BaseViewModel() {
 
-    private val listAddCoinData = mutableListOf(
-        AddCoinItem("P2P wallet", "Profile balance"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Tether", "Wallet balance")
-    )
 
-    private val _getAddCoinData by lazy { MutableLiveData<MutableList<AddCoinItem>>() }
-    val getAddCoinData: LiveData<MutableList<AddCoinItem>> get() = _getAddCoinData
-
-    fun getAddCoinList() {
-        _getAddCoinData.value = listAddCoinData
-    }
 
     fun goToFaceIdFragment() {
         _command.value =

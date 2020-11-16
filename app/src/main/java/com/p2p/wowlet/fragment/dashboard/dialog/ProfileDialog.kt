@@ -11,7 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogProfileBinding
-import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
+import kotlinx.android.synthetic.main.dialog_profile.*
 
 class ProfileDialog : DialogFragment() {
 
@@ -35,13 +35,20 @@ class ProfileDialog : DialogFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        vDone.setOnClickListener {
+            dismiss()
+        }
+    }
     override fun onResume() {
         super.onResume()
         dialog?.run {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 

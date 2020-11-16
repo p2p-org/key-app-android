@@ -1,6 +1,6 @@
 package com.p2p.wowlet.di
 
-import com.p2p.wowlet.fragment.backupwallat.completebackupwallet.viewmodel.BackupWalletViewModel
+import com.p2p.wowlet.fragment.backupwallat.completebackupwallet.viewmodel.CompleteBackupWalletViewModel
 import com.p2p.wowlet.fragment.backupwallat.recoverywallat.viewmodel.RecoveryWalletViewModel
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
@@ -25,14 +25,14 @@ import org.koin.dsl.module
 
 val viewModule = module {
     viewModel { SecretKeyViewModel(get()) }
-    viewModel { RegFinishViewModel() }
-    viewModel { SplashScreenViewModel() }
+    viewModel { RegFinishViewModel(get()) }
+    viewModel { SplashScreenViewModel(get()) }
     viewModel { FaceIdViewModel() }
     viewModel { NotificationViewModel(get()) }
     viewModel { PinCodeViewModel(get()) }
     viewModel { RegLoginViewModel(get()) }
     viewModel { RecoveryWalletViewModel() }
-    viewModel { BackupWalletViewModel() }
+    viewModel { CompleteBackupWalletViewModel(get()) }
     viewModel { RegWalletViewModel() }
     viewModel { DashboardViewModel(get()) }
     viewModel { SearchViewModel() }

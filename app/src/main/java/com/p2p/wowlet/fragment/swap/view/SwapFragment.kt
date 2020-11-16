@@ -3,6 +3,7 @@ package com.p2p.wowlet.fragment.swap.view
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
+import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
 import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command.*
@@ -44,5 +45,12 @@ class SwapFragment : FragmentBaseMVVM<SwapViewModel, FragmentSwapBinding>() {
                 yourWalletsBottomSheet.show(childFragmentManager, "send_coin_done_fragment")
             }
         }
+    }
+
+    override fun navigateUp() {
+        activity?.let {
+            (it as MainActivity).showHideNav(true)
+        }
+        viewModel.navigateUp()
     }
 }

@@ -1,4 +1,4 @@
-package com.p2p.wowlet.fragment.qrscanner.dialog
+package com.p2p.wowlet.fragment.dashboard.dialog.addcoin
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -9,13 +9,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogAddCoinBottomSheetBinding
-import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.dialog_add_coin_bottom_sheet.*
+import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AddCoinBottomSheet : BottomSheetDialogFragment() {
-    private val qrScannerViewModel: QrScannerViewModel by viewModel()
+    private val dashboardViewModel: DashboardViewModel by viewModel()
     lateinit var binding: DialogAddCoinBottomSheetBinding
 
     companion object {
@@ -33,17 +32,16 @@ class AddCoinBottomSheet : BottomSheetDialogFragment() {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.dialog_add_coin_bottom_sheet, container, false
         )
-        binding.viewModel = qrScannerViewModel
-
+        binding.viewModel = dashboardViewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        qrScannerViewModel.getAddCoinList()
-        vClose.setOnClickListener {
+        binding.dismissDialog.setOnClickListener {
             dismiss()
         }
+        dashboardViewModel.getAddCoinList()
     }
 
     override fun onResume() {

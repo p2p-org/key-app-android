@@ -11,16 +11,13 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
 import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command.NavigateRegWalletViewCommand
-import com.p2p.wowlet.appbase.viewcommand.Command.NavigateUpViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentQrScannerBinding
 import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
-import org.koin.androidx.viewmodel.ext.android.viewModel
-
-
 class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScannerBinding>(),
     ZBarScannerView.ResultHandler {
 
@@ -40,7 +37,6 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         initializeQRCamera()
         checkForPermission()
     }
-
     private fun checkForPermission() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -53,7 +49,6 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         }
 
     }
-
     private fun initializeQRCamera() {
         scannerView = ZBarScannerView(context)
         scannerView?.setResultHandler(this)
@@ -106,6 +101,7 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     }
 
 
+
     private fun requestPermission() {
         requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
     }
@@ -123,7 +119,6 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
                 requestPermission()
         }
     }
-
     companion object {
         private const val CAMERA_PERMISSION_REQUEST_CODE = 102
     }

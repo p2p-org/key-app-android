@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RegLoginViewModel(val regLoginInteractor: RegLoginInteractor) : BaseViewModel() {
-    private var phraseList = listOf<String>()
+
 
     init {
         initSecretUserData()
@@ -17,7 +17,7 @@ class RegLoginViewModel(val regLoginInteractor: RegLoginInteractor) : BaseViewMo
 
     fun goToRecoveryWalletFragment() {
         _command.value =
-            Command.NavigateRecoveryWalletViewCommand(R.id.action_navigation_reg_login_to_navigation_recovery_wallet,phraseList)
+            Command.NavigateRecoveryWalletViewCommand(R.id.action_navigation_reg_login_to_navigation_recovery_wallet)
     }
 
     fun goToRegWalletFragment() {
@@ -31,7 +31,7 @@ class RegLoginViewModel(val regLoginInteractor: RegLoginInteractor) : BaseViewMo
 
     private fun initSecretUserData() {
         viewModelScope.launch(Dispatchers.IO) {
-            phraseList = regLoginInteractor.initUser().phrase
+            regLoginInteractor.initUser()
         }
 
     }

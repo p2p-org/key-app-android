@@ -18,9 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wowlet">
+        <activity android:name="com.p2p.wowlet.activity.MainActivity">
 
-        <activity android:name="com.p2p.wowlet.activity.MainActivity"/>
-
+        </activity>
         <activity android:name="com.p2p.wowlet.activity.RegistrationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,9 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.p2p.wowlet.MainActivityTest">
 
-        <activity android:name="com.p2p.wowlet.MainActivityTest"/>
-
+        </activity>
     </application>
 
 </manifest>

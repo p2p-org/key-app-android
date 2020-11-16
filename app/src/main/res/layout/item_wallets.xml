@@ -74,6 +74,7 @@
                 android:id="@+id/lChartContainer"
                 android:layout_width="@dimen/dp_120"
                 android:layout_height="0dp"
+                android:visibility="gone"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

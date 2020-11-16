@@ -16,26 +16,31 @@
         android:background="@drawable/bg_profile_dialog">
 
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/icBack"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/vClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_left" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vClose"
-            style="@style/Grey.17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_2"
-            android:layout_marginTop="@dimen/dp_20"
-            android:text="@string/back"
-            app:layout_constraintStart_toEndOf="@+id/icBack"
-            app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_arrow_left" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/Grey.17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_2"
+                android:text="@string/back"
+                app:layout_constraintStart_toEndOf="@+id/icBack"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vTitle"

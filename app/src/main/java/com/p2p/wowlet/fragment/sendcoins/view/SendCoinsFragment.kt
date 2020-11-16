@@ -45,4 +45,8 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
             }
         }
     }
+
+    override fun navigateUp() {
+        viewModel.navigateUp()
+    }
 }

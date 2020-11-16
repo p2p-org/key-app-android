@@ -14,6 +14,7 @@ import com.p2p.wowlet.databinding.DialogBackupBinding
 import com.p2p.wowlet.databinding.DialogCurrencyBinding
 import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
 import com.p2p.wowlet.databinding.DialogSecurityBinding
+import kotlinx.android.synthetic.main.dialog_security.*
 
 class SecurityDialog : DialogFragment() {
 
@@ -37,12 +38,23 @@ class SecurityDialog : DialogFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vClose.setOnClickListener {
+            dismiss()
+        }
+        vDone.setOnClickListener {
+            dismiss()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         dialog?.run {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 

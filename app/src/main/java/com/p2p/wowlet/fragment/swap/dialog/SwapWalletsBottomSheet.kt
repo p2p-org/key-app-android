@@ -37,17 +37,17 @@ class SwapWalletsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        swapViewModel.getCoinList()
-
-        vClose.setOnClickListener {
+        icClose.setOnClickListener {
             dismiss()
         }
+        swapViewModel.getCoinList()
     }
 
     override fun onResume() {
         super.onResume()
         dialog?.run {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 }

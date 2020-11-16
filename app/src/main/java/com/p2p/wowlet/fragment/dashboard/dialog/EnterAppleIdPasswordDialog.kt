@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogEnterAppleIdPassBinding
 import com.p2p.wowlet.databinding.DialogSuccessBinding
+import kotlinx.android.synthetic.main.dialog_enter_apple_id_pass.*
 
 class EnterAppleIdPasswordDialog( ) : DialogFragment() {
 
@@ -32,6 +33,15 @@ class EnterAppleIdPasswordDialog( ) : DialogFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vEnable.setOnClickListener {
+            dismiss()
+        }
+        vCancel.setOnClickListener {
+            dismiss()
+        }
+    }
     override fun onResume() {
         super.onResume()
         dialog?.run {
@@ -40,6 +50,7 @@ class EnterAppleIdPasswordDialog( ) : DialogFragment() {
                 resources.getDimensionPixelSize(R.dimen.dp_178)
             )
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 

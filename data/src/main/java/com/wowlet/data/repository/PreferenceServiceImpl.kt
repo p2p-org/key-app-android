@@ -20,15 +20,19 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
     private val authenticationKey = "authenticationKeys"
     private val pinCodeKey = "pinCodeKey"
-    var pinCodeTemp: Int = 0
+    private val allowNotificationKey = "allowNotificationKey"
+    private val finishRegKey = "finishRegKey"
+
     val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
 
     override fun setPinCodeValue(codeValue: PinCodeData) {
-        // pinCode = codeValue
+        // pinCode = codeValue.pinCode
         put<PinCodeData>(codeValue, pinCodeKey)
     }
 
-    override fun getPinCodeValue(): PinCodeData? = get<PinCodeData>(pinCodeKey)
+    override fun getPinCodeValue(): PinCodeData? =
+       // PinCodeData(pinCode)
+        get<PinCodeData>(pinCodeKey)
 
     override fun enableNotification(isEnable: Boolean) {
         allowNotification = isEnable
@@ -36,20 +40,24 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
     override fun isAllowNotification(): Boolean = allowNotification
 
-    override fun getSecretData(): UserSecretData? = get<UserSecretData>(authenticationKey)
-
-    override fun setSecretData(userData: UserSecretData) {
-        put<UserSecretData>(userData, authenticationKey)
+    override fun isFinishReg(): Boolean = finishReg
+    override fun finishReg(finishReg: Boolean) {
+        this.finishReg = finishReg
     }
-
+    
     var pinCode: Int
         get() = sharedPreferences.getInt(pinCodeKey, 0)
         set(accessToken) = sharedPreferences.edit().putInt(pinCodeKey, accessToken)
             .apply()
 
-    var allowNotification: Boolean
-        get() = sharedPreferences.getBoolean(pinCodeKey, false)
-        set(enable) = sharedPreferences.edit().putBoolean(pinCodeKey, enable)
+    private var allowNotification: Boolean
+        get() = sharedPreferences.getBoolean(allowNotificationKey, false)
+        set(enable) = sharedPreferences.edit().putBoolean(allowNotificationKey, enable)
+            .apply()
+
+    private var finishReg: Boolean
+        get() = sharedPreferences.getBoolean(finishRegKey, false)
+        set(enable) = sharedPreferences.edit().putBoolean(finishRegKey, enable)
             .apply()
 
     inline fun <reified T> get(key: String): T? {

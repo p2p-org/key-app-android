@@ -10,12 +10,12 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentCompleteBackupWalletBinding
-import com.p2p.wowlet.fragment.backupwallat.completebackupwallet.viewmodel.BackupWalletViewModel
+import com.p2p.wowlet.fragment.backupwallat.completebackupwallet.viewmodel.CompleteBackupWalletViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class CompleteBackupWalletFragment : FragmentBaseMVVM<BackupWalletViewModel,FragmentCompleteBackupWalletBinding>() {
+class CompleteBackupWalletFragment : FragmentBaseMVVM<CompleteBackupWalletViewModel,FragmentCompleteBackupWalletBinding>() {
 
-    override val viewModel: BackupWalletViewModel by viewModel()
+    override val viewModel: CompleteBackupWalletViewModel by viewModel()
     override val binding: FragmentCompleteBackupWalletBinding by dataBinding(R.layout.fragment_complete_backup_wallet)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,4 +1,4 @@
-package com.p2p.wowlet.fragment.qrscanner.adapter
+package com.p2p.wowlet.fragment.dashboard.dialog.addcoin.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,7 +10,6 @@ import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
 import com.wowlet.entities.local.AddCoinItem
 
 class AddCoinAdapter(
-    private val viewModel: QrScannerViewModel,
     private val list: List<AddCoinItem>
 ) : RecyclerView.Adapter<AddCoinAdapter.MyViewHolder>() {
 

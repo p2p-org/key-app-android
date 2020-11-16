@@ -13,9 +13,9 @@ class PinCodeUseCase(private val preferenceService: PreferenceService) : PinCode
     override suspend fun initPinCode(pinCode: String): Boolean {
         val value = preferenceService.getPinCodeValue()
         return value?.let {
-            it.pinCode == pinCode
+            it.pinCode == pinCode.toInt()
         } ?: kotlin.run {
-            preferenceService.setPinCodeValue(PinCodeData(pinCode))
+            preferenceService.setPinCodeValue(PinCodeData(pinCode.toInt()))
             true
         }
     }

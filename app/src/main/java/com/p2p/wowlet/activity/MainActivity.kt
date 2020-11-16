@@ -1,8 +1,8 @@
 package com.p2p.wowlet.activity
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
@@ -32,17 +32,19 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.bottom_navigation_home -> {
-                    navController.navigate(R.id.navigation_dashboard, null, navOptions)
+                    navController.navigate(R.id.navigation_dashboard, null,navOptions )
                 }
+
                 R.id.bottom_navigation_investments -> {
-                    navController.navigate(R.id.navigation_investments, null, navOptions)
+                    navController.navigate(R.id.navigation_investments, null,navOptions )
                 }
                 R.id.bottom_navigation_search -> {
-                    navController.navigate(R.id.navigation_search, null, navOptions)
+                    navController.navigate(R.id.navigation_search, null,navOptions )
                 }
                 R.id.bottom_navigation_profile -> {
-                    navController.navigate(R.id.navigation_profile, null, navOptions)
+                    navController.navigate(R.id.navigation_profile, null,navOptions )
                 }
+
             }
             return@setOnNavigationItemSelectedListener true;
         }
