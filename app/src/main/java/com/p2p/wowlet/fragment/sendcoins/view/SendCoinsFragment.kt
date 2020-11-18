@@ -2,6 +2,7 @@ package com.p2p.wowlet.fragment.sendcoins.view
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import com.p2p.wowlet.fragment.sendcoins.dialog.SendCoinDoneDialog
 import com.p2p.wowlet.fragment.sendcoins.dialog.YourWalletsBottomSheet
 import com.p2p.wowlet.R
@@ -39,9 +40,11 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
                     YourWalletsBottomSheet.newInstance()
                 yourWalletsBottomSheet.show(childFragmentManager, "your_wallet_bottom_fragment")
             }
-            is SendCoinDoneViewCommand ->{
-                val yourWalletsBottomSheet: SendCoinDoneDialog = SendCoinDoneDialog.newInstance()
-                yourWalletsBottomSheet.show(childFragmentManager, "send_coin_done_fragment")
+            is SendCoinDoneViewCommand -> {
+                val yourWalletsBottomSheet: SendCoinDoneDialog = SendCoinDoneDialog.newInstance {
+                    navigateUp()
+                }
+                yourWalletsBottomSheet.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
             }
         }
     }

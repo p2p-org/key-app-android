@@ -10,7 +10,7 @@ val interactorsModule = module {
     single<PinCodeInteractor> { PinCodeUseCase(get()) }
     single<NotificationInteractor> { NotificationUseCase(get()) }
     single<SendCoinInteractor> { SendCoinUseCase(get()) }
-    single<DashboardInteractor> { DashBoardUseCase(get(),get()) }
+    single<DashboardInteractor> { DashBoardUseCase(get(),get(),get()) }
     single<RegFinishInteractor> { RegFinishUseCase(get()) }
     single<CompleteBackupWalletInteractor> { CompleteBackupWalletUseCase(get()) }
     single<SplashScreenInteractor> { SplashScreenUseCase(get()) }

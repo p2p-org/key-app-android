@@ -14,7 +14,7 @@ class PinCodeUseCase(private val preferenceService: PreferenceService) : PinCode
         val value = preferenceService.getPinCodeValue()
         return value?.let {
             it.pinCode == pinCode.toInt()
-        } ?: kotlin.run {
+        } ?: run {
             preferenceService.setPinCodeValue(PinCodeData(pinCode.toInt()))
             true
         }

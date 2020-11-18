@@ -1,11 +1,8 @@
 package com.p2p.wowlet.fragment.qrscanner.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.wowlet.entities.local.AddCoinItem
 
 class QrScannerViewModel : BaseViewModel() {
 

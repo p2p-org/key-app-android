@@ -2,6 +2,7 @@ package com.p2p.wowlet.fragment.pincode.view
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
 import com.p2p.wowlet.appbase.utils.dataBinding
@@ -30,6 +31,7 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                 }
             }
         }
+
         observes()
     }
 

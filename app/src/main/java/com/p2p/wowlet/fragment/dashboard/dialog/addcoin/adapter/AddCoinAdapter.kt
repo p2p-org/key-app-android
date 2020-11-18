@@ -6,11 +6,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemAddCoinBinding
-import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
-import com.wowlet.entities.local.AddCoinItem
+import com.wowlet.entities.local.ConstWalletItem
+import com.wowlet.entities.local.WalletItem
 
 class AddCoinAdapter(
-    private val list: List<AddCoinItem>
+    private val list: List<ConstWalletItem>
 ) : RecyclerView.Adapter<AddCoinAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {

@@ -21,6 +21,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.rpc.Cluster
 import org.p2p.solanaj.rpc.RpcClient
+import org.p2p.solanaj.rpc.types.AccountInfo
 import java.util.*
 
 
@@ -148,7 +149,8 @@ class MainActivityTest : AppCompatActivity() {
 
             }*/
             CoroutineScope(Dispatchers.IO).launch {
-                val client = RpcClient(Cluster.TESTNET)
+
+                val client = RpcClient(Cluster.MAINNET)
 
                 val accountAddress = "3h1zGmCwsRJnVk5BuRNMLsPaQu1y2aqXqXDWYCgrp5UG"
 
@@ -163,11 +165,24 @@ class MainActivityTest : AppCompatActivity() {
 
                 for (account in programAccounts) {
                     val data = Base58.decode(account.account.data)
+                    val mintData = ByteArray(32)
+                    System.arraycopy(data, 0, mintData, 0, 32)
+                    val owherData = ByteArray(32)
+                    System.arraycopy(data, 32, owherData, 0, 32)
+                    val owner = Base58.encode(owherData)
+                    val mint = Base58.encode(mintData)
                     val amount = readInt64(data, 32 + 32)
-                    balances.add(BalanceInfo(account.pubkey, amount))
+                    val accountInfo: AccountInfo = client.api.getAccountInfo(PublicKey(mint))
+                    var decimals = 0
+                    if (accountInfo.getValue().getData() != null) {
+                        val dataStr: String = accountInfo.getValue().getData().get(0)
+                        val accountInfoData = Base64.getDecoder().decode(dataStr)
+                        decimals = accountInfoData[44].toInt()
+                    }
+                    balances.add(BalanceInfo(account.pubkey, amount, mint, owner, decimals))
                 }
 
-                System.out.println(Arrays.toString(balances.toTypedArray()))
+                System.out.println("mint "+Arrays.toString(balances.toTypedArray()))
             }
 
         }

@@ -136,4 +136,7 @@
     <string name="auth_title">Authentication Required!</string>
     <string name="auth_subtitle">Important authentication</string>
     <string name="auth_description">Please authenticate to be able to view your account information</string>
+    <string name="usd"> USD</string>
+    <string name="tkns"> Tkns</string>
+    <string name="add_coin_token_info">Add a token to your wallet. This will cost 0.002039 SOL.</string>
 </resources>

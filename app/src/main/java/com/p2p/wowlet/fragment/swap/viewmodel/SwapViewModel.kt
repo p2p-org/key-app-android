@@ -58,7 +58,7 @@ class SwapViewModel : BaseViewModel() {
         _command.value = SwapCoinProcessingViewCommand()
     }
 
-    fun openDonDialog() {
+    fun openDoneDialog() {
         _command.value = SendCoinDoneViewCommand()
     }
 

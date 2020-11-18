@@ -33,6 +33,7 @@ class AddCoinBottomSheet : BottomSheetDialogFragment() {
             inflater, R.layout.dialog_add_coin_bottom_sheet, container, false
         )
         binding.viewModel = dashboardViewModel
+
         return binding.root
     }
 

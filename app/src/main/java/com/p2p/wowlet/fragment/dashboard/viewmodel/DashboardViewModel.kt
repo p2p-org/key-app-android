@@ -2,50 +2,51 @@ package com.p2p.wowlet.fragment.dashboard.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.wowlet.domain.interactors.DashboardInteractor
-import com.wowlet.entities.local.AddCoinItem
+import com.wowlet.entities.local.ConstWalletItem
 import com.wowlet.entities.local.WalletItem
 import com.wowlet.entities.local.EnterWallet
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseViewModel() {
-    private val listAddCoinData = mutableListOf(
-        AddCoinItem("P2P wallet", "Profile balance"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Bitcoin", "12 000 US"),
-        AddCoinItem("Tether", "Wallet balance")
-    )
-    private val listData = mutableListOf(WalletItem(""), WalletItem(""))
 
     private val _pages: MutableLiveData<List<EnterWallet>> by lazy { MutableLiveData() }
     val pages: LiveData<List<EnterWallet>> get() = _pages
 
-    private val _getWalletData by lazy { MutableLiveData<MutableList<WalletItem>>() }
-    val getWalletData: LiveData<MutableList<WalletItem>> get() = _getWalletData
+    private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
+    val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
 
-    private val _getAddCoinData by lazy { MutableLiveData<MutableList<AddCoinItem>>() }
-    val getAddCoinData: LiveData<MutableList<AddCoinItem>> get() = _getAddCoinData
+    private val _getAddCoinData by lazy { MutableLiveData<List<ConstWalletItem>>() }
+    val getAddCoinData: LiveData<List<ConstWalletItem>> get() = _getAddCoinData
 
     init {
-        _getWalletData.value = listData
+        getWalletItems()
     }
 
     fun getAddCoinList() {
-        _getAddCoinData.value = listAddCoinData
+            _getAddCoinData.value = dashboardInteractor.getAddCoinList()
     }
-
 
 
     fun initReceiver() {
         val qrCode = dashboardInteractor.generateQRrCode()
         _pages.value = listOf(EnterWallet(qrCode, ""))
+    }
+
+    private fun getWalletItems() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val walletList = dashboardInteractor.getWallets()
+            withContext(Dispatchers.Main) {
+                _getWalletData.value = walletList
+            }
+        }
     }
 
     fun finishApp() {

@@ -6,20 +6,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSendCoinDoneBinding
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
+import kotlinx.android.synthetic.main.dialog_send_coin_done.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SendCoinDoneDialog : DialogFragment() {
+class SendCoinDoneDialog(private val goToWallet: () -> Unit) : DialogFragment() {
 
     private val sendCoinsViewModel: SendCoinsViewModel by viewModel()
     lateinit var binding: DialogSendCoinDoneBinding
 
     companion object {
-        fun newInstance(): SendCoinDoneDialog = SendCoinDoneDialog()
+        const val SEND_COIN_DONE = "SEND_COIN_DONE"
+        fun newInstance(goToWallet: () -> Unit): SendCoinDoneDialog = SendCoinDoneDialog(goToWallet)
     }
 
     override fun onCreateView(
@@ -37,12 +41,16 @@ class SendCoinDoneDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sendCoinsViewModel.getCoinList()
+        sendCoinsViewModel.command.observe(viewLifecycleOwner, {
+            goToWallet.invoke()
+        })
     }
 
     override fun onResume() {
         super.onResume()
         dialog?.run {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 }

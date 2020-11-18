@@ -99,5 +99,7 @@ dependencies {
 
     //qrcode
     implementation supportDependencies.qrcodeLib
+    //glde
+    implementation supportDependencies.glide
 
 }

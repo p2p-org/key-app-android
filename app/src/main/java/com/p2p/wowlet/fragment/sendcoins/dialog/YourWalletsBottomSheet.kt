@@ -11,6 +11,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogMyWalletBinding
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.android.synthetic.main.dialog_my_wallet.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YourWalletsBottomSheet : BottomSheetDialogFragment() {
@@ -37,6 +38,9 @@ class YourWalletsBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sendCoinsViewModel.getCoinList()
+        vClose.setOnClickListener {
+            dismiss()
+        }
     }
 
     override fun onResume() {
