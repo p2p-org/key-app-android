@@ -60,7 +60,7 @@
             app:code_text_color="@color/black"
             app:code_text_size="26sp"
             android:layout_marginTop="@dimen/dp_30"
-            app:error_color="@color/red_500"
+            app:error_color="@color/red_400"
             app:input_type="numeric"
             android:layout_gravity="center_horizontal"
             app:layout_constraintTop_toBottomOf="@+id/vInfo"

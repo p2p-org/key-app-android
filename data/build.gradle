@@ -30,11 +30,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
 }
 
 dependencies {
-
+    //implementation project(path: ':domain')
     implementation project(path: ':entities')
+
     implementation project(path: ':sdk')
 
     implementation supportDependencies.kotlin

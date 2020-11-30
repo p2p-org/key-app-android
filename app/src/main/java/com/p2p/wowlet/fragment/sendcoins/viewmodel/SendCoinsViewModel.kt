@@ -6,70 +6,38 @@ import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
+import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.domain.interactors.SendCoinInteractor
-import com.wowlet.entities.local.CoinItem
 import com.wowlet.entities.local.SendTransactionModel
 import com.wowlet.entities.local.UserWalletType
+import com.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class SendCoinsViewModel(val sendCoinInteractor: SendCoinInteractor) : BaseViewModel() {
+class SendCoinsViewModel(val sendCoinInteractor: SendCoinInteractor,val dashboardInteractor: DashboardInteractor) : BaseViewModel() {
 
     private val _pages: MutableLiveData<List<UserWalletType>> by lazy { MutableLiveData() }
     val pages: LiveData<List<UserWalletType>> get() = _pages
 
-    private val _getAddCoinData by lazy { MutableLiveData<MutableList<CoinItem>>() }
-    val getAddCoinData: LiveData<MutableList<CoinItem>> get() = _getAddCoinData
+    private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
+    val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
 
-    private val listAddCoinData = mutableListOf(
-        CoinItem(
-            name = "Bitcoin",
-            priceInUs = "12 000 US$",
-            priceInBTC = "0,00212 BTC",
-            type = "Wallet balance"
-        ),
-        CoinItem(
-            name = "Tether",
-            priceInUs = "12 000 US$",
-            priceInBTC = "0,00212 BTC",
-            type = "Wallet balance"
-        ),
-        CoinItem(
-            name = "P2P wallet",
-            priceInUs = "12 000 US$",
-            priceInBTC = "0,00212 BTC",
-            type = "Profile balance"
-        ),
-        CoinItem(name = "Savings"),
-        CoinItem(
-            name = "1UP",
-            priceInUs = "12 000 US$",
-            priceInBTC = "0,00212 BTC",
-            type = "Investment"
-        ),
-        CoinItem(
-            name = "0xBTC",
-            priceInUs = "12 000 US$",
-            priceInBTC = "0,00212 BTC",
-            type = "Investment"
-        )
-    )
-
-    fun getCoinList() {
-        _getAddCoinData.value = listAddCoinData
+    fun getWalletItems() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val walletList = dashboardInteractor.getWallets()
+            withContext(Dispatchers.Main) {
+                _getWalletData.value = walletList.wallets
+            }
+        }
     }
 
-    val list = mutableListOf(
-        UserWalletType("Wallet address", "jd9(Hdh982y982y98308093", false, R.drawable.ic_qr_scaner),
-        UserWalletType("Wallet user", "@username", true, R.drawable.ic_account)
-    )
-
-    fun initData() {
-        _pages.value = list
+    fun initData(mutableListOf: MutableList<UserWalletType>) {
+        _pages.value = mutableListOf
     }
 
     fun openMyWalletsDialog() {
-        _command.value = MyWalletDialogViewCommand()
+        _command.value = OpenMyWalletDialogViewCommand()
     }
 
     fun openDoneDialog() {
@@ -88,7 +56,7 @@ class SendCoinsViewModel(val sendCoinInteractor: SendCoinInteractor) : BaseViewM
 
     fun sendCoin() {
         viewModelScope.launch(Dispatchers.IO) {
-            sendCoinInteractor.sendCoin(SendTransactionModel("", 1000))
+            sendCoinInteractor.sendCoin(SendTransactionModel("Em5fabaB6RXswMqUmZYoqz2AgLCKPbPHXxr23CrLpW9R", 1000))
         }
     }
 }

@@ -1,16 +1,21 @@
 package com.wowlet.data.datastore
 
+import com.wowlet.entities.local.EnableFingerPrintModel
+import com.wowlet.entities.local.EnableNotificationModel
 import com.wowlet.entities.local.PinCodeData
 import com.wowlet.entities.local.UserSecretData
 
-
 interface PreferenceService {
-    fun setSecretDataInFile( userData: UserSecretData)
-    fun getSecretDataAtFile(): UserSecretData?
-    fun setPinCodeValue(codeValue: PinCodeData)
+    fun setWalletItem(userData: UserSecretData)
+    fun getWalletList(): MutableList<UserSecretData>?
+    fun getActiveWallet(): UserSecretData?
+    fun updateWallet(userSecretData: UserSecretData)
+    fun setPinCodeValue(codeValue: PinCodeData):Boolean
     fun getPinCodeValue(): PinCodeData?
-    fun enableNotification(isEnable:Boolean)
-    fun isAllowNotification():Boolean
-    fun isFinishReg():Boolean
-    fun finishReg(finishReg:Boolean)
+    fun enableNotification(isEnable: EnableNotificationModel)
+    fun isAllowNotification(): EnableNotificationModel?
+    fun isSetFingerPrint(): EnableFingerPrintModel?
+    fun enableFingerPrint(isEnable: EnableFingerPrintModel)
+    fun isCurrentLoginReg(): Boolean
+    fun finishLoginReg(finishReg: Boolean)
 }

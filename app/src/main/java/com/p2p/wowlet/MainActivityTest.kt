@@ -7,7 +7,6 @@ import com.p2p.wowlet.utils.Transfer
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.BalanceInfo
-import com.wowlet.entities.local.TweetNaclFast
 import com.wowlet.entities.responce.CallRequest
 import kotlinx.android.synthetic.main.activity_maintest.*
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +21,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.rpc.Cluster
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.types.AccountInfo
+import org.p2p.solanaj.utils.TweetNaclFast
 import java.util.*
 
 
@@ -62,18 +62,7 @@ class MainActivityTest : AppCompatActivity() {
 
         submitBalance.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                repository.getBalance(CallRequest("getBalance", listOf(publicKey))).apply {
-                    when (this) {
-                        is Result.Success -> withContext(Dispatchers.Main) {
-                            getBalance.text = data?.result?.value.toString()
-                            Log.i(TAG, "response getBalance: ${data?.result?.value}")
-                        }
-                        is Result.Error -> withContext(Dispatchers.Main) {
-                            getBalance.text = errors.errorMessage
-                            Log.i(TAG, "error getBalance ${errors.errorMessage}")
-                        }
-                    }
-                }
+
             }
         }
         submitAirdrop.setOnClickListener {

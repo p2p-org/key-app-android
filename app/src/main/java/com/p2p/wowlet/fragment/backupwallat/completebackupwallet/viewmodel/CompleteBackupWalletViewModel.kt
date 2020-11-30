@@ -16,6 +16,6 @@ class CompleteBackupWalletViewModel(val completeBackupWalletInteractor: Complete
             Command.OpenMainActivityViewCommand()
     }
     private fun finishRegistration(){
-        completeBackupWalletInteractor.finishReg(true)
+        completeBackupWalletInteractor.finishLoginReg(true)
     }
 }

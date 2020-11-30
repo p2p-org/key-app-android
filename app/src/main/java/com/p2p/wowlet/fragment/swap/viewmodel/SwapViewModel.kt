@@ -6,14 +6,15 @@ import com.p2p.wowlet.R
 import  com.p2p.wowlet.appbase.viewcommand.Command.*
 import  com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.wowlet.entities.local.CoinItem
+import com.wowlet.entities.local.WalletItem
 
 class SwapViewModel : BaseViewModel() {
 
-    private val _getAddCoinData by lazy { MutableLiveData<MutableList<CoinItem>>() }
-    val getAddCoinData: LiveData<MutableList<CoinItem>> get() = _getAddCoinData
+    private val _getAddCoinData by lazy { MutableLiveData<MutableList<WalletItem>>() }
+    val getAddCoinData: LiveData<MutableList<WalletItem>> get() = _getAddCoinData
 
     fun openMyWalletsDialog() {
-        _command.value = MyWalletDialogViewCommand()
+        _command.value = OpenMyWalletDialogViewCommand()
     }
 
     private val listAddCoinData = mutableListOf(
@@ -51,7 +52,7 @@ class SwapViewModel : BaseViewModel() {
     )
 
     fun getCoinList() {
-        _getAddCoinData.value = listAddCoinData
+
     }
 
     fun openProcessingDialog() {

@@ -82,14 +82,14 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_25"
             android:layout_marginEnd="@dimen/dp_20"
-            android:text="@string/add_coin_token_info"
+            tools:text="@string/add_coin_token_info"
+            android:text="@{String.format(@string/add_coin_token_info, viewModel.getMinimumBalanceData)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vTitle" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/vRvAddCoin"
-            adapter_list="@{viewModel.getAddCoinData}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/item_add_coin" />

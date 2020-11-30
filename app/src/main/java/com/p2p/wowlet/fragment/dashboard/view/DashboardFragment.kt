@@ -1,20 +1,25 @@
 package com.p2p.wowlet.fragment.dashboard.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
+import com.p2p.wowlet.activity.RegistrationActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
 import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentDashboardBinding
+import com.p2p.wowlet.fragment.dashboard.dialog.ProfileDetailsDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.ProfileDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet.Companion.ENTER_WALLET
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet.Companion.TAG_ADD_COIN
-import com.p2p.wowlet.fragment.dashboard.dialog.backupingkey.BackingUpFromKeyDialog
+import com.p2p.wowlet.fragment.sendcoins.dialog.SendCoinDoneDialog
+import com.p2p.wowlet.fragment.sendcoins.dialog.YourWalletsBottomSheet
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboardBinding>() {
@@ -36,8 +41,8 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 navigateFragment(command.destinationId)
                 (activity as MainActivity).showHideNav(false)
             }
-            is NavigateReceiveViewCommand -> {
-                navigateFragment(command.destinationId)
+            is NavigateWalletViewCommand -> {
+                navigateFragment(command.destinationId, command.bundle)
                 (activity as MainActivity).showHideNav(false)
             }
             is NavigateSendCoinViewCommand -> {
@@ -60,16 +65,27 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     ENTER_WALLET
                 )
             }
+            is OpenProfileDetailDialogViewCommand -> {
+                ProfileDetailsDialog.newInstance {
+                    viewModel.clearSecretKey()
+                    activity?.let {
+                        val intent = Intent(it, RegistrationActivity::class.java)
+                        it.startActivity(intent)
+                        it.finish()
+                    }
+                }.show(
+                    childFragmentManager,
+                    ProfileDetailsDialog.TAG_PROFILE_DETAILS_DIALOG
+                )
+            }
             is OpenProfileDialogViewCommand -> {
-//                ProfileDetailsDialog.newInstance().show(
-//                    childFragmentManager,
-//                    TAG_PROFILE_DETAILS_DIALOG
-//                )
 
-//                ProfileDialog.newInstance().show(
-//                    childFragmentManager,
-//                    TAG_PROFILE_DIALOG
-//                )
+                ProfileDialog.newInstance {
+                    viewModel.goToProfileDetailDialog()
+                }.show(
+                    childFragmentManager,
+                    ProfileDialog.TAG_PROFILE_DIALOG
+                )
 //                CurrencyDialog.newInstance().show(
 //                    childFragmentManager,
 //                    TAG_CURRENCY_DIALOG
@@ -86,10 +102,10 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
 //                    childFragmentManager,
 //                    EnterAppleIdPasswordDialog.TAG_APPLE_ID_DIALOG
 //                )
-                BackingUpFromKeyDialog.newInstance().show(
-                    childFragmentManager,
-                    BackingUpFromKeyDialog.TAG_BACKUP_UP_KEY_DIALOG
-                )
+                /*    BackingUpFromKeyDialog.newInstance().show(
+                        childFragmentManager,
+                        BackingUpFromKeyDialog.TAG_BACKUP_UP_KEY_DIALOG
+                    )*/
             }
         }
     }

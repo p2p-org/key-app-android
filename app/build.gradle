@@ -45,8 +45,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    dataBinding {
-        enabled true
+
+    buildFeatures {
+
+        dataBinding = true
+        // for view binding:
+        viewBinding = true
     }
 }
 
@@ -62,6 +66,7 @@ dependencies {
     implementation supportDependencies.material
     implementation supportDependencies.constraintlayout
     implementation supportDependencies.legacySupport
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation supportDependencies.junit
     androidTestImplementation supportDependencies.junitAndroid
     androidTestImplementation supportDependencies.espressoCore

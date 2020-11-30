@@ -2,6 +2,8 @@ package com.wowlet.entities.local
 
 data class WalletItem(
     val tokenSymbol: String = "",
+    val depositAddress: String = "",
+    val decimals: Int = 0,
     val mintAddress: String = "",
     val tokenName: String = "",
     val icon: String = "",

@@ -1,5 +1,6 @@
 package com.p2p.wowlet
 
+import org.bitcoinj.core.Base58
 import org.junit.Test
 
 import org.junit.Assert.*

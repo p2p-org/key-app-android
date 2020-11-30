@@ -18,9 +18,10 @@ import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
+
 class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScannerBinding>(),
     ZBarScannerView.ResultHandler {
-
+    val isCheckAllowPermission = false
     override val viewModel: QrScannerViewModel by viewModel()
     override val binding: FragmentQrScannerBinding by dataBinding(R.layout.fragment_qr_scanner)
 
@@ -37,6 +38,7 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         initializeQRCamera()
         checkForPermission()
     }
+
     private fun checkForPermission() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -49,6 +51,7 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         }
 
     }
+
     private fun initializeQRCamera() {
         scannerView = ZBarScannerView(context)
         scannerView?.setResultHandler(this)
@@ -76,7 +79,7 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
                 }
                 navigateFragment(command.destinationId)
             }
-            is NavigateRegWalletViewCommand -> navigateFragment(command.destinationId)
+            is NavigateSendCoinViewCommand -> navigateFragment(command.destinationId,command.bundle)
         }
     }
 
@@ -85,6 +88,9 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     }
 
     override fun handleResult(rawResult: Result?) {
+        rawResult?.let {
+            viewModel.goToSendCoinFragment(it.contents)
+        }
         Toast.makeText(requireContext(), rawResult?.contents, Toast.LENGTH_SHORT).show()
     }
 
@@ -101,7 +107,6 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     }
 
 
-
     private fun requestPermission() {
         requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
     }
@@ -115,10 +120,14 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeQRCamera()
-            } else
-                requestPermission()
+            } else if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                viewModel.navigateUp()
+            }
+            return
+
         }
     }
+
     companion object {
         private const val CAMERA_PERMISSION_REQUEST_CODE = 102
     }

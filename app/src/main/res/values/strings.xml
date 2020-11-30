@@ -129,14 +129,50 @@
     <string name="fingerprint">Fingerprint</string>
     <string name="error_code">Error code</string>
 
-
     <string name="error_msg_no_biometric_hardware">No biometric features available on this device.</string>
     <string name="error_msg_biometric_hw_unavailable">Biometric features are currently unavailable.</string>
     <string name="error_msg_biometric_not_setup">The user hasn\'t associated any biometric credentials with their account.</string>
     <string name="auth_title">Authentication Required!</string>
     <string name="auth_subtitle">Important authentication</string>
     <string name="auth_description">Please authenticate to be able to view your account information</string>
-    <string name="usd"> USD</string>
-    <string name="tkns"> Tkns</string>
-    <string name="add_coin_token_info">Add a token to your wallet. This will cost 0.002039 SOL.</string>
+    <string name="usd">%1$,.2f USD</string>
+    <string name="usd_receive">%1$,.5f BTC</string>
+    <string name="usd_symbol">$%1$,.7f</string>
+    <string name="block_number_symbol">#%1$,.3f</string>
+    <string name="btc">%1$,.7f BTC</string>
+    <string name="usd_symbol_2">$%1$,.2f</string>
+    <string name="for_24h">%1$,.5f  for 24hrs</string>
+    <string name="percentages">%</string>
+    <string name="us">%1$,.2f US</string>
+    <string name="tkns">%1$,.2f Tkns</string>
+    <string name="add_coin_token_info">Add a token to your wallet. This will cost  %d SOL.</string>
+    <string name="term_and_condition_title_info">Please write down the following twelve words and keep in a safe place.</string>
+    <string name="term_and_condition_info">Your private keys are only stored on your current computer or device. You will need these words to restore your wallet if your browser\'s storage is cleared or your device is damaged or lost.</string>
+    <string name="i_have_saved_these_words_in_a_sage_place">I have saved these words in a sage place.</string>
+    <string name="continues">Continue</string>
+    <string name="copied_phrase">You copied the phrase</string>
+    <string name="copied_mint">You copied the mint address</string>
+    <string name="reset_phrases">Reset phrases</string>
+    <string name="recovery_code">Recovery pin code</string>
+    <string name="input_pin_code_again">Input pin code again</string>
+    <string name="mint_address">%1$s Mint Address</string>
+    <string name="currencies">Currencies</string>
+    <string name="policy_first_info">Physiological respiration involves the mechanisms that ensure that the composition of the functional residual capacity is kept constant, and equilibrates with the gases dissolved in the pulmonary capillary blood, and thus throughout the body. Thus, in precise usage, the words breathing and ventilation are hyponyms, not synonyms, of respiration; but this prescription is not consistently followed, even by most health care providers, because the term respiratory rate (RR) is a well-established term in health care, even though it would need to be consistently replaced with ventilation rate if the precise usage were to be followed. (RR) is a well-established term in health care, even though it would need to be consistently replaced with ventilation rate if the precise usage were to be followed.</string>
+    <string name="policy_second_info">Maxwell\'s equations—the foundation of classical electromagnetism—describe light as a wave that moves with a characteristic velocity. The modern view is that light needs no medium of transmission, but Maxwell and his contemporaries were convinced that light waves were propagated in a medium, analogous to sound propagating in air, and ripples propagating on the surface of a pond. This hypothetical medium was called the luminiferous aether, at rest relative to the "fixed stars" and through which the Earth moves. Fresnel\'s partial ether dragging hypothesis ruled out the measurement of first-order (v/c) effects, and although observations of second-order effects (v2/c2) were possible in principle, Maxwell thought they were too small to be detected with then-current technology.</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
+
+    <string name="simplepinlock_request_pin">Enter PIN</string>
+    <string name="simplepinlock_enter_pin1">Enter new PIN</string>
+    <string name="simplepinlock_enter_pin2">Re enter PIN</string>
+    <string name="simplepinlock_invalid_pin">Invalid PIN. Try again</string>
+    <string name="simplepinlock_pin_mismatch">PIN mismatch. Try again</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="create_pin_code">Create a PIN-code to protect your wallet</string>
+    <string name="confirm_pin_code">Confirm PIN-code</string>
+    <string name="pin_codes_doesn_s_match">PIN-codes doesn’s match</string>
+    <string name="pin_codes_invalid">Invalid PIN code</string>
+    <string name="address_copied">Address copied!</string>
+    <string name="block_number">Block number</string>
 </resources>

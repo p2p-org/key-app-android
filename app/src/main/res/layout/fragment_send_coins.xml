@@ -93,11 +93,12 @@
                     android:layout_marginStart="@dimen/dp_20"
                     android:orientation="vertical">
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatEditText
                         style="@style/Black.25.Bold"
+                        android:inputType="number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1000,0" />
+                        android:hint="Input count" />
 
                     <TextView
                         style="@style/Black.13"
@@ -152,7 +153,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:background="@drawable/bg_create_account"
-                android:onClick="@{()->viewModel.openDoneDialog()}"
+                android:onClick="@{()->viewModel.sendCoin()}"
                 android:paddingVertical="@dimen/dp_19"
                 android:text="@string/send_now"
                 android:textAllCaps="false"

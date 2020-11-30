@@ -85,8 +85,6 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSortSecretKey"
-                    adapter_list="@{viewModel.getSortSecretData}"
-                    view_model="@{viewModel}"
                     tools:itemCount="4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -106,7 +104,6 @@
                 android:layout_marginTop="@dimen/dp_15"
                 android:layout_marginEnd="@dimen/dp_35"
                 android:gravity="center"
-                android:onClick="@{()->viewModel.goToCompleteWalletFragment()}"
                 android:text="@string/secret_key_info"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -114,8 +111,6 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRandomSecretKey"
-                adapter_list="@{viewModel.getRandomSecretData}"
-                view_model="@{viewModel}"
                 android:layout_width="0dp"
                 tools:itemCount="4"
                 android:layout_height="wrap_content"

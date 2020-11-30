@@ -11,15 +11,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogProfileBinding
+import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
+import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import kotlinx.android.synthetic.main.dialog_profile.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ProfileDialog : DialogFragment() {
-
+class ProfileDialog(private val openProfileDetail: () -> Unit) : DialogFragment() {
     companion object {
 
         const val TAG_PROFILE_DIALOG = "ProfileDialog"
-        fun newInstance(): ProfileDialog {
-            return ProfileDialog()
+        fun newInstance(openProfileDetail: () -> Unit): ProfileDialog {
+            return ProfileDialog(openProfileDetail)
         }
 
     }
@@ -40,6 +42,9 @@ class ProfileDialog : DialogFragment() {
 
         vDone.setOnClickListener {
             dismiss()
+        }
+        lUserInfoContainer.setOnClickListener{
+            openProfileDetail.invoke()
         }
     }
     override fun onResume() {

@@ -1,13 +1,17 @@
 package com.p2p.wowlet.fragment.dashboard.viewmodel
 
+import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
+import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.ICON
+import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.PUBLIC_KEY
+import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.TOKEN_NAME
 import com.wowlet.domain.interactors.DashboardInteractor
-import com.wowlet.entities.local.ConstWalletItem
+import com.wowlet.entities.local.AddCoinItem
 import com.wowlet.entities.local.WalletItem
 import com.wowlet.entities.local.EnterWallet
 import kotlinx.coroutines.Dispatchers
@@ -22,32 +26,47 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
     private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
     val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
 
-    private val _getAddCoinData by lazy { MutableLiveData<List<ConstWalletItem>>() }
-    val getAddCoinData: LiveData<List<ConstWalletItem>> get() = _getAddCoinData
+    private val _getAddCoinData by lazy { MutableLiveData<List<AddCoinItem>>() }
+    val getAddCoinData: LiveData<List<AddCoinItem>> get() = _getAddCoinData
+    private val _getMinimumBalanceData by lazy { MutableLiveData<Int>() }
+    val getMinimumBalanceData: LiveData<Int> get() = _getMinimumBalanceData
+    private val _yourBalance by lazy { MutableLiveData<Double>(0.0) }
+    val yourBalance: LiveData<Double> get() = _yourBalance
 
     init {
         getWalletItems()
     }
 
     fun getAddCoinList() {
-            _getAddCoinData.value = dashboardInteractor.getAddCoinList()
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = dashboardInteractor.getAddCoinList()
+            withContext(Dispatchers.Main) {
+                _getAddCoinData.value = data.addCoinList
+                _getMinimumBalanceData.value = data.minimumBalance
+            }
+        }
+
     }
 
+    fun showMindAddress(addCoinItem: AddCoinItem) {
+        _getAddCoinData.value = dashboardInteractor.showSelectedMintAddress(addCoinItem)
+    }
 
     fun initReceiver() {
         val qrCode = dashboardInteractor.generateQRrCode()
-        _pages.value = listOf(EnterWallet(qrCode, ""))
+        _pages.value = listOf(qrCode)
     }
 
-    private fun getWalletItems() {
-
+     private fun getWalletItems() {
         viewModelScope.launch(Dispatchers.IO) {
             val walletList = dashboardInteractor.getWallets()
             withContext(Dispatchers.Main) {
-                _getWalletData.value = walletList
+                _getWalletData.value = walletList.wallets
+                _yourBalance.value = walletList.balance
             }
         }
     }
+
 
     fun finishApp() {
         _command.value = FinishAppViewCommand()
@@ -58,14 +77,26 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
             NavigateScannerViewCommand(R.id.action_navigation_dashboard_to_navigation_scanner)
     }
 
-    fun goToReceiveFragment() {
+    fun goToProfileDetailDialog() {
         _command.value =
-            NavigateReceiveViewCommand(R.id.action_navigation_dashboard_to_navigation_receive)
+            OpenProfileDetailDialogViewCommand()
+    }
+
+    fun goToDetailWalletFragment(depositAddress: String, icon: String, tokenName: String) {
+        val bundle = bundleOf(PUBLIC_KEY to depositAddress, ICON to icon, TOKEN_NAME to tokenName)
+        _command.value =
+            NavigateWalletViewCommand(
+                R.id.action_navigation_dashboard_to_navigation_detail_wallet,
+                bundle
+            )
     }
 
     fun goToSendCoinFragment() {
         _command.value =
-            NavigateSendCoinViewCommand(R.id.action_navigation_dashboard_to_navigation_send_coin)
+            NavigateSendCoinViewCommand(
+                R.id.action_navigation_dashboard_to_navigation_send_coin,
+                null
+            )
     }
 
     fun goToSwapFragment() {
@@ -73,10 +104,6 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
             NavigateSwapViewCommand(R.id.action_navigation_dashboard_to_navigation_swap)
     }
 
-    fun goToDetailSavingFragment() {
-        _command.value =
-            NavigateDetailSavingViewCommand(R.id.action_navigation_dashboard_to_navigation_detail_saving)
-    }
 
     fun openAddCoinDialog() {
         _command.value = OpenAddCoinDialogViewCommand()
@@ -88,6 +115,12 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
 
     fun enterWalletDialog() {
         _command.value = EnterWalletDialogViewCommand()
+    }
+
+    fun clearSecretKey() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dashboardInteractor.clearSecretKey()
+        }
     }
 
 }

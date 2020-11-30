@@ -25,7 +25,7 @@ class ActivityDetailAdapter(private val viewModel: DetailSavingViewModel,
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.itemActivityBinding.itemActivity = list[position]
+        //holder.itemActivityBinding.itemActivity = list[position]
     }
 
     override fun getItemCount(): Int {

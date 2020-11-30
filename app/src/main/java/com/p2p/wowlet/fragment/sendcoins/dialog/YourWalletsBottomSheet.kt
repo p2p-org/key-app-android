@@ -7,19 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogMyWalletBinding
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.p2p.wowlet.fragment.sendcoins.adapter.YourWalletsAdapter
 import kotlinx.android.synthetic.main.dialog_my_wallet.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YourWalletsBottomSheet : BottomSheetDialogFragment() {
 
     private val sendCoinsViewModel: SendCoinsViewModel by viewModel()
-    lateinit var binding: DialogMyWalletBinding
+    private lateinit var binding: DialogMyWalletBinding
 
     companion object {
+        const val YOUR_WALLET="yourWallet"
         fun newInstance(): YourWalletsBottomSheet = YourWalletsBottomSheet()
     }
 
@@ -37,7 +41,14 @@ class YourWalletsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sendCoinsViewModel.getCoinList()
+        sendCoinsViewModel.getWalletItems()
+        sendCoinsViewModel.getWalletData.observe(viewLifecycleOwner, Observer {
+            vRvWallets.apply {
+                adapter = YourWalletsAdapter(it)
+                this.layoutManager = LinearLayoutManager(this.context)
+            }
+
+        })
         vClose.setOnClickListener {
             dismiss()
         }

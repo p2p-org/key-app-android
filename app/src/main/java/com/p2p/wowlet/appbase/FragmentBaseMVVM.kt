@@ -35,6 +35,7 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
         savedInstanceState: Bundle?
     ): View {
         retainInstance = true
+        initData()
         return binding.also { it.lifecycleOwner = viewLifecycleOwner }.root
     }
 
@@ -42,12 +43,13 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
         super.onViewCreated(view, savedInstanceState)
         navControler = Navigation.findNavController(view)
         observe(viewModel.command) { processViewCommandGeneral(it) }
+        observes()
         initView()
-        initData()
-
     }
+
     protected open fun initView(){}
     protected open fun initData(){}
+    protected open fun observes(){}
 
     protected fun <T> observe(liveData: LiveData<T>, action: (T) -> Unit) = view?.run {
         if (!this@FragmentBaseMVVM.isAdded) return@run

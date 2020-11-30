@@ -1,13 +1,11 @@
 package com.wowlet.domain.interactors
 
-import android.graphics.Bitmap
-import com.wowlet.entities.local.ConstWalletItem
-import com.wowlet.entities.local.SecretKeyCombinationSuccess
-import com.wowlet.entities.local.SecretKeyItem
-import com.wowlet.entities.local.WalletItem
+import com.wowlet.entities.local.*
 
 interface DashboardInteractor {
-   fun generateQRrCode(): Bitmap
-   suspend fun getWallets():List<WalletItem>
-    fun getAddCoinList():List<ConstWalletItem>
+    fun generateQRrCode(): EnterWallet
+    suspend fun getWallets(): YourWallets
+    suspend fun getAddCoinList(): AddCoinModel
+    suspend fun clearSecretKey()
+    fun showSelectedMintAddress(addCoinItem: AddCoinItem):List<AddCoinItem>
 }

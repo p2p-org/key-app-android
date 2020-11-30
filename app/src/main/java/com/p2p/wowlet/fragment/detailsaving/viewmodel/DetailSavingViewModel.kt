@@ -9,12 +9,7 @@ import com.wowlet.entities.local.ActivityItem
 
 class DetailSavingViewModel : BaseViewModel() {
 
-    private val listActivityData = mutableListOf(
-        ActivityItem("Receive Tokens", "11 oct 2020", "+ 44,51 US$", "0,00344 Tkns"),
-        ActivityItem("Send Tokens", "11 oct 2020", "- 44,51 US$", "0,00344 Tkns"),
-        ActivityItem("Receive Tokens", "11 oct 2020", "+ 44,51 US$", "0,00344 Tkns"),
-        ActivityItem("Receive Tokens", "11 oct 2020", "+ 44,51 US$", "0,00344 Tkns")
-    )
+    private val listActivityData = mutableListOf<ActivityItem>()
 
     private val _getActivityData by lazy { MutableLiveData<MutableList<ActivityItem>>() }
     val getActivityData: LiveData<MutableList<ActivityItem>> get() = _getActivityData

@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-
+    implementation project(path: ':sdk')
     implementation supportDependencies.kotlin
     implementation supportDependencies.coreKtx
     implementation supportDependencies.appcompat

@@ -33,7 +33,7 @@ class RegWalletFragment : FragmentBaseMVVM<RegWalletViewModel, FragmentRegWallet
     }
     override fun processViewCommand(command: ViewCommand) {
         when(command){
-            is Command.NavigatePinCodeViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigatePinCodeViewCommand -> navigateFragment(command.destinationId,command.bundle)
             is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
         }
     }

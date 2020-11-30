@@ -33,10 +33,7 @@ class BackingUpKeyViewModel : BaseViewModel() {
     private val _getSortSecretData by lazy { MutableLiveData<MutableList<SecretKeyItem>>() }
     val getSortSecretData: LiveData<MutableList<SecretKeyItem>> get() = _getSortSecretData
 
-    fun goToCompleteWalletFragment() {
-        _command.value=
-            Command.NavigateUpViewCommand(R.id.action_navigation_secret_key_to_navigation_complete_wallet)
-    }
+
     fun navigateUp() {
         _command.value=
             Command.NavigateUpViewCommand(R.id.action_navigation_secret_key_to_navigation_recovery_wallet)

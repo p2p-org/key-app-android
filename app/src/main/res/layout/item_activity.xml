@@ -8,11 +8,15 @@
         <variable
             name="itemActivity"
             type="com.wowlet.entities.local.ActivityItem" />
+        <variable
+            name="viewModel"
+            type="com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{()->viewModel.openTransactionDialog(itemActivity)}">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/vCoin"
@@ -20,6 +24,7 @@
             android:layout_height="@dimen/dp_32"
             android:layout_marginStart="@dimen/dp_15"
             android:layout_marginTop="@dimen/dp_20"
+            app:image_source="@{itemActivity.icon}"
             android:layout_marginBottom="@dimen/dp_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,16 +47,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_15"
-                android:text="Coin Name Here" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vDate"
-                style="@style/Grey.13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_15"
-                android:layout_marginTop="@dimen/dp_5"
-                android:text="0,00344 Tkns" />
+                tools:text="Coin Name Here"
+                android:text="@{itemActivity.name}"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -62,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_15"
             android:layout_marginEnd="@dimen/dp_15"
-            android:text="12 800,99 US$"
+            android:text="@{itemActivity.symbolsPrice+String.format(@string/us, itemActivity.price)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_5"
             android:layout_marginEnd="@dimen/dp_15"
-            android:text="0.35% 24 hrs"
+            android:text="@{String.format(@string/tkns, itemActivity.tknsValue)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vPrice" />
 

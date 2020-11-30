@@ -29,6 +29,7 @@ class WalletsAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.itemWalletsBinding.itemWallet = list[position]
+        holder.itemWalletsBinding.viewModel = viewModel
     }
 
     override fun getItemCount(): Int {

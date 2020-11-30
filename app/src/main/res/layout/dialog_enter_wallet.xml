@@ -40,10 +40,10 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_360"
+            android:layout_height="@dimen/dp_380"
+            android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_48"
-            android:layout_marginHorizontal="@dimen/dp_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/enter_wallet_title">
 

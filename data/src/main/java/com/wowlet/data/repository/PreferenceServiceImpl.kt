@@ -4,56 +4,52 @@ import android.content.Context
 import android.util.Log
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.util.cipher.Cipher.Companion.decrypt
 import com.wowlet.data.util.cipher.Cipher.Companion.encrypt
 import com.wowlet.data.util.cipher.Cipher.Companion.generateSecretKeyCipher
 import com.wowlet.data.util.cipher.Cipher.Companion.getSecretKey
 import com.wowlet.data.util.cipher.Cipher.Companion.strSecretKey
-import com.wowlet.entities.local.CipherData
-import com.wowlet.entities.local.PinCodeData
-import com.wowlet.entities.local.UserSecretData
+import com.wowlet.entities.local.*
 import java.io.*
-
-
+import java.lang.reflect.Type
 class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
     private val authenticationKey = "authenticationKeys"
     private val pinCodeKey = "pinCodeKey"
     private val allowNotificationKey = "allowNotificationKey"
+    private val fingerPrintPKey = "fingerPrintPKey"
     private val finishRegKey = "finishRegKey"
 
     val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
 
-    override fun setPinCodeValue(codeValue: PinCodeData) {
-        // pinCode = codeValue.pinCode
-        put<PinCodeData>(codeValue, pinCodeKey)
-    }
+    override fun setPinCodeValue(codeValue: PinCodeData):Boolean =put(codeValue, pinCodeKey)
+
 
     override fun getPinCodeValue(): PinCodeData? =
-       // PinCodeData(pinCode)
         get<PinCodeData>(pinCodeKey)
 
-    override fun enableNotification(isEnable: Boolean) {
-        allowNotification = isEnable
+    override fun enableNotification(isEnable: EnableNotificationModel) {
+        put(isEnable, allowNotificationKey)
     }
 
-    override fun isAllowNotification(): Boolean = allowNotification
+    override fun isAllowNotification(): EnableNotificationModel? =
+        get<EnableNotificationModel>(allowNotificationKey)
 
-    override fun isFinishReg(): Boolean = finishReg
-    override fun finishReg(finishReg: Boolean) {
+    override fun isSetFingerPrint(): EnableFingerPrintModel? =
+        get<EnableFingerPrintModel>(fingerPrintPKey)
+
+    override fun enableFingerPrint(isEnable: EnableFingerPrintModel) {
+        put(isEnable, fingerPrintPKey)
+    }
+
+    override fun isCurrentLoginReg(): Boolean = finishReg
+
+    override fun finishLoginReg(finishReg: Boolean) {
         this.finishReg = finishReg
     }
-    
-    var pinCode: Int
-        get() = sharedPreferences.getInt(pinCodeKey, 0)
-        set(accessToken) = sharedPreferences.edit().putInt(pinCodeKey, accessToken)
-            .apply()
 
-    private var allowNotification: Boolean
-        get() = sharedPreferences.getBoolean(allowNotificationKey, false)
-        set(enable) = sharedPreferences.edit().putBoolean(allowNotificationKey, enable)
-            .apply()
 
     private var finishReg: Boolean
         get() = sharedPreferences.getBoolean(finishRegKey, false)
@@ -69,18 +65,23 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
         }
     }
 
-    inline fun <reified T> put(data: T, key: String) {
+    inline fun <reified T> put(data: T, key: String): Boolean {
         val jsonAdapter: JsonAdapter<T> =
             Moshi.Builder().build().adapter(T::class.java)
         val jsonString = jsonAdapter.toJson(data)
-        sharedPreferences.edit().putString(key, jsonString).apply()
+        return sharedPreferences.edit().putString(key, jsonString).commit()
     }
 
-    override fun setSecretDataInFile(userData: UserSecretData) {
+    override fun setWalletItem(userData: UserSecretData) {
 
-        val jsonAdapterSecretData: JsonAdapter<UserSecretData> =
-            Moshi.Builder().build().adapter(UserSecretData::class.java)
-        val secretDataByteArray = jsonAdapterSecretData.toJson(userData).toByteArray()
+        val listMyData: Type =
+            Types.newParameterizedType(MutableList::class.java, UserSecretData::class.java)
+        val jsonAdapter: JsonAdapter<MutableList<UserSecretData>> =
+            Moshi.Builder().build().adapter(listMyData)
+        val userDataList = getWalletList()?.apply {
+            add(userData)
+        } ?: mutableListOf(userData)
+        val secretDataByteArray = jsonAdapter.toJson(userDataList).toByteArray()
         val generateSecretKey = generateSecretKeyCipher()
         val encryptData = encrypt(secretDataByteArray, generateSecretKey)
         val strSecretKey = strSecretKey(generateSecretKey)
@@ -92,7 +93,50 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
         saveFile(cipherDataByteArray)
     }
 
-    override fun getSecretDataAtFile(): UserSecretData? {
+    override fun getActiveWallet(): UserSecretData? {
+        val walletAccount = getWalletList()
+        walletAccount?.let {
+            it.forEach { userData ->
+                if (userData.secretKey != "")
+                    return userData
+            }
+        }
+        return null
+    }
+
+
+
+    override fun updateWallet(userSecretData: UserSecretData) {
+        val listMyData: Type =
+            Types.newParameterizedType(MutableList::class.java, UserSecretData::class.java)
+        val jsonAdapter: JsonAdapter<MutableList<UserSecretData>> =
+            Moshi.Builder().build().adapter(listMyData)
+        val userDataList = getWalletList()?.apply {
+            this.forEach {
+                if (it.publicKey == userSecretData.publicKey) {
+                    it.phrase = userSecretData.phrase
+                    it.secretKey = userSecretData.secretKey
+                    it.seed = userSecretData.seed
+                    it.publicKey = userSecretData.publicKey
+                }
+            }
+        }
+        userDataList?.run {
+            val secretDataByteArray = jsonAdapter.toJson(this).toByteArray()
+            val generateSecretKey = generateSecretKeyCipher()
+            val encryptData = encrypt(secretDataByteArray, generateSecretKey)
+            val strSecretKey = strSecretKey(generateSecretKey)
+            val cipherData = CipherData(encryptData, strSecretKey)
+            val jsonAdapterCipherData: JsonAdapter<CipherData> =
+                Moshi.Builder().build().adapter(CipherData::class.java)
+            val cipherDataByteArray = jsonAdapterCipherData.toJson(cipherData).toByteArray()
+
+            saveFile(cipherDataByteArray)
+        }
+
+    }
+
+    override fun getWalletList(): MutableList<UserSecretData>? {
 
         loadFile()?.let {
             val jsonAdapterCipherData: JsonAdapter<CipherData> =
@@ -101,11 +145,13 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
             val strSecretKey = cipherData?.strSecretKey
             val secretKey = getSecretKey(strSecretKey)
             val decryptData = decrypt(cipherData?.userSecretData, secretKey)
-            val jsonAdapterSecretData: JsonAdapter<UserSecretData> =
-                Moshi.Builder().build().adapter(UserSecretData::class.java)
 
+            val listMyData: Type =
+                Types.newParameterizedType(MutableList::class.java, UserSecretData::class.java)
+            val adapter: JsonAdapter<MutableList<UserSecretData>> =
+                Moshi.Builder().build().adapter(listMyData)
             decryptData?.let { data ->
-                return jsonAdapterSecretData.fromJson(data)
+                return adapter.fromJson(data)
             }
 
         }
@@ -168,3 +214,6 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
         return null
     }
 }
+
+
+

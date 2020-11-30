@@ -79,6 +79,7 @@ class SplashScreenFragment :
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is NavigateRegLoginViewCommand -> navigateFragment(command.destinationId)
+            is NavigatePinCodeViewCommand -> navigateFragment(command.destinationId,command.bundle)
             is OpenMainActivityViewCommand -> {
                 activity?.let {
                     val intent = Intent(it, MainActivity::class.java)

@@ -1,4 +1,4 @@
-package com.p2p.gp.appbase.utils
+package com.p2p.wowlet.appbase.utils
 
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil

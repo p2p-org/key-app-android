@@ -6,7 +6,6 @@ import androidx.core.content.PermissionChecker
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import com.p2p.gp.appbase.utils.DataBindingDelegate
 
 fun <Binding : ViewDataBinding> Fragment.dataBinding(layout: Int) =
     DataBindingDelegate<Binding>(this, layout)

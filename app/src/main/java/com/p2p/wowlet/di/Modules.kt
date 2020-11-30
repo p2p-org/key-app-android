@@ -5,14 +5,13 @@ import com.p2p.wowlet.fragment.backupwallat.recoverywallat.viewmodel.RecoveryWal
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel
-import com.p2p.wowlet.fragment.faceid.viewmodel.FaceIdViewModel
+import com.p2p.wowlet.fragment.fingetprint.viewmodel.FingerPrintViewModel
 import com.p2p.wowlet.fragment.investments.viewmodel.InvestmentsViewModel
 import com.p2p.wowlet.fragment.notification.viewmodel.NotificationViewModel
-import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wowlet.fragment.contacts.viewmodel.ContactsViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
 import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
-import com.p2p.wowlet.fragment.receive.viewmodel.ReceiveViewModel
+import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.fragment.regfinish.viewmodel.RegFinishViewModel
 import com.p2p.wowlet.fragment.reglogin.viewmodel.RegLoginViewModel
 import com.p2p.wowlet.fragment.regwallet.viewmodel.RegWalletViewModel
@@ -20,6 +19,9 @@ import com.p2p.wowlet.fragment.search.viewmodel.SearchViewModel
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel
 import com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel
+import com.p2p.wowlet.fragment.createwallet.viewmodel.CreateWalletViewModel
+import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
+import com.p2p.wowlet.fragment.termandcondition.viewmodel.TermAndConditionViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -27,9 +29,8 @@ val viewModule = module {
     viewModel { SecretKeyViewModel(get()) }
     viewModel { RegFinishViewModel(get()) }
     viewModel { SplashScreenViewModel(get()) }
-    viewModel { FaceIdViewModel() }
+    viewModel { FingerPrintViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
-    viewModel { PinCodeViewModel(get()) }
     viewModel { RegLoginViewModel(get()) }
     viewModel { RecoveryWalletViewModel() }
     viewModel { CompleteBackupWalletViewModel(get()) }
@@ -39,9 +40,12 @@ val viewModule = module {
     viewModel { InvestmentsViewModel() }
     viewModel { ContactsViewModel() }
     viewModel { QrScannerViewModel() }
-    viewModel { ReceiveViewModel() }
+    viewModel { DetailWalletViewModel(get()) }
     viewModel { DetailSavingViewModel() }
     viewModel { RecoveryPhraseViewModel() }
-    viewModel { SendCoinsViewModel(get()) }
+    viewModel { SendCoinsViewModel(get(), get()) }
     viewModel { SwapViewModel() }
+    viewModel { CreateWalletViewModel(get()) }
+    viewModel { TermAndConditionViewModel() }
+    viewModel { PinCodeViewModel(get(),get(),get()) }
 }

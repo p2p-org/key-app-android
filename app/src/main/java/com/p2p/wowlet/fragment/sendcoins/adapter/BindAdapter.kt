@@ -4,18 +4,17 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.example.wowlet.fragment.sendcoins.adapter.YourWalletsAdapter
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
-import com.wowlet.entities.local.CoinItem
+import com.wowlet.entities.local.WalletItem
 import me.relex.circleindicator.CircleIndicator3
 
 @BindingAdapter("adapter_list", "view_model")
 fun RecyclerView.setAdapterList(
-    data: List<CoinItem>?,
+    data: List<WalletItem>?,
     viewModel: SendCoinsViewModel
 ) {
     data?.let {
-        adapter = YourWalletsAdapter(viewModel, it)
+        adapter = YourWalletsAdapter(data)
     }
     this.layoutManager = LinearLayoutManager(this.context)
 }

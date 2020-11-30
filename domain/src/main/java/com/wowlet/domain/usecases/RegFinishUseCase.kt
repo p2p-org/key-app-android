@@ -5,7 +5,10 @@ import com.wowlet.domain.interactors.RegFinishInteractor
 
 
 class RegFinishUseCase(private val preferenceService: PreferenceService) : RegFinishInteractor {
-    override fun finishReg(regFinish: Boolean) {
-        preferenceService.finishReg(regFinish)
+    override fun finishLoginReg(regFinish: Boolean) {
+        preferenceService.finishLoginReg(regFinish)
     }
+
+    override fun isCurrentLoginReg(): Boolean = preferenceService.isCurrentLoginReg()
+
 }

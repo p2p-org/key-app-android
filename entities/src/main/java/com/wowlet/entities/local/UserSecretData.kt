@@ -1,9 +1,11 @@
 package com.wowlet.entities.local
 
+import org.p2p.solanaj.utils.TweetNaclFast
+
 
 data class UserSecretData(
-    val secretKey: String,
-    val publicKey: String,
-    val seed: TweetNaclFast.Signature.KeyPair,
-    val phrase: List<String>
+    var secretKey: String,
+    var publicKey: String,
+    var seed: TweetNaclFast.Signature.KeyPair,
+    var phrase: List<String>
 )

@@ -31,7 +31,7 @@ class SwapFragment : FragmentBaseMVVM<SwapViewModel, FragmentSwapBinding>() {
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is NavigateUpViewCommand -> navigateFragment(command.destinationId)
-            is MyWalletDialogViewCommand -> {
+            is OpenMyWalletDialogViewCommand -> {
                 val swapWalletsBottomSheet: SwapWalletsBottomSheet =
                     SwapWalletsBottomSheet.newInstance()
                 swapWalletsBottomSheet.show(childFragmentManager, "swap_wallet_bottom_fragment")

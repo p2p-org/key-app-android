@@ -97,7 +97,7 @@ public class ConfirmedTransaction {
         @Json(name = "err")
         private Object err;
         @Json(name = "fee")
-        private long fee;
+        private double fee;
         @Json(name = "innerInstructions")
         private List<Object> innerInstructions = null;
         @Json(name = "postBalances")
@@ -111,7 +111,7 @@ public class ConfirmedTransaction {
             return err;
         }
 
-        public long getFee() {
+        public double getFee() {
             return fee;
         }
 

@@ -39,9 +39,7 @@
             app:srcCompat="@drawable/ic_close" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/vRvAddCoin"
-            adapter_list="@{viewModel.getAddCoinData}"
-            view_model="@{viewModel}"
+            android:id="@+id/vRvWallets"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_15"

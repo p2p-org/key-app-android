@@ -40,7 +40,6 @@ class SendCoinDoneDialog(private val goToWallet: () -> Unit) : DialogFragment() 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sendCoinsViewModel.getCoinList()
         sendCoinsViewModel.command.observe(viewLifecycleOwner, {
             goToWallet.invoke()
         })

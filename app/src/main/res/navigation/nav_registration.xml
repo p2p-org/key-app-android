@@ -15,6 +15,10 @@
         <action
             android:id="@+id/action_navigation_splash_screen_to_navigation_reg_login"
             app:destination="@id/navigation_reg_login" />
+        <action
+            android:id="@+id/action_navigation_splash_screen_to_navigation_pin_code"
+            app:destination="@id/navigation_pin_code" />
+
     </fragment>
 
     <fragment
@@ -24,12 +28,46 @@
         app:popUpTo="@+id/nav_registration"
         app:popUpToInclusive="true"
         tools:layout="@layout/fragment_reg_login">
-        <action
-            android:id="@+id/action_navigation_reg_login_to_navigation_reg_wallet"
-            app:destination="@id/navigation_reg_wallet" />
+
         <action
             android:id="@+id/action_navigation_reg_login_to_navigation_recovery_wallet"
             app:destination="@id/navigation_recovery_wallet" />
+        <action
+            android:id="@+id/action_navigation_reg_login_to_navigation_term_and_condition"
+            app:destination="@id/navigation_term_and_condition" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_create_wallet"
+        android:name="com.p2p.wowlet.fragment.createwallet.view.CreateWalletFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_registration"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_create_wallet">
+
+        <action
+            android:id="@+id/action_navigation_term_and_condition_to_navigation_reg_wallet"
+            app:destination="@id/navigation_reg_wallet" />
+        <action
+            android:id="@+id/action_navigation_create_wallet_to_navigation_reg_login"
+            app:destination="@id/navigation_reg_login" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_term_and_condition"
+        android:name="com.p2p.wowlet.fragment.termandcondition.view.TermAndConditionFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_registration"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_term_and_condition">
+
+        <action
+            android:id="@+id/action_navigation_term_and_condition_to_navigation_reg_login"
+            app:destination="@id/navigation_reg_login" />
+        <action
+            android:id="@+id/action_navigation_term_and_condition_to_navigation_create_wallet"
+            app:destination="@id/navigation_create_wallet" />
+
     </fragment>
     <fragment
         android:id="@+id/navigation_secret_key"
@@ -42,34 +80,22 @@
             android:id="@+id/action_navigation_secret_key_to_navigation_recovery_wallet"
             app:destination="@id/navigation_recovery_wallet" />
         <action
-            android:id="@+id/action_navigation_secret_key_to_navigation_complete_wallet"
-            app:destination="@id/navigation_complete_wallet" />
+            android:id="@+id/action_navigation_secret_key_to_navigation_pin_code"
+            app:destination="@id/navigation_pin_code" />
+
     </fragment>
-  <fragment
+    <fragment
         android:id="@+id/navigation_reg_finish"
         android:name="com.p2p.wowlet.fragment.regfinish.view.RegFinishFragment"
         app:launchSingleTop="true"
         app:popUpTo="@+id/nav_registration"
         app:popUpToInclusive="true"
         tools:layout="@layout/fragment_reg_finish">
-      <action
-          android:id="@+id/action_navigation_reg_finish_to_navigation_notification"
-          app:destination="@id/navigation_notification" />
-  </fragment>
-    <fragment
-        android:id="@+id/navigation_pin_code"
-        android:name="com.p2p.wowlet.fragment.pincode.view.PinCodeFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@+id/nav_registration"
-        app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_pin_code">
         <action
-            android:id="@+id/action_navigation_pin_code_to_navigation_reg_wallet"
-            app:destination="@id/navigation_reg_wallet" />
-        <action
-            android:id="@+id/action_navigation_pin_code_to_navigation_face_id"
-            app:destination="@id/navigation_face_id" />
+            android:id="@+id/action_navigation_reg_finish_to_navigation_notification"
+            app:destination="@id/navigation_notification" />
     </fragment>
+
     <fragment
         android:id="@+id/navigation_notification"
         android:name="com.p2p.wowlet.fragment.notification.view.NotificationFragment"
@@ -79,24 +105,46 @@
         tools:layout="@layout/fragment_notification">
         <action
             android:id="@+id/action_navigation_notification_to_navigation_face_id"
-            app:destination="@id/navigation_face_id" />
+            app:destination="@id/navigation_fingerprint_id" />
         <action
             android:id="@+id/action_navigation_notification_to_navigation_reg_finish"
             app:destination="@id/navigation_reg_finish" />
     </fragment>
     <fragment
-        android:id="@+id/navigation_face_id"
-        android:name="com.p2p.wowlet.fragment.faceid.view.FaceIdFragment"
+        android:id="@+id/navigation_pin_code"
+        android:name="com.p2p.wowlet.fragment.pincode.view.PinCodeFragment"
         app:launchSingleTop="true"
         app:popUpTo="@+id/nav_registration"
         app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_face_id">
+        tools:layout="@layout/fragment_pin_code">
+
         <action
-            android:id="@+id/action_navigation_face_id_to_navigation_notification"
+            android:id="@+id/action_navigation_pin_code_to_navigation_reg_login"
+            app:destination="@id/navigation_reg_login" />
+        <action
+            android:id="@+id/action_navigation_pin_code_to_navigation_secret_key"
+            app:destination="@id/navigation_secret_key" />
+        <action
+            android:id="@+id/action_navigation_pin_code_to_navigation_fingerprint_id"
+            app:destination="@id/navigation_fingerprint_id" />
+        <action
+            android:id="@+id/action_navigation_pin_code_to_navigation_reg_finish"
+            app:destination="@id/navigation_reg_finish" />
+        <action
+            android:id="@+id/action_navigation_pin_code_to_navigation_notification"
             app:destination="@id/navigation_notification" />
-         <action
-            android:id="@+id/action_navigation_face_id_to_navigation_pin_code"
-            app:destination="@id/navigation_pin_code" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_fingerprint_id"
+        android:name="com.p2p.wowlet.fragment.fingetprint.view.FingerPrintFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_registration"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_fingerprint">
+        <action
+            android:id="@+id/action_navigation_fingerprint_id_to_navigation_notification"
+            app:destination="@id/navigation_notification" />
+
     </fragment>
     <fragment
         android:id="@+id/navigation_recovery_wallet"
@@ -132,6 +180,7 @@
         app:popUpTo="@+id/nav_registration"
         app:popUpToInclusive="true"
         tools:layout="@layout/fragment_reg_wallet">
+
         <action
             android:id="@+id/action_navigation_reg_wallet_to_navigation_reg_login"
             app:destination="@id/navigation_reg_login" />

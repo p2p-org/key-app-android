@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="viewModel"
-            type="com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel" />
+            name="model"
+            type="com.wowlet.entities.local.ActivityItem" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -37,6 +38,7 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_15"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -47,15 +49,15 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/your_wallet_title"
-                        style="@style/Black.17"
+                        style="@style/Grey.17"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:alpha=".5"
                         android:text="24 Oct 2020 @ 12:51 PM" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/vClose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_12"
@@ -72,7 +74,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_30"
-            android:text="+ 0,00344 BTC" />
+            android:text="@{model.symbolsPrice+String.format(@string/usd_receive,model.price)}"
+            tools:text="+ 0,00344 BTC" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/Grey.12"
@@ -100,6 +103,30 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey.12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/block_number" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Black.15.Bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@{String.format(@string/block_number_symbol,model.slot)}"
+                    tools:text="#5387498763" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:background="@color/gray_30" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Grey.12"
                     android:layout_width="wrap_content"
@@ -112,18 +139,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20">
+                    android:layout_marginTop="@dimen/dp_10">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/Black.15.Bold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/dp_17"
-                        android:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8u209j08fh98yu20uiei"
+                        android:text="@{model.signature}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/copy_transaction"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8u209j08fh98yu20uiei" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/copy_transaction"
@@ -135,47 +163,6 @@
                         app:srcCompat="@drawable/ic_copy" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:text="@string/amount" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:text="0,00344 BTC at 12 902, 07 US$" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:text="@string/value" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:text="44,38 US$" />
 
                 <View
                     android:layout_width="match_parent"
@@ -196,7 +183,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:text="0,00009492 BTC" />
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@{String.format(@string/btc,model.fee)}"
+                    tools:text="0,00009492 BTC" />
 
                 <View
                     android:layout_width="match_parent"
@@ -250,7 +239,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
                             android:ellipsize="marquee"
-                            android:text="k97y8u209j08fh98yu20uiei..." />
+                            app:text="@{model.from}"
+                            tools:text="k97y8u209j08fh98yu20uiei..." />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -316,7 +306,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
                             android:ellipsize="marquee"
-                            android:text="k97y8u209j08fh98yu20uiei..." />
+                            app:text="@{model.from}"
+                            tools:text="k97y8u209j08fh98yu20uiei..." />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

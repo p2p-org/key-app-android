@@ -16,7 +16,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="red_500">#f44336</color>
+    <color name="red_400">#f44336</color>
+    <color name="red_500">#FF0000</color>
     <color name="background_screens">#1A282828</color>
     <color name="colorTranslucent">#99000000</color>
 </resources>

@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="coinItem"
-            type="com.wowlet.entities.local.CoinItem" />
+            name="walletItem"
+            type="com.wowlet.entities.local.WalletItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_15"
-                android:text="@{coinItem.name}" />
+                android:text="@{walletItem.tokenName}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vDate"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_5"
-                android:text="@{coinItem.type}" />
+                android:text="Wallet Address" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_15"
             android:layout_marginEnd="@dimen/dp_15"
-            android:text="@{coinItem.priceInUs}"
+            android:text="@{String.format(@string/usd, walletItem.price)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_5"
             android:layout_marginEnd="@dimen/dp_15"
-            android:text="@{coinItem.priceInBTC}"
+            android:text="@{String.format(@string/tkns, walletItem.tkns)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vPrice" />
 
