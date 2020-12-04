@@ -6,6 +6,12 @@ class WalletDataConst {
     companion object {
         val walletConstList = mutableListOf(
             ConstWalletItem(
+                "SOL",
+                "SOLMINT",
+                "SOL",
+                "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
+            ),
+            ConstWalletItem(
                 "SRM",
                 "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt",
                 "Serum",

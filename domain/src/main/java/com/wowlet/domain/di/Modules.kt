@@ -9,7 +9,7 @@ val interactorsModule = module {
     factory <SecretKeyInteractor> { SecretKeyUseCase(get(),get()) }
     factory<EnterPinCodeInteractor> { EnterPinCodeUseCase(get()) }
     single<NotificationInteractor> { NotificationUseCase(get()) }
-    single<SendCoinInteractor> { SendCoinUseCase(get()) }
+    single<SendCoinInteractor> { SendCoinUseCase(get(),get())}
     single<DashboardInteractor> { DashBoardUseCase(get(),get(),get()) }
     single<RegFinishInteractor> { RegFinishUseCase(get()) }
     single<CompleteBackupWalletInteractor> { CompleteBackupWalletUseCase(get()) }

@@ -9,6 +9,7 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.wowlet.domain.interactors.SecretKeyInteractor
+import com.wowlet.entities.enums.PinCodeFragmentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ class SecretKeyViewModel(val secretKeyInteractor: SecretKeyInteractor) : BaseVie
                 R.id.action_navigation_secret_key_to_navigation_pin_code,
                 bundleOf(
                     PinCodeFragment.OPEN_FRAGMENT_SPLASH_SCREEN to false,
-                    PinCodeFragment.CREATE_NEW_PIN_CODE to true)
+                    PinCodeFragment.CREATE_NEW_PIN_CODE to  PinCodeFragmentType.CREATE)
             )
     }
 

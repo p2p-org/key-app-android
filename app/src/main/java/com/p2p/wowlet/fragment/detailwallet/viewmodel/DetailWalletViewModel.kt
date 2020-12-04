@@ -42,9 +42,9 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
         _getChartData.value = chartList
     }
 
-    fun getActivityList(publicKey: String,icon:String) {
+    fun getActivityList(publicKey: String, icon: String, tokenName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val detailList = detailActivityInteractor.getActivityList(publicKey,icon)
+            val detailList = detailActivityInteractor.getActivityList(publicKey,icon,tokenName)
             withContext(Dispatchers.Main){
                 _getActivityData.value=detailList
             }
@@ -64,4 +64,5 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
         _command.value =
             Command.OpenTransactionDialogViewCommand(itemActivity)
     }
+
 }

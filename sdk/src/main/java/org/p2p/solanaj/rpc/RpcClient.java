@@ -1,5 +1,7 @@
 package org.p2p.solanaj.rpc;
 
+import android.widget.Toast;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,8 +42,7 @@ public class RpcClient {
         JsonAdapter<RpcResponce<T>> resultAdapter = new Moshi.Builder().build()
                 .adapter(Types.newParameterizedType(RpcResponce.class, Type.class.cast(clazz)));
 
-        Request request = new Request.Builder().url(endpoint)
-                .post(RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest))).build();
+        Request request = new Request.Builder().url(endpoint).post(RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest))).build();
 
         try {
             Response response = httpClient.newCall(request).execute();
@@ -53,6 +54,7 @@ public class RpcClient {
 
             return (T) rpcResult.getResult();
         } catch (IOException e) {
+
             throw new RpcException(e.getMessage());
         }
     }

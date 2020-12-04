@@ -10,9 +10,12 @@ import androidx.databinding.DataBindingUtil
 import com.p2p.wowlet.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.databinding.DialogTansactionBinding
+import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
+import com.p2p.wowlet.utils.copyClipboard
 import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.TransactionInfoModel
 import kotlinx.android.synthetic.main.dialog_tansaction.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TransactionBottomSheet(private val dataInfo: ActivityItem) : BottomSheetDialogFragment() {
 
@@ -40,6 +43,15 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem) : BottomSheetDi
         super.onViewCreated(view, savedInstanceState)
         vClose.setOnClickListener {
             dismiss()
+        }
+        copyToUserKey.setOnClickListener {
+            context?.copyClipboard(dataInfo.to)
+        }
+        copyFromUserKey.setOnClickListener {
+            context?.copyClipboard(dataInfo.from)
+        }
+        copyTransaction.setOnClickListener {
+            context?.copyClipboard(dataInfo.signature)
         }
     }
 

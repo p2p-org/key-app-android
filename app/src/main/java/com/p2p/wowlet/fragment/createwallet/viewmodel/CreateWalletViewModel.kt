@@ -24,19 +24,15 @@ class CreateWalletViewModel(private val createWalletInteractor: CreateWalletInte
 
     fun navigateUp() {
         _command.value =
-            Command.NavigateUpViewCommand(R.id.action_navigation_term_and_condition_to_navigation_reg_login)
+            Command.NavigateUpViewCommand(R.id.action_navigation_create_wallet_to_navigation_reg_login)
     }
 
     fun goToRegWalletFragment() {
-        initSecretUserData()
-    }
-
-    fun initSecretUserData() {
         viewModelScope.launch(Dispatchers.IO) {
             createWalletInteractor.initUser()
             withContext(Dispatchers.Main) {
                 _command.value =
-                    Command.NavigateRegWalletViewCommand(R.id.action_navigation_term_and_condition_to_navigation_reg_wallet)
+                    Command.NavigateRegWalletViewCommand(R.id.action_navigation_create_wallet_to_navigation_reg_wallet)
             }
         }
     }

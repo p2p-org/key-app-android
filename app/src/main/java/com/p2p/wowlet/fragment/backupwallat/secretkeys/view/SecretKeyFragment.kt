@@ -55,10 +55,13 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
         when (command) {
             is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
             is Command.NavigateCompleteBackupViewCommand -> navigateFragment(command.destinationId)
-            is Command.NavigatePinCodeViewCommand -> navigateFragment(
-                command.destinationId,
-                command.bundle
-            )
+            is Command.NavigatePinCodeViewCommand -> {
+
+                navigateFragment(
+                    command.destinationId,
+                    command.bundle
+                )
+            }
 
 
         }

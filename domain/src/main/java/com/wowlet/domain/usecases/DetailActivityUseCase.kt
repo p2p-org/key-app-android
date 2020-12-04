@@ -12,9 +12,9 @@ class DetailActivityUseCase(
     private val preferenceService: PreferenceService
 ) : DetailActivityInteractor {
 
-    override suspend fun getActivityList(publicKey: String, icon: String): List<ActivityItem> {
+    override suspend fun getActivityList(publicKey: String, icon: String, tokenName: String): List<ActivityItem> {
         val walletsList = wowletApiCallRepository.getDetailActivityData(publicKey).map {
-            it.transferInfoToActivityItem(publicKey,icon)
+            it.transferInfoToActivityItem(publicKey,icon,tokenName)
         }
         return walletsList
     }

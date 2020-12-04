@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_15"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:text="@{String.format(@string/usd_symbol, itemWallet.price)}"
+                    android:text="@{String.format(@string/usd_symbol(itemWallet.price))}"
                     tools:text="$ 120,00" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:text="@{String.format(@string/tkns, itemWallet.tkns)}"
+                    android:text="@{String.format(@string/amount_count_format(itemWallet.amount))+itemWallet.tokenSymbol}"
                     tools:text="1200,0000 SOL" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

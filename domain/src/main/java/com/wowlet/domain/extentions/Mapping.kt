@@ -2,6 +2,7 @@ package com.wowlet.domain.extentions
 
 import com.wowlet.entities.local.*
 import org.p2p.solanaj.rpc.types.TransferInfo
+import kotlin.math.pow
 
 fun ConstWalletItem.constWalletToWallet(walletsList: List<BalanceInfo>): WalletItem {
     var walletItem = WalletItem()
@@ -16,7 +17,7 @@ fun ConstWalletItem.constWalletToWallet(walletsList: List<BalanceInfo>): WalletI
                     decimals = it.decimals,
                     icon = icon,
                     price = it.amount.toDouble(),
-                    tkns = it.amount.toDouble()
+                    amount = it.amount.toDouble()
                 )
             } else {
                 walletItem = WalletItem(
@@ -26,14 +27,54 @@ fun ConstWalletItem.constWalletToWallet(walletsList: List<BalanceInfo>): WalletI
                     depositAddress = it.depositAddress,
                     decimals = it.decimals,
                     icon = icon,
-                    tkns = it.amount.toDouble()
+                    amount = it.amount.toDouble()
+                )
+            }
+        }else{
+            walletItem = WalletItem(
+                tokenSymbol = tokenSymbol,
+                mintAddress = mintAddress,
+                tokenName = tokenName,
+                depositAddress = it.depositAddress,
+                decimals = it.decimals,
+                icon = icon,
+                amount = it.amount.toDouble()*it.decimals
+            )
+        }
+    }
+    return walletItem
+}
+
+fun BalanceInfo.walletToWallet(walletsList: List<ConstWalletItem>): WalletItem {
+    var walletItem = WalletItem()
+    walletsList.forEach {
+        if (it.mintAddress == mint) {
+            if (it.tokenSymbol == "USDT" || it.tokenSymbol == "USDC") {
+                walletItem = WalletItem(
+                    tokenSymbol = it.tokenSymbol,
+                    mintAddress = it.mintAddress,
+                    tokenName = it.tokenName,
+                    depositAddress = depositAddress,
+                    decimals = decimals,
+                    icon = it.icon,
+                    price = amount.toDouble()/(10.0.pow(decimals)),
+                    amount = amount.toDouble()/(10.0.pow(decimals))
+                )
+            } else {
+                walletItem = WalletItem(
+                    tokenSymbol = it.tokenSymbol,
+                    mintAddress = it.mintAddress,
+                    tokenName = it.tokenName,
+                    depositAddress = depositAddress,
+                    decimals = decimals,
+                    icon = it.icon,
+                    amount =  amount.toDouble()/(10.0.pow(decimals))
                 )
             }
         }
     }
     return walletItem
 }
-
 fun ConstWalletItem.fromConstWalletToAddCoinItem(
     change24h: Double,
     change24hInPercentages: Double
@@ -48,7 +89,7 @@ fun ConstWalletItem.fromConstWalletToAddCoinItem(
     )
 }
 
-fun TransferInfo.transferInfoToActivityItem(publicKey: String, icon: String): ActivityItem {
+fun TransferInfo.transferInfoToActivityItem(publicKey: String, icon: String, tokenName: String): ActivityItem {
     val symbolPrice: String
     val sendOrReceive = if (this.from == publicKey) {
         symbolPrice = "-"
@@ -62,13 +103,14 @@ fun TransferInfo.transferInfoToActivityItem(publicKey: String, icon: String): Ac
         icon = icon,
         name = sendOrReceive,
         symbolsPrice = symbolPrice,
-        price = lamports.toDouble(),
-        tknsValue = lamports.toDouble(),
+        price = lamports.toDouble()/(10.0.pow(9)),
+        lamports = lamports.toDouble()/(10.0.pow(9)),
         slot = slot,
         signature = signature,
         fee=fee,
         from=from,
-        to=to
+        to=to,
+        tokenName=tokenName
     )
 }
 

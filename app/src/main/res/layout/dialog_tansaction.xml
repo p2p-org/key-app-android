@@ -148,15 +148,16 @@
                         android:layout_marginEnd="@dimen/dp_17"
                         android:text="@{model.signature}"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/copy_transaction"
+                        app:layout_constraintEnd_toStartOf="@+id/copyTransaction"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8u209j08fh98yu20uiei" />
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/copy_transaction"
+                        android:id="@+id/copyTransaction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_10"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -222,7 +223,7 @@
                         android:layout_marginStart="@dimen/dp_15"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/copy_from_user_key"
+                        app:layout_constraintEnd_toStartOf="@+id/copyFromUserKey"
                         app:layout_constraintStart_toEndOf="@+id/user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
@@ -245,9 +246,10 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/copy_from_user_key"
+                        android:id="@+id/copyFromUserKey"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_10"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -289,7 +291,7 @@
                         android:layout_marginStart="@dimen/dp_15"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/copy_to_user_key"
+                        app:layout_constraintEnd_toStartOf="@+id/copyToUserKey"
                         app:layout_constraintStart_toEndOf="@+id/to_user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
@@ -312,9 +314,10 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/copy_to_user_key"
+                        android:id="@+id/copyToUserKey"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_10"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"

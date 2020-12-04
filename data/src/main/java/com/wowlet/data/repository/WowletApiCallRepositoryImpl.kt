@@ -9,9 +9,12 @@ import com.wowlet.data.util.mnemoticgenerator.English
 import com.wowlet.data.util.mnemoticgenerator.MnemonicGenerator
 import com.wowlet.data.util.mnemoticgenerator.Words
 import com.wowlet.entities.Result
-import com.wowlet.entities.local.*
-import com.wowlet.entities.responce.*
+import com.wowlet.entities.local.BalanceInfo
+import com.wowlet.entities.local.SendTransactionModel
+import com.wowlet.entities.local.UserSecretData
+import com.wowlet.entities.responce.ResponceDataBonfida
 import com.wowlet.entities.responce.orderbook.OrderBooks
+import kotlinx.coroutines.delay
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.bitcoinj.core.Utils.readInt64
@@ -20,13 +23,13 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.programs.SystemProgram
-import org.p2p.solanaj.rpc.Cluster
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction
 import org.p2p.solanaj.rpc.types.TransferInfo
 import org.p2p.solanaj.utils.TweetNaclFast
 import retrofit2.Response
+import java.lang.Exception
 import java.security.SecureRandom
 import java.util.*
 import kotlin.collections.ArrayList
@@ -36,26 +39,22 @@ class WowletApiCallRepositoryImpl(
     private val client: RpcClient
 ) : WowletApiCallRepository {
 
-    private var publicKey: String = ""
-    private var secretKey: String = ""
-
     override suspend fun initAccount(phraseList: List<String>): UserSecretData {
 
         val convertToSeed = MnemonicCode.toSeed(phraseList, "")
         val seedRange: ByteArray = Arrays.copyOfRange(convertToSeed, 0, 32)
         val seed = TweetNaclFast.Signature.keyPair_fromSeed(seedRange)
         // get public and secret keys
-        publicKey = Base58.encode(seed.publicKey)
-        secretKey = Base58.encode(seed.secretKey)
+        val publicKey = Base58.encode(seed.publicKey)
+        val secretKey = Base58.encode(seed.secretKey)
 
         return UserSecretData(secretKey, publicKey, seed, phraseList)
     }
 
     override suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String {
-        val fromPublicKey = PublicKey(publicKey)
+        val fromPublicKey = PublicKey(sendTransactionModel.fromPublicKey)
         val toPublicKey = PublicKey(sendTransactionModel.toPublickKey)
-
-        val signer = Account(Base58.decode(secretKey))
+        val signer = Account(Base58.decode(sendTransactionModel.secretKey))
 
         val transaction = Transaction()
         transaction.addInstruction(
@@ -66,11 +65,16 @@ class WowletApiCallRepositoryImpl(
             )
         )
 
-        return client.api.sendTransaction(transaction, signer)
+
+
+       return client.api.sendTransaction(transaction, signer)
     }
 
-    override suspend fun getWallets(publicKey: String): List<BalanceInfo> {
-        val client = RpcClient(Cluster.MAINNET)
+    override suspend fun getBalance(accountAddress: String): Long {
+        return client.api.getBalance(PublicKey(accountAddress))
+    }
+
+    override suspend fun getWallets(publicKey: String): MutableList<BalanceInfo> {
         val programAccounts = client.api
             .getProgramAccounts(
                 PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
@@ -105,15 +109,13 @@ class WowletApiCallRepositoryImpl(
                 decimals = accountInfoData[44].toInt()
             }
             balances.add(BalanceInfo(account.pubkey, amount, mint, owner, decimals))
-
         }
-        System.out.println("balances " + Arrays.toString(balances.toTypedArray()))
 
+        System.out.println("balances " + Arrays.toString(balances.toTypedArray()))
         return balances
     }
 
     override suspend fun getMinimumBalance(accountLenght: Int): Int {
-
         val minimumBalance: Int =
             client.api.getMinimumBalanceForRentExemption(accountLenght)
         return minimumBalance
@@ -177,6 +179,5 @@ class WowletApiCallRepositoryImpl(
 
     private fun getOrderBooksData(response: Response<ResponceDataBonfida<OrderBooks>>): Result<OrderBooks> =
         analyzeResponseObject(response)
-
 
 }

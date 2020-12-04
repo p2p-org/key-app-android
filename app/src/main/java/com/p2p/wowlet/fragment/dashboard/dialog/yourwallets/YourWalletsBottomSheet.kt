@@ -1,4 +1,4 @@
-package com.p2p.wowlet.fragment.sendcoins.dialog
+package com.p2p.wowlet.fragment.dashboard.dialog.yourwallets
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,29 +13,35 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogMyWalletBinding
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.p2p.wowlet.fragment.sendcoins.adapter.YourWalletsAdapter
-import kotlinx.android.synthetic.main.dialog_my_wallet.*
+import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.adapter.YourWalletsAdapter
+import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class YourWalletsBottomSheet : BottomSheetDialogFragment() {
+class YourWalletsBottomSheet(val itemWallet: (data: WalletItem) -> Unit) :
+    BottomSheetDialogFragment() {
 
+    private lateinit var adapter: YourWalletsAdapter
     private val sendCoinsViewModel: SendCoinsViewModel by viewModel()
     private lateinit var binding: DialogMyWalletBinding
 
     companion object {
-        const val YOUR_WALLET="yourWallet"
-        fun newInstance(): YourWalletsBottomSheet = YourWalletsBottomSheet()
+        const val YOUR_WALLET = "yourWallet"
+        fun newInstance(itemWallet: (data: WalletItem) -> Unit): YourWalletsBottomSheet =
+            YourWalletsBottomSheet(itemWallet)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.dialog_my_wallet, container, false
         )
         binding.viewModel = sendCoinsViewModel
+        adapter = YourWalletsAdapter(mutableListOf(), sendCoinsViewModel)
+        binding.vRvWallets.layoutManager = LinearLayoutManager(this.context)
+        binding.vRvWallets.adapter = adapter
         return binding.root
     }
 
@@ -43,15 +49,18 @@ class YourWalletsBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         sendCoinsViewModel.getWalletItems()
         sendCoinsViewModel.getWalletData.observe(viewLifecycleOwner, Observer {
-            vRvWallets.apply {
-                adapter = YourWalletsAdapter(it)
-                this.layoutManager = LinearLayoutManager(this.context)
-            }
-
+            adapter.updateList(it)
         })
-        vClose.setOnClickListener {
+        binding.vClose.setOnClickListener {
             dismiss()
         }
+        sendCoinsViewModel.walletItemData.observe(viewLifecycleOwner, {
+            if (it.tokenSymbol.isNotEmpty()) {
+                itemWallet.invoke(it)
+                dismiss()
+            }
+        })
+
     }
 
     override fun onResume() {

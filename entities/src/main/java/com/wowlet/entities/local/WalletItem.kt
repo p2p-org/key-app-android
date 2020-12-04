@@ -8,5 +8,5 @@ data class WalletItem(
     val tokenName: String = "",
     val icon: String = "",
     var price: Double = 0.0,
-    var tkns: Double = 0.0
+    var amount: Double = 0.0
 )

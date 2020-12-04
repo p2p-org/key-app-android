@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
+import com.p2p.wowlet.appbase.viewmodel.SingleLiveData
+import com.p2p.wowlet.appbase.viewmodel.SingleLiveEvent
 import com.wowlet.domain.interactors.FingerPrintInteractor
 import com.wowlet.domain.interactors.NotificationInteractor
 import com.wowlet.domain.interactors.PinCodeInteractor
@@ -24,7 +26,7 @@ class PinCodeViewModel(
     private val _pinCodeSuccess by lazy { MutableLiveData<Unit>() }
     val pinCodeSuccess: LiveData<Unit> get() = _pinCodeSuccess
 
-    private val _verifyPinCodeError by lazy { MutableLiveData<Boolean>(false) }
+    private val _verifyPinCodeError by lazy { MutableLiveData<Boolean>() }
     val verifyPinCodeError: LiveData<Boolean> get() = _verifyPinCodeError
 
     private val _pinCodeSaved by lazy { MutableLiveData<Unit>() }

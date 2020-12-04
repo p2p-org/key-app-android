@@ -36,7 +36,7 @@ class CreateWalletFragment :
         }
         ibtCopyClipboard.setOnClickListener {
             it.context.copyClipboard(vPhrase.text.toString())
-            Toast.makeText(context, getString(R.string.copied_phrase), Toast.LENGTH_SHORT).show()
+
         }
     }
 

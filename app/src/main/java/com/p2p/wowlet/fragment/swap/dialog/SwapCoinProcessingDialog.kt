@@ -38,13 +38,13 @@ class SwapCoinProcessingDialog (private val goToWallet: () -> Unit): DialogFragm
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        object : CountDownTimer(2000, 1000) {
+        /*object : CountDownTimer(2000, 1000) {
             override fun onTick(millisUntilFinished: Long) {}
             override fun onFinish() {
                 goToWallet.invoke()
                 dismiss()
             }
-        }.start()
+        }.start()*/
     }
 
     override fun onResume() {

@@ -8,6 +8,7 @@
         <variable
             name="itemActivity"
             type="com.wowlet.entities.local.ActivityItem" />
+
         <variable
             name="viewModel"
             type="com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel" />
@@ -24,8 +25,8 @@
             android:layout_height="@dimen/dp_32"
             android:layout_marginStart="@dimen/dp_15"
             android:layout_marginTop="@dimen/dp_20"
-            app:image_source="@{itemActivity.icon}"
             android:layout_marginBottom="@dimen/dp_20"
+            app:image_source="@{itemActivity.icon}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +37,7 @@
             android:layout_height="0dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vTkns"
+            app:layout_constraintEnd_toStartOf="@+id/vLamport"
             app:layout_constraintStart_toEndOf="@+id/vCoin"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -47,8 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_15"
-                tools:text="Coin Name Here"
-                android:text="@{itemActivity.name}"/>
+                android:text="@{itemActivity.name}"
+                tools:text="Coin Name Here" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -59,18 +60,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_15"
             android:layout_marginEnd="@dimen/dp_15"
-            android:text="@{itemActivity.symbolsPrice+String.format(@string/us, itemActivity.price)}"
+            android:text="@{itemActivity.symbolsPrice+String.format(@string/us(itemActivity.price))}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vTkns"
+            android:id="@+id/vLamport"
             style="@style/Grey.13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_5"
             android:layout_marginEnd="@dimen/dp_15"
-            android:text="@{String.format(@string/tkns, itemActivity.tknsValue)}"
+            android:text="@{String.format(@string/sol(itemActivity.lamports))}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vPrice" />
 

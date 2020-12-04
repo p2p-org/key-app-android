@@ -8,16 +8,6 @@ import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import com.wowlet.entities.local.WalletItem
 import me.relex.circleindicator.CircleIndicator3
 
-@BindingAdapter("adapter_list", "view_model")
-fun RecyclerView.setAdapterList(
-    data: List<WalletItem>?,
-    viewModel: SendCoinsViewModel
-) {
-    data?.let {
-        adapter = YourWalletsAdapter(data)
-    }
-    this.layoutManager = LinearLayoutManager(this.context)
-}
 
 @BindingAdapter("view_pager", "view_model")
 fun CircleIndicator3.bindViewPager(

@@ -4,16 +4,16 @@ import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.domain.interactors.SecretKeyInteractor
 import com.wowlet.entities.local.SecretKeyCombinationSuccess
-import com.wowlet.entities.local.SecretKeyItem
 
+class SecretKeyUseCase(
+    val preferenceService: PreferenceService,
+    val wowletApiCallRepository: WowletApiCallRepository
+) : SecretKeyInteractor {
 
-class SecretKeyUseCase(val preferenceService: PreferenceService,val wowletApiCallRepository: WowletApiCallRepository) : SecretKeyInteractor {
     private lateinit var combinationValue: SecretKeyCombinationSuccess
-
     private val selectIds = mutableListOf<Int>()
     private var currentCombination = true
     private var tempId = -1
-
 
     override fun checkCurrentSelected(id: Int): SecretKeyCombinationSuccess {
 
@@ -48,17 +48,22 @@ class SecretKeyUseCase(val preferenceService: PreferenceService,val wowletApiCal
     }
 
     override suspend fun resetPhrase(inputPhrase: String): Boolean {
-        val walletList = preferenceService.getWalletList()
-        walletList?.let {
-            it.forEach { userData ->
-                if (userData.phrase.joinToString(separator = " ") == inputPhrase) {
-                    val userAccount=wowletApiCallRepository.initAccount(userData.phrase)
-                    preferenceService.updateWallet(userAccount)
-                    return true
-                }
-            }
-        }
-        return false
+        /*     val walletList = preferenceService.getWalletList()
+             walletList?.let {
+                 it.forEach { userData ->
+                     if (userData.phrase.joinToString(separator = " ") == inputPhrase) {
+                         val userAccount=wowletApiCallRepository.initAccount(userData.phrase)
+                         preferenceService.updateWallet(userAccount)
+                         return true
+                     }
+                 }
+             }
+
+                 return false*/
+
+        val phraze = inputPhrase.split(" ")
+        val userAccount = wowletApiCallRepository.initAccount(phraze)
+        return preferenceService.updateWallet(userAccount)
     }
 
     override fun currentPhrase(): String {
@@ -66,4 +71,5 @@ class SecretKeyUseCase(val preferenceService: PreferenceService,val wowletApiCal
         val phrase = walletList?.phrase?.joinToString(separator = " ")
         return phrase ?: ""
     }
+
 }

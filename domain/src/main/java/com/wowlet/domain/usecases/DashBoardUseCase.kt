@@ -1,10 +1,11 @@
 package com.wowlet.domain.usecases
 
+import android.util.Log
 import com.wowlet.data.datastore.DashboardRepository
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
-import com.wowlet.domain.extentions.constWalletToWallet
 import com.wowlet.domain.extentions.fromConstWalletToAddCoinItem
+import com.wowlet.domain.extentions.walletToWallet
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.entities.CallException
 import com.wowlet.entities.Constants.Companion.ERROR_NULL_DATA
@@ -19,29 +20,32 @@ class DashBoardUseCase(
     private val preferenceService: PreferenceService
 ) : DashboardInteractor {
     private var walletData: MutableList<WalletItem> = mutableListOf()
-    private var yourWalletBalance: Double=0.0
+    private var yourWalletBalance: Double = 0.0
     private var addCoinData: MutableList<AddCoinItem> = mutableListOf()
-    private var minBalance:Int=0
+    private var minBalance: Int = 0
 
     val accountAddress = "3h1zGmCwsRJnVk5BuRNMLsPaQu1y2aqXqXDWYCgrp5UG"
     override fun generateQRrCode(): EnterWallet {
-         val publickKey = preferenceService.getActiveWallet()?.publicKey ?: "No valid key"
-        return EnterWallet(dashboardRepository.getQrCode(accountAddress), accountAddress)
+        val publicKey = preferenceService.getActiveWallet()?.publicKey ?: "No valid key"
+        return EnterWallet(dashboardRepository.getQrCode(publicKey), publicKey)
     }
 
     override suspend fun getWallets(): YourWallets {
         val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
-        walletData.clear()
 
-        val walletsList = wowletApiCallRepository.getWallets(accountAddress)
+        walletData.clear()
+        yourWalletBalance = 0.0
+        val balance = wowletApiCallRepository.getBalance(publicKey)
+            val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
+            add(0, BalanceInfo(publicKey,balance,"SOLMINT",publicKey,9))
+        }
         getConcatWalletItem(walletsList)
         walletData.forEach {
             yourWalletBalance += it.price
         }
-        return YourWallets(walletData,yourWalletBalance)
+
+        return YourWallets(walletData, yourWalletBalance)
     }
-
-
 
     override suspend fun getAddCoinList(): AddCoinModel {
         addCoinData.clear()
@@ -94,7 +98,7 @@ class DashBoardUseCase(
             minBalance.await()
         }
 
-        return   AddCoinModel(minBalance,addCoinData)
+        return AddCoinModel(minBalance, addCoinData)
     }
 
     override fun showSelectedMintAddress(addCoinItem: AddCoinItem): List<AddCoinItem> {
@@ -105,36 +109,33 @@ class DashBoardUseCase(
     }
 
 
-
     override suspend fun clearSecretKey() {
         val secretData = preferenceService.getActiveWallet()
         secretData?.let {
             it.secretKey = ""
             preferenceService.updateWallet(it)
             preferenceService.finishLoginReg(false)
+            preferenceService.enableFingerPrint(EnableFingerPrintModel(false, false))
+            preferenceService.enableNotification(EnableNotificationModel(false, false))
         }
     }
 
     private suspend fun getConcatWalletItem(walletsList: List<BalanceInfo>) {
-        val constData = dashboardRepository.getConstWallets().map {
-            it.constWalletToWallet(walletsList)
+        val constData = dashboardRepository.getConstWallets()
+        val walletDataTemp = walletsList.map {
+            it.walletToWallet(constData)
         }
-        walletData.addAll(constData)
-        constData.forEach {
-            if (it.tokenSymbol == "") {
-                walletData.remove(it)
-            }
-        }
+        walletData.addAll(walletDataTemp)
         coroutineScope {
             walletData.map { walletsItem ->
-                async(Dispatchers.IO) {
+                async {
                     when (val overbookData =
                         wowletApiCallRepository.getOrderBooks(walletsItem.tokenSymbol + "USDT")) {
                         is Result.Success -> {
                             overbookData.data?.let {
                                 if (it.bids.isNotEmpty()) {
                                     val price = it.bids[0].price
-                                    walletsItem.price = price * walletsItem.tkns
+                                    walletsItem.price = price * walletsItem.amount
                                 }
                             }
                         }
@@ -149,7 +150,7 @@ class DashBoardUseCase(
                         }
                     }
                 }
-            }.awaitAll()
-        }
+            }
+        }.awaitAll()
     }
 }

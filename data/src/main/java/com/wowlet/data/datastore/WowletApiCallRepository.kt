@@ -12,8 +12,9 @@ interface WowletApiCallRepository {
     suspend fun initAccount(phraseList:List<String>): UserSecretData
     fun generatePhrase(): List<String>
     suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String
-    suspend fun getWallets(publicKey: String): List<BalanceInfo>
+    suspend fun getWallets(publicKey: String): MutableList<BalanceInfo>
     suspend fun getOrderBooks(tokenSymbol: String): Result<OrderBooks>
     suspend fun getMinimumBalance(accountLenght: Int): Int
     suspend fun getDetailActivityData(publicKey: String): List<TransferInfo>
+    suspend fun getBalance(accountAddress: String): Long
 }

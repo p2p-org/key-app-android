@@ -1,14 +1,14 @@
 package com.p2p.wowlet.utils
 
-import android.Manifest
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.p2p.wowlet.R
 import java.util.concurrent.Executor
+
 
 fun LineChart.initChart(chartList: List<Entry>) {
     val lineDataSet = LineDataSet(chartList, "DataSet1")
@@ -65,14 +66,15 @@ fun Context.copyClipboard(value: String) {
         this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText("label", value)
     clipboard.setPrimaryClip(clip)
+    Toast.makeText(this, getString(R.string.you_copied), Toast.LENGTH_SHORT).show()
 }
 
-fun FragmentActivity.openFingerprintDialog(requestSuccess:()->Unit) {
+fun FragmentActivity.openFingerprintDialog(requestSuccess: () -> Unit) {
     val executor = ContextCompat.getMainExecutor(this)
     val biometricManager = BiometricManager.from(this)
     when (biometricManager.canAuthenticate()) {
         BiometricManager.BIOMETRIC_SUCCESS ->
-            this.authUser(executor){
+            this.authUser(executor) {
                 requestSuccess.invoke()
             }
         BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
@@ -105,7 +107,7 @@ fun FragmentActivity.openFingerprintDialog(requestSuccess:()->Unit) {
     }
 }
 
-private fun FragmentActivity.authUser(executor: Executor, requestSuccess:()->Unit) {
+private fun FragmentActivity.authUser(executor: Executor, requestSuccess: () -> Unit) {
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle(getString(R.string.auth_title))
         .setSubtitle(getString(R.string.auth_subtitle))
@@ -133,10 +135,4 @@ private fun FragmentActivity.authUser(executor: Executor, requestSuccess:()->Uni
     biometricPrompt.authenticate(promptInfo)
 }
 
-fun dp2px(context: Context, dp: Float): Float {
-    return dp * context.resources.displayMetrics.density
-}
 
-fun px2dp(context: Context, px: Float): Float {
-    return px / context.resources.displayMetrics.density
-}

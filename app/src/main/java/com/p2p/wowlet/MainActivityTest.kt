@@ -22,6 +22,7 @@ import org.p2p.solanaj.rpc.Cluster
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.utils.TweetNaclFast
+import java.lang.Exception
 import java.util.*
 
 
@@ -142,36 +143,37 @@ class MainActivityTest : AppCompatActivity() {
                 val client = RpcClient(Cluster.MAINNET)
 
                 val accountAddress = "3h1zGmCwsRJnVk5BuRNMLsPaQu1y2aqXqXDWYCgrp5UG"
-
-                val programAccounts = client.api
-                    .getProgramAccounts(
-                        PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-                        32,
-                        accountAddress
-                    )
-
-                val balances: MutableList<BalanceInfo> = ArrayList()
-
-                for (account in programAccounts) {
-                    val data = Base58.decode(account.account.data)
-                    val mintData = ByteArray(32)
-                    System.arraycopy(data, 0, mintData, 0, 32)
-                    val owherData = ByteArray(32)
-                    System.arraycopy(data, 32, owherData, 0, 32)
-                    val owner = Base58.encode(owherData)
-                    val mint = Base58.encode(mintData)
-                    val amount = readInt64(data, 32 + 32)
-                    val accountInfo: AccountInfo = client.api.getAccountInfo(PublicKey(mint))
-                    var decimals = 0
-                    if (accountInfo.getValue().getData() != null) {
-                        val dataStr: String = accountInfo.getValue().getData().get(0)
-                        val accountInfoData = Base64.getDecoder().decode(dataStr)
-                        decimals = accountInfoData[44].toInt()
+                try {
+                    val programAccounts = client.api
+                        .getProgramAccounts(
+                            PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+                            32,
+                            accountAddress
+                        )
+                    val balances: MutableList<BalanceInfo> = ArrayList()
+                    for (account in programAccounts) {
+                        val data = Base58.decode(account.account.data)
+                        val mintData = ByteArray(32)
+                        System.arraycopy(data, 0, mintData, 0, 32)
+                        val owherData = ByteArray(32)
+                        System.arraycopy(data, 32, owherData, 0, 32)
+                        val owner = Base58.encode(owherData)
+                        val mint = Base58.encode(mintData)
+                        val amount = readInt64(data, 32 + 32)
+                        val accountInfo: AccountInfo = client.api.getAccountInfo(PublicKey(mint))
+                        var decimals = 0
+                        if (accountInfo.getValue().getData() != null) {
+                            val dataStr: String = accountInfo.getValue().getData().get(0)
+                            val accountInfoData = Base64.getDecoder().decode(dataStr)
+                            decimals = accountInfoData[44].toInt()
+                        }
+                        balances.add(BalanceInfo(account.pubkey, amount, mint, owner, decimals))
                     }
-                    balances.add(BalanceInfo(account.pubkey, amount, mint, owner, decimals))
+                    System.out.println("mint "+Arrays.toString(balances.toTypedArray()))
+                }catch (e:Exception){
+                    Log.i(TAG, "onCreate: ${e.message}")
                 }
 
-                System.out.println("mint "+Arrays.toString(balances.toTypedArray()))
             }
 
         }

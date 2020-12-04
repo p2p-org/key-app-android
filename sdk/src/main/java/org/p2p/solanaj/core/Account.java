@@ -9,8 +9,8 @@ public class Account {
         this.keyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(secretKey);
     }
 
-    public String getPublicKey() {
-        return new PublicKey(keyPair.getPublicKey()).toString();
+    public PublicKey getPublicKey() {
+        return new PublicKey(keyPair.getPublicKey());
     }
 
     public byte[] getSecretKey() {

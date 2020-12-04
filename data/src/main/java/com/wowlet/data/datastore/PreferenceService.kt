@@ -7,9 +7,11 @@ import com.wowlet.entities.local.UserSecretData
 
 interface PreferenceService {
     fun setWalletItem(userData: UserSecretData)
+    fun setSingleWalletData(userData: UserSecretData)
     fun getWalletList(): MutableList<UserSecretData>?
+    fun getSingleWalletData(): UserSecretData?
     fun getActiveWallet(): UserSecretData?
-    fun updateWallet(userSecretData: UserSecretData)
+    fun updateWallet(userSecretData: UserSecretData):Boolean
     fun setPinCodeValue(codeValue: PinCodeData):Boolean
     fun getPinCodeValue(): PinCodeData?
     fun enableNotification(isEnable: EnableNotificationModel)

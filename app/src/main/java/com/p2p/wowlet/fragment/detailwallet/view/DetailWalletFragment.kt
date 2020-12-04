@@ -37,9 +37,7 @@ class DetailWalletFragment :
             icon = it.getString(ICON, "")
             tokenName = it.getString(TOKEN_NAME, "")
         }
-        val testPublicKey = "QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo"
-        val testKey = "3pRUdowbMA9wsQUh8DDiFch8jrmCwatboVKWjTJpx6XV"
-        viewModel.getActivityList(testKey, icon)
+        viewModel.getActivityList(publicKey, icon,tokenName)
     }
 
     override fun initView() {

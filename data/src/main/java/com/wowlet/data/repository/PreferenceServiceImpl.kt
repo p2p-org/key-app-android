@@ -14,6 +14,7 @@ import com.wowlet.data.util.cipher.Cipher.Companion.strSecretKey
 import com.wowlet.entities.local.*
 import java.io.*
 import java.lang.reflect.Type
+
 class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
     private val authenticationKey = "authenticationKeys"
@@ -24,7 +25,7 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
     val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
 
-    override fun setPinCodeValue(codeValue: PinCodeData):Boolean =put(codeValue, pinCodeKey)
+    override fun setPinCodeValue(codeValue: PinCodeData): Boolean = put(codeValue, pinCodeKey)
 
 
     override fun getPinCodeValue(): PinCodeData? =
@@ -93,47 +94,81 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
         saveFile(cipherDataByteArray)
     }
 
-    override fun getActiveWallet(): UserSecretData? {
-        val walletAccount = getWalletList()
-        walletAccount?.let {
-            it.forEach { userData ->
-                if (userData.secretKey != "")
-                    return userData
+    override fun setSingleWalletData(userData: UserSecretData) {
+
+        val jsonAdapterSecretData: JsonAdapter<UserSecretData> =
+            Moshi.Builder().build().adapter(UserSecretData::class.java)
+        val secretDataByteArray = jsonAdapterSecretData.toJson(userData).toByteArray()
+        val generateSecretKey = generateSecretKeyCipher()
+        val encryptData = encrypt(secretDataByteArray, generateSecretKey)
+        val strSecretKey = strSecretKey(generateSecretKey)
+        val cipherData = CipherData(encryptData, strSecretKey)
+        val jsonAdapterCipherData: JsonAdapter<CipherData> =
+            Moshi.Builder().build().adapter(CipherData::class.java)
+        val cipherDataByteArray = jsonAdapterCipherData.toJson(cipherData).toByteArray()
+
+        saveFile(cipherDataByteArray)
+    }
+
+    override fun getSingleWalletData(): UserSecretData? {
+
+        loadFile()?.let {
+            val jsonAdapterCipherData: JsonAdapter<CipherData> =
+                Moshi.Builder().build().adapter(CipherData::class.java)
+            val cipherData = jsonAdapterCipherData.fromJson(it)
+            val strSecretKey = cipherData?.strSecretKey
+            val secretKey = getSecretKey(strSecretKey)
+            val decryptData = decrypt(cipherData?.userSecretData, secretKey)
+            val jsonAdapterSecretData: JsonAdapter<UserSecretData> =
+                Moshi.Builder().build().adapter(UserSecretData::class.java)
+
+            decryptData?.let {
+                val userSecretData = jsonAdapterSecretData.fromJson(decryptData)
+                return userSecretData
             }
+
+        }
+
+        return null
+    }
+
+    override fun getActiveWallet(): UserSecretData? {
+        val walletAccount = getSingleWalletData()
+        walletAccount?.let {
+            if (it.secretKey != "")
+                return walletAccount
         }
         return null
     }
 
 
-
-    override fun updateWallet(userSecretData: UserSecretData) {
-        val listMyData: Type =
-            Types.newParameterizedType(MutableList::class.java, UserSecretData::class.java)
-        val jsonAdapter: JsonAdapter<MutableList<UserSecretData>> =
-            Moshi.Builder().build().adapter(listMyData)
-        val userDataList = getWalletList()?.apply {
-            this.forEach {
-                if (it.publicKey == userSecretData.publicKey) {
-                    it.phrase = userSecretData.phrase
-                    it.secretKey = userSecretData.secretKey
-                    it.seed = userSecretData.seed
-                    it.publicKey = userSecretData.publicKey
-                }
+    override fun updateWallet(userSecretData: UserSecretData) :Boolean {
+        val userDataList = getSingleWalletData()?.apply {
+            if (this.publicKey == userSecretData.publicKey) {
+                this.phrase = userSecretData.phrase
+                this.secretKey = userSecretData.secretKey
+                this.seed = userSecretData.seed
+                this.publicKey = userSecretData.publicKey
             }
-        }
-        userDataList?.run {
-            val secretDataByteArray = jsonAdapter.toJson(this).toByteArray()
-            val generateSecretKey = generateSecretKeyCipher()
-            val encryptData = encrypt(secretDataByteArray, generateSecretKey)
-            val strSecretKey = strSecretKey(generateSecretKey)
-            val cipherData = CipherData(encryptData, strSecretKey)
-            val jsonAdapterCipherData: JsonAdapter<CipherData> =
-                Moshi.Builder().build().adapter(CipherData::class.java)
-            val cipherDataByteArray = jsonAdapterCipherData.toJson(cipherData).toByteArray()
 
-            saveFile(cipherDataByteArray)
         }
+        userDataList?.let {
+            setSingleWalletData(it)
+        }?:setSingleWalletData(userSecretData)
 
+        /* userDataList?.run {
+             val secretDataByteArray = jsonAdapter.toJson(this).toByteArray()
+             val generateSecretKey = generateSecretKeyCipher()
+             val encryptData = encrypt(secretDataByteArray, generateSecretKey)
+             val strSecretKey = strSecretKey(generateSecretKey)
+             val cipherData = CipherData(encryptData, strSecretKey)
+             val jsonAdapterCipherData: JsonAdapter<CipherData> =
+                 Moshi.Builder().build().adapter(CipherData::class.java)
+             val cipherDataByteArray = jsonAdapterCipherData.toJson(cipherData).toByteArray()
+
+             saveFile(cipherDataByteArray)
+         }*/
+        return true
     }
 
     override fun getWalletList(): MutableList<UserSecretData>? {

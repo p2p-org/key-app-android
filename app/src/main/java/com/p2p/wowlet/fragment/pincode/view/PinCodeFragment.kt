@@ -1,15 +1,11 @@
 package com.p2p.wowlet.fragment.pincode.view
 
 import android.content.Intent
-import android.os.Bundle
-import android.provider.Settings
+
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
@@ -17,12 +13,12 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentPinCodeBinding
+import com.p2p.wowlet.fragment.pincode.adapter.PinButtonAdapter
 import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
 import kotlinx.android.synthetic.main.fragment_pin_code.*
-import com.p2p.wowlet.supportclass.simplepinlock.PinButtonAdapter
 import com.p2p.wowlet.utils.openFingerprintDialog
+import com.wowlet.entities.enums.PinCodeFragmentType
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBinding>() {
     override val viewModel: PinCodeViewModel by viewModel()
@@ -34,62 +30,42 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
     }
 
     private var isSplashScreen: Boolean = false
-    private var createNewPinCode: Boolean = false
-    private var pin = ""
-    private var isFirstPinInput = false
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private lateinit var pinCodeFragmentType: PinCodeFragmentType
 
+
+    override fun initView() {
         binding.run {
             viewModel = this@PinCodeFragment.viewModel
         }
-
-        gridView.adapter = PinButtonAdapter(
-            context!!,
-            pinButtonClick = { onPinButtonClicked(text = it) },
-            pinFingerPrint = {
-                activity?.openFingerprintDialog() {
-                    viewModel.goToFingerPrintFragment()
-                }
-            },
-            pinReset = {
-                initCreateNewPinCode()
-            })
+        pinView.pinCodeFragmentType = pinCodeFragmentType
+        pinView.setMaxPinSize(6)
+        context?.let { context ->
+            gridView.adapter = PinButtonAdapter(
+                context,
+                pinCodeFragmentType,
+                pinButtonClick = {
+                    pinView.onPinButtonClicked(text = it)
+                    vPinCodeNotMatch.visibility = View.INVISIBLE
+                },
+                pinFingerPrint = {
+                    activity?.openFingerprintDialog {
+                        viewModel.goToFingerPrintFragment()
+                    }
+                },
+                removeCode = {
+                    pinView.onDeleteButtonClicked()
+                    vPinCodeNotMatch.visibility = View.INVISIBLE
+                })
+        }
         gridView.numColumns = 3
-        reloadPinView()
         initPinCodeMassage()
-
     }
 
     override fun initData() {
         arguments?.let {
             isSplashScreen = it.getBoolean(OPEN_FRAGMENT_SPLASH_SCREEN, false)
-            createNewPinCode = it.getBoolean(CREATE_NEW_PIN_CODE, false)
-        }
-    }
-
-    private fun getMaxPinSize(): Int {
-        return 6
-    }
-
-    private fun onPinButtonClicked(text: String) {
-        if (pin.length < getMaxPinSize()) {
-            if (createNewPinCode && !isFirstPinInput) {
-                vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
-            }
-            vPinCodeNotMatch.visibility = View.INVISIBLE
-            this.pin += text
-            reloadPinView()
-        }
-        if (pin.length == getMaxPinSize()) {
-            if (createNewPinCode) {
-                if (isFirstPinInput)
-                    this@PinCodeFragment.viewModel.verifyPinCode(pin)
-                else
-                    this@PinCodeFragment.viewModel.initCode(pin)
-            } else {
-                this@PinCodeFragment.viewModel.verifyPinCode(pin)
-            }
+            pinCodeFragmentType =
+                it.get(CREATE_NEW_PIN_CODE) as PinCodeFragmentType
         }
     }
 
@@ -100,32 +76,6 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
     }
 
-    private fun initCreateNewPinCode() {
-        viewModel.goToSecretKeyFragment()
-    }
-
-    private fun clearPin() {
-        pin = ""
-        reloadPinView()
-    }
-
-    private fun reloadPinView() {
-        val dotSize = resources.getDimensionPixelSize(R.dimen.dp_20)
-        val dotMargin = resources.getDimensionPixelSize(R.dimen.dp_10)
-        pinView.removeAllViews()
-        (1..getMaxPinSize()).forEach {
-            val imageView = ImageView(context)
-            val layoutParams = LinearLayout.LayoutParams(dotSize, dotSize, 0.0f)
-            layoutParams.setMargins(dotMargin, dotMargin, dotMargin, dotMargin)
-            imageView.layoutParams = layoutParams
-            if (it > pin.length) {
-                imageView.setImageResource(R.drawable.bg_pin_code_dot_empty)
-            } else {
-                imageView.setImageResource(R.drawable.bg_pin_code_dot_fill)
-            }
-            pinView.addView(imageView)
-        }
-    }
 
     override fun observes() {
         observe(viewModel.pinCodeSuccess) {
@@ -133,8 +83,8 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
         }
         observe(viewModel.pinCodeSaved) {
             vPinCodeMessage.text = getString(R.string.confirm_pin_code)
-            clearPin()
-            isFirstPinInput = true
+            pinView.clearPin()
+            pinView.isFirstPinInput = true
         }
         observe(viewModel.pinCodeError) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -151,14 +101,31 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             else
                 viewModel.goToNotificationFragment()
         }
+
         observe(viewModel.verifyPinCodeError) {
-            pin = ""
-            if (createNewPinCode) {
-                vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
-                isFirstPinInput = false
-            } else {
-                vPinCodeNotMatch.text = getString(R.string.pin_codes_doesn_s_match)
+            when (pinCodeFragmentType) {
+                PinCodeFragmentType.CREATE -> {
+                    vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
+                    vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
+                    pinView.isFirstPinInput = false
+                    pinView.clearPin()
+                }
+                PinCodeFragmentType.VERIFY -> {
+                    pinView.errorPinViewsDesign()
+                    when (pinView.wrongPinCodeCount) {
+                        1 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_2)
+                        2 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_1)
+                        else -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_block)
+                    }
+                }
             }
+        }
+
+        pinView.createPinCode = {
+            viewModel.initCode(it)
+        }
+        pinView.verifyPinCode = {
+            viewModel.verifyPinCode(it)
         }
     }
 

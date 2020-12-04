@@ -34,10 +34,12 @@ fun AppCompatImageView.imageSource(uri: String){
 }
 @BindingAdapter("text")
 fun AppCompatTextView.walletFormat(address: String){
-    val firstFour= address.substring(0,4)
-    val stringLenght=address.length
-    val lastFour= address.substring(stringLenght-4,stringLenght)
-    text="0x$firstFour...$lastFour"
+    if(address.length>4) {
+        val firstFour = address.substring(0, 4)
+        val stringLenght = address.length
+        val lastFour = address.substring(stringLenght - 4, stringLenght)
+        text = "0x$firstFour...$lastFour"
+    }
 }
 
 

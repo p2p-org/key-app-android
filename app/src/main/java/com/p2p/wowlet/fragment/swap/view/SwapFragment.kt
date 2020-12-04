@@ -2,7 +2,6 @@ package com.p2p.wowlet.fragment.swap.view
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
@@ -12,7 +11,6 @@ import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentSwapBinding
 import com.p2p.wowlet.fragment.sendcoins.dialog.SendCoinDoneDialog
 import com.p2p.wowlet.fragment.swap.dialog.SwapCoinProcessingDialog
-import com.p2p.wowlet.fragment.swap.dialog.SwapWalletsBottomSheet
 import com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -32,9 +30,7 @@ class SwapFragment : FragmentBaseMVVM<SwapViewModel, FragmentSwapBinding>() {
         when (command) {
             is NavigateUpViewCommand -> navigateFragment(command.destinationId)
             is OpenMyWalletDialogViewCommand -> {
-                val swapWalletsBottomSheet: SwapWalletsBottomSheet =
-                    SwapWalletsBottomSheet.newInstance()
-                swapWalletsBottomSheet.show(childFragmentManager, "swap_wallet_bottom_fragment")
+
             }
             is SwapCoinProcessingViewCommand -> {
                 val swapCoinProcessingDialog: SwapCoinProcessingDialog =

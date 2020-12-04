@@ -5,6 +5,6 @@ import com.wowlet.entities.local.SecretKeyItem
 
 interface SecretKeyInteractor {
     fun checkCurrentSelected(id: Int): SecretKeyCombinationSuccess
-   suspend fun  resetPhrase(inputPhrase: String): Boolean
+    suspend fun resetPhrase(inputPhrase: String): Boolean
     fun currentPhrase(): String
 }

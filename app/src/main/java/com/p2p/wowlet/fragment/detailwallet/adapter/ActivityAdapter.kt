@@ -9,7 +9,10 @@ import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.wowlet.entities.local.ActivityItem
 
-class ActivityAdapter(private var list: List<ActivityItem>,val viewModel: DetailWalletViewModel): RecyclerView.Adapter<ActivityAdapter.MyViewHolder>() {
+class ActivityAdapter(
+    private var list: List<ActivityItem>,
+    val viewModel: DetailWalletViewModel,
+): RecyclerView.Adapter<ActivityAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 

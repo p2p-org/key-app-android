@@ -18,8 +18,6 @@ import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomShe
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet.Companion.TAG_ADD_COIN
-import com.p2p.wowlet.fragment.sendcoins.dialog.SendCoinDoneDialog
-import com.p2p.wowlet.fragment.sendcoins.dialog.YourWalletsBottomSheet
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboardBinding>() {

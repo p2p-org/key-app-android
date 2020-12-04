@@ -10,6 +10,7 @@ import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment.Companion.CREATE_NEW
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment.Companion.OPEN_FRAGMENT_SPLASH_SCREEN
 
 import com.wowlet.domain.interactors.SplashScreenInteractor
+import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.SplashData
 
 class SplashScreenViewModel(val splashScreenInteractor: SplashScreenInteractor) : BaseViewModel() {
@@ -40,7 +41,7 @@ class SplashScreenViewModel(val splashScreenInteractor: SplashScreenInteractor) 
         _command.value =
             Command.NavigatePinCodeViewCommand(
                 R.id.action_navigation_splash_screen_to_navigation_pin_code,
-                bundleOf(OPEN_FRAGMENT_SPLASH_SCREEN to true,CREATE_NEW_PIN_CODE to false)
+                bundleOf(OPEN_FRAGMENT_SPLASH_SCREEN to true,CREATE_NEW_PIN_CODE to PinCodeFragmentType.VERIFY)
             )
     }
 

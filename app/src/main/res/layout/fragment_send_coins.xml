@@ -8,6 +8,7 @@
         <variable
             name="viewModel"
             type="com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -52,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_20"
-                android:text="DAI"
+                tools:text="DAI"
+                android:text="@{viewModel.walletItemData.tokenName}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,6 +75,7 @@
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="@dimen/dp_55"
                         android:layout_height="@dimen/dp_55"
+                        app:image_source="@{viewModel.walletItemData.icon}"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_default_coin" />
@@ -94,11 +97,12 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/etCount"
                         style="@style/Black.25.Bold"
                         android:inputType="number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="Input count" />
+                        android:hint="@string/input_count" />
 
                     <TextView
                         style="@style/Black.13"
@@ -153,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:background="@drawable/bg_create_account"
-                android:onClick="@{()->viewModel.sendCoin()}"
+                android:onClick="@{()->viewModel.sendCoinCommand()}"
                 android:paddingVertical="@dimen/dp_19"
                 android:text="@string/send_now"
                 android:textAllCaps="false"

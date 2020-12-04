@@ -1,25 +1,26 @@
-package com.p2p.wowlet.supportclass.simplepinlock
+package com.p2p.wowlet.fragment.pincode.adapter
 
 import android.content.Context
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ImageSpan
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.p2p.wowlet.R
+import com.wowlet.entities.enums.PinCodeFragmentType
 
-/**
- * Adapter class for PinButton GridView
- */
 class PinButtonAdapter(
     val context: Context,
+    val pinCodeFragmentType: PinCodeFragmentType,
     val pinButtonClick: (String) -> Unit,
     val pinFingerPrint: () -> Unit,
-    val pinReset: () -> Unit
-) : BaseAdapter(), Util {
-    val list = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "reset", "0", "fingerprint")
+    val removeCode: () -> Unit
+) : BaseAdapter() {
+    val list = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "fingerprint", "0", "remove")
 
     override fun getCount(): Int {
         return list.size
@@ -43,16 +44,6 @@ class PinButtonAdapter(
         val text = getItem(position)
         val button = view.findViewById<AppCompatTextView>(R.id.button)
         when (text) {
-            "reset" -> {
-                button.layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize)
-                button.text = "RESET"
-                button.isClickable=true
-                button.textSize= context.resources.getDimensionPixelSize(R.dimen.sp_5).toFloat()
-                button.setBackgroundResource(android.R.color.transparent)
-                button.setOnClickListener {
-                    pinReset.invoke()
-                }
-            }
             "fingerprint" -> {
                 button.layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize)
                 val ssb = SpannableStringBuilder()
@@ -69,6 +60,28 @@ class PinButtonAdapter(
                 button.setPadding(0, 0, 0, 0)
                 button.setOnClickListener {
                     pinFingerPrint.invoke()
+                }
+                if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
+                    button.isClickable = false
+                    button.visibility=View.GONE
+                }
+            }
+            "remove" -> {
+                button.layoutParams = FrameLayout.LayoutParams(buttonSize, buttonSize)
+                val ssb = SpannableStringBuilder()
+                ssb.append(" ")
+                ssb.setSpan(
+                    ImageSpan(context, R.drawable.ic_delete_pin),
+                    ssb.length - 1,
+                    ssb.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                ssb.append(" ")
+                button.text = ssb
+                button.setBackgroundResource(android.R.color.transparent)
+                button.setPadding(0, 0, 0, context.resources.getDimensionPixelSize(R.dimen.dp_20))
+                button.setOnClickListener {
+                    removeCode.invoke()
                 }
             }
             else -> {

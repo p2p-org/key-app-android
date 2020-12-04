@@ -42,6 +42,7 @@ public class RpcApi {
         params.add(new RpcSendTransactionConfig());
 
         return client.call("sendTransaction", params, String.class);
+
     }
 
     public long getBalance(PublicKey account) throws RpcException {

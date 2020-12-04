@@ -45,12 +45,13 @@
         app:popUpToInclusive="true"
         tools:layout="@layout/fragment_create_wallet">
 
-        <action
-            android:id="@+id/action_navigation_term_and_condition_to_navigation_reg_wallet"
-            app:destination="@id/navigation_reg_wallet" />
+
         <action
             android:id="@+id/action_navigation_create_wallet_to_navigation_reg_login"
             app:destination="@id/navigation_reg_login" />
+        <action
+            android:id="@+id/action_navigation_create_wallet_to_navigation_reg_wallet"
+            app:destination="@id/navigation_reg_wallet" />
 
     </fragment>
     <fragment

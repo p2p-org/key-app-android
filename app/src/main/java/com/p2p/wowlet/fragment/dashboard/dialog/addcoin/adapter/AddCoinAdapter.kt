@@ -35,14 +35,7 @@ class AddCoinAdapter(
         holder.itemAddCoinBinding.itemAddCoin = list[position]
         holder.itemAddCoinBinding.viewModel = dashboardViewModel
         holder.itemAddCoinBinding.btCopyMint.setOnClickListener {
-
             it.context.copyClipboard(list[position].mintAddress)
-
-            Toast.makeText(
-                it.context,
-                it.context.getString(R.string.copied_mint),
-                Toast.LENGTH_SHORT
-            ).show()
         }
         holder.itemAddCoinBinding.btAddCoin.setOnClickListener {
 

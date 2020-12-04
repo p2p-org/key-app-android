@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
-import com.p2p.wowlet.databinding.ItemSecretKeyBinding
 import com.p2p.wowlet.databinding.ItemWalletsBinding
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.wowlet.entities.local.WalletItem
