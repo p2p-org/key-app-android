@@ -131,6 +131,7 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/filled_button_selector</item>
     </style>
+
     <style name="Widget.Grey.Button" parent="Widget.Black.Button">
         <item name="android:background">@drawable/bg_gray_rect</item>
     </style>

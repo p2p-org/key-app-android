@@ -9,6 +9,7 @@ import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.domain.interactors.SendCoinInteractor
 import com.wowlet.entities.Result
+import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.SendTransactionModel
 import com.wowlet.entities.local.UserWalletType
 import com.wowlet.entities.local.WalletItem
@@ -28,14 +29,15 @@ class SendCoinsViewModel(
     val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
     private val _walletItemData by lazy { MutableLiveData<WalletItem>(WalletItem()) }
     val walletItemData: LiveData<WalletItem> get() = _walletItemData
-    private val _successTransaction by lazy { MutableLiveData<String>() }
-    val successTransaction: LiveData<String> get() = _successTransaction
+    val inputCount: MutableLiveData<String> by lazy { MutableLiveData("") }
+    private val _successTransaction by lazy { MutableLiveData<ActivityItem>() }
+    val successTransaction: LiveData<ActivityItem> get() = _successTransaction
     private val _errorTransaction by lazy { MutableLiveData<String>() }
     val errorTransaction: LiveData<String> get() = _errorTransaction
 
     fun getWalletItems() {
         viewModelScope.launch(Dispatchers.IO) {
-            val walletList = dashboardInteractor.getWallets()
+            val walletList = dashboardInteractor.getYourWallets()
             withContext(Dispatchers.Main) {
                 _getWalletData.value = walletList.wallets
             }
@@ -69,8 +71,8 @@ class SendCoinsViewModel(
             SendCoinViewCommand()
     }
 
-    fun openDoneDialog() {
-        _command.value = SendCoinDoneViewCommand()
+    fun openDoneDialog(transactionInfo: ActivityItem) {
+        _command.value = SendCoinDoneViewCommand(transactionInfo)
     }
 
     fun sendCoin(toPublicKey: String, lamprots: Int) {

@@ -35,12 +35,12 @@ class SwapFragment : FragmentBaseMVVM<SwapViewModel, FragmentSwapBinding>() {
             is SwapCoinProcessingViewCommand -> {
                 val swapCoinProcessingDialog: SwapCoinProcessingDialog =
                     SwapCoinProcessingDialog.newInstance(){
-                        viewModel.openDoneDialog()
+                        //viewModel.openDoneDialog(command.)
                     }
                 swapCoinProcessingDialog.show(childFragmentManager, SwapCoinProcessingDialog.SWAP_COIN_PROGRESS)
             }
             is SendCoinDoneViewCommand -> {
-                val sendCoinDone: SendCoinDoneDialog = SendCoinDoneDialog.newInstance() {
+                val sendCoinDone: SendCoinDoneDialog = SendCoinDoneDialog.newInstance(command.transactionInfo) {
                     navigateUp()
                 }
                 sendCoinDone.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)

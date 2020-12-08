@@ -53,10 +53,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_20"
-                tools:text="DAI"
                 android:text="@{viewModel.walletItemData.tokenName}"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="DAI" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
@@ -99,19 +99,79 @@
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/etCount"
                         style="@style/Black.25.Bold"
-                        android:inputType="number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="@string/input_count" />
+                        android:hint="@string/input_count"
+                        android:inputType="number"
+                        android:text="@={viewModel.inputCount}" />
 
                     <TextView
                         style="@style/Black.13"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="= $0.30"
+                        android:text="@{viewModel.inputCount.empty?@string/empty_string:String.format(@string/amount_to_usd(Double.valueOf(viewModel.inputCount)*viewModel.walletItemData.walletBinds))}"
                         android:textColor="#b3b3b3" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_weight="0"
+                android:background="@color/gray_30" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/single_sol"
+                    style="@style/Black.15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_15"
+                    android:text="@string/_1_sol"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/fee"
+                    style="@style/Black.15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:text="@string/fee"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/single_sol" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/single_sol_price"
+                    style="@style/Black.15"
+                    android:text="@{String.format(@string/usd(viewModel.walletItemData.walletBinds))}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_15"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="140003.00 US$" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/fee_count"
+                    style="@style/Black.15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_10"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/single_sol_price"
+                    tools:text="0.0001 SOL" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:layout_width="match_parent"

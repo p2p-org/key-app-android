@@ -14,7 +14,6 @@ import com.wowlet.entities.local.SendTransactionModel
 import com.wowlet.entities.local.UserSecretData
 import com.wowlet.entities.responce.ResponceDataBonfida
 import com.wowlet.entities.responce.orderbook.OrderBooks
-import kotlinx.coroutines.delay
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.bitcoinj.core.Utils.readInt64
@@ -29,7 +28,6 @@ import org.p2p.solanaj.rpc.types.ConfirmedTransaction
 import org.p2p.solanaj.rpc.types.TransferInfo
 import org.p2p.solanaj.utils.TweetNaclFast
 import retrofit2.Response
-import java.lang.Exception
 import java.security.SecureRandom
 import java.util.*
 import kotlin.collections.ArrayList
@@ -40,15 +38,11 @@ class WowletApiCallRepositoryImpl(
 ) : WowletApiCallRepository {
 
     override suspend fun initAccount(phraseList: List<String>): UserSecretData {
+        val account = Account.fromMnemonic(phraseList, "")
+        val publicKey = Base58.encode(account.publicKey.toByteArray())
+        val secretKey = Base58.encode(account.secretKey)
 
-        val convertToSeed = MnemonicCode.toSeed(phraseList, "")
-        val seedRange: ByteArray = Arrays.copyOfRange(convertToSeed, 0, 32)
-        val seed = TweetNaclFast.Signature.keyPair_fromSeed(seedRange)
-        // get public and secret keys
-        val publicKey = Base58.encode(seed.publicKey)
-        val secretKey = Base58.encode(seed.secretKey)
-
-        return UserSecretData(secretKey, publicKey, seed, phraseList)
+        return UserSecretData(secretKey, publicKey,  phraseList)
     }
 
     override suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String {
@@ -65,9 +59,7 @@ class WowletApiCallRepositoryImpl(
             )
         )
 
-
-
-       return client.api.sendTransaction(transaction, signer)
+        return client.api.sendTransaction(transaction, signer)
     }
 
     override suspend fun getBalance(accountAddress: String): Long {
@@ -131,32 +123,64 @@ class WowletApiCallRepositoryImpl(
 
         for (signature in signatures) {
             println("mint " + signature)
-            val trx = client.api.getConfirmedTransaction(signature.signature)
-            val message: ConfirmedTransaction.Message = trx.transaction.message
-            val meta: ConfirmedTransaction.Meta = trx.meta
-            val instructions: List<ConfirmedTransaction.Instruction> = message.instructions
-
-            for (instruction in instructions) {
-                val number: Long = 2
-                if (instruction.programIdIndex == number) {
-                    val data = Base58.decode(instruction.data)
-                    val lamports = readInt64(data, 4)
-
-                    val transferInfo = TransferInfo(
-                        message.accountKeys[instruction.accounts[0].toInt()],
-                        message.accountKeys[instruction.accounts[1].toInt()],
-                        lamports
-                    )
-                    transferInfo.slot = signature.slot
-                    transferInfo.signature = signature.signature
-                    transferInfo.setFee(meta.fee)
-                    transferInfoList.add(transferInfo)
-                    println(transferInfo)
-                }
+            val transferInfo = getConfirmedTransaction(signature.signature, signature.slot)
+            transferInfo?.let {
+                transferInfoList.add(transferInfo)
             }
+
+            /*
+             val trx = client.api.getConfirmedTransaction(signature.signature)
+             val message: ConfirmedTransaction.Message = trx.transaction.message
+             val meta: ConfirmedTransaction.Meta = trx.meta
+             val instructions: List<ConfirmedTransaction.Instruction> = message.instructions
+
+             for (instruction in instructions) {
+                 val number: Long = 2
+                 if (instruction.programIdIndex == number) {
+                     val data = Base58.decode(instruction.data)
+                     val lamports = readInt64(data, 4)
+
+                     val transferInfo = TransferInfo(
+                         message.accountKeys[instruction.accounts[0].toInt()],
+                         message.accountKeys[instruction.accounts[1].toInt()],
+                         lamports
+                     )
+                     transferInfo.slot = signature.slot
+                     transferInfo.signature = signature.signature
+                     transferInfo.setFee(meta.fee)
+                     transferInfoList.add(transferInfo)
+                     println(transferInfo)
+                 }
+             }*/
         }
         System.out.println("transferInfoList " + Arrays.toString(transferInfoList.toTypedArray()))
         return transferInfoList
+    }
+
+    override suspend fun getConfirmedTransaction(signature: String, slot: Double): TransferInfo? {
+        val trx = client.api.getConfirmedTransaction(signature)
+        val message: ConfirmedTransaction.Message = trx.transaction.message
+        val meta: ConfirmedTransaction.Meta = trx.meta
+        val instructions: List<ConfirmedTransaction.Instruction> = message.instructions
+        for (instruction in instructions) {
+            val number: Long = 2
+            if (instruction.programIdIndex == number) {
+                val data = Base58.decode(instruction.data)
+                val lamports = readInt64(data, 4)
+
+                val transferInfo = TransferInfo(
+                    message.accountKeys[instruction.accounts[0].toInt()],
+                    message.accountKeys[instruction.accounts[1].toInt()],
+                    lamports
+                )
+                transferInfo.slot = slot
+                transferInfo.signature = signature
+                transferInfo.setFee(meta.fee)
+                println(transferInfo)
+                return transferInfo
+            }
+        }
+        return null
     }
 
     override fun generatePhrase(): List<String> {

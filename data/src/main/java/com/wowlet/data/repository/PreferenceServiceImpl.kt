@@ -147,7 +147,6 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
             if (this.publicKey == userSecretData.publicKey) {
                 this.phrase = userSecretData.phrase
                 this.secretKey = userSecretData.secretKey
-                this.seed = userSecretData.seed
                 this.publicKey = userSecretData.publicKey
             }
 

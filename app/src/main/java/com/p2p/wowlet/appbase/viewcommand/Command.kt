@@ -35,7 +35,7 @@ sealed class Command {
     class OpenMyWalletDialogViewCommand() : ViewCommand
     class OpenProfileDetailDialogViewCommand() : ViewCommand
     class OpenTransactionDialogViewCommand(val itemActivity:ActivityItem) : ViewCommand
-    class SendCoinDoneViewCommand() : ViewCommand
+    class SendCoinDoneViewCommand(val transactionInfo: ActivityItem) : ViewCommand
     class SendCoinViewCommand() : ViewCommand
     class SwapCoinProcessingViewCommand() : ViewCommand
 }

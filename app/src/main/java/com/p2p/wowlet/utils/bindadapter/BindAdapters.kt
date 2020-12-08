@@ -1,5 +1,8 @@
 package com.p2p.wowlet.utils.bindadapter
 
+import android.text.TextWatcher
+import android.widget.EditText
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.BindingAdapter
@@ -11,6 +14,7 @@ import com.p2p.wowlet.fragment.splashscreen.adapters.PagerAdapter
 import com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel
 import me.relex.circleindicator.CircleIndicator3
 
+
 @BindingAdapter("view_pager", "view_model")
 fun CircleIndicator3.bindViewPager(
     viewPager: ViewPager2,
@@ -20,6 +24,10 @@ fun CircleIndicator3.bindViewPager(
     this.setViewPager(viewPager)
 }
 
+@BindingAdapter("textChangedListener")
+fun AppCompatEditText.bindTextWatcher(textWatcher: TextWatcher?) {
+    this.addTextChangedListener(textWatcher)
+}
 @BindingAdapter("image_source")
 fun AppCompatImageView.imageSource(uri: String){
     Glide.with(context)

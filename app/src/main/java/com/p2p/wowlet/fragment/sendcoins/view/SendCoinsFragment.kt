@@ -58,10 +58,15 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
                 if (isVisible) {
                     dismiss()
                 }
-                viewModel.openDoneDialog()
+                viewModel.openDoneDialog(it)
             }
         }
         observe(viewModel.errorTransaction) {message->
+            processingDialog?.run {
+                if (isVisible) {
+                    dismiss()
+                }
+            }
             context?.let {
                 Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
             }
@@ -86,7 +91,7 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
                 )
             }
             is SendCoinDoneViewCommand -> {
-                val sendCoinDoneDialog: SendCoinDoneDialog = SendCoinDoneDialog.newInstance {
+                val sendCoinDoneDialog: SendCoinDoneDialog = SendCoinDoneDialog.newInstance(command.transactionInfo) {
                     navigateUp()
                 }
                 sendCoinDoneDialog.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
@@ -106,6 +111,7 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
                                 etCount.text.toString().toInt()
                             )
                         } else
+                            processingDialog?.dismiss()
                             context?.let {
                                 Toast.makeText(
                                     it,
@@ -113,6 +119,7 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
                                 ).show()
                             }
                     } ?: context?.let {
+                        processingDialog?.dismiss()
                         Toast.makeText(
                             it,
                             "Not Selected wallet", Toast.LENGTH_SHORT

@@ -58,7 +58,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWalletItem>): WalletItem {
                     decimals = decimals,
                     icon = it.icon,
                     price = amount.toDouble()/(10.0.pow(decimals)),
-                    amount = amount.toDouble()/(10.0.pow(decimals))
+                    amount = amount.toDouble()/(10.0.pow(decimals)),
+                    walletBinds = amount.toDouble()/(10.0.pow(decimals))
                 )
             } else {
                 walletItem = WalletItem(

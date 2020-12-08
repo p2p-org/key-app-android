@@ -7,23 +7,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSendCoinDoneBinding
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
+import com.wowlet.entities.local.ActivityItem
 import kotlinx.android.synthetic.main.dialog_send_coin_done.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SendCoinDoneDialog(private val goToWallet: () -> Unit) : DialogFragment() {
+class SendCoinDoneDialog(val transactionInfo: ActivityItem,private val goToWallet: () -> Unit) : DialogFragment() {
 
     private val sendCoinsViewModel: SendCoinsViewModel by viewModel()
     lateinit var binding: DialogSendCoinDoneBinding
 
     companion object {
         const val SEND_COIN_DONE = "SEND_COIN_DONE"
-        fun newInstance(goToWallet: () -> Unit): SendCoinDoneDialog = SendCoinDoneDialog(goToWallet)
+        fun newInstance(transactionInfo: ActivityItem, goToWallet: () -> Unit): SendCoinDoneDialog = SendCoinDoneDialog(transactionInfo,goToWallet)
     }
 
     override fun onCreateView(
@@ -35,6 +37,7 @@ class SendCoinDoneDialog(private val goToWallet: () -> Unit) : DialogFragment() 
             inflater, R.layout.dialog_send_coin_done, container, false
         )
         binding.viewModel = sendCoinsViewModel
+        binding.model = transactionInfo
         return binding.root
     }
 
@@ -48,6 +51,8 @@ class SendCoinDoneDialog(private val goToWallet: () -> Unit) : DialogFragment() 
     override fun onResume() {
         super.onResume()
         dialog?.run {
+            val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
+            window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             isCancelable=false
         }

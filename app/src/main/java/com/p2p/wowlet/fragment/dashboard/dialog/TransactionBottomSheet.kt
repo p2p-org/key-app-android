@@ -1,21 +1,21 @@
 package com.p2p.wowlet.fragment.dashboard.dialog
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.p2p.wowlet.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogTansactionBinding
-import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.copyClipboard
 import com.wowlet.entities.local.ActivityItem
-import com.wowlet.entities.local.TransactionInfoModel
 import kotlinx.android.synthetic.main.dialog_tansaction.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class TransactionBottomSheet(private val dataInfo: ActivityItem) : BottomSheetDialogFragment() {
 
@@ -52,6 +52,9 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem) : BottomSheetDi
         }
         copyTransaction.setOnClickListener {
             context?.copyClipboard(dataInfo.signature)
+        }
+        blockChainExplorer.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://www.stackoverflow.com")))
         }
     }
 

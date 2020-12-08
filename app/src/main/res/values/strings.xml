@@ -133,9 +133,11 @@
     <string name="error_msg_biometric_hw_unavailable">Biometric features are currently unavailable.</string>
     <string name="error_msg_biometric_not_setup">The user hasn\'t associated any biometric credentials with their account.</string>
     <string name="auth_title">Authentication Required!</string>
+    <string name="empty_string"/>
     <string name="auth_subtitle">Important authentication</string>
     <string name="auth_description">Please authenticate to be able to view your account information</string>
     <string name="usd">%1$.2f USD</string>
+    <string name="amount_to_usd">~ $ %1$.5f</string>
     <string name="amount_count_format">%1.6f</string>
     <string name="usd_receive">%1$.2f BTC</string>
     <string name="usd_symbol">$%1$.4f</string>
@@ -181,5 +183,6 @@
     <string name="address_copied">Address copied!</string>
     <string name="block_number">Block number</string>
     <string name="input_count">Input count</string>
+    <string name="_1_sol">1 SOL:</string>
 
 </resources>

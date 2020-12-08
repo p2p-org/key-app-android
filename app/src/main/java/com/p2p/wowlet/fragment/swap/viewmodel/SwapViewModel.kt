@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.p2p.wowlet.R
 import  com.p2p.wowlet.appbase.viewcommand.Command.*
 import  com.p2p.wowlet.appbase.viewmodel.BaseViewModel
+import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.CoinItem
 import com.wowlet.entities.local.WalletItem
 
@@ -59,8 +60,8 @@ class SwapViewModel : BaseViewModel() {
         _command.value = SwapCoinProcessingViewCommand()
     }
 
-    fun openDoneDialog() {
-        _command.value = SendCoinDoneViewCommand()
+    fun openDoneDialog(transactionInfo:ActivityItem) {
+        _command.value = SendCoinDoneViewCommand(transactionInfo  )
     }
 
     fun navigateUp() {

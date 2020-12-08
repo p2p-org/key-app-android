@@ -8,7 +8,8 @@ class CreateWalletUseCase(
     val preferenceService: PreferenceService,
     val wowletApiCallRepository: WowletApiCallRepository
 ) : CreateWalletInteractor {
-    var phraseList = listOf<String>()
+  //  var phraseList = listOf<String>()
+    var phraseList = mutableListOf<String>()
     override suspend fun initUser() {
         val userData = wowletApiCallRepository.initAccount(phraseList)
       //  preferenceService.setWalletItem(userData)
@@ -16,32 +17,20 @@ class CreateWalletUseCase(
     }
 
     override fun generatePhrase(): String {
-         phraseList = wowletApiCallRepository.generatePhrase()
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-//        phraseList.add("kmworks.app")
-
-//        phraseList.add("miracle")
-//        phraseList.add("pizza")
-//        phraseList.add("supply")
-//        phraseList.add("useful")
-//        phraseList.add("steak")
-//        phraseList.add("border")
-//        phraseList.add("same")
-//        phraseList.add("again")
-//        phraseList.add("youth")
-//        phraseList.add("silver")
-//        phraseList.add("access")
-//        phraseList.add("hundred")
+         //phraseList = wowletApiCallRepository.generatePhrase()
+        // miracle pizza supply useful steak border same again youth silver access hundred
+        phraseList.add("miracle")
+        phraseList.add("pizza")
+        phraseList.add("supply")
+        phraseList.add("useful")
+        phraseList.add("steak")
+        phraseList.add("border")
+        phraseList.add("same")
+        phraseList.add("again")
+        phraseList.add("youth")
+        phraseList.add("silver")
+        phraseList.add("access")
+        phraseList.add("hundred")
 
         // ozone puppy agent bundle suit music purity license rebuild acquire swamp aim
 //        phraseList.add("ozone")
@@ -58,7 +47,7 @@ class CreateWalletUseCase(
 //        phraseList.add("aim")
 
         // my wallet1 biliary galaxy pike trod highbred washing rhizopod quass snow aesthete agar bionics
-   /*     phraseList.add("biliary")
+/*        phraseList.add("biliary")
         phraseList.add("galaxy")
         phraseList.add("pike")
         phraseList.add("trod")

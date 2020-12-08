@@ -12,6 +12,7 @@ import com.wowlet.entities.Constants.Companion.ERROR_NULL_DATA
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.*
 import kotlinx.coroutines.*
+import kotlin.math.pow
 
 
 class DashBoardUseCase(
@@ -30,14 +31,34 @@ class DashBoardUseCase(
         return EnterWallet(dashboardRepository.getQrCode(publicKey), publicKey)
     }
 
-    override suspend fun getWallets(): YourWallets {
+    override suspend fun getYourWallets(): YourWallets {
         val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
 
         walletData.clear()
         yourWalletBalance = 0.0
         val balance = wowletApiCallRepository.getBalance(publicKey)
-            val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
-            add(0, BalanceInfo(publicKey,balance,"SOLMINT",publicKey,9))
+        val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
+            add(0, BalanceInfo(publicKey, balance, "SOLMINT", publicKey, 9))
+        }
+        val number: Long = 0
+        walletsList.removeAll { it.amount == number }
+        getConcatWalletItem(walletsList)
+        walletData.forEach { item ->
+            yourWalletBalance += item.price
+        }
+        walletData.removeAll { it.amount == 0.0 }
+
+        return YourWallets(walletData, yourWalletBalance)
+    }
+
+    override suspend fun getWallets(): YourWallets {
+        val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
+
+        walletData.clear()
+        yourWalletBalance = 0.0
+        val balance = wowletApiCallRepository.getBalance(accountAddress)
+        val walletsList = wowletApiCallRepository.getWallets(accountAddress).apply {
+            add(0, BalanceInfo(accountAddress, balance, "SOLMINT", accountAddress, 9))
         }
         getConcatWalletItem(walletsList)
         walletData.forEach {
@@ -135,6 +156,7 @@ class DashBoardUseCase(
                             overbookData.data?.let {
                                 if (it.bids.isNotEmpty()) {
                                     val price = it.bids[0].price
+                                    walletsItem.walletBinds=price.toDouble()/(10.0.pow(9))
                                     walletsItem.price = price * walletsItem.amount
                                 }
                             }

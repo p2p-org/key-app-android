@@ -227,13 +227,13 @@
                         app:layout_constraintStart_toEndOf="@+id/user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                 <!--       <androidx.appcompat.widget.AppCompatTextView
                             style="@style/Black.17.Bold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
                             android:text="Martin" />
-
+-->
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/Grey.15"
                             android:layout_width="match_parent"
@@ -295,12 +295,12 @@
                         app:layout_constraintStart_toEndOf="@+id/to_user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                   <!--     <androidx.appcompat.widget.AppCompatTextView
                             style="@style/Black.17.Bold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
-                            android:text="BTC Wallet" />
+                            android:text="BTC Wallet" />-->
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/Grey.15"
@@ -308,7 +308,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
                             android:ellipsize="marquee"
-                            app:text="@{model.from}"
+                            app:text="@{model.to}"
                             tools:text="k97y8u209j08fh98yu20uiei..." />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -331,6 +331,7 @@
                     android:background="@color/gray_30" />
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/blockChainExplorer"
                     style="@style/Grey.15"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
