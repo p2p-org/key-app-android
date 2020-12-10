@@ -1,10 +1,10 @@
 package com.wowlet.domain.usecases
 
-import android.util.Log
 import com.wowlet.data.datastore.DashboardRepository
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.domain.extentions.fromConstWalletToAddCoinItem
+import com.wowlet.domain.extentions.walletItemToQrCode
 import com.wowlet.domain.extentions.walletToWallet
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.entities.CallException
@@ -23,12 +23,15 @@ class DashBoardUseCase(
     private var walletData: MutableList<WalletItem> = mutableListOf()
     private var yourWalletBalance: Double = 0.0
     private var addCoinData: MutableList<AddCoinItem> = mutableListOf()
-    private var minBalance: Int = 0
+    private var minBalance: Long = 0
 
     val accountAddress = "3h1zGmCwsRJnVk5BuRNMLsPaQu1y2aqXqXDWYCgrp5UG"
-    override fun generateQRrCode(): EnterWallet {
+    override fun generateQRrCode(list: List<WalletItem>): List<EnterWallet> {
         val publicKey = preferenceService.getActiveWallet()?.publicKey ?: "No valid key"
-        return EnterWallet(dashboardRepository.getQrCode(publicKey), publicKey)
+        return list.map {
+            it.walletItemToQrCode(dashboardRepository.getQrCode(it.depositAddress))
+        }
+
     }
 
     override suspend fun getYourWallets(): YourWallets {
@@ -56,11 +59,12 @@ class DashBoardUseCase(
 
         walletData.clear()
         yourWalletBalance = 0.0
-        val balance = wowletApiCallRepository.getBalance(accountAddress)
-        val walletsList = wowletApiCallRepository.getWallets(accountAddress).apply {
-            add(0, BalanceInfo(accountAddress, balance, "SOLMINT", accountAddress, 9))
+        val balance = wowletApiCallRepository.getBalance(publicKey)
+        val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
+            add(0, BalanceInfo(publicKey, balance, "SOLMINT", publicKey, 9))
         }
         getConcatWalletItem(walletsList)
+        walletData.removeAll { it.depositAddress.isEmpty() }
         walletData.forEach {
             yourWalletBalance += it.price
         }
@@ -156,7 +160,7 @@ class DashBoardUseCase(
                             overbookData.data?.let {
                                 if (it.bids.isNotEmpty()) {
                                     val price = it.bids[0].price
-                                    walletsItem.walletBinds=price.toDouble()/(10.0.pow(9))
+                                    walletsItem.walletBinds = price
                                     walletsItem.price = price * walletsItem.amount
                                 }
                             }

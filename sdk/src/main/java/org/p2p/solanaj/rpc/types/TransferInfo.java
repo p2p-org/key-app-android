@@ -5,7 +5,7 @@ public class TransferInfo {
     String from;
     String to;
     long lamports;
-    double slot;
+    long slot;
     String signature;
 
     public double getFee() {
@@ -24,11 +24,11 @@ public class TransferInfo {
         this.lamports = lamports;
     }
 
-    public double getSlot() {
+    public long getSlot() {
         return slot;
     }
 
-    public void setSlot(double slot) {
+    public void setSlot(long slot) {
         this.slot = slot;
     }
 

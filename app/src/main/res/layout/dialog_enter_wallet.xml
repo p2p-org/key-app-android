@@ -58,17 +58,17 @@
 
             <me.relex.circleindicator.CircleIndicator3
                 android:id="@+id/pageIndicator"
-                view_model="@{viewModel}"
-                view_pager="@{viewPager}"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:layout_marginStart="@dimen/dp_20"
                 android:layout_height="@dimen/dp_40"
-                android:layout_marginBottom="@dimen/dp_40"
                 android:alwaysDrawnWithCache="true"
                 app:ci_drawable="@drawable/bg_circule_indicator_selected"
                 app:ci_drawable_unselected="@drawable/bg_circule_indicator"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -67,6 +67,7 @@ class YourWalletsBottomSheet(val itemWallet: (data: WalletItem) -> Unit) :
         super.onResume()
         dialog?.run {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 }

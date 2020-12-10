@@ -1,6 +1,6 @@
 package com.wowlet.entities.local
 
 data class AddCoinModel(
-    var minimumBalance: Int,
+    var minimumBalance: Long,
     var addCoinList: MutableList<AddCoinItem>
 )

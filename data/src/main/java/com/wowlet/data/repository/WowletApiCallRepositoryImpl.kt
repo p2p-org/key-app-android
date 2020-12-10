@@ -17,7 +17,6 @@ import com.wowlet.entities.responce.orderbook.OrderBooks
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.bitcoinj.core.Utils.readInt64
-import org.bitcoinj.crypto.MnemonicCode
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
@@ -26,7 +25,6 @@ import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction
 import org.p2p.solanaj.rpc.types.TransferInfo
-import org.p2p.solanaj.utils.TweetNaclFast
 import retrofit2.Response
 import java.security.SecureRandom
 import java.util.*
@@ -42,7 +40,7 @@ class WowletApiCallRepositoryImpl(
         val publicKey = Base58.encode(account.publicKey.toByteArray())
         val secretKey = Base58.encode(account.secretKey)
 
-        return UserSecretData(secretKey, publicKey,  phraseList)
+        return UserSecretData(secretKey, publicKey, phraseList)
     }
 
     override suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String {
@@ -85,7 +83,7 @@ class WowletApiCallRepositoryImpl(
             val owner = Base58.encode(owherData)
             val mint = Base58.encode(mintData)
             val amount = Utils.readInt64(data, 32 + 32)
-            val accountInfo: AccountInfo = client.api.getAccountInfo(PublicKey(mint))
+            val accountInfo = getAccountInfo(mint)
             var decimals = 0
             accountInfo.value.data?.let {
                 val dataStr: String = it[0]
@@ -107,8 +105,12 @@ class WowletApiCallRepositoryImpl(
         return balances
     }
 
-    override suspend fun getMinimumBalance(accountLenght: Int): Int {
-        val minimumBalance: Int =
+    override suspend fun getAccountInfo(key: String): AccountInfo {
+        return client.api.getAccountInfo(PublicKey(key+"a"))
+    }
+
+    override suspend fun getMinimumBalance(accountLenght: Long): Long {
+        val minimumBalance: Long =
             client.api.getMinimumBalanceForRentExemption(accountLenght)
         return minimumBalance
     }
@@ -123,41 +125,20 @@ class WowletApiCallRepositoryImpl(
 
         for (signature in signatures) {
             println("mint " + signature)
-            val transferInfo = getConfirmedTransaction(signature.signature, signature.slot)
+            val transferInfo = getConfirmedTransaction(signature.signature, signature.slot.toLong())
             transferInfo?.let {
                 transferInfoList.add(transferInfo)
             }
-
-            /*
-             val trx = client.api.getConfirmedTransaction(signature.signature)
-             val message: ConfirmedTransaction.Message = trx.transaction.message
-             val meta: ConfirmedTransaction.Meta = trx.meta
-             val instructions: List<ConfirmedTransaction.Instruction> = message.instructions
-
-             for (instruction in instructions) {
-                 val number: Long = 2
-                 if (instruction.programIdIndex == number) {
-                     val data = Base58.decode(instruction.data)
-                     val lamports = readInt64(data, 4)
-
-                     val transferInfo = TransferInfo(
-                         message.accountKeys[instruction.accounts[0].toInt()],
-                         message.accountKeys[instruction.accounts[1].toInt()],
-                         lamports
-                     )
-                     transferInfo.slot = signature.slot
-                     transferInfo.signature = signature.signature
-                     transferInfo.setFee(meta.fee)
-                     transferInfoList.add(transferInfo)
-                     println(transferInfo)
-                 }
-             }*/
         }
         System.out.println("transferInfoList " + Arrays.toString(transferInfoList.toTypedArray()))
         return transferInfoList
     }
 
-    override suspend fun getConfirmedTransaction(signature: String, slot: Double): TransferInfo? {
+    override suspend fun getBlockTime(slot: Long): Long {
+        return client.api.getBlockTime(slot)
+    }
+
+    override suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfo? {
         val trx = client.api.getConfirmedTransaction(signature)
         val message: ConfirmedTransaction.Message = trx.transaction.message
         val meta: ConfirmedTransaction.Meta = trx.meta

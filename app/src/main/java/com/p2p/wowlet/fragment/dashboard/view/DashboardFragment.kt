@@ -58,7 +58,7 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 )
             }
             is EnterWalletDialogViewCommand -> {
-                EnterWalletBottomSheet.newInstance().show(
+                EnterWalletBottomSheet.newInstance(command.list).show(
                     childFragmentManager,
                     ENTER_WALLET
                 )
@@ -77,33 +77,12 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 )
             }
             is OpenProfileDialogViewCommand -> {
-
                 ProfileDialog.newInstance {
                     viewModel.goToProfileDetailDialog()
                 }.show(
                     childFragmentManager,
                     ProfileDialog.TAG_PROFILE_DIALOG
                 )
-//                CurrencyDialog.newInstance().show(
-//                    childFragmentManager,
-//                    TAG_CURRENCY_DIALOG
-//                )
-//                ChangeMailPhoneDialog.newInstance(MailPhoneType.PHONE).show(
-//                    childFragmentManager,
-//                    TAG_CURRENCY_DIALOG
-//                )
-                /*      SecurityDialog.newInstance().show(
-                          childFragmentManager,
-                          SecurityDialog.TAG_SECURITY_DIALOG
-                      )*/
-//                EnterAppleIdPasswordDialog.newInstance().show(
-//                    childFragmentManager,
-//                    EnterAppleIdPasswordDialog.TAG_APPLE_ID_DIALOG
-//                )
-                /*    BackingUpFromKeyDialog.newInstance().show(
-                        childFragmentManager,
-                        BackingUpFromKeyDialog.TAG_BACKUP_UP_KEY_DIALOG
-                    )*/
             }
         }
     }

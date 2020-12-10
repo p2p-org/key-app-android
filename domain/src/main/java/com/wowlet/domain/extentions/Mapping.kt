@@ -1,5 +1,6 @@
 package com.wowlet.domain.extentions
 
+import android.graphics.Bitmap
 import com.wowlet.entities.local.*
 import org.p2p.solanaj.rpc.types.TransferInfo
 import kotlin.math.pow
@@ -30,7 +31,7 @@ fun ConstWalletItem.constWalletToWallet(walletsList: List<BalanceInfo>): WalletI
                     amount = it.amount.toDouble()
                 )
             }
-        }else{
+        } else {
             walletItem = WalletItem(
                 tokenSymbol = tokenSymbol,
                 mintAddress = mintAddress,
@@ -38,7 +39,7 @@ fun ConstWalletItem.constWalletToWallet(walletsList: List<BalanceInfo>): WalletI
                 depositAddress = it.depositAddress,
                 decimals = it.decimals,
                 icon = icon,
-                amount = it.amount.toDouble()*it.decimals
+                amount = it.amount.toDouble() * it.decimals
             )
         }
     }
@@ -57,9 +58,9 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWalletItem>): WalletItem {
                     depositAddress = depositAddress,
                     decimals = decimals,
                     icon = it.icon,
-                    price = amount.toDouble()/(10.0.pow(decimals)),
-                    amount = amount.toDouble()/(10.0.pow(decimals)),
-                    walletBinds = amount.toDouble()/(10.0.pow(decimals))
+                    price = amount.toDouble() / (10.0.pow(decimals)),
+                    amount = amount.toDouble() / (10.0.pow(decimals)),
+                    walletBinds = amount.toDouble() / (10.0.pow(decimals))
                 )
             } else {
                 walletItem = WalletItem(
@@ -69,13 +70,14 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWalletItem>): WalletItem {
                     depositAddress = depositAddress,
                     decimals = decimals,
                     icon = it.icon,
-                    amount =  amount.toDouble()/(10.0.pow(decimals))
+                    amount = amount.toDouble() / (10.0.pow(decimals))
                 )
             }
         }
     }
     return walletItem
 }
+
 fun ConstWalletItem.fromConstWalletToAddCoinItem(
     change24h: Double,
     change24hInPercentages: Double
@@ -90,7 +92,19 @@ fun ConstWalletItem.fromConstWalletToAddCoinItem(
     )
 }
 
-fun TransferInfo.transferInfoToActivityItem(publicKey: String, icon: String, tokenName: String): ActivityItem {
+fun WalletItem.walletItemToQrCode(qrCode: Bitmap): EnterWallet {
+    return EnterWallet(
+        qrCode = qrCode,
+        walletAddress = depositAddress,
+        icon = icon,
+    )
+}
+
+fun TransferInfo.transferInfoToActivityItem(
+    publicKey: String,
+    icon: String,
+    tokenName: String
+): ActivityItem {
     val symbolPrice: String
     val sendOrReceive = if (this.from == publicKey) {
         symbolPrice = "-"
@@ -104,14 +118,14 @@ fun TransferInfo.transferInfoToActivityItem(publicKey: String, icon: String, tok
         icon = icon,
         name = sendOrReceive,
         symbolsPrice = symbolPrice,
-        price = lamports.toDouble()/(10.0.pow(9)),
-        lamports = lamports.toDouble()/(10.0.pow(9)),
+        price = lamports.toDouble() / (10.0.pow(9)),
+        lamports = lamports.toDouble() / (10.0.pow(9)),
         slot = slot,
         signature = signature,
-        fee=fee,
-        from=from,
-        to=to,
-        tokenName=tokenName
+        fee = fee,
+        from = from,
+        to = to,
+        tokenName = tokenName
     )
 }
 

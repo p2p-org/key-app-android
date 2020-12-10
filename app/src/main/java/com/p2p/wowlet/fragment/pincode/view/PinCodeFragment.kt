@@ -1,10 +1,9 @@
 package com.p2p.wowlet.fragment.pincode.view
 
 import android.content.Intent
+import android.util.Log
 
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Toast
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
@@ -15,6 +14,7 @@ import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentPinCodeBinding
 import com.p2p.wowlet.fragment.pincode.adapter.PinButtonAdapter
 import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
+import com.p2p.wowlet.utils.isFingerPrintSet
 import kotlinx.android.synthetic.main.fragment_pin_code.*
 import com.p2p.wowlet.utils.openFingerprintDialog
 import com.wowlet.entities.enums.PinCodeFragmentType
@@ -36,36 +36,37 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
     override fun initView() {
         binding.run {
             viewModel = this@PinCodeFragment.viewModel
+
+            Log.i("FingerPring", "initView: " + requireActivity().isFingerPrintSet())
+            pinView.pinCodeFragmentType = pinCodeFragmentType
+            pinView.setMaxPinSize(6)
+            context?.let { context ->
+                gridView.adapter = PinButtonAdapter(
+                    context,
+                    pinCodeFragmentType,
+                    pinButtonClick = {
+                        pinView.onPinButtonClicked(text = it)
+                        vPinCodeNotMatch.visibility = View.INVISIBLE
+                    },
+                    pinFingerPrint = {
+                        activity?.openFingerprintDialog {
+                            this@PinCodeFragment.viewModel.goToFingerPrintFragment()
+                        }
+                    },
+                    removeCode = {
+                        pinView.onDeleteButtonClicked()
+                        vPinCodeNotMatch.visibility = View.INVISIBLE
+                    })
+            }
+            gridView.numColumns = 3
         }
-        pinView.pinCodeFragmentType = pinCodeFragmentType
-        pinView.setMaxPinSize(6)
-        context?.let { context ->
-            gridView.adapter = PinButtonAdapter(
-                context,
-                pinCodeFragmentType,
-                pinButtonClick = {
-                    pinView.onPinButtonClicked(text = it)
-                    vPinCodeNotMatch.visibility = View.INVISIBLE
-                },
-                pinFingerPrint = {
-                    activity?.openFingerprintDialog {
-                        viewModel.goToFingerPrintFragment()
-                    }
-                },
-                removeCode = {
-                    pinView.onDeleteButtonClicked()
-                    vPinCodeNotMatch.visibility = View.INVISIBLE
-                })
-        }
-        gridView.numColumns = 3
         initPinCodeMassage()
     }
 
     override fun initData() {
         arguments?.let {
             isSplashScreen = it.getBoolean(OPEN_FRAGMENT_SPLASH_SCREEN, false)
-            pinCodeFragmentType =
-                it.get(CREATE_NEW_PIN_CODE) as PinCodeFragmentType
+            pinCodeFragmentType = it.get(CREATE_NEW_PIN_CODE) as PinCodeFragmentType
         }
     }
 
@@ -106,12 +107,16 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             when (pinCodeFragmentType) {
                 PinCodeFragmentType.CREATE -> {
                     vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
-                    vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
-                    pinView.isFirstPinInput = false
+                    //vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
+                    pinView.isFirstPinInput = true
                     pinView.clearPin()
                 }
                 PinCodeFragmentType.VERIFY -> {
                     pinView.errorPinViewsDesign()
+                    if(pinCodeFragmentType==PinCodeFragmentType.VERIFY)
+                        binding.resetPinCode.visibility=View.VISIBLE
+                    else
+                        binding.resetPinCode.visibility=View.GONE
                     when (pinView.wrongPinCodeCount) {
                         1 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_2)
                         2 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_1)
@@ -150,7 +155,14 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
     override fun navigateUp() {
         if (isSplashScreen)
             viewModel.finishApp()
-        else
-            viewModel.navigateUp()
+        else {
+            if (pinCodeFragmentType == PinCodeFragmentType.CREATE && pinView.isFirstPinInput) {
+                vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
+                binding.vPinCodeNotMatch.visibility = View.GONE
+                binding.pinView.isFirstPinInput = false
+            } else {
+                viewModel.navigateUp()
+            }
+        }
     }
 }

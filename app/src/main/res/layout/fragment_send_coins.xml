@@ -102,7 +102,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:hint="@string/input_count"
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
                         android:text="@={viewModel.inputCount}" />
 
                     <TextView
@@ -151,7 +151,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/single_sol_price"
                     style="@style/Black.15"
-                    android:text="@{String.format(@string/usd(viewModel.walletItemData.walletBinds))}"
+                    android:text="@{viewModel.walletItemData.walletBinds+@string/us_dollar}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_20"

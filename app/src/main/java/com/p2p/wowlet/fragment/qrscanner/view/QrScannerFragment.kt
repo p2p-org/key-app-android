@@ -79,7 +79,23 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
                 }
                 navigateFragment(command.destinationId)
             }
-            is NavigateSendCoinViewCommand -> navigateFragment(command.destinationId,command.bundle)
+            is NavigateSendCoinViewCommand -> navigateFragment(
+                command.destinationId,
+                command.bundle
+            )
+        }
+    }
+
+    override fun observes() {
+        observe(viewModel.isCurrentAccountError) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+        observe(viewModel.isCurrentAccount) {
+            if (it.isWalletAddress) {
+                viewModel.goToSendCoinFragment(it.walletKey)
+            } else {
+                Toast.makeText(context, "There is not wallet key", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -89,9 +105,8 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
 
     override fun handleResult(rawResult: Result?) {
         rawResult?.let {
-            viewModel.goToSendCoinFragment(it.contents)
+            viewModel.getAccountInfo(it.contents)
         }
-        Toast.makeText(requireContext(), rawResult?.contents, Toast.LENGTH_SHORT).show()
     }
 
     override fun onPause() {

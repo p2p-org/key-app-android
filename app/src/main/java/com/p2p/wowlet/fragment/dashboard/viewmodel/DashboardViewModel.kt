@@ -13,23 +13,18 @@ import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.entities.local.AddCoinItem
 import com.wowlet.entities.local.WalletItem
-import com.wowlet.entities.local.EnterWallet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseViewModel() {
-
-    private val _pages: MutableLiveData<List<EnterWallet>> by lazy { MutableLiveData() }
-    val pages: LiveData<List<EnterWallet>> get() = _pages
-
     private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
     val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
 
     private val _getAddCoinData by lazy { MutableLiveData<List<AddCoinItem>>() }
     val getAddCoinData: LiveData<List<AddCoinItem>> get() = _getAddCoinData
-    private val _getMinimumBalanceData by lazy { MutableLiveData<Int>() }
-    val getMinimumBalanceData: LiveData<Int> get() = _getMinimumBalanceData
+    private val _getMinimumBalanceData by lazy { MutableLiveData<Long>() }
+    val getMinimumBalanceData: LiveData<Long> get() = _getMinimumBalanceData
     private val _yourBalance by lazy { MutableLiveData<Double>(0.0) }
     val yourBalance: LiveData<Double> get() = _yourBalance
 
@@ -52,12 +47,7 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
         _getAddCoinData.value = dashboardInteractor.showSelectedMintAddress(addCoinItem)
     }
 
-    fun initReceiver() {
-        val qrCode = dashboardInteractor.generateQRrCode()
-        _pages.value = listOf(qrCode)
-    }
-
-     private fun getWalletItems() {
+    private fun getWalletItems() {
         viewModelScope.launch(Dispatchers.IO) {
             val walletList = dashboardInteractor.getWallets()
             withContext(Dispatchers.Main) {
@@ -66,7 +56,6 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
             }
         }
     }
-
 
     fun finishApp() {
         _command.value = FinishAppViewCommand()
@@ -114,7 +103,13 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
     }
 
     fun enterWalletDialog() {
-        _command.value = EnterWalletDialogViewCommand()
+
+        _getWalletData.value?.let {
+            if (it.isNotEmpty()) {
+                val qrCode = dashboardInteractor.generateQRrCode(it)
+                _command.value = EnterWalletDialogViewCommand(qrCode)
+            }
+        }
     }
 
     fun clearSecretKey() {

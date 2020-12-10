@@ -5,6 +5,8 @@ import com.wowlet.entities.local.BalanceInfo
 import com.wowlet.entities.local.SendTransactionModel
 import com.wowlet.entities.local.UserSecretData
 import com.wowlet.entities.responce.orderbook.OrderBooks
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.rpc.types.TransferInfo
 
 
@@ -13,9 +15,11 @@ interface WowletApiCallRepository {
     fun generatePhrase():List<String>
     suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String
     suspend fun getWallets(publicKey: String): MutableList<BalanceInfo>
+    suspend fun getAccountInfo(key: String): AccountInfo
     suspend fun getOrderBooks(tokenSymbol: String): Result<OrderBooks>
-    suspend fun getMinimumBalance(accountLenght: Int): Int
+    suspend fun getMinimumBalance(accountLenght: Long): Long
     suspend fun getDetailActivityData(publicKey: String): List<TransferInfo>
     suspend fun getBalance(accountAddress: String): Long
-    suspend fun getConfirmedTransaction(signature: String, slot: Double): TransferInfo?
+    suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfo?
+    suspend fun getBlockTime(slot:Long): Long
 }

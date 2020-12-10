@@ -2,6 +2,8 @@ package com.p2p.wowlet.appbase.viewcommand
 
 import android.os.Bundle
 import com.wowlet.entities.local.ActivityItem
+import com.wowlet.entities.local.EnterWallet
+import com.wowlet.entities.local.WalletItem
 
 sealed class Command {
 
@@ -26,12 +28,13 @@ sealed class Command {
     class OpenAddCoinDialogViewCommand() : ViewCommand
     class NavigateWalletViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
     class NavigateSendCoinViewCommand(val destinationId: Int,val bundle: Bundle?) : ViewCommand
+    class NavigateBlockChainViewCommand(val destinationId: Int,val bundle: Bundle?) : ViewCommand
     class NavigateDetailSavingViewCommand(val destinationId: Int) : ViewCommand
     class OpenProfileDialogViewCommand() : ViewCommand
     class OpenMainActivityViewCommand() : ViewCommand
 
 
-    class EnterWalletDialogViewCommand() : ViewCommand
+    class EnterWalletDialogViewCommand(val list: List<EnterWallet>) : ViewCommand
     class OpenMyWalletDialogViewCommand() : ViewCommand
     class OpenProfileDetailDialogViewCommand() : ViewCommand
     class OpenTransactionDialogViewCommand(val itemActivity:ActivityItem) : ViewCommand

@@ -32,6 +32,7 @@ class SendCoinsViewModel(
     val inputCount: MutableLiveData<String> by lazy { MutableLiveData("") }
     private val _successTransaction by lazy { MutableLiveData<ActivityItem>() }
     val successTransaction: LiveData<ActivityItem> get() = _successTransaction
+
     private val _errorTransaction by lazy { MutableLiveData<String>() }
     val errorTransaction: LiveData<String> get() = _errorTransaction
 
@@ -92,4 +93,6 @@ class SendCoinsViewModel(
             }
         }
     }
+
+
 }

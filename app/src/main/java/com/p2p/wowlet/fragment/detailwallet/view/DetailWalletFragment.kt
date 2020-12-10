@@ -71,7 +71,10 @@ class DetailWalletFragment :
                 (activity as MainActivity).showHideNav(false)
             }
             is Command.OpenTransactionDialogViewCommand -> {
-                TransactionBottomSheet.newInstance(command.itemActivity).show(childFragmentManager,TransactionBottomSheet.TRANSACTION_DIALOG)
+                TransactionBottomSheet.newInstance(command.itemActivity){destinationId, bundle ->
+                    navigateFragment(destinationId,bundle)
+                }.show(childFragmentManager,TransactionBottomSheet.TRANSACTION_DIALOG)
+                (activity as MainActivity).showHideNav(false)
             }
         }
     }

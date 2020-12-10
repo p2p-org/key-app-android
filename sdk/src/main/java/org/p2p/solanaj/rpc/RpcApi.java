@@ -2,6 +2,7 @@ package org.p2p.solanaj.rpc;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -27,11 +28,13 @@ public class RpcApi {
     public String getRecentBlockhash() throws RpcException {
         return client.call("getRecentBlockhash", null, RecentBlockhash.class).getRecentBlockhash();
     }
-
     public String sendTransaction(Transaction transaction, Account signer) throws RpcException {
+        return sendTransaction(transaction, Arrays.asList(signer));
+    }
+    public String sendTransaction(Transaction transaction,List<Account> signers) throws RpcException {
         String recentBlockhash = getRecentBlockhash();
         transaction.setRecentBlockHash(recentBlockhash);
-        transaction.sign(signer);
+        transaction.sign(signers);
         byte[] serializedTransaction = transaction.serialize();
 
         String base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
@@ -110,11 +113,26 @@ public class RpcApi {
 
         return client.call("getAccountInfo", params, AccountInfo.class);
     }
-
-    public int getMinimumBalanceForRentExemption(Integer account) throws RpcException {
+    public long getMinimumBalanceForRentExemption(long dataLength) throws RpcException {
         List<Object> params = new ArrayList<Object>();
-        params.add(account);
-        return client.call("getMinimumBalanceForRentExemption", params, Integer.class);
+        params.add(dataLength);
+        return client.call("getMinimumBalanceForRentExemption", params, Long.class);
     }
 
+    public long getBlockTime(long block) throws RpcException {
+        List<Object> params = new ArrayList<Object>();
+
+        params.add(block);
+
+        return client.call("getBlockTime", params, Long.class);
+    }
+
+    public String requestAirdrop(PublicKey address, long lamports) throws RpcException {
+        List<Object> params = new ArrayList<Object>();
+
+        params.add(address.toString());
+        params.add(lamports);
+
+        return client.call("requestAirdrop", params, String.class);
+    }
 }

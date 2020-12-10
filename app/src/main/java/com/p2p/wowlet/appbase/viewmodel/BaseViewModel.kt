@@ -6,7 +6,7 @@ import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 
 abstract class BaseViewModel : ViewModel() {
 
-    val _command = SingleLiveData<ViewCommand>()
+    val _command = SingleLiveEvent<ViewCommand>()
     val command: LiveData<ViewCommand>
         get() = _command
 

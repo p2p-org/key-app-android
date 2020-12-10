@@ -62,7 +62,7 @@
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="0dp"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/resetPinCode"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/vPinCodeNotMatch">
@@ -74,5 +74,20 @@
                 android:layout_gravity="center" />
         </LinearLayout>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/resetPinCode"
+            style="@style/Widget.Black.Button"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:onClick="@{()->viewModel.goToSecretKeyFragment()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/dp_20"
+            android:visibility="invisible"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginBottom="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:text="@string/reset_with_a_seed_phrase" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

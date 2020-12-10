@@ -19,4 +19,5 @@ val interactorsModule = module {
     factory<CreateWalletInteractor> { CreateWalletUseCase(get(),get()) }
     factory<PinCodeVerificationInteractor> { PinCodeVerificationUseCase(get()) }
     factory<PinCodeInteractor> { PinCodeUseCase(get()) }
+    factory<QrScannerInteractor> { QrScannerUseCase(get()) }
 }

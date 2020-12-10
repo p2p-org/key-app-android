@@ -73,7 +73,7 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/lChartContainer"
-                android:layout_width="@dimen/dp_120"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:gravity="end"
                 android:orientation="vertical"
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_15"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:text="@{String.format(@string/usd_symbol(itemWallet.price))}"
+                    android:text="@{@string/usd_symbol+itemWallet.price}"
                     tools:text="$ 120,00" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:text="@{String.format(@string/amount_count_format(itemWallet.amount))+itemWallet.tokenSymbol}"
+                    android:text="@{itemWallet.amount+@string/space+itemWallet.tokenSymbol}"
                     tools:text="1200,0000 SOL" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

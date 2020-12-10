@@ -7,4 +7,5 @@ import com.wowlet.entities.local.ActivityItem
 interface SendCoinInteractor {
   suspend  fun sendCoin(coinData:SendTransactionModel): Result<ActivityItem>
 
+
 }

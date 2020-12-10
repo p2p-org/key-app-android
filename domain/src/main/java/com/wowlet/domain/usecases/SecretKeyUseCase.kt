@@ -3,6 +3,9 @@ package com.wowlet.domain.usecases
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.domain.interactors.SecretKeyInteractor
+import com.wowlet.entities.CallException
+import com.wowlet.entities.Constants
+import com.wowlet.entities.Result
 import com.wowlet.entities.local.SecretKeyCombinationSuccess
 
 class SecretKeyUseCase(
@@ -47,7 +50,7 @@ class SecretKeyUseCase(
         return combinationValue
     }
 
-    override suspend fun resetPhrase(inputPhrase: String): Boolean {
+    override suspend fun resetPhrase(inputPhrase: String): Result<Boolean> {
         /*     val walletList = preferenceService.getWalletList()
              walletList?.let {
                  it.forEach { userData ->
@@ -60,10 +63,21 @@ class SecretKeyUseCase(
              }
 
                  return false*/
+        return if (inputPhrase.isNotEmpty()) {
+            val phrase = inputPhrase.split(" ")
+            if (phrase.size==12){
+                val userAccount = wowletApiCallRepository.initAccount(phrase)
+                preferenceService.updateWallet(userAccount)
+                Result.Success(true)
+            }else{
+                Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE,"Phrase size count is not 12 worlds"))
+            }
 
-        val phraze = inputPhrase.split(" ")
-        val userAccount = wowletApiCallRepository.initAccount(phraze)
-        return preferenceService.updateWallet(userAccount)
+        } else {
+            Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE,"Phrase empty"))
+        }
+
+
     }
 
     override fun currentPhrase(): String {

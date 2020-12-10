@@ -19,11 +19,4 @@ fun RecyclerView.setAdapterList(
    this.layoutManager = LinearLayoutManager(this.context)
 }
 
-@BindingAdapter("view_pager", "view_model")
-fun CircleIndicator3.bindViewPager(
-    viewPager: ViewPager2,
-    dashboardViewModel: DashboardViewModel
-) {
-    viewPager.adapter = dashboardViewModel.pages.value?.let { EnterWalletPagerAdapter(it) }
-    this.setViewPager(viewPager)
-}
+

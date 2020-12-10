@@ -1,5 +1,6 @@
 package com.p2p.wowlet.utils.bindadapter
 
+import android.graphics.Bitmap
 import android.text.TextWatcher
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
@@ -39,6 +40,10 @@ fun AppCompatImageView.imageSource(uri: String){
                 .error(R.drawable.bg_circule_indicator)
         )
         .into(this)
+}
+@BindingAdapter("image_source_bitmap")
+fun AppCompatImageView.imageSourceBitmap(icon: Bitmap){
+    this.setImageBitmap(icon)
 }
 @BindingAdapter("text")
 fun AppCompatTextView.walletFormat(address: String){

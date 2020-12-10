@@ -11,20 +11,23 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
+import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.databinding.DialogTansactionBinding
+import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.copyClipboard
 import com.wowlet.entities.local.ActivityItem
 import kotlinx.android.synthetic.main.dialog_tansaction.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class TransactionBottomSheet(private val dataInfo: ActivityItem) : BottomSheetDialogFragment() {
+class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(destinationId:Int,bundle: Bundle?)->Unit) : BottomSheetDialogFragment() {
 
     lateinit var binding: DialogTansactionBinding
-
+    private val viewModel:DetailWalletViewModel by viewModel()
     companion object {
         const val TRANSACTION_DIALOG="transactionDialog"
-        fun newInstance(dataInfo: ActivityItem): TransactionBottomSheet =
-            TransactionBottomSheet(dataInfo)
+        fun newInstance(dataInfo: ActivityItem, navigate:(destinationId:Int,bundle: Bundle?)->Unit): TransactionBottomSheet =
+            TransactionBottomSheet(dataInfo,navigate)
     }
 
     override fun onCreateView(
@@ -36,6 +39,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem) : BottomSheetDi
             inflater, R.layout.dialog_tansaction, container, false
         )
         binding.model = dataInfo
+        viewModel.getBlockTime(53762804)
         return binding.root
     }
 
@@ -54,10 +58,25 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem) : BottomSheetDi
             context?.copyClipboard(dataInfo.signature)
         }
         blockChainExplorer.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://www.stackoverflow.com")))
+            viewModel.goToBlockChainExplorer("http://www.stackoverflow.com")
         }
+        observes()
     }
-
+    private fun observes(){
+        viewModel.blockTime.observe(viewLifecycleOwner,{
+            binding.yourTransactionDate.text=it
+        })
+        viewModel.blockTimeError.observe(viewLifecycleOwner,{
+            binding.yourTransactionDate.text=it
+        })
+        viewModel._command.observe(viewLifecycleOwner,{
+           when(it){
+               is Command.NavigateBlockChainViewCommand-> {
+                   navigate.invoke(it.destinationId,it.bundle)
+               }
+           }
+        })
+    }
     override fun onResume() {
         super.onResume()
         dialog?.run {

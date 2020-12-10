@@ -47,9 +47,9 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
         initView()
     }
 
-    protected open fun initView(){}
-    protected open fun initData(){}
-    protected open fun observes(){}
+    protected open fun initView() {}
+    protected open fun initData() {}
+    protected open fun observes() {}
 
     protected fun <T> observe(liveData: LiveData<T>, action: (T) -> Unit) = view?.run {
         if (!this@FragmentBaseMVVM.isAdded) return@run
@@ -68,7 +68,10 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
 
     protected open fun processViewCommand(command: ViewCommand) {}
     protected open fun navigateUp() {}
-    protected fun navigateFragment(destinationId: Int, arg:Bundle?=null) {
+    protected open fun navigateBackStack() {
+        navControler.popBackStack()
+    }
+    protected fun navigateFragment(destinationId: Int, arg: Bundle? = null) {
         navControler.navigate(destinationId, arg, navOptions)
     }
 

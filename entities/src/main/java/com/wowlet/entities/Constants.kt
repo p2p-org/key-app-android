@@ -7,5 +7,6 @@ class Constants {
         const val REQUEST_EXACTION = 1001
         const val PREFERENCE_SAVED_ERROR = 1002
         const val VERIFY_PIN_CODE_ERROR = 1003
+        const val ERROR_INCORRECT_PHRASE= 1004
     }
 }

@@ -143,30 +143,7 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
 
     override fun updateWallet(userSecretData: UserSecretData) :Boolean {
-        val userDataList = getSingleWalletData()?.apply {
-            if (this.publicKey == userSecretData.publicKey) {
-                this.phrase = userSecretData.phrase
-                this.secretKey = userSecretData.secretKey
-                this.publicKey = userSecretData.publicKey
-            }
-
-        }
-        userDataList?.let {
-            setSingleWalletData(it)
-        }?:setSingleWalletData(userSecretData)
-
-        /* userDataList?.run {
-             val secretDataByteArray = jsonAdapter.toJson(this).toByteArray()
-             val generateSecretKey = generateSecretKeyCipher()
-             val encryptData = encrypt(secretDataByteArray, generateSecretKey)
-             val strSecretKey = strSecretKey(generateSecretKey)
-             val cipherData = CipherData(encryptData, strSecretKey)
-             val jsonAdapterCipherData: JsonAdapter<CipherData> =
-                 Moshi.Builder().build().adapter(CipherData::class.java)
-             val cipherDataByteArray = jsonAdapterCipherData.toJson(cipherData).toByteArray()
-
-             saveFile(cipherDataByteArray)
-         }*/
+        setSingleWalletData(userSecretData)
         return true
     }
 

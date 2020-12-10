@@ -78,7 +78,7 @@
     <string name="change_email">Change email</string>
     <string name="change_phone_number">Change phone number</string>
     <string name="enter_code_from_email">Enter code from email</string>
-    <string name="enter_the_code">Enter the code</string>
+    <string name="enter_the_code">Enter pin</string>
     <string name="change_email_code_info">Enter 6 digits code from email we’ve sent to you on your new email</string>
     <string name="change_phone_code_info">We’ve sent a text-message with confirmation code to +7 995 502-2525</string>
     <string name="solana">Solana</string>
@@ -133,15 +133,17 @@
     <string name="error_msg_biometric_hw_unavailable">Biometric features are currently unavailable.</string>
     <string name="error_msg_biometric_not_setup">The user hasn\'t associated any biometric credentials with their account.</string>
     <string name="auth_title">Authentication Required!</string>
-    <string name="empty_string"/>
+    <string name="empty_string">= 0 US$</string>
     <string name="auth_subtitle">Important authentication</string>
     <string name="auth_description">Please authenticate to be able to view your account information</string>
     <string name="usd">%1$.2f USD</string>
-    <string name="amount_to_usd">~ $ %1$.5f</string>
+    <string name="amount_to_usd">= %1$.5f US$</string>
     <string name="amount_count_format">%1.6f</string>
     <string name="usd_receive">%1$.2f BTC</string>
-    <string name="usd_symbol">$%1$.4f</string>
-    <string name="block_number_symbol">#%1$.2f</string>
+    <string name="usd_symbol">$&#160;</string>
+    <string name="us_dollar">&#160; US$</string>
+    <string name="space">&#160;</string>
+    <string name="block_number_symbol"># %1$d</string>
     <string name="btc">%1$.2f BTC</string>
     <string name="usd_symbol_2">$%1$.2f</string>
     <string name="for_24h">%1$.5f  for 24hrs</string>
@@ -179,10 +181,12 @@
     <string name="wrong_pin_code_left_2">Wrong PIN-code, 2 attempts left</string>
     <string name="wrong_pin_code_left_1">Wrong PIN-code, 1 attempts left</string>
     <string name="wrong_pin_code_block">We’ve locked your wallet, try again in a 15 minutes or reset it with a seed phrase.</string>
-    <string name="pin_codes_invalid">Invalid PIN code</string>
+    <string name="pin_codes_invalid">"PIN codes do not match" must be</string>
     <string name="address_copied">Address copied!</string>
     <string name="block_number">Block number</string>
-    <string name="input_count">Input count</string>
+    <string name="input_count">0.0</string>
     <string name="_1_sol">1 SOL:</string>
+    <string name="place_seed_phrases_in_a_correct_order_to_recover_your_wallet">Place seed phrases in a correct order to recover your wallet.</string>
+    <string name="reset_with_a_seed_phrase">Reset with a seed phrase</string>
 
 </resources>

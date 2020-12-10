@@ -1,17 +1,25 @@
 package com.p2p.wowlet.utils
 
+import android.Manifest
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.hardware.fingerprint.FingerprintManager
+import android.os.Build
 import android.provider.Settings
-import android.view.View
-import android.view.inputmethod.InputMethodManager
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
@@ -20,6 +28,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.p2p.wowlet.R
+import java.util.*
 import java.util.concurrent.Executor
 
 
@@ -134,5 +143,19 @@ private fun FragmentActivity.authUser(executor: Executor, requestSuccess: () -> 
 
     biometricPrompt.authenticate(promptInfo)
 }
+fun  Context.isFingerPrintSet(): Boolean {
+    return BiometricManager.from(this)
+        .canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
+}
+fun <T : ViewDataBinding> ViewGroup.inflate(layoutId: Int): T {
+    return DataBindingUtil.inflate(
+        LayoutInflater.from(context),
+        layoutId,
+        this,
+        false
+    )
+}
+
+
 
 

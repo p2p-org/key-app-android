@@ -3,6 +3,7 @@ package com.p2p.wowlet.di
 import com.p2p.wowlet.fragment.backupwallat.completebackupwallet.viewmodel.CompleteBackupWalletViewModel
 import com.p2p.wowlet.fragment.backupwallat.recoverywallat.viewmodel.RecoveryWalletViewModel
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
+import com.p2p.wowlet.fragment.blockchainexplorer.viewmodel.BlockChainExplorerViewModel
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel
 import com.p2p.wowlet.fragment.fingetprint.viewmodel.FingerPrintViewModel
@@ -39,7 +40,7 @@ val viewModule = module {
     viewModel { SearchViewModel() }
     viewModel { InvestmentsViewModel() }
     viewModel { ContactsViewModel() }
-    viewModel { QrScannerViewModel() }
+    viewModel { QrScannerViewModel(get()) }
     viewModel { DetailWalletViewModel(get()) }
     viewModel { DetailSavingViewModel() }
     viewModel { RecoveryPhraseViewModel() }
@@ -48,4 +49,5 @@ val viewModule = module {
     viewModel { CreateWalletViewModel(get()) }
     viewModel { TermAndConditionViewModel() }
     viewModel { PinCodeViewModel(get(),get(),get()) }
+    viewModel { BlockChainExplorerViewModel() }
 }

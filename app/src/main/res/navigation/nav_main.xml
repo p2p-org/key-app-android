@@ -86,6 +86,9 @@
         <action
             android:id="@+id/action_navigation_detail_wallet_to_navigation_scanner"
             app:destination="@id/navigation_scanner" />
+        <action
+            android:id="@+id/action_navigation_detail_wallet_to_navigation_block_chain_explorer"
+            app:destination="@id/navigation_block_chain_explorer" />
     </fragment>
     <fragment
         android:id="@+id/navigation_detail_saving"
@@ -127,6 +130,18 @@
             app:destination="@id/navigation_dashboard" />
     </fragment>
 
+    <fragment
+        android:id="@+id/navigation_block_chain_explorer"
+        android:name="com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_main"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_block_chain_explorer">
+
+        <action
+            android:id="@+id/action_navigation_block_chain_explorer_to_navigation_detail_wallet"
+            app:destination="@id/navigation_detail_wallet" />
+    </fragment>
 
 
 </navigation>

@@ -18,10 +18,6 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
     override val viewModel: SecretKeyViewModel by viewModel()
     override val binding: FragmentSecretKeyBinding by dataBinding(R.layout.fragment_secret_key)
 
-    private lateinit var sortAdapter: SortKeyAdapter
-    private lateinit var randomAdapter: RandomKeyAdapter
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
@@ -32,11 +28,13 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
 
     override fun observes() {
         observe(viewModel.isCurrentCombination) {
-            if (it) {
-                viewModel.goToPinCodeFragment()
-            } else {
-                Toast.makeText(context, "Incorrect", Toast.LENGTH_SHORT).show()
+            viewModel.goToPinCodeFragment()
+        }
+        observe(viewModel.invadedPhrase) {errorMessage->
+            context?.let {
+                Toast.makeText(it, errorMessage, Toast.LENGTH_SHORT).show()
             }
+
         }
     }
 
@@ -62,13 +60,11 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
                     command.bundle
                 )
             }
-
-
         }
     }
 
     override fun navigateUp() {
-        viewModel.navigateUp()
+        navigateBackStack()
     }
 
 }

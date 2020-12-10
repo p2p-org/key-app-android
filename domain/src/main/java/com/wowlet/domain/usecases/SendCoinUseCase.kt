@@ -24,7 +24,7 @@ class SendCoinUseCase(
             val signature = wowletApiCallRepository.sendTransaction(coinData)
             val transaction = wowletApiCallRepository.getConfirmedTransaction(
                 signature,
-                0.0
+                0
             )?.transferInfoToActivityItem(coinData.fromPublicKey, "", "")
 
             return Result.Success(transaction)
@@ -32,4 +32,6 @@ class SendCoinUseCase(
             return Result.Error(CallException(REQUEST_EXACTION, e.message))
         }
     }
+
+
 }
