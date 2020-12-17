@@ -1,7 +1,9 @@
 package com.wowlet.domain.extentions
 
 import android.graphics.Bitmap
+import com.github.mikephil.charting.data.Entry
 import com.wowlet.entities.local.*
+import com.wowlet.entities.responce.HistoricalPrices
 import org.p2p.solanaj.rpc.types.TransferInfo
 import kotlin.math.pow
 
@@ -97,7 +99,12 @@ fun WalletItem.walletItemToQrCode(qrCode: Bitmap): EnterWallet {
         qrCode = qrCode,
         walletAddress = depositAddress,
         icon = icon,
+        name = tokenName
     )
+}
+
+fun HistoricalPrices.fromHistoricalPricesToChartItem(index: Int): Entry {
+    return Entry(index.toFloat(), close.toFloat())
 }
 
 fun TransferInfo.transferInfoToActivityItem(
@@ -125,7 +132,8 @@ fun TransferInfo.transferInfoToActivityItem(
         fee = fee,
         from = from,
         to = to,
-        tokenName = tokenName
+        tokenName = tokenName,
+        date = ""
     )
 }
 

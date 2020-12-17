@@ -1,23 +1,19 @@
 package com.p2p.wowlet.utils
 
-import android.Manifest
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.hardware.fingerprint.FingerprintManager
-import android.os.Build
+import android.graphics.Typeface
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
@@ -28,6 +24,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.p2p.wowlet.R
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
 
@@ -76,6 +73,13 @@ fun Context.copyClipboard(value: String) {
     val clip = ClipData.newPlainText("label", value)
     clipboard.setPrimaryClip(clip)
     Toast.makeText(this, getString(R.string.you_copied), Toast.LENGTH_SHORT).show()
+}
+
+fun Context.shareText(value: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND)
+    shareIntent.type = "text/plain"
+    shareIntent.putExtra(Intent.EXTRA_TEXT, value)
+    startActivity(Intent.createChooser(shareIntent, "Share Text"))
 }
 
 fun FragmentActivity.openFingerprintDialog(requestSuccess: () -> Unit) {
@@ -143,10 +147,23 @@ private fun FragmentActivity.authUser(executor: Executor, requestSuccess: () -> 
 
     biometricPrompt.authenticate(promptInfo)
 }
-fun  Context.isFingerPrintSet(): Boolean {
+
+fun Context.isFingerPrintSet(): Boolean {
     return BiometricManager.from(this)
         .canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
 }
+
+fun TextView.changeTextColor(selectedTextView: AppCompatTextView?) {
+    this.setTextColor(ContextCompat.getColor(this.context, R.color.black))
+    this.typeface = Typeface.DEFAULT_BOLD
+    this.isEnabled = false
+    selectedTextView?.run {
+        setTextColor(ContextCompat.getColor(selectedTextView.context, R.color.gray_600))
+        typeface = Typeface.DEFAULT
+        isEnabled = true
+    }
+}
+
 fun <T : ViewDataBinding> ViewGroup.inflate(layoutId: Int): T {
     return DataBindingUtil.inflate(
         LayoutInflater.from(context),
@@ -156,6 +173,35 @@ fun <T : ViewDataBinding> ViewGroup.inflate(layoutId: Int): T {
     )
 }
 
+fun String.getActivityDate(): String {
+    val parser = SimpleDateFormat("dd-MMM-yyyy '@' HH:mm a")
+    val formatter = SimpleDateFormat("dd MMM yyyy")
+    return formatter.format(parser.parse(this))
+}
+
+fun getYesterday(): Long {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.DATE, -1)
+    return cal.timeInMillis
+}
+
+fun getWeekly(): Long {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.WEEK_OF_MONTH, -1)
+    return cal.timeInMillis
+}
+
+fun getMonthly(): Long {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.MONTH, -1)
+    return cal.timeInMillis
+}
+
+fun getYear(): Long {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.YEAR, -1)
+    return cal.timeInMillis
+}
 
 
 

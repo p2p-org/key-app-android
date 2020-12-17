@@ -13,8 +13,8 @@ import kotlinx.coroutines.withContext
 
 class CreateWalletViewModel(private val createWalletInteractor: CreateWalletInteractor) :
     BaseViewModel() {
-    private val _getPhraseData by lazy { MutableLiveData<String>() }
-    val getPhraseData: LiveData<String> get() = _getPhraseData
+    private val _getPhraseData by lazy { MutableLiveData<List<String>>() }
+    val getPhraseData: LiveData<List<String>> get() = _getPhraseData
 
     val checkBoxIsChecked: MutableLiveData<Boolean> by lazy { MutableLiveData() }
 

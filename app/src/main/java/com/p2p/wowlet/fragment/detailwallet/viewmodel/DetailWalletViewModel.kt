@@ -8,8 +8,9 @@ import com.github.mikephil.charting.data.Entry
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.databinding.FragmentBlockChainExplorerBinding
 import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
+import com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment
+import com.p2p.wowlet.utils.getActivityDate
 import com.wowlet.domain.interactors.DetailActivityInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
@@ -41,19 +42,23 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
     val getActivityData: LiveData<List<ActivityItem>> get() = _getActivityData
     private val _getChartData by lazy { MutableLiveData<List<Entry>>() }
     val getChartData: LiveData<List<Entry>> get() = _getChartData
+    private val _getChartDataError by lazy { MutableLiveData<String>() }
+    val getChartDataError: LiveData<String> get() = _getChartDataError
     private val _blockTime by lazy { MutableLiveData<String>() }
     val blockTime: LiveData<String> get() = _blockTime
     private val _blockTimeError by lazy { MutableLiveData<String>() }
     val blockTimeError: LiveData<String> get() = _blockTimeError
-    init {
-        _getChartData.value = chartList
-    }
+
+    private val activityItemList = mutableListOf<ActivityItem>()
 
     fun getActivityList(publicKey: String, icon: String, tokenName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val detailList = detailActivityInteractor.getActivityList(publicKey,icon,tokenName)
-            withContext(Dispatchers.Main){
-                _getActivityData.value=detailList
+            val detailList = detailActivityInteractor.getActivityList(publicKey, icon, tokenName)
+            withContext(Dispatchers.Main) {
+                activityItemList.clear()
+                detailList.forEach {
+                    getBlockTime(it)
+                }
             }
         }
     }
@@ -67,10 +72,24 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
         _command.value =
             Command.NavigateScannerViewCommand(R.id.action_navigation_detail_wallet_to_navigation_scanner)
     }
-    fun openTransactionDialog(itemActivity:ActivityItem) {
+
+    fun goToSendCoin(walletAddress: String) {
+        _command.value = Command.NavigateSendCoinViewCommand(
+            R.id.action_navigation_detail_wallet_to_navigation_send_coin,
+            bundleOf(SendCoinsFragment.WALLET_ADDRESS to walletAddress)
+        )
+    }
+
+    fun goToSwap() {
+        _command.value =
+            Command.NavigateSwapViewCommand(R.id.action_navigation_detail_wallet_to_navigation_swap)
+    }
+
+    fun openTransactionDialog(itemActivity: ActivityItem) {
         _command.value =
             Command.OpenTransactionDialogViewCommand(itemActivity)
     }
+
     fun getBlockTime(slot: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val data = detailActivityInteractor.blockTime(
@@ -86,9 +105,53 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
         }
     }
 
+    private fun getBlockTime(activityItem: ActivityItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val data = detailActivityInteractor.blockTime(activityItem.slot)) {
+                is Result.Success -> withContext(Dispatchers.Main) {
+                    activityItem.date = data.data?.getActivityDate() ?: ""
+                    activityItemList.add(activityItem)
+                    _getActivityData.value = activityItemList
+                }
+                is Result.Error -> withContext(Dispatchers.Main) {
+                    _blockTimeError.value = data.errors.errorMessage
+                }
+            }
+        }
+    }
+
+    fun getChartDataByDate(symbol: String, startTime: Long, endTime: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val data =
+                detailActivityInteractor.getChatListByDate(symbol, startTime, endTime)) {
+                is Result.Success -> withContext(Dispatchers.Main) {
+                    _getChartData.value = data.data
+                }
+                is Result.Error -> withContext(Dispatchers.Main) {
+                    _getChartDataError.value = data.errors.errorMessage
+                }
+            }
+        }
+    }
+
+    fun getChartData(symbol: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val data = detailActivityInteractor.getChatList(symbol)) {
+                is Result.Success -> withContext(Dispatchers.Main) {
+                    _getChartData.value = data.data
+                }
+                is Result.Error -> withContext(Dispatchers.Main) {
+                    _getChartDataError.value = data.errors.errorMessage
+                }
+            }
+        }
+    }
+
     fun goToBlockChainExplorer(url: String) {
         _command.value =
-            Command.NavigateBlockChainViewCommand(R.id.action_navigation_detail_wallet_to_navigation_block_chain_explorer,
-                bundleOf(BlockChainExplorerFragment.BLOCK_CHAIN_URL to url))
+            Command.NavigateBlockChainViewCommand(
+                R.id.action_navigation_detail_wallet_to_navigation_block_chain_explorer,
+                bundleOf(BlockChainExplorerFragment.BLOCK_CHAIN_URL to url)
+            )
     }
 }

@@ -50,6 +50,15 @@
                 android:layout_marginTop="@dimen/dp_15"
                 android:text="@{itemActivity.name}"
                 tools:text="Coin Name Here" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/vDate"
+                style="@style/Grey.13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_15"
+                android:layout_marginTop="@dimen/dp_5"
+                android:text="@{itemActivity.date}"
+                tools:text="11 oct 2020" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

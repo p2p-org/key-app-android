@@ -48,6 +48,7 @@ dependencies {
 
     implementation supportDependencies.koinAndroid
     implementation supportDependencies.coroutines
-
+    // MPAndroidChart
+    implementation supportDependencies.mpChart
 
 }

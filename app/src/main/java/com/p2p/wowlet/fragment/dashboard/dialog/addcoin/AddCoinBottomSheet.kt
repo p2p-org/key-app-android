@@ -56,7 +56,7 @@ class AddCoinBottomSheet : BottomSheetDialogFragment() {
 
         })
         dashboardViewModel.getMinimumBalanceData.observe(viewLifecycleOwner, Observer {
-            info.text= String.format(getString(R.string.add_coin_token_info),it)
+            info.text = String.format(getString(R.string.add_coin_token_info), it)
         })
 
     }

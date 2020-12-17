@@ -4,11 +4,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemEnterWalletPagerBinding
-import com.p2p.wowlet.databinding.ItemSecretKeyBinding
 import com.p2p.wowlet.utils.copyClipboard
 import com.p2p.wowlet.utils.inflate
+import com.p2p.wowlet.utils.shareText
 import com.wowlet.entities.local.EnterWallet
-import kotlinx.android.synthetic.main.item_enter_wallet_pager.view.*
 
 class EnterWalletPagerAdapter(private val list: List<EnterWallet>) :
     RecyclerView.Adapter<EnterWalletPagerAdapter.MyViewHolder>() {
@@ -21,6 +20,9 @@ class EnterWalletPagerAdapter(private val list: List<EnterWallet>) :
             itemModel = list[position]
             copyWallet.setOnClickListener {
                 it.context.copyClipboard(list[position].walletAddress)
+            }
+            shareWallet.setOnClickListener {
+                it.context.shareText(list[position].walletAddress)
             }
         }
     }

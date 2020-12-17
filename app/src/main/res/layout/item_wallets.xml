@@ -21,7 +21,7 @@
         android:layout_marginTop="@dimen/dp_15"
         android:layout_marginEnd="@dimen/dp_15"
         android:background="@color/white"
-        android:onClick="@{()->viewModel.goToDetailWalletFragment(itemWallet.depositAddress,itemWallet.icon,itemWallet.tokenName)}"
+        android:onClick="@{()->viewModel.goToDetailWalletFragment(itemWallet)}"
         app:cardCornerRadius="@dimen/dp_12">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_15"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:text="@{@string/usd_symbol+itemWallet.price}"
+                    android:text="@{@string/usd_symbol+viewModel.roundCurrencyValue(itemWallet.price)}"
                     tools:text="$ 120,00" />
 
                 <androidx.appcompat.widget.AppCompatTextView

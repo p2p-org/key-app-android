@@ -6,15 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.p2p.wowlet.utils.Transfer
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.entities.local.BalanceInfo
-import io.github.novacrypto.bip32.ExtendedPrivateKey
-import io.github.novacrypto.bip32.networks.Bitcoin
 import kotlinx.android.synthetic.main.activity_maintest.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils.readInt64
-import org.bitcoinj.crypto.MnemonicCode
 import org.koin.android.ext.android.inject
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey

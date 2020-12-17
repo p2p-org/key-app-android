@@ -181,12 +181,17 @@
     <string name="wrong_pin_code_left_2">Wrong PIN-code, 2 attempts left</string>
     <string name="wrong_pin_code_left_1">Wrong PIN-code, 1 attempts left</string>
     <string name="wrong_pin_code_block">We’ve locked your wallet, try again in a 15 minutes or reset it with a seed phrase.</string>
-    <string name="pin_codes_invalid">"PIN codes do not match" must be</string>
+    <string name="pin_codes_invalid">PIN codes do not match</string>
     <string name="address_copied">Address copied!</string>
     <string name="block_number">Block number</string>
     <string name="input_count">0.0</string>
     <string name="_1_sol">1 SOL:</string>
     <string name="place_seed_phrases_in_a_correct_order_to_recover_your_wallet">Place seed phrases in a correct order to recover your wallet.</string>
     <string name="reset_with_a_seed_phrase">Reset with a seed phrase</string>
+    <string name="day">Day</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="all">All</string>
 
 </resources>

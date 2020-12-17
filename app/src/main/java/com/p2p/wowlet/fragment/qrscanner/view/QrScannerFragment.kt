@@ -21,7 +21,6 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView
 
 class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScannerBinding>(),
     ZBarScannerView.ResultHandler {
-    val isCheckAllowPermission = false
     override val viewModel: QrScannerViewModel by viewModel()
     override val binding: FragmentQrScannerBinding by dataBinding(R.layout.fragment_qr_scanner)
 

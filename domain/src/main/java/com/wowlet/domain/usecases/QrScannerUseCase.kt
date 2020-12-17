@@ -10,6 +10,7 @@ import com.wowlet.entities.CallException
 import com.wowlet.entities.Constants
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
+import org.p2p.solanaj.core.PublicKey
 import java.lang.Exception
 
 
@@ -19,7 +20,7 @@ class QrScannerUseCase(
 
     override suspend fun getAccountInfo(publicKey: String): Result<Boolean> {
         return try {
-            val accountInfo = wowletApiCallRepository.getAccountInfo(publicKey)
+            val accountInfo = wowletApiCallRepository.getAccountInfo(PublicKey(publicKey))
             if (accountInfo.value != null) {
                 Result.Success(true)
             } else {

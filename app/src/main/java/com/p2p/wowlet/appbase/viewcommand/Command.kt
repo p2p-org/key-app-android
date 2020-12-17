@@ -11,6 +11,7 @@ sealed class Command {
     /*Navigate fragment commands*/
     class FinishAppViewCommand : ViewCommand
     class NavigateUpViewCommand(val destinationId: Int) : ViewCommand
+    class NavigateUpBackStackCommand() : ViewCommand
     class NavigateRegLoginViewCommand(val destinationId: Int) : ViewCommand
     class NavigateTermAndConditionViewCommand(val destinationId: Int) : ViewCommand
     class NavigatePinCodeViewCommand(val destinationId: Int,val bundle: Bundle?) : ViewCommand

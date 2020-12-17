@@ -108,7 +108,7 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
                             )
                             this@SendCoinsFragment.viewModel.sendCoin(
                                 walletAddress,
-                                etCount.text.toString().toInt()
+                                etCount.text.toString().toDouble()
                             )
                         } else
                             processingDialog?.dismiss()
@@ -131,7 +131,8 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
     }
 
     override fun navigateUp() {
-        viewModel.navigateUp()
+        navigateBackStack()
+        //viewModel.navigateUp()
     }
 
 }

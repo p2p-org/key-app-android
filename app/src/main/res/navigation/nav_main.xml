@@ -89,6 +89,12 @@
         <action
             android:id="@+id/action_navigation_detail_wallet_to_navigation_block_chain_explorer"
             app:destination="@id/navigation_block_chain_explorer" />
+        <action
+            android:id="@+id/action_navigation_detail_wallet_to_navigation_send_coin"
+            app:destination="@id/navigation_send_coin" />
+        <action
+            android:id="@+id/action_navigation_detail_wallet_to_navigation_swap"
+            app:destination="@id/navigation_swap" />
     </fragment>
     <fragment
         android:id="@+id/navigation_detail_saving"

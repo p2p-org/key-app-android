@@ -16,6 +16,8 @@ import com.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class SendCoinsViewModel(
     val sendCoinInteractor: SendCoinInteractor,
@@ -76,12 +78,12 @@ class SendCoinsViewModel(
         _command.value = SendCoinDoneViewCommand(transactionInfo)
     }
 
-    fun sendCoin(toPublicKey: String, lamprots: Int) {
+    fun sendCoin(toPublicKey: String, lamprots: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val data = sendCoinInteractor.sendCoin(
                 SendTransactionModel(
                     toPublicKey,
-                    lamprots
+                    lamprots.toInt()
                 )
             )) {
                 is Result.Success -> withContext(Dispatchers.Main) {
@@ -94,5 +96,11 @@ class SendCoinsViewModel(
         }
     }
 
+    fun roundCurrencyValue(value: Double): Double {
+        return BigDecimal(value).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+    }
 
+    fun formatToken(value: Double, name: String): String {
+        return (BigDecimal(value).stripTrailingZeros().toDouble().toString()+ " " + name)
+    }
 }

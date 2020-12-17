@@ -83,7 +83,7 @@ class WowletApiCallRepositoryImpl(
             val owner = Base58.encode(owherData)
             val mint = Base58.encode(mintData)
             val amount = Utils.readInt64(data, 32 + 32)
-            val accountInfo = getAccountInfo(mint)
+            val accountInfo = getAccountInfo(PublicKey(mint))
             var decimals = 0
             accountInfo.value.data?.let {
                 val dataStr: String = it[0]
@@ -105,8 +105,8 @@ class WowletApiCallRepositoryImpl(
         return balances
     }
 
-    override suspend fun getAccountInfo(key: String): AccountInfo {
-        return client.api.getAccountInfo(PublicKey(key+"a"))
+    override suspend fun getAccountInfo(publicKey: PublicKey): AccountInfo {
+        return client.api.getAccountInfo(publicKey)
     }
 
     override suspend fun getMinimumBalance(accountLenght: Long): Long {

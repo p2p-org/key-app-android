@@ -1,5 +1,7 @@
 package com.p2p.wowlet.fragment.detailwallet.view
 
+import android.annotation.SuppressLint
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
@@ -11,8 +13,10 @@ import com.p2p.wowlet.databinding.FragmentDetailActivityBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.adapter.ActivityAdapter
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
-import com.p2p.wowlet.utils.initChart
+import com.p2p.wowlet.utils.*
+import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
 
 class DetailWalletFragment :
@@ -21,34 +25,98 @@ class DetailWalletFragment :
     private lateinit var activityAdapter: ActivityAdapter
     override val viewModel: DetailWalletViewModel by viewModel()
     override val binding: FragmentDetailActivityBinding by dataBinding(R.layout.fragment_detail_activity)
-    private var publicKey: String = ""
-    private var icon: String = ""
-    private var tokenName: String = ""
+    private var walletItem: WalletItem? = null
+    private var selectedTextView: AppCompatTextView? = null
+    private val cal = Calendar.getInstance()
 
     companion object {
-        const val PUBLIC_KEY = "depositAddress"
-        const val ICON = "icon"
-        const val TOKEN_NAME = "tokenName"
+        const val WALLET_ITEM = "walletItem"
     }
 
     override fun initData() {
         arguments?.let {
-            publicKey = it.getString(PUBLIC_KEY, "")
-            icon = it.getString(ICON, "")
-            tokenName = it.getString(TOKEN_NAME, "")
+            walletItem = it.getParcelable(WALLET_ITEM)
+
         }
-        viewModel.getActivityList(publicKey, icon,tokenName)
+        walletItem?.run {
+            viewModel.getActivityList(this.depositAddress, icon, tokenName)
+            viewModel.getChartData(this.tokenSymbol)
+        }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun initView() {
         binding.run {
             viewModel = this@DetailWalletFragment.viewModel
-            vTitle.text = tokenName
+            vTitle.text = walletItem?.tokenName
+            vWalletAddress.text = walletItem?.depositAddress
+            vPrice.text = "$${walletItem?.price}"
+            vTokenValue.text = "${walletItem?.amount} ${walletItem?.tokenSymbol}"
+            vWalletAddress.setOnClickListener {
+                context?.run { copyClipboard(vWalletAddress.text.toString()) }
+            }
+            getChartByDay.setOnClickListener {
+                getChartByDay.changeTextColor(selectedTextView)
+                val yesterday = getYesterday()
+                walletItem?.tokenSymbol?.run {
+                    this@DetailWalletFragment.viewModel.getChartDataByDate(
+                        this,
+                        yesterday,
+                        cal.timeInMillis
+                    )
+                }
+                selectedTextView = getChartByDay
+            }
+            getChartByWeek.setOnClickListener {
+                getChartByWeek.changeTextColor(selectedTextView)
+                val weekly = getWeekly()
+                walletItem?.tokenSymbol?.run {
+                    this@DetailWalletFragment.viewModel.getChartDataByDate(
+                        this,
+                        weekly,
+                        cal.timeInMillis
+                    )
+                }
+                selectedTextView = getChartByWeek
+            }
+            getChartByMonth.setOnClickListener {
+                getChartByMonth.changeTextColor(selectedTextView)
+                val monthly = getMonthly()
+                walletItem?.tokenSymbol?.run {
+                    this@DetailWalletFragment.viewModel.getChartDataByDate(
+                        this,
+                        monthly,
+                        cal.timeInMillis
+                    )
+                }
+                selectedTextView = getChartByMonth
+            }
+            getChartByYear.setOnClickListener {
+                getChartByYear.changeTextColor(selectedTextView)
+                val year = getYear()
+                walletItem?.tokenSymbol?.run {
+                    this@DetailWalletFragment.viewModel.getChartDataByDate(
+                        this,
+                        year,
+                        cal.timeInMillis
+                    )
+                }
+                selectedTextView = getChartByYear
+            }
+            getChartByAll.setOnClickListener {
+                getChartByAll.changeTextColor(selectedTextView)
+                walletItem?.tokenSymbol?.run {
+                    this@DetailWalletFragment.viewModel.getChartData(this)
+                }
+                selectedTextView = getChartByAll
+            }
+            sendCoinAddress.setOnClickListener {
+                walletItem?.let { this@DetailWalletFragment.viewModel.goToSendCoin(it.mintAddress) }
+            }
         }
-        activityAdapter = ActivityAdapter(mutableListOf(),viewModel)
+        activityAdapter = ActivityAdapter(mutableListOf(), viewModel)
         binding.vRvActivity.adapter = activityAdapter
         binding.vRvActivity.layoutManager = LinearLayoutManager(context)
-        binding.vWalletAddress.text = publicKey
     }
 
     override fun observes() {
@@ -70,17 +138,26 @@ class DetailWalletFragment :
                 navigateFragment(command.destinationId)
                 (activity as MainActivity).showHideNav(false)
             }
+            is Command.NavigateSendCoinViewCommand -> {
+                navigateFragment(command.destinationId)
+                (activity as MainActivity).showHideNav(false)
+            }
+            is Command.NavigateSwapViewCommand -> {
+                navigateFragment(command.destinationId)
+                (activity as MainActivity).showHideNav(false)
+            }
             is Command.OpenTransactionDialogViewCommand -> {
-                TransactionBottomSheet.newInstance(command.itemActivity){destinationId, bundle ->
-                    navigateFragment(destinationId,bundle)
-                }.show(childFragmentManager,TransactionBottomSheet.TRANSACTION_DIALOG)
+                TransactionBottomSheet.newInstance(command.itemActivity) { destinationId, bundle ->
+                    navigateFragment(destinationId, bundle)
+                }.show(childFragmentManager, TransactionBottomSheet.TRANSACTION_DIALOG)
                 (activity as MainActivity).showHideNav(false)
             }
         }
     }
 
     override fun navigateUp() {
-        viewModel.navigateUp()
+        navigateBackStack()
+        //viewModel.navigateUp()
     }
 
 }

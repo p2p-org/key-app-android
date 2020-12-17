@@ -106,6 +106,5 @@ dependencies {
     implementation supportDependencies.qrcodeLib
     //glde
     implementation supportDependencies.glide
-    compile 'io.github.novacrypto:BIP39:2019.01.27'
-    compile 'io.github.novacrypto:BIP32:2019.01.27'
+
 }

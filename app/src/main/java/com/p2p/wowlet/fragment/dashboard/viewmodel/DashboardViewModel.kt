@@ -7,15 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.ICON
-import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.PUBLIC_KEY
-import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.TOKEN_NAME
+import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.WALLET_ITEM
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.entities.local.AddCoinItem
 import com.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseViewModel() {
     private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
@@ -71,8 +71,8 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
             OpenProfileDetailDialogViewCommand()
     }
 
-    fun goToDetailWalletFragment(depositAddress: String, icon: String, tokenName: String) {
-        val bundle = bundleOf(PUBLIC_KEY to depositAddress, ICON to icon, TOKEN_NAME to tokenName)
+    fun goToDetailWalletFragment(wallet: WalletItem) {
+        val bundle = bundleOf(WALLET_ITEM to wallet)
         _command.value =
             NavigateWalletViewCommand(
                 R.id.action_navigation_dashboard_to_navigation_detail_wallet,
@@ -116,6 +116,10 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor) : BaseVie
         viewModelScope.launch(Dispatchers.IO) {
             dashboardInteractor.clearSecretKey()
         }
+    }
+
+    fun roundCurrencyValue(value: Double): Double {
+        return BigDecimal(value).setScale(2, RoundingMode.HALF_EVEN).toDouble()
     }
 
 }

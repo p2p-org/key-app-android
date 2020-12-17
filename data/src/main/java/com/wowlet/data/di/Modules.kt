@@ -3,14 +3,9 @@ package com.wowlet.data.di
 
 import com.squareup.moshi.Moshi
 import com.wowlet.data.dataservice.RetrofitService
-import com.wowlet.data.datastore.DashboardRepository
+import com.wowlet.data.datastore.*
 import com.wowlet.data.datastore.PreferenceService
-import com.wowlet.data.datastore.TermAndConditionRepository
-import com.wowlet.data.datastore.WowletApiCallRepository
-import com.wowlet.data.repository.DashboardRepositoryImpl
-import com.wowlet.data.repository.PreferenceServiceImpl
-import com.wowlet.data.repository.TermAndConditionRepositoryImpl
-import com.wowlet.data.repository.WowletApiCallRepositoryImpl
+import com.wowlet.data.repository.*
 import com.wowlet.data.util.HeaderInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -56,6 +51,7 @@ val repositoryModule = module {
     single<PreferenceService> { PreferenceServiceImpl(get()) }
     single<DashboardRepository> { DashboardRepositoryImpl(get()) }
     single<TermAndConditionRepository> { TermAndConditionRepositoryImpl() }
+    single<DetailActivityRepository> { DetailActivityRepositoryImpl(get()) }
 }
 
 

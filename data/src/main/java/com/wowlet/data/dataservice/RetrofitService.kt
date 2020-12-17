@@ -21,7 +21,20 @@ interface RetrofitService {
     @GET("candles/{tokenSymbol}")
     suspend fun getHistoricalPrices(
         @Path("tokenSymbol") symbol: String,
+        @Query("resolution") resolution: Int,
+        @Query("startTime") startTime: Long,
+        @Query("endTime") endTime: Long,
+    ): Response<ResponceDataBonfida<List<HistoricalPrices>>>
+
+    @GET("candles/{tokenSymbol}")
+    suspend fun getHistoricalPrices(
+        @Path("tokenSymbol") symbol: String,
         @Query("limit") limit: Int,
+        @Query("resolution") resolution: Int
+    ): Response<ResponceDataBonfida<List<HistoricalPrices>>>
+    @GET("candles/{tokenSymbol}")
+    suspend fun getAllHistoricalPrices(
+        @Path("tokenSymbol") symbol: String,
         @Query("resolution") resolution: Int
     ): Response<ResponceDataBonfida<List<HistoricalPrices>>>
 }

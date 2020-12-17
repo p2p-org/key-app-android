@@ -1,5 +1,9 @@
 package com.wowlet.entities.local
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class WalletItem(
     val tokenSymbol: String = "",
     val depositAddress: String = "",
@@ -10,4 +14,4 @@ data class WalletItem(
     var price: Double = 0.0,
     var amount: Double = 0.0,
     var walletBinds: Double = 0.0
-)
+): Parcelable

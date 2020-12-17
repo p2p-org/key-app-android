@@ -1,9 +1,7 @@
 package com.p2p.wowlet.fragment.dashboard.dialog
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -34,7 +32,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.dialog_tansaction, container, false
         )

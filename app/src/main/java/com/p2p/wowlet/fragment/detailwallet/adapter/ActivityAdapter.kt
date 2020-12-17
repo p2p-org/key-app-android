@@ -12,7 +12,7 @@ import com.wowlet.entities.local.ActivityItem
 class ActivityAdapter(
     private var list: List<ActivityItem>,
     val viewModel: DetailWalletViewModel,
-): RecyclerView.Adapter<ActivityAdapter.MyViewHolder>() {
+) : RecyclerView.Adapter<ActivityAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
@@ -28,7 +28,7 @@ class ActivityAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.itemActivityBinding.itemActivity = list[position]
-        holder.itemActivityBinding.viewModel=viewModel
+        holder.itemActivityBinding.viewModel = viewModel
     }
 
     override fun getItemCount(): Int {
@@ -36,7 +36,7 @@ class ActivityAdapter(
     }
 
     fun updateList(it: List<ActivityItem>) {
-        list=it
+        list = it
         notifyDataSetChanged()
     }
 
