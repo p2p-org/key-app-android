@@ -45,7 +45,7 @@
                         style="@style/Black.17.Bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/your_wallets" />
+                        android:text="@{model.name}" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/yourTransactionDate"
@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_30"
-            android:text="@{model.symbolsPrice+String.format(@string/usd_receive,model.price)}"
+            android:text="@{model.symbolsPrice+String.format(@string/token_receive,model.price, model.tokenName)}"
             tools:text="+ 0,00344 BTC" />
 
         <androidx.appcompat.widget.AppCompatTextView

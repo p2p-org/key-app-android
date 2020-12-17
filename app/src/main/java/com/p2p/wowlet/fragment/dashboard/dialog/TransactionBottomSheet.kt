@@ -56,7 +56,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
             context?.copyClipboard(dataInfo.signature)
         }
         blockChainExplorer.setOnClickListener {
-            viewModel.goToBlockChainExplorer("http://www.stackoverflow.com")
+            viewModel.goToBlockChainExplorer("https://explorer.solana.com/tx/"+dataInfo.signature)
         }
         observes()
     }

@@ -42,6 +42,9 @@ class BlockChainExplorerFragment :
        // binding.webView.settings.javaScriptEnabled = true;
         // указываем страницу загрузки
         url?.let {
+            binding.webView.settings.javaScriptEnabled = true
+            binding.webView.settings.domStorageEnabled = true
+
             binding. webView.webViewClient = object : WebViewClient() {
                 override fun onReceivedError(
                     view: WebView,

@@ -140,6 +140,7 @@
     <string name="amount_to_usd">= %1$.5f US$</string>
     <string name="amount_count_format">%1.6f</string>
     <string name="usd_receive">%1$.2f BTC</string>
+    <string name="token_receive">%1$.2f %2$s</string>
     <string name="usd_symbol">$&#160;</string>
     <string name="us_dollar">&#160; US$</string>
     <string name="space">&#160;</string>
