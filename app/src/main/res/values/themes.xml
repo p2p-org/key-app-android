@@ -66,7 +66,9 @@
         <item name="android:textColor">@color/red_500</item>
     </style>
 
-
+    <style name="Gray.13" parent="Black.13">
+        <item name="android:textColor">@color/gray</item>
+    </style>
 
     <style name="Grey.17" parent="Grey.13">
         <item name="android:textSize">@dimen/sp_17</item>

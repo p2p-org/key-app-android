@@ -1,6 +1,7 @@
 package com.p2p.wowlet.fragment.detailwallet.view
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wowlet.R
@@ -12,6 +13,7 @@ import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentDetailActivityBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.adapter.ActivityAdapter
+import com.p2p.wowlet.fragment.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.*
 import com.wowlet.entities.local.WalletItem
@@ -50,7 +52,7 @@ class DetailWalletFragment :
             viewModel = this@DetailWalletFragment.viewModel
             vTitle.text = walletItem?.tokenName
             vWalletAddress.text = walletItem?.depositAddress
-            vPrice.text = "$${walletItem?.price}"
+            vPrice.text = "$${walletItem?.price?.roundCurrencyValue()}"
             vTokenValue.text = "${walletItem?.amount} ${walletItem?.tokenSymbol}"
             vWalletAddress.setOnClickListener {
                 context?.run { copyClipboard(vWalletAddress.text.toString()) }
@@ -111,7 +113,12 @@ class DetailWalletFragment :
                 selectedTextView = getChartByAll
             }
             sendCoinAddress.setOnClickListener {
-                walletItem?.let { this@DetailWalletFragment.viewModel.goToSendCoin(it.mintAddress) }
+                walletItem?.let { this@DetailWalletFragment.viewModel.goToSendCoin(it.depositAddress) }
+            }
+            vQrScanner.setOnClickListener {
+                walletItem?.let { item ->
+                    this@DetailWalletFragment.viewModel.goToQrScanner(item)
+                }
             }
         }
         activityAdapter = ActivityAdapter(mutableListOf(), viewModel)
@@ -126,12 +133,16 @@ class DetailWalletFragment :
         observe(viewModel.getActivityData) {
             activityAdapter.updateList(it)
         }
+
+        observe(viewModel.getActivityDataError) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is Command.NavigateUpViewCommand -> {
-                navigateFragment(command.destinationId)
+                navigateBackStack()
                 (activity as MainActivity).showHideNav(true)
             }
             is Command.NavigateScannerViewCommand -> {
@@ -139,7 +150,7 @@ class DetailWalletFragment :
                 (activity as MainActivity).showHideNav(false)
             }
             is Command.NavigateSendCoinViewCommand -> {
-                navigateFragment(command.destinationId)
+                navigateFragment(command.destinationId, command.bundle)
                 (activity as MainActivity).showHideNav(false)
             }
             is Command.NavigateSwapViewCommand -> {
@@ -151,6 +162,12 @@ class DetailWalletFragment :
                     navigateFragment(destinationId, bundle)
                 }.show(childFragmentManager, TransactionBottomSheet.TRANSACTION_DIALOG)
                 (activity as MainActivity).showHideNav(false)
+            }
+            is Command.YourWalletDialogViewCommand -> {
+                YourWalletBottomSheet.newInstance(command.enterWallet).show(
+                    childFragmentManager,
+                    YourWalletBottomSheet.ENTER_YOUR_WALLET
+                )
             }
         }
     }

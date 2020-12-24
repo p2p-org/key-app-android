@@ -40,4 +40,8 @@ public class RecentBlockhash extends RpcResultObject {
     public String getRecentBlockhash() {
         return getValue().getBlockhash();
     }
+
+    public FeeCalculator getFeeBlockhash() {
+        return getValue().getFeeCalculator();
+    }
 }

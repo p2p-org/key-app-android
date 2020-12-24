@@ -12,7 +12,7 @@ public class SignatureInformation {
     @Json(name = "signature")
     private String signature;
     @Json(name = "slot")
-    private double slot;
+    private double  slot;
 
     public SignatureInformation() {
     }

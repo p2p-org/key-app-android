@@ -140,7 +140,7 @@
     <string name="amount_to_usd">= %1$.5f US$</string>
     <string name="amount_count_format">%1.6f</string>
     <string name="usd_receive">%1$.2f BTC</string>
-    <string name="token_receive">%1$.2f %2$s</string>
+    <string name="token_receive">%1$.3f %2$s</string>
     <string name="usd_symbol">$&#160;</string>
     <string name="us_dollar">&#160; US$</string>
     <string name="space">&#160;</string>
@@ -194,5 +194,14 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="all">All</string>
-
+    <string name="wrong_security_key">Wrong order or seed phrase, please check it and try again</string>
+    <string name="reset_and_try_again">Reset and try again</string>
+    <string name="enter_a_seed_phrase_from_your_account">Enter a seed phrase from your account</string>
+    <string name="send_to_your_wallet">Send to your %1$s wallet</string>
+    <string name="all_deposits_are_stored_100_non_custodiallity_with_keys_held_on_this_device">All deposits are stored 100% non-custodiallity with keys held on this device</string>
+    <string name="deposit_to_your_sol_wallet">Deposit to your SOL wallet</string>
+    <string name="sol_acronym">SOL</string>
+    <string name="total_balance">Total balance</string>
+    <string name="all_tokens">All tokens</string>
+    <string name="all_my_tokens">All my tokens</string>
 </resources>

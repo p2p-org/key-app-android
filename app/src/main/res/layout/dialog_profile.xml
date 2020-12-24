@@ -134,10 +134,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_10"
+                android:tint="@color/gray_80"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/icArrowRightBackup"
                 app:layout_constraintTop_toTopOf="parent"
-                android:tint="@color/gray_80"
                 app:srcCompat="@drawable/ic_checkmark_backup" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

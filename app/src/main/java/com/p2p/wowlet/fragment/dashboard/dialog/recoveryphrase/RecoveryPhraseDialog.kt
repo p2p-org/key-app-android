@@ -12,11 +12,13 @@ import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogRecoveryPhraseBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
+import com.p2p.wowlet.utils.copyClipboard
 import kotlinx.android.synthetic.main.dialog_recovery_phrase.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RecoveryPhraseDialog : DialogFragment() {
     private val viewModel: RecoveryPhraseViewModel by viewModel()
+    private var phraseList = mutableListOf<String>()
 
     companion object {
 
@@ -47,12 +49,22 @@ class RecoveryPhraseDialog : DialogFragment() {
         vClose.setOnClickListener {
             dismiss()
         }
+        lContainer.setOnClickListener {
+            if (phraseList.isNotEmpty()) {
+                val phraseStr = phraseList.joinToString(separator = " ")
+                it.context.copyClipboard(phraseStr)
+            }
+        }
         observe()
     }
 
     private fun observe() {
         viewModel.dismissDialog.observe(viewLifecycleOwner, {
             dismiss()
+        })
+        viewModel.getSortSecretData.observe(viewLifecycleOwner, {
+            phraseList.clear()
+            phraseList.addAll(it)
         })
     }
 
@@ -62,7 +74,7 @@ class RecoveryPhraseDialog : DialogFragment() {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
     }
 }

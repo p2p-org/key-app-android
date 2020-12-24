@@ -22,6 +22,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.rpc.RpcClient
+import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction
 import org.p2p.solanaj.rpc.types.TransferInfo
@@ -124,19 +125,21 @@ class WowletApiCallRepositoryImpl(
         val transferInfoList = mutableListOf<TransferInfo>()
 
         for (signature in signatures) {
-            println("mint " + signature)
+            println("mint $signature")
             val transferInfo = getConfirmedTransaction(signature.signature, signature.slot.toLong())
             transferInfo?.let {
                 transferInfoList.add(transferInfo)
             }
         }
-        System.out.println("transferInfoList " + Arrays.toString(transferInfoList.toTypedArray()))
+        println("transferInfoList " + transferInfoList.toTypedArray().contentToString())
         return transferInfoList
     }
 
     override suspend fun getBlockTime(slot: Long): Long {
         return client.api.getBlockTime(slot)
     }
+
+    override suspend fun getFee(): Long = client.api.feeBlockhash
 
     override suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfo? {
         val trx = client.api.getConfirmedTransaction(signature)
@@ -145,6 +148,36 @@ class WowletApiCallRepositoryImpl(
         val instructions: List<ConfirmedTransaction.Instruction> = message.instructions
         for (instruction in instructions) {
             val number: Long = 2
+            if( message.accountKeys[instruction.programIdIndex.toInt()]=="11111111111111111111111111111111"){
+                val data = Base58.decode(instruction.data)
+                val lamports = readInt64(data, 4)
+
+                val transferInfo = TransferInfo(
+                    message.accountKeys[instruction.accounts[0].toInt()],
+                    message.accountKeys[instruction.accounts[1].toInt()],
+                    lamports
+                )
+                transferInfo.slot = slot
+                transferInfo.signature = signature
+                transferInfo.setFee(meta.fee)
+                println(transferInfo)
+                return transferInfo
+            }else if(message.accountKeys[instruction.programIdIndex.toInt()]=="TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"){
+                val data = Base58.decode(instruction.data)
+                val lamports = readInt64(data, 1)
+
+                val transferInfo = TransferInfo(
+                    message.accountKeys[instruction.accounts[0].toInt()],
+                    message.accountKeys[instruction.accounts[1].toInt()],
+                    lamports
+                )
+                transferInfo.slot = slot
+                transferInfo.signature = signature
+                transferInfo.setFee(meta.fee)
+                println(transferInfo)
+                return transferInfo
+            }
+/*
             if (instruction.programIdIndex == number) {
                 val data = Base58.decode(instruction.data)
                 val lamports = readInt64(data, 4)
@@ -159,9 +192,45 @@ class WowletApiCallRepositoryImpl(
                 transferInfo.setFee(meta.fee)
                 println(transferInfo)
                 return transferInfo
-            }
+            }else{
+                val data = Base58.decode(instruction.data)
+                val lamports = readInt64(data, 3)
+
+                val transferInfo = TransferInfo(
+                    message.accountKeys[instruction.accounts[0].toInt()],
+                    message.accountKeys[instruction.accounts[instruction.programIdIndex.toInt()].toInt()],
+                    lamports
+                )
+                transferInfo.slot = slot
+                transferInfo.signature = signature
+                transferInfo.setFee(meta.fee)
+                println(transferInfo)
+                return transferInfo
+            }*/
         }
         return null
+    }
+
+    @Throws(RpcException::class)
+    override suspend fun createAndInitializeTokenAccount(
+        payer: Account, mintAddress: PublicKey, newAccount: Account
+    ): String {
+        val space = (32 + 32 + 8 + 93).toLong() // mint account data length: 32 + 32 + 8 + 93
+        val newAccountPubKey = newAccount.publicKey
+        val payerPubKey = payer.publicKey
+        val minBalance = client.api.getMinimumBalanceForRentExemption(space)
+        val createAccount = SystemProgram.createAccount(
+            payerPubKey, newAccountPubKey, minBalance,
+            space, SystemProgram.SPL_TOKEN_PROGRAM_ID
+        )
+        val initializeAccount = SystemProgram.initializeAccountInstruction(
+            newAccountPubKey, mintAddress,
+            payerPubKey
+        )
+        val transaction = Transaction()
+        transaction.addInstruction(createAccount)
+        transaction.addInstruction(initializeAccount)
+        return client.api.sendTransaction(transaction, listOf(payer, newAccount))
     }
 
     override fun generatePhrase(): List<String> {

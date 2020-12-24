@@ -1,11 +1,7 @@
 package com.p2p.wowlet.fragment.dashboard.dialog.addcoin.adapter
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
@@ -36,9 +32,6 @@ class AddCoinAdapter(
         holder.itemAddCoinBinding.viewModel = dashboardViewModel
         holder.itemAddCoinBinding.btCopyMint.setOnClickListener {
             it.context.copyClipboard(list[position].mintAddress)
-        }
-        holder.itemAddCoinBinding.btAddCoin.setOnClickListener {
-
         }
     }
 

@@ -9,9 +9,9 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentSecretKeyBinding
-import com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter.RandomKeyAdapter
-import com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter.SortKeyAdapter
+import com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter.SecretPhraseAdapter
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
+import com.wowlet.entities.local.Keyword
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKeyBinding>() {
@@ -24,28 +24,26 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
             viewModel = this@SecretKeyFragment.viewModel
         }
 
+        binding.rvSecretPhrase.adapter = SecretPhraseAdapter(requireContext(), viewModel.phrase)
+        binding.phraseET.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.rvSecretPhrase.apply {
+                    (adapter as SecretPhraseAdapter).addItem(Keyword(""))
+                    v.visibility = View.GONE
+                    visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     override fun observes() {
         observe(viewModel.isCurrentCombination) {
             viewModel.goToPinCodeFragment()
         }
-        observe(viewModel.invadedPhrase) {errorMessage->
+        observe(viewModel.invadedPhrase) { errorMessage ->
             context?.let {
                 Toast.makeText(it, errorMessage, Toast.LENGTH_SHORT).show()
             }
-
-        }
-    }
-
-    override fun initView() {
-        with(binding) {
-            /*  sortAdapter = SortKeyAdapter(this@SecretKeyFragment.viewModel, mutableListOf())
-              rvSortSecretKey.adapter = sortAdapter
-              rvSortSecretKey.layoutManager = GridLayoutManager(context, 3)*/
-            /* randomAdapter = RandomKeyAdapter(this@SecretKeyFragment.viewModel, listOf())
-             rvRandomSecretKey.adapter=randomAdapter
-             rvRandomSecretKey.layoutManager = GridLayoutManager(context, 3)*/
         }
     }
 
@@ -53,12 +51,8 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
         when (command) {
             is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
             is Command.NavigateCompleteBackupViewCommand -> navigateFragment(command.destinationId)
-            is Command.NavigatePinCodeViewCommand -> {
-
-                navigateFragment(
-                    command.destinationId,
-                    command.bundle
-                )
+            is Command.NavigateManualSecretKeyViewCommand -> {
+                navigateFragment(command.destinationId, command.bundle)
             }
         }
     }

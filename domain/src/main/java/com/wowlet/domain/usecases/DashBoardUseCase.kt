@@ -1,18 +1,23 @@
 package com.wowlet.domain.usecases
 
+import com.github.mikephil.charting.data.PieEntry
 import com.wowlet.data.datastore.DashboardRepository
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.domain.extentions.fromConstWalletToAddCoinItem
+import com.wowlet.domain.extentions.transferInfoToActivityItem
 import com.wowlet.domain.extentions.walletItemToQrCode
 import com.wowlet.domain.extentions.walletToWallet
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.entities.CallException
+import com.wowlet.entities.Constants
 import com.wowlet.entities.Constants.Companion.ERROR_NULL_DATA
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.*
 import kotlinx.coroutines.*
-import kotlin.math.pow
+import org.bitcoinj.core.Base58
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
 
 
 class DashBoardUseCase(
@@ -21,6 +26,7 @@ class DashBoardUseCase(
     private val preferenceService: PreferenceService
 ) : DashboardInteractor {
     private var walletData: MutableList<WalletItem> = mutableListOf()
+    private var pirChatList: MutableList<PieEntry> = mutableListOf()
     private var yourWalletBalance: Double = 0.0
     private var addCoinData: MutableList<AddCoinItem> = mutableListOf()
     private var minBalance: Long = 0
@@ -50,26 +56,46 @@ class DashBoardUseCase(
             yourWalletBalance += item.price
         }
         walletData.removeAll { it.amount == 0.0 }
-
-        return YourWallets(walletData, yourWalletBalance)
+        val mainWalletData = if (walletData.size > 4)
+            walletData.take(4)
+        else
+            walletData
+        walletData.forEach {
+            if (it.price.toFloat() != 0.0f)
+                pirChatList.add(PieEntry(it.price.toFloat()))
+        }
+        return YourWallets(walletData, yourWalletBalance, mainWalletData,pirChatList)
     }
 
-    override suspend fun getWallets(): YourWallets {
+    override suspend fun getWallets(): Result<YourWallets> {
         val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
 
         walletData.clear()
         yourWalletBalance = 0.0
-        val balance = wowletApiCallRepository.getBalance(publicKey)
-        val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
-            add(0, BalanceInfo(publicKey, balance, "SOLMINT", publicKey, 9))
-        }
-        getConcatWalletItem(walletsList)
-        walletData.removeAll { it.depositAddress.isEmpty() }
-        walletData.forEach {
-            yourWalletBalance += it.price
+        try {
+            val balance = wowletApiCallRepository.getBalance(publicKey)
+            val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
+                add(0, BalanceInfo(publicKey, balance, "SOLMINT", publicKey, 9))
+            }
+            getConcatWalletItem(walletsList)
+            walletData.removeAll { it.depositAddress.isEmpty() }
+            walletData.forEach {
+                yourWalletBalance += it.price
+            }
+            val mainWalletData = if (walletData.size > 4)
+                walletData.take(4)
+            else
+                walletData
+
+            walletData.forEach {
+                if (it.price.toFloat() != 0.0f)
+                    pirChatList.add(PieEntry(it.price.toFloat()))
+            }
+            return Result.Success(YourWallets(walletData, yourWalletBalance, mainWalletData,pirChatList))
+        } catch (e: Exception) {
+            return Result.Error(CallException(Constants.ERROR_TIME_OUT, e.message))
         }
 
-        return YourWallets(walletData, yourWalletBalance)
     }
 
     override suspend fun getAddCoinList(): AddCoinModel {
@@ -142,6 +168,33 @@ class DashBoardUseCase(
             preferenceService.finishLoginReg(false)
             preferenceService.enableFingerPrint(EnableFingerPrintModel(false, false))
             preferenceService.enableNotification(EnableNotificationModel(false, false))
+        }
+    }
+
+    override suspend fun addCoin(addCoinItem: AddCoinItem): Result<Boolean> {
+        val currentPhrase = preferenceService.getActiveWallet()?.secretKey
+        val payer = Account(Base58.decode(currentPhrase))
+        val mintAddress = PublicKey(addCoinItem.mintAddress)
+        val newAccount = Account()
+        val activeWallet = preferenceService.getActiveWallet()
+        val fromPublicKey = activeWallet?.publicKey!!
+        try {
+            val signature = wowletApiCallRepository.createAndInitializeTokenAccount(
+                payer,
+                mintAddress,
+                newAccount
+            )
+            repeat(1000) {
+                delay(120_000)
+                val transaction = wowletApiCallRepository.getConfirmedTransaction(
+                    signature,
+                    0
+                )?.transferInfoToActivityItem(fromPublicKey, "", "")
+                return Result.Success(true)
+            }
+            return Result.Error(CallException(Constants.REQUEST_EXACTION, ""))
+        } catch (e: java.lang.Exception) {
+            return Result.Error(CallException(Constants.REQUEST_EXACTION, e.message))
         }
     }
 

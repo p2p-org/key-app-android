@@ -1,6 +1,5 @@
 package com.p2p.wowlet.fragment.qrscanner.viewmodel
 
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +11,6 @@ import com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment.Companion.WALLET
 import com.wowlet.domain.interactors.QrScannerInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.QrWalletType
-import com.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

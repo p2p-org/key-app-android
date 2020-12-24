@@ -1,4 +1,4 @@
-package com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter
+package com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,14 +6,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemSecretKeyBinding
-import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
+import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
 import com.wowlet.entities.local.SecretKeyItem
 
-class SortKeyAdapter(
-    private val viewModel: SecretKeyViewModel,
-    private var list: List<SecretKeyItem>
-) :
-    RecyclerView.Adapter<SortKeyAdapter.MyViewHolder>() {
+class RandomKeyAdapter(
+    private val viewModel: ManualSecretKeyViewModel,
+    private var list: MutableList<SecretKeyItem>
+) : RecyclerView.Adapter<RandomKeyAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
@@ -36,9 +35,17 @@ class SortKeyAdapter(
         return list.size
     }
 
-    fun updateData(data: List<SecretKeyItem>) {
-        list = data
+    fun updateData(secretKeyList: MutableList<SecretKeyItem>) {
+        list.addAll(secretKeyList)
         notifyDataSetChanged()
+    }
+
+    fun hideItem(it: SecretKeyItem) {
+        val itemPos = list.indexOf(it)
+        if (itemPos > -1) {
+            list.remove(it)
+            notifyDataSetChanged()
+        }
     }
 
     inner class MyViewHolder(

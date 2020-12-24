@@ -13,14 +13,12 @@ import kotlinx.coroutines.launch
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils.readInt64
 import org.koin.android.ext.android.inject
-import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.*
+import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.rpc.Cluster
 import org.p2p.solanaj.rpc.RpcClient
+import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.rpc.types.AccountInfo
-import org.p2p.solanaj.utils.TweetNaclFast
-import org.p2p.solanaj.utils.TweetNaclFast.Signature.seedLength
-import org.p2p.solanaj.utils.TweetNaclFast.crypto_sign_keypair
 import java.util.*
 
 
@@ -44,23 +42,31 @@ class MainActivityTest : AppCompatActivity() {
 
     private val passphrase = ""
     private val TAG = MainActivityTest::class.java.simpleName
+    val SPL_TOKEN_PROGRAM_ID = PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    val SYSVAR_RENT_ADDRESS = PublicKey("SysvarRent111111111111111111111111111111111")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maintest)
-
-
-        val account = Account.fromMnemonic(words,"")
-
+        val account = Account.fromMnemonic(words, "")
         val secretKey: String = Base58.encode(account.secretKey)
         Log.i(TAG, "onCreate: publicKey " + account.publicKey.toBase58())
         Log.i(TAG, "onCreate: secretKey " + secretKey)
 
-        val compiled = byteArrayOf(2, 2, 0, 1, 12, 2, 0, 0, 0, -72, 11, 0, 0, 0, 0, 0, 0)
-        val t = Transfer()
-
         submitBalance.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
+                val client = RpcClient(Cluster.MAINNET)
 
+                val payer = Account(
+                    Base58
+                        .decode("MdfH9tqq9mkBZ1YmjgmT5tGN9BMEUNgGAXefYNfW2LsNRWUzs7GrhYVvdKwhGL1gXCUT9EjuyaH4VATozcx6jHr")
+                )
+                val mintAddress = PublicKey("CWE8jPTUYhdCTZYWPTe1o5DFqfdjzWKc9WKz6rSjQUdG")
+                val newAccount = Account()
+
+                val signature: String =
+                    createAndInitializeTokenAccount(client, payer, mintAddress, newAccount)
+
+                print(signature)
             }
         }
         submitAirdrop.setOnClickListener {
@@ -176,14 +182,40 @@ class MainActivityTest : AppCompatActivity() {
         }
     }
 
-    fun keyPair_fromSeed(seed: ByteArray): TweetNaclFast.Signature.KeyPair? {
-        val kp = TweetNaclFast.Signature.KeyPair()
-        val pk: ByteArray = kp.getPublicKey()
-        val sk: ByteArray = kp.getSecretKey()
-        // copy sk
-        for (i in 0 until seedLength) sk[i] = seed[i]
-        // generate pk from sk
-        crypto_sign_keypair(pk, sk, true)
-        return kp
+
+    fun initializeAccountInstruction(
+        account: PublicKey?, mint: PublicKey?,
+        owner: PublicKey?
+    ): TransactionInstruction {
+        val keys = ArrayList<AccountMeta>()
+        keys.add(AccountMeta(account, false, true))
+        keys.add(AccountMeta(mint, false, false))
+        keys.add(AccountMeta(owner, false, false))
+        keys.add(AccountMeta(SYSVAR_RENT_ADDRESS, false, false))
+        val data = byteArrayOf(1)
+        return TransactionInstruction(SPL_TOKEN_PROGRAM_ID, keys, data)
+    }
+
+    @Throws(RpcException::class)
+    fun createAndInitializeTokenAccount(
+        client: RpcClient, payer: Account, mintAddress: PublicKey?,
+        newAccount: Account
+    ): String {
+        val space = (32 + 32 + 8 + 93).toLong() // mint account data length: 32 + 32 + 8 + 93
+        val newAccountPubKey = newAccount.publicKey
+        val payerPubKey = payer.publicKey
+        val minBalance = client.api.getMinimumBalanceForRentExemption(space)
+        val createAccount = SystemProgram.createAccount(
+            payerPubKey, newAccountPubKey, minBalance,
+            space, SPL_TOKEN_PROGRAM_ID
+        )
+        val initializeAccount = initializeAccountInstruction(
+            newAccountPubKey, mintAddress,
+            payerPubKey
+        )
+        val transaction = Transaction()
+        transaction.addInstruction(createAccount)
+        transaction.addInstruction(initializeAccount)
+        return client.api.sendTransaction(transaction, Arrays.asList(payer, newAccount))
     }
 }

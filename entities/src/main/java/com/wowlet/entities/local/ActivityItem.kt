@@ -8,7 +8,7 @@ data class ActivityItem(
     val lamports: Double,
     val slot: Long,
     val signature: String,
-    val fee: Double,
+    val fee: Long,
     val from: String,
     val to: String,
     val tokenName: String,

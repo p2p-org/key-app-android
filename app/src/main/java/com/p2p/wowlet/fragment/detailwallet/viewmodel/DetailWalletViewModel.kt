@@ -10,10 +10,10 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
 import com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment
-import com.p2p.wowlet.utils.getActivityDate
 import com.wowlet.domain.interactors.DetailActivityInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
+import com.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,8 +42,8 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
     val getActivityData: LiveData<List<ActivityItem>> get() = _getActivityData
     private val _getChartData by lazy { MutableLiveData<List<Entry>>() }
     val getChartData: LiveData<List<Entry>> get() = _getChartData
-    private val _getChartDataError by lazy { MutableLiveData<String>() }
-    val getChartDataError: LiveData<String> get() = _getChartDataError
+    private val _getActivityDataError by lazy { MutableLiveData<String>() }
+    val getActivityDataError: LiveData<String> get() = _getActivityDataError
     private val _blockTime by lazy { MutableLiveData<String>() }
     val blockTime: LiveData<String> get() = _blockTime
     private val _blockTimeError by lazy { MutableLiveData<String>() }
@@ -54,12 +54,19 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
     fun getActivityList(publicKey: String, icon: String, tokenName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val detailList = detailActivityInteractor.getActivityList(publicKey, icon, tokenName)
-            withContext(Dispatchers.Main) {
-                activityItemList.clear()
-                detailList.forEach {
-                    getBlockTime(it)
+            when(detailList){
+                is Result.Success->  withContext(Dispatchers.Main) {
+                    activityItemList.clear()
+                /*    detailList.data?.forEach {
+                        getBlockTime(it)
+                    }*/
+                    _getActivityData.value = detailList.data
+                }
+                is Result.Error->{
+                    _getActivityDataError.value = detailList.errors.errorMessage
                 }
             }
+
         }
     }
 
@@ -68,9 +75,9 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
             Command.NavigateUpViewCommand(R.id.action_navigation_receive_to_navigation_dashboard)
     }
 
-    fun goToQrScanner() {
-        _command.value =
-            Command.NavigateScannerViewCommand(R.id.action_navigation_detail_wallet_to_navigation_scanner)
+    fun goToQrScanner(walletItem: WalletItem) {
+        val enterWallet = detailActivityInteractor.generateQRrCode(walletItem)
+        _command.value = Command.YourWalletDialogViewCommand(enterWallet)
     }
 
     fun goToSendCoin(walletAddress: String) {
@@ -105,21 +112,6 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
         }
     }
 
-    private fun getBlockTime(activityItem: ActivityItem) {
-        viewModelScope.launch(Dispatchers.IO) {
-            when (val data = detailActivityInteractor.blockTime(activityItem.slot)) {
-                is Result.Success -> withContext(Dispatchers.Main) {
-                    activityItem.date = data.data?.getActivityDate() ?: ""
-                    activityItemList.add(activityItem)
-                    _getActivityData.value = activityItemList
-                }
-                is Result.Error -> withContext(Dispatchers.Main) {
-                    _blockTimeError.value = data.errors.errorMessage
-                }
-            }
-        }
-    }
-
     fun getChartDataByDate(symbol: String, startTime: Long, endTime: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val data =
@@ -128,7 +120,7 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
                     _getChartData.value = data.data
                 }
                 is Result.Error -> withContext(Dispatchers.Main) {
-                    _getChartDataError.value = data.errors.errorMessage
+                    _getActivityDataError.value = data.errors.errorMessage
                 }
             }
         }
@@ -141,7 +133,7 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
                     _getChartData.value = data.data
                 }
                 is Result.Error -> withContext(Dispatchers.Main) {
-                    _getChartDataError.value = data.errors.errorMessage
+                    _getActivityDataError.value = data.errors.errorMessage
                 }
             }
         }

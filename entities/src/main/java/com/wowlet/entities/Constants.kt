@@ -8,5 +8,6 @@ class Constants {
         const val PREFERENCE_SAVED_ERROR = 1002
         const val VERIFY_PIN_CODE_ERROR = 1003
         const val ERROR_INCORRECT_PHRASE= 1004
+        const val ERROR_TIME_OUT= 1005
     }
 }

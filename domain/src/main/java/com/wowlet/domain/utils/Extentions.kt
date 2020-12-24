@@ -16,3 +16,9 @@ fun Long.secondToDate(): String? {
         null
     }
 }
+
+fun String.getActivityDate(): String {
+    val parser = SimpleDateFormat("dd-MMM-yyyy '@' HH:mm a")
+    val formatter = SimpleDateFormat("dd MMM yyyy")
+    return formatter.format(parser.parse(this))
+}

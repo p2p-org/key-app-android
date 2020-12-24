@@ -8,11 +8,11 @@ import com.wowlet.entities.local.RecoveryPhraseItem
 
 @BindingAdapter("adapter_list", "view_model")
 fun RecyclerView.setAdapterList(
-    data: List<RecoveryPhraseItem>?,
+    data: List<String>?,
     viewModel: RecoveryPhraseViewModel
 ) {
     data?.let {
         adapter = RecoveryPhraseAdapter(viewModel, it)
     }
-   this.layoutManager = GridLayoutManager(this.context,2)
+    this.layoutManager = GridLayoutManager(this.context, 2)
 }

@@ -1,4 +1,4 @@
-package com.p2p.wowlet.fragment.dashboard.dialog
+package com.p2p.wowlet.fragment.dashboard.dialog.profile
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,17 +11,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogProfileBinding
-import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
-import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import kotlinx.android.synthetic.main.dialog_profile.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ProfileDialog(private val openProfileDetail: () -> Unit) : DialogFragment() {
+class ProfileDialog(
+    private val openProfileDetail: () -> Unit,
+    private val openBackup: () -> Unit
+) : DialogFragment() {
     companion object {
 
         const val TAG_PROFILE_DIALOG = "ProfileDialog"
-        fun newInstance(openProfileDetail: () -> Unit): ProfileDialog {
-            return ProfileDialog(openProfileDetail)
+        fun newInstance(openProfileDetail: () -> Unit, openBackup: () -> Unit): ProfileDialog {
+            return ProfileDialog(openProfileDetail, openBackup)
         }
 
     }
@@ -43,17 +43,21 @@ class ProfileDialog(private val openProfileDetail: () -> Unit) : DialogFragment(
         vDone.setOnClickListener {
             dismiss()
         }
-        lUserInfoContainer.setOnClickListener{
+        lUserInfoContainer.setOnClickListener {
             openProfileDetail.invoke()
         }
+        lBackupContainer.setOnClickListener {
+            openBackup.invoke()
+        }
     }
+
     override fun onResume() {
         super.onResume()
         dialog?.run {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
     }
 

@@ -6,16 +6,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogAddCoinBottomSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.adapter.AddCoinAdapter
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import kotlinx.android.synthetic.main.dialog_add_coin_bottom_sheet.*
-import org.bouncycastle.util.Strings
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AddCoinBottomSheet : BottomSheetDialogFragment() {
@@ -48,17 +47,24 @@ class AddCoinBottomSheet : BottomSheetDialogFragment() {
             dismiss()
         }
         dashboardViewModel.getAddCoinList()
-        dashboardViewModel.getAddCoinData.observe(viewLifecycleOwner, Observer {
+        dashboardViewModel.getAddCoinData.observe(viewLifecycleOwner, {
             vRvAddCoin.apply {
                 adapter = AddCoinAdapter(it, dashboardViewModel)
                 this.layoutManager = LinearLayoutManager(this.context)
             }
 
         })
-        dashboardViewModel.getMinimumBalanceData.observe(viewLifecycleOwner, Observer {
+        dashboardViewModel.getMinimumBalanceData.observe(viewLifecycleOwner, {
             info.text = String.format(getString(R.string.add_coin_token_info), it)
         })
 
+        dashboardViewModel.coinIsSuccessfullyAdded.observe(viewLifecycleOwner, {
+            dismiss()
+        })
+
+        dashboardViewModel.coinNoAddedError.observe(viewLifecycleOwner, {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        })
     }
 
     override fun onResume() {

@@ -47,4 +47,6 @@ dependencies {
     implementation supportDependencies.legacySupport
     //moshi converter
     implementation supportDependencies.moshiConverter
+    // MPAndroidChart
+    implementation supportDependencies.mpChart
 }

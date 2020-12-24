@@ -46,9 +46,7 @@ class EnterWalletBottomSheet(val list: List<EnterWallet>) : BottomSheetDialogFra
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.dismissDialog.setOnClickListener {
-            dismiss()
-        }
+
         binding.viewModel = dashboardViewModel
         adapter = EnterWalletPagerAdapter(list)
         binding.viewPager.adapter = adapter
@@ -68,7 +66,6 @@ class EnterWalletBottomSheet(val list: List<EnterWallet>) : BottomSheetDialogFra
         super.onResume()
         dialog?.run {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable = false
         }
     }
 }

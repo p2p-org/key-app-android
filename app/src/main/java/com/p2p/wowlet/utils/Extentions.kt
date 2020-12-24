@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -18,13 +19,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.MarkerView
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.utils.ColorTemplate
 import com.p2p.wowlet.R
-import java.text.SimpleDateFormat
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.Executor
 
@@ -64,6 +66,39 @@ fun LineChart.initChart(chartList: List<Entry>) {
         data = LineData(lineDataSet)
         invalidate()
         animateX(500);
+    }
+}
+
+fun PieChart.drawChart(pieList: List<PieEntry>) {
+    val dataSet = PieDataSet(pieList, "Election Results")
+    dataSet.sliceSpace = 6f
+    dataSet.selectionShift = 15f
+
+    val colors = ArrayList<Int>()
+    for (c in ColorTemplate.VORDIPLOM_COLORS) colors.add(c)
+    for (c in ColorTemplate.JOYFUL_COLORS) colors.add(c)
+    for (c in ColorTemplate.COLORFUL_COLORS) colors.add(c)
+    for (c in ColorTemplate.LIBERTY_COLORS) colors.add(c)
+    for (c in ColorTemplate.PASTEL_COLORS) colors.add(c)
+    colors.add(ColorTemplate.getHoloBlue())
+    dataSet.colors = colors
+
+    val data = PieData(dataSet)
+    data.setDrawValues(false)
+
+    apply {
+        setUsePercentValues(false)
+        setTouchEnabled(false)
+        description.isEnabled = false
+        isDrawHoleEnabled = true
+        setHoleColor(Color.WHITE)
+        holeRadius = 68f
+        setDrawCenterText(false)
+        animateY(500)
+        legend.isEnabled = false
+        setDrawEntryLabels(false)
+        this.data = data
+        invalidate()
     }
 }
 
@@ -173,12 +208,6 @@ fun <T : ViewDataBinding> ViewGroup.inflate(layoutId: Int): T {
     )
 }
 
-fun String.getActivityDate(): String {
-    val parser = SimpleDateFormat("dd-MMM-yyyy '@' HH:mm a")
-    val formatter = SimpleDateFormat("dd MMM yyyy")
-    return formatter.format(parser.parse(this))
-}
-
 fun getYesterday(): Long {
     val cal = Calendar.getInstance()
     cal.add(Calendar.DATE, -1)
@@ -202,6 +231,11 @@ fun getYear(): Long {
     cal.add(Calendar.YEAR, -1)
     return cal.timeInMillis
 }
+
+fun Double.roundCurrencyValue(): Double {
+    return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+}
+
 
 
 

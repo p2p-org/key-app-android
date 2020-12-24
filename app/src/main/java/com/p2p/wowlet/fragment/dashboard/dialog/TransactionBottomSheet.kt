@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
@@ -16,6 +17,7 @@ import com.p2p.wowlet.utils.copyClipboard
 import com.wowlet.entities.local.ActivityItem
 import kotlinx.android.synthetic.main.dialog_tansaction.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.math.pow
 
 
 class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(destinationId:Int,bundle: Bundle?)->Unit) : BottomSheetDialogFragment() {
@@ -55,6 +57,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
         copyTransaction.setOnClickListener {
             context?.copyClipboard(dataInfo.signature)
         }
+
         blockChainExplorer.setOnClickListener {
             viewModel.goToBlockChainExplorer("https://explorer.solana.com/tx/"+dataInfo.signature)
         }
@@ -67,6 +70,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
         viewModel.blockTimeError.observe(viewLifecycleOwner,{
             binding.yourTransactionDate.text=it
         })
+
         viewModel._command.observe(viewLifecycleOwner,{
            when(it){
                is Command.NavigateBlockChainViewCommand-> {

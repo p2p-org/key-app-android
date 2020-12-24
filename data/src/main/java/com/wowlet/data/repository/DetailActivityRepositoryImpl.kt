@@ -1,5 +1,6 @@
 package com.wowlet.data.repository
 
+import android.graphics.Bitmap
 import com.wowlet.data.dataservice.RetrofitService
 import com.wowlet.data.datastore.DetailActivityRepository
 import com.wowlet.data.util.analyzeResponseObject
@@ -7,6 +8,7 @@ import com.wowlet.data.util.makeApiCall
 import com.wowlet.entities.Result
 import com.wowlet.entities.responce.HistoricalPrices
 import com.wowlet.entities.responce.ResponceDataBonfida
+import net.glxn.qrgen.android.QRCode
 import retrofit2.Response
 
 
@@ -24,6 +26,8 @@ class DetailActivityRepositoryImpl(val allApiService: RetrofitService) : DetailA
             )
         })
 
+
+
     override suspend fun getAllHistoricalPrices(symbols: String): Result<List<HistoricalPrices>> =
         makeApiCall({
             getHistoricalPricesData(
@@ -33,6 +37,8 @@ class DetailActivityRepositoryImpl(val allApiService: RetrofitService) : DetailA
                 )
             )
         })
+
+    override fun getQrCode(publicKey: String): Bitmap = QRCode.from(publicKey).bitmap()
 
     private fun getHistoricalPricesData(response: Response<ResponceDataBonfida<List<HistoricalPrices>>>): Result<List<HistoricalPrices>> =
         analyzeResponseObject(response)

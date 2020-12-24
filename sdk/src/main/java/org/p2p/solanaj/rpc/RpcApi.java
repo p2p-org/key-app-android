@@ -28,10 +28,16 @@ public class RpcApi {
     public String getRecentBlockhash() throws RpcException {
         return client.call("getRecentBlockhash", null, RecentBlockhash.class).getRecentBlockhash();
     }
+
+    public long getFeeBlockhash() throws RpcException {
+        return client.call("getRecentBlockhash", null, RecentBlockhash.class).getFeeBlockhash().getLamportsPerSignature();
+    }
+
     public String sendTransaction(Transaction transaction, Account signer) throws RpcException {
         return sendTransaction(transaction, Arrays.asList(signer));
     }
-    public String sendTransaction(Transaction transaction,List<Account> signers) throws RpcException {
+
+    public String sendTransaction(Transaction transaction, List<Account> signers) throws RpcException {
         String recentBlockhash = getRecentBlockhash();
         transaction.setRecentBlockHash(recentBlockhash);
         transaction.sign(signers);
@@ -45,12 +51,13 @@ public class RpcApi {
         params.add(new RpcSendTransactionConfig());
 
         return client.call("sendTransaction", params, String.class);
-
     }
 
     public long getBalance(PublicKey account) throws RpcException {
         List<Object> params = new ArrayList<Object>();
+
         params.add(account.toString());
+
         return client.call("getBalance", params, ValueLong.class).getValue();
     }
 
@@ -65,7 +72,7 @@ public class RpcApi {
         return client.call("getConfirmedTransaction", params, ConfirmedTransaction.class);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public List<SignatureInformation> getConfirmedSignaturesForAddress2(PublicKey account, int limit)
             throws RpcException {
         List<Object> params = new ArrayList<Object>();
@@ -83,7 +90,7 @@ public class RpcApi {
         return result;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public List<ProgramAccount> getProgramAccounts(PublicKey account, long offset, String bytes) throws RpcException {
         List<Object> params = new ArrayList<Object>();
 
@@ -113,9 +120,12 @@ public class RpcApi {
 
         return client.call("getAccountInfo", params, AccountInfo.class);
     }
+
     public long getMinimumBalanceForRentExemption(long dataLength) throws RpcException {
         List<Object> params = new ArrayList<Object>();
+
         params.add(dataLength);
+
         return client.call("getMinimumBalanceForRentExemption", params, Long.class);
     }
 
@@ -135,4 +145,5 @@ public class RpcApi {
 
         return client.call("requestAirdrop", params, String.class);
     }
+
 }

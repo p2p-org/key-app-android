@@ -7,22 +7,24 @@ public class TransferInfo {
     long lamports;
     long slot;
     String signature;
+    public long fee;
 
-    public double getFee() {
-        return fee;
-    }
 
-    public void setFee(double fee) {
-        this.fee = fee;
-    }
-
-    public double fee;
 
     public TransferInfo(String from, String to, long lamports) {
         this.from = from;
         this.to = to;
         this.lamports = lamports;
     }
+
+    public long getFee() {
+        return fee;
+    }
+
+    public void setFee(long fee) {
+        this.fee = fee;
+    }
+
 
     public long getSlot() {
         return slot;

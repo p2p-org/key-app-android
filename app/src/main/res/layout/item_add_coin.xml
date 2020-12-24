@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginEnd="@dimen/dp_10"
-                    android:text="@{String.format(@string/usd_symbol, itemAddCoin.change24hPrice)}"
+                    android:text="@{String.format(@string/usd_symbol_2, itemAddCoin.change24hPrice)}"
                     tools:text="$0.887832" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -108,6 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_21"
+                android:onClick="@{()->viewModel.addCoin(itemAddCoin)}"
                 android:layout_marginEnd="@dimen/dp_20"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

@@ -1,6 +1,7 @@
 package com.p2p.wowlet.di
 
 import com.p2p.wowlet.fragment.backupwallat.completebackupwallet.viewmodel.CompleteBackupWalletViewModel
+import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
 import com.p2p.wowlet.fragment.backupwallat.recoverywallat.viewmodel.RecoveryWalletViewModel
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wowlet.fragment.blockchainexplorer.viewmodel.BlockChainExplorerViewModel
@@ -43,11 +44,12 @@ val viewModule = module {
     viewModel { QrScannerViewModel(get()) }
     viewModel { DetailWalletViewModel(get()) }
     viewModel { DetailSavingViewModel() }
-    viewModel { RecoveryPhraseViewModel() }
+    viewModel { RecoveryPhraseViewModel(get()) }
     viewModel { SendCoinsViewModel(get(), get()) }
     viewModel { SwapViewModel() }
     viewModel { CreateWalletViewModel(get()) }
     viewModel { TermAndConditionViewModel() }
-    viewModel { PinCodeViewModel(get(),get(),get()) }
+    viewModel { PinCodeViewModel(get(), get(), get()) }
     viewModel { BlockChainExplorerViewModel() }
+    viewModel { ManualSecretKeyViewModel(get()) }
 }

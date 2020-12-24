@@ -40,6 +40,7 @@ public class Message {
     private String recentBlockhash;
     private AccountKeysList accountKeys;
     private List<TransactionInstruction> instructions;
+    private Account feePayer;
 
     public Message() {
         this.accountKeys = new AccountKeysList();
@@ -70,7 +71,7 @@ public class Message {
 
         messageHeader = new MessageHeader();
 
-        List<AccountMeta> keysList = accountKeys.getList();
+        List<AccountMeta> keysList = getAccountKeys();
         int accountKeysSize = keysList.size();
 
         byte[] accountAddressesLength = ShortvecEncoding.encodeLength(accountKeysSize);
@@ -107,7 +108,7 @@ public class Message {
         ByteBuffer out = ByteBuffer.allocate(bufferSize);
 
         ByteBuffer accountKeysBuff = ByteBuffer.allocate(accountKeysSize * PublicKey.PUBLIC_KEY_LENGTH);
-        for (AccountMeta accountMeta : accountKeys.getList()) {
+        for (AccountMeta accountMeta : keysList) {
             accountKeysBuff.put(accountMeta.getPublicKey().toByteArray());
 
             if (accountMeta.isSigner()) {
@@ -141,6 +142,22 @@ public class Message {
         return out.array();
     }
 
+    protected void setFeePayer(Account feePayer) {
+        this.feePayer = feePayer;
+    }
+
+    private List<AccountMeta> getAccountKeys() {
+        List<AccountMeta> keysList = accountKeys.getList();
+        int feePayerIndex = findAccountIndex(keysList, feePayer.getPublicKey());
+
+        List<AccountMeta> newList = new ArrayList<AccountMeta>();
+        newList.add(keysList.get(feePayerIndex));
+        keysList.remove(feePayerIndex);
+        newList.addAll(keysList);
+
+        return newList;
+    }
+
     private int findAccountIndex(List<AccountMeta> accountMetaList, PublicKey key) {
         for (int i = 0; i < accountMetaList.size(); i++) {
             if (accountMetaList.get(i).getPublicKey().equals(key)) {
@@ -148,7 +165,6 @@ public class Message {
             }
         }
 
-        // TODO throw an error
-        return -1;
+        throw new RuntimeException("unable to find account index");
     }
 }

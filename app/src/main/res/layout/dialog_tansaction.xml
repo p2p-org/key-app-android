@@ -180,13 +180,14 @@
                     android:text="@string/fee" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/fee"
                     style="@style/Black.15.Bold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_5"
-                    android:text="@{String.format(@string/btc,model.fee)}"
-                    tools:text="0,00009492 BTC" />
+                    android:text="@{String.valueOf(model.fee).concat(@string/space).concat(@string/sol_acronym)}"
+                    tools:text="0,00009492 SOL" />
 
                 <View
                     android:layout_width="match_parent"

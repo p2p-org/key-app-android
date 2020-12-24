@@ -3,6 +3,7 @@ package com.p2p.wowlet.fragment.dashboard.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.activity.RegistrationActivity
@@ -12,12 +13,14 @@ import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentDashboardBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.ProfileDetailsDialog
-import com.p2p.wowlet.fragment.dashboard.dialog.ProfileDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.profile.ProfileDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet.Companion.ENTER_WALLET
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet.Companion.TAG_ADD_COIN
+import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.RecoveryPhraseDialog
+import com.p2p.wowlet.utils.drawChart
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboardBinding>() {
@@ -76,14 +79,31 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     ProfileDetailsDialog.TAG_PROFILE_DETAILS_DIALOG
                 )
             }
+            is OpenBackupDialogViewCommand -> {
+                RecoveryPhraseDialog.newInstance()
+                    .show(childFragmentManager, RecoveryPhraseDialog.TAG_RECOVERY_DIALOG)
+            }
             is OpenProfileDialogViewCommand -> {
-                ProfileDialog.newInstance {
+                ProfileDialog.newInstance({
                     viewModel.goToProfileDetailDialog()
+                }) {
+                    viewModel.goToBackupDialog()
                 }.show(
                     childFragmentManager,
                     ProfileDialog.TAG_PROFILE_DIALOG
                 )
             }
+        }
+    }
+
+    override fun observes() {
+        observe(viewModel.getWalletDataError) {
+            context?.run {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            }
+        }
+        observe(viewModel.getWalletChart) {
+            binding.vPieChartData.drawChart(it)
         }
     }
 

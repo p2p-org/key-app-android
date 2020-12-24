@@ -81,10 +81,29 @@
             android:id="@+id/action_navigation_secret_key_to_navigation_recovery_wallet"
             app:destination="@id/navigation_recovery_wallet" />
         <action
+            android:id="@+id/action_navigation_secret_key_to_navigation_manual_secret_key"
+            app:destination="@id/navigation_manual_secret_key" />
+        <action
             android:id="@+id/action_navigation_secret_key_to_navigation_pin_code"
             app:destination="@id/navigation_pin_code" />
 
     </fragment>
+    <fragment
+        android:id="@+id/navigation_manual_secret_key"
+        android:name="com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.view.ManualSecretKeysFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_registration"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_manual_secret_keys">
+        <action
+            android:id="@+id/action_navigation_manual_secret_key_to_navigation_secret_key"
+            app:destination="@id/navigation_secret_key" />
+
+        <action
+            android:id="@+id/action_navigation_manual_secret_key_to_navigation_pin_code"
+            app:destination="@id/navigation_pin_code" />
+    </fragment>
+
     <fragment
         android:id="@+id/navigation_reg_finish"
         android:name="com.p2p.wowlet.fragment.regfinish.view.RegFinishFragment"

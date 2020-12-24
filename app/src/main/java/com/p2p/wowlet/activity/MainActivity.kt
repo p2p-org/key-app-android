@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private fun initNavigationController() {
         navController.addOnDestinationChangedListener { controller: NavController?, destination: NavDestination?, arguments: Bundle? ->
             showHideNav(
-                true
+                false
             )
         }
         bottomNavigation.setOnNavigationItemSelectedListener {

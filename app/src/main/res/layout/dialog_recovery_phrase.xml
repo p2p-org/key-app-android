@@ -20,16 +20,16 @@
             android:id="@+id/vClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_24"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 app:srcCompat="@drawable/ic_arrow_left" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -110,24 +110,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_35"
+                android:layout_marginVertical="@dimen/dp_32"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:background="@drawable/bg_gray_rect"
-                app:layout_constraintTop_toBottomOf="@+id/lContainer">
+                app:layout_constraintTop_toBottomOf="@+id/lContainer"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSortSecretKey"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     adapter_list="@{viewModel.getSortSecretData}"
                     view_model="@{viewModel}"
-                    android:layout_marginStart="@dimen/dp_40"
-                    android:layout_marginTop="@dimen/dp_5"
-                    android:layout_marginEnd="@dimen/dp_40"
-                    android:layout_marginBottom="@dimen/dp_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_25"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:layout_marginBottom="@dimen/dp_25"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
                     tools:listitem="@layout/item_secret_key" />
             </FrameLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -136,10 +138,11 @@
             android:layout_height="@dimen/dp_56"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_30"
-            android:layout_marginBottom="@dimen/dp_30"
             android:layout_marginEnd="@dimen/dp_20"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="@dimen/dp_30"
             android:text="@string/backup_now"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lRecoveryPhraseContainer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
