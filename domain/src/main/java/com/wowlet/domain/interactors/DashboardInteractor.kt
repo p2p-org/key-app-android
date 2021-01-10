@@ -8,9 +8,10 @@ import org.p2p.solanaj.core.PublicKey
 interface DashboardInteractor {
     fun generateQRrCode(list: List<WalletItem>): List<EnterWallet>
     suspend fun getWallets(): Result<YourWallets>
+    suspend fun getAllWallets(): Result<List<WalletItem>>
     suspend fun getYourWallets(): YourWallets
     suspend fun getAddCoinList(): AddCoinModel
     suspend fun clearSecretKey()
-    suspend fun addCoin(addCoinItem: AddCoinItem): Result<Boolean>
+    suspend fun addCoin(addCoinItem: AddCoinItem): Result<AddCoinItem>
     fun showSelectedMintAddress(addCoinItem: AddCoinItem): List<AddCoinItem>
 }

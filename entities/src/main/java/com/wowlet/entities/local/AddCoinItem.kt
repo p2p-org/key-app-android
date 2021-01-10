@@ -1,5 +1,7 @@
 package com.wowlet.entities.local
 
+import androidx.lifecycle.MutableLiveData
+
 data class AddCoinItem(
     val tokenSymbol: String,
     val mintAddress: String,
@@ -8,4 +10,5 @@ data class AddCoinItem(
     val change24hPrice: Double,
     val change24hPercentages: Double,
     var isShowMindAddress: Boolean=false,
+    var isAlreadyAdded: Boolean = false
 )

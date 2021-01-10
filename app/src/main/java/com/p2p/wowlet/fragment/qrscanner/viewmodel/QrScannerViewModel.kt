@@ -23,7 +23,7 @@ class QrScannerViewModel(val qrScannerInteractor: QrScannerInteractor) : BaseVie
 
     fun navigateUp() {
         _command.value =
-            Command.NavigateUpViewCommand(R.id.action_navigation_scanner_to_navigation_dashboard)
+            Command.NavigateUpBackStackCommand()
     }
 
     fun goToSendCoinFragment(walletAddress: String) {

@@ -15,15 +15,14 @@
         android:background="@drawable/bg_radius_top_gray">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/enter_wallet_title"
+            android:id="@+id/enterWalletTitle"
+            style="@style/Black.17"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginStart="@dimen/dp_5"
+            android:layout_marginEnd="@dimen/dp_5"
             android:gravity="center"
-            android:text="@string/deposit_to_your_sol_wallet"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/sp_21"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -42,12 +41,12 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_380"
+            android:layout_height="@dimen/dp_440"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_48"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/enter_wallet_title">
+            app:layout_constraintTop_toBottomOf="@+id/enterWalletTitle">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager"
@@ -58,7 +57,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <me.relex.circleindicator.CircleIndicator3
+            <com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.util.CircleIndicatorForViewPagerLoop
                 android:id="@+id/pageIndicator"
                 android:layout_width="0dp"
                 android:layout_marginEnd="@dimen/dp_20"

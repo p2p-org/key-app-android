@@ -3,6 +3,7 @@ package com.wowlet.domain.interactors
 import com.wowlet.entities.local.SendTransactionModel
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
+import com.wowlet.entities.local.WalletItem
 import java.math.BigDecimal
 
 interface SendCoinInteractor {
@@ -10,4 +11,7 @@ interface SendCoinInteractor {
 
     suspend fun getFee(): Result<BigDecimal>
 
+    fun saveWalletItem(walletItem: WalletItem?)
+
+    suspend fun getWalletItem(): Result<WalletItem>?
 }

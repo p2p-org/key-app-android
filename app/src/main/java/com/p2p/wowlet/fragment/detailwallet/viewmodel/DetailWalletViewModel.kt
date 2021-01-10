@@ -9,8 +9,8 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
-import com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment
-import com.wowlet.domain.interactors.DetailActivityInteractor
+import com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment.Companion.WALLET_ITEM
+import com.wowlet.domain.interactors.DetailWalletInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.WalletItem
@@ -18,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteractor) :
+class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) :
     BaseViewModel() {
 
     val chartList = mutableListOf(
@@ -51,18 +51,18 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
 
     private val activityItemList = mutableListOf<ActivityItem>()
 
-    fun getActivityList(publicKey: String, icon: String, tokenName: String) {
+    fun getActivityList(publicKey: String, icon: String, tokenName: String, tokenSymbol: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val detailList = detailActivityInteractor.getActivityList(publicKey, icon, tokenName)
-            when(detailList){
-                is Result.Success->  withContext(Dispatchers.Main) {
+            val detailList = detailWalletInteractor.getActivityList(publicKey, icon, tokenName,tokenSymbol)
+            when (detailList) {
+                is Result.Success -> withContext(Dispatchers.Main) {
                     activityItemList.clear()
-                /*    detailList.data?.forEach {
-                        getBlockTime(it)
-                    }*/
+                    /*    detailList.data?.forEach {
+                            getBlockTime(it)
+                        }*/
                     _getActivityData.value = detailList.data
                 }
-                is Result.Error->{
+                is Result.Error -> {
                     _getActivityDataError.value = detailList.errors.errorMessage
                 }
             }
@@ -72,18 +72,18 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
 
     fun navigateUp() {
         _command.value =
-            Command.NavigateUpViewCommand(R.id.action_navigation_receive_to_navigation_dashboard)
+            Command.NavigateUpBackStackCommand()
     }
 
     fun goToQrScanner(walletItem: WalletItem) {
-        val enterWallet = detailActivityInteractor.generateQRrCode(walletItem)
+        val enterWallet = detailWalletInteractor.generateQRrCode(walletItem)
         _command.value = Command.YourWalletDialogViewCommand(enterWallet)
     }
 
-    fun goToSendCoin(walletAddress: String) {
+    fun goToSendCoin(walletItem: WalletItem) {
         _command.value = Command.NavigateSendCoinViewCommand(
             R.id.action_navigation_detail_wallet_to_navigation_send_coin,
-            bundleOf(SendCoinsFragment.WALLET_ADDRESS to walletAddress)
+            bundleOf(WALLET_ITEM to walletItem)
         )
     }
 
@@ -99,7 +99,7 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
 
     fun getBlockTime(slot: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            when (val data = detailActivityInteractor.blockTime(
+            when (val data = detailWalletInteractor.blockTime(
                 slot
             )) {
                 is Result.Success -> withContext(Dispatchers.Main) {
@@ -115,7 +115,7 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
     fun getChartDataByDate(symbol: String, startTime: Long, endTime: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val data =
-                detailActivityInteractor.getChatListByDate(symbol, startTime, endTime)) {
+                detailWalletInteractor.getChatListByDate(symbol, startTime, endTime)) {
                 is Result.Success -> withContext(Dispatchers.Main) {
                     _getChartData.value = data.data
                 }
@@ -128,7 +128,7 @@ class DetailWalletViewModel(val detailActivityInteractor: DetailActivityInteract
 
     fun getChartData(symbol: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            when (val data = detailActivityInteractor.getChatList(symbol)) {
+            when (val data = detailWalletInteractor.getChatList(symbol)) {
                 is Result.Success -> withContext(Dispatchers.Main) {
                     _getChartData.value = data.data
                 }

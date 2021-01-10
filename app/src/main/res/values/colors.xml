@@ -9,8 +9,10 @@
     <color name="gray_600">#757575</color>
     <color name="gray_500">#565656</color>
     <color name="blue_500">#0A84FF</color>
+    <color name="blue_300">#64B5F6</color>
+    <color name="gray_blue_400">#A3A5BA</color>
     <color name="gray_400">#C4C4C4</color>
-    <color name="gray_300">#DDDDDD</color>
+    <color name="gray_300">#F6F6F8</color>
     <color name="gray_80">#CCDBDBDB</color>
     <color name="hintColor">#808080</color>
     <color name="gray_30">#4DD9D9D9</color>
@@ -24,4 +26,8 @@
     <color name="colorTranslucent">#99000000</color>
     <color name="darkgray">#33A3A5BA</color>
     <color name="gray">#A3A5BA</color>
+    <color name="lightgray">#CFCFCF</color>
+    <color name="black_1">#1b1b1b</color>
+    <color name="darkslategray">#2a2a2a</color>
+    <color name="gainsboro">#E3E3E3</color>
 </resources>

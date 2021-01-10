@@ -43,29 +43,16 @@ class EnterWalletBottomSheet(val list: List<EnterWallet>) : BottomSheetDialogFra
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = dashboardViewModel
         adapter = EnterWalletPagerAdapter(list)
         binding.viewPager.adapter = adapter
-
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                val enterWallet = list[position]
-                binding.enterWalletTitle.text = enterWallet.name
-            }
-        })
+        binding.viewPager.registerOnPageChangeCallback(adapter.getInfiniteScrollingOnPageChangeCallback(binding))
         binding.pageIndicator.setViewPager(binding.viewPager)
         adapter.registerAdapterDataObserver(binding.pageIndicator.adapterDataObserver)
     }
 
-    override fun onResume() {
-        super.onResume()
-        dialog?.run {
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
-    }
+
 }

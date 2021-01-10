@@ -26,14 +26,14 @@ class DashBoardUseCase(
     private val preferenceService: PreferenceService
 ) : DashboardInteractor {
     private var walletData: MutableList<WalletItem> = mutableListOf()
+    private var sendCoinWalletList: MutableList<WalletItem> = mutableListOf()
     private var pirChatList: MutableList<PieEntry> = mutableListOf()
     private var yourWalletBalance: Double = 0.0
-    private var addCoinData: MutableList<AddCoinItem> = mutableListOf()
+    private var addCoinData: MutableList<AddCoinItem> = mutableListOf() // 30
     private var minBalance: Long = 0
 
-    val accountAddress = "3h1zGmCwsRJnVk5BuRNMLsPaQu1y2aqXqXDWYCgrp5UG"
+    val ownerAccountAddress = "22CbwPktYBVbTctjfsr35ozanxwfVjNbBofsnWY4C2YR"
     override fun generateQRrCode(list: List<WalletItem>): List<EnterWallet> {
-        val publicKey = preferenceService.getActiveWallet()?.publicKey ?: "No valid key"
         return list.map {
             it.walletItemToQrCode(dashboardRepository.getQrCode(it.depositAddress))
         }
@@ -41,44 +41,24 @@ class DashBoardUseCase(
     }
 
     override suspend fun getYourWallets(): YourWallets {
-        val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
-
-        walletData.clear()
-        yourWalletBalance = 0.0
-        val balance = wowletApiCallRepository.getBalance(publicKey)
-        val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
-            add(0, BalanceInfo(publicKey, balance, "SOLMINT", publicKey, 9))
-        }
-        val number: Long = 0
-        walletsList.removeAll { it.amount == number }
-        getConcatWalletItem(walletsList)
-        walletData.forEach { item ->
-            yourWalletBalance += item.price
-        }
-        walletData.removeAll { it.amount == 0.0 }
-        val mainWalletData = if (walletData.size > 4)
-            walletData.take(4)
-        else
-            walletData
-        walletData.forEach {
-            if (it.price.toFloat() != 0.0f)
-                pirChatList.add(PieEntry(it.price.toFloat()))
-        }
-        return YourWallets(walletData, yourWalletBalance, mainWalletData,pirChatList)
+        return YourWallets(sendCoinWalletList, yourWalletBalance, mutableListOf(), mutableListOf())
     }
 
     override suspend fun getWallets(): Result<YourWallets> {
         val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
 
-        walletData.clear()
-        yourWalletBalance = 0.0
         try {
             val balance = wowletApiCallRepository.getBalance(publicKey)
             val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
                 add(0, BalanceInfo(publicKey, balance, "SOLMINT", publicKey, 9))
             }
+            walletData.clear()
+            sendCoinWalletList.clear()
+            yourWalletBalance = 0.0
             getConcatWalletItem(walletsList)
             walletData.removeAll { it.depositAddress.isEmpty() }
+            sendCoinWalletList.addAll(walletData)
+            sendCoinWalletList.removeAll { it.amount == 0.0 }
             walletData.forEach {
                 yourWalletBalance += it.price
             }
@@ -91,11 +71,23 @@ class DashBoardUseCase(
                 if (it.price.toFloat() != 0.0f)
                     pirChatList.add(PieEntry(it.price.toFloat()))
             }
-            return Result.Success(YourWallets(walletData, yourWalletBalance, mainWalletData,pirChatList))
+            return Result.Success(
+                YourWallets(
+                    walletData,
+                    yourWalletBalance,
+                    mainWalletData,
+                    pirChatList
+                )
+            )
         } catch (e: Exception) {
             return Result.Error(CallException(Constants.ERROR_TIME_OUT, e.message))
         }
 
+    }
+
+    override suspend fun getAllWallets(): Result<List<WalletItem>> {
+        return if (walletData.isNotEmpty()) Result.Success(walletData)
+        else Result.Error(CallException(Constants.ERROR_EMPTY_ALL_WALLETS))
     }
 
     override suspend fun getAddCoinList(): AddCoinModel {
@@ -143,6 +135,16 @@ class DashBoardUseCase(
 
             }.awaitAll()
 
+            val wallets = getYourWallets().wallets
+            for (wallet in wallets) {
+                for (addCoinItem in addCoinData) {
+                    val isAlreadyAdded = addCoinItem.tokenSymbol == wallet.tokenSymbol
+                    if (isAlreadyAdded) {
+                        addCoinItem.isAlreadyAdded = true
+                    }
+                }
+            }
+
             val minBalance = async(Dispatchers.IO) {
                 minBalance = wowletApiCallRepository.getMinimumBalance(165)
             }
@@ -171,9 +173,9 @@ class DashBoardUseCase(
         }
     }
 
-    override suspend fun addCoin(addCoinItem: AddCoinItem): Result<Boolean> {
-        val currentPhrase = preferenceService.getActiveWallet()?.secretKey
-        val payer = Account(Base58.decode(currentPhrase))
+    override suspend fun addCoin(addCoinItem: AddCoinItem): Result<AddCoinItem> {
+        val secretKey = preferenceService.getActiveWallet()?.secretKey
+        val payer = Account(Base58.decode(secretKey))
         val mintAddress = PublicKey(addCoinItem.mintAddress)
         val newAccount = Account()
         val activeWallet = preferenceService.getActiveWallet()
@@ -189,8 +191,8 @@ class DashBoardUseCase(
                 val transaction = wowletApiCallRepository.getConfirmedTransaction(
                     signature,
                     0
-                )?.transferInfoToActivityItem(fromPublicKey, "", "")
-                return Result.Success(true)
+                )?.transferInfoToActivityItem(fromPublicKey, "", "","")
+                return Result.Success(addCoinItem)
             }
             return Result.Error(CallException(Constants.REQUEST_EXACTION, ""))
         } catch (e: java.lang.Exception) {

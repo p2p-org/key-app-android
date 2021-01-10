@@ -15,7 +15,7 @@ val interactorsModule = module {
     single<RegFinishInteractor> { RegFinishUseCase(get()) }
     single<CompleteBackupWalletInteractor> { CompleteBackupWalletUseCase(get()) }
     single<SplashScreenInteractor> { SplashScreenUseCase(get()) }
-    single<DetailActivityInteractor> { DetailActivityUseCase(get(), get()) }
+    single<DetailWalletInteractor> { DetailWalletUseCase(get(), get()) }
     single<FingerPrintInteractor> { FingerPrintUseCase(get()) }
     factory<CreateWalletInteractor> { CreateWalletUseCase(get(), get()) }
     factory<PinCodeVerificationInteractor> { PinCodeVerificationUseCase(get()) }

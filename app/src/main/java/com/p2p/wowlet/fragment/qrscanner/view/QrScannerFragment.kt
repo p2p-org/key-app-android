@@ -57,7 +57,8 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         scannerView?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorTranslucent))
         scannerView?.setBorderColor(ContextCompat.getColor(context!!, android.R.color.white))
         scannerView?.setLaserEnabled(false)
-        scannerView?.setBorderStrokeWidth(4)
+        scannerView?.setBorderStrokeWidth(12)
+        scannerView?.setBorderLineLength(120)
         scannerView?.setBorderCornerRadius(24)
         scannerView?.setSquareViewFinder(true)
         scannerView?.setupScanner()
@@ -72,11 +73,8 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is NavigateUpViewCommand -> {
-                activity?.let {
-                    (it as MainActivity).showHideNav(true)
-                }
-                navigateFragment(command.destinationId)
+            is NavigateUpBackStackCommand -> {
+                navigateBackStack()
             }
             is NavigateSendCoinViewCommand -> navigateFragment(
                 command.destinationId,

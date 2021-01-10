@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.EnterWallet
 import com.wowlet.entities.local.WalletItem
+import com.wowlet.entities.local.YourWallets
 
 sealed class Command {
 
@@ -26,7 +27,7 @@ sealed class Command {
     class NavigateRecoveryWalletViewCommand(val destinationId: Int) : ViewCommand
     class NavigateSecretKeyViewCommand(val destinationId: Int) : ViewCommand
     class NavigateSwapViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateCompleteBackupViewCommand(val destinationId: Int) : ViewCommand
+
     class NavigateScannerViewCommand(val destinationId: Int) : ViewCommand
     class OpenAddCoinDialogViewCommand() : ViewCommand
     class NavigateWalletViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
@@ -45,8 +46,9 @@ sealed class Command {
     class OpenMyWalletDialogViewCommand() : ViewCommand
     class OpenProfileDetailDialogViewCommand() : ViewCommand
     class OpenBackupDialogViewCommand() : ViewCommand
-    class OpenTransactionDialogViewCommand(val itemActivity:ActivityItem) : ViewCommand
+    class OpenTransactionDialogViewCommand(val itemActivity: ActivityItem) : ViewCommand
     class SendCoinDoneViewCommand(val transactionInfo: ActivityItem) : ViewCommand
     class SendCoinViewCommand() : ViewCommand
     class SwapCoinProcessingViewCommand() : ViewCommand
+    class OpenAllMyTokensDialogViewCommand(val yourWallets: YourWallets) : ViewCommand
 }

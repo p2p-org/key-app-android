@@ -52,8 +52,7 @@
                         style="@style/Grey.17"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="24 Oct 2020 @ 12:51 PM"
-                        />
+                        tools:text="24 Oct 2020 @ 12:51 PM" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -75,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_30"
-            android:text="@{model.symbolsPrice+String.format(@string/token_receive,model.price, model.tokenName)}"
+            android:text="@{model.symbolsPrice+String.format(@string/token_receive,model.price, model.tokenSymbol)}"
             tools:text="+ 0,00344 BTC" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -186,8 +185,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_5"
-                    android:text="@{String.valueOf(model.fee).concat(@string/space).concat(@string/sol_acronym)}"
-                    tools:text="0,00009492 SOL" />
+                    android:text="@{String.format(model.fee +@string/space+@string/lamports)}"
+                    tools:text="10000 lamports" />
 
                 <View
                     android:layout_width="match_parent"
@@ -228,19 +227,20 @@
                         app:layout_constraintStart_toEndOf="@+id/user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
-                 <!--       <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/Black.17.Bold"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/dp_20"
-                            android:text="Martin" />
--->
+                        <!--       <androidx.appcompat.widget.AppCompatTextView
+                                   style="@style/Black.17.Bold"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="wrap_content"
+                                   android:layout_marginHorizontal="@dimen/dp_20"
+                                   android:text="Martin" />
+       -->
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/Grey.15"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
-                            android:ellipsize="marquee"
+                            android:singleLine="true"
+                            app:symbolCount="@{4}"
                             app:text="@{model.from}"
                             tools:text="k97y8u209j08fh98yu20uiei..." />
 
@@ -296,19 +296,20 @@
                         app:layout_constraintStart_toEndOf="@+id/to_user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
-                   <!--     <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/Black.17.Bold"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/dp_20"
-                            android:text="BTC Wallet" />-->
+                        <!--     <androidx.appcompat.widget.AppCompatTextView
+                                 style="@style/Black.17.Bold"
+                                 android:layout_width="match_parent"
+                                 android:layout_height="wrap_content"
+                                 android:layout_marginHorizontal="@dimen/dp_20"
+                                 android:text="BTC Wallet" />-->
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/Grey.15"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
-                            android:ellipsize="marquee"
+                            android:singleLine="true"
+                            app:symbolCount="@{4}"
                             app:text="@{model.to}"
                             tools:text="k97y8u209j08fh98yu20uiei..." />
 

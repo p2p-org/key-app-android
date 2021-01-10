@@ -14,9 +14,12 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.databinding.DialogTansactionBinding
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.copyClipboard
+import com.p2p.wowlet.utils.roundCurrencyValue
+import com.wowlet.entities.Constants.Companion.EXPLORER_SOLANA
 import com.wowlet.entities.local.ActivityItem
 import kotlinx.android.synthetic.main.dialog_tansaction.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.math.BigDecimal
 import kotlin.math.pow
 
 
@@ -39,7 +42,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
             inflater, R.layout.dialog_tansaction, container, false
         )
         binding.model = dataInfo
-        viewModel.getBlockTime(53762804)
+        viewModel.getBlockTime(dataInfo.slot)
         return binding.root
     }
 
@@ -59,7 +62,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
         }
 
         blockChainExplorer.setOnClickListener {
-            viewModel.goToBlockChainExplorer("https://explorer.solana.com/tx/"+dataInfo.signature)
+            viewModel.goToBlockChainExplorer(EXPLORER_SOLANA+dataInfo.signature)
         }
         observes()
     }
@@ -71,7 +74,7 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
             binding.yourTransactionDate.text=it
         })
 
-        viewModel._command.observe(viewLifecycleOwner,{
+        viewModel.command.observe(viewLifecycleOwner,{
            when(it){
                is Command.NavigateBlockChainViewCommand-> {
                    navigate.invoke(it.destinationId,it.bundle)

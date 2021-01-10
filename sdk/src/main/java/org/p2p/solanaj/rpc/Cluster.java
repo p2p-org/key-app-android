@@ -3,7 +3,8 @@ package org.p2p.solanaj.rpc;
 public enum Cluster {
     DEVNET("https://devnet.solana.com"),
     TESTNET("https://testnet.solana.com"),
-    MAINNET("http://api.mainnet-beta.solana.com");
+    MAINNET("http://api.mainnet-beta.solana.com"),
+    SOLANANET("https://solana-api.projectserum.com");
 
     private String endpoint;
 

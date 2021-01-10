@@ -11,8 +11,7 @@ import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.viewmodel.Recover
 class RecoveryPhraseAdapter(
     private val viewModel: RecoveryPhraseViewModel,
     private val list: List<String>
-) :
-    RecyclerView.Adapter<RecoveryPhraseAdapter.MyViewHolder>() {
+) : RecyclerView.Adapter<RecoveryPhraseAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 

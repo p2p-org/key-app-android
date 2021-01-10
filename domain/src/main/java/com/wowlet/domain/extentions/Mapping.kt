@@ -110,7 +110,8 @@ fun HistoricalPrices.fromHistoricalPricesToChartItem(index: Int): Entry {
 fun TransferInfo.transferInfoToActivityItem(
     publicKey: String,
     icon: String,
-    tokenName: String
+    tokenName: String,
+    tokenSymbol: String
 ): ActivityItem {
     val symbolPrice: String
     val sendOrReceive = if (this.from == publicKey) {
@@ -133,6 +134,7 @@ fun TransferInfo.transferInfoToActivityItem(
         from = from,
         to = to,
         tokenName = tokenName,
+        tokenSymbol = tokenSymbol,
         date = ""
     )
 }

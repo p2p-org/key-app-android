@@ -1,12 +1,10 @@
-package com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter
+package com.p2p.wowlet.fragment.backupwallat.secretkeys.utils
 
 import android.view.View
-import android.view.ViewTreeObserver
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
 import androidx.recyclerview.widget.RecyclerView
-import com.wowlet.entities.local.Keyword
+import com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter.MultipleSpanGridLayoutManager
 import kotlin.math.roundToInt
 
 class MeasureHelper(

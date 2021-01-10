@@ -139,7 +139,7 @@
     <string name="usd">%1$.2f USD</string>
     <string name="amount_to_usd">= %1$.5f US$</string>
     <string name="amount_count_format">%1.6f</string>
-    <string name="usd_receive">%1$.2f BTC</string>
+    <string name="usd_receive">%1$.2f</string>
     <string name="token_receive">%1$.3f %2$s</string>
     <string name="usd_symbol">$&#160;</string>
     <string name="us_dollar">&#160; US$</string>
@@ -200,8 +200,23 @@
     <string name="send_to_your_wallet">Send to your %1$s wallet</string>
     <string name="all_deposits_are_stored_100_non_custodiallity_with_keys_held_on_this_device">All deposits are stored 100% non-custodiallity with keys held on this device</string>
     <string name="deposit_to_your_sol_wallet">Deposit to your SOL wallet</string>
+    <string name="hint_austin">Austin</string>
+    <string name="lamports">lamports</string>
+    <string name="deposit_to_your_wallet">Deposit to your %1$s wallet</string>
     <string name="sol_acronym">SOL</string>
     <string name="total_balance">Total balance</string>
     <string name="all_tokens">All tokens</string>
     <string name="all_my_tokens">All my tokens</string>
+    <string name="add_tokens">Add tokens</string>
+    <string name="close">Close</string>
+    <string name="search_token">Search token</string>
+    <string name="view_in_solana_explorer">View in Solana explorer</string>
+    <string name="add_token">Add Token</string>
+    <string name="adding_token_to_your_wallet">Adding token to your wallet</string>
+    <string name="balances">Balances</string>
+    <string name="exchange">Exchange</string>
+    <string name="secret_phrase_can_not_contain_more_than_12_words_error_message">Secret phrase can\'t contain more than 12 words</string>
+    <string name="we_couldn_t_add_the_coin_error_message">We couldn\'t add the coin to your list. Check your internet connection and try again</string>
+    <string name="influenced_founds">This will cost some SOL (Influenced founds)</string>
+    <string name="add_coin_cost">This will cost some SOL</string>
 </resources>

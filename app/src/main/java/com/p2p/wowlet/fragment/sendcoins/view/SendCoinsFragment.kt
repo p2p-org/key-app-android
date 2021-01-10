@@ -13,7 +13,8 @@ import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.YourWalletsBottomShe
 import com.p2p.wowlet.fragment.sendcoins.dialog.SendCoinDoneDialog
 import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.fragment.swap.dialog.SwapCoinProcessingDialog
-import com.wowlet.entities.local.UserWalletType
+import com.wowlet.entities.local.ActivityItem
+import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.pow
 
@@ -24,9 +25,11 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
 
     private var feeValue = 0.0
     private var balance = 0.0
+    private var walletItem: WalletItem? = null
 
     companion object {
         const val WALLET_ADDRESS = "walletAddress"
+        const val WALLET_ITEM = "walletItem"
     }
 
     private var walletAddress: String = ""
@@ -35,17 +38,8 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
         binding.run {
             viewModel = this@SendCoinsFragment.viewModel
         }
-        viewModel.initData(
-            mutableListOf(
-                UserWalletType(
-                    "Wallet address",
-                    walletAddress,
-                    false,
-                    R.drawable.ic_qr_scaner
-                ),
-                UserWalletType("Wallet user", "@username", true, R.drawable.ic_account)
-            )
-        )
+        binding.walletUserContactTv.setText(walletAddress)
+        viewModel.getWalletData()
         viewModel.getWalletItems()
         viewModel.getFee()
     }
@@ -53,6 +47,7 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
     override fun initData() {
         arguments?.let {
             walletAddress = it.getString(WALLET_ADDRESS, "")
+            walletItem = it.getParcelable(WALLET_ITEM)
         }
     }
 
@@ -85,22 +80,43 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
         observe(viewModel.feeErrorLiveData) { message ->
             context?.run { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
         }
+        observe(viewModel.getWalletData) { walletItemList ->
+            if (walletItemList.isNotEmpty()) {
+                walletItem?.let { item ->
+                    val find = walletItemList.find { item1 ->
+                        item1.depositAddress == item.depositAddress
+                    }
+                    find?.let {
+                        viewModel.selectWalletItem(it)
+                    } ?: viewModel.selectWalletItem(
+                        walletItemList[0]
+                    )
+                }
+            }
+        }
+        observe(viewModel.savedWalletItemData) {
+            if (it.depositAddress.isNotEmpty()) {
+                walletItem = it
+                viewModel.getWalletItems()
+            }
+        }
         observe(viewModel.yourBalance) { balance = it }
     }
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is NavigateUpViewCommand -> {
+            is NavigateUpBackStackCommand -> {
                 navigateBackStack()
+                viewModel.setWalletData(null)
             }
             is NavigateScannerViewCommand -> {
+                walletItem?.let { viewModel.setWalletData(it) }
                 navigateFragment(command.destinationId)
                 (activity as MainActivity).showHideNav(false)
             }
             is OpenMyWalletDialogViewCommand -> {
                 val yourWalletsBottomSheet: YourWalletsBottomSheet =
                     YourWalletsBottomSheet.newInstance() {
-                        walletAddress = it.depositAddress
                         viewModel.selectWalletItem(it)
                     }
                 yourWalletsBottomSheet.show(
@@ -110,9 +126,9 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
             }
             is SendCoinDoneViewCommand -> {
                 val sendCoinDoneDialog: SendCoinDoneDialog =
-                    SendCoinDoneDialog.newInstance(command.transactionInfo) {
-                        navigateUp()
-                    }
+                    SendCoinDoneDialog.newInstance(command.transactionInfo, { navigateUp() }, navigateBlockChain = {destinationId, bundle ->
+                        navigateFragment(destinationId, bundle)
+                    })
                 sendCoinDoneDialog.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
             }
             is SendCoinViewCommand -> {
@@ -136,15 +152,17 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
                                     ))
                                     this@SendCoinsFragment.viewModel.sendCoin(
                                         walletAddress,
-                                        lamprots.toLong()
+                                        lamprots.toLong(),
+                                        this@SendCoinsFragment.viewModel.walletItemData.value?.tokenSymbol!!
                                     )
-                                } else
+                                } else {
                                     processingDialog?.dismiss()
-                                context?.let {
-                                    Toast.makeText(
-                                        it,
-                                        "Invalidate input data", Toast.LENGTH_SHORT
-                                    ).show()
+                                    context?.let {
+                                        Toast.makeText(
+                                            it,
+                                            "Invalidate input data", Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                             } ?: context?.let {
                                 processingDialog?.dismiss()
@@ -168,7 +186,7 @@ class SendCoinsFragment : FragmentBaseMVVM<SendCoinsViewModel, FragmentSendCoins
 
     override fun navigateUp() {
         navigateBackStack()
-        //viewModel.navigateUp()
+
     }
 
 }

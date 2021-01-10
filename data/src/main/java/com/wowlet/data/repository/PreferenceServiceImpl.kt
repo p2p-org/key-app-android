@@ -22,6 +22,7 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
     private val allowNotificationKey = "allowNotificationKey"
     private val fingerPrintPKey = "fingerPrintPKey"
     private val finishRegKey = "finishRegKey"
+    private val walletItemKey = "walletItemKey"
 
     val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
 
@@ -50,6 +51,13 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
     override fun finishLoginReg(finishReg: Boolean) {
         this.finishReg = finishReg
     }
+
+    override fun setWalletItemData(walletItem: WalletItem?) {
+        put(walletItem, walletItemKey)
+    }
+
+    override fun getWalletItemData(): WalletItem? = get(walletItemKey)
+
 
 
     private var finishReg: Boolean
@@ -142,7 +150,7 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
     }
 
 
-    override fun updateWallet(userSecretData: UserSecretData) :Boolean {
+    override fun updateWallet(userSecretData: UserSecretData): Boolean {
         setSingleWalletData(userSecretData)
         return true
     }

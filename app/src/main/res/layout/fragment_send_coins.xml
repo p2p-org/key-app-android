@@ -151,11 +151,11 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/single_sol_price"
                     style="@style/Black.15"
-                    android:text="@{viewModel.walletItemData.walletBinds+@string/us_dollar}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_15"
+                    android:text="@{viewModel.walletItemData.walletBinds+@string/us_dollar}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="140003.00 US$" />
@@ -180,35 +180,52 @@
                 android:layout_weight="0"
                 android:background="@color/gray_30" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/paymentTypeTv"
+                style="@style/Black.15.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_20"
+                android:text="@string/wallet_address"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_180"
-                android:layout_marginHorizontal="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_20"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/enter_wallet_title">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_15"
+                android:background="@drawable/bg_gray_rect"
+                android:paddingHorizontal="@dimen/dp_18"
+                android:paddingVertical="@dimen/dp_20"
+                app:layout_constraintTop_toBottomOf="@+id/paymentTypeTv">
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/viewPager"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toTopOf="@+id/pageIndicator"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/walletUserContactTv"
+                    style="@style/Black.15"
+                    android:layout_width="@dimen/dp_0"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/dp_10"
+                    android:background="@null"
+                    android:paddingVertical="@dimen/dp_3"
+                    android:maxLines="1"
+                    android:inputType="text"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/walletUserTypeIv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="jd9(Hdh982y982y98308093" />
 
-                <me.relex.circleindicator.CircleIndicator3
-                    android:id="@+id/pageIndicator"
-                    view_model="@{viewModel}"
-                    view_pager="@{viewPager}"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_40"
-                    android:layout_marginBottom="@dimen/dp_40"
-                    android:alwaysDrawnWithCache="true"
-                    app:ci_drawable="@drawable/bg_circule_indicator_selected"
-                    app:ci_drawable_unselected="@drawable/bg_circule_indicator"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/walletUserTypeIv"
+                    android:layout_width="@dimen/dp_27"
+                    android:layout_height="@dimen/dp_27"
+                    android:backgroundTint="@color/gray_30"
+                    android:onClick="@{()->viewModel.goToQrScanner()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_qr_scaner" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -216,6 +233,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_20"
                 android:background="@drawable/bg_create_account"
                 android:onClick="@{()->viewModel.sendCoinCommand()}"
                 android:paddingVertical="@dimen/dp_19"

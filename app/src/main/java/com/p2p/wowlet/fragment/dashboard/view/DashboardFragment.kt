@@ -1,5 +1,6 @@
 package com.p2p.wowlet.fragment.dashboard.view
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,13 +14,16 @@ import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentDashboardBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.ProfileDetailsDialog
-import com.p2p.wowlet.fragment.dashboard.dialog.profile.ProfileDialog
-import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet
-import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet.Companion.ENTER_WALLET
-import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet.Companion.TAG_ADD_COIN
+import com.p2p.wowlet.fragment.dashboard.dialog.allmytokens.AllMyTokensBottomSheet
+import com.p2p.wowlet.fragment.dashboard.dialog.allmytokens.AllMyTokensBottomSheet.Companion.TAG_ALL_MY_TOKENS_DIALOG
+import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet
+import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet.Companion.ENTER_WALLET
+import com.p2p.wowlet.fragment.dashboard.dialog.profile.ProfileDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.RecoveryPhraseDialog
+import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
+import com.p2p.wowlet.utils.OnSwipeTouchListener
 import com.p2p.wowlet.utils.drawChart
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -29,9 +33,25 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
     override val binding: FragmentDashboardBinding by dataBinding(R.layout.fragment_dashboard)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.getWalletItems()
         binding.run {
             viewModel = this@DashboardFragment.viewModel
         }
+        viewModel.getWalletItems()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun initView() {
+        binding.rootContainer.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
+            override fun onSwipeRight() {
+                viewModel.goToScannerFragment()
+            }
+        })
+        binding.vRvWallets.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
+            override fun onSwipeRight() {
+                viewModel.goToScannerFragment()
+            }
+        })
     }
 
     override fun processViewCommand(command: ViewCommand) {
@@ -93,6 +113,15 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     ProfileDialog.TAG_PROFILE_DIALOG
                 )
             }
+            is OpenAllMyTokensDialogViewCommand -> {
+                AllMyTokensBottomSheet.newInstance(command.yourWallets, {
+                    viewModel.openAddCoinDialog()
+                }) { itemWallet ->
+                    viewModel.goToDetailWalletFragment(itemWallet)
+                }.show(
+                    childFragmentManager, TAG_ALL_MY_TOKENS_DIALOG
+                )
+            }
         }
     }
 
@@ -104,6 +133,15 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
         }
         observe(viewModel.getWalletChart) {
             binding.vPieChartData.drawChart(it)
+        }
+        observe(viewModel.getAllWalletData) { itemList ->
+            if (itemList.size <= 4) {
+                binding.allMyTokensContainer.visibility = View.GONE
+                binding.addTokensContainer.visibility = View.VISIBLE
+            } else {
+                binding.allMyTokensContainer.visibility = View.VISIBLE
+                binding.addTokensContainer.visibility = View.GONE
+            }
         }
     }
 

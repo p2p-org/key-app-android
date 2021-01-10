@@ -19,7 +19,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 val apiModule = module {
     single { Moshi.Builder().build() }
-    single { RpcClient(Cluster.MAINNET) }
+    single { RpcClient(Cluster.SOLANANET) }
 
     single<Retrofit> {
         Retrofit.Builder()

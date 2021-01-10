@@ -6,7 +6,7 @@ import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.domain.extentions.fromHistoricalPricesToChartItem
 import com.wowlet.domain.extentions.transferInfoToActivityItem
 import com.wowlet.domain.extentions.walletItemToQrCode
-import com.wowlet.domain.interactors.DetailActivityInteractor
+import com.wowlet.domain.interactors.DetailWalletInteractor
 import com.wowlet.domain.utils.getActivityDate
 import com.wowlet.domain.utils.secondToDate
 import com.wowlet.entities.CallException
@@ -16,19 +16,20 @@ import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.EnterWallet
 import com.wowlet.entities.local.WalletItem
 
-class DetailActivityUseCase(
+class DetailWalletUseCase(
     private val wowletApiCallRepository: WowletApiCallRepository,
     private val detailActivityRepository: DetailActivityRepository
-) : DetailActivityInteractor {
+) : DetailWalletInteractor {
 
     override suspend fun getActivityList(
         publicKey: String,
         icon: String,
-        tokenName: String
+        tokenName: String,
+        tokenSymbol: String
     ): Result<List<ActivityItem>> {
         return try {
             val walletsList = wowletApiCallRepository.getDetailActivityData(publicKey).map {
-                it.transferInfoToActivityItem(publicKey, icon, tokenName)
+                it.transferInfoToActivityItem(publicKey, icon, tokenName,tokenSymbol)
             }
             walletsList.map {
                 val time = wowletApiCallRepository.getBlockTime(it.slot)

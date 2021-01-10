@@ -45,12 +45,12 @@ fun AppCompatImageView.imageSource(uri: String){
 fun AppCompatImageView.imageSourceBitmap(icon: Bitmap){
     this.setImageBitmap(icon)
 }
-@BindingAdapter("text")
-fun AppCompatTextView.walletFormat(address: String){
-    if(address.length>4) {
-        val firstFour = address.substring(0, 4)
+@BindingAdapter("text","symbolCount")
+fun AppCompatTextView.walletFormat(address: String,symbolCount:Int){
+    if(address.length>symbolCount) {
+        val firstFour = address.substring(0, symbolCount)
         val stringLenght = address.length
-        val lastFour = address.substring(stringLenght - 4, stringLenght)
+        val lastFour = address.substring(stringLenght - symbolCount, stringLenght)
         text = "0x$firstFour...$lastFour"
     }
 }

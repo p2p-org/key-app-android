@@ -29,6 +29,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.Executor
+import kotlin.math.pow
 
 
 fun LineChart.initChart(chartList: List<Entry>) {
@@ -235,6 +236,7 @@ fun getYear(): Long {
 fun Double.roundCurrencyValue(): Double {
     return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toDouble()
 }
+
 
 
 

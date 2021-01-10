@@ -4,25 +4,25 @@
     <item android:state_enabled="false" >
         <shape>
             <solid android:color="@color/gray_600" />
-            <corners android:radius="@dimen/dp_20" />
+            <corners android:radius="@dimen/dp_10" />
         </shape>
     </item>
     <item android:state_enabled="true" >
         <shape>
             <solid android:color="@color/black" />
-            <corners android:radius="@dimen/dp_20" />
+            <corners android:radius="@dimen/dp_10" />
         </shape>
     </item>
     <item android:state_pressed="false">
         <shape>
             <solid android:color="@color/black" />
-            <corners android:radius="@dimen/dp_20" />
+            <corners android:radius="@dimen/dp_10" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape>
             <solid android:color="@color/gray_600" />
-            <corners android:radius="@dimen/dp_20" />
+            <corners android:radius="@dimen/dp_10" />
         </shape>
     </item>
 </selector>

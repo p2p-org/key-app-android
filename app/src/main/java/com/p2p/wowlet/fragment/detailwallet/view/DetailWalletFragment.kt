@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
@@ -38,10 +39,10 @@ class DetailWalletFragment :
     override fun initData() {
         arguments?.let {
             walletItem = it.getParcelable(WALLET_ITEM)
-
+            println("debug: icon = ${walletItem?.icon}")
         }
         walletItem?.run {
-            viewModel.getActivityList(this.depositAddress, icon, tokenName)
+            viewModel.getActivityList(this.depositAddress, icon, tokenName,this.tokenSymbol)
             viewModel.getChartData(this.tokenSymbol)
         }
     }
@@ -50,6 +51,9 @@ class DetailWalletFragment :
     override fun initView() {
         binding.run {
             viewModel = this@DetailWalletFragment.viewModel
+            Glide.with(this@DetailWalletFragment)
+                .load(walletItem?.icon)
+                .into(currencyIcon)
             vTitle.text = walletItem?.tokenName
             vWalletAddress.text = walletItem?.depositAddress
             vPrice.text = "$${walletItem?.price?.roundCurrencyValue()}"
@@ -112,9 +116,9 @@ class DetailWalletFragment :
                 }
                 selectedTextView = getChartByAll
             }
-            sendCoinAddress.setOnClickListener {
-                walletItem?.let { this@DetailWalletFragment.viewModel.goToSendCoin(it.depositAddress) }
-            }
+//            sendCoinAddress.setOnClickListener {
+//                walletItem?.let { this@DetailWalletFragment.viewModel.goToSendCoin(it) }
+//            }
             vQrScanner.setOnClickListener {
                 walletItem?.let { item ->
                     this@DetailWalletFragment.viewModel.goToQrScanner(item)
@@ -141,7 +145,7 @@ class DetailWalletFragment :
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> {
+            is Command.NavigateUpBackStackCommand -> {
                 navigateBackStack()
                 (activity as MainActivity).showHideNav(true)
             }
@@ -161,7 +165,6 @@ class DetailWalletFragment :
                 TransactionBottomSheet.newInstance(command.itemActivity) { destinationId, bundle ->
                     navigateFragment(destinationId, bundle)
                 }.show(childFragmentManager, TransactionBottomSheet.TRANSACTION_DIALOG)
-                (activity as MainActivity).showHideNav(false)
             }
             is Command.YourWalletDialogViewCommand -> {
                 YourWalletBottomSheet.newInstance(command.enterWallet).show(

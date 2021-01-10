@@ -12,6 +12,7 @@ data class ActivityItem(
     val from: String,
     val to: String,
     val tokenName: String,
+    var tokenSymbol: String,
     val chartList: List<ChartListItem> = listOf(),
     var date: String
 )

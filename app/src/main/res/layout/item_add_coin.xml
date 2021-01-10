@@ -17,9 +17,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:onClick="@{()->viewModel.showMindAddress(itemAddCoin)}"
+        android:id="@+id/clItemAddCoin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@{itemAddCoin.showMindAddress?@color/gray_300:@color/white}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/containerAddCoin"
@@ -80,7 +81,7 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:visibility="visible"
-                app:layout_constraintEnd_toStartOf="@+id/btAddCoin"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -103,60 +104,143 @@
                     tools:text="+16.9% for 24hrs" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btAddCoin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_21"
-                android:onClick="@{()->viewModel.addCoin(itemAddCoin)}"
-                android:layout_marginEnd="@dimen/dp_20"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_add" />
+            <!--            <androidx.appcompat.widget.AppCompatImageView-->
+            <!--                android:id="@+id/btAddCoin"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginTop="@dimen/dp_21"-->
+            <!--                android:onClick="@{()->viewModel.addCoin(itemAddCoin)}"-->
+            <!--                android:layout_marginEnd="@dimen/dp_20"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="parent"-->
+            <!--                app:srcCompat="@drawable/ic_add" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/containerMintAddress"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginBottom="@dimen/dp_20"
-            android:visibility="@{itemAddCoin.isShowMindAddress?View.VISIBLE:View.GONE}"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20"
+            android:paddingBottom="@dimen/dp_20"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/containerAddCoin">
 
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_400"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/mintAddressInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.format(itemAddCoin.tokenSymbol , @string/mint_address)}"
+                android:layout_marginTop="@dimen/dp_20"
+                android:text="@{String.format( @string/mint_address, itemAddCoin.tokenSymbol)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="SRM Mint Address" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtMintAddress"
+                style="@style/Black.17"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:singleLine="true"
                 android:text="@{itemAddCoin.mintAddress}"
-                app:layout_constraintEnd_toStartOf="@+id/btCopyMint"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mintAddressInfo"
-                tools:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8..." />
+                tools:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8k92jkek9j97y8" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btCopyMint"
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/dp_20"
+                android:background="@color/gray_400"
+                app:layout_constraintTop_toBottomOf="@id/txtMintAddress" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewInExplorer"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="@dimen/dp_30"
+                android:text="@string/view_in_solana_explorer"
+                android:textAllCaps="false"
+                android:textColor="@color/gray_500"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_copy_in_add_coin" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtMintAddress" />
+
+            <FrameLayout
+                android:id="@+id/lAddCoin"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:onClick="@{()->viewModel.addCoin(itemAddCoin)}"
+                android:paddingTop="@dimen/dp_4"
+                android:paddingBottom="@dimen/dp_4"
+                app:layout_constraintTop_toBottomOf="@id/btnViewInExplorer">
+
+                <ProgressBar
+                    android:id="@+id/pb_add_coin"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/bg_button_progress_bar" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtAddToken"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/add_token"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/sp_17"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtWillCost"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/gray_300"
+                        tools:text="will cost 0.000025 SOL" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </FrameLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtErrorMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/lAddCoin"
+                android:layout_marginTop="@dimen/dp_10"
+                android:textColor="@color/red_400"
+                android:gravity="center"
+                tools:text="Error message"
+                />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

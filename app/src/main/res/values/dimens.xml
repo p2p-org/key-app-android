@@ -80,4 +80,5 @@
     <dimen name="sp_5">5sp</dimen>
     <dimen name="dp_45">45dp</dimen>
     <dimen name="dp_65">65dp</dimen>
+    <dimen name="dp_440">440dp</dimen>
 </resources>

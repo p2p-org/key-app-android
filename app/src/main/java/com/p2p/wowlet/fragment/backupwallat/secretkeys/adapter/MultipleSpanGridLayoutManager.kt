@@ -10,6 +10,7 @@ class MultipleSpanGridLayoutManager(
 
     companion object {
         const val SPAN_SIZE: Int = 52
+        const val DEFAULT_SPAN_SIZE = 12
     }
 
     var spanSizes: SparseArray<Int> = spanSparseArray()
@@ -26,19 +27,19 @@ class MultipleSpanGridLayoutManager(
 
     private fun spanSparseArray() : SparseArray<Int> {
         val sparseArray: SparseArray<Int> = SparseArray(12)
-        sparseArray.put(0,10)
-        sparseArray.put(1,10)
-        sparseArray.put(2,10)
-        sparseArray.put(3,10)
-        sparseArray.put(4,10)
-        sparseArray.put(5,10)
-        sparseArray.put(6,10)
-        sparseArray.put(7,10)
-        sparseArray.put(8,10)
-        sparseArray.put(9,10)
-        sparseArray.put(10,10)
-        sparseArray.put(11,10)
-        sparseArray.put(12,10)
+        sparseArray.put(0, SPAN_SIZE)
+        sparseArray.put(1, SPAN_SIZE)
+        sparseArray.put(2, SPAN_SIZE)
+        sparseArray.put(3, SPAN_SIZE)
+        sparseArray.put(4, SPAN_SIZE)
+        sparseArray.put(5, SPAN_SIZE)
+        sparseArray.put(6, SPAN_SIZE)
+        sparseArray.put(7, SPAN_SIZE)
+        sparseArray.put(8, SPAN_SIZE)
+        sparseArray.put(9, SPAN_SIZE)
+        sparseArray.put(10, SPAN_SIZE)
+        sparseArray.put(11, SPAN_SIZE)
+        sparseArray.put(12, SPAN_SIZE)
         return sparseArray
     }
 }

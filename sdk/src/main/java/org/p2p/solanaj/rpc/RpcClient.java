@@ -32,7 +32,7 @@ public class RpcClient {
     public RpcClient(String endpoint) {
         this.endpoint = endpoint;
         rpcApi = new RpcApi(this);
-        httpClient = new OkHttpClient.Builder().readTimeout(20, TimeUnit.SECONDS).build();
+        httpClient = new OkHttpClient.Builder().readTimeout(50, TimeUnit.SECONDS).build();
     }
 
     public <T> T call(String method, List<Object> params, Class<T> clazz) throws RpcException {

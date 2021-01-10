@@ -1,15 +1,10 @@
 package com.wowlet.domain.usecases
 
-import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
-import com.wowlet.domain.extentions.transferInfoToActivityItem
-import com.wowlet.domain.interactors.DetailActivityInteractor
 import com.wowlet.domain.interactors.QrScannerInteractor
-import com.wowlet.domain.utils.secondToDate
 import com.wowlet.entities.CallException
 import com.wowlet.entities.Constants
 import com.wowlet.entities.Result
-import com.wowlet.entities.local.ActivityItem
 import org.p2p.solanaj.core.PublicKey
 import java.lang.Exception
 

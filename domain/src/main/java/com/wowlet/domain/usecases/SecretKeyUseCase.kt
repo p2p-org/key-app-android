@@ -65,16 +65,27 @@ class SecretKeyUseCase(
                  return false*/
         return if (inputPhrase.isNotEmpty()) {
             val phrase = inputPhrase.split(" ")
-            if (phrase.size==12){
+            if (phrase.size == 12) {
+                //Temporary comparing to the list from CreateWalletUseCase class
+//                CreateWalletUseCase(preferenceService, wowletApiCallRepository).generatePhrase().forEach {
+//                    if (!phrase.contains(it)) {
+//                        return Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE,"Phrase is invalid"))
+//                    }
+//
+//                }
                 val userAccount = wowletApiCallRepository.initAccount(phrase)
                 preferenceService.updateWallet(userAccount)
                 Result.Success(true)
-            }else{
-                Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE,"Phrase size count is not 12 worlds"))
+            } else {
+                Result.Error(
+                    CallException(
+                        Constants.ERROR_INCORRECT_PHRASE,
+                        "Phrase size count is not 12 worlds"
+                    )
+                )
             }
-
         } else {
-            Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE,"Phrase empty"))
+            Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE, "Phrase empty"))
         }
 
 
@@ -86,4 +97,7 @@ class SecretKeyUseCase(
         return phrase ?: ""
     }
 
+    override fun currentListPhrase(): List<String> {
+        return preferenceService.getActiveWallet()?.phrase ?: listOf()
+    }
 }

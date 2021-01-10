@@ -29,23 +29,23 @@
             app:srcCompat="@drawable/ic_logo" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/price"
             style="@style/Black.21.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            tools:text="- 0,00344 BTC"
-            android:text="@{model.symbolsPrice+String.format(@string/usd_receive,model.price)}"/>
+            tools:text="- 0,00344 BTC" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:background="@drawable/bg_done_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_20"
-            android:paddingStart="@dimen/dp_16"
-            android:paddingEnd="@dimen/dp_16"
-            android:paddingTop="@dimen/dp_5"
-            android:paddingBottom="@dimen/dp_5"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_20"
+            android:background="@drawable/bg_done_text"
+            android:paddingStart="@dimen/dp_16"
+            android:paddingTop="@dimen/dp_5"
+            android:paddingEnd="@dimen/dp_16"
+            android:paddingBottom="@dimen/dp_5"
             android:text="@string/done" />
 
         <View
@@ -53,6 +53,7 @@
             android:layout_height="@dimen/dp_1"
             android:layout_marginTop="@dimen/dp_15"
             android:background="@color/gray_80" />
+
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/Grey.12"
             android:layout_width="wrap_content"
@@ -73,6 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_17"
                 android:text="@{model.signature}"
+                android:singleLine="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/copyTransaction"
                 app:layout_constraintStart_toStartOf="parent"
@@ -95,22 +97,21 @@
             android:layout_height="@dimen/dp_1"
             android:layout_marginTop="@dimen/dp_20"
             android:background="@color/gray_80" />
-        <androidx.appcompat.widget.AppCompatButton
 
-            style="Widget.Grey.Button"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/blockChainExplorer"
+            style="@style/Widget.Grey.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
-            android:onClick="@{()->viewModel.navigateUp()}"
+            android:onClick="@{()->viewModel.goToBlockChainExplorer(model.signature)}"
             android:paddingHorizontal="@dimen/dp_40"
             android:paddingVertical="@dimen/dp_19"
-            android:text="@string/go_back_to_wallet"
+            android:text="@string/view_in_blockchain_explorer"
             android:textAllCaps="false" />
 
-
         <androidx.appcompat.widget.AppCompatButton
-
             style="@style/Widget.Black.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

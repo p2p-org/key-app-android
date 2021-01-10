@@ -7,4 +7,5 @@ interface SecretKeyInteractor {
     fun checkCurrentSelected(id: Int): SecretKeyCombinationSuccess
     suspend fun resetPhrase(inputPhrase: String): Result<Boolean>
     fun currentPhrase(): String
+    fun currentListPhrase(): List<String>
 }

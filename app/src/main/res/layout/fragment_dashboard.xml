@@ -13,7 +13,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_screens"
         tools:context=".fragment.dashboard.view.DashboardFragment">
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -47,8 +46,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
+            android:id="@+id/rootContainer"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/dp_33"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +58,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_33"
                 android:background="@drawable/bg_already_have_account"
+                android:elevation="@dimen/dp_5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -136,6 +137,9 @@
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginBottom="@dimen/dp_30"
                 android:background="@drawable/bg_already_have_account"
+                android:elevation="@dimen/dp_5"
+                android:onClick="@{()->viewModel.openAllMyTokensDialog()}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/lCoinContainer">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -144,7 +148,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/dp_15"
                     android:layout_marginStart="@dimen/dp_20"
-                    android:text="@string/all_my_tokens" />
+                    android:text="@string/all_my_tokens"
+                    tools:ignore="RelativeOverlap" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
@@ -156,12 +161,44 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/addTokensContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_30"
+                android:background="@drawable/bg_already_have_account"
+                android:elevation="@dimen/dp_5"
+                android:visibility="gone"
+                android:onClick="@{()->viewModel.openAddCoinDialog()}"
+                app:layout_constraintBottom_toTopOf="@+id/lCoinContainer">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey.17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/dp_15"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:text="@string/add_token"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/dp_18"
+                    app:srcCompat="@drawable/ic_inline_add" />
+
+            </RelativeLayout>
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/lCoinContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
                 android:background="@drawable/bg_radius_top"
+                android:elevation="@dimen/dp_10"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingVertical="@dimen/dp_17"
@@ -230,24 +267,10 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/dp_7"
                         android:gravity="center"
-                        android:text="@string/swap" />
+                        android:text="@string/exchange" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vAddCoin"
-                style="@style/Black.15.Bold"
-                android:layout_width="@dimen/dp_120"
-                android:layout_height="@dimen/dp_36"
-                android:layout_marginTop="@dimen/dp_30"
-                android:gravity="center"
-                android:onClick="@{()->viewModel.openAddCoinDialog()}"
-                android:text="+ Add coin"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lCoinContainer" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

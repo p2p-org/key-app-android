@@ -1,20 +1,28 @@
 package com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter
 
 import android.content.Context
-import android.text.Selection
+import android.graphics.Color
+import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import androidx.core.widget.addTextChangedListener
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
+import androidx.core.util.set
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.RvItemKeyWordBinding
+import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.*
+import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.wowlet.entities.local.Keyword
 
-class SecretPhraseAdapter(private val context: Context, private val phrase: MutableLiveData<String>) : RecyclerView.Adapter<SecretPhraseAdapter.ViewHolder>() {
+class SecretPhraseAdapter(private val context: Context,
+                          private val viewModel: SecretKeyViewModel
+) : RecyclerView.Adapter<SecretPhraseAdapter.ViewHolder>() {
 
 
     companion object {
@@ -24,30 +32,82 @@ class SecretPhraseAdapter(private val context: Context, private val phrase: Muta
     private var recyclerView: RecyclerView? = null
     private val keywordList: ArrayList<Keyword> = ArrayList(PHRASE_SIZE)
     private val layoutManager: MultipleSpanGridLayoutManager = MultipleSpanGridLayoutManager(context)
-
-    init {
-
-    }
-
-
+    private val textWatcher = KeywordEditTextChangeListener(this, keywordList, viewModel)
+    private val onFocusChangeListener = OnFocusChangeListener()
+    private val onKeyListener = KeywordEditOnKeyListener(this)
 
     fun clear() {
+        var count = 0
+        recyclerView?.children?.forEach { root->
+            val parent = root as ViewGroup
+            val textView = parent.getChildAt(0) as AppCompatTextView
+            val editText = parent.getChildAt(1) as AppCompatEditText
+            editText.apply {
+                removeTextChangedListener(textWatcher)
+                visibility = View.VISIBLE
+                setText("")
+            }
+            textView.setTextColor(ContextCompat.getColor(context, R.color.hintColor))
+            layoutManager.spanSizes[count++] = MultipleSpanGridLayoutManager.SPAN_SIZE
+        }
         keywordList.clear()
         notifyDataSetChanged()
-    }
 
-    fun isEmpty(): Boolean {
-        return keywordList.isEmpty()
+//        ????????????????????????????????????????????????????
+//        ????????????????????????????????????????????????????
+//        ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+//        ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+        //Keyboard is not appearing after Resetting the phrase
+        //without this additional operation (idk y)
+        recyclerView?.children?.forEach { root->
+            ((root as ViewGroup).getChildAt(1) as AppCompatEditText).apply {
+                setText("")
+            }
+        }
     }
+//        ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+//        ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+//        ????????????????????????????????????????????????????
+//        ????????????????????????????????????????????????????
 
     fun addItem(keyword: Keyword) {
         if (keywordList.size >= PHRASE_SIZE) {
-            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            context.hideSoftKeyboard()
+            viewModel.phrase.value?.let { viewModel.verifyPhrase(it) }
             return
         }
         keywordList.add(keyword)
         notifyItemInserted(keywordList.size - 1)
+    }
+
+    fun removeItemAt(
+        position: Int,
+        root: ViewGroup,
+        txtKeyword: AppCompatTextView,
+        edtKeyword: AppCompatEditText,
+        currentEdtKeyword: AppCompatEditText
+    ) {
+
+        keywordList.removeAt(position)
+        currentEdtKeyword.removeTextChangedListener(textWatcher)
+        textWatcher.apply {
+            _itemPosition = position - 1
+            _root = root
+            _txtKeyword = txtKeyword
+            _edtKeyword = edtKeyword
+        }
+        onKeyListener._position = position - 1
+        notifyItemRemoved(position)
+        edtKeyword.apply {
+            isVisible = true
+            requestFocus()
+        }
+        txtKeyword.apply {
+            val phrase = text.toString()
+            text = phrase.substring(0, phrase.indexOf(".") + 1)
+            setTextColor(Color.BLACK)
+        }
+
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -55,6 +115,8 @@ class SecretPhraseAdapter(private val context: Context, private val phrase: Muta
         this.recyclerView = recyclerView.apply {
             layoutManager = this@SecretPhraseAdapter.layoutManager
         }
+        textWatcher._recyclerView = this.recyclerView
+        onKeyListener.recyclerView = this.recyclerView
 
     }
 
@@ -70,7 +132,7 @@ class SecretPhraseAdapter(private val context: Context, private val phrase: Muta
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
+        holder.bind(position, keywordList[position])
     }
 
     override fun getItemCount(): Int {
@@ -78,26 +140,83 @@ class SecretPhraseAdapter(private val context: Context, private val phrase: Muta
     }
 
     inner class ViewHolder(val binding: RvItemKeyWordBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(position: Int) {
+        fun bind(position: Int, item: Keyword) {
 
+            initListeners(position)
+            initTxtKeywordNum(position)
+            addListeners()
+            setFocusToCurrentItem()
+            openKeyboardOnFirstItem(position)
 
-            val textNum = "${position + 1}."
-            binding.txtKeywordNum.text = textNum
-
-            binding.edtKeyword.requestFocus()
-            binding.edtKeyword
-            if (position == 0) {
-                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            if (textWatcher.isPhrasePastedFromClipboard) {
+               handlePastedPhrase(position, item)
             }
 
 
-            val textWatcher = KeywordEditTextChangeListener(
-                recyclerView, binding.edtKeyword, binding.txtKeywordNum, binding.root, keywordList, position, phrase
-            )
-            binding.edtKeyword.addTextChangedListener(textWatcher)
-            binding.edtKeyword.onFocusChangeListener = OnFocusChangeListener(position)
+        }
 
+        private fun initListeners(position: Int) {
+            textWatcher.apply {
+                _itemPosition = position
+                _root = binding.root as ViewGroup
+                _txtKeyword = binding.txtKeywordNum
+                _edtKeyword = binding.edtKeyword
+            }
+            onKeyListener._position = position
+        }
+
+        private fun addListeners() {
+            binding.edtKeyword.apply {
+                addTextChangedListener(textWatcher)
+                onFocusChangeListener = this@SecretPhraseAdapter.onFocusChangeListener
+                setOnKeyListener(onKeyListener)
+
+            }
+        }
+
+        private fun initTxtKeywordNum(position: Int) {
+            layoutManager.spanSizes[position] = MultipleSpanGridLayoutManager.DEFAULT_SPAN_SIZE
+            val textNum = "${position + 1}."
+            binding.txtKeywordNum.text = textNum
+        }
+
+        private fun setFocusToCurrentItem() {
+            binding.root.setBackgroundColor(Color.TRANSPARENT)
+            binding.edtKeyword.requestFocus()
+        }
+
+        private fun openKeyboardOnFirstItem(position: Int) {
+            if (position == 0) {
+                context.showSoftKeyboard()
+            }
+        }
+
+        private fun handlePastedPhrase(position: Int, item: Keyword) {
+            if (position != keywordList.size - 1) {
+                binding.edtKeyword.apply {
+                    removeTextChangedListener(textWatcher)
+                    setText(item.title)
+                    addTextChangedListener(textWatcher)
+                    setSelection(binding.edtKeyword.text.toString().length)
+                    isVisible = false
+                }
+                binding.txtKeywordNum.apply {
+                    val tag = "${position + 1}.${item.title}"
+                    text = tag
+                    setTextColor(Color.WHITE)
+                }
+            }else {
+                textWatcher.isPhrasePastedFromClipboard = false
+                binding.edtKeyword.apply {
+                    removeTextChangedListener(textWatcher)
+                    setText(item.title)
+                    setSelection(binding.edtKeyword.text.toString().length)
+                    addTextChangedListener(textWatcher)
+                }
+                binding.txtKeywordNum.setTextColor(Color.BLACK)
+            }
+            val spanSize = MeasureHelper(recyclerView, binding.root).getSpanSize()
+            layoutManager.spanSizes[position] = spanSize
         }
     }
 }
