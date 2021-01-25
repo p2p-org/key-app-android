@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
@@ -15,6 +16,10 @@ import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentQrScannerBinding
 import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
+import kotlinx.coroutines.launch
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
+import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
@@ -52,17 +57,18 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     }
 
     private fun initializeQRCamera() {
-        scannerView = ZBarScannerView(context)
-        scannerView?.setResultHandler(this)
-        scannerView?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorTranslucent))
-        scannerView?.setBorderColor(ContextCompat.getColor(context!!, android.R.color.white))
-        scannerView?.setLaserEnabled(false)
-        scannerView?.setBorderStrokeWidth(12)
-        scannerView?.setBorderLineLength(120)
-        scannerView?.setBorderCornerRadius(24)
-        scannerView?.setSquareViewFinder(true)
-        scannerView?.setupScanner()
-        scannerView?.setAutoFocus(true)
+        scannerView = ZBarScannerView(context).apply {
+            setResultHandler(this@QrScannerFragment)
+            setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorTranslucent))
+            setBorderColor(ContextCompat.getColor(context!!, android.R.color.white))
+            setLaserEnabled(false)
+            setBorderStrokeWidth(resources.getDimensionPixelSize(R.dimen.dp_4))
+            setBorderLineLength(resources.getDimensionPixelSize(R.dimen.dp_55))
+            setBorderCornerRadius(resources.getDimensionPixelSize(R.dimen.dp_24))
+            setSquareViewFinder(true)
+            setupScanner()
+            setAutoFocus(true)
+        }
         startQRCamera()
         binding.containerScanner.addView(scannerView)
     }
@@ -76,10 +82,19 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
             is NavigateUpBackStackCommand -> {
                 navigateBackStack()
             }
-            is NavigateSendCoinViewCommand -> navigateFragment(
-                command.destinationId,
-                command.bundle
-            )
+            is OpenSendCoinDialogViewCommand -> {
+                val walletItem = command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
+                val walletAddress = command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "")!!
+                SendCoinsBottomSheet.newInstance(
+                    walletItem, walletAddress
+                ) { destinationId, bundle ->
+                    navigateFragment(destinationId, bundle)
+                }.show(
+                    childFragmentManager,
+                    TAG_SEND_COIN
+                )
+            }
+
         }
     }
 

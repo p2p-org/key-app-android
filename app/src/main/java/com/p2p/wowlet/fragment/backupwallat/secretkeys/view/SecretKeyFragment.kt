@@ -60,7 +60,10 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpBackStackCommand -> {
+                requireContext().hideSoftKeyboard(this@SecretKeyFragment)
+                navigateBackStack()
+            }
             is Command.NavigatePinCodeViewCommand -> {
                 navigateFragment(command.destinationId, command.bundle)
             }

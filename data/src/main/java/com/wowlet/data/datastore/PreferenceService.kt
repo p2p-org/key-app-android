@@ -1,6 +1,8 @@
 package com.wowlet.data.datastore
 
+import com.wowlet.entities.enums.SelectedCurrency
 import com.wowlet.entities.local.*
+import org.p2p.solanaj.rpc.Cluster
 
 interface PreferenceService {
     fun setWalletItem(userData: UserSecretData)
@@ -19,4 +21,8 @@ interface PreferenceService {
     fun finishLoginReg(finishReg: Boolean)
     fun setWalletItemData(walletItem: WalletItem?)
     fun getWalletItemData(): WalletItem?
+    fun setSelectedNetWork(cluster: Cluster)
+    fun getSelectedCluster(): Cluster
+    fun setSelectedCurrency(currency: SelectedCurrency)
+    fun getSelectedCurrency(): SelectedCurrency?
 }

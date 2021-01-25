@@ -55,6 +55,9 @@ class EnterWalletPagerAdapter(private var list: List<EnterWallet>) :
         init {
             binding.viewPager.setCurrentItem(2, false)
             binding.enterWalletTitle.text = binding.enterWalletTitle.context.getString(R.string.deposit_to_your_wallet, list[2].name)
+            if (list.size <= 4) {
+                binding.viewPager.isUserInputEnabled = false
+            }
         }
 
 
@@ -71,8 +74,8 @@ class EnterWalletPagerAdapter(private var list: List<EnterWallet>) :
             if (state == ViewPager2.SCROLL_STATE_IDLE) {
                 if (currentPosition == 0) {
                     binding.viewPager.setCurrentItem(list.size - 3, false)
-                }else if (currentPosition == list.size - 2) {
-                    binding.viewPager.setCurrentItem(1, false)
+                }else if (currentPosition == list.size - 1) {
+                    binding.viewPager.setCurrentItem(2, false)
                 }
             }else if (state == ViewPager2.SCROLL_STATE_DRAGGING
                 && currentPosition == list.size - 1) {

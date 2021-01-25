@@ -24,7 +24,7 @@ class FingerPrintFragment : FragmentBaseMVVM<FingerPrintViewModel, FragmentFinge
         }
         binding.btUseFaceID.setOnClickListener {
             activity?.openFingerprintDialog() {
-                viewModel.doThisLater()
+                viewModel.enableFingerprint()
             }
         }
     }

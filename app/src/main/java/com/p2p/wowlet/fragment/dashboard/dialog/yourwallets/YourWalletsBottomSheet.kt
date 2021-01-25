@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogMyWalletBinding
-import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.adapter.YourWalletsAdapter
 import com.wowlet.entities.local.WalletItem

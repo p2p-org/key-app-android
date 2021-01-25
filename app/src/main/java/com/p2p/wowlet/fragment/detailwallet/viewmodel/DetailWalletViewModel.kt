@@ -9,7 +9,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
-import com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment.Companion.WALLET_ITEM
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.WALLET_ITEM
 import com.wowlet.domain.interactors.DetailWalletInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
@@ -62,7 +62,7 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
                         }*/
                     _getActivityData.value = detailList.data
                 }
-                is Result.Error -> {
+                is Result.Error -> withContext(Dispatchers.Main) {
                     _getActivityDataError.value = detailList.errors.errorMessage
                 }
             }
@@ -81,8 +81,7 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
     }
 
     fun goToSendCoin(walletItem: WalletItem) {
-        _command.value = Command.NavigateSendCoinViewCommand(
-            R.id.action_navigation_detail_wallet_to_navigation_send_coin,
+        _command.value = Command.OpenSendCoinDialogViewCommand(
             bundleOf(WALLET_ITEM to walletItem)
         )
     }

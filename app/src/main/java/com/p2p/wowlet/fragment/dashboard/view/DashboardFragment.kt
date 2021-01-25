@@ -10,27 +10,52 @@ import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.activity.RegistrationActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
 import com.p2p.wowlet.appbase.utils.dataBinding
+import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentDashboardBinding
+import com.p2p.wowlet.fragment.dashboard.dialog.BackupDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.currency.CurrencyDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.ProfileDetailsDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.SecurityDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet.Companion.TAG_ADD_COIN
 import com.p2p.wowlet.fragment.dashboard.dialog.allmytokens.AllMyTokensBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.allmytokens.AllMyTokensBottomSheet.Companion.TAG_ALL_MY_TOKENS_DIALOG
+import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.DetailWalletBottomSheet
+import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.DetailWalletBottomSheet.Companion.DETAIL_WALLET
 import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.EnterWalletBottomSheet.Companion.ENTER_WALLET
+import com.p2p.wowlet.fragment.dashboard.dialog.networks.NetworksDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.profile.ProfileDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.RecoveryPhraseDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.savedcards.SavedCardsDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.sendyourwallet.YourWalletBottomSheet
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
+import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
 import com.p2p.wowlet.utils.OnSwipeTouchListener
 import com.p2p.wowlet.utils.drawChart
+import org.koin.android.ext.android.inject
+import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.p2p.solanaj.rpc.RpcClient
 
 class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboardBinding>() {
 
     override val viewModel: DashboardViewModel by viewModel()
     override val binding: FragmentDashboardBinding by dataBinding(R.layout.fragment_dashboard)
+
+    private val rpcClient: RpcClient by inject()
+
+
+    private var isBackupSuccess: Boolean? = null
+
+    companion object {
+        const val BACK_TO_DASHBOARD_SCREEN = "backToDashboardScreen"
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getWalletItems()
@@ -42,6 +67,14 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
 
     @SuppressLint("ClickableViewAccessibility")
     override fun initView() {
+        if (isBackupSuccess != null) {
+            if (isBackupSuccess as Boolean) {
+                viewModel.openRecoveryPhraseDialog()
+            } else {
+                viewModel.openBackupFailedDialog()
+            }
+        }
+
         binding.rootContainer.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeRight() {
                 viewModel.goToScannerFragment()
@@ -54,6 +87,12 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
         })
     }
 
+    override fun initData() {
+        arguments?.let {
+            isBackupSuccess = it.getBoolean(BACK_TO_DASHBOARD_SCREEN)
+        }
+    }
+
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is NavigateUpViewCommand -> navigateFragment(command.destinationId)
@@ -62,29 +101,62 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 navigateFragment(command.destinationId)
                 (activity as MainActivity).showHideNav(false)
             }
-            is NavigateWalletViewCommand -> {
-                navigateFragment(command.destinationId, command.bundle)
-                (activity as MainActivity).showHideNav(false)
+            is OpenWalletDetailDialogViewCommand -> {
+                DetailWalletBottomSheet.newInstance(command.walletItem, {
+                    viewModel.goToQrScanner(it)
+                }, {
+                    viewModel.openAddCoinDialog()
+                }, {
+                      viewModel.goToSendCoin(it)
+                }, {
+                    viewModel.enterWalletDialog()
+                }, {
+                    viewModel.goToSwapFragment()
+                }).show(
+                    childFragmentManager,
+                    DETAIL_WALLET
+                )
             }
-            is NavigateSendCoinViewCommand -> {
-                navigateFragment(command.destinationId)
-                (activity as MainActivity).showHideNav(false)
+            is OpenSendCoinDialogViewCommand -> {
+                val walletItem =
+                    command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
+                val walletAddress =
+                    command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "") ?: ""
+                SendCoinsBottomSheet.newInstance(
+                    walletItem, walletAddress
+                ) { destinationId, bundle ->
+                    navigateFragment(destinationId, bundle)
+                }.show(
+                    childFragmentManager,
+                    TAG_SEND_COIN
+                )
             }
+
+
             is NavigateDetailSavingViewCommand -> {
                 navigateFragment(command.destinationId)
                 (activity as MainActivity).showHideNav(false)
             }
+            is NavigateBlockChainViewCommand -> {
+                navigateFragment(command.destinationId, command.bundle)
+            }
             is OpenAddCoinDialogViewCommand -> {
-                AddCoinBottomSheet.newInstance().show(
-                    childFragmentManager,
-                    TAG_ADD_COIN
-                )
+                AddCoinBottomSheet.newInstance({
+                    viewModel.goToDetailWalletFragment(it)
+                }) {
+                    viewModel.goToBlockChainExplorer(it)
+                }.show(childFragmentManager, TAG_ADD_COIN)
             }
             is EnterWalletDialogViewCommand -> {
                 EnterWalletBottomSheet.newInstance(command.list).show(
                     childFragmentManager,
                     ENTER_WALLET
                 )
+            }
+            is Command.OpenTransactionDialogViewCommand -> {
+                TransactionBottomSheet.newInstance(command.itemActivity) { destinationId, bundle ->
+                    navigateFragment(destinationId, bundle)
+                }.show(childFragmentManager, TransactionBottomSheet.TRANSACTION_DIALOG)
             }
             is OpenProfileDetailDialogViewCommand -> {
                 ProfileDetailsDialog.newInstance {
@@ -100,15 +172,47 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 )
             }
             is OpenBackupDialogViewCommand -> {
-                RecoveryPhraseDialog.newInstance()
-                    .show(childFragmentManager, RecoveryPhraseDialog.TAG_RECOVERY_DIALOG)
+                BackupDialog.newInstance {
+                    viewModel.goToPinCodeFragment()
+                }.show(childFragmentManager, BackupDialog.TAG_BACKUP_DIALOG)
+            }
+            is NavigatePinCodeViewCommand -> {
+                navigateFragment(command.destinationId, command.bundle)
+            }
+            is OpenCurrencyDialogViewCommand -> {
+                CurrencyDialog.newInstance(command.onCurrencySelected)
+                    .show(childFragmentManager, CurrencyDialog.TAG_CURRENCY_DIALOG)
+            }
+            is OpenSavedCardDialogViewCommand -> {
+                SavedCardsDialog.newInstance()
+                    .show(childFragmentManager, SavedCardsDialog.TAG_SAVED_CARDS_DIALOG)
+            }
+            is OpenSecurityDialogViewCommand -> {
+                SecurityDialog.newInstance(command.onFingerprintStateSelected)
+                    .show(childFragmentManager, SecurityDialog.TAG_SECURITY_DIALOG)
+            }
+            is OpenNetworkDialogViewCommand -> {
+                NetworksDialog.newInstance {
+                    rpcClient.updateEndpoint(it.endpoint)
+                    viewModel.getWalletItems()
+                    command.onNetworkSelected.invoke()
+                }.show(childFragmentManager, NetworksDialog.TAG_NETWORKS_DIALOG)
             }
             is OpenProfileDialogViewCommand -> {
                 ProfileDialog.newInstance({
                     viewModel.goToProfileDetailDialog()
-                }) {
+                }, {
                     viewModel.goToBackupDialog()
-                }.show(
+                }, {
+                    viewModel.goToNetworkDialog(it)
+                }, {
+                    viewModel.goToCurrencyDialog(it)
+                }, {
+                    viewModel.goToSavedCardDialog()
+                },
+                    {
+                        viewModel.goToSecurityCardDialog(it)
+                    }).show(
                     childFragmentManager,
                     ProfileDialog.TAG_PROFILE_DIALOG
                 )
@@ -120,6 +224,19 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     viewModel.goToDetailWalletFragment(itemWallet)
                 }.show(
                     childFragmentManager, TAG_ALL_MY_TOKENS_DIALOG
+                )
+            }
+            is OpenRecoveryPhraseDialogViewCommand -> {
+                RecoveryPhraseDialog.newInstance()
+                    .show(childFragmentManager, RecoveryPhraseDialog.TAG_RECOVERY_DIALOG)
+            }
+            is OpenBackupFailedDialogViewCommand -> {
+
+            }
+            is YourWalletDialogViewCommand -> {
+                YourWalletBottomSheet.newInstance(command.enterWallet).show(
+                    childFragmentManager,
+                    YourWalletBottomSheet.ENTER_YOUR_WALLET
                 )
             }
         }

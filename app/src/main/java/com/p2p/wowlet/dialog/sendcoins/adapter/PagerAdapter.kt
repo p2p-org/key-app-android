@@ -1,11 +1,11 @@
-package com.p2p.wowlet.fragment.sendcoins.adapter
+package com.p2p.wowlet.dialog.sendcoins.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
-import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.wowlet.entities.local.UserWalletType
 import kotlinx.android.synthetic.main.item_send_coin_type.view.*
 

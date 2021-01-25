@@ -1,13 +1,13 @@
 package com.p2p.wowlet.fragment.pincode.viewmodel
 
+import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.appbase.viewmodel.SingleLiveData
-import com.p2p.wowlet.appbase.viewmodel.SingleLiveEvent
+import com.p2p.wowlet.fragment.dashboard.view.DashboardFragment.Companion.BACK_TO_DASHBOARD_SCREEN
 import com.wowlet.domain.interactors.FingerPrintInteractor
 import com.wowlet.domain.interactors.NotificationInteractor
 import com.wowlet.domain.interactors.PinCodeInteractor
@@ -54,6 +54,7 @@ class PinCodeViewModel(
             }
         }
     }
+
     fun notificationStatus() {
         val data = notificationInteractor.isEnableNotification()
         when {
@@ -82,10 +83,12 @@ class PinCodeViewModel(
         _command.value =
             Command.NavigateSecretKeyViewCommand(R.id.action_navigation_pin_code_to_navigation_secret_key)
     }
+
     fun goToRegFinishFragment() {
         _command.value =
             Command.NavigateRegFinishViewCommand(R.id.action_navigation_pin_code_to_navigation_reg_finish)
     }
+
     fun goToNotificationFragment() {
         _command.value =
             Command.NavigateNotificationViewCommand(R.id.action_navigation_pin_code_to_navigation_notification)
@@ -94,6 +97,14 @@ class PinCodeViewModel(
     fun goToFingerPrintFragment() {
         _command.value =
             Command.NavigateFingerPrintViewCommand(R.id.action_navigation_pin_code_to_navigation_fingerprint_id)
+    }
+
+    fun goBackToDashboardFragment(isSuccess: Boolean) {
+        _command.value =
+            Command.NavigateDashboardViewCommand(
+                R.id.action_navigation_pin_code_to_navigation_dashboard,
+                bundleOf(BACK_TO_DASHBOARD_SCREEN to isSuccess)
+            )
     }
 
     fun initCode(value: String) {

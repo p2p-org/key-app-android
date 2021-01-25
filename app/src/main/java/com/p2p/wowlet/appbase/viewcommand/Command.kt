@@ -29,11 +29,12 @@ sealed class Command {
     class NavigateSwapViewCommand(val destinationId: Int) : ViewCommand
 
     class NavigateScannerViewCommand(val destinationId: Int) : ViewCommand
+    class NavigateScannerFromSendCoinViewCommand() : ViewCommand
     class OpenAddCoinDialogViewCommand() : ViewCommand
     class NavigateWalletViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
-    class NavigateSendCoinViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
+    class OpenSendCoinDialogViewCommand(val bundle: Bundle? = null) : ViewCommand
     class NavigateBlockChainViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
-    class NavigateManualSecretKeyViewCommand(val destinationId: Int, val bundle: Bundle?) :
+    class NavigateDashboardViewCommand(val destinationId: Int, val bundle: Bundle?) :
         ViewCommand
 
     class NavigateDetailSavingViewCommand(val destinationId: Int) : ViewCommand
@@ -46,9 +47,19 @@ sealed class Command {
     class OpenMyWalletDialogViewCommand() : ViewCommand
     class OpenProfileDetailDialogViewCommand() : ViewCommand
     class OpenBackupDialogViewCommand() : ViewCommand
+    class OpenBackupFailedDialogViewCommand() : ViewCommand
+    class OpenCurrencyDialogViewCommand(val onCurrencySelected: () -> Unit) : ViewCommand
+    class OpenSavedCardDialogViewCommand() : ViewCommand
+    class OpenSecurityDialogViewCommand(val onFingerprintStateSelected: () -> Unit) : ViewCommand
+    class OpenNetworkDialogViewCommand(val onNetworkSelected: () -> Unit) : ViewCommand
+    class OpenRecoveryPhraseDialogViewCommand() : ViewCommand
     class OpenTransactionDialogViewCommand(val itemActivity: ActivityItem) : ViewCommand
+    class OpenWalletDetailDialogViewCommand(val walletItem: WalletItem) : ViewCommand
     class SendCoinDoneViewCommand(val transactionInfo: ActivityItem) : ViewCommand
     class SendCoinViewCommand() : ViewCommand
     class SwapCoinProcessingViewCommand() : ViewCommand
     class OpenAllMyTokensDialogViewCommand(val yourWallets: YourWallets) : ViewCommand
+
+
+
 }

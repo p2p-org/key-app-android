@@ -1,11 +1,8 @@
-package com.p2p.wowlet.fragment.sendcoins.adapter
+package com.p2p.wowlet.dialog.sendcoins.adapter
 
 import androidx.databinding.BindingAdapter
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import me.relex.circleindicator.CircleIndicator3
 
 

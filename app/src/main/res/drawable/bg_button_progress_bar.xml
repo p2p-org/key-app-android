@@ -4,7 +4,7 @@
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
             <corners android:radius="@dimen/dp_10"/>
-            <solid android:color="@color/blue_300"/>
+            <solid android:color="@color/blue_200"/>
         </shape>
     </item>
 
@@ -13,7 +13,7 @@
         <clip>
             <shape android:shape="rectangle">
                 <corners android:radius="@dimen/dp_10"/>
-                <solid android:color="@color/blue_500"/>
+                <solid android:color="@color/blue_400"/>
             </shape>
         </clip>
     </item>
@@ -23,7 +23,7 @@
         <clip>
             <shape android:shape="rectangle">
                 <corners android:radius="@dimen/dp_10"/>
-                <solid android:color="@color/blue_500"/>
+                <solid android:color="@color/blue_400"/>
             </shape>
         </clip>
     </item>

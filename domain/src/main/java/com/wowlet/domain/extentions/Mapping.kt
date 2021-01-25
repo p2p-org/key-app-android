@@ -82,7 +82,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWalletItem>): WalletItem {
 
 fun ConstWalletItem.fromConstWalletToAddCoinItem(
     change24h: Double,
-    change24hInPercentages: Double
+    change24hInPercentages: Double,
+    currency: Double
 ): AddCoinItem {
     return AddCoinItem(
         tokenName = tokenSymbol,
@@ -90,7 +91,8 @@ fun ConstWalletItem.fromConstWalletToAddCoinItem(
         tokenSymbol = tokenSymbol,
         icon = icon,
         change24hPrice = change24h,
-        change24hPercentages = change24hInPercentages
+        change24hPercentages = change24hInPercentages,
+        currency = currency
     )
 }
 

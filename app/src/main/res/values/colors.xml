@@ -5,12 +5,18 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+    <color name="green_30">#4D2DB533</color>
+    <color name="green_500">#17971D</color>
     <color name="black">#FF000000</color>
+    <color name="grey_dark">#202020</color>
     <color name="gray_600">#757575</color>
     <color name="gray_500">#565656</color>
     <color name="blue_500">#0A84FF</color>
+    <color name="blue_400">#5887FF </color>
     <color name="blue_300">#64B5F6</color>
+    <color name="blue_200">#a7befc</color>
     <color name="gray_blue_400">#A3A5BA</color>
+    <color name="gray_blue_10">#1AA3A5BA</color>
     <color name="gray_400">#C4C4C4</color>
     <color name="gray_300">#F6F6F8</color>
     <color name="gray_80">#CCDBDBDB</color>
@@ -30,4 +36,8 @@
     <color name="black_1">#1b1b1b</color>
     <color name="darkslategray">#2a2a2a</color>
     <color name="gainsboro">#E3E3E3</color>
+    <color name="limegreen">#2DB533</color>
+    <color name="cornflowerblue">#5887FF</color>
+    <color name="black_300">#202020</color>
+    <color name="lavender">#E9E9E9</color>
 </resources>

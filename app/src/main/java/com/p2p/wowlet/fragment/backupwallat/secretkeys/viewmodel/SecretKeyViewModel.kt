@@ -38,8 +38,7 @@ class SecretKeyViewModel(val secretKeyInteractor: SecretKeyInteractor) : BaseVie
     }
 
     fun navigateUp() {
-        _command.value =
-            Command.NavigateUpViewCommand(R.id.action_navigation_secret_key_to_navigation_recovery_wallet)
+        _command.value = Command.NavigateUpBackStackCommand()
     }
 
     fun verifyPhrase(phrase: String) {

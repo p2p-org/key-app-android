@@ -11,7 +11,9 @@ import com.wowlet.data.util.cipher.Cipher.Companion.encrypt
 import com.wowlet.data.util.cipher.Cipher.Companion.generateSecretKeyCipher
 import com.wowlet.data.util.cipher.Cipher.Companion.getSecretKey
 import com.wowlet.data.util.cipher.Cipher.Companion.strSecretKey
+import com.wowlet.entities.enums.SelectedCurrency
 import com.wowlet.entities.local.*
+import org.p2p.solanaj.rpc.Cluster
 import java.io.*
 import java.lang.reflect.Type
 
@@ -23,6 +25,8 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
     private val fingerPrintPKey = "fingerPrintPKey"
     private val finishRegKey = "finishRegKey"
     private val walletItemKey = "walletItemKey"
+    private val networkItemKey = "networkItemKey"
+    private val selectedCurrencyKey = "selectedCurrencyKey"
 
     val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
 
@@ -59,11 +63,22 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
     override fun getWalletItemData(): WalletItem? = get(walletItemKey)
 
 
+    override fun setSelectedNetWork(cluster: Cluster) {
+        put(cluster, networkItemKey)
+    }
+
+    override fun getSelectedCluster(): Cluster = get(networkItemKey) ?: Cluster.MAINNET
 
     private var finishReg: Boolean
         get() = sharedPreferences.getBoolean(finishRegKey, false)
         set(enable) = sharedPreferences.edit().putBoolean(finishRegKey, enable)
             .apply()
+
+    override fun setSelectedCurrency(currency: SelectedCurrency) {
+        put(currency, selectedCurrencyKey)
+    }
+
+    override fun getSelectedCurrency(): SelectedCurrency? = get(selectedCurrencyKey)
 
     inline fun <reified T> get(key: String): T? {
         val value = sharedPreferences.getString(key, null)

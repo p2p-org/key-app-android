@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel" />
+            type="com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -74,7 +74,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_17"
                 android:text="@{model.signature}"
-                android:singleLine="true"
+                android:lines="1"
+                android:ellipsize="end"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/copyTransaction"
                 app:layout_constraintStart_toStartOf="parent"
@@ -100,12 +101,11 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/blockChainExplorer"
-            style="@style/Widget.Grey.Button"
+            style="@style/Widget.Gain.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
-            android:onClick="@{()->viewModel.goToBlockChainExplorer(model.signature)}"
             android:paddingHorizontal="@dimen/dp_40"
             android:paddingVertical="@dimen/dp_19"
             android:text="@string/view_in_blockchain_explorer"

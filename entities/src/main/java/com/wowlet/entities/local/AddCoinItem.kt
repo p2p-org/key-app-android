@@ -9,6 +9,8 @@ data class AddCoinItem(
     val icon: String,
     val change24hPrice: Double,
     val change24hPercentages: Double,
+    val currency: Double,
     var isShowMindAddress: Boolean=false,
-    var isAlreadyAdded: Boolean = false
+    var isAlreadyAdded: Boolean = false,
+    var navigatingBack: Boolean = false
 )

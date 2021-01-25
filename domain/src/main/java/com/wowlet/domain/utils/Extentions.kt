@@ -19,6 +19,12 @@ fun Long.secondToDate(): String? {
 
 fun String.getActivityDate(): String {
     val parser = SimpleDateFormat("dd-MMM-yyyy '@' HH:mm a")
-    val formatter = SimpleDateFormat("dd MMM yyyy")
+    val formatter = SimpleDateFormat("MMMM dd,yyyy '@' HH:mm a")
+    return formatter.format(parser.parse(this))
+}
+
+fun String.getTransactionDate(): String {
+    val parser = SimpleDateFormat("dd-MMM-yyyy '@' HH:mm a")
+    val formatter = SimpleDateFormat("dd MMM yyyy '@' HH:mm a")
     return formatter.format(parser.parse(this))
 }

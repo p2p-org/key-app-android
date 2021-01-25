@@ -50,8 +50,9 @@ class EnterWalletBottomSheet(val list: List<EnterWallet>) : BottomSheetDialogFra
         adapter = EnterWalletPagerAdapter(list)
         binding.viewPager.adapter = adapter
         binding.viewPager.registerOnPageChangeCallback(adapter.getInfiniteScrollingOnPageChangeCallback(binding))
-        binding.pageIndicator.setViewPager(binding.viewPager)
-        adapter.registerAdapterDataObserver(binding.pageIndicator.adapterDataObserver)
+        binding.indicator.attachToPager(binding.viewPager)
+//        binding.pageIndicator.setViewPager(binding.viewPager)
+//        adapter.registerAdapterDataObserver(binding.pageIndicator.adapterDataObserver)
     }
 
 

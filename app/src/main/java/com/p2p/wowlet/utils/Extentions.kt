@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.Settings
@@ -29,7 +30,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.Executor
-import kotlin.math.pow
 
 
 fun LineChart.initChart(chartList: List<Entry>) {
@@ -37,10 +37,10 @@ fun LineChart.initChart(chartList: List<Entry>) {
     lineDataSet.lineWidth = 2f
     lineDataSet.setDrawCircles(false)
     lineDataSet.setDrawValues(false)
-    lineDataSet.color = R.color.black
+    lineDataSet.color = R.color.cornflowerblue
     lineDataSet.setDrawFilled(true)
     lineDataSet.setDrawHorizontalHighlightIndicator(false)
-    lineDataSet.highLightColor = R.color.black
+    lineDataSet.highLightColor = R.color.cornflowerblue
 
     context?.run {
         val fillGradient = ContextCompat.getDrawable(this, R.drawable.bg_chart)
@@ -66,7 +66,7 @@ fun LineChart.initChart(chartList: List<Entry>) {
         marker = mv
         data = LineData(lineDataSet)
         invalidate()
-        animateX(500);
+        animateX(500)
     }
 }
 
@@ -139,14 +139,7 @@ fun FragmentActivity.openFingerprintDialog(requestSuccess: () -> Unit) {
                 Toast.LENGTH_LONG
             ).show()
         BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-            when {
-                android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R -> {
-                    startActivity(Intent(Settings.ACTION_BIOMETRIC_ENROLL))
-                }
-                else -> {
-                    startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
-                }
-            }
+            startActivity(Intent(Settings.ACTION_SETTINGS))
             Toast.makeText(
                 this,
                 getString(R.string.error_msg_biometric_not_setup),
@@ -209,6 +202,18 @@ fun <T : ViewDataBinding> ViewGroup.inflate(layoutId: Int): T {
     )
 }
 
+fun getOneHour(): Long {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.HOUR, -1)
+    return cal.timeInMillis
+}
+
+fun getFourHour(): Long {
+    val cal = Calendar.getInstance()
+    cal.add(Calendar.HOUR, -4)
+    return cal.timeInMillis
+}
+
 fun getYesterday(): Long {
     val cal = Calendar.getInstance()
     cal.add(Calendar.DATE, -1)
@@ -237,6 +242,9 @@ fun Double.roundCurrencyValue(): Double {
     return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toDouble()
 }
 
+fun Double.roundToThousandsCurrencyValue(): Double {
+    return BigDecimal(this).setScale(4, RoundingMode.HALF_EVEN).toDouble()
+}
 
 
 

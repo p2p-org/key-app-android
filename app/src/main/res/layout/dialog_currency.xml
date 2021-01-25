@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_20"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -29,7 +33,7 @@
                 app:srcCompat="@drawable/ic_arrow_left" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/Grey.17"
+                style="@style/Grey.17.SfProDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_2"
@@ -40,7 +44,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vTitle"
-            style="@style/Black.17.Bold"
+            style="@style/Black.17.Bold.SfProDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -50,9 +54,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/dividerCurrency"
+            style="@style/HorizontalDividerGrey_400"
+            app:layout_constraintTop_toBottomOf="@id/vTitle"
+            android:layout_marginTop="@dimen/dp_20"
+            tools:ignore="MissingConstraints"
+            />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vDone"
-            style="@style/Grey.17"
+            style="@style/Grey.17.SfProDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_20"
@@ -66,32 +78,47 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_10"
             android:layout_marginEnd="@dimen/dp_20"
+            android:checkedButton="@{viewModel.getSelectedCurrencyCheckbox()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vTitle">
+            app:layout_constraintTop_toBottomOf="@+id/dividerCurrency">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                style="@style/Black.15"
+                android:id="@+id/rbUSD"
+                style="@style/Black.15.SfProDisplay"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/dp_56"
                 android:button="@null"
                 android:checked="false"
                 android:drawableEnd="@drawable/selector_radio_button"
                 android:text="@string/united_states_dollar" />
 
+
+            <View
+                style="@style/HorizontalDividerGrey_400"
+
+                />
+
             <com.google.android.material.radiobutton.MaterialRadioButton
-                style="@style/Black.15"
+                android:id="@+id/rbEUR"
+                style="@style/Black.15.SfProDisplay"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/dp_56"
                 android:button="@null"
                 android:checked="false"
                 android:drawableEnd="@drawable/selector_radio_button"
                 android:text="@string/euro" />
 
+
+            <View
+                style="@style/HorizontalDividerGrey_400"
+                />
+
             <com.google.android.material.radiobutton.MaterialRadioButton
-                style="@style/Black.15"
+                android:id="@+id/rbCNY"
+                style="@style/Black.15.SfProDisplay"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:button="@null"
@@ -99,8 +126,14 @@
                 android:drawableEnd="@drawable/selector_radio_button"
                 android:text="@string/chinese_yuan" />
 
+
+            <View
+                style="@style/HorizontalDividerGrey_400"
+                />
+
             <com.google.android.material.radiobutton.MaterialRadioButton
-                style="@style/Black.15"
+                android:id="@+id/rbKRW"
+                style="@style/Black.15.SfProDisplay"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:button="@null"
@@ -108,8 +141,14 @@
                 android:drawableEnd="@drawable/selector_radio_button"
                 android:text="@string/south_korean_won" />
 
+
+            <View
+                style="@style/HorizontalDividerGrey_400"
+                />
+
             <com.google.android.material.radiobutton.MaterialRadioButton
-                style="@style/Black.15"
+                android:id="@+id/rbRUB"
+                style="@style/Black.15.SfProDisplay"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:button="@null"
@@ -117,11 +156,16 @@
                 android:drawableEnd="@drawable/selector_radio_button"
                 android:text="@string/russian_ruble" />
 
+
+            <View
+                style="@style/HorizontalDividerGrey_400"
+                />
+
         </RadioGroup>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vLogOut"
-            style="@style/Grey.15"
+            style="@style/Grey.15.SfProText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_110"

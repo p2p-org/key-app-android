@@ -26,10 +26,12 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
 
     companion object {
         const val OPEN_FRAGMENT_SPLASH_SCREEN = "openFragmentSplashScreen"
+        const val OPEN_FRAGMENT_BACKUP_DIALOG = "openFragmentBackupDialog"
         const val CREATE_NEW_PIN_CODE = "createNewPinCode"
     }
 
     private var isSplashScreen: Boolean = false
+    private var isBackupDialog: Boolean = false
     private lateinit var pinCodeFragmentType: PinCodeFragmentType
 
 
@@ -50,7 +52,10 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                     },
                     pinFingerPrint = {
                         activity?.openFingerprintDialog {
-                            this@PinCodeFragment.viewModel.goToFingerPrintFragment()
+                            if (isBackupDialog)
+                                this@PinCodeFragment.viewModel.goBackToDashboardFragment(true)
+                            else
+                                this@PinCodeFragment.viewModel.goToFingerPrintFragment()
                         }
                     },
                     removeCode = {
@@ -66,12 +71,13 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
     override fun initData() {
         arguments?.let {
             isSplashScreen = it.getBoolean(OPEN_FRAGMENT_SPLASH_SCREEN, false)
+            isBackupDialog = it.getBoolean(OPEN_FRAGMENT_BACKUP_DIALOG, false)
             pinCodeFragmentType = it.get(CREATE_NEW_PIN_CODE) as PinCodeFragmentType
         }
     }
 
     private fun initPinCodeMassage() {
-        if (isSplashScreen)
+        if (isSplashScreen || isBackupDialog)
             vPinCodeMessage.text = getString(R.string.enter_the_code)
         else
             vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
@@ -84,16 +90,19 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
         }
         observe(viewModel.pinCodeSaved) {
             vPinCodeMessage.text = getString(R.string.confirm_pin_code)
-            pinView.clearPin()
-            pinView.isFirstPinInput = true
+            binding.pinView.clearPin()
+            binding.pinView.isFirstPinInput = true
         }
         observe(viewModel.pinCodeError) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
         observe(viewModel.isSkipFingerPrint) {
-            if (it)
-                viewModel.notificationStatus()
-            else
+            if (it) {
+                if (isBackupDialog)
+                    viewModel.goBackToDashboardFragment(true)
+                else
+                    viewModel.notificationStatus()
+            } else
                 viewModel.goToFingerPrintFragment()
         }
         observe(viewModel.skipNotification) {
@@ -108,28 +117,31 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                 PinCodeFragmentType.CREATE -> {
                     vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
                     //vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
-                    pinView.isFirstPinInput = true
-                    pinView.clearPin()
+                    binding.pinView.isFirstPinInput = true
+                    binding.pinView.clearPin()
                 }
                 PinCodeFragmentType.VERIFY -> {
-                    pinView.errorPinViewsDesign()
-                    if(pinCodeFragmentType==PinCodeFragmentType.VERIFY)
-                        binding.resetPinCode.visibility=View.VISIBLE
+                    binding.pinView.errorPinViewsDesign()
+                    if (pinCodeFragmentType == PinCodeFragmentType.VERIFY)
+                        binding.resetPinCode.visibility = View.VISIBLE
                     else
-                        binding.resetPinCode.visibility=View.GONE
-                    when (pinView.wrongPinCodeCount) {
-                        1 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_2)
-                        2 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_1)
-                        else -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_block)
-                    }
+                        binding.resetPinCode.visibility = View.GONE
+                    if (isBackupDialog)
+                        vPinCodeNotMatch.text = getString(R.string.incorrect_password)
+                    else
+                        when (binding.pinView.wrongPinCodeCount) {
+                            1 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_2)
+                            2 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_1)
+                            else -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_block)
+                        }
                 }
             }
         }
 
-        pinView.createPinCode = {
+        binding.pinView.createPinCode = {
             viewModel.initCode(it)
         }
-        pinView.verifyPinCode = {
+        binding.pinView.verifyPinCode = {
             viewModel.verifyPinCode(it)
         }
     }
@@ -149,14 +161,19 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                     it.finish()
                 }
             }
+            is Command.NavigateDashboardViewCommand -> {
+                navigateFragment(command.destinationId, command.bundle)
+            }
         }
     }
 
     override fun navigateUp() {
         if (isSplashScreen)
             viewModel.finishApp()
-        else {
-            if (pinCodeFragmentType == PinCodeFragmentType.CREATE && pinView.isFirstPinInput) {
+        else if (isBackupDialog) {
+            viewModel.goBackToDashboardFragment(false)
+        } else {
+            if (pinCodeFragmentType == PinCodeFragmentType.CREATE && binding.pinView.isFirstPinInput) {
                 vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
                 binding.vPinCodeNotMatch.visibility = View.GONE
                 binding.pinView.isFirstPinInput = false

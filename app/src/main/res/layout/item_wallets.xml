@@ -45,6 +45,7 @@
                 style="@style/Black.17.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/sf_pro_text"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_10"
                 android:text="@{itemWallet.tokenName}"
@@ -53,6 +54,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vWalletAddress"
                 style="@style/Grey.13"
+                android:fontFamily="@font/font_sf_pro_display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
@@ -76,6 +78,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vPrice"
                 style="@style/Black.17.Bold"
+                android:fontFamily="@font/sf_pro_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_15"
@@ -86,6 +89,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vTkns"
                 style="@style/Grey.13"
+                android:fontFamily="@font/font_sf_pro_display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_7"

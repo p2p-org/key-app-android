@@ -9,7 +9,7 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentSwapBinding
-import com.p2p.wowlet.fragment.sendcoins.dialog.SendCoinDoneDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.SendCoinDoneDialog
 import com.p2p.wowlet.fragment.swap.dialog.SwapCoinProcessingDialog
 import com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -45,7 +45,7 @@ class SwapFragment : FragmentBaseMVVM<SwapViewModel, FragmentSwapBinding>() {
             is SendCoinDoneViewCommand -> {
                 val sendCoinDone: SendCoinDoneDialog =
                     SendCoinDoneDialog.newInstance(command.transactionInfo, { navigateUp() }) { destinationId, bundle ->
-                        navigateFragment(destinationId, bundle)
+                        navigateBackStack()
                     }
                 sendCoinDone.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
             }

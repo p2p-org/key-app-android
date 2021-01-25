@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel" />
+            type="com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

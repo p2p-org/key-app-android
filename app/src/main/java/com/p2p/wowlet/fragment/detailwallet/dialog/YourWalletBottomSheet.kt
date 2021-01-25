@@ -43,7 +43,7 @@ class YourWalletBottomSheet(val enterWallet: EnterWallet) : BottomSheetDialogFra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.dismissDialog.setOnClickListener { dismiss() }
-        binding.viewModel = dashboardViewModel
+//        binding.viewModel = dashboardViewModel
         binding.itemModel = enterWallet
         binding.shareWalletContainer.setOnClickListener {
             context?.run { shareText(enterWallet.walletAddress) }

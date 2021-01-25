@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel" />
+            type="com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.viewmodel.DetailWalletViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

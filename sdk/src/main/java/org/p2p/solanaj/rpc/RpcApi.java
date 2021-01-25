@@ -98,6 +98,7 @@ public class RpcApi {
 
         List<Object> filters = new ArrayList<Object>();
         filters.add(new Filter(new Memcmp(offset, bytes)));
+        filters.add(new DataSize(DataSize.SPAN));
 
         ProgramAccountConfig programAccountConfig = new ProgramAccountConfig(filters);
         params.add(programAccountConfig);

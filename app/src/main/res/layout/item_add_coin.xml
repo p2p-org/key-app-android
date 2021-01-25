@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginEnd="@dimen/dp_10"
-                    android:text="@{String.format(@string/usd_symbol_2, itemAddCoin.change24hPrice)}"
+                    android:text="@{String.format(@string/usd_symbol_2, itemAddCoin.currency)}"
                     tools:text="$0.887832" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -172,8 +172,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
+                android:fontFamily="@font/font_sf_pro_display"
+                android:textStyle="bold"
                 android:text="@string/view_in_solana_explorer"
                 android:textAllCaps="false"
+                app:rippleColor="@color/blue_200"
                 android:textColor="@color/gray_500"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -214,16 +217,21 @@
                         android:gravity="center"
                         android:text="@string/add_token"
                         android:textColor="@android:color/white"
-                        android:textSize="@dimen/sp_17"
-                        android:textStyle="bold" />
+                        android:textSize="@dimen/sp_15"
+                        android:fontFamily="@font/font_sf_pro_display"
+                        android:textStyle="bold"
+                        />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtWillCost"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_sf_pro_display"
+                        android:textSize="@dimen/sp_13"
                         android:gravity="center"
                         android:textColor="@color/gray_300"
-                        tools:text="will cost 0.000025 SOL" />
+                        tools:text="will cost 0.000023 SOL"
+                        />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 

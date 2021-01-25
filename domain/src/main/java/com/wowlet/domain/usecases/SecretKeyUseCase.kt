@@ -2,6 +2,7 @@ package com.wowlet.domain.usecases
 
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
+import com.wowlet.data.util.mnemoticgenerator.English
 import com.wowlet.domain.interactors.SecretKeyInteractor
 import com.wowlet.entities.CallException
 import com.wowlet.entities.Constants
@@ -65,7 +66,17 @@ class SecretKeyUseCase(
                  return false*/
         return if (inputPhrase.isNotEmpty()) {
             val phrase = inputPhrase.split(" ")
-            if (phrase.size == 12) {
+            val words = English.INSTANCE.words
+            var wordsAreValid = true
+            for (word in phrase) {
+                val wordNotFound = !words.contains(word)
+                if (wordNotFound) {
+                    wordsAreValid = false
+                    break
+                }
+            }
+
+            if (wordsAreValid) {
                 //Temporary comparing to the list from CreateWalletUseCase class
 //                CreateWalletUseCase(preferenceService, wowletApiCallRepository).generatePhrase().forEach {
 //                    if (!phrase.contains(it)) {
@@ -73,14 +84,17 @@ class SecretKeyUseCase(
 //                    }
 //
 //                }
+
                 val userAccount = wowletApiCallRepository.initAccount(phrase)
+
                 preferenceService.updateWallet(userAccount)
                 Result.Success(true)
             } else {
                 Result.Error(
                     CallException(
                         Constants.ERROR_INCORRECT_PHRASE,
-                        "Phrase size count is not 12 worlds"
+                        "Wrong order or seed phrase, please\n" +
+                                " check it and try again"
                     )
                 )
             }

@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment.Companion.WALLET_ADDRESS
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.WALLET_ADDRESS
 import com.wowlet.domain.interactors.QrScannerInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.QrWalletType
@@ -28,8 +28,7 @@ class QrScannerViewModel(val qrScannerInteractor: QrScannerInteractor) : BaseVie
 
     fun goToSendCoinFragment(walletAddress: String) {
         _command.value =
-            Command.NavigateSendCoinViewCommand(
-                R.id.action_navigation_scanner_to_navigation_send_coin,
+            Command.OpenSendCoinDialogViewCommand(
                 bundleOf(WALLET_ADDRESS to walletAddress)
             )
     }

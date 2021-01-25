@@ -13,6 +13,10 @@ public enum English implements WordList {
         return ' ';
     }
 
+    public String[] getWords() {
+        return words;
+    }
+
     private final static String[] words = new String[]{
             "abandon",
             "ability",

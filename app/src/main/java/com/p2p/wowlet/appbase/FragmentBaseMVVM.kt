@@ -22,7 +22,7 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
     abstract val viewModel: ViewModel
     abstract val binding: DataBinding
     private lateinit var navControler: NavController
-    private val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+    private val navOptions = NavOptions.Builder().setLaunchSingleTop(false).build()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(this) {

@@ -20,6 +20,24 @@ inline fun <reified F> getCurrentFragment(navHostFragment: NavHostFragment): F? 
     } else null
 }
 
+fun getCurrentFragment(navHostFragment: NavHostFragment): Fragment? {
+    return if (navHostFragment.isAdded && navHostFragment.childFragmentManager.fragments.size > 0) {
+        navHostFragment.childFragmentManager.fragments[0]
+    } else null
+}
+
+
+fun Fragment.getNavHostFragment() : NavHostFragment? {
+    var parentFragment = this.parentFragment
+    while (parentFragment !is NavHostFragment) {
+        parentFragment = this.parentFragment?.parentFragment
+        if (parentFragment == null) {
+            return null
+        }
+    }
+    return parentFragment
+}
+
 fun Activity.checkPermissionsGranted(permissions: ArrayList<String>): Boolean {
     permissions.forEach {
         if ((PermissionChecker.checkCallingOrSelfPermission(

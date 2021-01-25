@@ -25,9 +25,9 @@ class SendCoinUseCase(
     override suspend fun sendCoin(coinData: SendTransactionModel): Result<ActivityItem> {
         val activeWallet = preferenceService.getActiveWallet()
         coinData.secretKey = activeWallet?.secretKey!!
-       // coinData.secretKey = "4g8ivUf5LiczqSUs7v2XjhVetZKhSkEFFSRtD94sgtkG6jhNeKXZN6KHkbs2U6AJJWmBXQo8zqmNGFnbgA3F6VCu"
+        //coinData.secretKey = "4g8ivUf5LiczqSUs7v2XjhVetZKhSkEFFSRtD94sgtkG6jhNeKXZN6KHkbs2U6AJJWmBXQo8zqmNGFnbgA3F6VCu"
        coinData.fromPublicKey = activeWallet?.publicKey!!
-      //  coinData.fromPublicKey = "22CbwPktYBVbTctjfsr35ozanxwfVjNbBofsnWY4C2YR"
+       // coinData.fromPublicKey = "22CbwPktYBVbTctjfsr35ozanxwfVjNbBofsnWY4C2YR"
         try {
             val signature = wowletApiCallRepository.sendTransaction(coinData)
             repeat(1000) {
@@ -37,7 +37,7 @@ class SendCoinUseCase(
                     0
                 )?.transferInfoToActivityItem(coinData.fromPublicKey, "", "", "")
                 transaction?.tokenSymbol=coinData.tokenSymbol
-                return Result.Success(transaction)
+                 return Result.Success(transaction)
             }
             return Result.Error(CallException(REQUEST_EXACTION, ""))
         } catch (e: Exception) {

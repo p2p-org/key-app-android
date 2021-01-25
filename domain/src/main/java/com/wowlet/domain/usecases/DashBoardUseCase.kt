@@ -13,6 +13,7 @@ import com.wowlet.entities.CallException
 import com.wowlet.entities.Constants
 import com.wowlet.entities.Constants.Companion.ERROR_NULL_DATA
 import com.wowlet.entities.Result
+import com.wowlet.entities.enums.SelectedCurrency
 import com.wowlet.entities.local.*
 import kotlinx.coroutines.*
 import org.bitcoinj.core.Base58
@@ -31,6 +32,7 @@ class DashBoardUseCase(
     private var yourWalletBalance: Double = 0.0
     private var addCoinData: MutableList<AddCoinItem> = mutableListOf() // 30
     private var minBalance: Long = 0
+
 
     val ownerAccountAddress = "22CbwPktYBVbTctjfsr35ozanxwfVjNbBofsnWY4C2YR"
     override fun generateQRrCode(list: List<WalletItem>): List<EnterWallet> {
@@ -54,6 +56,7 @@ class DashBoardUseCase(
             }
             walletData.clear()
             sendCoinWalletList.clear()
+            pirChatList.clear()
             yourWalletBalance = 0.0
             getConcatWalletItem(walletsList)
             walletData.removeAll { it.depositAddress.isEmpty() }
@@ -62,13 +65,22 @@ class DashBoardUseCase(
             walletData.forEach {
                 yourWalletBalance += it.price
             }
+            val itemComparator = Comparator<WalletItem> { o1, o2 ->
+                when {
+                    o1?.tokenSymbol == "SOL" ->  -1
+                    o2?.tokenSymbol == "SOL" ->  1
+                    else ->  o1?.price?.let { o2?.price?.compareTo(it) } ?: 0
+                }
+            }
+            
+            walletData.sortWith(itemComparator)
             val mainWalletData = if (walletData.size > 4)
                 walletData.take(4)
             else
                 walletData
 
             walletData.forEach {
-                if (it.price.toFloat() != 0.0f)
+                if (it.price != 0.0)
                     pirChatList.add(PieEntry(it.price.toFloat()))
             }
             return Result.Success(
@@ -113,7 +125,8 @@ class DashBoardUseCase(
                                     addCoinData.add(
                                         walletsItem.fromConstWalletToAddCoinItem(
                                             change24h,
-                                            change24hInPercentages
+                                            change24hInPercentages,
+                                            close
                                         )
                                     )
                                 }
@@ -135,8 +148,8 @@ class DashBoardUseCase(
 
             }.awaitAll()
 
-            val wallets = getYourWallets().wallets
-            for (wallet in wallets) {
+
+            for (wallet in walletData) {
                 for (addCoinItem in addCoinData) {
                     val isAlreadyAdded = addCoinItem.tokenSymbol == wallet.tokenSymbol
                     if (isAlreadyAdded) {
@@ -173,7 +186,15 @@ class DashBoardUseCase(
         }
     }
 
-    override suspend fun addCoin(addCoinItem: AddCoinItem): Result<AddCoinItem> {
+    override fun setSelectedCurrency(currency: SelectedCurrency) {
+        preferenceService.setSelectedCurrency(currency)
+    }
+
+    override fun getSelectedCurrency(): SelectedCurrency? {
+        return preferenceService.getSelectedCurrency()
+    }
+
+    override suspend fun addCoin(addCoinItem: AddCoinItem): Result<Boolean> {
         val secretKey = preferenceService.getActiveWallet()?.secretKey
         val payer = Account(Base58.decode(secretKey))
         val mintAddress = PublicKey(addCoinItem.mintAddress)
@@ -192,7 +213,7 @@ class DashBoardUseCase(
                     signature,
                     0
                 )?.transferInfoToActivityItem(fromPublicKey, "", "","")
-                return Result.Success(addCoinItem)
+                return Result.Success(true)
             }
             return Result.Error(CallException(Constants.REQUEST_EXACTION, ""))
         } catch (e: java.lang.Exception) {

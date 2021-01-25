@@ -40,7 +40,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/close"
-                android:textColor="@color/blue_500"
+                android:textColor="@color/blue_400"
                 android:textSize="@dimen/sp_17"
                 app:layout_constraintBottom_toBottomOf="@id/vTitle"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -49,6 +49,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vTitle"
                 style="@style/Black.17"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"

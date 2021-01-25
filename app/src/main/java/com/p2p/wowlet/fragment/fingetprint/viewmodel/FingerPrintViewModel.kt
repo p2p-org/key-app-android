@@ -32,6 +32,19 @@ class FingerPrintViewModel(private val fingerPrintInteractor: FingerPrintInterac
             NavigateNotificationViewCommand(R.id.action_navigation_fingerprint_id_to_navigation_notification)
     }
 
+    fun enableFingerprint() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fingerPrintInteractor.setFingerPrint(
+                EnableFingerPrintModel(
+                    isEnable = true,
+                    isNotWantEnable = false
+                )
+            )
+        }
+        _command.value =
+            NavigateNotificationViewCommand(R.id.action_navigation_fingerprint_id_to_navigation_notification)
+    }
+
     fun navigateUp() {
        /* _command.value =
             NavigateUpViewCommand(R.id.action_navigation_fingerprint_id_to_navigation_enter_pin_code)*/

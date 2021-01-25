@@ -1,10 +1,13 @@
 package com.p2p.wowlet.fragment.detailwallet.view
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
@@ -16,6 +19,8 @@ import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.adapter.ActivityAdapter
 import com.p2p.wowlet.fragment.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.utils.*
 import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -42,7 +47,7 @@ class DetailWalletFragment :
             println("debug: icon = ${walletItem?.icon}")
         }
         walletItem?.run {
-            viewModel.getActivityList(this.depositAddress, icon, tokenName,this.tokenSymbol)
+            viewModel.getActivityList(this.depositAddress, icon, tokenName, this.tokenSymbol)
             viewModel.getChartData(this.tokenSymbol)
         }
     }
@@ -53,6 +58,7 @@ class DetailWalletFragment :
             viewModel = this@DetailWalletFragment.viewModel
             Glide.with(this@DetailWalletFragment)
                 .load(walletItem?.icon)
+                .apply(RequestOptions.bitmapTransform(RoundedCorners(38)))
                 .into(currencyIcon)
             vTitle.text = walletItem?.tokenName
             vWalletAddress.text = walletItem?.depositAddress
@@ -99,7 +105,7 @@ class DetailWalletFragment :
             }
             getChartByYear.setOnClickListener {
                 getChartByYear.changeTextColor(selectedTextView)
-                val year = getYear()
+                val year = getOneHour()
                 walletItem?.tokenSymbol?.run {
                     this@DetailWalletFragment.viewModel.getChartDataByDate(
                         this,
@@ -153,9 +159,18 @@ class DetailWalletFragment :
                 navigateFragment(command.destinationId)
                 (activity as MainActivity).showHideNav(false)
             }
-            is Command.NavigateSendCoinViewCommand -> {
-                navigateFragment(command.destinationId, command.bundle)
-                (activity as MainActivity).showHideNav(false)
+            is Command.OpenSendCoinDialogViewCommand -> {
+                val walletAddress = command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "") ?: ""
+                val walletItem = command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
+                SendCoinsBottomSheet.newInstance(
+                    walletItem,
+                    walletAddress,
+                ) { destinationId: Int, bundle: Bundle? ->
+                    navigateFragment(destinationId, bundle)
+                }.show(
+                    childFragmentManager,
+                    TAG_SEND_COIN
+                )
             }
             is Command.NavigateSwapViewCommand -> {
                 navigateFragment(command.destinationId)

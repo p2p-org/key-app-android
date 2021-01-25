@@ -14,5 +14,7 @@ data class ActivityItem(
     val tokenName: String,
     var tokenSymbol: String,
     val chartList: List<ChartListItem> = listOf(),
-    var date: String
+    var date: String,
+    var currency: Double = lamports.div(price),
+    var isReceive: Boolean = symbolsPrice == "+"
 )

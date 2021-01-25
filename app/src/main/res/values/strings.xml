@@ -87,6 +87,7 @@
     <string name="backup_recovery_info">If you lose this device, you can recover your encrypted wallet backup from iCloud</string>
     <string name="backup_using_icloud">Backup using iCloud</string>
     <string name="faceid">FaceID</string>
+    <string name="touchid">TouchID</string>
     <string name="secure_check">Will be as a primary secure check</string>
     <string name="pin_code">PIN-code</string>
     <string name="default_secure_check">Default secure check</string>
@@ -127,6 +128,8 @@
     <string name="processing">Processing</string>
     <string name="contacts">Contacts</string>
     <string name="fingerprint">Fingerprint</string>
+    <string name="fingerprint_and_pin">Fingerprint, PIN</string>
+    <string name="pin">PIN</string>
     <string name="error_code">Error code</string>
 
     <string name="error_msg_no_biometric_hardware">No biometric features available on this device.</string>
@@ -141,6 +144,7 @@
     <string name="amount_count_format">%1.6f</string>
     <string name="usd_receive">%1$.2f</string>
     <string name="token_receive">%1$.3f %2$s</string>
+    <string name="token_receive_6"> %1$.6f %2$s</string>
     <string name="usd_symbol">$&#160;</string>
     <string name="us_dollar">&#160; US$</string>
     <string name="space">&#160;</string>
@@ -148,8 +152,13 @@
     <string name="btc">%1$.2f BTC</string>
     <string name="usd_symbol_2">$%1$.2f</string>
     <string name="for_24h">%1$.5f  for 24hrs</string>
+    <string name="for_24h_p">%, 24hours</string>
     <string name="percentages">%</string>
     <string name="us">%1$.3f US</string>
+    <string name="us_symbol">%1$.3f $</string>
+    <string name="dollars_value">$ %1$.2f</string>
+    <string name="amount_at_currency">%1$.6f %2$s at %3$.2f US$</string>
+    <string name="us_new">$ %1$.2f</string>
     <string name="tkns">%1$.2f Tkns</string>
     <string name="sol">%1$.6f SOL</string>
     <string name="add_coin_token_info">Add a token to your wallet. This will cost  %d SOL.</string>
@@ -187,6 +196,7 @@
     <string name="block_number">Block number</string>
     <string name="input_count">0.0</string>
     <string name="_1_sol">1 SOL:</string>
+    <string name="_1_token">1 %1$s:</string>
     <string name="place_seed_phrases_in_a_correct_order_to_recover_your_wallet">Place seed phrases in a correct order to recover your wallet.</string>
     <string name="reset_with_a_seed_phrase">Reset with a seed phrase</string>
     <string name="day">Day</string>
@@ -219,4 +229,17 @@
     <string name="we_couldn_t_add_the_coin_error_message">We couldn\'t add the coin to your list. Check your internet connection and try again</string>
     <string name="influenced_founds">This will cost some SOL (Influenced founds)</string>
     <string name="add_coin_cost">This will cost some SOL</string>
+    <string name="date">Date</string>
+    <string name="default_">Default</string>
+    <string name="add_new_payment_method">+ Add new payment method</string>
+    <string name="networks">Networks</string>
+    <string name="dev_net">DevNet</string>
+    <string name="test_net">TestNet</string>
+    <string name="main_net_beta">MainNet Beta</string>
+    <string name="incorrect_password">Incorrect Password</string>
+    <string name="send_to">Send to</string>
+    <string name="around_amount_sol">≈ %1$.4f %2$s</string>
+    <string name="usd_upper_case">USD</string>
+    <string name="available">Available: %1$.4f %2$s</string>
+    <string name="physical_space_is_often_conceived_in_three_linear_dimensions_although_modern_physicists_usually_consider_it_with_time">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
 </resources>

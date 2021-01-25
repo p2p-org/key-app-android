@@ -11,17 +11,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogBackupBinding
-import com.p2p.wowlet.databinding.DialogCurrencyBinding
-import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
 import kotlinx.android.synthetic.main.dialog_backup.*
 
-class BackupDialog : DialogFragment() {
+class BackupDialog(private val openPinPage: (() -> Unit)) : DialogFragment() {
 
     companion object {
 
         const val TAG_BACKUP_DIALOG = "BackupDialog"
-        fun newInstance(): BackupDialog {
-            return BackupDialog()
+        fun newInstance(openPinPage: (() -> Unit)): BackupDialog {
+            return BackupDialog(openPinPage)
         }
 
     }
@@ -45,14 +43,18 @@ class BackupDialog : DialogFragment() {
         vDone.setOnClickListener {
             dismiss()
         }
+        btBackupManual.setOnClickListener {
+            openPinPage.invoke()
+        }
     }
+
     override fun onResume() {
         super.onResume()
         dialog?.run {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
     }
 

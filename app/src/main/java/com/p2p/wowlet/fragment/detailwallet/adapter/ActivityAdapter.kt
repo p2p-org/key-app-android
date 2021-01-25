@@ -28,7 +28,7 @@ class ActivityAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.itemActivityBinding.itemActivity = list[position]
-        holder.itemActivityBinding.viewModel = viewModel
+//        holder.itemActivityBinding.viewModel = viewModel
     }
 
     override fun getItemCount(): Int {

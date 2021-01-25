@@ -14,15 +14,26 @@ import com.p2p.wowlet.databinding.DialogBackupBinding
 import com.p2p.wowlet.databinding.DialogCurrencyBinding
 import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
 import com.p2p.wowlet.databinding.DialogSecurityBinding
+import com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel
 import kotlinx.android.synthetic.main.dialog_security.*
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SecurityDialog : DialogFragment() {
+class SecurityDialog(
+    private val onFingerprintStateSelected: () -> Unit
+) : DialogFragment() {
+
+    private var _binding: DialogSecurityBinding? = null
+    private val binding: DialogSecurityBinding get() = _binding!!
+
+    private val profileViewModel: ProfileViewModel by viewModel()
 
     companion object {
 
         const val TAG_SECURITY_DIALOG = "SecurityDialog"
-        fun newInstance(): SecurityDialog {
-            return SecurityDialog()
+        fun newInstance(onFingerprintStateSelected: () -> Unit): SecurityDialog {
+            return SecurityDialog(onFingerprintStateSelected)
         }
 
     }
@@ -32,18 +43,24 @@ class SecurityDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: DialogSecurityBinding = DataBindingUtil.inflate(
+        _binding = DataBindingUtil.inflate(
             inflater, R.layout.dialog_security, container, false
         )
+        binding.profileViewModel = this.profileViewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vClose.setOnClickListener {
+        binding.vClose.setOnClickListener {
             dismiss()
         }
-        vDone.setOnClickListener {
+        binding.vDone.setOnClickListener {
+            val isFingerprintChecked = binding.vSwitch.isChecked
+            profileViewModel.setUsesFingerPrint(isEnabled = isFingerprintChecked, isNotWantEnable = false)
+                .invokeOnCompletion {
+                    MainScope().launch { onFingerprintStateSelected.invoke() }
+            }
             dismiss()
         }
     }
@@ -58,5 +75,10 @@ class SecurityDialog : DialogFragment() {
         }
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
 }

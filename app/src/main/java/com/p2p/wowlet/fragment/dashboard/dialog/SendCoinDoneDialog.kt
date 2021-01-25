@@ -1,5 +1,6 @@
-package com.p2p.wowlet.fragment.sendcoins.dialog
+package com.p2p.wowlet.fragment.dashboard.dialog
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,17 +10,22 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.p2p.wowlet.R
+import com.p2p.wowlet.appbase.utils.getCurrentFragment
+import com.p2p.wowlet.appbase.utils.getNavHostFragment
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.databinding.DialogSendCoinDoneBinding
-import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.fragment.dashboard.view.DashboardFragment
+import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment
+import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
 import com.p2p.wowlet.utils.copyClipboard
-import com.wowlet.entities.Constants
+import com.wowlet.entities.Constants.Companion.EXPLORER_SOLANA
 import com.wowlet.entities.local.ActivityItem
-import kotlinx.android.synthetic.main.dialog_send_coin_done.*
-import kotlinx.android.synthetic.main.dialog_send_coin_done.copyTransaction
-import kotlinx.android.synthetic.main.dialog_tansaction.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.IllegalStateException
 import java.math.BigDecimal
 
 class SendCoinDoneDialog(
@@ -52,11 +58,20 @@ class SendCoinDoneDialog(
         binding.viewModel = sendCoinsViewModel
         binding.model = transactionInfo
         binding.blockChainExplorer.setOnClickListener {
-            sendCoinsViewModel.goToBlockChainExplorer(transactionInfo.signature)
+            val actionId = when(getNavHostFragment()?.let { navHostFragment -> getCurrentFragment(navHostFragment) }) {
+                is DashboardFragment -> R.id.action_navigation_dashboard_to_navigation_block_chain_explorer
+                is DetailWalletFragment -> R.id.action_navigation_detail_wallet_to_navigation_block_chain_explorer
+                is QrScannerFragment -> throw IllegalStateException("${QrScannerFragment::class} must have a destination id to blockchain explorer")
+                else -> null
+            }
+            actionId?.let {
+                sendCoinsViewModel.goToBlockChainExplorer(it, EXPLORER_SOLANA + transactionInfo.signature)
+            }
         }
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sendCoinsViewModel.command.observe(viewLifecycleOwner, {
@@ -65,6 +80,7 @@ class SendCoinDoneDialog(
                     navigateBlockChain.invoke(it.destinationId, it.bundle)
                 }
                 is Command.NavigateUpBackStackCommand -> {
+                    dismiss()
                     goToWallet.invoke()
                 }
             }
@@ -75,7 +91,7 @@ class SendCoinDoneDialog(
         }
 
         binding.price.text =
-            transactionInfo.symbolsPrice + BigDecimal.valueOf(transactionInfo.price) + transactionInfo.tokenSymbol
+            transactionInfo.symbolsPrice + BigDecimal.valueOf(transactionInfo.price) + " " + transactionInfo.tokenSymbol
     }
 
     override fun onResume() {

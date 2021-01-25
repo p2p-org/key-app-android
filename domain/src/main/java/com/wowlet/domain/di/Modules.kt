@@ -15,10 +15,11 @@ val interactorsModule = module {
     single<RegFinishInteractor> { RegFinishUseCase(get()) }
     single<CompleteBackupWalletInteractor> { CompleteBackupWalletUseCase(get()) }
     single<SplashScreenInteractor> { SplashScreenUseCase(get()) }
-    single<DetailWalletInteractor> { DetailWalletUseCase(get(), get()) }
+    single<DetailWalletInteractor> { DetailWalletUseCase(get(), get(), get()) }
     single<FingerPrintInteractor> { FingerPrintUseCase(get()) }
     factory<CreateWalletInteractor> { CreateWalletUseCase(get(), get()) }
     factory<PinCodeVerificationInteractor> { PinCodeVerificationUseCase(get()) }
     factory<PinCodeInteractor> { PinCodeUseCase(get()) }
     factory<QrScannerInteractor> { QrScannerUseCase(get()) }
+    factory<NetworksInteractor> { NetworksUseCase(get()) }
 }

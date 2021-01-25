@@ -24,25 +24,31 @@
             android:onClick="@{()->viewModel.goToScannerFragment()}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_qr_scaner" />
+            app:srcCompat="@drawable/ic_qr_scaner"
+            android:tint="@color/gray_blue_400"
+            />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="@dimen/dp_75"
-            android:layout_height="@dimen/dp_75"
+            android:id="@+id/imgProfilePic"
+            android:layout_width="@dimen/dp_33"
+            android:layout_height="@dimen/dp_33"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_20"
             android:onClick="@{()->viewModel.openProfileDialog()}"
-            android:padding="@dimen/dp_15"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_default_coin" />
+            app:srcCompat="@drawable/ic_default_coin"
+            android:elevation="@dimen/dp_16"
+            />
 
         <View
             android:layout_width="@dimen/dp_8"
             android:layout_height="@dimen/dp_8"
-            android:layout_marginTop="@dimen/dp_17"
-            android:layout_marginEnd="@dimen/dp_16"
             android:background="@drawable/ic_profile_online"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="@id/imgProfilePic"
+            app:layout_constraintTop_toTopOf="@id/imgProfilePic"
+            android:elevation="@dimen/dp_16"
+            />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -60,7 +66,8 @@
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_33"
                 android:background="@drawable/bg_already_have_account"
-                android:elevation="@dimen/dp_5"
+                android:elevation="@dimen/dp_2"
+                android:onClick="@{() -> viewModel.openAllMyTokensDialog()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -68,6 +75,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/total_balance_title"
                     style="@style/Black.15"
+                    android:fontFamily="@font/sf_pro_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_15"
@@ -79,6 +87,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/vPrice"
                     style="@style/Black.21.Bold"
+                    android:fontFamily="@font/font_sf_pro_display"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_15"
@@ -90,6 +99,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Gray.13"
+                    android:fontFamily="@font/sf_pro_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/dp_15"
@@ -136,8 +146,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginBottom="@dimen/dp_30"
-                android:background="@drawable/bg_already_have_account"
-                android:elevation="@dimen/dp_5"
+                android:background="@drawable/bg_already_have_account_gray_15"
                 android:onClick="@{()->viewModel.openAllMyTokensDialog()}"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/lCoinContainer">
@@ -148,6 +157,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/dp_15"
                     android:layout_marginStart="@dimen/dp_20"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="@font/font_sf_pro_display"
+                    android:textStyle="bold"
                     android:text="@string/all_my_tokens"
                     tools:ignore="RelativeOverlap" />
 
@@ -167,18 +179,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginBottom="@dimen/dp_30"
-                android:background="@drawable/bg_already_have_account"
-                android:elevation="@dimen/dp_5"
+                android:background="@drawable/bg_already_have_account_gray_15"
                 android:visibility="gone"
                 android:onClick="@{()->viewModel.openAddCoinDialog()}"
                 app:layout_constraintBottom_toTopOf="@+id/lCoinContainer">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.17"
+                    style="@style/Black.17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="@dimen/dp_15"
                     android:layout_marginStart="@dimen/dp_20"
+                    android:fontFamily="@font/font_sf_pro_display"
+                    android:textStyle="bold"
                     android:text="@string/add_token"
                     tools:ignore="RelativeOverlap" />
 
@@ -219,6 +232,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/Grey.12"
+                        android:fontFamily="@font/font_sf_pro_display"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -241,6 +255,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/Grey.12"
+                        android:fontFamily="@font/font_sf_pro_display"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -262,6 +277,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/Grey.12"
+                        android:fontFamily="@font/font_sf_pro_display"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"

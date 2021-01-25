@@ -1,6 +1,7 @@
 package com.wowlet.domain.usecases
 
 import com.github.mikephil.charting.data.Entry
+import com.wowlet.data.datastore.DashboardRepository
 import com.wowlet.data.datastore.DetailActivityRepository
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.domain.extentions.fromHistoricalPricesToChartItem
@@ -15,10 +16,17 @@ import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.EnterWallet
 import com.wowlet.entities.local.WalletItem
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 
 class DetailWalletUseCase(
     private val wowletApiCallRepository: WowletApiCallRepository,
-    private val detailActivityRepository: DetailActivityRepository
+    private val detailActivityRepository: DetailActivityRepository,
+    private val dashboardRepository: DashboardRepository,
 ) : DetailWalletInteractor {
 
     override suspend fun getActivityList(
@@ -29,13 +37,51 @@ class DetailWalletUseCase(
     ): Result<List<ActivityItem>> {
         return try {
             val walletsList = wowletApiCallRepository.getDetailActivityData(publicKey).map {
-                it.transferInfoToActivityItem(publicKey, icon, tokenName,tokenSymbol)
+                it.transferInfoToActivityItem(publicKey, icon, tokenName, tokenSymbol)
             }
             walletsList.map {
                 val time = wowletApiCallRepository.getBlockTime(it.slot)
                 val secondToDate = time.secondToDate()
                 it.date = secondToDate?.getActivityDate() ?: ""
             }
+
+
+            coroutineScope {
+                walletsList.map { activityItem->
+                    val time = wowletApiCallRepository.getBlockTime(activityItem.slot)
+                    async {
+                        when(val historicalPrices = detailActivityRepository.getHistoricalPricesByDate(
+                            activityItem.tokenSymbol + "USDT",
+                            time * 1000,
+                            time * 1000,
+
+                        )) {
+                            is Result.Success -> {
+                                historicalPrices.data?.let {
+                                    if (it.isNotEmpty()) {
+                                        val close = it[0].close
+                                        activityItem.currency = close
+                                    }
+                                }
+                            }
+                            is Result.Error -> {
+                                Result.Error(
+                                    CallException(
+                                        Constants.ERROR_NULL_DATA,
+                                        null,
+                                        "Can't load OrderBook data at server"
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+
+
+                }.awaitAll()
+            }
+
+
             Result.Success(walletsList)
         } catch (e: java.lang.Exception) {
             Result.Error(CallException(Constants.ERROR_TIME_OUT, e.message))
@@ -87,6 +133,40 @@ class DetailWalletUseCase(
                 Result.Error(CallException(Constants.REQUEST_EXACTION, "Error char data load"))
             }
         }
+    }
+
+    override suspend fun getPercentages(walletItem: WalletItem): Double {
+        var change24hInPercentages = 0.0
+        coroutineScope {
+            withContext(Dispatchers.IO) {
+                when (val historicalPrice = dashboardRepository.getHistoricalPrices(walletItem.tokenSymbol + "USDT")) {
+                    is Result.Success -> {
+                        historicalPrice.data?.let {
+                            if (it.isNotEmpty()) {
+                                val close = it[0].close
+                                val open = it[0].open
+                                val change24h = close - open
+                                change24hInPercentages = if (open == 0.0) {
+                                    change24h / 1
+                                } else {
+                                    change24h / open
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        Result.Error(
+                            CallException(
+                                Constants.ERROR_NULL_DATA,
+                                null,
+                                "Can't load OrderBook data at server"
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return change24hInPercentages
     }
 
     override fun generateQRrCode(walletItem: WalletItem): EnterWallet =

@@ -7,10 +7,12 @@ import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewMo
 import com.p2p.wowlet.fragment.blockchainexplorer.viewmodel.BlockChainExplorerViewModel
 import com.p2p.wowlet.fragment.contacts.viewmodel.ContactsViewModel
 import com.p2p.wowlet.fragment.createwallet.viewmodel.CreateWalletViewModel
+import com.p2p.wowlet.fragment.dashboard.dialog.networks.viewmodel.NetworkViewModel
+import com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel
-import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
+import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.fragment.fingetprint.viewmodel.FingerPrintViewModel
 import com.p2p.wowlet.fragment.investments.viewmodel.InvestmentsViewModel
 import com.p2p.wowlet.fragment.notification.viewmodel.NotificationViewModel
@@ -20,7 +22,7 @@ import com.p2p.wowlet.fragment.regfinish.viewmodel.RegFinishViewModel
 import com.p2p.wowlet.fragment.reglogin.viewmodel.RegLoginViewModel
 import com.p2p.wowlet.fragment.regwallet.viewmodel.RegWalletViewModel
 import com.p2p.wowlet.fragment.search.viewmodel.SearchViewModel
-import com.p2p.wowlet.fragment.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel
 import com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel
 import com.p2p.wowlet.fragment.termandcondition.viewmodel.TermAndConditionViewModel
@@ -37,7 +39,7 @@ val viewModule = module {
     viewModel { RecoveryWalletViewModel() }
     viewModel { CompleteBackupWalletViewModel(get()) }
     viewModel { RegWalletViewModel() }
-    viewModel { DashboardViewModel(get()) }
+    viewModel { DashboardViewModel(get(), get()) }
     viewModel { SearchViewModel() }
     viewModel { InvestmentsViewModel() }
     viewModel { ContactsViewModel() }
@@ -52,4 +54,6 @@ val viewModule = module {
     viewModel { PinCodeViewModel(get(), get(), get()) }
     viewModel { BlockChainExplorerViewModel() }
     viewModel { ManualSecretKeyViewModel(get()) }
+    viewModel { NetworkViewModel(get()) }
+    viewModel { ProfileViewModel(get(), get()) }
 }

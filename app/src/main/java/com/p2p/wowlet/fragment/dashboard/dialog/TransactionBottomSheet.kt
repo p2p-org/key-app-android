@@ -1,12 +1,9 @@
 package com.p2p.wowlet.fragment.dashboard.dialog
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
@@ -14,13 +11,11 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.databinding.DialogTansactionBinding
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.copyClipboard
-import com.p2p.wowlet.utils.roundCurrencyValue
+import com.wowlet.domain.utils.getTransactionDate
 import com.wowlet.entities.Constants.Companion.EXPLORER_SOLANA
 import com.wowlet.entities.local.ActivityItem
 import kotlinx.android.synthetic.main.dialog_tansaction.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.math.BigDecimal
-import kotlin.math.pow
 
 
 class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(destinationId:Int,bundle: Bundle?)->Unit) : BottomSheetDialogFragment() {
@@ -41,16 +36,22 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
         binding = DataBindingUtil.inflate(
             inflater, R.layout.dialog_tansaction, container, false
         )
-        binding.model = dataInfo
         viewModel.getBlockTime(dataInfo.slot)
+        binding.apply {
+            model = dataInfo
+            setTransactionImage(this)
+        }
         return binding.root
+    }
+
+    private fun setTransactionImage(binding: DialogTansactionBinding) {
+        val imageTransaction = if (dataInfo.isReceive) R.drawable.ic_receive else R.drawable.ic_send
+        binding.imgTransactionType.setImageResource(imageTransaction)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vClose.setOnClickListener {
-            dismiss()
-        }
+
         copyToUserKey.setOnClickListener {
             context?.copyClipboard(dataInfo.to)
         }
@@ -68,10 +69,10 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
     }
     private fun observes(){
         viewModel.blockTime.observe(viewLifecycleOwner,{
-            binding.yourTransactionDate.text=it
+            binding.yourTransactionDate.text=it.getTransactionDate()
         })
         viewModel.blockTimeError.observe(viewLifecycleOwner,{
-            binding.yourTransactionDate.text=it
+            binding.yourTransactionDate.text=it.getTransactionDate()
         })
 
         viewModel.command.observe(viewLifecycleOwner,{
@@ -82,11 +83,5 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
            }
         })
     }
-    override fun onResume() {
-        super.onResume()
-        dialog?.run {
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable = false
-        }
-    }
+
 }

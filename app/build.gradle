@@ -91,6 +91,7 @@ dependencies {
     implementation supportDependencies.lifecycleViewModel
     // Indicator circle pager
     implementation supportDependencies.circleIndicator
+    implementation supportDependencies.circleIndicatrLoop
     // navigation component
     implementation supportDependencies.navigationFragment
     implementation supportDependencies.navigationUi

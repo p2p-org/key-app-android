@@ -1,5 +1,6 @@
 package com.wowlet.data.util
 
+import android.util.Log
 import com.wowlet.entities.CallException
 import com.wowlet.entities.Result
 import com.wowlet.entities.responce.ResponceDataBonfida
@@ -13,6 +14,7 @@ suspend fun <R> makeApiCall(
 ) = try {
     call()
 } catch (e: Exception) {
+    Log.i("makeApiCall", "makeApiCall: ${e.message}")
     Result.Error(CallException<Nothing>(errorMessage))
 }
 

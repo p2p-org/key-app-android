@@ -11,7 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/bg_radius_top_gray">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -41,7 +41,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_440"
+            android:layout_height="500dp"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_48"
@@ -52,23 +52,22 @@
                 android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="@dimen/dp_15"
                 android:background="@drawable/bg_white_rect"
-                app:layout_constraintBottom_toTopOf="@+id/pageIndicator"
+                app:layout_constraintBottom_toTopOf="@id/indicator"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.p2p.wowlet.fragment.dashboard.dialog.enterwallet.util.CircleIndicatorForViewPagerLoop
-                android:id="@+id/pageIndicator"
-                android:layout_width="0dp"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_height="@dimen/dp_40"
-                android:alwaysDrawnWithCache="true"
-                app:ci_drawable="@drawable/bg_circule_indicator_selected"
-                app:ci_drawable_unselected="@drawable/bg_circule_indicator"
+            <com.p2p.wowlet.supportclass.ScrollingPagerIndicatorLoop
+                android:id="@+id/indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:spi_dotSelectedColor="@android:color/black"
+                />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
