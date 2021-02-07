@@ -6,6 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.core.view.marginStart
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -15,15 +19,20 @@ import com.p2p.wowlet.appbase.utils.getCurrentFragment
 import com.p2p.wowlet.appbase.utils.getNavHostFragment
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.databinding.FragmentSendCoinsBinding
+import com.p2p.wowlet.dialog.SwapCoinProcessingDialog
+import com.p2p.wowlet.dialog.sendcoins.util.toShortenedPublicKeyFormat
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.SendCoinDoneDialog
+import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.util.pxToDp
 import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.YourWalletsBottomSheet
 import com.p2p.wowlet.fragment.dashboard.view.DashboardFragment
-import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment
 import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
-import com.p2p.wowlet.fragment.swap.dialog.SwapCoinProcessingDialog
+
+import com.wowlet.entities.Constants
 import com.wowlet.entities.local.WalletItem
 import kotlinx.android.synthetic.main.fragment_send_coins.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.pow
 
@@ -34,6 +43,7 @@ class SendCoinsBottomSheet(
 ) : BottomSheetDialogFragment() {
 
     private val viewModel: SendCoinsViewModel by viewModel()
+    private val walletAddressViewModel: WalletAddressViewModel by sharedViewModel()
     private lateinit var binding: FragmentSendCoinsBinding
 
     private var bottomSheet: View? = null
@@ -65,7 +75,30 @@ class SendCoinsBottomSheet(
         binding.run {
             viewModel = this@SendCoinsBottomSheet.viewModel
             this.lifecycleOwner = viewLifecycleOwner
-            etWalletAddress.doOnTextChanged { text, start, before, count ->
+            etWalletAddress.doAfterTextChanged { text ->
+                if (text == null ) return@doAfterTextChanged
+                if (text.length == Constants.PUBLIC_KEY_LENGTH) {
+                    this@SendCoinsBottomSheet.viewModel.setWalletIconVisibility(true)
+                }else {
+                    this@SendCoinsBottomSheet.viewModel.setWalletIconVisibility(false)
+                }
+                if (text.isEmpty()) {
+                    binding.imgClearWalletAddress.isVisible = false
+                    binding.imgScanQrCode.isVisible = true
+                    return@doAfterTextChanged
+                }
+                binding.imgClearWalletAddress.isVisible = true
+                binding.imgScanQrCode.isVisible = false
+                for (char in text) {
+                    val charToInt = char.toInt()
+                    if (charToInt in 1040..1103
+                        || charToInt == 1025
+                        || charToInt == 1105) {
+                        etWalletAddress.setText(text.toString().replace(char.toString(),""))
+                        etWalletAddress.setSelection(text.length-1)
+                        return@doAfterTextChanged
+                    }
+                }
                 walletAddress = text.toString()
             }
             etWalletAddress.setText(walletAddress)
@@ -75,23 +108,28 @@ class SendCoinsBottomSheet(
                 }
             }
             etCount.requestFocus()
-            etCount.doOnTextChanged { text, start, before, count ->
+            etCount.doOnTextChanged { text, _, _, _ ->
                 if (text?.length == 1 && text.last() ==  '.') {
                     etCount.setText("")
                     return@doOnTextChanged
                 }
+                walletAddressViewModel.enteredAmount = text.toString()
                 if (text?.isEmpty() == true) {
                     binding.txtInputInToken.text = ""
                     return@doOnTextChanged
                 }
                 etCount.setSelection(text?.length!!)
-                this@SendCoinsBottomSheet.viewModel.setInputCountInTokens(requireContext(), text.toString())
+                this@SendCoinsBottomSheet.viewModel.setInputCountInTokens(
+                    requireContext(),
+                    text.toString()
+                )
             }
             etWalletAddress.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     bottomSheet?.let {
                         BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
                     }
+                    etWalletAddress.setSelection(etWalletAddress.text.toString().length)
                 }
             }
 
@@ -107,10 +145,15 @@ class SendCoinsBottomSheet(
         return binding.root
     }
 
+
     override fun onStart() {
         super.onStart()
         bottomSheet = dialog?.findViewById(com.google.android.material.R.id.design_bottom_sheet) ?: return
-        bottomSheet!!.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+        bottomSheet?.layoutParams?.height = WindowManager.LayoutParams.MATCH_PARENT
+        BottomSheetBehavior.from(bottomSheet!!).apply {
+            state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            halfExpandedRatio = 0.99f
+        }
     }
 
 
@@ -147,9 +190,18 @@ class SendCoinsBottomSheet(
         })
         viewModel.getWalletData.observe(viewLifecycleOwner, { walletItemList ->
             if (walletItemList.isNotEmpty()) {
-                walletItem?.let { item ->
+                if (!walletItem?.depositAddress.isNullOrEmpty()) {
                     val find = walletItemList.find { item1 ->
-                        item1.depositAddress == item.depositAddress
+                        item1.depositAddress == walletItem!!.depositAddress
+                    }
+                    find?.let {
+                        viewModel.selectWalletItem(it)
+                    } ?: viewModel.selectWalletItem(
+                        walletItemList[0]
+                    )
+                } else {
+                    val find = walletItemList.find { item1 ->
+                        item1.depositAddress == walletAddress
                     }
                     find?.let {
                         viewModel.selectWalletItem(it)
@@ -158,7 +210,6 @@ class SendCoinsBottomSheet(
                     )
                 }
             }
-
         })
         viewModel.walletItemData.observe(viewLifecycleOwner) {
             walletItem = it
@@ -185,14 +236,39 @@ class SendCoinsBottomSheet(
             val balanceText = getString(R.string.available, amount, it)
             binding.txtAvailableBalance.text = balanceText
             viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())
+            binding.etWalletAddress.setText("")
         }
         viewModel.yourBalance.observe(viewLifecycleOwner, {
             balance = it
         })
+        walletAddressViewModel.walletAddress.observe(viewLifecycleOwner) { walletAddress->
+            if (walletAddressViewModel.disableObserving) return@observe
+            binding.apply {
+                etWalletAddress.setText(walletAddress)
+                etWalletAddress.clearFocus()
+                etCount.clearFocus()
+                etCount.setText(walletAddressViewModel.enteredAmount)
+                imgClearWalletAddress.isVisible = true
+                imgScanQrCode.isVisible = false
+
+            }
+            walletAddressViewModel.disableObserving = true
+
+        }
+        viewModel.clearWalletAddress.observe(viewLifecycleOwner) {
+            if (!it) return@observe
+            binding.apply {
+                etWalletAddress.setText("")
+                etWalletAddress.requestFocus()
+                imgClearWalletAddress.isVisible = false
+                imgScanQrCode.isVisible = true
+            }
+            viewModel.disableClearWalletAddress()
+        }
     }
 
     private fun initViewCommand() {
-        viewModel.command.observe(viewLifecycleOwner, { viewCommand->
+        viewModel.command.observe(viewLifecycleOwner, { viewCommand ->
             when (viewCommand) {
                 is NavigateUpBackStackCommand -> {
                     dismiss()
@@ -200,20 +276,21 @@ class SendCoinsBottomSheet(
                 }
                 is NavigateScannerFromSendCoinViewCommand -> {
                     walletItem?.let { viewModel.setWalletData(it) }
-                    val actionId = when(getNavHostFragment()?.let { getCurrentFragment(it) }) {
+                    val actionId = when (getNavHostFragment()?.let { getCurrentFragment(it) }) {
                         is DashboardFragment -> R.id.action_navigation_dashboard_to_navigation_scanner
-                        is DetailWalletFragment -> R.id.action_navigation_detail_wallet_to_navigation_scanner
                         is QrScannerFragment -> throw IllegalStateException("Must have a destination to ${QrScannerFragment::class}")
                         else -> null
                     }
                     actionId?.let {
-                        navigateTo.invoke(it, null)
+                        navigateTo.invoke(it, bundleOf(QrScannerFragment.GO_BACK_TO_SEND_COIN to true))
                     }
 
                 }
                 is OpenMyWalletDialogViewCommand -> {
                     val yourWalletsBottomSheet: YourWalletsBottomSheet =
-                        YourWalletsBottomSheet.newInstance() {
+                        YourWalletsBottomSheet.newInstance(
+                            getString(R.string.select_wallet)
+                        ) {
                             viewModel.selectWalletItem(it)
                         }
                     yourWalletsBottomSheet.show(
@@ -225,7 +302,7 @@ class SendCoinsBottomSheet(
                     val sendCoinDoneDialog: SendCoinDoneDialog =
                         SendCoinDoneDialog.newInstance(
                             viewCommand.transactionInfo,
-                            goToWallet = {
+                            navigateBack = {
                                 dismiss()
                             },
                             navigateBlockChain = { destinationId, bundle ->
@@ -236,7 +313,8 @@ class SendCoinsBottomSheet(
                 is SendCoinViewCommand -> {
                     with(binding) {
 
-                        val amount = this@SendCoinsBottomSheet.viewModel.walletItemData.value?.amount
+                        val amount =
+                            this@SendCoinsBottomSheet.viewModel.walletItemData.value?.amount
                         val decimals =
                             this@SendCoinsBottomSheet.viewModel.walletItemData.value?.decimals
                         amount?.run {

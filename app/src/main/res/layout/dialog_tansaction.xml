@@ -141,7 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_30"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -217,7 +217,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -293,7 +293,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
 
@@ -323,7 +323,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -351,7 +351,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -379,7 +379,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -400,6 +400,13 @@
                     android:text="@{String.format(model.fee +@string/space+@string/lamports)}"
                     tools:text="10000 lamports" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Grey400.12.SfProText"
@@ -423,7 +430,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -470,7 +477,7 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:background="@color/gray_30"
+                    android:background="@color/gray_blue_10"
                     />
 
                 <androidx.appcompat.widget.AppCompatButton

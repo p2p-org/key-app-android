@@ -8,6 +8,7 @@ import com.wowlet.entities.responce.orderbook.OrderBooks
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.rpc.types.AccountInfo
+import org.p2p.solanaj.rpc.types.QRAccountInfo
 import org.p2p.solanaj.rpc.types.TransferInfo
 
 
@@ -17,6 +18,7 @@ interface WowletApiCallRepository {
     suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String
     suspend fun getWallets(publicKey: String): MutableList<BalanceInfo>
     suspend fun getAccountInfo(publicKey: PublicKey): AccountInfo
+    suspend fun getQRAccountInfo(publicKey: PublicKey): QRAccountInfo
     suspend fun getOrderBooks(tokenSymbol: String): Result<OrderBooks>
     suspend fun getMinimumBalance(accountLenght: Long): Long
     suspend fun getDetailActivityData(publicKey: String): List<TransferInfo>

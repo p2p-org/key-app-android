@@ -1,28 +1,38 @@
 package com.p2p.wowlet.fragment.dashboard.dialog.addcoin
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ProgressBar
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogAddCoinBottomSheetBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.adapter.AddCoinAdapter
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
+import com.wowlet.entities.local.AddCoinItem
 import com.wowlet.entities.local.WalletItem
 import kotlinx.android.synthetic.main.dialog_add_coin_bottom_sheet.*
 import kotlinx.android.synthetic.main.item_add_coin.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
+import kotlin.collections.ArrayList
+
 class AddCoinBottomSheet(
     private val goToDetailWalletFragment: (wallet: WalletItem) -> Unit,
-    private val goToSolanaExplorerFragment: (mintAddress: String) -> Unit
+    private val goToSolanaExplorerFragment: (mintAddress: String) -> Unit,
+    private val updateListInAllMyTokens: () -> Unit
 ) : BottomSheetDialogFragment() {
     private val dashboardViewModel: DashboardViewModel by viewModel()
     lateinit var binding: DialogAddCoinBottomSheetBinding
@@ -36,9 +46,10 @@ class AddCoinBottomSheet(
         const val NAV_TAG_COIN_NO_ADDED_ERROR = "coin_no_added"
         fun newInstance(
             goToDetailWalletFragment: (wallet: WalletItem) -> Unit,
-            goToSolanaExplorerFragment: (mintAddress: String) -> Unit
+            goToSolanaExplorerFragment: (mintAddress: String) -> Unit,
+            updateListInAllMyTokens: () -> Unit = {}
         ): AddCoinBottomSheet {
-            return AddCoinBottomSheet(goToDetailWalletFragment, goToSolanaExplorerFragment)
+            return AddCoinBottomSheet(goToDetailWalletFragment, goToSolanaExplorerFragment, updateListInAllMyTokens)
         }
     }
 
@@ -57,31 +68,58 @@ class AddCoinBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addCoinAdapter = AddCoinAdapter(requireContext(), dashboardViewModel, goToSolanaExplorerFragment)
         binding.txtCloseDialog.setOnClickListener {
             dismiss()
         }
+        addCoinAdapter = AddCoinAdapter(requireContext(), dashboardViewModel, goToSolanaExplorerFragment)
         dashboardViewModel.getAddCoinList()
         dashboardViewModel.getAddCoinData.observe(viewLifecycleOwner, {
-            vRvAddCoin.apply {
+            binding.vRvAddCoin.apply {
                 if (adapter == null) {
                     adapter = addCoinAdapter
                 }
                 addCoinAdapter.updateList(it)
             }
-
         })
 
+        binding.etSearch.doOnTextChanged { text, start, before, count ->
+            dashboardViewModel.getAddCoinData.value?.let { addCoinItems->
+                if (text.toString().isNotEmpty()) {
+                    val filteredList = ArrayList<AddCoinItem>()
+                    addCoinItems.forEach {
+                        if (it.tokenName.toLowerCase(Locale.ROOT)
+                                .contains(text.toString().toLowerCase(Locale.ROOT))
+                        )
+                        {
+                            filteredList.add(it)
+                        }
+                    }
+                    addCoinAdapter.updateList(filteredList)
+                } else {
+                    addCoinAdapter.updateList(addCoinItems)
+                }
+            }
+        }
 
         dashboardViewModel.coinIsSuccessfullyAdded.observe(viewLifecycleOwner, {
-            val walletItem = WalletItem(
-                tokenSymbol = it.tokenSymbol,
-                mintAddress = it.mintAddress,
-                tokenName = it.tokenName,
-                icon = it.icon
-            )
+            val walletItem = it.walletAddress?.let { walletAddress ->
+                WalletItem(
+                    tokenSymbol = it.tokenSymbol,
+                    mintAddress = it.mintAddress,
+                    tokenName = it.tokenName,
+                    icon = it.icon,
+                    depositAddress = walletAddress
+                )
+            }
             if (it.navigatingBack) return@observe
-            goToDetailWalletFragment.invoke(walletItem)
+            it.isAlreadyAdded = true
+            dashboardViewModel.getAddCoinData.value?.let { addCoinItems -> addCoinAdapter.updateList(addCoinItems) }
+            addCoinAdapter.enableCallbacks()
+            binding.txtCloseDialog.isEnabled = true
+            this@AddCoinBottomSheet.isCancelable = true
+            binding.etSearch.isEnabled = true
+            updateListInAllMyTokens.invoke()
+            walletItem?.let { item-> goToDetailWalletFragment.invoke(item) }
             dashboardViewModel.updateNavValue(it)
         })
 
@@ -100,6 +138,7 @@ class AddCoinBottomSheet(
                 lAddCoin.isEnabled = false
                 binding.txtCloseDialog.isEnabled = false
                 this@AddCoinBottomSheet.isCancelable = false
+                binding.etSearch.isEnabled = false
             }
 
         })
@@ -124,16 +163,20 @@ class AddCoinBottomSheet(
                 lAddCoin.isEnabled = true
                 binding.txtCloseDialog.isEnabled = true
                 this@AddCoinBottomSheet.isCancelable = true
+                binding.etSearch.isEnabled = true
             }
             addCoinAdapter.enableCallbacks()
         })
 
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        dialog?.run {
-//            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//        }
-//    }
+
+    override fun onStart() {
+        super.onStart()
+        (dialog as? BottomSheetDialog)?.behavior?.apply {
+            state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            halfExpandedRatio = 0.99f
+            binding.vRvAddCoin.minimumHeight = Resources.getSystem().displayMetrics.heightPixels
+        }
+    }
 }

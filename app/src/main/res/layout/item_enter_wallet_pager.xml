@@ -19,10 +19,9 @@
             android:id="@+id/walletQrCodeIv"
             android:layout_width="@dimen/dp_150"
             android:layout_height="@dimen/dp_150"
-            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_30"
             android:layout_marginBottom="@dimen/dp_31"
             app:image_source_bitmap="@{itemModel.qrCode}"
-            app:layout_constraintBottom_toTopOf="@+id/wallet_address_tv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

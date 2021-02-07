@@ -42,13 +42,13 @@
             android:lines="1"
             android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/walletUserTypeIv"
+            app:layout_constraintEnd_toStartOf="@+id/imgScanQrCode"
             app:layout_constraintStart_toEndOf="@+id/walletUserIconIv"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="jd9(Hdh982y982y98308093" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/walletUserTypeIv"
+            android:id="@+id/imgScanQrCode"
             android:layout_width="@dimen/dp_18"
             android:layout_height="@dimen/dp_18"
 

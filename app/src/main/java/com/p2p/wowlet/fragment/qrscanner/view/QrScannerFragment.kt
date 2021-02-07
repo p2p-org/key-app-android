@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
@@ -16,20 +15,24 @@ import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentQrScannerBinding
 import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
-import kotlinx.coroutines.launch
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
 import com.wowlet.entities.local.WalletItem
+import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScannerBinding>(),
     ZBarScannerView.ResultHandler {
     override val viewModel: QrScannerViewModel by viewModel()
+    private val walletAddressViewModel: WalletAddressViewModel by sharedViewModel()
     override val binding: FragmentQrScannerBinding by dataBinding(R.layout.fragment_qr_scanner)
 
     private var scannerView: ZBarScannerView? = null
+    private var isFromSendCoinsBottomSheet = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,9 +65,9 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
             setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorTranslucent))
             setBorderColor(ContextCompat.getColor(context!!, android.R.color.white))
             setLaserEnabled(false)
-            setBorderStrokeWidth(resources.getDimensionPixelSize(R.dimen.dp_4))
+            setBorderStrokeWidth(resources.getDimensionPixelSize(R.dimen.dp_6))
             setBorderLineLength(resources.getDimensionPixelSize(R.dimen.dp_55))
-            setBorderCornerRadius(resources.getDimensionPixelSize(R.dimen.dp_24))
+            setBorderCornerRadius(resources.getDimensionPixelSize(R.dimen.dp_10))
             setSquareViewFinder(true)
             setupScanner()
             setAutoFocus(true)
@@ -77,6 +80,12 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         scannerView?.startCamera()
     }
 
+    override fun initData() {
+        arguments?.let {
+            isFromSendCoinsBottomSheet = it.getBoolean(GO_BACK_TO_SEND_COIN, false)
+        }
+    }
+
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is NavigateUpBackStackCommand -> {
@@ -84,13 +93,13 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
             }
             is OpenSendCoinDialogViewCommand -> {
                 val walletItem = command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
-                val walletAddress = command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "")!!
+                val walletAddress = command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "") ?: ""
                 SendCoinsBottomSheet.newInstance(
                     walletItem, walletAddress
                 ) { destinationId, bundle ->
                     navigateFragment(destinationId, bundle)
                 }.show(
-                    childFragmentManager,
+                    parentFragmentManager,
                     TAG_SEND_COIN
                 )
             }
@@ -101,10 +110,16 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     override fun observes() {
         observe(viewModel.isCurrentAccountError) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            navigateUp()
         }
         observe(viewModel.isCurrentAccount) {
-            if (it.isWalletAddress) {
-                viewModel.goToSendCoinFragment(it.walletKey)
+            if (it.walletAddress.isNotEmpty()) {
+                if (isFromSendCoinsBottomSheet) {
+                    walletAddressViewModel.setWalletAddress(it.walletKey)
+                    navigateUp()
+                }else {
+                    viewModel.goToSendCoinFragment(it.walletKey)
+                }
             } else {
                 Toast.makeText(context, "There is not wallet key", Toast.LENGTH_SHORT).show()
             }
@@ -157,5 +172,6 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST_CODE = 102
+        const val GO_BACK_TO_SEND_COIN = "go_back_to_send_coin"
     }
 }

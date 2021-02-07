@@ -8,3 +8,7 @@ fun Float.dpToPx(): Float {
     val displayMetrics: DisplayMetrics = Resources.getSystem().displayMetrics
     return this * displayMetrics.density
 }
+
+fun Float.pxToDp(): Float {
+    return this.div(Resources.getSystem().displayMetrics.density)
+}

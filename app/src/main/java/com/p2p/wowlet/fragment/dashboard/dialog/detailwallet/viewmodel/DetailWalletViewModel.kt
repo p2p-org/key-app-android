@@ -88,10 +88,10 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
             bundleOf(WALLET_ITEM to walletItem)
         )
     }
-    fun goToSwap() {
-        _command.value =
-            Command.NavigateSwapViewCommand(R.id.action_navigation_detail_wallet_to_navigation_swap)
-    }
+//    fun goToSwap(walletItem: WalletItem) {
+//        _command.value =
+//            Command.OpenSwapBottomSheetViewCommand(walletItem)
+//    }
 
     fun openTransactionDialog(itemActivity: ActivityItem) {
         _command.value =
@@ -99,7 +99,7 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
     }
 
     fun openAddCoinDialog() {
-        _command.value = Command.OpenAddCoinDialogViewCommand()
+        _command.value = Command.OpenAddCoinDialogViewCommand {}
     }
 
     fun getBlockTime(slot: Long) {
@@ -153,11 +153,11 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
         }
     }
 
-    fun goToBlockChainExplorer(url: String) {
-        _command.value =
-            Command.NavigateBlockChainViewCommand(
-                R.id.action_navigation_detail_wallet_to_navigation_block_chain_explorer,
-                bundleOf(BlockChainExplorerFragment.BLOCK_CHAIN_URL to url)
-            )
-    }
+//    fun goToBlockChainExplorer(url: String) {
+//        _command.value =
+//            Command.NavigateBlockChainViewCommand(
+//                R.id.action_navigation_detail_wallet_to_navigation_block_chain_explorer,
+//                bundleOf(BlockChainExplorerFragment.BLOCK_CHAIN_URL to url)
+//            )
+//    }
 }

@@ -23,7 +23,6 @@
             android:id="@+id/vCoin"
             android:layout_width="@dimen/dp_45"
             android:layout_height="@dimen/dp_45"
-            android:layout_marginStart="@dimen/dp_15"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_20"
             app:image_source="@{itemActivity.icon}"
@@ -43,7 +42,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vName"
-                style="@style/Black.15.Bold"
+                style="@style/Black.17.Bold.SfProDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
@@ -53,7 +52,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vDate"
-                style="@style/Grey.13"
+                style="@style/Grey400.15.SfProDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
@@ -66,10 +65,9 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vPrice"
-            style="@style/Black.15.Bold"
+            style="@style/Black.15.Bold.SfProDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_15"
             android:text="@{itemActivity.symbolsPrice+String.format(@string/us_new(itemActivity.price))}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

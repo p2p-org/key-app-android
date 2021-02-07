@@ -54,6 +54,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/vName"
                     style="@style/Black.15.Bold"
+                    android:fontFamily="@font/sf_pro_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_15"
@@ -64,6 +65,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/Price"
                     style="@style/Grey.12"
+                    android:fontFamily="@font/font_sf_pro_display"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_15"
@@ -86,6 +88,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black.15.Bold"
+                    android:fontFamily="@font/sf_pro_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
@@ -95,25 +98,16 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Grey.12"
+                    android:fontFamily="@font/font_sf_pro_display"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginTop="@dimen/dp_6"
                     android:layout_marginEnd="@dimen/dp_10"
-                    android:text="@{String.format(@string/for_24h, itemAddCoin.change24hPercentages)}"
+                    android:text="@{itemAddCoin.change24hPercentagesPositive ? String.format(@string/for_24h_positive, itemAddCoin.change24hPercentages) : String.format(@string/for_24h, itemAddCoin.change24hPercentages)}"
                     tools:text="+16.9% for 24hrs" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <!--            <androidx.appcompat.widget.AppCompatImageView-->
-            <!--                android:id="@+id/btAddCoin"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginTop="@dimen/dp_21"-->
-            <!--                android:onClick="@{()->viewModel.addCoin(itemAddCoin)}"-->
-            <!--                android:layout_marginEnd="@dimen/dp_20"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent"-->
-            <!--                app:srcCompat="@drawable/ic_add" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -144,11 +138,14 @@
                 android:text="@{String.format( @string/mint_address, itemAddCoin.tokenSymbol)}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:textSize="@dimen/sp_13"
+                android:fontFamily="@font/sf_pro_text"
                 tools:text="SRM Mint Address" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtMintAddress"
                 style="@style/Black.17"
+                android:fontFamily="@font/font_sf_pro_display"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
@@ -177,7 +174,7 @@
                 android:text="@string/view_in_solana_explorer"
                 android:textAllCaps="false"
                 app:rippleColor="@color/blue_200"
-                android:textColor="@color/gray_500"
+                android:textColor="@color/gray_blue_400"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txtMintAddress" />
@@ -218,7 +215,7 @@
                         android:text="@string/add_token"
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/sp_15"
-                        android:fontFamily="@font/font_sf_pro_display"
+                        android:fontFamily="@font/sf_pro_text"
                         android:textStyle="bold"
                         />
 
@@ -226,11 +223,12 @@
                         android:id="@+id/txtWillCost"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/font_sf_pro_display"
+                        android:fontFamily="@font/sf_pro_text"
                         android:textSize="@dimen/sp_13"
                         android:gravity="center"
-                        android:textColor="@color/gray_300"
-                        tools:text="will cost 0.000023 SOL"
+                        android:text="@{@string/add_coin_cost(itemAddCoin.minBalance)}"
+                        android:textColor="@color/gray_300_65"
+                        tools:text="will cost 0.002039 SOL"
                         />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -243,6 +241,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/lAddCoin"
                 android:layout_marginTop="@dimen/dp_10"
+                android:fontFamily="@font/font_sf_pro_display"
                 android:textColor="@color/red_400"
                 android:gravity="center"
                 tools:text="Error message"

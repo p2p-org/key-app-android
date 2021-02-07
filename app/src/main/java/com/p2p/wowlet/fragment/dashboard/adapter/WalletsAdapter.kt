@@ -11,7 +11,7 @@ import com.wowlet.entities.local.WalletItem
 
 class WalletsAdapter(
     private val viewModel: DashboardViewModel,
-    private val list: List<WalletItem>
+    private var list: List<WalletItem>
 ) : RecyclerView.Adapter<WalletsAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -33,6 +33,22 @@ class WalletsAdapter(
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    fun setData(walletList: List<WalletItem>) {
+        list = walletList
+        notifyDataSetChanged()
+    }
+
+    fun setItemData(walletItem: WalletItem) {
+        list.find { item ->
+            if (item.depositAddress == walletItem.depositAddress) {
+                item.tokenName = walletItem.tokenName
+                true
+            } else
+                false
+        }
+        notifyDataSetChanged()
     }
 
     inner class MyViewHolder(

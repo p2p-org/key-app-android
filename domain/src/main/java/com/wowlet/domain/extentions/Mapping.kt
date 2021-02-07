@@ -113,16 +113,23 @@ fun TransferInfo.transferInfoToActivityItem(
     publicKey: String,
     icon: String,
     tokenName: String,
-    tokenSymbol: String
+    tokenSymbol: String,
+    isCreating: Boolean = false
 ): ActivityItem {
     val symbolPrice: String
-    val sendOrReceive = if (this.from == publicKey) {
-        symbolPrice = "-"
-        "Send Coin"
-
-    } else {
-        symbolPrice = "+"
-        "Receive Coin"
+    val sendOrReceive = when {
+        isCreating -> {
+            symbolPrice = "+"
+            "Create account"
+        }
+        from == publicKey -> {
+            symbolPrice = "-"
+            "Send Coin"
+        }
+        else -> {
+            symbolPrice = "+"
+           "Receive Coin"
+        }
     }
     return ActivityItem(
         icon = icon,

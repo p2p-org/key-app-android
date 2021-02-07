@@ -48,6 +48,7 @@
                     style="@style/White.17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/font_sf_pro_display"
                     android:text="@string/scan_qr_code"
                     app:layout_constraintBottom_toBottomOf="@+id/containerScanner"
                     app:layout_constraintEnd_toEndOf="@+id/containerScanner"

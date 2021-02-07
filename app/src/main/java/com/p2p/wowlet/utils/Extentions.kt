@@ -18,6 +18,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
@@ -118,28 +119,33 @@ fun Context.shareText(value: String) {
     startActivity(Intent.createChooser(shareIntent, "Share Text"))
 }
 
-fun FragmentActivity.openFingerprintDialog(requestSuccess: () -> Unit) {
+fun FragmentActivity.openFingerprintDialog(requestSuccess: (Boolean) -> Unit) {
     val executor = ContextCompat.getMainExecutor(this)
     val biometricManager = BiometricManager.from(this)
     when (biometricManager.canAuthenticate()) {
         BiometricManager.BIOMETRIC_SUCCESS ->
             this.authUser(executor) {
-                requestSuccess.invoke()
+                requestSuccess.invoke(true)
             }
-        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
+        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+            requestSuccess.invoke(false)
             Toast.makeText(
                 this,
                 getString(R.string.error_msg_no_biometric_hardware),
                 Toast.LENGTH_LONG
             ).show()
-        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
+        }
+        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+            requestSuccess.invoke(false)
             Toast.makeText(
                 this,
                 getString(R.string.error_msg_biometric_hw_unavailable),
                 Toast.LENGTH_LONG
             ).show()
+        }
         BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
             startActivity(Intent(Settings.ACTION_SETTINGS))
+            requestSuccess.invoke(false)
             Toast.makeText(
                 this,
                 getString(R.string.error_msg_biometric_not_setup),
@@ -176,6 +182,75 @@ private fun FragmentActivity.authUser(executor: Executor, requestSuccess: () -> 
 
     biometricPrompt.authenticate(promptInfo)
 }
+
+
+
+
+fun Fragment.openFingerprintDialog(requestSuccess: (Boolean) -> Unit) {
+    val executor = ContextCompat.getMainExecutor(requireContext())
+    val biometricManager = BiometricManager.from(requireContext())
+    when (biometricManager.canAuthenticate()) {
+        BiometricManager.BIOMETRIC_SUCCESS ->
+            this.authUser(executor) {
+                requestSuccess.invoke(true)
+            }
+        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+            requestSuccess.invoke(false)
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.error_msg_no_biometric_hardware),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+            requestSuccess.invoke(false)
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.error_msg_biometric_hw_unavailable),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+            requestSuccess.invoke(false)
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.error_msg_biometric_not_setup),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+}
+
+private fun Fragment.authUser(executor: Executor, requestSuccess: () -> Unit) {
+    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+        .setTitle(getString(R.string.auth_title))
+        .setSubtitle(getString(R.string.auth_subtitle))
+        .setDescription(getString(R.string.auth_description))
+        .setDeviceCredentialAllowed(true)
+        .build()
+
+    val biometricPrompt = BiometricPrompt(this, executor,
+        object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                requestSuccess.invoke()
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Toast.makeText(requireContext(), "Auth failed", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+    biometricPrompt.authenticate(promptInfo)
+}
+
+
 
 fun Context.isFingerPrintSet(): Boolean {
     return BiometricManager.from(this)
@@ -246,6 +321,13 @@ fun Double.roundToThousandsCurrencyValue(): Double {
     return BigDecimal(this).setScale(4, RoundingMode.HALF_EVEN).toDouble()
 }
 
+fun Double.roundToMilCurrencyValue(): BigDecimal {
+    return BigDecimal(this).setScale(6, RoundingMode.HALF_UP)
+}
+
+fun Double.roundToBilCurrencyValue(): BigDecimal {
+    return BigDecimal(this).setScale(9, RoundingMode.HALF_UP)
+}
 
 
 

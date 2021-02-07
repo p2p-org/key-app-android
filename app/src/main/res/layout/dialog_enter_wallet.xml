@@ -41,7 +41,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="@dimen/dp_400"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_48"
@@ -58,7 +58,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.p2p.wowlet.supportclass.ScrollingPagerIndicatorLoop
+            <com.p2p.wowlet.supportclass.widget.ScrollingPagerIndicatorLoop
                 android:id="@+id/indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

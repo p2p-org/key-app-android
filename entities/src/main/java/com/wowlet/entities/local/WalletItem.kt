@@ -9,7 +9,7 @@ data class WalletItem(
     val depositAddress: String = "",
     val decimals: Int = 0,
     val mintAddress: String = "",
-    val tokenName: String = "",
+    var tokenName: String = "",
     val icon: String = "",
     var price: Double = 0.0,
     var amount: Double = 0.0,

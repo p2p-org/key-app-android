@@ -25,6 +25,7 @@ import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction
+import org.p2p.solanaj.rpc.types.QRAccountInfo
 import org.p2p.solanaj.rpc.types.TransferInfo
 import retrofit2.Response
 import java.security.SecureRandom
@@ -110,6 +111,10 @@ class WowletApiCallRepositoryImpl(
         return client.api.getAccountInfo(publicKey)
     }
 
+    override suspend fun getQRAccountInfo(publicKey: PublicKey): QRAccountInfo {
+        return client.api.getQRAccountInfo(publicKey)
+    }
+
     override suspend fun getMinimumBalance(accountLenght: Long): Long {
         val minimumBalance: Long =
             client.api.getMinimumBalanceForRentExemption(accountLenght)
@@ -148,7 +153,7 @@ class WowletApiCallRepositoryImpl(
         val instructions: List<ConfirmedTransaction.Instruction> = message.instructions
         for (instruction in instructions) {
             val number: Long = 2
-            if( message.accountKeys[instruction.programIdIndex.toInt()]=="11111111111111111111111111111111"){
+            if (message.accountKeys[instruction.programIdIndex.toInt()] == "11111111111111111111111111111111") {
                 val data = Base58.decode(instruction.data)
                 val lamports = readInt64(data, 4)
 
@@ -162,7 +167,7 @@ class WowletApiCallRepositoryImpl(
                 transferInfo.setFee(meta.fee)
                 println(transferInfo)
                 return transferInfo
-            }else if(message.accountKeys[instruction.programIdIndex.toInt()]=="TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"){
+            } else if (message.accountKeys[instruction.programIdIndex.toInt()] == "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") {
                 val data = Base58.decode(instruction.data)
                 val lamports = readInt64(data, 1)
 

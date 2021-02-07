@@ -12,18 +12,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FingerPrintViewModel(private val fingerPrintInteractor: FingerPrintInteractor) : BaseViewModel() {
-    private val _isSkipFingerPrint by lazy { MutableLiveData<Unit>() }
-    val isSkipFingerPrint: LiveData<Unit> get() = _isSkipFingerPrint
+    private val _isSkipFingerPrint by lazy { MutableLiveData<Boolean>() }
+    val isSkipFingerPrint: LiveData<Boolean> get() = _isSkipFingerPrint
 
     init {
         fingerPrintStatus()
     }
 
-    fun doThisLater() {
+    fun doThisLater(isEnabled:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             fingerPrintInteractor.setFingerPrint(
                 EnableFingerPrintModel(
-                    isEnable = false,
+                    isEnable = isEnabled,
                     isNotWantEnable = true
                 )
             )
@@ -53,9 +53,9 @@ class FingerPrintViewModel(private val fingerPrintInteractor: FingerPrintInterac
     private fun fingerPrintStatus() {
         val data = fingerPrintInteractor.isEnableFingerPrint()
         if (data.isEnable) {
-            _isSkipFingerPrint.value = Unit
+            _isSkipFingerPrint.value = data.isEnable
         } else if (data.isNotWantEnable) {
-            _isSkipFingerPrint.value = Unit
+            _isSkipFingerPrint.value = data.isNotWantEnable
         }
     }
 }

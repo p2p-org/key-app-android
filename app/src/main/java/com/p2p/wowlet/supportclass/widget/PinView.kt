@@ -1,4 +1,4 @@
-package com.p2p.wowlet.supportclass
+package com.p2p.wowlet.supportclass.widget
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,7 +6,6 @@ import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.p2p.wowlet.R
 import com.wowlet.entities.enums.PinCodeFragmentType
-import kotlinx.android.synthetic.main.fragment_pin_code.view.*
 
 class PinView : LinearLayoutCompat {
     private var pin = ""

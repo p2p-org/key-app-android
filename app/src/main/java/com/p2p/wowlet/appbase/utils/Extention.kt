@@ -2,6 +2,7 @@ package com.p2p.wowlet.appbase.utils
 
 import android.app.Activity
 import android.os.Build
+import android.widget.Toast
 import androidx.core.content.PermissionChecker
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -58,5 +59,13 @@ fun Activity.hasPermission(permission: String): Boolean {
         ) == PermissionChecker.PERMISSION_GRANTED
     }
     return true
+}
+
+fun Activity.makeShortToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Fragment.makeShortToast(message: String) {
+    requireActivity().makeShortToast(message)
 }
 

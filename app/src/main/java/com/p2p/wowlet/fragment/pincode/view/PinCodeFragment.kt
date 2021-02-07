@@ -32,10 +32,13 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
 
     private var isSplashScreen: Boolean = false
     private var isBackupDialog: Boolean = false
+    private var isFingerprintEnabled: Boolean = false
     private lateinit var pinCodeFragmentType: PinCodeFragmentType
+    private lateinit var pinButtonAdapter: PinButtonAdapter
 
 
     override fun initView() {
+        viewModel.fingerPrintStatus()
         binding.run {
             viewModel = this@PinCodeFragment.viewModel
 
@@ -43,7 +46,8 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             pinView.pinCodeFragmentType = pinCodeFragmentType
             pinView.setMaxPinSize(6)
             context?.let { context ->
-                gridView.adapter = PinButtonAdapter(
+                pinButtonAdapter = PinButtonAdapter(
+                    isFingerprintEnabled,
                     context,
                     pinCodeFragmentType,
                     pinButtonClick = {
@@ -51,17 +55,13 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                         vPinCodeNotMatch.visibility = View.INVISIBLE
                     },
                     pinFingerPrint = {
-                        activity?.openFingerprintDialog {
-                            if (isBackupDialog)
-                                this@PinCodeFragment.viewModel.goBackToDashboardFragment(true)
-                            else
-                                this@PinCodeFragment.viewModel.goToFingerPrintFragment()
-                        }
+                        this@PinCodeFragment.viewModel.openFingerprintDialog()
                     },
                     removeCode = {
                         pinView.onDeleteButtonClicked()
                         vPinCodeNotMatch.visibility = View.INVISIBLE
                     })
+                gridView.adapter = pinButtonAdapter
             }
             gridView.numColumns = 3
         }
@@ -83,10 +83,23 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
     }
 
-
     override fun observes() {
         observe(viewModel.pinCodeSuccess) {
-            viewModel.fingerPrintStatus()
+            if (isFingerprintEnabled) {
+                if (isBackupDialog)
+                    viewModel.goBackToDashboardFragment(true)
+                else
+                    viewModel.notificationStatus()
+            } else {
+                if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
+                    viewModel.goToFingerPrintFragment()
+                } else {
+                    if (isBackupDialog)
+                        viewModel.goBackToDashboardFragment(true)
+                    else
+                        viewModel.notificationStatus()
+                }
+            }
         }
         observe(viewModel.pinCodeSaved) {
             vPinCodeMessage.text = getString(R.string.confirm_pin_code)
@@ -97,13 +110,12 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
         observe(viewModel.isSkipFingerPrint) {
+            isFingerprintEnabled = it
+            pinButtonAdapter.updateFingerprintStatus(isFingerprintEnabled)
             if (it) {
-                if (isBackupDialog)
-                    viewModel.goBackToDashboardFragment(true)
-                else
-                    viewModel.notificationStatus()
-            } else
-                viewModel.goToFingerPrintFragment()
+                childFragmentManager.executePendingTransactions()
+                viewModel.openFingerprintDialog()
+            }
         }
         observe(viewModel.skipNotification) {
             if (it)
@@ -130,11 +142,22 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                         vPinCodeNotMatch.text = getString(R.string.incorrect_password)
                     else
                         when (binding.pinView.wrongPinCodeCount) {
-                            1 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_2)
-                            2 -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_left_1)
-                            else -> vPinCodeNotMatch.text = getString(R.string.wrong_pin_code_block)
+                            1 -> vPinCodeNotMatch.text =
+                                getString(R.string.wrong_pin_code_left_2)
+                            2 -> vPinCodeNotMatch.text =
+                                getString(R.string.wrong_pin_code_left_1)
+                            else -> vPinCodeNotMatch.text =
+                                getString(R.string.wrong_pin_code_block)
                         }
                 }
+            }
+        }
+        observe(viewModel.openFingerprintDialog) {
+            openFingerprintDialog {
+                if (isBackupDialog)
+                    this@PinCodeFragment.viewModel.goBackToDashboardFragment(true)
+                else
+                    this@PinCodeFragment.viewModel.goToFingerPrintFragment()
             }
         }
 

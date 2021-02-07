@@ -1,4 +1,4 @@
-package com.p2p.wowlet.supportclass;
+package com.p2p.wowlet.supportclass.widget;
 
 import android.animation.ArgbEvaluator;
 import android.content.Context;

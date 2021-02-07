@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Wowlet</string>
+    <string name="app_name">p2p wallet</string>
     <string name="splash_title">Wowlet for people, not for tokens</string>
     <string name="splash_hint">For athletes, high altitude produces two contradictory effects on performance. For explosive events (sprints up to 400 metres, long jump, triple jump) the reduction in atmospheric pressure means there is</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -120,6 +120,7 @@
     <string name="amount">Amount</string>
     <string name="value">Value</string>
     <string name="fee">Fee</string>
+    <string name="fee_">Fee:</string>
     <string name="to">To</string>
     <string name="view_in_blockchain_explorer">View in blockchain explorer</string>
     <string name="done">Done</string>
@@ -151,8 +152,10 @@
     <string name="block_number_symbol"># %1$d</string>
     <string name="btc">%1$.2f BTC</string>
     <string name="usd_symbol_2">$%1$.2f</string>
-    <string name="for_24h">%1$.5f  for 24hrs</string>
-    <string name="for_24h_p">%, 24hours</string>
+    <string name="for_24h">%1$.5f%% for 24hrs</string>
+    <string name="for_24h_positive">&#43;%1$.5f%% for 24hrs</string>
+    <string name="for_24h_positive_detail_wallet">&#43;%1$.2f%%, 24 hours</string>
+    <string name="for_24h_negative_detail_wallet">%1$.2f%%, 24 hours</string>
     <string name="percentages">%</string>
     <string name="us">%1$.3f US</string>
     <string name="us_symbol">%1$.3f $</string>
@@ -208,7 +211,7 @@
     <string name="reset_and_try_again">Reset and try again</string>
     <string name="enter_a_seed_phrase_from_your_account">Enter a seed phrase from your account</string>
     <string name="send_to_your_wallet">Send to your %1$s wallet</string>
-    <string name="all_deposits_are_stored_100_non_custodiallity_with_keys_held_on_this_device">All deposits are stored 100% non-custodiallity with keys held on this device</string>
+    <string name="all_deposits_are_stored_100_non_custodiallity_with_keys_held_on_this_device">All deposits are stored 100%% non-custodiallity with keys held on this device</string>
     <string name="deposit_to_your_sol_wallet">Deposit to your SOL wallet</string>
     <string name="hint_austin">Austin</string>
     <string name="lamports">lamports</string>
@@ -221,14 +224,14 @@
     <string name="close">Close</string>
     <string name="search_token">Search token</string>
     <string name="view_in_solana_explorer">View in Solana explorer</string>
-    <string name="add_token">Add Token</string>
+    <string name="add_token">Add token</string>
     <string name="adding_token_to_your_wallet">Adding token to your wallet</string>
     <string name="balances">Balances</string>
     <string name="exchange">Exchange</string>
     <string name="secret_phrase_can_not_contain_more_than_12_words_error_message">Secret phrase can\'t contain more than 12 words</string>
     <string name="we_couldn_t_add_the_coin_error_message">We couldn\'t add the coin to your list. Check your internet connection and try again</string>
     <string name="influenced_founds">This will cost some SOL (Influenced founds)</string>
-    <string name="add_coin_cost">This will cost some SOL</string>
+    <string name="add_coin_cost">will cost %1$.6f SOL</string>
     <string name="date">Date</string>
     <string name="default_">Default</string>
     <string name="add_new_payment_method">+ Add new payment method</string>
@@ -239,7 +242,31 @@
     <string name="incorrect_password">Incorrect Password</string>
     <string name="send_to">Send to</string>
     <string name="around_amount_sol">≈ %1$.4f %2$s</string>
+    <string name="around_amount_sol_2">≈ %1$.2f %2$s</string>
     <string name="usd_upper_case">USD</string>
     <string name="available">Available: %1$.4f %2$s</string>
     <string name="physical_space_is_often_conceived_in_three_linear_dimensions_although_modern_physicists_usually_consider_it_with_time">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
+    <string name="_0_0000">0,0000</string>
+    <string name="price">Price:</string>
+    <string name="minimum_receive_">Minimum receive:</string>
+    <string name="slippage_">Slippage:</string>
+    <string name="swap_now">Swap now</string>
+    <string name="select_currency">Select currency</string>
+    <string name="balance_">Balance: %1$.4f</string>
+    <string name="select_a_token_destination">Select a token/destination</string>
+    <string name="my_tokens_set">My tokens set</string>
+    <string name="token_exchange">Token Exchange</string>
+    <string name="search_uniswap">Search uniswap</string>
+    <string name="slippage_settings">Slippage settings</string>
+    <string name="slippage_description">Slippage refers to the difference between the expected price of a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.</string>
+    <string name="_0_1_percent">0.1%</string>
+    <string name="_5_percent">5%</string>
+    <string name="_1_percent">1%</string>
+    <string name="_0_5_percent">0.5%</string>
+    <string name="custom">Custom</string>
+    <string name="percent">%</string>
+    <string name="amount_token_per_token">%1$f %2$s per %3$s</string>
+    <string name="select_source">Select Source</string>
+    <string name="select_wallet">Select wallet</string>
+    <string name="create_a_unique_name_for_your_wallet">Create a unique name for your wallet.</string>
 </resources>

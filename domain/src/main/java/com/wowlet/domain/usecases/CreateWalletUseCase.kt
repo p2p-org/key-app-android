@@ -8,18 +8,19 @@ class CreateWalletUseCase(
     val preferenceService: PreferenceService,
     val wowletApiCallRepository: WowletApiCallRepository
 ) : CreateWalletInteractor {
-   // var phraseList = listOf<String>()
+    var phraseList = listOf<String>()
 
-    var phraseList = mutableListOf<String>()
+   // var phraseList = mutableListOf<String>()
     override suspend fun initUser() {
         val userData = wowletApiCallRepository.initAccount(phraseList)
         preferenceService.setSingleWalletData(userData)
     }
 
+
     override fun generatePhrase(): List<String> {
-       // phraseList = wowletApiCallRepository.generatePhrase()
+        phraseList = wowletApiCallRepository.generatePhrase()
         // miracle pizza supply useful steak border same again youth silver access hundred
-         phraseList.add("miracle")
+   /*      phraseList.add("miracle")
          phraseList.add("pizza")
          phraseList.add("supply")
          phraseList.add("useful")
@@ -30,7 +31,7 @@ class CreateWalletUseCase(
          phraseList.add("youth")
          phraseList.add("silver")
          phraseList.add("access")
-         phraseList.add("hundred")
+         phraseList.add("hundred")*/
         // ozone puppy agent bundle suit music purity license rebuild acquire swamp aim
 //        phraseList.add("ozone")
 //        phraseList.add("puppy")

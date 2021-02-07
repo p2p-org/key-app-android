@@ -8,6 +8,7 @@
     <color name="green_30">#4D2DB533</color>
     <color name="green_500">#17971D</color>
     <color name="black">#FF000000</color>
+    <color name="black_80">#CC000000</color>
     <color name="grey_dark">#202020</color>
     <color name="gray_600">#757575</color>
     <color name="gray_500">#565656</color>
@@ -17,8 +18,10 @@
     <color name="blue_200">#a7befc</color>
     <color name="gray_blue_400">#A3A5BA</color>
     <color name="gray_blue_10">#1AA3A5BA</color>
+    <color name="gray_blue_50">#80A3A5BA</color>
     <color name="gray_400">#C4C4C4</color>
     <color name="gray_300">#F6F6F8</color>
+    <color name="gray_300_65">#A6F6F6F8</color>
     <color name="gray_80">#CCDBDBDB</color>
     <color name="hintColor">#808080</color>
     <color name="gray_30">#4DD9D9D9</color>
@@ -26,7 +29,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="red_400">#f44336</color>
+    <color name="red_400">#F43D3D</color>
     <color name="red_500">#FF0000</color>
     <color name="background_screens">#1A282828</color>
     <color name="colorTranslucent">#99000000</color>
@@ -40,4 +43,5 @@
     <color name="cornflowerblue">#5887FF</color>
     <color name="black_300">#202020</color>
     <color name="lavender">#E9E9E9</color>
+    <color name="whitesmoke">#F7F7F9</color>
 </resources>

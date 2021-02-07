@@ -6,5 +6,5 @@ import com.wowlet.entities.local.EnableNotificationModel
 import com.wowlet.entities.local.PinCodeVerification
 
 interface QrScannerInteractor {
-    suspend fun getAccountInfo(publicKey: String): Result<Boolean>
+    suspend fun getAccountInfo(publicKey: String): Result<String>
 }

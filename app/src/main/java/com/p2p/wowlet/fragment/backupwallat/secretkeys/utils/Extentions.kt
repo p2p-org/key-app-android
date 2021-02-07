@@ -27,6 +27,14 @@ fun Context.hideSoftKeyboard() {
     getInputMethodManager().hideSoftInputFromWindow(windowToken, 0)
 }
 
+fun View.hideSoftKeyboard() {
+    context.getInputMethodManager().hideSoftInputFromWindow(windowToken, 0)
+}
+
+fun View.showSoftKeyboard() {
+    context.getInputMethodManager().showSoftInput(this, 0)
+}
+
 private fun Context.getInputMethodManager() = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
 
 

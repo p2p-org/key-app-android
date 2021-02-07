@@ -10,12 +10,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.databinding.DialogBackupBinding
-import com.p2p.wowlet.databinding.DialogCurrencyBinding
-import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
 import com.p2p.wowlet.databinding.DialogSecurityBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel
-import kotlinx.android.synthetic.main.dialog_security.*
+import com.p2p.wowlet.utils.openFingerprintDialog
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -42,7 +39,7 @@ class SecurityDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DataBindingUtil.inflate(
             inflater, R.layout.dialog_security, container, false
         )
@@ -57,11 +54,26 @@ class SecurityDialog(
         }
         binding.vDone.setOnClickListener {
             val isFingerprintChecked = binding.vSwitch.isChecked
-            profileViewModel.setUsesFingerPrint(isEnabled = isFingerprintChecked, isNotWantEnable = false)
-                .invokeOnCompletion {
-                    MainScope().launch { onFingerprintStateSelected.invoke() }
-            }
+            fingerprintEnableState(isFingerprintChecked)
             dismiss()
+        }
+        binding.vSwitch.setOnClickListener {
+            val isChecked = binding.vSwitch.isChecked
+            if (isChecked) {
+                binding.vSwitch.isChecked = false
+                activity?.openFingerprintDialog {
+                    binding.vSwitch.isChecked = it
+                }
+            }
+        }
+    }
+
+    private fun fingerprintEnableState(isFingerprintChecked: Boolean) {
+        profileViewModel.setUsesFingerPrint(
+            isEnabled = isFingerprintChecked,
+            isNotWantEnable = false
+        ).invokeOnCompletion {
+            MainScope().launch { onFingerprintStateSelected.invoke() }
         }
     }
 
@@ -71,7 +83,7 @@ class SecurityDialog(
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
     }
 

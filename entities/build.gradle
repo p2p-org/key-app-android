@@ -49,4 +49,8 @@ dependencies {
     implementation supportDependencies.moshiConverter
     // MPAndroidChart
     implementation supportDependencies.mpChart
+    //room database
+    implementation supportDependencies.roomRuntime
+    annotationProcessor supportDependencies.roomCompiler
+    kapt supportDependencies.roomCompiler
 }

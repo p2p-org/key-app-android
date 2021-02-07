@@ -13,7 +13,9 @@ import org.p2p.solanaj.rpc.types.ConfigObjects.*;
 import org.p2p.solanaj.rpc.types.AccountInfo;
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction;
 import org.p2p.solanaj.rpc.types.ProgramAccount;
+import org.p2p.solanaj.rpc.types.QRAccountInfo;
 import org.p2p.solanaj.rpc.types.RecentBlockhash;
+import org.p2p.solanaj.rpc.types.RpcQrAccountInfoConfig;
 import org.p2p.solanaj.rpc.types.RpcSendTransactionConfig;
 import org.p2p.solanaj.rpc.types.SignatureInformation;
 import org.p2p.solanaj.rpc.types.RpcResultTypes.ValueLong;
@@ -42,8 +44,16 @@ public class RpcApi {
         transaction.setRecentBlockHash(recentBlockhash);
         transaction.sign(signers);
         byte[] serializedTransaction = transaction.serialize();
-
-        String base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
+        String base64Trx;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
+        } else {
+            base64Trx = android.util.Base64.encodeToString(
+                    serializedTransaction,
+                    android.util.Base64.DEFAULT
+            );
+        }
+       // String base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
 
         List<Object> params = new ArrayList<Object>();
 
@@ -72,7 +82,7 @@ public class RpcApi {
         return client.call("getConfirmedTransaction", params, ConfirmedTransaction.class);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public List<SignatureInformation> getConfirmedSignaturesForAddress2(PublicKey account, int limit)
             throws RpcException {
         List<Object> params = new ArrayList<Object>();
@@ -90,7 +100,7 @@ public class RpcApi {
         return result;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public List<ProgramAccount> getProgramAccounts(PublicKey account, long offset, String bytes) throws RpcException {
         List<Object> params = new ArrayList<Object>();
 
@@ -120,6 +130,15 @@ public class RpcApi {
         params.add(new RpcSendTransactionConfig());
 
         return client.call("getAccountInfo", params, AccountInfo.class);
+    }
+
+    public QRAccountInfo getQRAccountInfo(PublicKey account) throws RpcException {
+        List<Object> params = new ArrayList<Object>();
+
+        params.add(account.toString());
+        params.add(new RpcQrAccountInfoConfig());
+
+        return client.call("getAccountInfo", params, QRAccountInfo.class);
     }
 
     public long getMinimumBalanceForRentExemption(long dataLength) throws RpcException {

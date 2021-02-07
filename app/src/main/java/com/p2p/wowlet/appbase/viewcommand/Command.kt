@@ -5,6 +5,7 @@ import com.wowlet.entities.local.ActivityItem
 import com.wowlet.entities.local.EnterWallet
 import com.wowlet.entities.local.WalletItem
 import com.wowlet.entities.local.YourWallets
+import org.bitcoinj.wallet.Wallet
 
 sealed class Command {
 
@@ -26,11 +27,10 @@ sealed class Command {
     class NavigateFingerPrintViewCommand(val destinationId: Int) : ViewCommand
     class NavigateRecoveryWalletViewCommand(val destinationId: Int) : ViewCommand
     class NavigateSecretKeyViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateSwapViewCommand(val destinationId: Int) : ViewCommand
 
-    class NavigateScannerViewCommand(val destinationId: Int) : ViewCommand
+    class NavigateScannerViewCommand(val destinationId: Int, val bundle: Bundle? = null) : ViewCommand
     class NavigateScannerFromSendCoinViewCommand() : ViewCommand
-    class OpenAddCoinDialogViewCommand() : ViewCommand
+    class OpenAddCoinDialogViewCommand(val updateAllMyTokens: () -> Unit) : ViewCommand
     class NavigateWalletViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
     class OpenSendCoinDialogViewCommand(val bundle: Bundle? = null) : ViewCommand
     class NavigateBlockChainViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
@@ -40,6 +40,10 @@ sealed class Command {
     class NavigateDetailSavingViewCommand(val destinationId: Int) : ViewCommand
     class OpenProfileDialogViewCommand() : ViewCommand
     class OpenMainActivityViewCommand() : ViewCommand
+
+    class OpenSwapBottomSheetViewCommand(val walletData: WalletItem, val allMyWallets: List<WalletItem>) : ViewCommand
+    class OpenSelectTokenToSwapBottomSheet() : ViewCommand
+    class OpenSlippageSettingsBottomSheet() : ViewCommand
 
 
     class EnterWalletDialogViewCommand(val list: List<EnterWallet>) : ViewCommand
@@ -55,6 +59,7 @@ sealed class Command {
     class OpenRecoveryPhraseDialogViewCommand() : ViewCommand
     class OpenTransactionDialogViewCommand(val itemActivity: ActivityItem) : ViewCommand
     class OpenWalletDetailDialogViewCommand(val walletItem: WalletItem) : ViewCommand
+    class OpenEditWalletDialogViewCommand(val walletItem: WalletItem) : ViewCommand
     class SendCoinDoneViewCommand(val transactionInfo: ActivityItem) : ViewCommand
     class SendCoinViewCommand() : ViewCommand
     class SwapCoinProcessingViewCommand() : ViewCommand

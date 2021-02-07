@@ -37,7 +37,7 @@ class CreateWalletViewModel(private val createWalletInteractor: CreateWalletInte
         }
     }
 
-    private fun generateRandomPhrase() {
+    fun generateRandomPhrase() {
         _getPhraseData.value = createWalletInteractor.generatePhrase()
     }
 }

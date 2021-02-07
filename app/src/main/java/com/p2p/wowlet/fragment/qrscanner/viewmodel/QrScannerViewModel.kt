@@ -8,6 +8,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.WALLET_ADDRESS
+import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.domain.interactors.QrScannerInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.QrWalletType
@@ -15,7 +16,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class QrScannerViewModel(val qrScannerInteractor: QrScannerInteractor) : BaseViewModel() {
+class QrScannerViewModel(
+    val qrScannerInteractor: QrScannerInteractor,
+    val dashboardInteractor: DashboardInteractor
+) : BaseViewModel() {
     private val _isCurrentAccount by lazy { MutableLiveData<QrWalletType>() }
     val isCurrentAccount: LiveData<QrWalletType> get() = _isCurrentAccount
     private val _isCurrentAccountError by lazy { MutableLiveData<String>() }
@@ -26,21 +30,28 @@ class QrScannerViewModel(val qrScannerInteractor: QrScannerInteractor) : BaseVie
             Command.NavigateUpBackStackCommand()
     }
 
-    fun goToSendCoinFragment(walletAddress: String) {
+    fun goToSendCoinFragment(walletKey: String) {
         _command.value =
             Command.OpenSendCoinDialogViewCommand(
-                bundleOf(WALLET_ADDRESS to walletAddress)
+                bundleOf(WALLET_ADDRESS to walletKey)
             )
     }
 
-    fun getAccountInfo(publicKey:String) {
-        viewModelScope.launch(Dispatchers.IO){
-            when(val data=qrScannerInteractor.getAccountInfo(publicKey)){
-                is Result.Success-> withContext(Dispatchers.Main){
+    fun getAccountInfo(publicKey: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val data = qrScannerInteractor.getAccountInfo(publicKey)) {
+                is Result.Success -> withContext(Dispatchers.Main) {
                     data.data?.let {
-                        _isCurrentAccount.value=QrWalletType(it,publicKey)
+                        when (val result = dashboardInteractor.checkWalletFromList(it)) {
+                            is Result.Success -> {
+                                _isCurrentAccount.value =
+                                    result.data?.let { it1 -> QrWalletType(it1, publicKey) }
+                            }
+                            is Result.Error -> {
+                                _isCurrentAccountError.value = result.errors.errorMessage
+                            }
+                        }
                     }
-
                 }
                 is Result.Error -> withContext(Dispatchers.Main) {
                     _isCurrentAccountError.value = data.errors.errorMessage

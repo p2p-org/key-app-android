@@ -5,6 +5,7 @@
 
     <data>
 
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel" />
@@ -73,38 +74,44 @@
             app:layout_constraintBottom_toBottomOf="parent"
             >
 
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/lTokenInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_19"
+                android:orientation="vertical"
                 >
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtFromTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:padding="@dimen/dp_4"
-                    style="@style/Black.15.Bold"
-                    android:fontFamily="@font/font_sf_pro_display"
-                    android:text="@string/from"
-                    />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtAvailableBalance"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/dp_4"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:fontFamily="@font/sf_pro_text"
-                    android:onClick="@{() -> viewModel.insertAllBalance()}"
-                    android:textSize="@dimen/sp_15"
-                    android:textColor="@color/blue_400"
-                    android:gravity="end"
-                    tools:text="Available: 1200 SOL"
-                    />
+                    android:layout_marginTop="@dimen/dp_19"
+                    >
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtFromTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:padding="@dimen/dp_4"
+                        style="@style/Black.15.Bold"
+                        android:fontFamily="@font/font_sf_pro_display"
+                        android:text="@string/from"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtAvailableBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_4"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:fontFamily="@font/sf_pro_text"
+                        android:onClick="@{() -> viewModel.insertAllBalance()}"
+                        android:textSize="@dimen/sp_15"
+                        android:textColor="@color/blue_400"
+                        android:gravity="end"
+                        tools:text="Available: 1200 SOL"
+                        />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/imgWalletData"
@@ -151,6 +158,8 @@
                         android:fontFamily="@font/font_sf_pro_display"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textCursorDrawable="@drawable/ic_et_cursor_black"
+                        android:background="@android:color/transparent"
                         android:hint="@string/input_count"
                         android:layout_marginStart="@dimen/dp_20"
                         android:inputType="numberDecimal"
@@ -174,96 +183,99 @@
                         tools:text="≈ 3140.4641 SOL"
                         />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp_15"
-                    android:letterSpacing="-0.02"
-                    app:layout_constraintTop_toTopOf="@id/etCount"
-                    app:layout_constraintBottom_toBottomOf="@id/etCount"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:background="@drawable/bg_light_gray_rect_radius_12"
-                    android:textColor="@color/gray_blue_400"
-                    android:fontFamily="@font/font_sf_pro_display"
-                    android:textStyle="bold"
-                    android:onClick="@{() -> viewModel.toggleInsertAmountCurrency()}"
-                    android:text="@{viewModel.selectedCurrency}"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:paddingTop="@dimen/dp_8"
-                    android:paddingBottom="@dimen/dp_8"
-                    tools:text="@string/usd_upper_case"
-                    />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/sp_15"
+                        android:letterSpacing="-0.02"
+                        app:layout_constraintTop_toTopOf="@id/etCount"
+                        app:layout_constraintBottom_toBottomOf="@id/etCount"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@drawable/bg_light_gray_rect_radius_12"
+                        android:textColor="@color/gray_blue_400"
+                        android:fontFamily="@font/font_sf_pro_display"
+                        android:textStyle="bold"
+                        android:onClick="@{() -> viewModel.toggleInsertAmountCurrency()}"
+                        android:text="@{viewModel.selectedCurrency}"
+                        android:paddingStart="@dimen/dp_16"
+                        android:paddingEnd="@dimen/dp_16"
+                        android:paddingTop="@dimen/dp_8"
+                        android:paddingBottom="@dimen/dp_8"
+                        tools:text="@string/usd_upper_case"
+                        />
 
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/dp_20"
-                android:layout_marginBottom="@dimen/dp_20"
-                android:layout_weight="0"
-                android:background="@color/gray_blue_10" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginBottom="@dimen/dp_20"
+                    android:layout_weight="0"
+                    android:background="@color/gray_blue_10" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/single_sol"
-                    style="@style/Black.15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text"
-                    android:text="@{String.format(@string/_1_token(viewModel.walletItemData.tokenName))}"
-                    android:textColor="@color/gray_blue_400"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="1 SOL:"
-                    />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/single_sol"
+                        style="@style/Black.15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sf_pro_text"
+                        android:text="@{String.format(@string/_1_token(viewModel.walletItemData.tokenName))}"
+                        android:textColor="@color/gray_blue_400"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="1 SOL:"
+                        />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/fee"
-                    style="@style/Black.15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_12"
-                    android:text="@string/fee"
-                    android:fontFamily="@font/sf_pro_text"
-                    android:textColor="@color/gray_blue_400"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/single_sol" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/fee"
+                        style="@style/Black.15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_12"
+                        android:text="@string/fee"
+                        android:fontFamily="@font/sf_pro_text"
+                        android:textColor="@color/gray_blue_400"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/single_sol" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/single_sol_price"
-                    style="@style/Black.15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:fontFamily="@font/sf_pro_text"
-                    android:text="@{viewModel.walletItemData.walletBinds+@string/us_dollar}"
-                    android:textColor="@color/gray_blue_400"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="140003.00 US$" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/single_sol_price"
+                        style="@style/Black.15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:fontFamily="@font/sf_pro_text"
+                        android:text="@{viewModel.walletItemData.walletBinds+@string/us_dollar}"
+                        android:textColor="@color/gray_blue_400"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="140003.00 US$" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/fee_count"
-                    style="@style/Black.15"
-                    android:fontFamily="@font/sf_pro_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_12"
-                    android:textColor="@color/gray_blue_400"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/single_sol_price"
-                    tools:text="0.0001 SOL" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/fee_count"
+                        style="@style/Black.15"
+                        android:fontFamily="@font/sf_pro_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_12"
+                        android:textColor="@color/gray_blue_400"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/single_sol_price"
+                        tools:text="0.0001 SOL" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
 
             <View
                 android:layout_width="match_parent"
@@ -288,8 +300,19 @@
                 android:layout_height="@dimen/dp_59"
                 android:layout_marginTop="@dimen/dp_15"
                 android:background="@drawable/bg_light_gray_rect_radius_15"
-                android:paddingVertical="@dimen/dp_20"
                 app:layout_constraintTop_toBottomOf="@+id/paymentTypeTv">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgWallet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_7"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/ic_wallet"
+                    android:visibility="@{viewModel.walletIconVisibility ? View.VISIBLE : View.GONE}"
+                    />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/etWalletAddress"
@@ -297,21 +320,29 @@
                     android:layout_width="@dimen/dp_0"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_15"
-                    android:layout_marginEnd="@dimen/dp_15"
                     android:background="@null"
                     android:maxLines="1"
                     android:inputType="text"
+                    android:textCursorDrawable="@drawable/ic_et_cursor_black"
                     android:hint="@string/wallet_address"
                     android:fontFamily="@font/sf_pro_text"
                     android:textColorHint="@color/gray_blue_400"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/walletUserTypeIv"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guide_walletAddress"
+                    app:layout_constraintStart_toEndOf="@id/imgWallet"
                     app:layout_constraintTop_toTopOf="parent"
                     />
 
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guide_walletAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.8"
+                    />
+
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/walletUserTypeIv"
+                    android:id="@+id/imgScanQrCode"
                     android:layout_width="@dimen/dp_27"
                     android:layout_height="@dimen/dp_27"
                     android:layout_marginEnd="@dimen/dp_15"
@@ -321,7 +352,20 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_qr_scaner" />
+                    app:srcCompat="@drawable/ic_qr_scaner"
+                    />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgClearWalletAddress"
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_marginEnd="@dimen/dp_15"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_close_circle"
+                    android:onClick="@{() -> viewModel.clearWalletAddress()}"
+                    android:visibility="gone"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
