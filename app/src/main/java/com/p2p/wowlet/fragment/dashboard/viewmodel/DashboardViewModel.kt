@@ -1,5 +1,6 @@
 package com.p2p.wowlet.fragment.dashboard.viewmodel
 
+import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,7 @@ import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragmen
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment.Companion.CREATE_NEW_PIN_CODE
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment.Companion.OPEN_FRAGMENT_BACKUP_DIALOG
+import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
 import com.p2p.wowlet.utils.roundCurrencyValue
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.domain.interactors.DetailWalletInteractor
@@ -156,7 +158,9 @@ class DashboardViewModel(
     fun goToScannerFragment() {
         if (getWalletData.value.isNullOrEmpty()) return
         _command.value =
-            NavigateScannerViewCommand(R.id.action_navigation_dashboard_to_navigation_scanner)
+            NavigateScannerViewCommand(
+                R.id.action_navigation_dashboard_to_navigation_scanner
+            )
     }
 
     fun goToProfileDetailDialog() {
@@ -194,7 +198,7 @@ class DashboardViewModel(
             if (it.isNotEmpty()) {
                 _command.value =
                     OpenSendCoinDialogViewCommand(
-                        bundleOf(SendCoinsBottomSheet.WALLET_ITEM to it[0])
+                        walletItem = it[0]
                     )
             }
         }
@@ -265,7 +269,7 @@ class DashboardViewModel(
 
     fun goToSendCoin(walletItem: WalletItem) {
         _command.value = Command.OpenSendCoinDialogViewCommand(
-            bundleOf(SendCoinsBottomSheet.WALLET_ITEM to walletItem)
+            walletItem = walletItem
         )
     }
 

@@ -232,9 +232,13 @@ class SwapViewModel(
      * @throws NullPointerException when _selectedWalletFrom is null
      * Notice:This case expected to never happen
      */
-    fun setAmountOfConvertingToken(amount: String) {
+    fun setAmountOfConvertingToken(_amount: String) {
+        var amount = _amount
         val to: Double = _selectedWalletTo.value?.walletBinds ?: return
         val from: Double = _selectedWalletFrom.value?.walletBinds ?: throw NullPointerException("WalletItem is null in Swap screen")
+        if (_isInCryptoCurrency.value == false) {
+            amount = _aroundToCurrency.value.toString()
+        }
         val amountOfConvertingToken: BigDecimal = swapInteractor.getAmountInConvertingToken(amount, from, to).roundToMilCurrencyValue()
         val amountOfConvertingTokenStr: String = if (amountOfConvertingToken == 0.0.toBigDecimal()) "0.0000" else amountOfConvertingToken.toString()
         _amountInConvertingToken.value = amountOfConvertingTokenStr

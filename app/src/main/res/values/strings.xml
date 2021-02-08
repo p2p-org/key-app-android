@@ -253,6 +253,7 @@
     <string name="swap_now">Swap now</string>
     <string name="select_currency">Select currency</string>
     <string name="balance_">Balance: %1$.4f</string>
+    <string name="available_swap">Available: %1$.4f</string>
     <string name="select_a_token_destination">Select a token/destination</string>
     <string name="my_tokens_set">My tokens set</string>
     <string name="token_exchange">Token Exchange</string>

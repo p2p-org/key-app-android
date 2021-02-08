@@ -5,6 +5,7 @@ import com.wowlet.data.datastore.DashboardRepository
 import com.wowlet.data.datastore.LocalDatabaseRepository
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
+import com.wowlet.data.util.WalletDataConst
 import com.wowlet.domain.extentions.fromConstWalletToAddCoinItem
 import com.wowlet.domain.extentions.transferInfoToActivityItem
 import com.wowlet.domain.extentions.walletItemToQrCode
@@ -67,7 +68,7 @@ class DashBoardUseCase(
                     item.tokenName = wallet.walletName
             }
             sendCoinWalletList.addAll(walletData)
-            sendCoinWalletList.removeAll { it.amount == 0.0 }
+            //sendCoinWalletList.removeAll { it.amount == 0.0 }
             walletData.forEach {
                 yourWalletBalance += it.price
             }
@@ -225,16 +226,16 @@ class DashBoardUseCase(
             awaitClose {}
         }
 
-    override fun checkWalletFromList(walletAddress: String): Result<String> {
+    override fun checkWalletFromList(mintAddress: String): Result<ConstWalletItem> {
         return if (sendCoinWalletList.isNotEmpty()) {
-            if (walletAddress == Constants.OWNER_SOL) {
-                return Result.Success(walletAddress)
+            if (mintAddress == Constants.OWNER_SOL) {
+                return Result.Success(WalletDataConst.walletConstList[0])
             }
-            val find = sendCoinWalletList.find { walletItem -> walletItem.mintAddress == walletAddress }
-            if (find != null) {
-                Result.Success(walletAddress)
+            val findFromAll = WalletDataConst.walletConstList.find { walletItem -> walletItem.mintAddress == mintAddress }
+            if (findFromAll != null) {
+                Result.Success(findFromAll)
             } else
-                Result.Error(CallException(Constants.ERROR_NULL_DATA, "Wallet not found"))
+                Result.Error(CallException(Constants.ERROR_NULL_DATA, "Invalid QR code"))
         } else {
             Result.Error(CallException(Constants.ERROR_EMPTY_ALL_WALLETS, "You don't have any wallets"))
         }

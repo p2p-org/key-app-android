@@ -13,7 +13,7 @@ sealed class Command {
 
     /*Navigate fragment commands*/
     class FinishAppViewCommand : ViewCommand
-    class NavigateUpViewCommand(val destinationId: Int) : ViewCommand
+    class NavigateUpViewCommand(val destinationId: Int, val bundle: Bundle? = null) : ViewCommand
     class NavigateUpBackStackCommand() : ViewCommand
     class NavigateRegLoginViewCommand(val destinationId: Int) : ViewCommand
     class NavigateTermAndConditionViewCommand(val destinationId: Int) : ViewCommand
@@ -29,10 +29,9 @@ sealed class Command {
     class NavigateSecretKeyViewCommand(val destinationId: Int) : ViewCommand
 
     class NavigateScannerViewCommand(val destinationId: Int, val bundle: Bundle? = null) : ViewCommand
-    class NavigateScannerFromSendCoinViewCommand() : ViewCommand
     class OpenAddCoinDialogViewCommand(val updateAllMyTokens: () -> Unit) : ViewCommand
     class NavigateWalletViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
-    class OpenSendCoinDialogViewCommand(val bundle: Bundle? = null) : ViewCommand
+    class OpenSendCoinDialogViewCommand(val walletItem: WalletItem? = null, val walletAddress: String? = null) : ViewCommand
     class NavigateBlockChainViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
     class NavigateDashboardViewCommand(val destinationId: Int, val bundle: Bundle?) :
         ViewCommand

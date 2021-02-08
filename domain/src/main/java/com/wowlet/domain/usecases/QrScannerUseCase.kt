@@ -34,13 +34,14 @@ class QrScannerUseCase(
                         val mint = infoJson.getString("mint")
                         Result.Success(mint)
                     } else {
-                        Result.Success(accountInfo.value.owner)
+                        Result.Error(CallException(Constants.ERROR_NULL_DATA, "Parsed is null"))
                     }
                 } catch (e: JSONException) {
                     Result.Error(CallException(Constants.ERROR_NULL_DATA, e.message))
                 }
             } else {
-                Result.Error(CallException(Constants.ERROR_NULL_DATA, "Wallet not found"))
+                //Scanned wallet has 0 balance
+                Result.Error(CallException(Constants.ERROR_NULL_DATA, "Could not find the wallet"))
             }
         } catch (e: Exception) {
             Result.Error(CallException(Constants.REQUEST_EXACTION, e.message))

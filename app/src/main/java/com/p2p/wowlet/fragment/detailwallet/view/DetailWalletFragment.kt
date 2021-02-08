@@ -160,11 +160,9 @@ class DetailWalletFragment :
                 (activity as MainActivity).showHideNav(false)
             }
             is Command.OpenSendCoinDialogViewCommand -> {
-                val walletAddress = command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "") ?: ""
-                val walletItem = command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
                 SendCoinsBottomSheet.newInstance(
-                    walletItem,
-                    walletAddress,
+                    command.walletItem,
+                    command.walletAddress,
                 ) { destinationId: Int, bundle: Bundle? ->
                     navigateFragment(destinationId, bundle)
                 }.show(

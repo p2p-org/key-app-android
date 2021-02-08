@@ -21,5 +21,5 @@ interface DashboardInteractor {
     fun setSelectedCurrency(currency: SelectedCurrency)
     fun getSelectedCurrency(): SelectedCurrency?
     suspend fun saveEditedWallet(localWalletItem: LocalWalletItem): Flow<List<WalletItem>>
-    fun checkWalletFromList(walletAddress: String): Result<String>
+    fun checkWalletFromList(mintAddress: String): Result<ConstWalletItem>
 }

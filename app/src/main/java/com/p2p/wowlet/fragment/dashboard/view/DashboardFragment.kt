@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.activity.RegistrationActivity
@@ -35,6 +38,7 @@ import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
+import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.util.pxToDp
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.SwapBottomSheet
 import com.p2p.wowlet.utils.OnSwipeTouchListener
 import com.p2p.wowlet.utils.drawChart
@@ -121,7 +125,7 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     viewModel.enterWalletDialog()
                 }, {
                     viewModel.openSwapBottomSheet(it)
-                }, { destinationId, bundle->
+                }, { destinationId, bundle ->
                     navigateFragment(destinationId, bundle)
                 }).show(
                     childFragmentManager,
@@ -129,12 +133,12 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 )
             }
             is OpenSendCoinDialogViewCommand -> {
-                val walletItem =
-                    command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
-                val walletAddress =
-                    command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "") ?: ""
+//                val walletItem =
+//                    command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
+//                val walletAddress =
+//                    command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "") ?: ""
                 SendCoinsBottomSheet.newInstance(
-                    walletItem, walletAddress
+                    command.walletItem, command.walletAddress
                 ) { destinationId, bundle ->
                     navigateFragment(destinationId, bundle)
                 }.show(
@@ -150,11 +154,6 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
             }
 
 
-
-            is NavigateDetailSavingViewCommand -> {
-                navigateFragment(command.destinationId)
-                (activity as MainActivity).showHideNav(false)
-            }
             is NavigateBlockChainViewCommand -> {
                 navigateFragment(command.destinationId, command.bundle)
             }
@@ -170,7 +169,7 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     updateListInAllMyTokens =
                     command.updateAllMyTokens
 
-                ) .show(childFragmentManager, TAG_ADD_COIN)
+                ).show(childFragmentManager, TAG_ADD_COIN)
             }
 
             is Command.OpenTransactionDialogViewCommand -> {
@@ -292,6 +291,30 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     binding.allMyTokensContainer.visibility = View.VISIBLE
                     binding.addTokensContainer.visibility = View.GONE
                 }
+            }
+            binding.rootContainer.post {
+                val myBalanceContainer: Int =
+                    binding.myBalanceContainer.run { height + marginTop + marginBottom }
+                val lCoinContainer: Int =
+                    binding.lCoinContainer.run { height +  marginBottom }
+                val rvMargins: Int = binding.vRvWallets.run { marginTop + marginBottom }
+                val button: Int = binding.run {
+                    addTokensContainer.run { height + marginBottom + marginTop }
+                    +allMyTokensContainer.run { height + marginBottom + marginTop }
+                }
+                val allowedHeight =
+                    binding.rootContainer.height - (myBalanceContainer + lCoinContainer + rvMargins + button)
+                val layoutParams: ViewGroup.LayoutParams =
+                    if (binding.vRvWallets.height > allowedHeight) {
+                        binding.vRvWallets.layoutParams.apply {
+                            height = allowedHeight
+                        }
+                    } else {
+                        binding.vRvWallets.layoutParams.apply {
+                            height = ViewGroup.LayoutParams.WRAP_CONTENT
+                        }
+                    }
+                binding.vRvWallets.layoutParams = layoutParams
             }
         }
     }

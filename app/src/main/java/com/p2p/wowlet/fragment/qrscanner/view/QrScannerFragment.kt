@@ -18,7 +18,7 @@ import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
-import com.wowlet.entities.local.WalletItem
+import com.wowlet.entities.local.QrWalletType
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import me.dm7.barcodescanner.zbar.Result
@@ -89,13 +89,16 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is NavigateUpBackStackCommand -> {
+                walletAddressViewModel.postEnteredAmount()
                 navigateBackStack()
             }
+            is NavigateUpViewCommand -> {
+                navigateFragment(command.destinationId)
+            }
             is OpenSendCoinDialogViewCommand -> {
-                val walletItem = command.bundle?.getParcelable<WalletItem>(SendCoinsBottomSheet.WALLET_ITEM)
-                val walletAddress = command.bundle?.getString(SendCoinsBottomSheet.WALLET_ADDRESS, "") ?: ""
                 SendCoinsBottomSheet.newInstance(
-                    walletItem, walletAddress
+                    command.walletItem,
+                    command.walletAddress
                 ) { destinationId, bundle ->
                     navigateFragment(destinationId, bundle)
                 }.show(
@@ -113,15 +116,14 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
             navigateUp()
         }
         observe(viewModel.isCurrentAccount) {
-            if (it.walletAddress.isNotEmpty()) {
-                if (isFromSendCoinsBottomSheet) {
-                    walletAddressViewModel.setWalletAddress(it.walletKey)
-                    navigateUp()
-                }else {
-                    viewModel.goToSendCoinFragment(it.walletKey)
-                }
-            } else {
-                Toast.makeText(context, "There is not wallet key", Toast.LENGTH_SHORT).show()
+            //if (it.walletAddress.isNotEmpty())
+            if (isFromSendCoinsBottomSheet) {
+                walletAddressViewModel.setWalletData(it)
+                navigateUp()
+            }else {
+                viewModel.goToSendCoinFragment(it.walletAddress)
+                navigateUp()
+                walletAddressViewModel.setWalletData(it)
             }
         }
     }

@@ -27,4 +27,5 @@ interface WowletApiCallRepository {
     suspend fun getBlockTime(slot: Long): Long
     suspend fun getFee(): Long
     suspend fun createAndInitializeTokenAccount(payer: Account, mintAddress: PublicKey, newAccount: Account): String
+    suspend fun getProgramAccounts(publicKey: String)
 }

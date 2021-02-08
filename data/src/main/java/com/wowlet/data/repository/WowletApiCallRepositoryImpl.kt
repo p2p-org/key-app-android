@@ -14,6 +14,8 @@ import com.wowlet.entities.local.SendTransactionModel
 import com.wowlet.entities.local.UserSecretData
 import com.wowlet.entities.responce.ResponceDataBonfida
 import com.wowlet.entities.responce.orderbook.OrderBooks
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.bitcoinj.core.Utils.readInt64
@@ -64,6 +66,20 @@ class WowletApiCallRepositoryImpl(
 
     override suspend fun getBalance(accountAddress: String): Long {
         return client.api.getBalance(PublicKey(accountAddress))
+    }
+
+    override suspend fun getProgramAccounts(publicKey: String) {
+        val programAccounts = client.api
+            .getProgramAccounts(
+                PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+                32,
+                publicKey
+            )
+
+        programAccounts.map { programAccount ->
+            println("owner = ${programAccount.account.owner}")
+            println("pub key = ${programAccount.pubkey}")
+        }
     }
 
     override suspend fun getWallets(publicKey: String): MutableList<BalanceInfo> {

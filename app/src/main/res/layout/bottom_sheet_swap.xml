@@ -101,13 +101,11 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CornerFlowerBlue.15.SfProText"
-                    android:id="@+id/txtBalance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:text="@{viewModel.isInCryptoCurrency?@string/balance_(walletItemFrom.amount):@string/balance_(walletItemFrom.price)}"
-                    tools:text="Balance: 2140.0000"
-                    />
+                    android:text="@{viewModel.isInCryptoCurrency?@string/available_swap(walletItemFrom.amount):@string/available_swap(walletItemFrom.price)}"
+                    tools:text="Available: 2140.0000" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
