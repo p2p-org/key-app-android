@@ -17,21 +17,29 @@ import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment.Companion.OPEN_FRAGM
 import com.p2p.wowlet.utils.roundCurrencyValue
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.domain.interactors.DetailWalletInteractor
-import com.wowlet.entities.Constants
+import com.wowlet.domain.interactors.FingerPrintInteractor
 import com.wowlet.entities.Result
-import com.wowlet.entities.local.ActivityItem
-import com.wowlet.entities.enums.SelectedCurrency
 import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.AddCoinItem
+import com.wowlet.entities.local.LocalWalletItem
 import com.wowlet.entities.local.WalletItem
 import com.wowlet.entities.local.YourWallets
+import com.wowlet.entities.local.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.*
+import kotlin.math.pow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
 
-class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detailWalletInteractor: DetailWalletInteractor) : BaseViewModel() {
+
+class DashboardViewModel(
+    val dashboardInteractor: DashboardInteractor,
+    val detailWalletInteractor: DetailWalletInteractor,
+    val fingerPrintInteractor: FingerPrintInteractor
+) : BaseViewModel() {
     private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
     val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
     private val _getAllWalletData by lazy { MutableLiveData<List<WalletItem>>() }
@@ -46,8 +54,7 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
 
     private val _getAddCoinData by lazy { MutableLiveData<List<AddCoinItem>>() }
     val getAddCoinData: LiveData<List<AddCoinItem>> get() = _getAddCoinData
-    private val _getMinimumBalanceData by lazy { MutableLiveData<Long>() }
-    val getMinimumBalanceData: LiveData<Long> get() = _getMinimumBalanceData
+
     private val _yourBalance by lazy { MutableLiveData<Double>(0.0) }
     val yourBalance: LiveData<Double> get() = _yourBalance
 
@@ -63,15 +70,17 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
     private val _progressData by lazy { MutableLiveData<Int>() }
     val progressData: LiveData<Int> get() = _progressData
 
+    val emptyLambda: () -> Unit = {}
 
     private var yourWallets: YourWallets? = null
+    private var getWalletItemsJob: Job? = null
+    val nullWalletItem: WalletItem? = null
 
     fun getAddCoinList() {
         viewModelScope.launch(Dispatchers.IO) {
             val data = dashboardInteractor.getAddCoinList()
             withContext(Dispatchers.Main) {
                 _getAddCoinData.value = data.addCoinList
-                _getMinimumBalanceData.value = data.minimumBalance
             }
         }
     }
@@ -81,7 +90,8 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
     }
 
     fun getWalletItems() {
-        viewModelScope.launch(Dispatchers.IO) {
+        clearWalletItems()
+        getWalletItemsJob = viewModelScope.launch(Dispatchers.IO) {
             when (val walletList = dashboardInteractor.getWallets()) {
                 is Result.Success -> withContext(Dispatchers.Main) {
                     walletList.data?.let {
@@ -97,6 +107,15 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
                 }
             }
         }
+    }
+
+    private fun clearWalletItems() {
+        getWalletItemsJob?.cancel()
+        _getWalletData.value = listOf()
+        _getAllWalletData.value = listOf()
+        yourWallets = YourWallets(listOf(), 0.0, listOf(), listOf())
+        _yourBalance.value = 0.0
+        _getWalletChart.value = listOf()
     }
 
 
@@ -115,11 +134,27 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
         }
     }
 
+    fun clearGetWalletData() {
+        _getWalletData.value = listOf()
+    }
+
+    fun setChangeWallet(walletId: String, changeName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dashboardInteractor.saveEditedWallet(LocalWalletItem(walletId, changeName))
+                .collect { value ->
+                    withContext(Dispatchers.Main) {
+                        _getWalletData.value = value
+                    }
+                }
+        }
+    }
+
     fun finishApp() {
         _command.value = FinishAppViewCommand()
     }
 
     fun goToScannerFragment() {
+        if (getWalletData.value.isNullOrEmpty()) return
         _command.value =
             NavigateScannerViewCommand(R.id.action_navigation_dashboard_to_navigation_scanner)
     }
@@ -171,11 +206,12 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
         _command.value = YourWalletDialogViewCommand(enterWallet)
     }
 
-    fun goToSwapFragment() {
+    fun openSwapBottomSheet(walletItem: WalletItem? = null) {
         _getAllWalletData.value?.let {
             if (it.isNotEmpty()) {
+                val item: WalletItem = walletItem ?: it[0]
                 _command.value =
-                    NavigateSwapViewCommand(R.id.action_navigation_dashboard_to_navigation_swap)
+                    OpenSwapBottomSheetViewCommand(item, it)
             }
         }
     }
@@ -226,14 +262,15 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
             }
         }
     }
+
     fun goToSendCoin(walletItem: WalletItem) {
         _command.value = Command.OpenSendCoinDialogViewCommand(
             bundleOf(SendCoinsBottomSheet.WALLET_ITEM to walletItem)
         )
     }
 
-    fun openAddCoinDialog() {
-        _command.value = OpenAddCoinDialogViewCommand()
+    fun openAddCoinDialog(updateAllMyTokens: () -> Unit = {}) {
+        _command.value = OpenAddCoinDialogViewCommand(updateAllMyTokens)
     }
 
     fun openAllMyTokensDialog() {
@@ -278,5 +315,15 @@ class DashboardViewModel(val dashboardInteractor: DashboardInteractor,val detail
         _coinNoAddedError.value = AddCoinBottomSheet.NAV_TAG_COIN_NO_ADDED_ERROR
     }
 
+    fun openEditWalletDialog(walletItem: WalletItem) {
+        _command.value = OpenEditWalletDialogViewCommand(walletItem)
+    }
 
+    fun clearFingerprint() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fingerPrintInteractor.setFingerPrint(
+                EnableFingerPrintModel(isEnable = false, isNotWantEnable = false)
+            )
+        }
+    }
 }

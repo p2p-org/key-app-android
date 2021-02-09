@@ -20,16 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!--            <androidx.appcompat.widget.AppCompatImageView-
-            android:id="@+id/dismissDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_18"
-            android:layout_marginEnd="@dimen/dp_15"
-            android:tint="@color/black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_close" />-->
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCloseDialog"
@@ -37,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:fontFamily="@font/font_sf_pro_display"
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/close"
@@ -49,6 +40,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vTitle"
                 style="@style/Black.17"
+                android:fontFamily="@font/font_sf_pro_display"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,48 +63,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <!--<androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/lSearchContainer"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/dp_56"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_25"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/bg_search"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vTitle">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp_16"
-                app:srcCompat="@drawable/ic_search" />
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_18"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:hint="@string/search" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/info"
-            style="@style/Black.17"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_25"
-            android:layout_marginEnd="@dimen/dp_20"
-            tools:text="@string/add_coin_token_info"
-            android:text="@{String.format(@string/add_coin_token_info, viewModel.getMinimumBalanceData)}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vTitle" />-->
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -133,26 +83,15 @@
                 app:srcCompat="@drawable/ic_search" />
 
             <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/sf_pro_text"
                 android:layout_marginStart="@dimen/dp_4"
                 android:background="@android:color/transparent"
                 android:hint="@string/search_token" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <!--        <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/edtSearchTokens"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginTop="@dimen/dp_25"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/bg_gray_rect"
-        android:padding="@dimen/dp_12"
-        android:drawableStart="@drawable/ic_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vTitle" />-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/vRvAddCoin"

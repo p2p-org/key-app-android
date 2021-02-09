@@ -30,8 +30,8 @@ class FingerPrintFragment : FragmentBaseMVVM<FingerPrintViewModel, FragmentFinge
     }
 
     override fun observes() {
-        observe(viewModel.isSkipFingerPrint){
-            viewModel.doThisLater()
+        observe(viewModel.isSkipFingerPrint) {
+            viewModel.doThisLater(it)
         }
     }
 

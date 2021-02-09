@@ -35,7 +35,7 @@ android {
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "Wowlet_${variant.name}_${variant.versionName}.apk"
+            outputFileName = "p2p_wallet_${variant.name}_${variant.versionName}.apk"
         }
     }
     compileOptions {

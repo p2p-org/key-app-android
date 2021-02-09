@@ -15,6 +15,7 @@ import com.p2p.wowlet.utils.isFingerPrintSet
 import com.wowlet.entities.enums.PinCodeFragmentType
 
 class PinButtonAdapter(
+    var isFingerprintEnabled: Boolean,
     val context: Context,
     val pinCodeFragmentType: PinCodeFragmentType,
     val pinButtonClick: (String) -> Unit,
@@ -64,10 +65,13 @@ class PinButtonAdapter(
                 }
                 if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
                     button.isClickable = false
-                    button.visibility=View.GONE
-                }else if(!context.isFingerPrintSet() && pinCodeFragmentType != PinCodeFragmentType.CREATE){
+                    button.visibility = View.GONE
+                } else if (!context.isFingerPrintSet() && pinCodeFragmentType != PinCodeFragmentType.CREATE) {
                     button.isClickable = false
-                    button.visibility=View.GONE
+                    button.visibility = View.GONE
+                } else if (!isFingerprintEnabled) {
+                    button.isClickable = false
+                    button.visibility = View.GONE
                 }
             }
             "remove" -> {
@@ -97,6 +101,11 @@ class PinButtonAdapter(
             }
         }
         return view
+    }
+
+    fun updateFingerprintStatus(fingerprintEnabled: Boolean) {
+        isFingerprintEnabled = fingerprintEnabled
+        notifyDataSetChanged()
     }
 
 }

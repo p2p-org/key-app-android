@@ -35,6 +35,7 @@ import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
+import com.p2p.wowlet.fragment.dashboard.dialog.swap.SwapBottomSheet
 import com.p2p.wowlet.utils.OnSwipeTouchListener
 import com.p2p.wowlet.utils.drawChart
 import org.koin.android.ext.android.inject
@@ -58,7 +59,6 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getWalletItems()
         binding.run {
             viewModel = this@DashboardFragment.viewModel
         }
@@ -90,6 +90,7 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
     override fun initData() {
         arguments?.let {
             isBackupSuccess = it.getBoolean(BACK_TO_DASHBOARD_SCREEN)
+            it.clear()
         }
     }
 
@@ -97,9 +98,17 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
         when (command) {
             is NavigateUpViewCommand -> navigateFragment(command.destinationId)
             is NavigateScannerViewCommand -> navigateFragment(command.destinationId)
-            is NavigateSwapViewCommand -> {
-                navigateFragment(command.destinationId)
-                (activity as MainActivity).showHideNav(false)
+            is OpenSwapBottomSheetViewCommand -> {
+                SwapBottomSheet.newInstance(
+                    allMyWallets = command.allMyWallets,
+                    selectedWalletItems = command.walletData,
+                    navigateToFragment = { destinationId, bundle ->
+                        navigateFragment(destinationId, bundle)
+                    }
+                ).show(
+                    childFragmentManager,
+                    SwapBottomSheet.TAG_SWAP_BOTTOM_SHEET
+                )
             }
             is OpenWalletDetailDialogViewCommand -> {
                 DetailWalletBottomSheet.newInstance(command.walletItem, {
@@ -107,11 +116,13 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 }, {
                     viewModel.openAddCoinDialog()
                 }, {
-                      viewModel.goToSendCoin(it)
+                    viewModel.goToSendCoin(it)
                 }, {
                     viewModel.enterWalletDialog()
                 }, {
-                    viewModel.goToSwapFragment()
+                    viewModel.openSwapBottomSheet(it)
+                }, { destinationId, bundle->
+                    navigateFragment(destinationId, bundle)
                 }).show(
                     childFragmentManager,
                     DETAIL_WALLET
@@ -137,22 +148,31 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 navigateFragment(command.destinationId)
                 (activity as MainActivity).showHideNav(false)
             }
+
+
+
+            is NavigateDetailSavingViewCommand -> {
+                navigateFragment(command.destinationId)
+                (activity as MainActivity).showHideNav(false)
+            }
             is NavigateBlockChainViewCommand -> {
                 navigateFragment(command.destinationId, command.bundle)
             }
             is OpenAddCoinDialogViewCommand -> {
-                AddCoinBottomSheet.newInstance({
-                    viewModel.goToDetailWalletFragment(it)
-                }) {
-                    viewModel.goToBlockChainExplorer(it)
-                }.show(childFragmentManager, TAG_ADD_COIN)
+                AddCoinBottomSheet.newInstance(
+                    goToDetailWalletFragment = {
+                        viewModel.goToDetailWalletFragment(it)
+                        viewModel.getWalletItems()
+                    },
+                    goToSolanaExplorerFragment = {
+                        viewModel.goToBlockChainExplorer(it)
+                    },
+                    updateListInAllMyTokens =
+                    command.updateAllMyTokens
+
+                ) .show(childFragmentManager, TAG_ADD_COIN)
             }
-            is EnterWalletDialogViewCommand -> {
-                EnterWalletBottomSheet.newInstance(command.list).show(
-                    childFragmentManager,
-                    ENTER_WALLET
-                )
-            }
+
             is Command.OpenTransactionDialogViewCommand -> {
                 TransactionBottomSheet.newInstance(command.itemActivity) { destinationId, bundle ->
                     navigateFragment(destinationId, bundle)
@@ -161,6 +181,7 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
             is OpenProfileDetailDialogViewCommand -> {
                 ProfileDetailsDialog.newInstance {
                     viewModel.clearSecretKey()
+                    viewModel.clearFingerprint()
                     activity?.let {
                         val intent = Intent(it, RegistrationActivity::class.java)
                         it.startActivity(intent)
@@ -239,6 +260,12 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     YourWalletBottomSheet.ENTER_YOUR_WALLET
                 )
             }
+            is EnterWalletDialogViewCommand -> {
+                EnterWalletBottomSheet.newInstance(command.list).show(
+                    childFragmentManager,
+                    ENTER_WALLET
+                )
+            }
         }
     }
 
@@ -252,12 +279,19 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
             binding.vPieChartData.drawChart(it)
         }
         observe(viewModel.getAllWalletData) { itemList ->
-            if (itemList.size <= 4) {
-                binding.allMyTokensContainer.visibility = View.GONE
-                binding.addTokensContainer.visibility = View.VISIBLE
-            } else {
-                binding.allMyTokensContainer.visibility = View.VISIBLE
-                binding.addTokensContainer.visibility = View.GONE
+            when {
+                itemList.isEmpty() -> {
+                    binding.allMyTokensContainer.visibility = View.GONE
+                    binding.addTokensContainer.visibility = View.GONE
+                }
+                itemList.size <= 4 -> {
+                    binding.allMyTokensContainer.visibility = View.GONE
+                    binding.addTokensContainer.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.allMyTokensContainer.visibility = View.VISIBLE
+                    binding.addTokensContainer.visibility = View.GONE
+                }
             }
         }
     }

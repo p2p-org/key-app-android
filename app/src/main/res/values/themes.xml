@@ -34,10 +34,29 @@
         <item name="android:alpha">0.06</item>
     </style>
 
+    <style name="HorizontalDividerGreyBlue_400_10">
+        <item name="android:background">@color/gray_blue_10</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_1</item>
+    </style>
+
     <style name="Black.25.Bold" parent="Black.32.Bold">
         <item name="android:textSize">@dimen/sp_25</item>
-
     </style>
+
+    <style name="CornerFlowerBlue.15.SfProText" parent="Grey.15.SfProText">
+        <item name="android:textColor">@color/cornflowerblue</item>
+    </style>
+
+    <style name="White.15.Bold.SfProText" parent="CornerFlowerBlue.15.SfProText">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Black.25.Bold.SfProDisplay" parent="Black.19.Bold.SfProDisplay">
+        <item name="android:textSize">@dimen/sp_25</item>
+    </style>
+
     <style name="Black.28.Bold" parent="Black.32.Bold">
         <item name="android:textSize">@dimen/sp_28</item>
     </style>
@@ -45,6 +64,18 @@
     <style name="Black.27.Bold" parent="Black.32.Bold">
         <item name="android:textSize">@dimen/sp_27</item>
     </style>
+
+
+    <style name="Black.27.Bold.SfProDisplay" parent="Black.25.Bold.SfProDisplay">
+        <item name="android:textSize">@dimen/sp_27</item>
+    </style>
+
+
+    <style name="Black300.27.Bold.SfProDisplay" parent="Black.27.Bold.SfProDisplay">
+        <item name="android:textColor">@color/black_300</item>
+    </style>
+
+
 
     <style name="Black.17" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/black</item>
@@ -60,20 +91,53 @@
         <item name="android:fontFamily">@font/font_sf_pro_display</item>
     </style>
 
+
+    <style name="Black300.15.SfProDisplay" parent="Black.15.SfProDisplay">
+        <item name="android:textColor">@color/black_300</item>
+    </style>
+
+    <style name="Black300.15.SfProText" parent="Black300.15.SfProDisplay">
+        <item name="android:fontFamily">@font/sf_pro_text</item>
+    </style>
+
+
     <style name="Black.13" parent="Black.17">
         <item name="android:textSize">@dimen/sp_13</item>
     </style>
+
+    <style name="GreyDark.13.SfProDisplay" parent="Black.13">
+        <item name="android:textColor">@color/black_300</item>
+        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+    </style>
+
     <style name="Black.13.Bold" parent="Black.17.Bold">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/sp_13</item>
         <item name="android:textStyle">bold</item>
     </style>
+    
+    <style name="Black.13.Bold.SfProDisplay" parent="Black.13.Bold">
+        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+    </style>
+
+    <style name="Black.13.Bold.SfProDisplay.Alfa80" parent="Black.13.Bold.SfProDisplay">
+        <item name="android:textColor">@color/black_80</item>
+    </style>
+    
     <style name="Grey.13" parent="Black.13">
         <item name="android:textColor">@color/gray_600</item>
     </style>
 
     <style name="Grey400.13" parent="Black.13">
         <item name="android:textColor">@color/gray_blue_400</item>
+    </style>
+
+    <style name="Grey400.13.SfProText" parent="Grey400.13">
+        <item name="android:fontFamily">@font/sf_pro_text</item>
+    </style>
+
+    <style name="Grey400.13.SfProDisplay" parent="Grey400.13.SfProText">
+        <item name="android:fontFamily">@font/font_sf_pro_display</item>
     </style>
 
     <style name="Grey.15" parent="Grey.13">
@@ -97,10 +161,21 @@
         <item name="android:fontFamily">@font/font_sf_pro_display</item>
     </style>
 
+    <style name="Grey400.15.SfProText" parent="Grey400.15.SfProDisplay">
+        <item name="android:fontFamily">@font/sf_pro_text</item>
+    </style>
+
 
     <style name="Green.15" parent="Grey.13">
         <item name="android:textColor">@color/limegreen</item>
     </style>
+
+
+    <style name="Green.15.SfProDisplay" parent="Green.15">
+        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+    </style>
+
+
 
     <style name="Red.15" parent="Grey.15">
         <item name="android:textColor">@color/red_500</item>
@@ -117,6 +192,14 @@
     <style name="Grey.17.SfProDisplay" parent="Grey.13">
         <item name="android:textSize">@dimen/sp_17</item>
         <item name="android:fontFamily">@font/font_sf_pro_display</item>
+    </style>
+
+    <style name="Black300.17.SfProText" parent="Black300.15.SfProText">
+        <item name="android:textSize">@dimen/sp_17</item>
+    </style>
+
+    <style name="Gray400.17.SfProText" parent="Black300.17.SfProText">
+        <item name="android:textColor">@color/gray_blue_400</item>
     </style>
 
     <style name="Blue.17" parent="Grey.13">
@@ -184,8 +267,24 @@
         <item name="android:textSize">@dimen/sp_21</item>
     </style>
 
+    <style name="Black.21.Bold.SfProDisplay" parent="Black.19.Bold.SfProDisplay">
+        <item name="android:textSize">@dimen/sp_21</item>
+    </style>
+
     <style name="Black.21" parent="Black.21.Bold">
         <item name="android:textStyle">normal</item>
+    </style>
+    <style name="Black.17.Bold.SfProDisplay" parent="Black.21.Bold">
+        <item name="android:textSize">@dimen/sp_17</item>
+        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+    </style>
+
+    <style name="CornflowerBlue.17.Bold.SfProDisplay" parent="Grey.17.SfProDisplay">
+        <item name="android:textColor">@color/cornflowerblue</item>
+    </style>
+
+    <style name="Black.19.Bold.SfProDisplay" parent="Black.17.Bold.SfProDisplay">
+        <item name="android:textSize">@dimen/sp_19</item>
     </style>
 
     <style name="Black.17.Bold" parent="Black.21.Bold">
@@ -193,10 +292,16 @@
     </style>
 
 
-    <style name="Black.17.Bold.SfProDisplay" parent="Black.21.Bold">
-        <item name="android:textSize">@dimen/sp_17</item>
+    <style name="SlippageButtonStyle">
         <item name="android:fontFamily">@font/font_sf_pro_display</item>
+        <item name="android:textSize">@dimen/sp_15</item>
+        <item name="android:elevation">@dimen/dp_0</item>
+        <item name="android:minHeight">@dimen/dp_0</item>
+        <item name="android:minWidth">@dimen/dp_0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:stateListAnimator">@null</item>
     </style>
+
 
     <style name="Widget.Black.Button" parent="TextAppearance.AppCompat">
         <item name="textAllCaps">false</item>

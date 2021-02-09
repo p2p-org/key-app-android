@@ -11,7 +11,7 @@ fun Long.secondToDate(): String? {
     )
     dateFormat.timeZone = TimeZone.getTimeZone("GMT")
     return try {
-        dateFormat.format(Date(this*1000L))
+        dateFormat.format(Date(this * 1000L))
     } catch (e: ParseException) {
         null
     }
@@ -19,12 +19,12 @@ fun Long.secondToDate(): String? {
 
 fun String.getActivityDate(): String {
     val parser = SimpleDateFormat("dd-MMM-yyyy '@' HH:mm a")
-    val formatter = SimpleDateFormat("MMMM dd,yyyy '@' HH:mm a")
+    val formatter = SimpleDateFormat("MMMM dd,yyyy '@' HH:mm a", Locale.ENGLISH)
     return formatter.format(parser.parse(this))
 }
 
 fun String.getTransactionDate(): String {
     val parser = SimpleDateFormat("dd-MMM-yyyy '@' HH:mm a")
-    val formatter = SimpleDateFormat("dd MMM yyyy '@' HH:mm a")
+    val formatter = SimpleDateFormat("dd MMM yyyy '@' HH:mm a", Locale.ENGLISH)
     return formatter.format(parser.parse(this))
 }

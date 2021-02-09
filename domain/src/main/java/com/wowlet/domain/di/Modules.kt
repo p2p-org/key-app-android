@@ -11,7 +11,7 @@ val interactorsModule = module {
     factory<EnterPinCodeInteractor> { EnterPinCodeUseCase(get()) }
     single<NotificationInteractor> { NotificationUseCase(get()) }
     single<SendCoinInteractor> { SendCoinUseCase(get(), get()) }
-    single<DashboardInteractor> { DashBoardUseCase(get(), get(), get()) }
+    single<DashboardInteractor> { DashBoardUseCase(get(), get(), get(), get()) }
     single<RegFinishInteractor> { RegFinishUseCase(get()) }
     single<CompleteBackupWalletInteractor> { CompleteBackupWalletUseCase(get()) }
     single<SplashScreenInteractor> { SplashScreenUseCase(get()) }
@@ -22,4 +22,5 @@ val interactorsModule = module {
     factory<PinCodeInteractor> { PinCodeUseCase(get()) }
     factory<QrScannerInteractor> { QrScannerUseCase(get()) }
     factory<NetworksInteractor> { NetworksUseCase(get()) }
+    factory<SwapInteractor> { SwapUseCase(get()) }
 }

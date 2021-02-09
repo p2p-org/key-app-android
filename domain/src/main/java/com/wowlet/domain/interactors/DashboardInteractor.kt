@@ -3,6 +3,9 @@ package com.wowlet.domain.interactors
 import com.wowlet.entities.Result
 import com.wowlet.entities.enums.SelectedCurrency
 import com.wowlet.entities.local.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.flow.Flow
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 
@@ -17,4 +20,6 @@ interface DashboardInteractor {
     fun showSelectedMintAddress(addCoinItem: AddCoinItem): List<AddCoinItem>
     fun setSelectedCurrency(currency: SelectedCurrency)
     fun getSelectedCurrency(): SelectedCurrency?
+    suspend fun saveEditedWallet(localWalletItem: LocalWalletItem): Flow<List<WalletItem>>
+    fun checkWalletFromList(walletAddress: String): Result<String>
 }

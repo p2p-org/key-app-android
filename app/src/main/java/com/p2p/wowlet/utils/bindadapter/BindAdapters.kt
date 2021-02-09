@@ -48,6 +48,7 @@ fun AppCompatImageView.imageSource(uri: String) {
 }
 @BindingAdapter("image_source_radius_16")
 fun AppCompatImageView.imageSourceRadius(uri: String){
+    if (uri == "") return
     Glide.with(context)
         .load(uri)
         .centerCrop()
@@ -60,6 +61,25 @@ fun AppCompatImageView.imageSourceRadius(uri: String){
         .into(this)
 }
 
+@BindingAdapter(value = [ "image_source_radius", "radius_dp" ])
+fun AppCompatImageView.imageSourceRadiusDp(uri: String?, radius: Int){
+    imageSourceRadiusDpWithDefault(uri, radius, R.drawable.bg_circule_indicator, R.drawable.bg_circule_indicator)
+}
+
+
+@BindingAdapter(value = [ "image_source_radius", "radius_dp", "error_drawable", "placeholder" ])
+fun AppCompatImageView.imageSourceRadiusDpWithDefault(uri: String?, radius: Int, error: Int, placeHolder: Int){
+    Glide.with(context)
+        .load(uri)
+        .centerCrop()
+        .transform(RoundedCorners(radius.toFloat().dpToPx().toInt()))
+        .apply(
+            RequestOptions()
+                .placeholder(placeHolder)
+                .error(error)
+        )
+        .into(this)
+}
 
 
 

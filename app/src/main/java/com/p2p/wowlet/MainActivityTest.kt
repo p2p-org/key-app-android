@@ -1,9 +1,10 @@
 package com.p2p.wowlet
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.p2p.wowlet.utils.Transfer
+import com.squareup.moshi.*
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.entities.local.BalanceInfo
 import kotlinx.android.synthetic.main.activity_maintest.*
@@ -13,12 +14,14 @@ import kotlinx.coroutines.launch
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils.readInt64
 import org.koin.android.ext.android.inject
-import org.p2p.solanaj.core.*
-import org.p2p.solanaj.programs.SystemProgram
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.programs.TokenSwapProgram
 import org.p2p.solanaj.rpc.Cluster
 import org.p2p.solanaj.rpc.RpcClient
-import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.rpc.types.AccountInfo
+import java.math.BigInteger
 import java.util.*
 
 
@@ -55,92 +58,152 @@ class MainActivityTest : AppCompatActivity() {
         submitBalance.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 val client = RpcClient(Cluster.MAINNET)
+                val publicKey = PublicKey("9qvG1zUp8xF1Bi4m6UdRNby1BAAuaDrUxSpv4CmRRMjL")
+                val pools = Pool.getPools(client, publicKey)
 
-                val payer = Account(
-                    Base58
-                        .decode("MdfH9tqq9mkBZ1YmjgmT5tGN9BMEUNgGAXefYNfW2LsNRWUzs7GrhYVvdKwhGL1gXCUT9EjuyaH4VATozcx6jHr")
+                pools.forEach {
+                    Log.i(TAG, "mintA: ${it.swapData.mintA}")
+                    Log.i(TAG, "mintB: ${it.swapData.mintB}")
+                }
+
+                val moshi = Moshi.Builder().add(BigIntegerAdapter).build()
+                val listMyData = Types.newParameterizedType(
+                    MutableList::class.java,
+                    Pool.PoolInfo::class.java
                 )
-                val mintAddress = PublicKey("CWE8jPTUYhdCTZYWPTe1o5DFqfdjzWKc9WKz6rSjQUdG")
-                val newAccount = Account()
+                val adapter: JsonAdapter<List<Pool.PoolInfo>> = moshi.adapter<List<Pool.PoolInfo>>(listMyData)
 
-                val signature: String =
-                    createAndInitializeTokenAccount(client, payer, mintAddress, newAccount)
+//                        println("pool: ${adapter.toJson(pools)}")
 
-                print(signature)
+//                val programAccounts = client.api.getProgramSwapAccounts(publicKey.toBase58())
+//                if (programAccounts.isNotEmpty()) {
+//                    for (programAccount in programAccounts) {
+//                        val dataStr = programAccount.account.data[0]
+//                        val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                            Base64.getDecoder().decode(dataStr)
+//                        } else {
+//                            android.util.Base64.decode(dataStr, android.util.Base64.DEFAULT)
+//                        }
+//
+//                        val tokenSwapData = TokenSwapProgram.TokenSwapData.decode(data)
+//
+//                        Log.i(TAG, "isInitialized: ${tokenSwapData.isInitialized}")
+//                        Log.i(TAG, "nonce: ${tokenSwapData.nonce}")
+//                        Log.i(TAG, "tokenProgramId: ${tokenSwapData.tokenProgramId}")
+//                        Log.i(TAG, "tokenAccountA: ${tokenSwapData.tokenAccountA}")
+//                        Log.i(TAG, "tokenAccountB: ${tokenSwapData.tokenAccountB}")
+//                        Log.i(TAG, "tokenPool: ${tokenSwapData.tokenPool}")
+//                        Log.i(TAG, "mintA: ${tokenSwapData.mintA}")
+//                        Log.i(TAG, "mintB: ${tokenSwapData.mintB}")
+//                        Log.i(TAG, "feeAccount: ${tokenSwapData.feeAccount}")
+//                        Log.i(TAG, "curveType: ${tokenSwapData.curveType}")
+//                        Log.i(TAG, "tradeFeeNumerator: ${tokenSwapData.tradeFeeNumerator}")
+//                        Log.i(TAG, "tradeFeeDenominator: ${tokenSwapData.tradeFeeDenominator}")
+//                        Log.i(TAG,"ownerTradeFeeNumerator: ${tokenSwapData.ownerTradeFeeNumerator}")
+//                        Log.i(TAG,"ownerTradeFeeDenominator: ${tokenSwapData.ownerTradeFeeDenominator}")
+//                        Log.i(TAG,"ownerWithdrawFeeNumerator: ${tokenSwapData.ownerWithdrawFeeNumerator}")
+//                        Log.i(TAG,"ownerWithdrawFeeDenominator: ${tokenSwapData.ownerWithdrawFeeDenominator}")
+//                        Log.i(TAG, "hostFeeNumerator: ${tokenSwapData.hostFeeNumerator}")
+//                        Log.i(TAG, "hostFeeDenominator: ${tokenSwapData.hostFeeDenominator}")
+//
+//
+//                        val pool = Pool.getPoolInfo(client, programAccount)
+//
+//                        val moshi = Moshi.Builder().add(BigIntegerAdapter).build()
+//                        val adapter = moshi.adapter(Pool.PoolInfo::class.java)
+//
+//                        println("pool: ${adapter.toJson(pool)}")
+//
+//                        break
+////
+//                    }
+////
+//////                val payer = Account(
+//////                    Base58
+//////                        .decode("MdfH9tqq9mkBZ1YmjgmT5tGN9BMEUNgGAXefYNfW2LsNRWUzs7GrhYVvdKwhGL1gXCUT9EjuyaH4VATozcx6jHr")
+//////                )
+//////                val mintAddress = PublicKey("CWE8jPTUYhdCTZYWPTe1o5DFqfdjzWKc9WKz6rSjQUdG")
+//////                val newAccount = Account()
+//////
+//////                val signature: String =
+//////                    createAndInitializeTokenAccount(client, payer, mintAddress, newAccount)
+//////
+//////                print(signature)
+//                }
             }
         }
         submitAirdrop.setOnClickListener {
             /*    CoroutineScope(Dispatchers.IO).launch {
-                    repository.requestAirdrop(
-                        CallRequest(
-                            "requestAirdrop",
-                            listOf<Any>(publicKey, 50)
-                        )
-                    ).apply {
-                        when (this) {
-                            is Result.Success -> withContext(Dispatchers.Main) {
-                                getAirdrop.text = data?.result
-                                Log.i(TAG, "response requestAirdrop  ${data?.result}")
-                            }
-                            is Result.Error -> withContext(Dispatchers.Main) {
-                                getAirdrop.text = errors.errorMessage
-                                Log.i(TAG, "error requestAirdrop ${errors.errorMessage}")
-                            }
+                repository.requestAirdrop(
+                    CallRequest(
+                        "requestAirdrop",
+                        listOf<Any>(publicKey, 50)
+                    )
+                ).apply {
+                    when (this) {
+                        is Result.Success -> withContext(Dispatchers.Main) {
+                            getAirdrop.text = data?.result
+                            Log.i(TAG, "response requestAirdrop  ${data?.result}")
+                        }
+                        is Result.Error -> withContext(Dispatchers.Main) {
+                            getAirdrop.text = errors.errorMessage
+                            Log.i(TAG, "error requestAirdrop ${errors.errorMessage}")
                         }
                     }
                 }
+            }
 */
-        /*    CoroutineScope(Dispatchers.IO).launch {
-                val client = RpcClient(Cluster.TESTNET)
+            /*    CoroutineScope(Dispatchers.IO).launch {
+            val client = RpcClient(Cluster.TESTNET)
 
-                val fromPublicKey = PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo")
-                val toPublickKey = PublicKey("GrDMoeqMLFjeXQ24H56S1RLgT4R76jsuWCd6SvXyGPQ5")
-                val lamports = 3000
+            val fromPublicKey = PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo")
+            val toPublickKey = PublicKey("GrDMoeqMLFjeXQ24H56S1RLgT4R76jsuWCd6SvXyGPQ5")
+            val lamports = 3000
 
-                val signer = Account(
-                    Base58
-                        .decode("4Z7cXSyeFR8wNGMVXUE1TwtKn5D5Vu7FzEv69dokLv7KrQk7h6pu4LF8ZRR9yQBhc7uSM6RTTZtU1fmaxiNrxXrs")
+            val signer = Account(
+                Base58
+                    .decode("4Z7cXSyeFR8wNGMVXUE1TwtKn5D5Vu7FzEv69dokLv7KrQk7h6pu4LF8ZRR9yQBhc7uSM6RTTZtU1fmaxiNrxXrs")
+            )
+
+            val transaction = Transaction()
+            transaction.addInstruction(
+                SystemProgram.transfer(
+                    fromPublicKey,
+                    toPublickKey,
+                    lamports
                 )
+            )
 
-                val transaction = Transaction()
-                transaction.addInstruction(
-                    SystemProgram.transfer(
-                        fromPublicKey,
-                        toPublickKey,
-                        lamports
-                    )
+            print(client.getApi().sendTransaction(transaction, signer))
+        }*/
+
+            /*      CoroutineScope(Dispatchers.IO).launch {
+            val client = RpcClient(Cluster.TESTNET)
+
+            val fromPublicKey = PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo")
+            val toPublickKey = PublicKey("GrDMoeqMLFjeXQ24H56S1RLgT4R76jsuWCd6SvXyGPQ5")
+            val lamports = 3000
+
+            val signer = Account(
+                Base58
+                    .decode("4Z7cXSyeFR8wNGMVXUE1TwtKn5D5Vu7FzEv69dokLv7KrQk7h6pu4LF8ZRR9yQBhc7uSM6RTTZtU1fmaxiNrxXrs")
+            )
+
+            val transaction = Transaction()
+            transaction.addInstruction(
+                SystemProgram.transfer(
+                    fromPublicKey,
+                    toPublickKey,
+                    lamports
                 )
+            )
 
-                print(client.getApi().sendTransaction(transaction, signer))
-            }*/
-
-      /*      CoroutineScope(Dispatchers.IO).launch {
-                val client = RpcClient(Cluster.TESTNET)
-
-                val fromPublicKey = PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo")
-                val toPublickKey = PublicKey("GrDMoeqMLFjeXQ24H56S1RLgT4R76jsuWCd6SvXyGPQ5")
-                val lamports = 3000
-
-                val signer = Account(
-                    Base58
-                        .decode("4Z7cXSyeFR8wNGMVXUE1TwtKn5D5Vu7FzEv69dokLv7KrQk7h6pu4LF8ZRR9yQBhc7uSM6RTTZtU1fmaxiNrxXrs")
-                )
-
-                val transaction = Transaction()
-                transaction.addInstruction(
-                    SystemProgram.transfer(
-                        fromPublicKey,
-                        toPublickKey,
-                        lamports
-                    )
-                )
-
-                print(client.getApi().getBalance(fromPublicKey))
+            print(client.getApi().getBalance(fromPublicKey))
 
 
 
 
-            }*/
+        }*/
             CoroutineScope(Dispatchers.IO).launch {
 
                 val client = RpcClient(Cluster.MAINNET)
@@ -163,59 +226,38 @@ class MainActivityTest : AppCompatActivity() {
                         val owner = Base58.encode(owherData)
                         val mint = Base58.encode(mintData)
                         val amount = readInt64(data, 32 + 32)
-                        val accountInfo: AccountInfo = client.api.getAccountInfo(PublicKey(mint))
+                        val accountInfo: AccountInfo =
+                            client.api.getAccountInfo(PublicKey(mint))
                         var decimals = 0
                         if (accountInfo.getValue().getData() != null) {
                             val dataStr: String = accountInfo.getValue().getData().get(0)
-                            val accountInfoData = Base64.getDecoder().decode(dataStr)
+                            val accountInfoData =
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    Base64.getDecoder().decode(dataStr)
+                                } else {
+                                    android.util.Base64.decode(dataStr, android.util.Base64.DEFAULT)
+                                }
                             decimals = accountInfoData[44].toInt()
                         }
                         balances.add(BalanceInfo(account.pubkey, amount, mint, owner, decimals))
                     }
-                    System.out.println("mint " + Arrays.toString(balances.toTypedArray()))
-                }catch (e: Exception){
+                    Log.i("programAccountsmint", Arrays.toString(balances.toTypedArray()))
+
+                } catch (e: Exception) {
                     Log.i(TAG, "onCreate: ${e.message}")
                 }
 
             }
 
         }
-    }
 
-
-    fun initializeAccountInstruction(
-        account: PublicKey?, mint: PublicKey?,
-        owner: PublicKey?
-    ): TransactionInstruction {
-        val keys = ArrayList<AccountMeta>()
-        keys.add(AccountMeta(account, false, true))
-        keys.add(AccountMeta(mint, false, false))
-        keys.add(AccountMeta(owner, false, false))
-        keys.add(AccountMeta(SYSVAR_RENT_ADDRESS, false, false))
-        val data = byteArrayOf(1)
-        return TransactionInstruction(SPL_TOKEN_PROGRAM_ID, keys, data)
     }
+}
 
-    @Throws(RpcException::class)
-    fun createAndInitializeTokenAccount(
-        client: RpcClient, payer: Account, mintAddress: PublicKey?,
-        newAccount: Account
-    ): String {
-        val space = (32 + 32 + 8 + 93).toLong() // mint account data length: 32 + 32 + 8 + 93
-        val newAccountPubKey = newAccount.publicKey
-        val payerPubKey = payer.publicKey
-        val minBalance = client.api.getMinimumBalanceForRentExemption(space)
-        val createAccount = SystemProgram.createAccount(
-            payerPubKey, newAccountPubKey, minBalance,
-            space, SPL_TOKEN_PROGRAM_ID
-        )
-        val initializeAccount = initializeAccountInstruction(
-            newAccountPubKey, mintAddress,
-            payerPubKey
-        )
-        val transaction = Transaction()
-        transaction.addInstruction(createAccount)
-        transaction.addInstruction(initializeAccount)
-        return client.api.sendTransaction(transaction, Arrays.asList(payer, newAccount))
-    }
+object BigIntegerAdapter {
+    @FromJson
+    fun fromJson(string: String) = BigInteger(string)
+
+    @ToJson
+    fun toJson(value: BigInteger) = value.toString()
 }

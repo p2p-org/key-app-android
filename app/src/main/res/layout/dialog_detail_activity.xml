@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bg_radius_top"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_behavior="@string/bottom_sheet_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/titleContainer"
@@ -32,21 +33,22 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/editWallet"
                 android:layout_width="@dimen/dp_24"
                 android:layout_height="@dimen/dp_24"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_30"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@id/vTitle"
                 app:srcCompat="@drawable/ic_edit_24" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vTitle"
-                style="@style/Black.17.Bold"
+                style="@style/Black.19.Bold.SfProDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"
@@ -58,12 +60,11 @@
 
         <View
             android:id="@+id/view_one"
+            style="@style/HorizontalDividerGrey_400"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_1"
             android:layout_below="@+id/titleContainer"
-            android:layout_marginTop="@dimen/dp_15"
-            android:alpha=".01"
-            android:background="@color/gray" />
+            android:layout_marginTop="@dimen/dp_15" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -87,7 +88,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/vPrice"
-                        style="@style/Black.25.Bold"
+                        style="@style/Black.27.Bold.SfProDisplay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_20"
@@ -98,7 +99,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/vTokenValue"
-                        style="@style/Grey.15"
+                        style="@style/Grey400.15.SfProDisplay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_20"
@@ -109,7 +110,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/vTokenPercent"
-                        style="@style/Green.15"
+                        style="@style/Green.15.SfProDisplay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dp_10"
@@ -120,11 +121,10 @@
 
                     <View
                         android:id="@+id/view_two"
+                        style="@style/HorizontalDividerGrey_400"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_1"
                         android:layout_marginTop="@dimen/dp_15"
-                        android:alpha=".01"
-                        android:background="@color/gray"
                         app:layout_constraintTop_toBottomOf="@+id/vTokenValue" />
 
                     <FrameLayout
@@ -143,10 +143,9 @@
                     </FrameLayout>
 
                     <View
+                        style="@style/HorizontalDividerGrey_400"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:alpha=".01"
-                        android:background="@color/gray"
                         app:layout_constraintTop_toBottomOf="@+id/vChart" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -161,7 +160,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/getChartByOneHour"
-                            style="@style/Black.13"
+                            style="@style/GreyDark.13.SfProDisplay"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -171,7 +170,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/getChartByFourHour"
-                            style="@style/Black.13"
+                            style="@style/GreyDark.13.SfProDisplay"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -181,7 +180,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/getChartByDay"
-                            style="@style/Black.13"
+                            style="@style/GreyDark.13.SfProDisplay"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -191,7 +190,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/getChartByWeek"
-                            style="@style/Black.13"
+                            style="@style/GreyDark.13.SfProDisplay"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -201,7 +200,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/getChartByMonth"
-                            style="@style/Black.13"
+                            style="@style/GreyDark.13.SfProDisplay"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -225,7 +224,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/vAddressCopied"
-                            style="@style/Gray.13"
+                            style="@style/Grey400.13.SfProText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
@@ -236,7 +235,7 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/vWalletAddress"
-                            style="@style/Black.15"
+                            style="@style/Black.15.SfProDisplay"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
@@ -264,7 +263,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/vActivity"
-                        style="@style/Black.21.Bold"
+                        style="@style/Black.21.Bold.SfProDisplay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_15"
@@ -279,35 +278,44 @@
                     android:id="@+id/vRvActivity"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginEnd="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_15"
                     android:overScrollMode="never"
-                    app:layout_constraintTop_toBottomOf="@id/lHeader" />
+                    app:layout_constraintTop_toBottomOf="@id/lHeader"
+                    tools:listitem="@layout/item_activity"
+                    />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/lCoinContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_85"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="@dimen/dp_30"
             android:background="@drawable/bg_radius_top_dark"
             android:elevation="@dimen/dp_10"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingVertical="@dimen/dp_17">
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/addCoin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_add_black" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/reciveWallet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_36"
+                android:layout_marginStart="@dimen/dp_20"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/addCoin"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_receive_black" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -315,15 +323,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_36"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/swap"
+                app:layout_constraintStart_toEndOf="@+id/reciveWallet"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_send_black" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/swap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_20"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_exchange_black" />
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 
 </layout>

@@ -64,6 +64,11 @@ class SendCoinsViewModel(
     private val _selectedCurrency by lazy { MutableLiveData("USD") }
     val selectedCurrency: LiveData<String> get() = _selectedCurrency
 
+    private val _clearWalletAddress by lazy { MutableLiveData<Boolean>() }
+    val clearWalletAddress: LiveData<Boolean> get() = _clearWalletAddress
+
+    private val _walletIconVisibility by lazy { MutableLiveData<Boolean>(false) }
+    val walletIconVisibility: LiveData<Boolean> get() = _walletIconVisibility
 
     fun getWalletItems() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -215,4 +220,17 @@ class SendCoinsViewModel(
             _selectedCurrency.value = "USD"
         }
     }
+
+    fun clearWalletAddress() {
+        _clearWalletAddress.value = true
+    }
+
+    fun disableClearWalletAddress() {
+        _clearWalletAddress.value = false
+    }
+
+    fun setWalletIconVisibility(isVisible: Boolean) {
+        _walletIconVisibility.value = isVisible
+    }
+
 }

@@ -10,10 +10,14 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
+import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.databinding.DialogDetailActivityBinding
+import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.adapter.ActivityAdapter
+import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.util.DividerItemDecoration
 import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.*
 import com.p2p.wowlet.utils.bindadapter.imageSource
@@ -27,7 +31,8 @@ class DetailWalletBottomSheet(
     private val openAddCoin: (() -> Unit),
     private val openSendCoin: ((WalletItem) -> Unit),
     private val openReceveCoin: (() -> Unit),
-    private val openSwap: (() -> Unit),
+    private val openSwap: ((wallet: WalletItem) -> Unit),
+    private val navigateToFragment: ((actionId: Int, bundle: Bundle?) -> Unit)
 ) : BottomSheetDialogFragment() {
 
     private val detailWalletViewModel: DetailWalletViewModel by viewModel()
@@ -44,12 +49,13 @@ class DetailWalletBottomSheet(
             openAddCoin: (() -> Unit),
             openSendCoin: ((WalletItem) -> Unit),
             openReveice: (() -> Unit),
-            openSwapCoin: (() -> Unit)
+            openSwapCoin: ((wallet: WalletItem) -> Unit),
+            navigateToFragment: ((actionId: Int, bundle: Bundle?) -> Unit)
 
 
         ): DetailWalletBottomSheet {
             return DetailWalletBottomSheet(
-                walletItem, openQRScanner, openAddCoin, openSendCoin,openReveice, openSwapCoin
+                walletItem, openQRScanner, openAddCoin, openSendCoin,openReveice, openSwapCoin,navigateToFragment
             )
         }
     }
@@ -77,6 +83,7 @@ class DetailWalletBottomSheet(
         }
         initView()
         initViewModel()
+        initObserves()
     }
 
     @SuppressLint("SetTextI18n")
@@ -135,11 +142,19 @@ class DetailWalletBottomSheet(
             vQrScanner.setOnClickListener { walletItem.let { item -> openQRScanner.invoke(item) } }
             reciveWallet.setOnClickListener { openReceveCoin.invoke() }
             addCoin.setOnClickListener { openAddCoin.invoke() }
-            swap.setOnClickListener { openSwap.invoke() }
+            swap.setOnClickListener { openSwap.invoke(walletItem) }
         }
         activityAdapter = ActivityAdapter(mutableListOf(), detailWalletViewModel)
-        binding.vRvActivity.adapter = activityAdapter
-        binding.vRvActivity.layoutManager = LinearLayoutManager(context)
+        binding.vRvActivity.apply {
+            adapter = activityAdapter
+            layoutManager = LinearLayoutManager(context)
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    R.drawable.horizontal_divider_grey_blue_10
+                )
+            )
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -161,6 +176,8 @@ class DetailWalletBottomSheet(
                         R.color.red_400
                     )
                 )
+                binding.vTokenPercent.text= String.format(getString(R.string.for_24h_negative_detail_wallet), change24hPercentages.roundCurrencyValue())
+
             } else {
                 binding.vTokenPercent.setTextColor(
                     ContextCompat.getColor(
@@ -168,9 +185,28 @@ class DetailWalletBottomSheet(
                         R.color.limegreen
                     )
                 )
+                binding.vTokenPercent.text= String.format(getString(R.string.for_24h_positive_detail_wallet), change24hPercentages.roundCurrencyValue())
             }
-            val roundCurrencyValue = change24hPercentages.roundCurrencyValue()
-            binding.vTokenPercent.text = "$roundCurrencyValue${getString(R.string.for_24h_p)}"
+
         })
     }
+
+
+    private fun initObserves() {
+        detailWalletViewModel.command.observe(viewLifecycleOwner) { viewCommand->
+            when(viewCommand) {
+                is Command.OpenTransactionDialogViewCommand -> {
+                    TransactionBottomSheet.newInstance(
+                        viewCommand.itemActivity
+                    ) { destinationId, bundle ->
+                        navigateToFragment.invoke(destinationId, bundle)
+                    }.show(
+                        childFragmentManager,
+                        TransactionBottomSheet.TRANSACTION_DIALOG
+                    )
+                }
+            }
+        }
+    }
+
 }

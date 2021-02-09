@@ -4,8 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
@@ -26,7 +24,7 @@ class AddCoinAdapter(
 ) : RecyclerView.Adapter<AddCoinAdapter.MyViewHolder>() {
 
     private val list: ArrayList<AddCoinItem> = ArrayList()
-    private val noScrollLinearLayoutManager = NoScrollLinearLayoutManager(context)
+    private val layoutManager = LinearLayoutManager(context)
 
     private var previousExpandedItemPosition = -1
     private var expandedItemPosition = -1
@@ -37,7 +35,7 @@ class AddCoinAdapter(
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView.also {
-            it.layoutManager = noScrollLinearLayoutManager
+            it.layoutManager = layoutManager
         }
         super.onAttachedToRecyclerView(recyclerView)
     }
@@ -63,23 +61,33 @@ class AddCoinAdapter(
         return list.size
     }
 
+    fun getAddCoinItemList() = list
+
     fun updateList(list: List<AddCoinItem>) {
         this.list.apply {
             clear()
-            addAll(list)
+            addAll(list.toMutableList().removeAddedTokens())
         }
         notifyDataSetChanged()
     }
 
+    private fun MutableList<AddCoinItem>.removeAddedTokens() : MutableList<AddCoinItem> {
+        val list = mutableListOf<AddCoinItem>()
+        for (item in this) {
+            if (item.isAlreadyAdded) {
+                continue
+            }
+            list.add(item)
+        }
+        return list
+    }
 
     fun disableCallbacks() {
         callbacksEnabled = false
-        getLayoutManager().disableScrolling()
     }
 
     fun enableCallbacks() {
         callbacksEnabled = true
-        getLayoutManager().enableScrolling()
     }
 
 
@@ -101,11 +109,6 @@ class AddCoinAdapter(
         }
         return null
     }
-
-    private fun getLayoutManager() : NoScrollLinearLayoutManager {
-        return recyclerView?.layoutManager as NoScrollLinearLayoutManager
-    }
-
 
     private fun onItemClick(item: AddCoinItem, position: Int, view: ViewGroup) =
         View.OnClickListener {
@@ -146,17 +149,15 @@ class AddCoinAdapter(
             itemAddCoinBinding.apply {
                 itemAddCoin = item
                 viewModel = dashboardViewModel
+                txtErrorMessage.text = ""
                 containerMintAddress.isVisible = item.isShowMindAddress
                 clItemAddCoin.setOnClickListener(onItemClick(item, position, clItemAddCoin))
                 btnViewInExplorer.setOnClickListener {
                     btnViewInExplorerClickEvent.invoke(Constants.EXPLORER_SOLANA_ADD_TOKEN + item.mintAddress)
                 }
                 txtWillCost.text = txtWillCost.context.getString(R.string.add_coin_cost)
-                if (item.isAlreadyAdded) {
-                    pbAddCoin.progressDrawable = ContextCompat.getDrawable(pbAddCoin.context, R.drawable.bg_button_progress_bar_disabled)
-                    lAddCoin.isEnabled = false
-                    txtWillCost.text = txtWillCost.context.getString(R.string.influenced_founds)
-                }
+                pbAddCoin.progressDrawable = ContextCompat.getDrawable(pbAddCoin.context, R.drawable.bg_button_progress_bar)
+                lAddCoin.isEnabled = true
 
             }
 

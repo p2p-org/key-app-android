@@ -1,9 +1,8 @@
-package com.p2p.wowlet.fragment.swap.dialog
+package com.p2p.wowlet.dialog
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSwapCoinProcessingBinding
-import com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel
+import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SwapCoinProcessingDialog (private val goToWallet: () -> Unit): DialogFragment() {

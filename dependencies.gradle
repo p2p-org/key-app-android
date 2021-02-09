@@ -6,7 +6,7 @@ ext {
     minVersion = 21
     targetVersion = 30
     appVersionCode = 1
-    appVersionName = "1.0.25"
+    appVersionName = "1.0.29"
 
     appcompat = '1.2.0'
     coreKtx = '1.3.2'

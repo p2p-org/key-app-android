@@ -2,6 +2,7 @@ package com.wowlet.domain.usecases
 
 import com.github.mikephil.charting.data.PieEntry
 import com.wowlet.data.datastore.DashboardRepository
+import com.wowlet.data.datastore.LocalDatabaseRepository
 import com.wowlet.data.datastore.PreferenceService
 import com.wowlet.data.datastore.WowletApiCallRepository
 import com.wowlet.domain.extentions.fromConstWalletToAddCoinItem
@@ -16,15 +17,19 @@ import com.wowlet.entities.Result
 import com.wowlet.entities.enums.SelectedCurrency
 import com.wowlet.entities.local.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.channelFlow
 import org.bitcoinj.core.Base58
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
+import kotlin.math.pow
 
 
 class DashBoardUseCase(
     private val dashboardRepository: DashboardRepository,
     private val wowletApiCallRepository: WowletApiCallRepository,
-    private val preferenceService: PreferenceService
+    private val preferenceService: PreferenceService,
+    private val localDatabaseRepository: LocalDatabaseRepository
 ) : DashboardInteractor {
     private var walletData: MutableList<WalletItem> = mutableListOf()
     private var sendCoinWalletList: MutableList<WalletItem> = mutableListOf()
@@ -54,12 +59,13 @@ class DashBoardUseCase(
             val walletsList = wowletApiCallRepository.getWallets(publicKey).apply {
                 add(0, BalanceInfo(publicKey, balance, "SOLMINT", publicKey, 9))
             }
-            walletData.clear()
-            sendCoinWalletList.clear()
-            pirChatList.clear()
-            yourWalletBalance = 0.0
             getConcatWalletItem(walletsList)
             walletData.removeAll { it.depositAddress.isEmpty() }
+            walletData.forEach { item ->
+                val wallet = localDatabaseRepository.getWallet(item.depositAddress)
+                if (wallet != null)
+                    item.tokenName = wallet.walletName
+            }
             sendCoinWalletList.addAll(walletData)
             sendCoinWalletList.removeAll { it.amount == 0.0 }
             walletData.forEach {
@@ -67,12 +73,12 @@ class DashBoardUseCase(
             }
             val itemComparator = Comparator<WalletItem> { o1, o2 ->
                 when {
-                    o1?.tokenSymbol == "SOL" ->  -1
-                    o2?.tokenSymbol == "SOL" ->  1
-                    else ->  o1?.price?.let { o2?.price?.compareTo(it) } ?: 0
+                    o1?.tokenSymbol == "SOL" -> -1
+                    o2?.tokenSymbol == "SOL" -> 1
+                    else -> o1?.price?.let { o2?.price?.compareTo(it) } ?: 0
                 }
             }
-            
+
             walletData.sortWith(itemComparator)
             val mainWalletData = if (walletData.size > 4)
                 walletData.take(4)
@@ -108,45 +114,53 @@ class DashBoardUseCase(
 
             dashboardRepository.getConstWallets().map { walletsItem ->
 
-                async(Dispatchers.IO) {
-                    when (val historicalPrice =
-                        dashboardRepository.getHistoricalPrices(walletsItem.tokenSymbol + "USDT")) {
-                        is Result.Success -> {
-                            historicalPrice.data?.let {
-                                if (it.isNotEmpty()) {
-                                    val close = it[0].close
-                                    val open = it[0].open
-                                    val change24h = close - open
-                                    val change24hInPercentages = if (open == 0.0) {
-                                        change24h / 1
-                                    } else {
-                                        change24h / open
-                                    }
-                                    addCoinData.add(
-                                        walletsItem.fromConstWalletToAddCoinItem(
-                                            change24h,
-                                            change24hInPercentages,
-                                            close
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        else -> {
-                            Result.Error(
-                                CallException(
-                                    ERROR_NULL_DATA,
-                                    null,
-                                    "Can't load OrderBook data at server"
-                                )
-                            )
-                        }
-                    }
+                addCoinData.add(
+                    walletsItem.fromConstWalletToAddCoinItem(
+                        0.0,
+                        0.0,
+                        0.0
+                    )
+                )
 
-                }
+//                async(Dispatchers.IO) {
+//                    when (val historicalPrice =
+//                        dashboardRepository.getHistoricalPrices(walletsItem.tokenSymbol + "USDT")) {
+//                        is Result.Success -> {
+//                            historicalPrice.data?.let {
+//                                if (it.isNotEmpty()) {
+//                                    val close = it[0].close
+//                                    val open = it[0].open
+//                                    val change24h = close - open
+//                                    val change24hInPercentages = if (open == 0.0) {
+//                                        change24h / 1
+//                                    } else {
+//                                        change24h / open
+//                                    }
+//                                    addCoinData.add(
+//                                        walletsItem.fromConstWalletToAddCoinItem(
+//                                            change24h,
+//                                            change24hInPercentages,
+//                                            close
+//                                        )
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        else -> {
+//                            Result.Error(
+//                                CallException(
+//                                    ERROR_NULL_DATA,
+//                                    null,
+//                                    "Can't load OrderBook data at server"
+//                                )
+//                            )
+//                        }
+//                    }
+//
+//                }
 
 
-            }.awaitAll()
+            }//.awaitAll()
 
 
             for (wallet in walletData) {
@@ -160,6 +174,9 @@ class DashBoardUseCase(
 
             val minBalance = async(Dispatchers.IO) {
                 minBalance = wowletApiCallRepository.getMinimumBalance(165)
+                addCoinData.forEach {
+                    it.minBalance = minBalance.div(10f.pow(9)).toDouble()
+                }
             }
             minBalance.await()
         }
@@ -194,11 +211,41 @@ class DashBoardUseCase(
         return preferenceService.getSelectedCurrency()
     }
 
+    @ExperimentalCoroutinesApi
+    override suspend fun saveEditedWallet(localWalletItem: LocalWalletItem) =
+        channelFlow<List<WalletItem>> {
+            localDatabaseRepository.saveEditedWallet(localWalletItem)
+            walletData.forEach { item ->
+                val wallet = localDatabaseRepository.getWallet(item.depositAddress)
+                if (wallet != null) {
+                    item.tokenName = wallet.walletName
+                }
+            }
+            channel.offer(walletData)
+            awaitClose {}
+        }
+
+    override fun checkWalletFromList(walletAddress: String): Result<String> {
+        return if (sendCoinWalletList.isNotEmpty()) {
+            if (walletAddress == Constants.OWNER_SOL) {
+                return Result.Success(walletAddress)
+            }
+            val find = sendCoinWalletList.find { walletItem -> walletItem.mintAddress == walletAddress }
+            if (find != null) {
+                Result.Success(walletAddress)
+            } else
+                Result.Error(CallException(Constants.ERROR_NULL_DATA, "Wallet not found"))
+        } else {
+            Result.Error(CallException(Constants.ERROR_EMPTY_ALL_WALLETS, "You don't have any wallets"))
+        }
+    }
+
     override suspend fun addCoin(addCoinItem: AddCoinItem): Result<Boolean> {
         val secretKey = preferenceService.getActiveWallet()?.secretKey
         val payer = Account(Base58.decode(secretKey))
         val mintAddress = PublicKey(addCoinItem.mintAddress)
         val newAccount = Account()
+        addCoinItem.walletAddress = newAccount.publicKey.toBase58()
         val activeWallet = preferenceService.getActiveWallet()
         val fromPublicKey = activeWallet?.publicKey!!
         try {
@@ -212,7 +259,7 @@ class DashBoardUseCase(
                 val transaction = wowletApiCallRepository.getConfirmedTransaction(
                     signature,
                     0
-                )?.transferInfoToActivityItem(fromPublicKey, "", "","")
+                )?.transferInfoToActivityItem(fromPublicKey, "", "", "", true)
                 return Result.Success(true)
             }
             return Result.Error(CallException(Constants.REQUEST_EXACTION, ""))
@@ -226,6 +273,11 @@ class DashBoardUseCase(
         val walletDataTemp = walletsList.map {
             it.walletToWallet(constData)
         }
+        walletData.clear()
+        sendCoinWalletList.clear()
+        pirChatList.clear()
+        yourWalletBalance = 0.0
+
         walletData.addAll(walletDataTemp)
         coroutineScope {
             walletData.map { walletsItem ->

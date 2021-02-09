@@ -172,9 +172,9 @@ class DetailWalletFragment :
                     TAG_SEND_COIN
                 )
             }
-            is Command.NavigateSwapViewCommand -> {
-                navigateFragment(command.destinationId)
-                (activity as MainActivity).showHideNav(false)
+            is Command.OpenSwapBottomSheetViewCommand -> {
+//                navigateFragment(command.destinationId)
+//                (activity as MainActivity).showHideNav(false)
             }
             is Command.OpenTransactionDialogViewCommand -> {
                 TransactionBottomSheet.newInstance(command.itemActivity) { destinationId, bundle ->

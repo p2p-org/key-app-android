@@ -40,19 +40,12 @@ class PinCodeViewModel(
     private val _skipNotification by lazy { MutableLiveData<Boolean>() }
     val skipNotification: LiveData<Boolean> get() = _skipNotification
 
+    private val _openFingerprintDialog by lazy { MutableLiveData<Boolean>() }
+    val openFingerprintDialog: LiveData<Boolean> get() = _openFingerprintDialog
+
     fun fingerPrintStatus() {
         val data = fingerPrintInteractor.isEnableFingerPrint()
-        when {
-            data.isEnable -> {
-                _isSkipFingerPrint.value = true
-            }
-            data.isNotWantEnable -> {
-                _isSkipFingerPrint.value = true
-            }
-            else -> {
-                _isSkipFingerPrint.value = false
-            }
-        }
+        _isSkipFingerPrint.value = data.isEnable
     }
 
     fun notificationStatus() {
@@ -99,7 +92,7 @@ class PinCodeViewModel(
             Command.NavigateFingerPrintViewCommand(R.id.action_navigation_pin_code_to_navigation_fingerprint_id)
     }
 
-    fun goBackToDashboardFragment(isSuccess: Boolean) {
+    fun goBackToDashboardFragment(isSuccess: Boolean?) {
         _command.value =
             Command.NavigateDashboardViewCommand(
                 R.id.action_navigation_pin_code_to_navigation_dashboard,
@@ -142,5 +135,9 @@ class PinCodeViewModel(
                 }
             }
         }
+    }
+
+    fun openFingerprintDialog() {
+        _openFingerprintDialog.value = true
     }
 }

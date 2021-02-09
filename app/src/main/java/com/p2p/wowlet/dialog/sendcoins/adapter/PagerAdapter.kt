@@ -36,8 +36,8 @@ class PagerAdapter(
                     walletUserIconIv.visibility = View.GONE
                 paymentTypeTv.text = data.walletType
                 walletUserContactTv.text = data.userContact
-                walletUserTypeIv.setImageResource(data.userType)
-                walletUserTypeIv.setOnClickListener {
+                imgScanQrCode.setImageResource(data.userType)
+                imgScanQrCode.setOnClickListener {
                     viewModel.goToQrScanner()
                 }
             }

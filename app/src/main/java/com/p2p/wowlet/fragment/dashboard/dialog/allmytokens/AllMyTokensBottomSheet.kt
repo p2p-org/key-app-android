@@ -20,7 +20,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AllMyTokensBottomSheet(
     private var yourWallets: YourWallets,
-    private val addCoinClickListener: (() -> Unit),
+    private val addCoinClickListener: ((updateAllMyTokens: () -> Unit) -> Unit),
     private val itemClickListener: ((WalletItem) -> Unit)
 ) : BottomSheetDialogFragment() {
 
@@ -32,7 +32,7 @@ class AllMyTokensBottomSheet(
         const val TAG_ALL_MY_TOKENS_DIALOG = "AllMyTokensDialog"
         fun newInstance(
             yourWallets: YourWallets,
-            addCoinClickListener: (() -> Unit),
+            addCoinClickListener: ((updateAllMyTokens: () -> Unit) -> Unit),
             itemClickListener: ((WalletItem) -> Unit)
         ): AllMyTokensBottomSheet =
             AllMyTokensBottomSheet(yourWallets, addCoinClickListener, itemClickListener)
@@ -53,7 +53,10 @@ class AllMyTokensBottomSheet(
         }
         binding.vRvWallets.adapter = walletsAdapter
         binding.addCoinBtn.setOnClickListener {
-            addCoinClickListener.invoke()
+            addCoinClickListener.invoke {
+                dashboardViewModel.clearGetWalletData()
+                dashboardViewModel.getAllWallets()
+            }
         }
         return binding.root
     }

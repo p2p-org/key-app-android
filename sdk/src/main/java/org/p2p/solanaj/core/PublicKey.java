@@ -1,5 +1,7 @@
 package org.p2p.solanaj.core;
 
+import android.util.Base64;
+
 import java.util.Arrays;
 import org.bitcoinj.core.Base58;
 import org.p2p.solanaj.utils.ByteUtils;

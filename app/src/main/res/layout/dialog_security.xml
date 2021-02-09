@@ -107,7 +107,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_10"
-                    android:text="@string/faceid" />
+                    android:text="@string/fingerprint" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/v"
@@ -124,12 +124,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_20"
+                android:checked="@{profileViewModel.isUsesFingerprint().enable}"
                 android:theme="@style/MyIOSSwitch"
                 android:thumb="@drawable/switch_thumb_selector"
-                app:track="@drawable/switch_track_selector"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:track="@drawable/switch_track_selector" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

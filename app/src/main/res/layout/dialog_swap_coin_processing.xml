@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel" />
+            type="com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

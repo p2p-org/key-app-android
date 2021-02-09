@@ -10,8 +10,6 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.utils.getCurrentFragment
 import com.p2p.wowlet.appbase.utils.getNavHostFragment
@@ -30,7 +28,7 @@ import java.math.BigDecimal
 
 class SendCoinDoneDialog(
     val transactionInfo: ActivityItem,
-    private val goToWallet: () -> Unit,
+    private val navigateBack: () -> Unit,
     private val navigateBlockChain: (destinationId: Int, bundle: Bundle?) -> Unit
 ) : DialogFragment() {
 
@@ -41,10 +39,10 @@ class SendCoinDoneDialog(
         const val SEND_COIN_DONE = "SEND_COIN_DONE"
         fun newInstance(
             transactionInfo: ActivityItem,
-            goToWallet: () -> Unit,
+            navigateBack: () -> Unit,
             navigateBlockChain: (destinationId: Int, bundle: Bundle?) -> Unit
         ): SendCoinDoneDialog =
-            SendCoinDoneDialog(transactionInfo, goToWallet, navigateBlockChain)
+            SendCoinDoneDialog(transactionInfo, navigateBack, navigateBlockChain)
     }
 
     override fun onCreateView(
@@ -60,7 +58,6 @@ class SendCoinDoneDialog(
         binding.blockChainExplorer.setOnClickListener {
             val actionId = when(getNavHostFragment()?.let { navHostFragment -> getCurrentFragment(navHostFragment) }) {
                 is DashboardFragment -> R.id.action_navigation_dashboard_to_navigation_block_chain_explorer
-                is DetailWalletFragment -> R.id.action_navigation_detail_wallet_to_navigation_block_chain_explorer
                 is QrScannerFragment -> throw IllegalStateException("${QrScannerFragment::class} must have a destination id to blockchain explorer")
                 else -> null
             }
@@ -81,7 +78,7 @@ class SendCoinDoneDialog(
                 }
                 is Command.NavigateUpBackStackCommand -> {
                     dismiss()
-                    goToWallet.invoke()
+                    navigateBack.invoke()
                 }
             }
 
