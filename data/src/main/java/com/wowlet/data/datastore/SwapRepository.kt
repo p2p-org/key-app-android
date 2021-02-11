@@ -7,10 +7,11 @@ import java.math.BigInteger
 interface SwapRepository {
 
     suspend fun swap(
-        amount: BigInteger,
-        tokenSource: PublicKey,
-        tokenDestination: PublicKey,
-        slippage: Double
+        pool: Pool.PoolInfo,
+        source: PublicKey,
+        destination: PublicKey,
+        slippage: Double,
+        amountIn: BigInteger
     ): String
 
     suspend fun getFee(

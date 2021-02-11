@@ -119,9 +119,9 @@ public class Swap {
         }
 
         TransactionInstruction approveInstruction = TokenProgram.approveInstruction(TokenProgram.PROGRAM_ID,
-                fromAccount, new PublicKey(pool.getAuthority()), ownerPubKey, tokenInputAmount);
+                fromAccount, pool.getAuthority(), ownerPubKey, tokenInputAmount);
 
-        TransactionInstruction swapInstruction = TokenSwapProgram.swapInstruction(poolAddress, new PublicKey(pool.getAuthority()),
+        TransactionInstruction swapInstruction = TokenSwapProgram.swapInstruction(poolAddress, pool.getAuthority(),
                 fromAccount, tokenA, tokenB, toAccount, pool.getSwapData().getTokenPool(),
                 pool.getSwapData().getFeeAccount(), pool.getSwapData().getFeeAccount(), TokenProgram.PROGRAM_ID,
                 SWAP_PROGRAM_ID, tokenInputAmount, minAmountIn);

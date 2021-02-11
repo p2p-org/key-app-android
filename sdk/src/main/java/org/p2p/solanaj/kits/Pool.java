@@ -138,16 +138,16 @@ public class Pool {
             return poolTokenMint;
         }
 
-        public String getAuthority() {
-            return authority;
+        public PublicKey getAuthority() {
+            return new PublicKey(authority);
         }
 
         public TokenSwapData getSwapData() {
             return swapData;
         }
 
-        public String getAddress() {
-            return address;
+        public PublicKey getAddress() {
+            return new PublicKey(address);
         }
 
         public TokenAccountBalance getTokenABalance() {

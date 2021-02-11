@@ -13,48 +13,76 @@ import org.p2p.solanaj.rpc.types.TokenAccountBalance;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class TokenSwap {
 
-    private RpcClient client;
-    private PublicKey tokenSwapAccount;
-    private PublicKey swapProgramId;
-    private Account payer;
-    private PoolInfo poolInfo;
+    private final RpcClient client;
+    private final PublicKey swapProgramId;
 
-    public TokenSwap(RpcClient client, PublicKey tokenSwapAccount, PublicKey swapProgramId, PoolInfo poolInfo,
-                     Account payer) {
+    public TokenSwap(RpcClient client, PublicKey swapProgramId) {
         this.client = client;
-        this.tokenSwapAccount = tokenSwapAccount;
         this.swapProgramId = swapProgramId;
-        this.poolInfo = poolInfo;
-        this.payer = payer;
     }
 
-    public String swap(PublicKey tokenSource, PublicKey tokenDestination, BigInteger amountIn,
-                       BigInteger minimumAmountOut) throws RpcException {
+    public String swap(
+            Account owner,
+            PoolInfo pool,
+            PublicKey source,
+//            PublicKey sourceMint,
+            PublicKey destination,
+//            PublicKey destinationMint,
+            Double slippage,
+            BigInteger amountIn) throws RpcException {
 
-        if (poolInfo == null) {
+        if (pool == null) {
             throw new RuntimeException("Pool doesn't exsist");
         }
 
-        TransactionInstruction approve = TokenProgram.approveInstruction(TokenProgram.PROGRAM_ID, tokenSource,
-                new PublicKey(poolInfo.getAuthority()), payer.getPublicKey(), amountIn);
+        final ArrayList<Account> signers = new ArrayList<Account>(Collections.singletonList(owner));
 
-        TransactionInstruction swap = TokenSwapProgram.swapInstruction(tokenSwapAccount, new PublicKey(poolInfo.getAuthority()),
-                tokenSource, poolInfo.getSwapData().getTokenAccountA(), poolInfo.getSwapData().getTokenAccountB(), tokenDestination,
-                poolInfo.getSwapData().getTokenPool(), poolInfo.getSwapData().getFeeAccount(), poolInfo.getSwapData().getFeeAccount(),
-                TokenProgram.PROGRAM_ID, swapProgramId, amountIn, minimumAmountOut);
+        TransactionInstruction approve = TokenProgram.approveInstruction(
+                TokenProgram.PROGRAM_ID,
+                source, pool.getAuthority(), owner.getPublicKey(), amountIn
+        );
+
+        final BigInteger estimatedAmount = TokenSwap.calculateSwapEstimatedAmount(
+                pool.getTokenABalance(),
+                pool.getTokenBBalance(),
+                amountIn
+        );
+        final BigInteger minimumAmountOut = TokenSwap.calculateSwapMinimumReceiveAmount(
+                estimatedAmount,
+                slippage
+        );
+
+        TransactionInstruction swap = TokenSwapProgram.swapInstruction(
+                pool.getAddress(),
+                pool.getAuthority(),
+                source,
+                pool.getSwapData().getTokenAccountA(),
+                pool.getSwapData().getTokenAccountB(),
+                destination,
+                pool.getSwapData().getTokenPool(),
+                pool.getSwapData().getFeeAccount(),
+                null,
+                TokenProgram.PROGRAM_ID,
+                swapProgramId,
+                minimumAmountOut,
+                amountIn
+        );
 
         Transaction transaction = new Transaction();
         transaction.addInstruction(approve);
         transaction.addInstruction(swap);
 
-        return client.getApi().sendTransaction(transaction, payer);
+        return client.getApi().sendTransaction(transaction, signers);
     }
 
+
     public static BigInteger calculateSwapMinimumReceiveAmount(BigInteger estimatedAmount, double slippage) {
-        return BigDecimal.valueOf(estimatedAmount.doubleValue() * (1 - slippage) / 100).toBigInteger();
+        return BigDecimal.valueOf(estimatedAmount.doubleValue() * (1 - slippage)).toBigInteger();
     }
 
     public static BigInteger calculateSwapEstimatedAmount(TokenAccountBalance tokenABalance, TokenAccountBalance tokenBBalance, BigInteger inputAmount) {

@@ -14,11 +14,12 @@ interface SwapInteractor {
     fun  getMinimumReceiveAmount(pool: Pool.PoolInfo, amount: BigInteger, slippage: Double): BigInteger
 
     suspend fun swap(
-       source: String?,
-       destination: String?,
-       amount: BigInteger,
-       slippage: Double
-   ): String
+        source: String?,
+        destination: String?,
+        amount: BigInteger,
+        slippage: Double,
+        poolInfo: Pool.PoolInfo
+    ): String
 
     suspend  fun getFee(
         amount: BigInteger,
@@ -26,7 +27,7 @@ interface SwapInteractor {
         tokenDestination: String?,
         pool: Pool.PoolInfo
     ): BigDecimal
-    
+
     suspend fun getPool(source: PublicKey, destination: PublicKey): Pool.PoolInfo
 
 }

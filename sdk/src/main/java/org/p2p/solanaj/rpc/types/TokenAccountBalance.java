@@ -1,11 +1,8 @@
 package org.p2p.solanaj.rpc.types;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import com.squareup.moshi.Json;
 
-import org.p2p.solanaj.rpc.types.RpcResultObject;
+import java.math.BigInteger;
 
 public class TokenAccountBalance extends RpcResultObject {
 
@@ -25,7 +22,7 @@ public class TokenAccountBalance extends RpcResultObject {
     private Balance value;
 
     public BigInteger getAmount() {
-        return new BigInteger(value.getAmount()).divide(BigDecimal.valueOf(Math.pow(10.0, value.decimals)).toBigInteger());
+        return new BigInteger(value.getAmount());
     }
 
 }

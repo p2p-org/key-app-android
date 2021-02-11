@@ -37,19 +37,24 @@ class SwapUseCase(private val swapRepository: SwapRepository) : SwapInteractor {
     }
 
     override suspend fun swap(
-        source: String?, destination: String?, amount: BigInteger, slippage: Double
+        source: String?,
+        destination: String?,
+        amount: BigInteger,
+        slippage: Double,
+        poolInfo: Pool.PoolInfo
     ): String {
         val fromMintAddress = if (source == "SOLMINT") Constants.SWAP_SOL else source
         val toMintAddress = if (destination == "SOLMINT") Constants.SWAP_SOL else destination
         return swapRepository.swap(
-            amount,
+            poolInfo,
             PublicKey(fromMintAddress),
             PublicKey(toMintAddress),
-            slippage
+            slippage,
+            amount
         )
     }
 
-    override suspend fun getPool(source: PublicKey, destination: PublicKey): Pool.PoolInfo = 
+    override suspend fun getPool(source: PublicKey, destination: PublicKey): Pool.PoolInfo =
         swapRepository.getPool(source, destination)
 
     override suspend fun getFee(

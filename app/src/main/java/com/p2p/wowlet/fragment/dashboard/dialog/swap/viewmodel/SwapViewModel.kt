@@ -1,6 +1,5 @@
 package com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -20,6 +19,7 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
 import java.math.BigDecimal
+import kotlin.math.pow
 
 private const val DEFAULT_SLIPPAGE = 0.1
 
@@ -154,11 +154,13 @@ class SwapViewModel(
         val fromMintAddress = _selectedWalletFrom.value?.mintAddress
         val toMintAddress = _selectedWalletTo.value?.mintAddress
         viewModelScope.launch(Dispatchers.IO) {
+            val multiply = 10.0.pow(_selectedWalletFrom.value?.decimals?.toDouble()?: return@launch)
             val data = swapInteractor.swap(
                 fromMintAddress,
                 toMintAddress,
-                insertedAmount.toBigDecimal().toBigInteger(),
-                _slippage.value ?: DEFAULT_SLIPPAGE
+                (insertedAmount * multiply).toBigDecimal().toBigInteger(),
+                _slippage.value ?: DEFAULT_SLIPPAGE,
+                poolInfo ?: return@launch
             )
             if (data.isNotEmpty()) {
                 _command.value = SwapCoinProcessingViewCommand()
@@ -204,7 +206,7 @@ class SwapViewModel(
     fun setSelectedWalletTo(walletItem: WalletItem) {
         _selectedWalletTo.value = walletItem
 
-        _selectedWalletTo.value?.mintAddress?.let {
+        _selectedWalletFrom.value?.mintAddress?.let {
             getPool()
         }
 
@@ -224,6 +226,7 @@ class SwapViewModel(
     private fun swapAddressIfSOL(mintAddress: String?): String = if (mintAddress == "SOLMINT") Constants.SWAP_SOL else mintAddress ?: ""
 
     private fun setTokenRatios(from: Double, to: Double) {
+        if (from == 0.0 || to == 0.0) return
         tokenFromPerTokenTo = swapInteractor.getTokenPerToken(from, to).roundToBilCurrencyValue()
         tokenToPerTokenFrom = swapInteractor.getTokenPerToken(to, from).roundToBilCurrencyValue()
     }
@@ -308,6 +311,7 @@ class SwapViewModel(
         val pool = poolInfo
         pool ?: return
 
+        // TODO fix this amount should multiply by 10.pow(decimal)
         val minimumReceiveAmount =
             swapInteractor.getMinimumReceiveAmount(
                 pool,

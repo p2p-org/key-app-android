@@ -20,11 +20,11 @@ public class TokenSwapProgram {
     public static final int INSTRUCTION_INDEX_WITHDRAW = 3;
 
     public static TransactionInstruction initializeSwapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
-            PublicKey tokenAccountA, PublicKey tokenAccountB, PublicKey tokenPool, PublicKey feeAccount,
-            PublicKey tokenAccountPool, PublicKey tokenProgramId, PublicKey swapProgramId, int nonce, int curveType,
-            BigInteger tradeFeeNumerator, BigInteger tradeFeeDenominator, BigInteger ownerTradeFeeNumerator,
-            BigInteger ownerTradeFeeDenominator, BigInteger ownerWithdrawFeeNumerator,
-            BigInteger ownerWithdrawFeeDenominator, BigInteger hostFeeNumerator, BigInteger hostFeeDenominator) {
+                                                                   PublicKey tokenAccountA, PublicKey tokenAccountB, PublicKey tokenPool, PublicKey feeAccount,
+                                                                   PublicKey tokenAccountPool, PublicKey tokenProgramId, PublicKey swapProgramId, int nonce, int curveType,
+                                                                   BigInteger tradeFeeNumerator, BigInteger tradeFeeDenominator, BigInteger ownerTradeFeeNumerator,
+                                                                   BigInteger ownerTradeFeeDenominator, BigInteger ownerWithdrawFeeNumerator,
+                                                                   BigInteger ownerWithdrawFeeDenominator, BigInteger hostFeeNumerator, BigInteger hostFeeDenominator) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, true));
         keys.add(new AccountMeta(authority, false, false));
@@ -53,7 +53,7 @@ public class TokenSwapProgram {
         }
 
         bos.write(curveType);
-      //  bos.writeBytes(new byte[32]);
+        //  bos.writeBytes(new byte[32]);
         byte[] byteArray=new byte[32];
         bos.write(byteArray,0,byteArray.length);
 
@@ -64,7 +64,7 @@ public class TokenSwapProgram {
     public static TransactionInstruction swapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
                                                          PublicKey userSource, PublicKey poolSource, PublicKey poolDestination, PublicKey userDestination,
                                                          PublicKey poolMint, PublicKey feeAccount, PublicKey hostFeeAccount, PublicKey tokenProgramId,
-                                                         PublicKey swapProgramId, BigInteger amountIn, BigInteger minimumAmountOut) {
+                                                         PublicKey swapProgramId, BigInteger minimumAmountOut, BigInteger amountIn) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, false));
         keys.add(new AccountMeta(authority, false, false));
@@ -84,8 +84,8 @@ public class TokenSwapProgram {
         bos.write(INSTRUCTION_INDEX_SWAP);
 
         try {
-            ByteUtils.uint64ToByteStreamLE(amountIn, bos);
             ByteUtils.uint64ToByteStreamLE(minimumAmountOut, bos);
+            ByteUtils.uint64ToByteStreamLE(amountIn, bos);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
