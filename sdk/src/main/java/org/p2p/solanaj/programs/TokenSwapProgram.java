@@ -84,8 +84,8 @@ public class TokenSwapProgram {
         bos.write(INSTRUCTION_INDEX_SWAP);
 
         try {
-            ByteUtils.uint64ToByteStreamLE(minimumAmountOut, bos);
             ByteUtils.uint64ToByteStreamLE(amountIn, bos);
+            ByteUtils.uint64ToByteStreamLE(minimumAmountOut, bos);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

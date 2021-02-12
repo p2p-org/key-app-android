@@ -2,22 +2,42 @@ package org.p2p.solanaj.rpc.types;
 
 import com.squareup.moshi.Json;
 
+import java.util.List;
+
 public class RpcResponse<T> {
 
     public static class Error {
         @Json(name = "code")
-        private long code;
+        private int code;
+
+        @Json(name = "data")
+        private Data data;
+
         @Json(name = "message")
         private String message;
 
-        public long getCode() {
+        public int getCode(){
             return code;
         }
 
-        public String getMessage() {
+        public Data getData(){
+            return data;
+        }
+
+        public String getMessage(){
             return message;
         }
 
+    }
+
+    public static class Data{
+
+        @Json(name = "logs")
+        private List<String> logs;
+
+        public List<String> getLogs(){
+            return logs;
+        }
     }
 
     @Json(name = "jsonrpc")

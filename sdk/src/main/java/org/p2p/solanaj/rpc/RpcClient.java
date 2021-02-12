@@ -4,6 +4,7 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
+import org.p2p.solanaj.BuildConfig;
 import org.p2p.solanaj.rpc.types.RpcRequest;
 import org.p2p.solanaj.rpc.types.RpcResponse;
 
@@ -46,12 +47,22 @@ public class RpcClient {
         JsonAdapter<RpcResponse<T>> resultAdapter = new Moshi.Builder().build()
                 .adapter(Types.newParameterizedType(RpcResponse.class, Type.class.cast(clazz)));
 
+        final String requestJson = rpcRequestJsonAdapter.toJson(rpcRequest);
+        if (BuildConfig.DEBUG) {
+            System.out.println(RpcClient.class.getCanonicalName() + ": requestJson: " + requestJson);
+        }
+
         Request request = new Request.Builder().url(endpoint)
-                .post(RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest))).build();
+                .post(RequestBody.create(JSON, requestJson)).build();
 
         try {
             Response response = httpClient.newCall(request).execute();
             RpcResponse<T> rpcResult = resultAdapter.fromJson(response.body().string());
+
+            if (BuildConfig.DEBUG) {
+                final String responseJson = resultAdapter.toJson(rpcResult);
+                System.out.println(RpcClient.class.getCanonicalName() + ": responseJson: " + responseJson);
+            }
 
             if (rpcResult.getError() != null) {
                 throw new RpcException(rpcResult.getError().getMessage());
@@ -59,6 +70,7 @@ public class RpcClient {
 
             return (T) rpcResult.getResult();
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RpcException(e.getMessage());
         }
     }
