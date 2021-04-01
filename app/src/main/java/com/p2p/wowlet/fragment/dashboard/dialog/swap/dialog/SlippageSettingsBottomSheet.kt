@@ -1,20 +1,13 @@
 package com.p2p.wowlet.fragment.dashboard.dialog.swap.dialog
 
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.utils.makeShortToast
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.BottomSheetSlippageSettingsBinding
@@ -23,6 +16,7 @@ import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.showSoftKeyboard
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wowlet.supportclass.widget.CheckableButton
 import com.p2p.wowlet.supportclass.widget.CheckableButtonGroup
+import com.p2p.wowlet.utils.toast
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SlippageSettingsBottomSheet(
@@ -58,8 +52,8 @@ class SlippageSettingsBottomSheet(
             lSlippageCheckableBG.addClickEvents(
                 selectSlippageClickEvent,
                 HashMap<Int, CheckableButtonGroup.OnClickEvent>().apply {
-                put(5, customSlippageClickEVent)
-            })
+                    put(5, customSlippageClickEVent)
+                })
         }
         return binding.root
     }
@@ -68,8 +62,9 @@ class SlippageSettingsBottomSheet(
         swapViewModel.command.observe(viewLifecycleOwner) { initViewCommands(it) }
         swapViewModel.selectedSlippage.observe(viewLifecycleOwner) {
             if (swapViewModel.isCustomSlippageEditorVisible.value == true
-                && swapViewModel.isSlippageEditorEmpty.value == true) {
-                makeShortToast("Please select a slippage")
+                && swapViewModel.isSlippageEditorEmpty.value == true
+            ) {
+                toast("Please select a slippage")
                 return@observe
             }
             selectSlippage.invoke(slippage)
@@ -87,21 +82,20 @@ class SlippageSettingsBottomSheet(
     }
 
     private fun initViewCommands(command: ViewCommand) {
-        when(command) {
+        when (command) {
             is Command.NavigateUpBackStackCommand -> {
                 dismiss()
             }
         }
     }
 
-
-    private val selectSlippageClickEvent : (v: CheckableButton) -> Unit = {
+    private val selectSlippageClickEvent: (v: CheckableButton) -> Unit = {
         slippage = it.text.removeSuffix("%").toString().toDouble()
         swapViewModel.makeCustomSlippageEditorVisible(false)
         binding.edtCustomSlippage.hideSoftKeyboard()
     }
 
-    private val customSlippageClickEVent : (v: CheckableButton) -> Unit = {
+    private val customSlippageClickEVent: (v: CheckableButton) -> Unit = {
         val slippageText = binding.edtCustomSlippage.text.toString()
         slippage = if (slippageText == "." || slippageText == "") 0.0 else slippageText.toDouble()
         binding.edtCustomSlippage.doAfterTextChanged {
@@ -112,6 +106,4 @@ class SlippageSettingsBottomSheet(
         swapViewModel.makeCustomSlippageEditorVisible(true)
         swapViewModel.setFocusOnSlippageEditor()
     }
-
-
 }

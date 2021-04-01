@@ -9,24 +9,19 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigation
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-
+import com.p2p.wowlet.utils.popBackStack
 
 abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDataBinding> :
     Fragment() {
     abstract val viewModel: ViewModel
     abstract val binding: DataBinding
-    private lateinit var navControler: NavController
-    private val navOptions = NavOptions.Builder().setLaunchSingleTop(false).build()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(this) {
-            navigateUp()
+            popBackStack()
         }
     }
 
@@ -41,7 +36,6 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navControler = Navigation.findNavController(view)
         observe(viewModel.command) { processViewCommandGeneral(it) }
         observes()
         initView()
@@ -67,12 +61,4 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
     }
 
     protected open fun processViewCommand(command: ViewCommand) {}
-    protected open fun navigateUp() {}
-    protected open fun navigateBackStack() {
-        navControler.popBackStack()
-    }
-    protected fun navigateFragment(destinationId: Int, arg: Bundle? = null) {
-        navControler.navigate(destinationId, arg, navOptions)
-    }
-
 }

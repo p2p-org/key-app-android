@@ -9,31 +9,28 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentTermAndConditionBinding
+import com.p2p.wowlet.fragment.createwallet.view.CreateWalletFragment
 import com.p2p.wowlet.fragment.termandcondition.viewmodel.TermAndConditionViewModel
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class TermAndConditionFragment() : FragmentBaseMVVM<TermAndConditionViewModel, FragmentTermAndConditionBinding>() {
+class TermsAndConditionFragment() : FragmentBaseMVVM<TermAndConditionViewModel, FragmentTermAndConditionBinding>() {
     override val viewModel: TermAndConditionViewModel by viewModel()
     override val binding: FragmentTermAndConditionBinding by dataBinding(R.layout.fragment_term_and_condition)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@TermAndConditionFragment.viewModel
+            viewModel = this@TermsAndConditionFragment.viewModel
         }
     }
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
-            is Command.NavigateCreateWalletViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
+            is Command.NavigateCreateWalletViewCommand -> replace(CreateWalletFragment())
         }
     }
-
-    override fun navigateUp() {
-        viewModel.navigateUp()
-    }
-
-
 
 }

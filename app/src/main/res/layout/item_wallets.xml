@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -15,10 +16,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/itemWalletView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_65"
-        android:layout_marginTop="@dimen/dp_10"
-        android:onClick="@{()->viewModel.goToDetailWalletFragment(itemWallet)}">
+        android:layout_marginTop="@dimen/dp_10">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/vCoin"
@@ -45,22 +46,22 @@
                 style="@style/Black.17.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/sf_pro_text"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_10"
+                android:fontFamily="@font/sf_pro_text"
                 android:text="@{itemWallet.tokenName}"
                 tools:text="Solana" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vWalletAddress"
                 style="@style/Grey.13"
-                android:fontFamily="@font/font_sf_pro_display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_7"
-                app:text="@{itemWallet.depositAddress}"
+                android:fontFamily="@font/font_sf_pro_display"
                 app:symbolCount="@{4}"
+                app:text="@{itemWallet.depositAddress}"
                 tools:text="0xG97y...g7R4" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -78,22 +79,22 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vPrice"
                 style="@style/Black.17.Bold"
-                android:fontFamily="@font/sf_pro_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_15"
                 android:layout_marginEnd="@dimen/dp_20"
+                android:fontFamily="@font/sf_pro_text"
                 android:text="@{@string/usd_symbol+viewModel.roundCurrencyValue(itemWallet.price)}"
                 tools:text="$ 120,00" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/vTkns"
                 style="@style/Grey.13"
-                android:fontFamily="@font/font_sf_pro_display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_7"
                 android:layout_marginEnd="@dimen/dp_20"
+                android:fontFamily="@font/font_sf_pro_display"
                 android:text="@{itemWallet.amount+@string/space+itemWallet.tokenSymbol}"
                 tools:text="1200,0000 SOL" />
         </androidx.appcompat.widget.LinearLayoutCompat>

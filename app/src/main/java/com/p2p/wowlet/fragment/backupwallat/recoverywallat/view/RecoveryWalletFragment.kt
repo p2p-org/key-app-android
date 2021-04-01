@@ -10,6 +10,9 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentRecoveryWalletBinding
 import com.p2p.wowlet.fragment.backupwallat.recoverywallat.viewmodel.RecoveryWalletViewModel
+import com.p2p.wowlet.fragment.backupwallat.secretkeys.view.SecretKeyFragment
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.ArrayList
 
@@ -30,14 +33,11 @@ class RecoveryWalletFragment :
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
             is Command.NavigateSecretKeyViewCommand -> {
-                navigateFragment(command.destinationId)
+                replace(SecretKeyFragment())
             }
         }
     }
 
-    override fun navigateUp() {
-        viewModel.navigateUp()
-    }
 }

@@ -10,8 +10,8 @@ import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentInvestmentsBinding
 
 import com.p2p.wowlet.fragment.investments.viewmodel.InvestmentsViewModel
+import com.p2p.wowlet.utils.popBackStack
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class InvestmentsFragment : FragmentBaseMVVM<InvestmentsViewModel, FragmentInvestmentsBinding>() {
 
@@ -26,12 +26,8 @@ class InvestmentsFragment : FragmentBaseMVVM<InvestmentsViewModel, FragmentInves
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
 
         }
-    }
-
-    override fun navigateUp() {
-        viewModel.finishApp()
     }
 }

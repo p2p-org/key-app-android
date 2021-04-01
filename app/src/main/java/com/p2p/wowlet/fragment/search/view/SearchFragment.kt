@@ -8,7 +8,10 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentSearchBinding
+import com.p2p.wowlet.fragment.regwallet.view.RegWalletFragment
 import com.p2p.wowlet.fragment.search.viewmodel.SearchViewModel
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : FragmentBaseMVVM<SearchViewModel, FragmentSearchBinding>() {
@@ -25,12 +28,9 @@ class SearchFragment : FragmentBaseMVVM<SearchViewModel, FragmentSearchBinding>(
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
-            is Command.NavigateRegWalletViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
+            is Command.NavigateRegWalletViewCommand -> replace(RegWalletFragment())
         }
     }
 
-    override fun navigateUp() {
-        viewModel.finishApp()
-    }
 }

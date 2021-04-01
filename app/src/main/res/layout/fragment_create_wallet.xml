@@ -32,7 +32,6 @@
                     android:layout_marginStart="@dimen/dp_20"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:onClick="@{()->viewModel.navigateUp()}"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_back" />
 
@@ -113,6 +112,8 @@
             android:text="@string/i_have_saved_these_words_in_a_sage_place"
             app:layout_constraintBottom_toTopOf="@+id/btContinue" />
 
+
+        <!--android:onClick="@{()->viewModel.goToRegWalletFragment()}"-->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btContinue"
             style="@style/Widget.Black.Button"
@@ -123,7 +124,6 @@
             android:layout_marginEnd="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_30"
             android:enabled="@{viewModel.checkBoxIsChecked}"
-            android:onClick="@{()->viewModel.goToRegWalletFragment()}"
             android:text="@string/continues"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

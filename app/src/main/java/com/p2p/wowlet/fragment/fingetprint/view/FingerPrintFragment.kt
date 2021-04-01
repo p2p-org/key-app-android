@@ -10,7 +10,10 @@ import com.p2p.wowlet.appbase.viewcommand.Command.NavigateUpViewCommand
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentFingerprintBinding
 import com.p2p.wowlet.fragment.fingetprint.viewmodel.FingerPrintViewModel
+import com.p2p.wowlet.fragment.notification.view.NotificationFragment
 import com.p2p.wowlet.utils.openFingerprintDialog
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FingerPrintFragment : FragmentBaseMVVM<FingerPrintViewModel, FragmentFingerprintBinding>() {
@@ -38,15 +41,12 @@ class FingerPrintFragment : FragmentBaseMVVM<FingerPrintViewModel, FragmentFinge
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is NavigateUpViewCommand -> {
-                navigateFragment(command.destinationId)
+                popBackStack()
             }
             is NavigateNotificationViewCommand -> {
-                navigateFragment(command.destinationId)
+                replace(NotificationFragment.newInstance())
             }
         }
     }
 
-    override fun navigateUp() {
-        viewModel.navigateUp()
-    }
 }

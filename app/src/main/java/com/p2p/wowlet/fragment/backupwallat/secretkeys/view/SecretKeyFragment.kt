@@ -1,7 +1,6 @@
 package com.p2p.wowlet.fragment.backupwallat.secretkeys.view
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
@@ -12,6 +11,10 @@ import com.p2p.wowlet.databinding.FragmentSecretKeyBinding
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter.SecretPhraseAdapter
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
+import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
+import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.Keyword
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -40,10 +43,9 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
         binding.phraseET.requestFocus()
     }
 
-
     override fun observes() {
         observe(viewModel.isCurrentCombination) {
-            viewModel.goToPinCodeFragment()
+            replace(PinCodeFragment.create(false, false, PinCodeFragmentType.CREATE))
         }
         observe(viewModel.invadedPhrase) { errorMessage ->
             binding.txtErrorMessage.text = errorMessage
@@ -62,16 +64,16 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
         when (command) {
             is Command.NavigateUpBackStackCommand -> {
                 requireContext().hideSoftKeyboard(this@SecretKeyFragment)
-                navigateBackStack()
+                popBackStack()
             }
             is Command.NavigatePinCodeViewCommand -> {
-                navigateFragment(command.destinationId, command.bundle)
+                replace(PinCodeFragment.create(
+                    openSplashScreen = false,
+                    isBackupDialog = false,
+                    type = PinCodeFragmentType.CREATE
+                ))
             }
         }
-    }
-
-    override fun navigateUp() {
-        navigateBackStack()
     }
 
 }

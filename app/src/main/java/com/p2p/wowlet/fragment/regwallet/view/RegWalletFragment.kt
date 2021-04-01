@@ -9,9 +9,12 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentRegWalletBinding
+import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.p2p.wowlet.fragment.regwallet.viewmodel.RegWalletViewModel
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
+import com.wowlet.entities.enums.PinCodeFragmentType
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class RegWalletFragment : FragmentBaseMVVM<RegWalletViewModel, FragmentRegWalletBinding>() {
 
@@ -26,19 +29,22 @@ class RegWalletFragment : FragmentBaseMVVM<RegWalletViewModel, FragmentRegWallet
         yourCountDownTimer = object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {}
             override fun onFinish() {
-                viewModel.goToPinCodeFragment()
+                replace(PinCodeFragment.create(false, false, PinCodeFragmentType.CREATE))
             }
         }.start()
-
     }
+
     override fun processViewCommand(command: ViewCommand) {
-        when(command){
-            is Command.NavigatePinCodeViewCommand -> navigateFragment(command.destinationId,command.bundle)
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
+        when (command) {
+            is Command.NavigatePinCodeViewCommand -> replace(
+                PinCodeFragment.create(
+                    openSplashScreen = false,
+                    isBackupDialog = false,
+                    type = PinCodeFragmentType.CREATE
+                )
+            )
+            is Command.NavigateUpViewCommand -> popBackStack()
         }
     }
-    override fun navigateUp() {
-        yourCountDownTimer.cancel()
-        viewModel.navigateUp()
-    }
+
 }

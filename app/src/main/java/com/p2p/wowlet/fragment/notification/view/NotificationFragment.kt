@@ -10,6 +10,9 @@ import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentNotificationBinding
 import com.p2p.wowlet.fragment.notification.dialog.EnableNotificationDialog
 import com.p2p.wowlet.fragment.notification.viewmodel.NotificationViewModel
+import com.p2p.wowlet.fragment.regfinish.view.RegFinishFragment
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -44,19 +47,16 @@ class NotificationFragment :
             viewModel.doThisLater()
         }
         observe(viewModel.isAlreadyEnableNotification) {
-            viewModel.goToRegFinishFragment()
+            replace(RegFinishFragment())
         }
     }
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
-            is Command.NavigateRegFinishViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
+            is Command.NavigateRegFinishViewCommand -> replace(RegFinishFragment())
         }
     }
 
-    override fun navigateUp() {
-        viewModel.navigateUp()
-    }
 
 }

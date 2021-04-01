@@ -1,7 +1,6 @@
 package com.p2p.wowlet.fragment.detailwallet.view
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,23 +8,22 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.p2p.wowlet.R
-import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
 import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentDetailActivityBinding
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
+import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
 import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.adapter.ActivityAdapter
 import com.p2p.wowlet.fragment.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.utils.*
 import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-
 
 class DetailWalletFragment :
     FragmentBaseMVVM<DetailWalletViewModel, FragmentDetailActivityBinding>() {
@@ -152,20 +150,13 @@ class DetailWalletFragment :
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is Command.NavigateUpBackStackCommand -> {
-                navigateBackStack()
-                (activity as MainActivity).showHideNav(true)
-            }
-            is Command.NavigateScannerViewCommand -> {
-                navigateFragment(command.destinationId)
-                (activity as MainActivity).showHideNav(false)
+                popBackStack()
             }
             is Command.OpenSendCoinDialogViewCommand -> {
                 SendCoinsBottomSheet.newInstance(
                     command.walletItem,
                     command.walletAddress,
-                ) { destinationId: Int, bundle: Bundle? ->
-                    navigateFragment(destinationId, bundle)
-                }.show(
+                ).show(
                     childFragmentManager,
                     TAG_SEND_COIN
                 )
@@ -175,8 +166,8 @@ class DetailWalletFragment :
 //                (activity as MainActivity).showHideNav(false)
             }
             is Command.OpenTransactionDialogViewCommand -> {
-                TransactionBottomSheet.newInstance(command.itemActivity) { destinationId, bundle ->
-                    navigateFragment(destinationId, bundle)
+                TransactionBottomSheet.newInstance(command.itemActivity) {
+                    replace(BlockChainExplorerFragment.createScreen(it))
                 }.show(childFragmentManager, TransactionBottomSheet.TRANSACTION_DIALOG)
             }
             is Command.YourWalletDialogViewCommand -> {
@@ -187,10 +178,4 @@ class DetailWalletFragment :
             }
         }
     }
-
-    override fun navigateUp() {
-        navigateBackStack()
-        //viewModel.navigateUp()
-    }
-
 }

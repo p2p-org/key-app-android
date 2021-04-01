@@ -11,6 +11,10 @@ import com.p2p.wowlet.databinding.FragmentManualSecretKeysBinding
 import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.adapter.RandomKeyAdapter
 import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.adapter.SortKeyAdapter
 import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
+import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
+import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.SecretKeyItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -73,7 +77,11 @@ class ManualSecretKeysFragment :
         }
         observe(viewModel.resultResponseData) {
             if (it) {
-                viewModel.goToPinCodeFragment()
+                replace(PinCodeFragment.create(
+                    openSplashScreen = false,
+                    isBackupDialog = false,
+                    type = PinCodeFragmentType.CREATE
+                ))
             } else {
                 binding.vUserId.visibility = View.VISIBLE
                 binding.resetSecretKeys.visibility = View.VISIBLE
@@ -83,9 +91,15 @@ class ManualSecretKeysFragment :
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
             is Command.NavigatePinCodeViewCommand -> {
-                navigateFragment(command.destinationId, command.bundle)
+                replace(
+                    PinCodeFragment.create(
+                        openSplashScreen = false,
+                        isBackupDialog = false,
+                        type = PinCodeFragmentType.CREATE
+                    )
+                )
             }
         }
     }

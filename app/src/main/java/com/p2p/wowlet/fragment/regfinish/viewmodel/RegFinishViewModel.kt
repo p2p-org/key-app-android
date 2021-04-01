@@ -11,11 +11,6 @@ class RegFinishViewModel(val regFinishInteractor: RegFinishInteractor) : BaseVie
         checkFinishReg()
     }
 
-    fun navigateUp() {
-        _command.value =
-            Command.NavigateUpViewCommand(R.id.action_navigation_reg_finish_to_navigation_notification)
-    }
-
     fun openMainActivityViewCommand() {
         finishRegistration()
         _command.value =

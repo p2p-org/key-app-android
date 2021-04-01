@@ -28,7 +28,7 @@ class RegFinishFragment : FragmentBaseMVVM<RegFinishViewModel, FragmentRegFinish
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-           // is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
+           // is Command.NavigateUpViewCommand -> popBackStack()
             is Command.OpenMainActivityViewCommand -> {
                 activity?.let{
                     val intent = Intent (it, MainActivity::class.java)
@@ -38,10 +38,6 @@ class RegFinishFragment : FragmentBaseMVVM<RegFinishViewModel, FragmentRegFinish
 
             }
         }
-    }
-
-    override fun navigateUp() {
-       // viewModel.navigateUp()
     }
 
 }

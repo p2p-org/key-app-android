@@ -4,29 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.utils.makeShortToast
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.BottomSheetSwapBinding
-import com.p2p.wowlet.fragment.dashboard.dialog.SendCoinDoneDialog
-import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.YourWalletsBottomSheet
 import com.p2p.wowlet.dialog.SwapCoinProcessingDialog
 import com.p2p.wowlet.dialog.utils.makeFullScreen
+import com.p2p.wowlet.fragment.dashboard.dialog.SendCoinDoneDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.dialog.SelectTokenToSwapBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.dialog.SlippageSettingsBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
+import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.YourWalletsBottomSheet
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.toast
 import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SwapBottomSheet(
     private val allMyWallets: List<WalletItem>,
-    private var selectedWalletFrom: WalletItem,
-    private val navigateToFragment: (destinationId: Int, bundle: Bundle?) -> Unit
+    private var selectedWalletFrom: WalletItem
 ) : BottomSheetDialogFragment() {
 
     private val viewModel: SwapViewModel by viewModel()
@@ -38,13 +36,11 @@ class SwapBottomSheet(
         const val TAG_SWAP_BOTTOM_SHEET = "swapBottomSheet"
         fun newInstance(
             allMyWallets: List<WalletItem>,
-            selectedWalletItems: WalletItem,
-            navigateToFragment: (destinationId: Int, bundle: Bundle?) -> Unit
+            selectedWalletItems: WalletItem
         ): SwapBottomSheet {
-            return SwapBottomSheet(allMyWallets, selectedWalletItems, navigateToFragment)
+            return SwapBottomSheet(allMyWallets, selectedWalletItems)
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,7 +64,10 @@ class SwapBottomSheet(
 
     private fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is NavigateUpViewCommand -> navigateToFragment.invoke(command.destinationId, null)
+            is NavigateUpViewCommand -> {
+                dismissAllowingStateLoss()
+                popBackStack()
+            }
             is NavigateUpBackStackCommand -> dismiss()
             is OpenMyWalletDialogViewCommand -> {
                 YourWalletsBottomSheet.newInstance(
@@ -93,7 +92,7 @@ class SwapBottomSheet(
             }
             is OpenSlippageSettingsBottomSheet -> {
                 SlippageSettingsBottomSheet.newInstance {
-                    makeShortToast("Slippage is $it%")
+                    toast("Slippage is $it%")
                     dialog?.makeFullScreen(binding.root, this)
                 }.show(
                     childFragmentManager,
@@ -113,15 +112,10 @@ class SwapBottomSheet(
             is SendCoinDoneViewCommand -> {
                 val sendCoinDone: SendCoinDoneDialog =
                     SendCoinDoneDialog.newInstance(
-                        command.transactionInfo,
-                        {
-                            dismiss()
-                        },
-                        { destinationId, bundle ->
-                            //Navigate to block chain explorer
-                            navigateToFragment.invoke(destinationId, bundle)
-                        }
-                    )
+                        command.transactionInfo
+                    ) {
+                        dismiss()
+                    }
 
                 sendCoinDone.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
             }
@@ -149,7 +143,7 @@ class SwapBottomSheet(
             dialog?.makeFullScreen(binding.root, this)
         }
         viewModel.insufficientFoundsError.observe(viewLifecycleOwner) {
-            makeShortToast("Insufficient founds")
+            toast("Insufficient founds")
         }
     }
 
@@ -157,5 +151,4 @@ class SwapBottomSheet(
         super.onDestroyView()
         _binding = null
     }
-
 }

@@ -112,13 +112,13 @@
             android:textAllCaps="false" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/backButton"
             style="@style/Widget.Black.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_marginBottom="@dimen/dp_20"
-            android:onClick="@{()->viewModel.navigateUp()}"
             android:paddingHorizontal="@dimen/dp_40"
             android:paddingVertical="@dimen/dp_19"
             android:text="@string/go_back_to_wallet"

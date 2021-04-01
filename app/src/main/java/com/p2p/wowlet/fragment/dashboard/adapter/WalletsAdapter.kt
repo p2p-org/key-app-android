@@ -11,7 +11,8 @@ import com.wowlet.entities.local.WalletItem
 
 class WalletsAdapter(
     private val viewModel: DashboardViewModel,
-    private var list: List<WalletItem>
+    private var list: List<WalletItem>,
+    private val onItemClicked: () -> Unit
 ) : RecyclerView.Adapter<WalletsAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -23,12 +24,12 @@ class WalletsAdapter(
             false
         )
         return MyViewHolder(bind)
-
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.itemWalletsBinding.itemWallet = list[position]
         holder.itemWalletsBinding.viewModel = viewModel
+        holder.onBind()
     }
 
     override fun getItemCount(): Int {
@@ -53,6 +54,14 @@ class WalletsAdapter(
 
     inner class MyViewHolder(
         val itemWalletsBinding: ItemWalletsBinding
-    ) : RecyclerView.ViewHolder(itemWalletsBinding.root)
+    ) : RecyclerView.ViewHolder(itemWalletsBinding.root) {
 
+        val itemWalletView = itemWalletsBinding.itemWalletView
+
+        fun onBind() {
+            itemWalletView.setOnClickListener {
+                onItemClicked()
+            }
+        }
+    }
 }

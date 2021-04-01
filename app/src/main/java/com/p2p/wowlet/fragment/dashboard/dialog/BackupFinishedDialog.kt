@@ -10,11 +10,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.databinding.DialogBackupBinding
 import com.p2p.wowlet.databinding.DialogBackupFinishBinding
-import com.p2p.wowlet.databinding.DialogCurrencyBinding
-import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
-import kotlinx.android.synthetic.main.dialog_backup_finish.*
+import kotlinx.android.synthetic.main.dialog_backup_finish.vClose
+import kotlinx.android.synthetic.main.dialog_backup_finish.vDone
 
 class BackupFinishedDialog : DialogFragment() {
 
@@ -24,7 +22,6 @@ class BackupFinishedDialog : DialogFragment() {
         fun newInstance(): BackupFinishedDialog {
             return BackupFinishedDialog()
         }
-
     }
 
     override fun onCreateView(
@@ -47,15 +44,14 @@ class BackupFinishedDialog : DialogFragment() {
             dismiss()
         }
     }
+
     override fun onResume() {
         super.onResume()
         dialog?.run {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
     }
-
-
 }

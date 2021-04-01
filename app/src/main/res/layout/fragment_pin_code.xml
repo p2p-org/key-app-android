@@ -81,7 +81,6 @@
             style="@style/Widget.Black.Button"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_56"
-            android:onClick="@{()->viewModel.goToSecretKeyFragment()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

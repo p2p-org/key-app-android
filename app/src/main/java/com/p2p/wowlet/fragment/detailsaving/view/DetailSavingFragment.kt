@@ -13,6 +13,7 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentDetailSavingBinding
 import com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel
+import com.p2p.wowlet.utils.popBackStack
 import kotlinx.android.synthetic.main.fragment_detail_saving.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -48,13 +49,8 @@ class DetailSavingFragment :
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
             is Command.NavigateUpViewCommand -> {
-                navigateFragment(command.destinationId)
-                (activity as MainActivity).showHideNav(true)
+                popBackStack()
             }
         }
-    }
-
-    override fun navigateUp() {
-        viewModel.navigateUp()
     }
 }

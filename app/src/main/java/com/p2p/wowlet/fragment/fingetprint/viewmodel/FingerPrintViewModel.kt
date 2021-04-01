@@ -28,8 +28,8 @@ class FingerPrintViewModel(private val fingerPrintInteractor: FingerPrintInterac
                 )
             )
         }
-        _command.value =
-            NavigateNotificationViewCommand(R.id.action_navigation_fingerprint_id_to_navigation_notification)
+//        _command.value =
+//            NavigateNotificationViewCommand(R.id.action_navigation_fingerprint_id_to_navigation_notification)
     }
 
     fun enableFingerprint() {
@@ -41,8 +41,8 @@ class FingerPrintViewModel(private val fingerPrintInteractor: FingerPrintInterac
                 )
             )
         }
-        _command.value =
-            NavigateNotificationViewCommand(R.id.action_navigation_fingerprint_id_to_navigation_notification)
+//        _command.value =
+//            NavigateNotificationViewCommand(R.id.action_navigation_fingerprint_id_to_navigation_notification)
     }
 
     fun navigateUp() {

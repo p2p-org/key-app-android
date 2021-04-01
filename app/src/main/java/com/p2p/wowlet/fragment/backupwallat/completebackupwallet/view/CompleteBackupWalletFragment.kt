@@ -11,6 +11,7 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentCompleteBackupWalletBinding
 import com.p2p.wowlet.fragment.backupwallat.completebackupwallet.viewmodel.CompleteBackupWalletViewModel
+import com.p2p.wowlet.utils.popBackStack
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CompleteBackupWalletFragment : FragmentBaseMVVM<CompleteBackupWalletViewModel,FragmentCompleteBackupWalletBinding>() {
@@ -25,7 +26,7 @@ class CompleteBackupWalletFragment : FragmentBaseMVVM<CompleteBackupWalletViewMo
     }
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand ->navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
             is Command.OpenMainActivityViewCommand -> {
                 activity?.let{
                     val intent = Intent (it, MainActivity::class.java)
@@ -35,9 +36,5 @@ class CompleteBackupWalletFragment : FragmentBaseMVVM<CompleteBackupWalletViewMo
 
             }
         }
-    }
-
-    override fun navigateUp() {
-        viewModel.navigateUp()
     }
 }

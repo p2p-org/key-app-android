@@ -18,9 +18,4 @@ class DetailSavingViewModel : BaseViewModel() {
         _getActivityData.value = listActivityData
     }
 
-    fun navigateUp() {
-        _command.value =
-            Command.NavigateUpViewCommand(R.id.action_navigation_detail_saving_to_navigation_dashboard)
-    }
-
 }

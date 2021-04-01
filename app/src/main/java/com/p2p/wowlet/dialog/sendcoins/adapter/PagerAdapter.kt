@@ -38,7 +38,7 @@ class PagerAdapter(
                 walletUserContactTv.text = data.userContact
                 imgScanQrCode.setImageResource(data.userType)
                 imgScanQrCode.setOnClickListener {
-                    viewModel.goToQrScanner()
+                    // go to scanner
                 }
             }
         }

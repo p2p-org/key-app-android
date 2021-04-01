@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel" />
@@ -29,7 +31,6 @@
             android:id="@+id/pageIndicator"
             view_model="@{viewModel}"
             view_pager="@{viewPager}"
-            android:onClick="@{()->viewModel.goToRegLoginFragment()}"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_40"
             android:layout_marginBottom="@dimen/dp_40"
