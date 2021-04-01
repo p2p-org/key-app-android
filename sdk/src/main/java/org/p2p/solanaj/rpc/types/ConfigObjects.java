@@ -35,6 +35,16 @@ public class ConfigObjects {
 
     }
 
+    public static class DataSize {
+        public static final int SPAN = 165;
+        @Json(name = "dataSize")
+        private int dataSize;
+
+        public DataSize(int dataSize) {
+            this.dataSize = dataSize;
+        }
+    }
+
     public static class Filter {
         @Json(name = "memcmp")
         private Memcmp memcmp;

@@ -37,7 +37,7 @@ android {
 }
 
 dependencies {
-
+    implementation project(path: ':sdk')
     implementation supportDependencies.kotlin
     implementation supportDependencies.coreKtx
     implementation supportDependencies.appcompat
@@ -47,4 +47,10 @@ dependencies {
     implementation supportDependencies.legacySupport
     //moshi converter
     implementation supportDependencies.moshiConverter
+    // MPAndroidChart
+    implementation supportDependencies.mpChart
+    //room database
+    implementation supportDependencies.roomRuntime
+    annotationProcessor supportDependencies.roomCompiler
+    kapt supportDependencies.roomCompiler
 }

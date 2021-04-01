@@ -2,11 +2,11 @@ package com.p2p.wowlet.appbase.utils
 
 import android.app.Activity
 import android.os.Build
+import android.widget.Toast
 import androidx.core.content.PermissionChecker
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import com.p2p.gp.appbase.utils.DataBindingDelegate
 
 fun <Binding : ViewDataBinding> Fragment.dataBinding(layout: Int) =
     DataBindingDelegate<Binding>(this, layout)
@@ -19,6 +19,24 @@ inline fun <reified F> getCurrentFragment(navHostFragment: NavHostFragment): F? 
             null
         }
     } else null
+}
+
+fun getCurrentFragment(navHostFragment: NavHostFragment): Fragment? {
+    return if (navHostFragment.isAdded && navHostFragment.childFragmentManager.fragments.size > 0) {
+        navHostFragment.childFragmentManager.fragments[0]
+    } else null
+}
+
+
+fun Fragment.getNavHostFragment() : NavHostFragment? {
+    var parentFragment = this.parentFragment
+    while (parentFragment !is NavHostFragment) {
+        parentFragment = this.parentFragment?.parentFragment
+        if (parentFragment == null) {
+            return null
+        }
+    }
+    return parentFragment
 }
 
 fun Activity.checkPermissionsGranted(permissions: ArrayList<String>): Boolean {
@@ -41,5 +59,13 @@ fun Activity.hasPermission(permission: String): Boolean {
         ) == PermissionChecker.PERMISSION_GRANTED
     }
     return true
+}
+
+fun Activity.makeShortToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Fragment.makeShortToast(message: String) {
+    requireActivity().makeShortToast(message)
 }
 

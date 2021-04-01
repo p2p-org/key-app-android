@@ -11,14 +11,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogProfileDetailsBinding
+import kotlinx.android.synthetic.main.dialog_profile_details.*
 
-class ProfileDetailsDialog : DialogFragment() {
+class ProfileDetailsDialog(private val logOut: () -> Unit) : DialogFragment() {
 
     companion object {
 
         const val TAG_PROFILE_DETAILS_DIALOG = "ProfileDetailsDialog"
-        fun newInstance(): ProfileDetailsDialog {
-            return ProfileDetailsDialog()
+        fun newInstance(logOut: () -> Unit): ProfileDetailsDialog {
+            return ProfileDetailsDialog(logOut)
         }
 
     }
@@ -34,6 +35,18 @@ class ProfileDetailsDialog : DialogFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vClose.setOnClickListener {
+            dismiss()
+        }
+        vDone.setOnClickListener {
+            dismiss()
+        }
+        vLogOut.setOnClickListener {
+            logOut.invoke()
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -41,6 +54,7 @@ class ProfileDetailsDialog : DialogFragment() {
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 

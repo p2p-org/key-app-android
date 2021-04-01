@@ -30,11 +30,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
 }
 
 dependencies {
-
+    //implementation project(path: ':domain')
     implementation project(path: ':entities')
+
     implementation project(path: ':sdk')
 
     implementation supportDependencies.kotlin
@@ -57,4 +59,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.2.0'
     // generate qr code
     implementation 'com.github.kenglxn.QRGen:android:2.6.0'
+    //room database
+    implementation supportDependencies.roomRuntime
+    annotationProcessor supportDependencies.roomCompiler
+    kapt supportDependencies.roomCompiler
 }

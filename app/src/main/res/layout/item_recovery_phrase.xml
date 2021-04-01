@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="itemRecoveryPhraseItem"
-            type="com.wowlet.entities.local.RecoveryPhraseItem" />
+            name="item"
+            type="String" />
     </data>
 
     <LinearLayout
@@ -25,7 +25,7 @@
             android:layout_marginEnd="@dimen/dp_10"
             android:layout_marginBottom="@dimen/dp_6"
             android:gravity="center"
-            android:text="@{itemRecoveryPhraseItem.value}"
+            android:text="@{item}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

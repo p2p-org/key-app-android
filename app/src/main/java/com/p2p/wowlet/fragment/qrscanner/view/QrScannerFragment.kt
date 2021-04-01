@@ -11,23 +11,28 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.FragmentBaseMVVM
 import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command.NavigateRegWalletViewCommand
-import com.p2p.wowlet.appbase.viewcommand.Command.NavigateUpViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentQrScannerBinding
 import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
+import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
+import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
+import com.wowlet.entities.local.QrWalletType
+import kotlinx.coroutines.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
-import org.koin.androidx.viewmodel.ext.android.viewModel
-
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScannerBinding>(),
     ZBarScannerView.ResultHandler {
-
     override val viewModel: QrScannerViewModel by viewModel()
+    private val walletAddressViewModel: WalletAddressViewModel by sharedViewModel()
     override val binding: FragmentQrScannerBinding by dataBinding(R.layout.fragment_qr_scanner)
 
     private var scannerView: ZBarScannerView? = null
+    private var isFromSendCoinsBottomSheet = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,16 +60,18 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     }
 
     private fun initializeQRCamera() {
-        scannerView = ZBarScannerView(context)
-        scannerView?.setResultHandler(this)
-        scannerView?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorTranslucent))
-        scannerView?.setBorderColor(ContextCompat.getColor(context!!, android.R.color.white))
-        scannerView?.setLaserEnabled(false)
-        scannerView?.setBorderStrokeWidth(4)
-        scannerView?.setBorderCornerRadius(24)
-        scannerView?.setSquareViewFinder(true)
-        scannerView?.setupScanner()
-        scannerView?.setAutoFocus(true)
+        scannerView = ZBarScannerView(context).apply {
+            setResultHandler(this@QrScannerFragment)
+            setBackgroundColor(ContextCompat.getColor(context!!, R.color.colorTranslucent))
+            setBorderColor(ContextCompat.getColor(context!!, android.R.color.white))
+            setLaserEnabled(false)
+            setBorderStrokeWidth(resources.getDimensionPixelSize(R.dimen.dp_6))
+            setBorderLineLength(resources.getDimensionPixelSize(R.dimen.dp_55))
+            setBorderCornerRadius(resources.getDimensionPixelSize(R.dimen.dp_10))
+            setSquareViewFinder(true)
+            setupScanner()
+            setAutoFocus(true)
+        }
         startQRCamera()
         binding.containerScanner.addView(scannerView)
     }
@@ -73,15 +80,51 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         scannerView?.startCamera()
     }
 
+    override fun initData() {
+        arguments?.let {
+            isFromSendCoinsBottomSheet = it.getBoolean(GO_BACK_TO_SEND_COIN, false)
+        }
+    }
+
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
+            is NavigateUpBackStackCommand -> {
+                walletAddressViewModel.postEnteredAmount()
+                navigateBackStack()
+            }
             is NavigateUpViewCommand -> {
-                activity?.let {
-                    (it as MainActivity).showHideNav(true)
-                }
                 navigateFragment(command.destinationId)
             }
-            is NavigateRegWalletViewCommand -> navigateFragment(command.destinationId)
+            is OpenSendCoinDialogViewCommand -> {
+                SendCoinsBottomSheet.newInstance(
+                    command.walletItem,
+                    command.walletAddress
+                ) { destinationId, bundle ->
+                    navigateFragment(destinationId, bundle)
+                }.show(
+                    parentFragmentManager,
+                    TAG_SEND_COIN
+                )
+            }
+
+        }
+    }
+
+    override fun observes() {
+        observe(viewModel.isCurrentAccountError) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            navigateUp()
+        }
+        observe(viewModel.isCurrentAccount) {
+            //if (it.walletAddress.isNotEmpty())
+            if (isFromSendCoinsBottomSheet) {
+                walletAddressViewModel.setWalletData(it)
+                navigateUp()
+            }else {
+                viewModel.goToSendCoinFragment(it.walletAddress)
+                navigateUp()
+                walletAddressViewModel.setWalletData(it)
+            }
         }
     }
 
@@ -90,7 +133,9 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     }
 
     override fun handleResult(rawResult: Result?) {
-        Toast.makeText(requireContext(), rawResult?.contents, Toast.LENGTH_SHORT).show()
+        rawResult?.let {
+            viewModel.getAccountInfo(it.contents)
+        }
     }
 
     override fun onPause() {
@@ -119,12 +164,16 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeQRCamera()
-            } else
-                requestPermission()
+            } else if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                viewModel.navigateUp()
+            }
+            return
+
         }
     }
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST_CODE = 102
+        const val GO_BACK_TO_SEND_COIN = "go_back_to_send_coin"
     }
 }

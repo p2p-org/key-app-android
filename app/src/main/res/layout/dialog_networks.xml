@@ -11,28 +11,31 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_profile_dialog">
 
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/icBack"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/vClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_24"
-
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_left" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vClose"
-            style="@style/Grey.17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_2"
             android:layout_marginTop="@dimen/dp_20"
-            android:text="@string/back"
-            app:layout_constraintStart_toEndOf="@+id/icBack"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_arrow_left" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/Grey.17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_2"
+                android:text="@string/back"
+                app:layout_constraintStart_toEndOf="@+id/icBack"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vTitle"
@@ -41,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/dp_20"
-            android:text="@string/currency"
+            android:text="@string/networks"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,64 +60,75 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/view_line_title"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="@dimen/dp_20"
+            android:alpha=".06"
+            android:background="@color/gray_400"
+            app:layout_constraintTop_toBottomOf="@+id/vTitle" />
+
         <RadioGroup
-            android:id="@+id/vPriceType"
+            android:id="@+id/vNetworkGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_10"
             android:layout_marginEnd="@dimen/dp_20"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="@dimen/dp_30"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vTitle">
+            app:layout_constraintTop_toBottomOf="@+id/view_line_title">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/devNetRb"
                 style="@style/Black.15"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/dp_56"
                 android:button="@null"
                 android:checked="false"
                 android:drawableEnd="@drawable/selector_radio_button"
-                android:text="@string/solana" />
+                android:text="@string/dev_net" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:alpha=".06"
+                android:background="@color/gray_400" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/testNetRb"
                 style="@style/Black.15"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/dp_56"
                 android:button="@null"
                 android:checked="false"
                 android:drawableEnd="@drawable/selector_radio_button"
-                android:text="@string/network_name" />
+                android:text="@string/test_net" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:alpha=".06"
+                android:background="@color/gray_400" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/mainNetRb"
                 style="@style/Black.15"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/dp_56"
                 android:button="@null"
                 android:checked="false"
                 android:drawableEnd="@drawable/selector_radio_button"
-                android:text="@string/network_name"  />
+                android:text="@string/main_net_beta" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                style="@style/Black.15"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:button="@null"
-                android:checked="false"
-                android:drawableEnd="@drawable/selector_radio_button"
-                android:text="@string/network_name"  />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                style="@style/Black.15"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:button="@null"
-                android:checked="false"
-                android:drawableEnd="@drawable/selector_radio_button"
-                android:text="@string/network_name"  />
-
+                android:layout_height="@dimen/dp_1"
+                android:alpha=".06"
+                android:background="@color/gray_400" />
         </RadioGroup>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

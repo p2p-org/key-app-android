@@ -16,18 +16,22 @@
         <action
             android:id="@+id/action_navigation_dashboard_to_navigation_scanner"
             app:destination="@id/navigation_scanner" />
-        <action
-            android:id="@+id/action_navigation_dashboard_to_navigation_receive"
-            app:destination="@id/navigation_receive" />
+<!--        <action-->
+<!--            android:id="@+id/action_navigation_dashboard_to_navigation_detail_wallet"-->
+<!--            app:destination="@id/navigation_detail_wallet" />-->
         <action
             android:id="@+id/action_navigation_dashboard_to_navigation_detail_saving"
             app:destination="@id/navigation_detail_saving" />
+
+<!--        <action-->
+<!--            android:id="@+id/action_navigation_dashboard_to_navigation_swap"-->
+<!--            app:destination="@id/navigation_swap" />-->
         <action
-            android:id="@+id/action_navigation_dashboard_to_navigation_send_coin"
-            app:destination="@id/navigation_send_coin" />
+            android:id="@+id/action_navigation_dashboard_to_navigation_block_chain_explorer"
+            app:destination="@id/navigation_block_chain_explorer" />
         <action
-            android:id="@+id/action_navigation_dashboard_to_navigation_swap"
-            app:destination="@id/navigation_swap" />
+            android:id="@+id/action_navigation_dashboard_to_navigation_pin_code"
+            app:destination="@id/navigation_pin_code" />
     </fragment>
     <fragment
         android:id="@+id/navigation_investments"
@@ -58,6 +62,53 @@
     </fragment>
 
     <fragment
+        android:id="@+id/navigation_pin_code"
+        android:name="com.p2p.wowlet.fragment.pincode.view.PinCodeFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_registration"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_pin_code">
+
+        <action
+            android:id="@+id/action_navigation_pin_code_to_navigation_dashboard"
+            app:destination="@id/navigation_dashboard" />
+        <action
+            android:id="@+id/action_navigation_pin_code_to_navigation_secret_key"
+            app:destination="@id/navigation_secret_key" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_secret_key"
+        android:name="com.p2p.wowlet.fragment.backupwallat.secretkeys.view.SecretKeyFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_registration"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_secret_key">
+        <action
+            android:id="@+id/action_navigation_secret_key_to_navigation_pin_code"
+            app:destination="@id/navigation_pin_code" />
+        <action
+            android:id="@+id/action_navigation_secret_key_to_navigation_manual_secret_key"
+            app:destination="@id/navigation_manual_secret_key" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_manual_secret_key"
+        android:name="com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.view.ManualSecretKeysFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@+id/nav_registration"
+        app:popUpToInclusive="true"
+        tools:layout="@layout/fragment_manual_secret_keys">
+        <action
+            android:id="@+id/action_navigation_manual_secret_key_to_navigation_secret_key"
+            app:destination="@id/navigation_secret_key" />
+
+        <action
+            android:id="@+id/action_navigation_manual_secret_key_to_navigation_pin_code"
+            app:destination="@id/navigation_pin_code" />
+    </fragment>
+
+    <fragment
         android:id="@+id/navigation_scanner"
         android:name="com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment"
         app:launchSingleTop="true"
@@ -68,19 +119,9 @@
         <action
             android:id="@+id/action_navigation_scanner_to_navigation_dashboard"
             app:destination="@id/navigation_dashboard" />
+
     </fragment>
 
-    <fragment
-        android:id="@+id/navigation_receive"
-        android:name="com.p2p.wowlet.fragment.receive.view.ReceiveFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@+id/nav_main"
-        app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_receive">
-        <action
-            android:id="@+id/action_navigation_receive_to_navigation_dashboard"
-            app:destination="@id/navigation_dashboard" />
-    </fragment>
     <fragment
         android:id="@+id/navigation_detail_saving"
         android:name="com.p2p.wowlet.fragment.detailsaving.view.DetailSavingFragment"
@@ -94,72 +135,33 @@
             app:destination="@id/navigation_dashboard" />
     </fragment>
 
+
+
+<!--    <fragment-->
+<!--        android:id="@+id/navigation_swap"-->
+<!--        android:name="com.p2p.wowlet.fragment.dashboard.dialog.swap.view.SwapFragment"-->
+<!--        app:launchSingleTop="true"-->
+<!--        app:popUpTo="@+id/nav_main"-->
+<!--        app:popUpToInclusive="true"-->
+<!--        tools:layout="@layout/fragment_swap">-->
+<!--        <action-->
+<!--            android:id="@+id/action_navigation_swap_to_navigation_dashboard"-->
+<!--            app:destination="@id/navigation_dashboard" />-->
+<!--    </fragment>-->
+
+
     <fragment
-        android:id="@+id/navigation_send_coin"
-        android:name="com.p2p.wowlet.fragment.sendcoins.view.SendCoinsFragment"
+        android:id="@+id/navigation_block_chain_explorer"
+        android:name="com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment"
         app:launchSingleTop="true"
         app:popUpTo="@+id/nav_main"
         app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_send_coins">
-        <action
-            android:id="@+id/action_navigation_send_coin_to_navigation_dashboard"
-            app:destination="@id/navigation_dashboard" />
-        <action
-            android:id="@+id/action_navigation_send_coin_to_navigation_scanner"
-            app:destination="@id/navigation_scanner" />
+        tools:layout="@layout/fragment_block_chain_explorer">
+
+<!--        <action-->
+<!--            android:id="@+id/action_navigation_block_chain_explorer_to_navigation_detail_wallet"-->
+<!--            app:destination="@id/navigation_detail_wallet" />-->
     </fragment>
 
-    <fragment
-        android:id="@+id/navigation_swap"
-        android:name="com.p2p.wowlet.fragment.swap.view.SwapFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@+id/nav_main"
-        app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_swap">
-        <action
-            android:id="@+id/action_navigation_swap_to_navigation_dashboard"
-            app:destination="@id/navigation_dashboard" />
-    </fragment>
 
-    <fragment
-        android:id="@+id/navigation_pin_code"
-        android:name="com.p2p.wowlet.fragment.pincode.view.PinCodeFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@+id/nav_registration"
-        app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_pin_code">
-        <action
-            android:id="@+id/action_navigation_pin_code_to_navigation_face_id"
-            app:destination="@id/navigation_face_id" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_face_id"
-        android:name="com.p2p.wowlet.fragment.faceid.view.FaceIdFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@+id/nav_registration"
-        app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_face_id">
-        <action
-            android:id="@+id/action_navigation_face_id_to_navigation_notification"
-            app:destination="@id/navigation_notification" />
-        <action
-            android:id="@+id/action_navigation_face_id_to_navigation_pin_code"
-            app:destination="@id/navigation_pin_code" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_notification"
-        android:name="com.p2p.wowlet.fragment.notification.view.NotificationFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@+id/nav_registration"
-        app:popUpToInclusive="true"
-        tools:layout="@layout/fragment_notification">
-        <action
-            android:id="@+id/action_navigation_notification_to_navigation_face_id"
-            app:destination="@id/navigation_face_id" />
-        <!--<action
-            android:id="@+id/action_navigation_notification_to_navigation_reg_finish"
-            app:destination="@id/navigation_reg_finish" />-->
-    </fragment>
 </navigation>

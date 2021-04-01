@@ -35,7 +35,7 @@ android {
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "Wowlet_${variant.name}_${variant.versionName}.apk"
+            outputFileName = "p2p_wallet_${variant.name}_${variant.versionName}.apk"
         }
     }
     compileOptions {
@@ -45,8 +45,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    dataBinding {
-        enabled true
+
+    buildFeatures {
+
+        dataBinding = true
+        // for view binding:
+        viewBinding = true
     }
 }
 
@@ -62,6 +66,7 @@ dependencies {
     implementation supportDependencies.material
     implementation supportDependencies.constraintlayout
     implementation supportDependencies.legacySupport
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation supportDependencies.junit
     androidTestImplementation supportDependencies.junitAndroid
     androidTestImplementation supportDependencies.espressoCore
@@ -86,6 +91,7 @@ dependencies {
     implementation supportDependencies.lifecycleViewModel
     // Indicator circle pager
     implementation supportDependencies.circleIndicator
+    implementation supportDependencies.circleIndicatrLoop
     // navigation component
     implementation supportDependencies.navigationFragment
     implementation supportDependencies.navigationUi
@@ -99,5 +105,7 @@ dependencies {
 
     //qrcode
     implementation supportDependencies.qrcodeLib
+    //glde
+    implementation supportDependencies.glide
 
 }

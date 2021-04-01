@@ -64,6 +64,7 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/vCancel"
                 style="@style/Blue.17"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -78,6 +79,7 @@
                 android:background="@color/gray_30" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/vEnable"
                 style="@style/Blue.17"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

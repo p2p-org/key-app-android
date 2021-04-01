@@ -12,26 +12,31 @@
         android:background="@drawable/bg_profile_dialog">
 
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/icBack"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/vClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_left" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vClose"
-            style="@style/Grey.17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_2"
             android:layout_marginTop="@dimen/dp_20"
-            android:text="@string/back"
-            app:layout_constraintStart_toEndOf="@+id/icBack"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_arrow_left" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/Grey.17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_2"
+                android:text="@string/back"
+                app:layout_constraintStart_toEndOf="@+id/icBack"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vTitle"
@@ -86,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:gravity="center"
                 android:text="@string/backup_recovery_info" />
@@ -98,17 +103,21 @@
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/dp_20"
-                android:text="@string/backup_using_icloud" />
+                android:text="@string/backup_using_icloud"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatButton
-                style="@style/Widget.White.Button"
+                android:id="@+id/btBackupManual"
+                style="@style/Black.15.Bold"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_56"
                 android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:layout_marginBottom="@dimen/dp_94"
-                android:text="@string/backup_manually" />
+                android:background="@drawable/bg_backup_manually"
+                android:text="@string/backup_manually"
+                android:textAllCaps="false" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_secret_keyword_selected"
+        android:layout_marginStart="@dimen/dp_6"
+        android:layout_marginTop="@dimen/dp_6"
+        android:layout_marginEnd="@dimen/dp_6"
+        android:padding="@dimen/dp_6"
+        >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_keyword_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textColor="@color/hintColor"
+            android:textSize="@dimen/sp_15"
+            tools:text="1."
+            />
+
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edt_keyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/dp_50"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:textSize="@dimen/sp_15"
+            android:background="@android:color/transparent"
+            />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</layout>

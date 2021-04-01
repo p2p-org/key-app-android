@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogChangePinBinding
+import kotlinx.android.synthetic.main.dialog_change_pin.*
 
 
 class ChangePinDialog() : DialogFragment() {
@@ -33,6 +34,12 @@ class ChangePinDialog() : DialogFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        icClose.setOnClickListener {
+            dismiss()
+        }
+    }
     override fun onResume() {
         super.onResume()
         dialog?.run {
@@ -41,6 +48,7 @@ class ChangePinDialog() : DialogFragment() {
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isCancelable=false
         }
     }
 

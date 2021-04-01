@@ -6,13 +6,12 @@
 
         <variable
             name="viewModel"
-            type="com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel" />
+            type="com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{()->viewModel.openDonDialog()}"
         android:background="@drawable/bg_already_have_account"
         android:orientation="vertical">
 

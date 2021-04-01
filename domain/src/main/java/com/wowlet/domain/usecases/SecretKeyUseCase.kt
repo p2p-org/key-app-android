@@ -1,24 +1,23 @@
 package com.wowlet.domain.usecases
 
 import com.wowlet.data.datastore.PreferenceService
+import com.wowlet.data.datastore.WowletApiCallRepository
+import com.wowlet.data.util.mnemoticgenerator.English
 import com.wowlet.domain.interactors.SecretKeyInteractor
+import com.wowlet.entities.CallException
+import com.wowlet.entities.Constants
+import com.wowlet.entities.Result
 import com.wowlet.entities.local.SecretKeyCombinationSuccess
-import com.wowlet.entities.local.SecretKeyItem
 
+class SecretKeyUseCase(
+    val preferenceService: PreferenceService,
+    val wowletApiCallRepository: WowletApiCallRepository
+) : SecretKeyInteractor {
 
-class SecretKeyUseCase(val preferenceService: PreferenceService) : SecretKeyInteractor {
     private lateinit var combinationValue: SecretKeyCombinationSuccess
-    private val listSortData = mutableListOf<SecretKeyItem>()
     private val selectIds = mutableListOf<Int>()
     private var currentCombination = true
     private var tempId = -1
-    override suspend fun getSecretData(): List<SecretKeyItem> {
-        val phraseList = preferenceService.getSecretDataAtFile()?.phrase
-        phraseList?.forEachIndexed { index, value ->
-            listSortData.add(SecretKeyItem(index, "${index + 1}.$value", false))
-        }
-        return listSortData
-    }
 
     override fun checkCurrentSelected(id: Int): SecretKeyCombinationSuccess {
 
@@ -28,15 +27,15 @@ class SecretKeyUseCase(val preferenceService: PreferenceService) : SecretKeyInte
 
         for (i in 0 until selectIds.size) {
 
-            if(selectIds.size==1){
+            if (selectIds.size == 1) {
                 tempCurrentCombination = true
                 currentCombination = true
-                tempId =  selectIds[i]
-            }else if(tempId + 1 == selectIds[i]){
+                tempId = selectIds[i]
+            } else if (tempId + 1 == selectIds[i]) {
                 tempCurrentCombination = true
                 currentCombination = true
-                tempId =  selectIds[i]
-            }else{
+                tempId = selectIds[i]
+            } else {
                 currentCombination = false
             }
         }
@@ -45,11 +44,74 @@ class SecretKeyUseCase(val preferenceService: PreferenceService) : SecretKeyInte
         if (selectIds.size == 3) {
             tempCurrentCombination = currentCombination
             selectIds.clear()
-            currentCombination=true
-            tempId=-1
+            currentCombination = true
+            tempId = -1
         }
         combinationValue.isCurrentCombination = tempCurrentCombination
         return combinationValue
     }
 
+    override suspend fun resetPhrase(inputPhrase: String): Result<Boolean> {
+        /*     val walletList = preferenceService.getWalletList()
+             walletList?.let {
+                 it.forEach { userData ->
+                     if (userData.phrase.joinToString(separator = " ") == inputPhrase) {
+                         val userAccount=wowletApiCallRepository.initAccount(userData.phrase)
+                         preferenceService.updateWallet(userAccount)
+                         return true
+                     }
+                 }
+             }
+
+                 return false*/
+        return if (inputPhrase.isNotEmpty()) {
+            val phrase = inputPhrase.split(" ")
+            val words = English.INSTANCE.words
+            var wordsAreValid = true
+            for (word in phrase) {
+                val wordNotFound = !words.contains(word)
+                if (wordNotFound) {
+                    wordsAreValid = false
+                    break
+                }
+            }
+
+            if (wordsAreValid) {
+                //Temporary comparing to the list from CreateWalletUseCase class
+//                CreateWalletUseCase(preferenceService, wowletApiCallRepository).generatePhrase().forEach {
+//                    if (!phrase.contains(it)) {
+//                        return Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE,"Phrase is invalid"))
+//                    }
+//
+//                }
+
+                val userAccount = wowletApiCallRepository.initAccount(phrase)
+
+                preferenceService.updateWallet(userAccount)
+                Result.Success(true)
+            } else {
+                Result.Error(
+                    CallException(
+                        Constants.ERROR_INCORRECT_PHRASE,
+                        "Wrong order or seed phrase, please\n" +
+                                " check it and try again"
+                    )
+                )
+            }
+        } else {
+            Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE, "Phrase empty"))
+        }
+
+
+    }
+
+    override fun currentPhrase(): String {
+        val walletList = preferenceService.getActiveWallet()
+        val phrase = walletList?.phrase?.joinToString(separator = " ")
+        return phrase ?: ""
+    }
+
+    override fun currentListPhrase(): List<String> {
+        return preferenceService.getActiveWallet()?.phrase ?: listOf()
+    }
 }

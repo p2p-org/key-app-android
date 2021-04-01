@@ -19,14 +19,16 @@
             android:id="@+id/vClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_24"
                 app:srcCompat="@drawable/ic_arrow_left" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -34,9 +36,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_2"
-                android:layout_marginTop="@dimen/dp_20"
-                android:text="@string/back" />
-
+                android:text="@string/back"
+                app:layout_constraintStart_toEndOf="@+id/icBack"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -83,8 +85,6 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSortSecretKey"
-                    adapter_list="@{viewModel.getSortSecretData}"
-                    view_model="@{viewModel}"
                     tools:itemCount="4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -104,7 +104,6 @@
                 android:layout_marginTop="@dimen/dp_15"
                 android:layout_marginEnd="@dimen/dp_35"
                 android:gravity="center"
-                android:onClick="@{()->viewModel.goToCompleteWalletFragment()}"
                 android:text="@string/secret_key_info"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -112,8 +111,6 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRandomSecretKey"
-                adapter_list="@{viewModel.getRandomSecretData}"
-                view_model="@{viewModel}"
                 android:layout_width="0dp"
                 tools:itemCount="4"
                 android:layout_height="wrap_content"

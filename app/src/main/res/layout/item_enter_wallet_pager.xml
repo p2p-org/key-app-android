@@ -1,79 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/walletQrCodeIv"
-        android:layout_width="@dimen/dp_150"
-        android:layout_height="@dimen/dp_150"
-        android:layout_marginTop="@dimen/dp_21"
-        android:layout_marginBottom="@dimen/dp_31"
-        app:layout_constraintBottom_toTopOf="@+id/walletAddressTv"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_logo" />
+    <data>
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/wallet_address_tv"
-        style="@style/Black.13.Bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_30"
-        android:layout_marginEnd="@dimen/dp_30"
-        android:gravity="center"
-        android:text="@string/wallet_address"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/walletQrCodeIv" />
+        <variable
+            name="itemModel"
+            type="com.wowlet.entities.local.EnterWallet" />
+    </data>
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/walletAddressTv"
-        style="@style/Black.13"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_30"
-        android:layout_marginTop="@dimen/dp_7"
-        android:layout_marginEnd="@dimen/dp_30"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wallet_address_tv" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/walletAddressTv">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/walletQrCodeIv"
+            android:layout_width="@dimen/dp_150"
+            android:layout_height="@dimen/dp_150"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginBottom="@dimen/dp_31"
+            app:image_source_bitmap="@{itemModel.qrCode}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginTop="@dimen/dp_21"
+            android:layout_marginBottom="@dimen/dp_31"
+            app:image_source="@{itemModel.icon}"
+            app:layout_constraintBottom_toTopOf="@+id/wallet_address_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
+            android:id="@+id/wallet_address_tv"
+            style="@style/Black.13.Bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_add_coin_bt"
-            android:paddingHorizontal="22dp"
-            android:paddingVertical="@dimen/dp_10"
-            android:text="@string/copy"
-            android:textColor="@color/gray_600"
-            android:textSize="@dimen/sp_12"
-            android:textStyle="bold" />
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_12"
+            android:layout_marginEnd="@dimen/dp_30"
+            android:gravity="center"
+            android:text="@{itemModel.walletAddress}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/walletQrCodeIv" />
+
+
+        <LinearLayout
+            android:id="@+id/lCopyAndShare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/wallet_address_tv">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/copyWallet"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/dp_1"
+                android:layout_weight="85"
+                android:background="@drawable/bg_copy_wallet_address_to_clipboard_btn"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:singleLine="true"
+                android:textColor="@color/hintColor"
+                app:symbolCount="@{6}"
+                app:text="@{itemModel.walletAddress}"
+                tools:text="345458...445584" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/shareWallet"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dp_1"
+                android:layout_weight="15"
+                android:background="@drawable/bg_share_upload_btn" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_10"
-            android:background="@drawable/bg_add_coin_bt"
-            android:paddingHorizontal="22dp"
-            android:paddingVertical="@dimen/dp_10"
-            android:text="@string/share"
-            android:textColor="@color/gray_600"
-            android:textSize="@dimen/sp_12"
-            android:textStyle="bold" />
+            android:gravity="center"
+            android:padding="@dimen/dp_10"
+            android:text="@string/all_deposits_are_stored_100_non_custodiallity_with_keys_held_on_this_device"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lCopyAndShare" />
 
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

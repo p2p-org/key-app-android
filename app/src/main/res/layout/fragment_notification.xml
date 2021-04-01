@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.p2p.wowlet.fragment.notification.viewmodel.NotificationViewModel" />
@@ -91,7 +90,7 @@
                 android:layout_marginBottom="@dimen/dp_30"
                 android:text="@string/do_this_later"
                 android:textStyle="bold"
-                android:onClick="@{()->viewModel.goToRefFinishFragment()}"
+                android:onClick="@{()->viewModel.doThisLater()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

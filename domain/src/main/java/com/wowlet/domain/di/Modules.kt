@@ -5,10 +5,22 @@ import com.wowlet.domain.usecases.*
 import org.koin.dsl.module
 
 val interactorsModule = module {
-    single<RegLoginInteractor> { RegLoginUseCase(get(),get()) }
-    factory <SecretKeyInteractor> { SecretKeyUseCase(get()) }
-    single<PinCodeInteractor> { PinCodeUseCase(get()) }
+    single<RegLoginInteractor> { RegLoginUseCase(get(), get()) }
+    factory<SecretKeyInteractor> { SecretKeyUseCase(get(), get()) }
+    factory<ManualSecretKeyInteractor> { ManualSecretKeyUseCase() }
+    factory<EnterPinCodeInteractor> { EnterPinCodeUseCase(get()) }
     single<NotificationInteractor> { NotificationUseCase(get()) }
-    single<SendCoinInteractor> { SendCoinUseCase(get()) }
-    single<DashboardInteractor> { DashBoardUseCase(get(), get()) }
+    single<SendCoinInteractor> { SendCoinUseCase(get(), get()) }
+    single<DashboardInteractor> { DashBoardUseCase(get(), get(), get(), get()) }
+    single<RegFinishInteractor> { RegFinishUseCase(get()) }
+    single<CompleteBackupWalletInteractor> { CompleteBackupWalletUseCase(get()) }
+    single<SplashScreenInteractor> { SplashScreenUseCase(get()) }
+    single<DetailWalletInteractor> { DetailWalletUseCase(get(), get(), get()) }
+    single<FingerPrintInteractor> { FingerPrintUseCase(get()) }
+    factory<CreateWalletInteractor> { CreateWalletUseCase(get(), get()) }
+    factory<PinCodeVerificationInteractor> { PinCodeVerificationUseCase(get()) }
+    factory<PinCodeInteractor> { PinCodeUseCase(get()) }
+    factory<QrScannerInteractor> { QrScannerUseCase(get()) }
+    factory<NetworksInteractor> { NetworksUseCase(get()) }
+    factory<SwapInteractor> { SwapUseCase() }
 }

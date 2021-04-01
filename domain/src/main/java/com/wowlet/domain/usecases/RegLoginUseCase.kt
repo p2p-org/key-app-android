@@ -10,15 +10,4 @@ class RegLoginUseCase(
     private val wowletApiCallRepository: WowletApiCallRepository
 ) : RegLoginInteractor {
 
-    override suspend fun initUser(): UserSecretData {
-
-         preferenceService.getSecretDataAtFile()?.run {
-            return this
-        } ?: run {
-            val userData = wowletApiCallRepository.initAccount()
-            preferenceService.setSecretDataInFile(userData)
-            return userData
-        }
-    }
-
 }

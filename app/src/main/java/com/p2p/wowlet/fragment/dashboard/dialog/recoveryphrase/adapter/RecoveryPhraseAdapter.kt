@@ -7,13 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemRecoveryPhraseBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
-import com.wowlet.entities.local.RecoveryPhraseItem
 
 class RecoveryPhraseAdapter(
     private val viewModel: RecoveryPhraseViewModel,
-    private val list: List<RecoveryPhraseItem>
-) :
-    RecyclerView.Adapter<RecoveryPhraseAdapter.MyViewHolder>() {
+    private val list: List<String>
+) : RecyclerView.Adapter<RecoveryPhraseAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
@@ -28,7 +26,7 @@ class RecoveryPhraseAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.itemRecoveryPhraseBinding.itemRecoveryPhraseItem = list[position]
+        holder.itemRecoveryPhraseBinding.item = "${(position + 1)}.${list[position]}"
     }
 
     override fun getItemCount(): Int {

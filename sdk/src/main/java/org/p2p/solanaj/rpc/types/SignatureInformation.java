@@ -12,7 +12,7 @@ public class SignatureInformation {
     @Json(name = "signature")
     private String signature;
     @Json(name = "slot")
-    private long slot;
+    private double  slot;
 
     public SignatureInformation() {
     }
@@ -22,7 +22,7 @@ public class SignatureInformation {
         this.err = info.get("err");
         this.memo = info.get("memo");
         this.signature = (String) info.get("signature");
-        this.err = info.get("slot");
+        this.slot = (double) info.get("slot");
     }
 
     public Object getErr() {
@@ -37,7 +37,7 @@ public class SignatureInformation {
         return signature;
     }
 
-    public long getSlot() {
+    public double getSlot() {
         return slot;
     }
 

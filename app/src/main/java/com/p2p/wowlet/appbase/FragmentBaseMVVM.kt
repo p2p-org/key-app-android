@@ -22,7 +22,7 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
     abstract val viewModel: ViewModel
     abstract val binding: DataBinding
     private lateinit var navControler: NavController
-    private val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+    private val navOptions = NavOptions.Builder().setLaunchSingleTop(false).build()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(this) {
@@ -35,6 +35,7 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
         savedInstanceState: Bundle?
     ): View {
         retainInstance = true
+        initData()
         return binding.also { it.lifecycleOwner = viewLifecycleOwner }.root
     }
 
@@ -42,13 +43,13 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
         super.onViewCreated(view, savedInstanceState)
         navControler = Navigation.findNavController(view)
         observe(viewModel.command) { processViewCommandGeneral(it) }
+        observes()
         initView()
-        initData()
-
     }
 
     protected open fun initView() {}
     protected open fun initData() {}
+    protected open fun observes() {}
 
     protected fun <T> observe(liveData: LiveData<T>, action: (T) -> Unit) = view?.run {
         if (!this@FragmentBaseMVVM.isAdded) return@run
@@ -67,6 +68,9 @@ abstract class FragmentBaseMVVM<ViewModel : BaseViewModel, DataBinding : ViewDat
 
     protected open fun processViewCommand(command: ViewCommand) {}
     protected open fun navigateUp() {}
+    protected open fun navigateBackStack() {
+        navControler.popBackStack()
+    }
     protected fun navigateFragment(destinationId: Int, arg: Bundle? = null) {
         navControler.navigate(destinationId, arg, navOptions)
     }

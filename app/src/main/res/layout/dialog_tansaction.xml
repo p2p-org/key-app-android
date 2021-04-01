@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-            name="viewModel"
-            type="com.p2p.wowlet.fragment.swap.viewmodel.SwapViewModel" />
+            name="model"
+            type="com.wowlet.entities.local.ActivityItem" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -18,78 +19,114 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/dp_20">
+            >
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clHeader"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/bg_radius_top_gray"
+                android:paddingBottom="@dimen/dp_50"
+                >
 
-                <androidx.appcompat.widget.AppCompatImageView
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_transaction" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="@dimen/dp_30"
+                    android:textStyle="bold"
+                    android:text="@{model.receive?@string/receive:@string/send}"
+                    android:fontFamily="@font/font_sf_pro_display"
+                    android:textSize="@dimen/sp_21"
+                    android:textColor="@android:color/black"
+                    tools:text="Receive"
+                    />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/yourTransactionDate"
+                    style="@style/Grey400.13"
+                    android:fontFamily="@font/sf_pro_text"
+                    android:layout_marginTop="@dimen/dp_5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    app:layout_constraintTop_toBottomOf="@id/txtType"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="24 Oct 2020 @ 12:51 PM"
+                    />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/Black.17.Bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/your_wallets" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/your_wallet_title"
-                        style="@style/Black.17"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:alpha=".5"
-                        android:text="24 Oct 2020 @ 12:51 PM" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
-            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgTransactionType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_12"
-                android:tint="@android:color/black"
+                app:layout_constraintTop_toBottomOf="@id/clHeader"
+                app:layout_constraintBottom_toBottomOf="@id/clHeader"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_close" />
+                android:layout_gravity="center_vertical"
+                tools:srcCompat="@drawable/ic_receive"
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtPrice"
+                style="@style/Black.27.Bold"
+                android:fontFamily="@font/font_sf_pro_display"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_27"
+                app:layout_constraintTop_toBottomOf="@id/imgTransactionType"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@{model.symbolsPrice+String.format(@string/space)+String.format(@string/us_symbol(model.price))}"
+                tools:text="+ 1 200,00 $"
+                />
+
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSymbolPrice"
+                style="@style/Grey.15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/txtPrice"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:fontFamily="@font/font_sf_pro_display"
+                android:layout_marginHorizontal="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_5"
+                android:text="@{model.symbolsPrice+String.format(@string/space)+String.format(@string/token_receive_6,model.lamports, model.tokenSymbol)}"
+                tools:text="+ 0․00344 BTC" />
+
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtStatus"
+                style="@style/Grey.12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/txtSymbolPrice"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/green_500"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_20"
+                android:background="@drawable/bg_green_rect"
+                android:paddingHorizontal="@dimen/dp_16"
+                android:paddingVertical="@dimen/dp_8"
+                android:text="@string/completed" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/Black.25.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_30"
-            android:text="+ 0,00344 BTC" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/Grey.12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_15"
-            android:background="@drawable/bg_gray_rect"
-            android:paddingHorizontal="@dimen/dp_16"
-            android:paddingVertical="@dimen/dp_8"
-            android:text="@string/completed" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/dp_30"
-            android:background="@color/gray_30" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -100,115 +137,19 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:text="@string/transaction_id" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/Black.15.Bold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/dp_17"
-                        android:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8u209j08fh98yu20uiei"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/copy_transaction"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/copy_transaction"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_copy" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
+                    android:layout_marginTop="@dimen/dp_30"
+                    android:background="@color/gray_blue_10"
+                    />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
+                    style="@style/Grey400.12.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:text="@string/amount" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:text="0,00344 BTC at 12 902, 07 US$" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:text="@string/value" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:text="44,38 US$" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:text="@string/fee" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
-                    android:text="0,00009492 BTC" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginEnd="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_20"
                     android:text="@string/from" />
 
@@ -216,7 +157,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_15">
+                    android:layout_marginTop="@dimen/dp_20">
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/user_profile_iv"
@@ -233,45 +174,54 @@
                         android:layout_marginStart="@dimen/dp_15"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/copy_from_user_key"
+                        app:layout_constraintEnd_toStartOf="@+id/copyFromUserKey"
                         app:layout_constraintStart_toEndOf="@+id/user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/Black.17.Bold"
+                            style="@style/Black.17.Bold.SfProDisplay"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/dp_20"
-                            android:text="Martin" />
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginEnd="@dimen/dp_20"
+                            />
+
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/Grey.15"
+                            style="@style/Grey400.15.SfProDisplay"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
-                            android:ellipsize="marquee"
-                            android:text="k97y8u209j08fh98yu20uiei..." />
+                            android:singleLine="true"
+                            app:symbolCount="@{4}"
+                            app:text="@{model.from}"
+                            tools:text="k97y8u209j08fh98yu20uiei..." />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/copy_from_user_key"
+                        android:id="@+id/copyFromUserKey"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_10"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_copy" />
+                        app:srcCompat="@drawable/ic_copy_grey"
+                        android:background="@drawable/bg_lighter_gray_rect"
+                        />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
+                    style="@style/Grey400.12.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_20"
@@ -299,50 +249,247 @@
                         android:layout_marginStart="@dimen/dp_15"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/copy_to_user_key"
+                        app:layout_constraintEnd_toStartOf="@+id/copyToUserKey"
                         app:layout_constraintStart_toEndOf="@+id/to_user_profile_iv"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/Black.17.Bold"
+                            style="@style/Black.17.Bold.SfProDisplay"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/dp_20"
-                            android:text="BTC Wallet" />
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginEnd="@dimen/dp_20"
+                            />
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/Grey.15"
+                            style="@style/Grey400.15.SfProDisplay"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="@dimen/dp_20"
-                            android:ellipsize="marquee"
-                            android:text="k97y8u209j08fh98yu20uiei..." />
+                            android:singleLine="true"
+                            app:symbolCount="@{4}"
+                            app:text="@{model.to}"
+                            tools:text="k97y8u209j08fh98yu20uiei..." />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/copy_to_user_key"
+                        android:id="@+id/copyToUserKey"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_10"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_copy" />
+                        android:background="@drawable/bg_lighter_gray_rect"
+                        app:srcCompat="@drawable/ic_copy_grey"
+                        />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey400.12.SfProText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/date"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/date"
+                    style="@style/Black.15.Bold.SfProDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@{model.date}"
+                    tools:text="October 24,2020@12:51 PM"
+                    />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey400.12.SfProText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/amount" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/amount"
+                    style="@style/Black.15.Bold.SfProDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@{String.format(@string/amount_at_currency(model.lamports, model.tokenSymbol, model.currency))}"
+                    tools:text="0,00344 SOL at 12 902,07 US$"
+                    />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey400.12.SfProText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/value" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/value"
+                    style="@style/Black.15.Bold.SfProDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@{String.format(@string/dollars_value(model.price))}"
+                    tools:text="$ 1220.00 "
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey400.12.SfProText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/fee" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/fee"
+                    style="@style/Black.15.Bold.SfProDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@{String.format(model.fee +@string/space+@string/lamports)}"
+                    tools:text="10000 lamports" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey400.12.SfProText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/block_number" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Black.15.Bold.SfProDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_5"
+                    android:text="@{String.format(@string/block_number_symbol,model.slot)}"
+                    tools:text="#5387498763" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey400.12.SfProText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/transaction_id" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_10">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Black.15.Bold.SfProDisplay"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_17"
+                        android:text="@{model.signature}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/copyTransaction"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8u209j08fh98yu20uiei" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/copyTransaction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_10"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_copy_grey"
+                        android:background="@drawable/bg_lighter_gray_rect"
+                        />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/gray_30" />
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:background="@color/gray_blue_10"
+                    />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    style="@style/Grey.15"
+                    android:id="@+id/blockChainExplorer"
+                    style="@style/White.15"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_20"
+                    android:fontFamily="@font/font_sf_pro_display"
                     android:layout_marginVertical="@dimen/dp_20"
-                    android:background="@drawable/bg_gray_rect"
+                    android:paddingVertical="@dimen/dp_18"
+                    android:background="@drawable/bg_dark_gray_rect"
                     android:text="@string/view_in_blockchain_explorer"
                     android:textAllCaps="false" />
             </androidx.appcompat.widget.LinearLayoutCompat>

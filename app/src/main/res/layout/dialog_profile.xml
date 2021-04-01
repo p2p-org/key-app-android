@@ -4,6 +4,13 @@
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel" />
+
+        <variable
+            name="networkViewModel"
+            type="com.p2p.wowlet.fragment.dashboard.dialog.networks.viewmodel.NetworkViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -134,10 +141,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_10"
+                android:tint="@color/gray_80"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/icArrowRightBackup"
                 app:layout_constraintTop_toTopOf="parent"
-                android:tint="@color/gray_80"
                 app:srcCompat="@drawable/ic_checkmark_backup" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,11 +180,12 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtCurrencyName"
                 style="@style/Grey.15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:text="US$"
+                android:text="@{viewModel.getSelectedCurrencyName()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/icArrowRightCurrency"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -192,57 +200,57 @@
                 app:srcCompat="@drawable/ic_arrow_right" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/lSavedCardsContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lCurrencyContainer">
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/lSavedCardsContainer"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="@dimen/dp_20"-->
+<!--            android:layout_marginEnd="@dimen/dp_20"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/lCurrencyContainer">-->
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/vPhonePhoto"
-                android:layout_width="@dimen/dp_44"
-                android:layout_height="@dimen/dp_44"
-                android:layout_marginTop="@dimen/dp_6"
-                android:layout_marginBottom="@dimen/dp_6"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_default_coin" />
+<!--            <androidx.appcompat.widget.AppCompatImageView-->
+<!--                android:id="@+id/vPhonePhoto"-->
+<!--                android:layout_width="@dimen/dp_44"-->
+<!--                android:layout_height="@dimen/dp_44"-->
+<!--                android:layout_marginTop="@dimen/dp_6"-->
+<!--                android:layout_marginBottom="@dimen/dp_6"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:srcCompat="@drawable/ic_default_coin" />-->
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vSaviedCards"
-                style="@style/Black.15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_15"
-                android:text="@string/saved_cards"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/vPhonePhoto"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <androidx.appcompat.widget.AppCompatTextView-->
+<!--                android:id="@+id/vSaviedCards"-->
+<!--                style="@style/Black.15"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="@dimen/dp_15"-->
+<!--                android:text="@string/saved_cards"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/vPhonePhoto"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/Grey.15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:text="3"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/icArrowRightSavedCard"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <androidx.appcompat.widget.AppCompatTextView-->
+<!--                style="@style/Grey.15"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="@dimen/dp_10"-->
+<!--                android:text="3"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/icArrowRightSavedCard"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/icArrowRightSavedCard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_right" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            <androidx.appcompat.widget.AppCompatImageView-->
+<!--                android:id="@+id/icArrowRightSavedCard"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:srcCompat="@drawable/ic_arrow_right" />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/lNetworkContainer"
@@ -252,7 +260,7 @@
             android:layout_marginEnd="@dimen/dp_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lSavedCardsContainer">
+            app:layout_constraintTop_toBottomOf="@+id/lCurrencyContainer">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/vNetworkPhoto"
@@ -277,11 +285,12 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSelectedNetworkName"
                 style="@style/Grey.15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:text="Solana"
+                android:text="@{networkViewModel.getSelectedNetworkName()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/icArrowRightNetwork"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -329,11 +338,12 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSecurityOptions"
                 style="@style/Grey.15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:text="Face ID, PIN"
+                android:text="@{viewModel.isUsesFingerprint().enable?@string/fingerprint_and_pin:@string/pin}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/icArrowRightSecurity"
                 app:layout_constraintTop_toTopOf="parent" />

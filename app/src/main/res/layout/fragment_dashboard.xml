@@ -5,6 +5,7 @@
 
     <data>
 
+        <import type="com.wowlet.entities.local.WalletItem"/>
         <variable
             name="viewModel"
             type="com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel" />
@@ -12,171 +13,281 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/background_screens"
+        android:layout_height="match_parent"
         tools:context=".fragment.dashboard.view.DashboardFragment">
 
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/lScannerContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
-
-            android:orientation="horizontal"
+            android:layout_width="@dimen/dp_45"
+            android:layout_height="@dimen/dp_45"
+            android:layout_marginStart="@dimen/dp_11"
+            android:layout_marginTop="@dimen/dp_11"
+            android:onClick="@{()->viewModel.goToScannerFragment()}"
+            android:tint="@color/gray_blue_400"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_qr_scaner" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/Black.13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_7"
-                android:onClick="@{()->viewModel.goToScannerFragment()}"
-                android:text="@string/slide_to_scan" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_qr_scaner" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="@dimen/dp_75"
-            android:layout_height="@dimen/dp_75"
-            android:padding="@dimen/dp_15"
+            android:id="@+id/imgProfilePic"
+            android:layout_width="@dimen/dp_33"
+            android:layout_height="@dimen/dp_33"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:elevation="@dimen/dp_16"
             android:onClick="@{()->viewModel.openProfileDialog()}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@id/lScannerContainer"
+            app:layout_constraintBottom_toBottomOf="@id/lScannerContainer"
             app:srcCompat="@drawable/ic_default_coin" />
 
         <View
             android:layout_width="@dimen/dp_8"
             android:layout_height="@dimen/dp_8"
-            android:layout_marginTop="@dimen/dp_17"
-            android:layout_marginEnd="@dimen/dp_16"
             android:background="@drawable/ic_profile_online"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:elevation="@dimen/dp_16"
+            app:layout_constraintEnd_toEndOf="@id/imgProfilePic"
+            app:layout_constraintTop_toTopOf="@id/imgProfilePic" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/rootContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lScannerContainer">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vPrice"
-                style="@style/Black.36.Bold"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/myBalanceContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_70"
-                android:text="$120,00"
+                android:layout_marginHorizontal="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_33"
+                android:background="@drawable/bg_already_have_account"
+                android:elevation="@dimen/dp_2"
+                android:onClick="@{() -> viewModel.openAllMyTokensDialog()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vPriceInfo"
-                style="@style/Black.15"
-                android:layout_width="wrap_content"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/total_balance_title"
+                    style="@style/Black.15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:layout_marginTop="@dimen/dp_15"
+                    android:fontFamily="@font/sf_pro_text"
+                    android:text="@string/total_balance"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/vPrice"
+                    style="@style/Black.21.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:layout_marginTop="@dimen/dp_12"
+                    android:fontFamily="@font/font_sf_pro_display"
+                    android:text="@{String.format(@string/usd_symbol_2,viewModel.yourBalance)}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/total_balance_title"
+                    tools:text="$0.0" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Gray.13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/dp_15"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:fontFamily="@font/sf_pro_text"
+                    android:text="@string/all_tokens"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/vPrice" />
+
+                <FrameLayout
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/vPieChartData"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="@dimen/dp_15" />
+                </FrameLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/vRvWallets"
+                android:layout_width="@dimen/dp_0"
+                adapter_list="@{viewModel.getWalletData}"
+                view_model="@{viewModel}"
                 android:layout_height="wrap_content"
-                android:text="+ 0,16 US$ (0,01%) 24 hrs"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginBottom="@dimen/dp_5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vPrice" />
+                app:layout_constraintTop_toBottomOf="@+id/myBalanceContainer"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_wallets" />
+
+            <RelativeLayout
+                android:id="@+id/allMyTokensContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/dp_20"
+                android:layout_marginVertical="@dimen/dp_10"
+                app:layout_constraintTop_toBottomOf="@+id/vRvWallets"
+                android:background="@drawable/bg_already_have_account_gray_15"
+                android:onClick="@{()->viewModel.openAllMyTokensDialog()}"
+                android:visibility="gone"
+                >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Grey.17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/dp_15"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:fontFamily="@font/font_sf_pro_display"
+                    android:text="@string/all_my_tokens"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/dp_18"
+                    app:srcCompat="@drawable/ic_arrow_right" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/addTokensContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_15"
+                android:background="@drawable/bg_already_have_account_gray_15"
+                android:onClick="@{()->viewModel.openAddCoinDialog(viewModel.emptyLambda)}"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/vRvWallets"
+                >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Black.17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/dp_15"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:fontFamily="@font/font_sf_pro_display"
+                    android:text="@string/add_token"
+                    android:textStyle="bold"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/dp_18"
+                    app:srcCompat="@drawable/ic_inline_add" />
+
+            </RelativeLayout>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/lCoinContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
+                android:background="@drawable/bg_radius_top"
+                android:elevation="@dimen/dp_10"
                 android:gravity="center"
                 android:orientation="horizontal"
+                android:paddingVertical="@dimen/dp_17"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vPriceInfo">
+                >
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{()->viewModel.enterWalletDialog()}"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_receive" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/White.15"
-                        android:layout_width="@dimen/dp_80"
-                        android:layout_height="@dimen/dp_56"
-                        android:background="@drawable/bg_send_coin_bt"
+                        style="@style/Grey.12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/dp_7"
+                        android:fontFamily="@font/font_sf_pro_display"
                         android:gravity="center"
-                        android:onClick="@{()->viewModel.goToSendCoinFragment()}"
-                        android:text="@string/send" />
-
-                <View
-                    android:layout_width="@dimen/dp_2"
-                    android:layout_height="match_parent"
-                    android:background="@color/background_screens" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/White.15"
-                        android:layout_width="@dimen/dp_80"
-                        android:layout_height="@dimen/dp_56"
-                        android:background="@drawable/bg_receive_coin_bt"
-                        android:gravity="center"
-                        android:onClick="@{()->viewModel.enterWalletDialog()}"
                         android:text="@string/receive" />
-
-                <View
-                    android:layout_width="@dimen/dp_2"
-                    android:layout_height="match_parent"
-                    android:background="@color/background_screens" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/White.15"
-                        android:layout_width="@dimen/dp_80"
-                        android:layout_height="@dimen/dp_56"
-                        android:background="@drawable/bg_swap_coin_bt"
-                        android:gravity="center"
-                        android:onClick="@{()->viewModel.goToSwapFragment()}"
-                        android:text="@string/swap" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vWallets"
-                style="@style/Black.17.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_15"
-                android:layout_marginTop="@dimen/dp_30"
-                android:onClick="@{()->viewModel.goToDetailSavingFragment()}"
-                android:text="@string/wallets"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lCoinContainer" />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/dp_36"
+                    android:onClick="@{()->viewModel.goToSendCoinFragment()}"
+                    android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/vRvWallets"
-                adapter_list="@{viewModel.getWalletData}"
-                view_model="@{viewModel}"
-                android:layout_width="@dimen/dp_0"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vWallets" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_send" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.12.Bold"
-                    android:layout_width="@dimen/dp_120"
-                    android:layout_height="@dimen/dp_36"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@drawable/bg_add_coin_bt"
-                    android:gravity="center"
-                    android:onClick="@{()->viewModel.openAddCoinDialog()}"
-                    android:text="+ Add coin"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/vRvWallets" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Grey.12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/dp_7"
+                        android:fontFamily="@font/font_sf_pro_display"
+                        android:gravity="center"
+                        android:text="@string/send" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{()->viewModel.openSwapBottomSheet(viewModel.nullWalletItem)}"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_exchange" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Grey.12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/dp_7"
+                        android:fontFamily="@font/font_sf_pro_display"
+                        android:gravity="center"
+                        android:text="@string/exchange" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
