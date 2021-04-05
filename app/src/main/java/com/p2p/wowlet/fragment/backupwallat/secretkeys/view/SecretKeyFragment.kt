@@ -3,31 +3,29 @@ package com.p2p.wowlet.fragment.backupwallat.secretkeys.view
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentSecretKeyBinding
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter.SecretPhraseAdapter
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.Keyword
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKeyBinding>() {
-    override val viewModel: SecretKeyViewModel by viewModel()
-    override val binding: FragmentSecretKeyBinding by dataBinding(R.layout.fragment_secret_key)
+class SecretKeyFragment : BaseFragment(R.layout.fragment_secret_key) {
+    private val viewModel: SecretKeyViewModel by viewModel()
+    private val binding: FragmentSecretKeyBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.run {
-            viewModel = this@SecretKeyFragment.viewModel
+        binding.backImageView.setOnClickListener {
+            popBackStack()
+            requireContext().hideSoftKeyboard(this@SecretKeyFragment)
         }
-
         binding.rvSecretPhrase.adapter = SecretPhraseAdapter(requireContext(), viewModel)
         binding.phraseET.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
@@ -40,17 +38,21 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
             }
         }
 
+        binding.resetButton.setOnClickListener { viewModel.resetPhrase() }
+
         binding.phraseET.requestFocus()
+
+        observeData()
     }
 
-    override fun observes() {
-        observe(viewModel.isCurrentCombination) {
-            replace(PinCodeFragment.create(false, false, PinCodeFragmentType.CREATE))
+    private fun observeData() {
+        viewModel.isCurrentCombination.observe(viewLifecycleOwner) {
+            replaceFragment(PinCodeFragment.create(false, false, PinCodeFragmentType.CREATE))
         }
-        observe(viewModel.invadedPhrase) { errorMessage ->
+        viewModel.invadedPhrase.observe(viewLifecycleOwner) { errorMessage ->
             binding.txtErrorMessage.text = errorMessage
         }
-        observe(viewModel.shouldResetThePhrase) {
+        viewModel.shouldResetThePhrase.observe(viewLifecycleOwner) {
             binding.apply {
                 (rvSecretPhrase.adapter as SecretPhraseAdapter?)?.clear()
                 rvSecretPhrase.visibility = View.GONE
@@ -59,21 +61,4 @@ class SecretKeyFragment : FragmentBaseMVVM<SecretKeyViewModel, FragmentSecretKey
             }
         }
     }
-
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is Command.NavigateUpBackStackCommand -> {
-                requireContext().hideSoftKeyboard(this@SecretKeyFragment)
-                popBackStack()
-            }
-            is Command.NavigatePinCodeViewCommand -> {
-                replace(PinCodeFragment.create(
-                    openSplashScreen = false,
-                    isBackupDialog = false,
-                    type = PinCodeFragmentType.CREATE
-                ))
-            }
-        }
-    }
-
 }

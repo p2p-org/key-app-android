@@ -1,99 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="viewModel"
-            type="com.p2p.wowlet.fragment.notification.viewmodel.NotificationViewModel" />
-    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.notification.view.NotificationFragment">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/vTitle"
+        style="@style/Black.32.Bold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_100"
+        android:gravity="center"
+        android:text="@string/almost_done"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/vEnablePush"
+        style="@style/Black.21.Bold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_125"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:gravity="center"
+        android:text="@string/enable_push_notifications"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vTitle" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/vEnableInfo"
+        style="@style/Black.17"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/dp_30"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:gravity="center"
+        android:text="@string/enable_push_notifications_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vEnablePush" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".fragment.notification.view.NotificationFragment">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vTitle"
-            style="@style/Black.32.Bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_100"
-            android:gravity="center"
-            android:text="@string/almost_done"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vEnablePush"
-            style="@style/Black.21.Bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/dp_30"
-            android:layout_marginTop="@dimen/dp_125"
-            android:layout_marginEnd="@dimen/dp_30"
-            android:gravity="center"
-            android:text="@string/enable_push_notifications"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vTitle" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vEnableInfo"
-            style="@style/Black.17"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/dp_30"
-            android:layout_marginTop="@dimen/dp_30"
-            android:layout_marginEnd="@dimen/dp_30"
-            android:gravity="center"
-            android:text="@string/enable_push_notifications_info"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vEnablePush" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btUseFaceID"
+            style="@style/Widget.Black.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:text="@string/enable_now"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/btLater"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btLater"
+            style="@style/Widget.White.Button"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_30"
+            android:text="@string/do_this_later"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btUseFaceID"
-                style="@style/Widget.Black.Button"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_56"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:layout_marginBottom="@dimen/dp_10"
-                android:text="@string/enable_now"
-                android:textStyle="bold"
-                android:onClick="@{()->viewModel.openEnableNotificationDialog()}"
-                app:layout_constraintBottom_toTopOf="@+id/btLater"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btLater"
-                style="@style/Widget.White.Button"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_56"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:layout_marginBottom="@dimen/dp_30"
-                android:text="@string/do_this_later"
-                android:textStyle="bold"
-                android:onClick="@{()->viewModel.doThisLater()}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>

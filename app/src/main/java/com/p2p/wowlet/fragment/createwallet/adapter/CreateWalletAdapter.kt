@@ -1,37 +1,43 @@
 package com.p2p.wowlet.fragment.createwallet.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.p2p.wowlet.R
-import kotlinx.android.synthetic.main.item_security_key.view.*
+import com.p2p.wowlet.databinding.ItemSecretKeyBinding
 
-class CreateWalletAdapter(private var phraseList: List<String>) :
-    RecyclerView.Adapter<CreateWalletAdapter.MyViewHolder>() {
+class CreateWalletAdapter : RecyclerView.Adapter<CreateWalletAdapter.PhraseViewHolder>() {
 
-    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(value: String) {
-            with(itemView) {
-                itemText.text = value
-            }
-        }
-    }
+    private val data = mutableListOf<String>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val inflate =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_security_key, parent, false)
-        return MyViewHolder(inflate)
-    }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(phraseList[position])
-    }
-
-    override fun getItemCount(): Int = phraseList.size
-
-    fun setData(mutableList: List<String>) {
-        phraseList = mutableList
+    fun setItems(new: List<String>) {
+        data.clear()
+        data.addAll(new)
         notifyDataSetChanged()
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        PhraseViewHolder(
+            ItemSecretKeyBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+
+    override fun onBindViewHolder(holder: PhraseViewHolder, position: Int) {
+        holder.bind(data[position])
+    }
+
+    override fun getItemCount(): Int = data.size
+
+    inner class PhraseViewHolder(
+        binding: ItemSecretKeyBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        private val phraseTextView = binding.phraseTextView
+
+        fun bind(value: String) {
+            phraseTextView.text = value
+        }
     }
 }

@@ -7,13 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.databinding.DialogChangePhoneEmailBinding
-
+import com.p2p.wowlet.databinding.DialogEnterCodeBinding
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.enums.MailPhoneType
-import kotlinx.android.synthetic.main.dialog_enter_code.*
 
 class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment() {
 
@@ -24,22 +22,17 @@ class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val binding: DialogChangePhoneEmailBinding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_enter_code, container, false
-        )
-        binding.dialogType = mailPhoneType
-        return binding.root
-    }
+    private val binding: DialogEnterCodeBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_enter_code, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        icClose.setOnClickListener {
-            dismiss()
+        with(binding) {
+            icClose.setOnClickListener {
+                dismiss()
+            }
         }
     }
 
@@ -51,8 +44,7 @@ class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
     }
-
 }

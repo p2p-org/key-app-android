@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
-import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.wowlet.domain.interactors.DetailWalletInteractor
@@ -65,11 +64,6 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
             }
 
         }
-    }
-
-    fun navigateUp() {
-        _command.value =
-            Command.NavigateUpBackStackCommand()
     }
 
     fun goToQrScanner(walletItem: WalletItem) {

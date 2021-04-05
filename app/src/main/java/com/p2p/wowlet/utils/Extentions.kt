@@ -4,20 +4,15 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.github.mikephil.charting.charts.LineChart
@@ -31,7 +26,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.Executor
-
 
 fun LineChart.initChart(chartList: List<Entry>) {
     val lineDataSet = LineDataSet(chartList, "DataSet1")
@@ -183,9 +177,6 @@ private fun FragmentActivity.authUser(executor: Executor, requestSuccess: () -> 
     biometricPrompt.authenticate(promptInfo)
 }
 
-
-
-
 fun Fragment.openFingerprintDialog(requestSuccess: (Boolean) -> Unit) {
     val executor = ContextCompat.getMainExecutor(requireContext())
     val biometricManager = BiometricManager.from(requireContext())
@@ -250,8 +241,6 @@ private fun Fragment.authUser(executor: Executor, requestSuccess: () -> Unit) {
     biometricPrompt.authenticate(promptInfo)
 }
 
-
-
 fun Context.isFingerPrintSet(): Boolean {
     return BiometricManager.from(this)
         .canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
@@ -266,15 +255,6 @@ fun TextView.changeTextColor(selectedTextView: AppCompatTextView?) {
         typeface = Typeface.DEFAULT
         isEnabled = true
     }
-}
-
-fun <T : ViewDataBinding> ViewGroup.inflate(layoutId: Int): T {
-    return DataBindingUtil.inflate(
-        LayoutInflater.from(context),
-        layoutId,
-        this,
-        false
-    )
 }
 
 fun getOneHour(): Long {

@@ -1,25 +1,20 @@
 package com.p2p.wowlet.fragment.blockchainexplorer.view
 
 import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentBlockChainExplorerBinding
-import com.p2p.wowlet.fragment.blockchainexplorer.viewmodel.BlockChainExplorerViewModel
-import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class BlockChainExplorerFragment :
-    FragmentBaseMVVM<BlockChainExplorerViewModel, FragmentBlockChainExplorerBinding>() {
+class BlockChainExplorerFragment : BaseFragment(R.layout.fragment_block_chain_explorer) {
 
-    override val viewModel: BlockChainExplorerViewModel by viewModel()
-    override val binding: FragmentBlockChainExplorerBinding by dataBinding(R.layout.fragment_block_chain_explorer)
+    private val binding: FragmentBlockChainExplorerBinding by viewBinding()
 
     companion object {
         const val BLOCK_CHAIN_URL = "block_chain_url"
@@ -32,14 +27,20 @@ class BlockChainExplorerFragment :
 
     private var url: String? = null
 
-    override fun initData() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initData()
+        initView()
+    }
+
+    private fun initData() {
         arguments?.let {
             url = it.getString(BLOCK_CHAIN_URL)
         }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    override fun initView() {
+    private fun initView() {
         // binding.webView.settings.javaScriptEnabled = true;
         // указываем страницу загрузки
         url?.let {
@@ -59,13 +60,6 @@ class BlockChainExplorerFragment :
 
             binding.webView.loadUrl(it)
 
-        }
-    }
-
-    override fun processViewCommand(command: ViewCommand) {
-        super.processViewCommand(command)
-        when (command) {
-            is Command.NavigateUpViewCommand -> popBackStack()
         }
     }
 }

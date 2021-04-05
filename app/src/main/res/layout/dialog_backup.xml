@@ -1,124 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_profile_dialog">
 
-    </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/vClose"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_profile_dialog">
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/vClose"
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_arrow_left" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/Grey.17"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_2"
-                android:text="@string/back"
-                app:layout_constraintStart_toEndOf="@+id/icBack"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/ic_arrow_left" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vTitle"
-            style="@style/Black.17.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/dp_20"
-            android:text="@string/backup"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vDone"
             style="@style/Grey.17"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:text="@string/done"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/dp_2"
+            android:text="@string/back"
+            app:layout_constraintStart_toEndOf="@+id/icBack"
             app:layout_constraintTop_toTopOf="parent" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/vTitle"
+        style="@style/Black.17.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/dp_20"
+        android:text="@string/backup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/vDone"
+        style="@style/Grey.17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:text="@string/done"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_85"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vTitle">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="@dimen/dp_78"
+            android:layout_height="@dimen/dp_64"
+            android:layout_gravity="center_horizontal"
+            android:tint="@color/gray_80"
+            app:srcCompat="@drawable/ic_checkmark_backup" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/Black.17"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_85"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vTitle">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_30"
+            android:text="@string/your_wallet_needs_backup" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="@dimen/dp_78"
-                android:layout_height="@dimen/dp_64"
-                android:layout_gravity="center_horizontal"
-                android:tint="@color/gray_80"
-                app:srcCompat="@drawable/ic_checkmark_backup" />
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/Grey.17"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:gravity="center"
+            android:text="@string/backup_recovery_info" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/Black.17"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/dp_30"
-                android:text="@string/your_wallet_needs_backup" />
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Widget.Black.Button"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:text="@string/backup_using_icloud"
+            android:visibility="gone" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/Grey.17"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_10"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:gravity="center"
-                android:text="@string/backup_recovery_info" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btBackupManual"
+            style="@style/Black.15.Bold"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_94"
+            android:background="@drawable/bg_backup_manually"
+            android:text="@string/backup_manually"
+            android:textAllCaps="false" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatButton
-                style="@style/Widget.Black.Button"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_56"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_30"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:text="@string/backup_using_icloud"
-                android:visibility="gone" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btBackupManual"
-                style="@style/Black.15.Bold"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_56"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_30"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:layout_marginBottom="@dimen/dp_94"
-                android:background="@drawable/bg_backup_manually"
-                android:text="@string/backup_manually"
-                android:textAllCaps="false" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,12 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.databinding.DialogNetworksBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.networks.viewmodel.NetworkViewModel
-import kotlinx.android.synthetic.main.dialog_networks.*
+import kotlinx.android.synthetic.main.dialog_networks.devNetRb
+import kotlinx.android.synthetic.main.dialog_networks.mainNetRb
+import kotlinx.android.synthetic.main.dialog_networks.testNetRb
+import kotlinx.android.synthetic.main.dialog_networks.vClose
+import kotlinx.android.synthetic.main.dialog_networks.vDone
+import kotlinx.android.synthetic.main.dialog_networks.vNetworkGroup
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.p2p.solanaj.rpc.Cluster
 
@@ -30,16 +33,8 @@ class NetworksDialog(
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val binding: DialogNetworksBinding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_networks, container, false
-        )
-        return binding.root
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_networks, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

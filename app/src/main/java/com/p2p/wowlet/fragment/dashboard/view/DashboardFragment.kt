@@ -7,16 +7,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.Command.*
+import com.p2p.wowlet.appbase.viewcommand.Command.EnterWalletDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenAllMyTokensDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenBackupFailedDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenProfileDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenRecoveryPhraseDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenSwapBottomSheetViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.YourWalletDialogViewCommand
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentDashboardBinding
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
+import com.p2p.wowlet.fragment.dashboard.adapter.WalletsAdapter
 import com.p2p.wowlet.fragment.dashboard.dialog.BackupDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.ProfileDetailsFragment
 import com.p2p.wowlet.fragment.dashboard.dialog.SecurityDialog
@@ -41,8 +48,8 @@ import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
 import com.p2p.wowlet.utils.OnSwipeTouchListener
 import com.p2p.wowlet.utils.drawChart
-import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
 import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.WalletItem
@@ -50,10 +57,10 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.p2p.solanaj.rpc.RpcClient
 
-class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboardBinding>() {
+class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
-    override val viewModel: DashboardViewModel by viewModel()
-    override val binding: FragmentDashboardBinding by dataBinding(R.layout.fragment_dashboard)
+    private val viewModel: DashboardViewModel by viewModel()
+    private val binding: FragmentDashboardBinding by viewBinding()
 
     private val rpcClient: RpcClient by inject()
 
@@ -70,12 +77,27 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
+        initData()
+        observeData()
+
         binding.run {
-            viewModel = this@DashboardFragment.viewModel
+            imgProfilePic.setOnClickListener { viewModel.openProfileDialog() }
+            swapView.setOnClickListener {
+                viewModel.openSwapBottomSheet(null)
+            }
+
+            addTokensContainer.setOnClickListener {
+                openAddCoinDialog()
+            }
 
             lScannerContainer.setOnClickListener {
-                replace(QrScannerFragment())
+                replaceFragment(QrScannerFragment())
             }
+
+            enterWalletView.setOnClickListener { viewModel.enterWalletDialog() }
+
+            myBalanceContainer.setOnClickListener { viewModel.openAllMyTokensDialog() }
 
             sendButton.setOnClickListener {
                 val item = (viewModel as? DashboardViewModel)?.getAllWalletData?.value?.firstOrNull()
@@ -86,12 +108,16 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     TAG_SEND_COIN
                 )
             }
+
+            with(vRvWallets) {
+                layoutManager = LinearLayoutManager(this.context)
+            }
         }
         viewModel.getWalletItems()
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun initView() {
+    private fun initView() {
         if (isBackupSuccess != null) {
             if (isBackupSuccess as Boolean) {
                 viewModel.openRecoveryPhraseDialog()
@@ -102,26 +128,25 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
 
         binding.rootContainer.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeRight() {
-                replace(QrScannerFragment())
+                replaceFragment(QrScannerFragment())
             }
         })
         binding.vRvWallets.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeRight() {
-                replace(QrScannerFragment())
+                replaceFragment(QrScannerFragment())
             }
         })
     }
 
-    override fun initData() {
+    private fun initData() {
         arguments?.let {
             isBackupSuccess = it.getBoolean(BACK_TO_DASHBOARD_SCREEN)
             it.clear()
         }
     }
 
-    override fun processViewCommand(command: ViewCommand) {
+    private fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is NavigateUpViewCommand -> popBackStack()
             is OpenSwapBottomSheetViewCommand -> {
                 SwapBottomSheet.newInstance(
                     allMyWallets = command.allMyWallets,
@@ -131,33 +156,19 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                     SwapBottomSheet.TAG_SWAP_BOTTOM_SHEET
                 )
             }
-            is OpenAddCoinDialogViewCommand -> {
-                AddCoinBottomSheet.newInstance(
-                    goToDetailWalletFragment = {
-                        openWalletDetails(it)
-                        viewModel.getWalletItems()
-                    },
-                    goToSolanaExplorerFragment = {
-                        replace(BlockChainExplorerFragment.createScreen(it))
-                    },
-                    updateListInAllMyTokens =
-                    command.updateAllMyTokens
-
-                ).show(childFragmentManager, TAG_ADD_COIN)
-            }
 
             is Command.OpenTransactionDialogViewCommand -> {
                 TransactionBottomSheet.newInstance(command.itemActivity) {
-                    replace(BlockChainExplorerFragment.createScreen(it))
+                    replaceFragment(BlockChainExplorerFragment.createScreen(it))
                 }.show(childFragmentManager, TransactionBottomSheet.TRANSACTION_DIALOG)
             }
 
             is OpenProfileDialogViewCommand -> {
                 ProfileDialog.newInstance({
-                    replace(ProfileDetailsFragment.newInstance())
+                    replaceFragment(ProfileDetailsFragment.newInstance())
                 }, {
                     BackupDialog.newInstance {
-                        replace(
+                        replaceFragment(
                             PinCodeFragment.create(
                                 openSplashScreen = false,
                                 isBackupDialog = true,
@@ -188,7 +199,7 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
             }
             is OpenAllMyTokensDialogViewCommand -> {
                 AllMyTokensBottomSheet.newInstance(command.yourWallets, {
-                    viewModel.openAddCoinDialog()
+                    openAddCoinDialog()
                 }) { itemWallet ->
                     openWalletDetails(itemWallet)
                 }.show(
@@ -221,7 +232,7 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
         DetailWalletBottomSheet.newInstance(it, {
             viewModel.goToQrScanner(it)
         }, {
-            viewModel.openAddCoinDialog()
+            openAddCoinDialog()
         }, {
             viewModel.goToSendCoin(it)
         }, {
@@ -229,23 +240,32 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
         }, {
             viewModel.openSwapBottomSheet(it)
         }, {
-            replace(BlockChainExplorerFragment.createScreen(it))
+            replaceFragment(BlockChainExplorerFragment.createScreen(it))
         }).show(
             childFragmentManager,
             DETAIL_WALLET
         )
     }
 
-    override fun observes() {
-        observe(viewModel.getWalletDataError) {
+    private fun observeData() {
+        viewModel.getWalletDataError.observe(viewLifecycleOwner) {
             context?.run {
                 Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
             }
         }
-        observe(viewModel.getWalletChart) {
+        viewModel.yourBalance.observe(viewLifecycleOwner) {
+            binding.vPrice.text = getString(R.string.usd_symbol_2, it)
+        }
+        viewModel.getWalletChart.observe(viewLifecycleOwner) {
             binding.vPieChartData.drawChart(it)
         }
-        observe(viewModel.getAllWalletData) { itemList ->
+        viewModel.getWalletData.observe(viewLifecycleOwner) {
+            val adapter = WalletsAdapter(viewModel, it) {
+                // what to do?
+            }
+            binding.vRvWallets.adapter = adapter
+        }
+        viewModel.getAllWalletData.observe(viewLifecycleOwner) { itemList ->
             when {
                 itemList.isEmpty() -> {
                     binding.allMyTokensContainer.visibility = View.GONE
@@ -285,5 +305,21 @@ class DashboardFragment : FragmentBaseMVVM<DashboardViewModel, FragmentDashboard
                 binding.vRvWallets.layoutParams = layoutParams
             }
         }
+
+        viewModel.command.observe(viewLifecycleOwner) {
+            processViewCommand(it)
+        }
+    }
+
+    private fun openAddCoinDialog() {
+        AddCoinBottomSheet.newInstance(
+            goToDetailWalletFragment = {
+                openWalletDetails(it)
+                viewModel.getWalletItems()
+            },
+            goToSolanaExplorerFragment = {
+                replaceFragment(BlockChainExplorerFragment.createScreen(it))
+            }
+        ).show(childFragmentManager, TAG_ADD_COIN)
     }
 }

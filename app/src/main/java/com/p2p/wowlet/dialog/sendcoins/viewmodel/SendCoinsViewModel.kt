@@ -163,10 +163,6 @@ class SendCoinsViewModel(
         return BigDecimal(value).setScale(2, RoundingMode.HALF_EVEN).toDouble()
     }
 
-    fun formatToken(value: Double, name: String): String {
-        return (BigDecimal(value).stripTrailingZeros().toDouble().toString() + " " + name)
-    }
-
     fun getFee() {
         viewModelScope.launch(Dispatchers.IO) {
             when (val data = sendCoinInteractor.getFee()) {

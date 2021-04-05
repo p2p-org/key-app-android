@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.p2p.wowlet.R
 import com.p2p.wowlet.fragment.splashscreen.view.SplashScreenFragment
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
 
 class RegistrationActivity : AppCompatActivity() {
 
@@ -13,7 +13,7 @@ class RegistrationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registration)
 
         if (savedInstanceState == null) {
-            replace(SplashScreenFragment())
+            replaceFragment(SplashScreenFragment())
         }
     }
 }

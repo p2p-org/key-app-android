@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
@@ -19,11 +17,20 @@ import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
 import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.adapter.ActivityAdapter
 import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.util.DividerItemDecoration
 import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.viewmodel.DetailWalletViewModel
-import com.p2p.wowlet.utils.*
 import com.p2p.wowlet.utils.bindadapter.imageSource
+import com.p2p.wowlet.utils.changeTextColor
+import com.p2p.wowlet.utils.copyClipboard
+import com.p2p.wowlet.utils.getFourHour
+import com.p2p.wowlet.utils.getMonthly
+import com.p2p.wowlet.utils.getOneHour
+import com.p2p.wowlet.utils.getWeekly
+import com.p2p.wowlet.utils.getYesterday
+import com.p2p.wowlet.utils.initChart
+import com.p2p.wowlet.utils.roundCurrencyValue
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
+import java.util.Calendar
 
 class DetailWalletBottomSheet(
     private val walletItem: WalletItem,
@@ -34,12 +41,6 @@ class DetailWalletBottomSheet(
     private val openSwap: ((wallet: WalletItem) -> Unit),
     private val navigateToFragment: ((url: String) -> Unit)
 ) : BottomSheetDialogFragment() {
-
-    private val detailWalletViewModel: DetailWalletViewModel by viewModel()
-    private lateinit var activityAdapter: ActivityAdapter
-    lateinit var binding: DialogDetailActivityBinding
-    private var selectedTextView: AppCompatTextView? = null
-    private val cal = Calendar.getInstance()
 
     companion object {
         const val DETAIL_WALLET = "DetailWallet"
@@ -52,28 +53,25 @@ class DetailWalletBottomSheet(
             openSwapCoin: ((wallet: WalletItem) -> Unit),
             navigateToFragment: ((url: String) -> Unit)
 
-
         ): DetailWalletBottomSheet {
             return DetailWalletBottomSheet(
-                walletItem, openQRScanner, openAddCoin, openSendCoin,openReveice, openSwapCoin,navigateToFragment
+                walletItem, openQRScanner, openAddCoin, openSendCoin, openReveice, openSwapCoin, navigateToFragment
             )
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_detail_activity, container, false
-        )
-        return binding.root
-    }
+    private val detailWalletViewModel: DetailWalletViewModel by viewModel()
+    private val binding: DialogDetailActivityBinding by viewBinding()
+
+    private lateinit var activityAdapter: ActivityAdapter
+    private var selectedTextView: AppCompatTextView? = null
+    private val cal = Calendar.getInstance()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_detail_activity, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.viewModel = detailWalletViewModel
         walletItem.run {
             detailWalletViewModel.getActivityList(
                 this.depositAddress, icon, tokenName, this.tokenSymbol
@@ -176,8 +174,10 @@ class DetailWalletBottomSheet(
                         R.color.red_400
                     )
                 )
-                binding.vTokenPercent.text= String.format(getString(R.string.for_24h_negative_detail_wallet), change24hPercentages.roundCurrencyValue())
-
+                binding.vTokenPercent.text = String.format(
+                    getString(R.string.for_24h_negative_detail_wallet),
+                    change24hPercentages.roundCurrencyValue()
+                )
             } else {
                 binding.vTokenPercent.setTextColor(
                     ContextCompat.getColor(
@@ -185,16 +185,18 @@ class DetailWalletBottomSheet(
                         R.color.limegreen
                     )
                 )
-                binding.vTokenPercent.text= String.format(getString(R.string.for_24h_positive_detail_wallet), change24hPercentages.roundCurrencyValue())
+                binding.vTokenPercent.text = String.format(
+                    getString(R.string.for_24h_positive_detail_wallet),
+                    change24hPercentages.roundCurrencyValue()
+                )
             }
 
         })
     }
 
-
     private fun initObserves() {
-        detailWalletViewModel.command.observe(viewLifecycleOwner) { viewCommand->
-            when(viewCommand) {
+        detailWalletViewModel.command.observe(viewLifecycleOwner) { viewCommand ->
+            when (viewCommand) {
                 is Command.OpenTransactionDialogViewCommand -> {
                     TransactionBottomSheet.newInstance(
                         viewCommand.itemActivity
@@ -208,5 +210,4 @@ class DetailWalletBottomSheet(
             }
         }
     }
-
 }

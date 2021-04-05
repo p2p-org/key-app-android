@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
@@ -13,6 +12,7 @@ import com.p2p.wowlet.databinding.DialogEditNameBinding
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.utils.bindadapter.imageSource
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -20,10 +20,6 @@ class EditWalletNameBottomSheet(
     val walletItem: WalletItem,
     private val changedName: (WalletItem) -> Unit
 ) : BottomSheetDialogFragment() {
-
-    private var bottomSheet: View? = null
-    lateinit var binding: DialogEditNameBinding
-    private val dashboardViewModel: DashboardViewModel by viewModel()
 
     companion object {
         const val EDIT_WALLET_NAME = "EditWalletName"
@@ -34,16 +30,13 @@ class EditWalletNameBottomSheet(
             EditWalletNameBottomSheet(walletItem, changedName)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_edit_name, container, false
-        )
-        return binding.root
-    }
+    private var bottomSheet: View? = null
+    private val dashboardViewModel: DashboardViewModel by viewModel()
+
+    private val binding: DialogEditNameBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_edit_name, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

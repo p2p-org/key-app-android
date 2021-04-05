@@ -1,6 +1,8 @@
 package com.p2p.wowlet.fragment.detailwallet.view
 
 import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,29 +10,29 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentDetailActivityBinding
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
 import com.p2p.wowlet.fragment.dashboard.dialog.TransactionBottomSheet
+import com.p2p.wowlet.fragment.dashboard.dialog.swap.SwapBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.adapter.ActivityAdapter
 import com.p2p.wowlet.fragment.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.*
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class DetailWalletFragment :
-    FragmentBaseMVVM<DetailWalletViewModel, FragmentDetailActivityBinding>() {
+class DetailWalletFragment : BaseFragment(R.layout.fragment_detail_activity) {
 
     private lateinit var activityAdapter: ActivityAdapter
-    override val viewModel: DetailWalletViewModel by viewModel()
-    override val binding: FragmentDetailActivityBinding by dataBinding(R.layout.fragment_detail_activity)
+    private val viewModel: DetailWalletViewModel by viewModel()
+    private val binding: FragmentDetailActivityBinding by viewBinding()
     private var walletItem: WalletItem? = null
     private var selectedTextView: AppCompatTextView? = null
     private val cal = Calendar.getInstance()
@@ -39,7 +41,13 @@ class DetailWalletFragment :
         const val WALLET_ITEM = "walletItem"
     }
 
-    override fun initData() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initData()
+        initView()
+    }
+
+    private fun initData() {
         arguments?.let {
             walletItem = it.getParcelable(WALLET_ITEM)
             println("debug: icon = ${walletItem?.icon}")
@@ -51,9 +59,8 @@ class DetailWalletFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    override fun initView() {
+    private fun initView() {
         binding.run {
-            viewModel = this@DetailWalletFragment.viewModel
             Glide.with(this@DetailWalletFragment)
                 .load(walletItem?.icon)
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(38)))
@@ -129,25 +136,37 @@ class DetailWalletFragment :
                 }
             }
         }
-        activityAdapter = ActivityAdapter(mutableListOf(), viewModel)
+        activityAdapter = ActivityAdapter(mutableListOf(), viewModel) {
+            TransactionBottomSheet
+                .newInstance(it) {
+                    replaceFragment(BlockChainExplorerFragment.createScreen(it))
+                }
+                .show(childFragmentManager, TransactionBottomSheet::javaClass.name)
+        }
         binding.vRvActivity.adapter = activityAdapter
         binding.vRvActivity.layoutManager = LinearLayoutManager(context)
+
+        observeData()
     }
 
-    override fun observes() {
-        observe(viewModel.getChartData) {
+    private fun observeData() {
+        viewModel.getChartData.observe(viewLifecycleOwner) {
             binding.vChartData.initChart(it)
         }
-        observe(viewModel.getActivityData) {
+        viewModel.getActivityData.observe(viewLifecycleOwner) {
             activityAdapter.updateList(it)
         }
 
-        observe(viewModel.getActivityDataError) {
+        viewModel.getActivityDataError.observe(viewLifecycleOwner) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.command.observe(viewLifecycleOwner) {
+            processViewCommand(it)
         }
     }
 
-    override fun processViewCommand(command: ViewCommand) {
+    private fun processViewCommand(command: ViewCommand) {
         when (command) {
             is Command.NavigateUpBackStackCommand -> {
                 popBackStack()
@@ -162,12 +181,17 @@ class DetailWalletFragment :
                 )
             }
             is Command.OpenSwapBottomSheetViewCommand -> {
-//                navigateFragment(command.destinationId)
-//                (activity as MainActivity).showHideNav(false)
+                SwapBottomSheet.newInstance(
+                    allMyWallets = command.allMyWallets,
+                    selectedWalletItems = command.walletData
+                ).show(
+                    childFragmentManager,
+                    SwapBottomSheet.TAG_SWAP_BOTTOM_SHEET
+                )
             }
             is Command.OpenTransactionDialogViewCommand -> {
                 TransactionBottomSheet.newInstance(command.itemActivity) {
-                    replace(BlockChainExplorerFragment.createScreen(it))
+                    replaceFragment(BlockChainExplorerFragment.createScreen(it))
                 }.show(childFragmentManager, TransactionBottomSheet.TRANSACTION_DIALOG)
             }
             is Command.YourWalletDialogViewCommand -> {

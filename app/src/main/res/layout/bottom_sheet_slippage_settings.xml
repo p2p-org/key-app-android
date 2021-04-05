@@ -1,230 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-    <data>
-        <import type="com.p2p.wowlet.R"/>
-        <import type="android.view.View"/>
-        <import type="com.p2p.wowlet.supportclass.widget.CheckableButtonGroup"/>
-        <variable
-            name="swapViewModel"
-            type="com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel" />
-    </data>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtTitle"
+        style="@style/Black.17.Bold.SfProDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:text="@string/slippage_settings"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <View
+        android:id="@+id/vDividerTitle"
+        style="@style/HorizontalDividerGreyBlue_400_10"
+        android:layout_marginTop="@dimen/dp_20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtTitle" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtSlippageDescription"
+        style="@style/Grey400.15.SfProDisplay"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:text="@string/slippage_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vDividerTitle" />
+
+    <com.p2p.wowlet.supportclass.widget.CheckableButtonGroup
+        android:id="@+id/lSlippageCheckableBG"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/bg_slippage_selector"
+        android:gravity="center_horizontal"
+        android:weightSum="100"
+        app:layout_constraintTop_toBottomOf="@id/txtSlippageDescription">
+
+        <com.p2p.wowlet.supportclass.widget.CheckableButton
+            style="@style/SlippageButtonStyle"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_weight="21"
+            android:padding="@dimen/dp_15"
+            android:text="@string/_0_1_percent" />
+
+
+        <com.p2p.wowlet.supportclass.widget.CheckableButton
+            style="@style/SlippageButtonStyle"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_weight="21"
+            android:padding="@dimen/dp_15"
+            android:text="@string/_0_5_percent" />
+
+
+        <com.p2p.wowlet.supportclass.widget.CheckableButton
+            style="@style/SlippageButtonStyle"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_weight="21"
+            android:padding="@dimen/dp_15"
+            android:text="@string/_1_percent" />
+
+
+        <com.p2p.wowlet.supportclass.widget.CheckableButton
+            style="@style/SlippageButtonStyle"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_weight="21"
+            android:padding="@dimen/dp_15"
+            android:text="@string/_5_percent" />
+
+        <com.p2p.wowlet.supportclass.widget.CheckableButton
+            style="@style/SlippageButtonStyle"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_4"
+            android:layout_weight="16"
+            android:padding="@dimen/dp_15" />
+
+    </com.p2p.wowlet.supportclass.widget.CheckableButtonGroup>
+
+
+    <!--        Custom slippage editor-->
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/lCustumSlippage"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lSlippageCheckableBG">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtTitle"
+            style="@style/Black.13.Bold.SfProDisplay.Alfa80"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Black.17.Bold.SfProDisplay"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginStart="@dimen/dp_20"
-            android:text="@string/slippage_settings"
-            />
+            android:layout_marginBottom="@dimen/dp_7"
+            android:text="@string/custom" />
 
-        <View
-            android:id="@+id/vDividerTitle"
-            style="@style/HorizontalDividerGreyBlue_400_10"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtTitle"
-            android:layout_marginTop="@dimen/dp_20"
-            />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtSlippageDescription"
-            style="@style/Grey400.15.SfProDisplay"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/vDividerTitle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/slippage_description"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            />
-
-        <com.p2p.wowlet.supportclass.widget.CheckableButtonGroup
-            android:id="@+id/lSlippageCheckableBG"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/slippageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/txtSlippageDescription"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:weightSum="100"
-            buttonStateChecked="@{R.drawable.bg_slippage_checkable_button_state_checked}"
-            textColorChecked="@{R.color.cornflowerblue}"
-            buttonStateUnchecked="@{R.drawable.bg_slippage_checkable_button_state_un_checked}"
-            textColorUnchecked="@{R.color.gray_blue_400}"
-            attrs="@{CheckableButtonGroup.slippageAttrs()}"
-            >
-
-            <com.p2p.wowlet.supportclass.widget.CheckableButton
-                android:layout_width="@dimen/dp_0"
-                android:layout_height="wrap_content"
-                android:text="@string/_0_1_percent"
-                android:padding="@dimen/dp_15"
-                style="@style/SlippageButtonStyle"
-                android:layout_weight="21"
-                />
-
-
-            <com.p2p.wowlet.supportclass.widget.CheckableButton
-                android:layout_width="@dimen/dp_0"
-                android:layout_height="wrap_content"
-                android:text="@string/_0_5_percent"
-                android:padding="@dimen/dp_15"
-                style="@style/SlippageButtonStyle"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_weight="21"
-                />
-
-
-            <com.p2p.wowlet.supportclass.widget.CheckableButton
-                android:layout_width="@dimen/dp_0"
-                android:layout_height="wrap_content"
-                android:text="@string/_1_percent"
-                android:padding="@dimen/dp_15"
-                style="@style/SlippageButtonStyle"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_weight="21"
-                />
-
-
-            <com.p2p.wowlet.supportclass.widget.CheckableButton
-                android:layout_width="@dimen/dp_0"
-                android:layout_height="wrap_content"
-                android:text="@string/_5_percent"
-                android:padding="@dimen/dp_15"
-                style="@style/SlippageButtonStyle"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_weight="21"
-                />
-
-            <com.p2p.wowlet.supportclass.widget.CheckableButton
-                android:layout_width="@dimen/dp_0"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/dp_15"
-                style="@style/SlippageButtonStyle"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginBottom="@dimen/dp_4"
-                android:layout_weight="16"
-                />
-
-        </com.p2p.wowlet.supportclass.widget.CheckableButtonGroup>
-
-
-<!--        Custom slippage editor-->
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/lCustumSlippage"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
-            app:layout_constraintTop_toBottomOf="@id/lSlippageCheckableBG"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:orientation="vertical"
-            android:visibility="visible"
-            >
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Black.13.Bold.SfProDisplay.Alfa80"
-                android:text="@string/custom"
-                android:layout_marginBottom="@dimen/dp_7"
-                />
+            android:background="@drawable/bg_slippage_custom"
+            android:weightSum="1">
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
+                android:id="@+id/editorView"
+                android:layout_width="@dimen/dp_0"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:background="@drawable/bg_slippage_custom"
-                android:visibility="@{swapViewModel.isCustomSlippageEditorVisible?View.VISIBLE:View.GONE}"
-                >
+                android:layout_weight="1"
+                android:weightSum="1">
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="@dimen/dp_0"
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtCustomSlippage"
+                    style="@style/Black300.17.SfProText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:weightSum="1"
-                    android:onClick="@{() -> swapViewModel.setFocusOnSlippageEditor()}"
-                    >
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/edtCustomSlippage"
-                        style="@style/Black300.17.SfProText"
-                        android:hint="@string/percent"
-                        android:textColorHint="@color/black_300"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="@dimen/dp_18"
-                        android:paddingTop="@dimen/dp_18"
-                        android:paddingStart="@dimen/dp_15"
-                        android:textCursorDrawable="@drawable/black_edt_cursor"
-                        android:background="@android:color/transparent"
-                        android:inputType="numberDecimal"
-                        enableDecimalInputTextWatcher="@{true}"
-                        tools:ignore="RtlSymmetry"
-                        />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/Black300.17.SfProText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/dp_15"
-                        android:text="@string/percent"
-                        android:visibility="@{swapViewModel.isSlippageEditorEmpty?View.GONE:View.VISIBLE}"
-                        tools:ignore="RtlSymmetry"
-                        />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="@dimen/dp_40"
-                    android:layout_height="match_parent"
-                    app:srcCompat="@drawable/ic_close_circle"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:alpha="0.6"
-                    android:onClick="@{() -> swapViewModel.clearSlippageEditor()}"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/percent"
+                    android:inputType="numberDecimal"
+                    android:paddingStart="@dimen/dp_15"
+                    android:paddingTop="@dimen/dp_18"
+                    android:paddingBottom="@dimen/dp_18"
+                    android:textColorHint="@color/black_300"
+                    android:textCursorDrawable="@drawable/black_edt_cursor"
                     tools:ignore="RtlSymmetry" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/editorTextView"
+                    style="@style/Black300.17.SfProText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/dp_15"
+                    android:text="@string/percent"
+                    tools:ignore="RtlSymmetry" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/closeImageView"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="match_parent"
+                android:alpha="0.6"
+                android:paddingEnd="@dimen/dp_16"
+                app:srcCompat="@drawable/ic_close_circle"
+                tools:ignore="RtlSymmetry" />
+
+
         </androidx.appcompat.widget.LinearLayoutCompat>
-        <!--        Custom slippage editor ->END -->
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <!--        Custom slippage editor ->END -->
 
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/White.15.Bold.SfProText"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_26"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginBottom="@dimen/dp_50"
-            android:background="@drawable/bg_swap_button"
-            android:paddingTop="@dimen/dp_19"
-            android:paddingBottom="@dimen/dp_19"
-            android:text="@string/done"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:onClick="@{() -> swapViewModel.setSelectedSlippage()}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lCustumSlippage" />
+    <androidx.appcompat.widget.AppCompatButton
+        style="@style/White.15.Bold.SfProText"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_26"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:background="@drawable/bg_swap_button"
+        android:onClick="@{() -> swapViewModel.setSelectedSlippage()}"
+        android:paddingTop="@dimen/dp_19"
+        android:paddingBottom="@dimen/dp_19"
+        android:text="@string/done"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lCustumSlippage" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>

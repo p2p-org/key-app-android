@@ -98,10 +98,6 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
             Command.OpenTransactionDialogViewCommand(itemActivity)
     }
 
-    fun openAddCoinDialog() {
-        _command.value = Command.OpenAddCoinDialogViewCommand {}
-    }
-
     fun getBlockTime(slot: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val data = detailWalletInteractor.blockTime(

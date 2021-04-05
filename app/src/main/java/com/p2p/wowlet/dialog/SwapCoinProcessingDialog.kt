@@ -6,34 +6,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSwapCoinProcessingBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SwapCoinProcessingDialog (private val goToWallet: () -> Unit): DialogFragment() {
+class SwapCoinProcessingDialog(private val goToWallet: () -> Unit) : DialogFragment() {
 
     private val swapViewModel: SwapViewModel by viewModel()
-    lateinit var binding: DialogSwapCoinProcessingBinding
 
     companion object {
         const val SWAP_COIN_PROGRESS = "SWAP_COIN_PROGRESS"
         fun newInstance(goToWallet: () -> Unit): SwapCoinProcessingDialog = SwapCoinProcessingDialog(goToWallet)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_swap_coin_processing, container, false
-        )
-        binding.viewModel = swapViewModel
-        return binding.root
-    }
+    private val binding: DialogSwapCoinProcessingBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_swap_coin_processing, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

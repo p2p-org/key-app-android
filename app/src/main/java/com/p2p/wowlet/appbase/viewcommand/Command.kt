@@ -28,7 +28,6 @@ sealed class Command {
     class NavigateSecretKeyViewCommand(val destinationId: Int) : ViewCommand
 
     class NavigateScannerViewCommand(val destinationId: Int, val goBack: Boolean) : ViewCommand
-    class OpenAddCoinDialogViewCommand(val updateAllMyTokens: () -> Unit) : ViewCommand
     class OpenSendCoinDialogViewCommand(val walletItem: WalletItem? = null, val walletAddress: String? = null) :
         ViewCommand
 
