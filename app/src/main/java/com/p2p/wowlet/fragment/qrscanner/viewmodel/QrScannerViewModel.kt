@@ -32,13 +32,6 @@ class QrScannerViewModel(
             Command.NavigateUpBackStackCommand()
     }
 
-    fun goToSendCoinFragment(walletKey: String) {
-        _command.value =
-            Command.OpenSendCoinDialogViewCommand(
-                walletAddress = walletKey
-            )
-    }
-
     fun getAccountInfo(publicKey: String) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val data = qrScannerInteractor.getAccountInfo(publicKey)) {

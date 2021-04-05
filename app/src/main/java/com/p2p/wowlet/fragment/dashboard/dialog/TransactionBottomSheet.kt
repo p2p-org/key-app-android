@@ -4,29 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.databinding.DialogTansactionBinding
 import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
+import com.p2p.wowlet.utils.bindadapter.walletFormat
 import com.p2p.wowlet.utils.copyClipboard
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.domain.utils.getTransactionDate
 import com.wowlet.entities.Constants.Companion.EXPLORER_SOLANA
 import com.wowlet.entities.local.ActivityItem
-import kotlinx.android.synthetic.main.dialog_tansaction.blockChainExplorer
-import kotlinx.android.synthetic.main.dialog_tansaction.copyFromUserKey
-import kotlinx.android.synthetic.main.dialog_tansaction.copyToUserKey
-import kotlinx.android.synthetic.main.dialog_tansaction.copyTransaction
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate: (url: String) -> Unit) :
     BottomSheetDialogFragment() {
-
-    lateinit var binding: DialogTansactionBinding
-    private val viewModel: DetailWalletViewModel by viewModel()
 
     companion object {
         const val TRANSACTION_DIALOG = "transactionDialog"
@@ -34,44 +28,45 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate: (
             TransactionBottomSheet(dataInfo, navigate)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_tansaction, container, false
-        )
-        viewModel.getBlockTime(dataInfo.slot)
-        binding.apply {
-            model = dataInfo
-            setTransactionImage(this)
-        }
-        return binding.root
-    }
+    private val viewModel: DetailWalletViewModel by viewModel()
 
-    private fun setTransactionImage(binding: DialogTansactionBinding) {
-        val imageTransaction = if (dataInfo.isReceive) R.drawable.ic_receive else R.drawable.ic_send
-        binding.imgTransactionType.setImageResource(imageTransaction)
-    }
+    private val binding: DialogTansactionBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_tansaction, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        copyToUserKey.setOnClickListener {
-            context?.copyClipboard(dataInfo.to)
-        }
-        copyFromUserKey.setOnClickListener {
-            context?.copyClipboard(dataInfo.from)
-        }
-        copyTransaction.setOnClickListener {
-            context?.copyClipboard(dataInfo.signature)
-        }
+        viewModel.getBlockTime(dataInfo.slot)
+        binding.apply {
+            setTransactionImage()
 
-        blockChainExplorer.setOnClickListener {
-            replace(BlockChainExplorerFragment.createScreen(EXPLORER_SOLANA + dataInfo.signature))
+            fromTextView.walletFormat(dataInfo.from, 4)
+            toTextView.walletFormat(dataInfo.to, 4)
+
+            copyToUserKey.setOnClickListener {
+                context?.copyClipboard(dataInfo.to)
+            }
+            copyFromUserKey.setOnClickListener {
+                context?.copyClipboard(dataInfo.from)
+            }
+            copyTransaction.setOnClickListener {
+                context?.copyClipboard(dataInfo.signature)
+            }
+
+            blockChainExplorer.setOnClickListener {
+                replaceFragment(BlockChainExplorerFragment.createScreen(EXPLORER_SOLANA + dataInfo.signature))
+            }
+
+            txtType.setText(if (dataInfo.isReceive) R.string.receive else R.string.send)
         }
         observes()
+    }
+
+    private fun setTransactionImage() {
+        val imageTransaction = if (dataInfo.isReceive) R.drawable.ic_receive else R.drawable.ic_send
+        binding.imgTransactionType.setImageResource(imageTransaction)
     }
 
     private fun observes() {

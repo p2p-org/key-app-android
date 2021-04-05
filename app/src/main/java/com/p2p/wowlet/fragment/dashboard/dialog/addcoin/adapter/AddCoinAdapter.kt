@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
@@ -14,6 +13,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemAddCoinBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.util.dpToPx
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
+import com.p2p.wowlet.utils.bindadapter.imageSource
 import com.wowlet.entities.Constants
 import com.wowlet.entities.local.AddCoinItem
 
@@ -32,7 +32,6 @@ class AddCoinAdapter(
 
     private var callbacksEnabled = true
 
-
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView.also {
             it.layoutManager = layoutManager
@@ -42,20 +41,17 @@ class AddCoinAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-        val bind: ItemAddCoinBinding = DataBindingUtil.inflate(
+        val bind = ItemAddCoinBinding.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_add_coin,
             parent,
             false
         )
         return MyViewHolder(bind)
-
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(position)
     }
-
 
     override fun getItemCount(): Int {
         return list.size
@@ -71,7 +67,7 @@ class AddCoinAdapter(
         notifyDataSetChanged()
     }
 
-    private fun MutableList<AddCoinItem>.removeAddedTokens() : MutableList<AddCoinItem> {
+    private fun MutableList<AddCoinItem>.removeAddedTokens(): MutableList<AddCoinItem> {
         val list = mutableListOf<AddCoinItem>()
         for (item in this) {
             if (item.isAlreadyAdded) {
@@ -90,7 +86,6 @@ class AddCoinAdapter(
         callbacksEnabled = true
     }
 
-
     fun getItemAddCoinBinding(mintAddress: String): ItemAddCoinBinding? {
         val position: Int? = getPositionByMintAddress(mintAddress)
         return getBindingByPosition(position)
@@ -101,7 +96,7 @@ class AddCoinAdapter(
         return (recyclerView?.findViewHolderForAdapterPosition(position) as MyViewHolder).itemAddCoinBinding
     }
 
-    fun getExpandedItemPosition() : Int? {
+    fun getExpandedItemPosition(): Int? {
         for (i in 0 until list.size) {
             if (list[i].isShowMindAddress) {
                 return i
@@ -129,7 +124,6 @@ class AddCoinAdapter(
             notifyItemChanged(previousExpandedItemPosition)
         }
 
-
     private fun getPositionByMintAddress(mintAddress: String): Int? {
         for (item in list) {
             if (item.mintAddress == mintAddress) {
@@ -139,16 +133,16 @@ class AddCoinAdapter(
         return null
     }
 
-
-
     inner class MyViewHolder(
         val itemAddCoinBinding: ItemAddCoinBinding
     ) : RecyclerView.ViewHolder(itemAddCoinBinding.root) {
+
         fun bind(position: Int) {
             val item = list[position]
             itemAddCoinBinding.apply {
-                itemAddCoin = item
-                viewModel = dashboardViewModel
+
+                val color = if (item.isShowMindAddress) R.color.gray_300 else R.color.white
+                clItemAddCoin.setBackgroundColor(ContextCompat.getColor(itemView.context, color))
                 txtErrorMessage.text = ""
                 containerMintAddress.isVisible = item.isShowMindAddress
                 clItemAddCoin.setOnClickListener(onItemClick(item, position, clItemAddCoin))
@@ -156,11 +150,26 @@ class AddCoinAdapter(
                     btnViewInExplorerClickEvent.invoke(Constants.EXPLORER_SOLANA_ADD_TOKEN + item.mintAddress)
                 }
                 txtWillCost.text = txtWillCost.context.getString(R.string.add_coin_cost)
-                pbAddCoin.progressDrawable = ContextCompat.getDrawable(pbAddCoin.context, R.drawable.bg_button_progress_bar)
+                pbAddCoin.progressDrawable =
+                    ContextCompat.getDrawable(pbAddCoin.context, R.drawable.bg_button_progress_bar)
                 lAddCoin.isEnabled = true
-
+                vName.text = item.tokenSymbol
+                priceTextView.text = item.tokenName
+                currencyTextView.text = itemView.context.getString(R.string.usd_symbol_2, item.currency)
+                val result = if (item.isChange24hPercentagesPositive) {
+                    itemView.context.getString(R.string.for_24h_positive, item.change24hPercentages)
+                } else {
+                    itemView.context.getString(R.string.for_24h, item.change24hPercentages)
+                }
+                percentTextView.text = result
+                mintAddressInfo.text = itemView.context.getString(R.string.mint_address, item.tokenSymbol)
+                txtMintAddress.text = item.mintAddress
+                lAddCoin.setOnClickListener {
+                    dashboardViewModel.addCoin(item)
+                }
+                txtWillCost.text = itemView.context.getString(R.string.add_coin_cost, item.minBalance)
+                vCoin.imageSource(item.icon)
             }
-
         }
     }
 }

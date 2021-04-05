@@ -7,12 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogChangePinBinding
-import kotlinx.android.synthetic.main.dialog_change_pin.*
-
+import com.p2p.wowlet.utils.viewbinding.viewBinding
+import kotlinx.android.synthetic.main.dialog_change_pin.icClose
 
 class ChangePinDialog() : DialogFragment() {
 
@@ -23,16 +22,10 @@ class ChangePinDialog() : DialogFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val binding: DialogChangePinBinding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_change_pin, container, false
-        )
-        return binding.root
-    }
+    private val binding: DialogChangePinBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_change_pin, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,6 +33,7 @@ class ChangePinDialog() : DialogFragment() {
             dismiss()
         }
     }
+
     override fun onResume() {
         super.onResume()
         dialog?.run {
@@ -48,8 +42,7 @@ class ChangePinDialog() : DialogFragment() {
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
     }
-
 }

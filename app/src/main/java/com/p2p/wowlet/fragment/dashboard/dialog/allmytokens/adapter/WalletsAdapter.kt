@@ -2,9 +2,8 @@ package com.p2p.wowlet.fragment.dashboard.dialog.allmytokens.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.p2p.wowlet.R
+import com.bumptech.glide.Glide
 import com.p2p.wowlet.databinding.ItemAllWalletsBinding
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.wowlet.entities.local.WalletItem
@@ -17,27 +16,19 @@ class WalletsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-        val bind: ItemAllWalletsBinding = DataBindingUtil.inflate(
+        val bind = ItemAllWalletsBinding.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_all_wallets,
             parent,
             false
         )
         return MyViewHolder(bind)
-
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.itemWalletsBinding.itemWallet = list[position]
-        holder.itemWalletsBinding.viewModel = viewModel
-        holder.itemWalletsBinding.itemWalletContainer.setOnClickListener {
-            itemClickListener.invoke(list[position])
-        }
+        holder.onBind(list[position])
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    override fun getItemCount(): Int = list.size
 
     fun updateData(walletItem: List<WalletItem>) {
         list = walletItem.toMutableList()
@@ -45,7 +36,21 @@ class WalletsAdapter(
     }
 
     inner class MyViewHolder(
-        val itemWalletsBinding: ItemAllWalletsBinding
-    ) : RecyclerView.ViewHolder(itemWalletsBinding.root)
+        private val itemWalletsBinding: ItemAllWalletsBinding
+    ) : RecyclerView.ViewHolder(itemWalletsBinding.root) {
 
+        private val vItem = itemWalletsBinding.vItem
+        private val vWalletAddress = itemWalletsBinding.vWalletAddress
+        private val vCoin = itemWalletsBinding.vCoin
+        private val itemWalletContainer = itemWalletsBinding.itemWalletContainer
+
+        fun onBind(item: WalletItem) {
+            vItem.text = item.tokenName
+            vWalletAddress.text = item.depositAddress
+            Glide.with(vCoin).load(item.icon).into(vCoin)
+            itemWalletContainer.setOnClickListener {
+                itemClickListener.invoke(list[position])
+            }
+        }
+    }
 }

@@ -5,28 +5,61 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.tabs.TabLayout
 import com.p2p.wowlet.R
-import com.p2p.wowlet.activity.MainActivity
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentDetailSavingBinding
+import com.p2p.wowlet.fragment.detailsaving.adapter.ActivityDetailAdapter
 import com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel
 import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import kotlinx.android.synthetic.main.fragment_detail_saving.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+class DetailSavingFragment : BaseFragment(R.layout.fragment_detail_saving) {
 
-class DetailSavingFragment :
-    FragmentBaseMVVM<DetailSavingViewModel, FragmentDetailSavingBinding>() {
+    private val viewModel: DetailSavingViewModel by viewModel()
+    private val binding: FragmentDetailSavingBinding by viewBinding()
 
-    override val viewModel: DetailSavingViewModel by viewModel()
-    override val binding: FragmentDetailSavingBinding by dataBinding(R.layout.fragment_detail_saving)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@DetailSavingFragment.viewModel
+            vIcBack.setOnClickListener { popBackStack() }
+
+            with(vRvActivity) {
+                this.layoutManager = LinearLayoutManager(context)
+            }
+
+            viewModel.getActivityData.observe(viewLifecycleOwner) {
+                binding.vRvActivity.adapter = ActivityDetailAdapter(viewModel, it)
+            }
+
+            binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    tab?.customView?.findViewById<TextView>(R.id.tab)?.apply {
+                        setTypeface(typeface, Typeface.BOLD)
+                        background =
+                            ContextCompat.getDrawable(context, R.drawable.bg_detail_selected_tab)
+                    }
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    tab?.customView?.findViewById<TextView>(R.id.tab)?.apply {
+                        background =
+                            ContextCompat.getDrawable(context, R.drawable.bg_detail_unselected_tab)
+                        setTypeface(typeface, Typeface.NORMAL)
+                    }
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    tab?.customView?.findViewById<TextView>(R.id.tab)?.apply {
+                        setTypeface(typeface, Typeface.BOLD)
+                        background =
+                            ContextCompat.getDrawable(context, R.drawable.bg_detail_selected_tab)
+                    }
+                }
+            })
         }
         context?.run {
             tabs.getTabAt(0)?.customView?.findViewById<TextView>(R.id.tab)?.apply {
@@ -42,15 +75,6 @@ class DetailSavingFragment :
                 getString(R.string.news)
             tabs.getTabAt(3)?.customView?.findViewById<TextView>(R.id.tab)?.text =
                 getString(R.string.transactions)
-        }
-
-    }
-
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is Command.NavigateUpViewCommand -> {
-                popBackStack()
-            }
         }
     }
 }

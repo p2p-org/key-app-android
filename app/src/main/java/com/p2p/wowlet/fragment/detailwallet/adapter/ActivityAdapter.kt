@@ -1,34 +1,34 @@
 package com.p2p.wowlet.fragment.detailwallet.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
+import com.p2p.wowlet.utils.bindadapter.imageSource
+import com.p2p.wowlet.utils.bindadapter.walletFormat
 import com.wowlet.entities.local.ActivityItem
 
 class ActivityAdapter(
     private var list: List<ActivityItem>,
     val viewModel: DetailWalletViewModel,
+    private val onItemClicked: (ActivityItem) -> Unit
 ) : RecyclerView.Adapter<ActivityAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-        val bind: ItemActivityBinding = DataBindingUtil.inflate(
+        val bind: ItemActivityBinding = ItemActivityBinding.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_activity,
             parent,
             false
         )
         return MyViewHolder(bind)
-
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.itemActivityBinding.itemActivity = list[position]
-//        holder.itemActivityBinding.viewModel = viewModel
+        holder.onBind(list[position])
     }
 
     override fun getItemCount(): Int {
@@ -41,7 +41,19 @@ class ActivityAdapter(
     }
 
     inner class MyViewHolder(
-        val itemActivityBinding: ItemActivityBinding
-    ) : RecyclerView.ViewHolder(itemActivityBinding.root)
+        val binding: ItemActivityBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
+        @SuppressLint("SetTextI18n")
+        fun onBind(item: ActivityItem) {
+            with(binding) {
+                vName.text = item.name
+                vDate.walletFormat(item.from, 4)
+                vCoin.imageSource(item.icon)
+                vPrice.text = "${item.symbolsPrice}${itemView.context.getString(R.string.us_new, item.price)}"
+                vLamport.text = itemView.context.getString(R.string.sol, item.lamports)
+                root.setOnClickListener { onItemClicked.invoke(item) }
+            }
+        }
+    }
 }

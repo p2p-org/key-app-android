@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
@@ -17,6 +17,7 @@ import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wowlet.supportclass.widget.CheckableButton
 import com.p2p.wowlet.supportclass.widget.CheckableButtonGroup
 import com.p2p.wowlet.utils.toast
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SlippageSettingsBottomSheet(
@@ -25,8 +26,7 @@ class SlippageSettingsBottomSheet(
 
     private val swapViewModel: SwapViewModel by viewModel()
 
-    private var _binding: BottomSheetSlippageSettingsBinding? = null
-    private val binding: BottomSheetSlippageSettingsBinding get() = _binding!!
+    private val binding: BottomSheetSlippageSettingsBinding by viewBinding()
 
     private var slippage: Double = 0.1
 
@@ -39,26 +39,26 @@ class SlippageSettingsBottomSheet(
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_slippage_settings, container, false)
-        initObserves()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.bottom_sheet_slippage_settings, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.run {
-            swapViewModel = this@SlippageSettingsBottomSheet.swapViewModel
-            lifecycleOwner = this@SlippageSettingsBottomSheet
             lSlippageCheckableBG.addClickEvents(
                 selectSlippageClickEvent,
                 HashMap<Int, CheckableButtonGroup.OnClickEvent>().apply {
                     put(5, customSlippageClickEVent)
                 })
+
+            editorView.setOnClickListener { swapViewModel.setFocusOnSlippageEditor() }
+            editorTextView.isVisible = swapViewModel.isSlippageEditorEmpty.value == true
+            closeImageView.setOnClickListener { swapViewModel.clearSlippageEditor() }
         }
-        return binding.root
+        observeData()
     }
 
-    private fun initObserves() {
+    private fun observeData() {
         swapViewModel.command.observe(viewLifecycleOwner) { initViewCommands(it) }
         swapViewModel.selectedSlippage.observe(viewLifecycleOwner) {
             if (swapViewModel.isCustomSlippageEditorVisible.value == true

@@ -1,85 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_profile_dialog"
+    android:orientation="vertical">
 
-    <data>
-
-        <import type="com.wowlet.entities.enums.MailPhoneType" />
-
-        <variable
-            name="dialogType"
-            type="com.wowlet.entities.enums.MailPhoneType" />
-    </data>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icClose"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/bg_profile_dialog">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/icClose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="@dimen/dp_15"
-            android:layout_marginEnd="@dimen/dp_15"
-            android:tint="@color/black"
-            app:srcCompat="@drawable/ic_close" />
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:tint="@color/black"
+        app:srcCompat="@drawable/ic_close" />
 
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/Black.27.Bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:text="@{dialogType.EMAIL == MailPhoneType.EMAIL?@string/change_email:@string/change_phone}"
-            tools:text="@string/change_email" />
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/Black.27.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:text="@{dialogType.EMAIL == MailPhoneType.EMAIL?@string/change_email:@string/change_phone}"
+        tools:text="@string/change_email" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/Grey.17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_30"
-            android:text="@{dialogType.EMAIL == MailPhoneType.EMAIL?@string/change_email_info:@string/change_phone_info}"
-            tools:text="@string/change_email_info" />
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/Grey.17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:text="@{dialogType.EMAIL == MailPhoneType.EMAIL?@string/change_email_info:@string/change_phone_info}"
+        tools:text="@string/change_email_info" />
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/lSearchContainer"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/lSearchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_56"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_25"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/bg_change_phone_email"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edMailPhone"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_56"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_25"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/bg_change_phone_email"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/dp_18"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="@android:color/transparent"
+            android:hint="Text" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edMailPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/dp_18"
-                android:background="@android:color/transparent"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:hint="Text" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/Widget.Black.Button"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_56"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_100"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginBottom="@dimen/dp_34"
-            android:text="@{dialogType.EMAIL == MailPhoneType.EMAIL?@string/verify_new_email:@string/verify_new_phone_number}"
-            tools:text="@string/verify_new_email" />
-    </LinearLayout>
-
-
-</layout>
+    <androidx.appcompat.widget.AppCompatButton
+        style="@style/Widget.Black.Button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_56"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_100"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_34"
+        android:text="@{dialogType.EMAIL == MailPhoneType.EMAIL?@string/verify_new_email:@string/verify_new_phone_number}"
+        tools:text="@string/verify_new_email" />
+</LinearLayout>

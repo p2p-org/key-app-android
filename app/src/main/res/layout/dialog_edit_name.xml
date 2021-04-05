@@ -1,95 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_radius_top"
+    android:orientation="vertical"
+    app:layout_behavior="@string/bottom_sheet_behavior">
 
-    <data>
-
-    </data>
-
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/titleContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_radius_top"
-        android:orientation="vertical"
-        app:layout_behavior="@string/bottom_sheet_behavior">
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/currencyIcon"
+            android:layout_width="@dimen/dp_34"
+            android:layout_height="@dimen/dp_34"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_20"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/titleContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_15"
+            android:layout_marginEnd="@dimen/dp_28"
+            app:layout_constraintBottom_toBottomOf="@id/currencyIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/currencyIcon"
+            app:layout_constraintTop_toTopOf="@id/currencyIcon">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/currencyIcon"
-                android:layout_width="@dimen/dp_34"
-                android:layout_height="@dimen/dp_34"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_20"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_15"
-                android:layout_marginEnd="@dimen/dp_28"
-                app:layout_constraintBottom_toBottomOf="@id/currencyIcon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/currencyIcon"
-                app:layout_constraintTop_toTopOf="@id/currencyIcon">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/close_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_close_circle" />
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/vEditTitle"
-                    style="@style/Black.17.Bold"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/dp_23"
-                    android:layout_marginEnd="@dimen/dp_30"
-                    android:background="@null"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:lines="1"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/close_btn"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:background="@color/black"
-                    app:layout_constraintTop_toBottomOf="@+id/vEditTitle" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/titleContainer"
-            android:layout_marginTop="@dimen/dp_10"
-            android:background="@color/whitesmoke">
-
-            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/close_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_20"
-                android:text="@string/create_a_unique_name_for_your_wallet"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_close_circle" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/vEditTitle"
+                style="@style/Black.17.Bold"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_23"
+                android:layout_marginEnd="@dimen/dp_30"
+                android:background="@null"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:lines="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/close_btn"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </RelativeLayout>
 
-</layout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_marginTop="@dimen/dp_10"
+                android:background="@color/black"
+                app:layout_constraintTop_toBottomOf="@+id/vEditTitle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/titleContainer"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@color/whitesmoke">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_20"
+            android:text="@string/create_a_unique_name_for_your_wallet"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

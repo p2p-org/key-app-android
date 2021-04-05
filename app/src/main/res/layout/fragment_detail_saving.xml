@@ -1,172 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.detailsaving.view.DetailSavingFragment">
 
-    <data>
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/vIcBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_back" />
 
-        <variable
-            name="viewModel"
-            type="com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel" />
-    </data>
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/vTitle"
+        style="@style/Black.17.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_27"
+        android:text="Coin Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".fragment.detailsaving.view.DetailSavingFragment">
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/dp_30"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vIcBack">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/vIcBack"
-            android:layout_width="wrap_content"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_back" />
+            app:tabIndicatorHeight="0dp"
+            app:tabMode="scrollable">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout="@layout/layaout_custom_tab" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout="@layout/layaout_custom_tab" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout="@layout/layaout_custom_tab" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout="@layout/layaout_custom_tab" />
+
+        </com.google.android.material.tabs.TabLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/vTitle"
-            style="@style/Black.17.Bold"
+            android:id="@+id/vPrice"
+            style="@style/Black.25.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_27"
-            android:text="Coin Name"
+            android:layout_marginTop="@dimen/dp_70"
+            android:text="$120,00"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/dp_30"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/vPriceInfo"
+            style="@style/Black.15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ 0,16 US$ (0,01%) 24 hrs"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vIcBack">
+            app:layout_constraintTop_toBottomOf="@+id/vPrice" />
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabs"
-                android:layout_width="0dp"
-                app:tabMode="scrollable"
-                app:tabIndicatorHeight="0dp"
-                tab_item_selected="@{viewModel}"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginEnd="@dimen/dp_20"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout="@layout/layaout_custom_tab" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout="@layout/layaout_custom_tab" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout="@layout/layaout_custom_tab" />
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout="@layout/layaout_custom_tab" />
-
-            </com.google.android.material.tabs.TabLayout>
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vPrice"
-                style="@style/Black.25.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_70"
-                android:text="$120,00"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vPriceInfo"
-                style="@style/Black.15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+ 0,16 US$ (0,01%) 24 hrs"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vPrice" />
-
-            <FrameLayout
-                android:id="@+id/vChart"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/dp_20"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vPriceInfo" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/vActivity"
-                style="@style/Black.21.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_15"
-                android:layout_marginTop="@dimen/dp_30"
-                android:text="@string/activity"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vChart" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/vRvActivity"
-                adapter_list="@{viewModel.getActivityData}"
-                view_model="@{viewModel}"
-                android:layout_width="@dimen/dp_0"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15"
-                android:nestedScrollingEnabled="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vActivity" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/lCoinContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp_50"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <FrameLayout
+            android:id="@+id/vChart"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/dp_20"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vPriceInfo" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/White.15"
-                android:layout_width="@dimen/dp_80"
-                android:layout_height="@dimen/dp_56"
-                android:background="@drawable/bg_send_coin_bt"
-                android:gravity="center"
-                android:text="@string/top_up" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/vActivity"
+            style="@style/Black.21.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_15"
+            android:layout_marginTop="@dimen/dp_30"
+            android:text="@string/activity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vChart" />
 
-
-            <View
-                android:layout_width="@dimen/dp_2"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/White.15"
-                android:layout_width="@dimen/dp_80"
-                android:layout_height="@dimen/dp_56"
-                android:background="@drawable/bg_swap_coin_bt"
-                android:gravity="center"
-                android:text="@string/swap" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vRvActivity"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_15"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vActivity" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/lCoinContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/White.15"
+            android:layout_width="@dimen/dp_80"
+            android:layout_height="@dimen/dp_56"
+            android:background="@drawable/bg_send_coin_bt"
+            android:gravity="center"
+            android:text="@string/top_up" />
+
+
+        <View
+            android:layout_width="@dimen/dp_2"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/White.15"
+            android:layout_width="@dimen/dp_80"
+            android:layout_height="@dimen/dp_56"
+            android:background="@drawable/bg_swap_coin_bt"
+            android:gravity="center"
+            android:text="@string/swap" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

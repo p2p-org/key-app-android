@@ -8,16 +8,15 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command.*
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentQrScannerBinding
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
 import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
 import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
 import kotlinx.coroutines.*
 import me.dm7.barcodescanner.zbar.Result
@@ -25,7 +24,7 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScannerBinding>(),
+class QrScannerFragment : BaseFragment(R.layout.fragment_qr_scanner),
     ZBarScannerView.ResultHandler {
 
     companion object {
@@ -37,9 +36,9 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         )
     }
 
-    override val viewModel: QrScannerViewModel by viewModel()
+    private val viewModel: QrScannerViewModel by viewModel()
     private val walletAddressViewModel: WalletAddressViewModel by sharedViewModel()
-    override val binding: FragmentQrScannerBinding by dataBinding(R.layout.fragment_qr_scanner)
+    private val binding: FragmentQrScannerBinding by viewBinding()
 
     private var scannerView: ZBarScannerView? = null
     private var isFromSendCoinsBottomSheet = false
@@ -47,10 +46,15 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@QrScannerFragment.viewModel
+            vClose.setOnClickListener {
+                walletAddressViewModel.postEnteredAmount()
+                popBackStack()
+            }
         }
         initializeQRCamera()
         checkForPermission()
+        initData()
+        observeData()
     }
 
     private fun checkForPermission() {
@@ -86,46 +90,30 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
         scannerView?.startCamera()
     }
 
-    override fun initData() {
+    private fun initData() {
         arguments?.let {
             isFromSendCoinsBottomSheet = it.getBoolean(GO_BACK_TO_SEND_COIN, false)
         }
     }
 
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is NavigateUpBackStackCommand -> {
-                walletAddressViewModel.postEnteredAmount()
-                popBackStack()
-            }
-            is NavigateUpViewCommand -> {
-                popBackStack()
-            }
-            is OpenSendCoinDialogViewCommand -> {
-                SendCoinsBottomSheet.newInstance(
-                    command.walletItem,
-                    command.walletAddress
-                ).show(
-                    parentFragmentManager,
-                    TAG_SEND_COIN
-                )
-            }
-
-        }
-    }
-
-    override fun observes() {
-        observe(viewModel.isCurrentAccountError) {
+    private fun observeData() {
+        viewModel.isCurrentAccountError.observe(viewLifecycleOwner) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             popBackStack()
         }
-        observe(viewModel.isCurrentAccount) {
+        viewModel.isCurrentAccount.observe(viewLifecycleOwner) {
             //if (it.walletAddress.isNotEmpty())
             if (isFromSendCoinsBottomSheet) {
                 walletAddressViewModel.setWalletData(it)
                 popBackStack()
             } else {
-                viewModel.goToSendCoinFragment(it.walletAddress)
+                SendCoinsBottomSheet.newInstance(
+                    null,
+                    it.walletAddress
+                ).show(
+                    parentFragmentManager,
+                    TAG_SEND_COIN
+                )
                 popBackStack()
                 walletAddressViewModel.setWalletData(it)
             }
@@ -164,7 +152,7 @@ class QrScannerFragment : FragmentBaseMVVM<QrScannerViewModel, FragmentQrScanner
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeQRCamera()
             } else if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                viewModel.navigateUp()
+                popBackStack()
             }
             return
         }

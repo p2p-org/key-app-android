@@ -7,11 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogCurrencyBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.enums.SelectedCurrency
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -19,44 +19,34 @@ class CurrencyDialog(
     private val onCurrencySelected: () -> Unit
 ) : DialogFragment() {
 
-    private val profileViewModel: ProfileViewModel by viewModel()
-
-    private var _binding: DialogCurrencyBinding? = null
-    private val binding: DialogCurrencyBinding get() = _binding!!
-
     companion object {
-
         const val TAG_CURRENCY_DIALOG = "CurrencyDialog"
+
         fun newInstance(onCurrencySelected: () -> Unit): CurrencyDialog {
             return CurrencyDialog(onCurrencySelected)
         }
-
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_currency, container, false
-        )
-        binding.apply {
-            viewModel = profileViewModel
-            vPriceType.setOnCheckedChangeListener { group, checkedId ->  }
-        }
-        return binding.root
-    }
+    private val profileViewModel: ProfileViewModel by viewModel()
+
+    private val binding: DialogCurrencyBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_currency, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
+            vPriceType.setOnCheckedChangeListener { group, checkedId ->
+
+            }
+
             vClose.setOnClickListener {
                 dismiss()
             }
             vDone.setOnClickListener {
                 vPriceType.checkedRadioButtonId.run {
-                    when(this) {
+                    when (this) {
                         R.id.rbUSD -> profileViewModel.setSelectedCurrency(SelectedCurrency.USD)
                         R.id.rbEUR -> profileViewModel.setSelectedCurrency(SelectedCurrency.EUR)
                         R.id.rbCNY -> profileViewModel.setSelectedCurrency(SelectedCurrency.CNY)
@@ -68,6 +58,9 @@ class CurrencyDialog(
                 }
                 dismiss()
             }
+
+            val id = profileViewModel.getSelectedCurrencyCheckbox()
+            vPriceType.check(id)
         }
     }
 
@@ -77,14 +70,7 @@ class CurrencyDialog(
             val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
             window?.setLayout(width, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            isCancelable=false
+            isCancelable = false
         }
-
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

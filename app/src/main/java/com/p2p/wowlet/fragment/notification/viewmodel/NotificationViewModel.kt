@@ -36,7 +36,6 @@ class NotificationViewModel(val notificationInteractor: NotificationInteractor) 
                 )
             )
         }
-//        goToRegFinishFragment()
     }
 
     fun enableNotification() {
@@ -48,7 +47,6 @@ class NotificationViewModel(val notificationInteractor: NotificationInteractor) 
                 )
             )
         }
-//        goToRegFinishFragment()
     }
 
     private fun notificationStatus() {

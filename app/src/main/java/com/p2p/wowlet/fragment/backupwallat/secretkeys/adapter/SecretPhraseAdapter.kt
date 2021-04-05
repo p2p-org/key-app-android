@@ -2,7 +2,6 @@ package com.p2p.wowlet.fragment.backupwallat.secretkeys.adapter
 
 import android.content.Context
 import android.graphics.Color
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.set
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.RvItemKeyWordBinding
@@ -20,10 +18,10 @@ import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.*
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.wowlet.entities.local.Keyword
 
-class SecretPhraseAdapter(private val context: Context,
-                          private val viewModel: SecretKeyViewModel
+class SecretPhraseAdapter(
+    private val context: Context,
+    private val viewModel: SecretKeyViewModel
 ) : RecyclerView.Adapter<SecretPhraseAdapter.ViewHolder>() {
-
 
     companion object {
         const val PHRASE_SIZE: Int = 12
@@ -38,7 +36,7 @@ class SecretPhraseAdapter(private val context: Context,
 
     fun clear() {
         var count = 0
-        recyclerView?.children?.forEach { root->
+        recyclerView?.children?.forEach { root ->
             val parent = root as ViewGroup
             val textView = parent.getChildAt(0) as AppCompatTextView
             val editText = parent.getChildAt(1) as AppCompatEditText
@@ -59,7 +57,7 @@ class SecretPhraseAdapter(private val context: Context,
 //        ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
         //Keyboard is not appearing after Resetting the phrase
         //without this additional operation (idk y)
-        recyclerView?.children?.forEach { root->
+        recyclerView?.children?.forEach { root ->
             ((root as ViewGroup).getChildAt(1) as AppCompatEditText).apply {
                 setText("")
             }
@@ -107,7 +105,6 @@ class SecretPhraseAdapter(private val context: Context,
             text = phrase.substring(0, phrase.indexOf(".") + 1)
             setTextColor(Color.BLACK)
         }
-
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -117,14 +114,12 @@ class SecretPhraseAdapter(private val context: Context,
         }
         textWatcher._recyclerView = this.recyclerView
         onKeyListener.recyclerView = this.recyclerView
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            DataBindingUtil.inflate(
+            RvItemKeyWordBinding.inflate(
                 LayoutInflater.from(parent.context),
-                R.layout.rv_item_key_word,
                 parent,
                 false
             )
@@ -149,10 +144,8 @@ class SecretPhraseAdapter(private val context: Context,
             openKeyboardOnFirstItem(position)
 
             if (textWatcher.isPhrasePastedFromClipboard) {
-               handlePastedPhrase(position, item)
+                handlePastedPhrase(position, item)
             }
-
-
         }
 
         private fun initListeners(position: Int) {
@@ -205,7 +198,7 @@ class SecretPhraseAdapter(private val context: Context,
                     text = tag
                     setTextColor(Color.WHITE)
                 }
-            }else {
+            } else {
                 textWatcher.isPhrasePastedFromClipboard = false
                 binding.edtKeyword.apply {
                     removeTextChangedListener(textWatcher)

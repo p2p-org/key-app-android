@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.PieEntry
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.Command.EnterWalletDialogViewCommand
-import com.p2p.wowlet.appbase.viewcommand.Command.OpenAddCoinDialogViewCommand
 import com.p2p.wowlet.appbase.viewcommand.Command.OpenAllMyTokensDialogViewCommand
 import com.p2p.wowlet.appbase.viewcommand.Command.OpenBackupFailedDialogViewCommand
 import com.p2p.wowlet.appbase.viewcommand.Command.OpenEditWalletDialogViewCommand
@@ -71,7 +70,6 @@ class DashboardViewModel(
 
     private var yourWallets: YourWallets? = null
     private var getWalletItemsJob: Job? = null
-    val nullWalletItem: WalletItem? = null
 
     fun getAddCoinList() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -187,10 +185,6 @@ class DashboardViewModel(
         _command.value = Command.OpenSendCoinDialogViewCommand(
             walletItem = walletItem
         )
-    }
-
-    fun openAddCoinDialog(updateAllMyTokens: () -> Unit = {}) {
-        _command.value = OpenAddCoinDialogViewCommand(updateAllMyTokens)
     }
 
     fun openAllMyTokensDialog() {

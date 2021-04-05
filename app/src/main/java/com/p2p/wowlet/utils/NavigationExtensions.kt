@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.whenStateAtLeast
 import com.p2p.wowlet.R
-import com.p2p.wowlet.common.BaseFragmentContract
+import com.p2p.wowlet.common.mvp.BaseFragmentContract
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
@@ -59,7 +59,7 @@ fun <T : Fragment> FragmentActivity.popBackStackTo(target: KClass<T>, inclusive:
     }
 }
 
-fun Fragment.popAndReplace(
+fun Fragment.popAndReplaceFragment(
     target: Fragment,
     popTo: KClass<out Fragment>? = null,
     @IdRes containerId: Int = R.id.content,
@@ -74,8 +74,8 @@ fun Fragment.popAndReplace(
     requireActivity().hideKeyboard()
     with(fragmentManager) {
         // Override exit animation for popping fragment
-        if (this@popAndReplace is BaseFragmentContract) {
-            this@popAndReplace.overrideExitAnimation(exit)
+        if (this@popAndReplaceFragment is BaseFragmentContract) {
+            this@popAndReplaceFragment.overrideExitAnimation(exit)
         }
 
         // Make pop entering fragment invisible during transition
@@ -97,7 +97,7 @@ fun Fragment.popAndReplace(
     }
 }
 
-fun Fragment.add(
+fun Fragment.addFragment(
     target: Fragment,
     @IdRes containerId: Int = R.id.content,
     addToBackStack: Boolean = true,
@@ -115,7 +115,7 @@ fun Fragment.add(
     }
 }
 
-fun Fragment.replace(
+fun Fragment.replaceFragment(
     target: Fragment,
     @IdRes containerId: Int = R.id.content,
     addToBackStack: Boolean = true,
@@ -133,7 +133,7 @@ fun Fragment.replace(
     }
 }
 
-fun FragmentActivity.replace(
+fun FragmentActivity.replaceFragment(
     target: Fragment,
     @IdRes containerId: Int = R.id.content,
     addToBackStack: Boolean = true
@@ -145,7 +145,7 @@ fun FragmentActivity.replace(
     }
 }
 
-fun FragmentActivity.add(
+fun FragmentActivity.addFragment(
     target: Fragment,
     @IdRes containerId: Int = R.id.content,
     addToBackStack: Boolean = true,

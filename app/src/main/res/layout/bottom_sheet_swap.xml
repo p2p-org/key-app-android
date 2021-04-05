@@ -1,27 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-
-        <import type="com.p2p.wowlet.R"/>
-        <import type="com.wowlet.entities.local.WalletItem"/>
-        <import type="android.view.View"/>
-        <variable
-            name="viewModel"
-            type="com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel" />
-        <variable
-            name="walletItemFrom"
-            type="WalletItem" />
-        <variable
-            name="walletItemTo"
-            type="WalletItem" />
-    </data>
 <androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -33,47 +16,43 @@
             android:id="@+id/imgSwap"
             android:layout_width="@dimen/dp_36"
             android:layout_height="@dimen/dp_36"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
-            app:srcCompat="@drawable/ic_exchange_swap"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_exchange_swap" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vTitle"
             style="@style/Black.17.Bold.SfProDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/swap"
-            app:layout_constraintStart_toEndOf="@id/imgSwap"
-            app:layout_constraintTop_toTopOf="@id/imgSwap"
-            app:layout_constraintBottom_toBottomOf="@id/imgSwap"
             android:layout_marginStart="@dimen/dp_14"
-            />
+            android:text="@string/swap"
+            app:layout_constraintBottom_toBottomOf="@id/imgSwap"
+            app:layout_constraintStart_toEndOf="@id/imgSwap"
+            app:layout_constraintTop_toTopOf="@id/imgSwap" />
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/settingsImageView"
             android:layout_width="@dimen/dp_36"
             android:layout_height="@dimen/dp_36"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_20"
-            android:onClick="@{() -> viewModel.openSlippageSettingsBottomSheet()}"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            app:srcCompat="@drawable/ic_setting_toggle"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_setting_toggle" />
 
         <View
             android:id="@+id/vDividerTitle"
             style="@style/HorizontalDividerGreyBlue_400_10"
-            app:layout_constraintTop_toBottomOf="@id/imgSwap"
+            android:layout_marginTop="@dimen/dp_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/dp_20"
-            />
+            app:layout_constraintTop_toBottomOf="@id/imgSwap" />
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -81,16 +60,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
             android:background="@drawable/bg_already_have_account"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="@+id/vDividerTitle">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
+                android:layout_height="wrap_content">
+
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black.15.Bold.SfProDisplay"
                     android:layout_width="wrap_content"
@@ -100,11 +79,11 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/availableTextView"
                     style="@style/CornerFlowerBlue.15.SfProText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:text="@{viewModel.isInCryptoCurrency?@string/available_swap(walletItemFrom.amount):@string/available_swap(walletItemFrom.price)}"
                     tools:text="Available: 2140.0000" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -121,11 +100,7 @@
                     android:layout_height="@dimen/dp_44"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_default_coin"
-                    android:onClick="@{()->viewModel.openMyWalletsDialog()}"
-                    image_source_radius="@{walletItemFrom.icon}"
-                    radius_dp="@{12}"
-                    />
+                    app:srcCompat="@drawable/ic_default_coin" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTokenFrom"
@@ -134,12 +109,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="@dimen/dp_6"
-                    app:layout_constraintTop_toBottomOf="@id/imgTokenFrom"
-                    app:layout_constraintStart_toStartOf="@id/imgTokenFrom"
                     app:layout_constraintEnd_toEndOf="@id/imgTokenFrom"
-                    android:text="@{walletItemFrom.tokenSymbol}"
-                    tools:text="DAI"
-                    />
+                    app:layout_constraintStart_toStartOf="@id/imgTokenFrom"
+                    app:layout_constraintTop_toBottomOf="@id/imgTokenFrom"
+                    tools:text="DAI" />
 
                 <!--                Padding (8dp) is for bigger clickbox of button-->
                 <!--                Respectively, surrounding margins reduced by 8dp-->
@@ -151,34 +124,29 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/dp_7"
                     android:padding="@dimen/dp_8"
-                    app:srcCompat="@drawable/ic_down_arrow"
                     android:tint="@color/gray_blue_400"
-                    app:tint="@color/gray_blue_400"
-                    android:onClick="@{()->viewModel.openMyWalletsDialog()}"
-                    app:layout_constraintTop_toTopOf="@id/imgTokenFrom"
                     app:layout_constraintBottom_toBottomOf="@id/imgTokenFrom"
                     app:layout_constraintStart_toEndOf="@id/imgTokenFrom"
-                    />
+                    app:layout_constraintTop_toTopOf="@id/imgTokenFrom"
+                    app:srcCompat="@drawable/ic_down_arrow"
+                    app:tint="@color/gray_blue_400" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtAmountFrom"
                     style="@style/Black.27.Bold.SfProDisplay"
                     android:layout_width="@dimen/dp_0"
                     android:layout_height="wrap_content"
-                    android:textCursorDrawable="@drawable/black_edt_cursor"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/dp_12"
+                    android:background="@android:color/transparent"
                     android:hint="@string/_0_0000"
                     android:inputType="numberDecimal"
-                    android:text="@={viewModel.amountBinding}"
-                    enableDecimalInputTextWatcher="@{true}"
                     android:maxLines="1"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintStart_toEndOf="@id/imgArrowDownFrom"
-                    app:layout_constraintTop_toTopOf="@id/imgArrowDownFrom"
+                    android:textCursorDrawable="@drawable/black_edt_cursor"
                     app:layout_constraintBottom_toBottomOf="@id/imgArrowDownFrom"
                     app:layout_constraintEnd_toEndOf="parent"
-                    />
+                    app:layout_constraintStart_toEndOf="@id/imgArrowDownFrom"
+                    app:layout_constraintTop_toTopOf="@id/imgArrowDownFrom" />
 
                 <!--                    Set Text To                         -->
                 <!--                android:text="@string/around_amount_sol"-->
@@ -187,16 +155,14 @@
                     style="@style/Grey400.15.SfProText"
                     android:layout_width="@dimen/dp_0"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@id/txtTokenFrom"
-                    app:layout_constraintTop_toTopOf="@id/txtTokenFrom"
-                    app:layout_constraintStart_toStartOf="@id/edtAmountFrom"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:maxLines="1"
-                    android:ems="3"
                     android:ellipsize="end"
-                    android:text="@{viewModel.isInCryptoCurrency?@string/around_amount_sol_2(viewModel.aroundToCurrency, @string/usd_symbol):@string/around_amount_sol(viewModel.aroundToCurrency, walletItemFrom.tokenSymbol)}"
-                    tools:text="≈ 0.00 $"
-                    />
+                    android:ems="3"
+                    android:maxLines="1"
+                    app:layout_constraintBottom_toBottomOf="@id/txtTokenFrom"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/edtAmountFrom"
+                    app:layout_constraintTop_toTopOf="@id/txtTokenFrom"
+                    tools:text="≈ 0.00 $" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -205,30 +171,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_8"
-                android:layout_marginBottom="@dimen/dp_15"
-                >
+                android:layout_marginBottom="@dimen/dp_15">
 
                 <View
                     style="@style/HorizontalDividerGreyBlue_400_10"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/currencyTypeImageView"
                     android:layout_width="@dimen/dp_44"
                     android:layout_height="@dimen/dp_44"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:onClick="@{() -> viewModel.swapFromAmountCurrencyTypes()}"
                     app:srcCompat="@drawable/ic_exchange_swap" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
+                android:layout_height="wrap_content">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black.15.Bold.SfProDisplay"
@@ -239,15 +203,13 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/balanceTextView"
                     style="@style/Grey400.15.SfProText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:text="@{@string/balance_(walletItemTo.amount)}"
-                    tools:text="Balance: 1012.0000"
-                    />
+                    tools:text="Balance: 1012.0000" />
             </androidx.appcompat.widget.LinearLayoutCompat>
-
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -262,13 +224,7 @@
                     android:layout_height="@dimen/dp_44"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_wallet_blue"
-                    image_source_radius="@{walletItemTo.icon}"
-                    radius_dp="@{12}"
-                    error_drawable="@{R.drawable.ic_wallet_blue}"
-                    placeholder="@{R.drawable.ic_wallet_blue}"
-                    android:onClick="@{() -> viewModel.openSelectTokenToSwapBottomSheet()}"
-                    />
+                    app:srcCompat="@drawable/ic_wallet_blue" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTokenTo"
@@ -276,13 +232,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    app:layout_constraintTop_toBottomOf="@id/imgTokenTo"
-                    app:layout_constraintStart_toStartOf="@id/imgTokenTo"
-                    app:layout_constraintEnd_toEndOf="@id/imgTokenTo"
                     android:layout_marginTop="@dimen/dp_6"
-                    android:text="@{walletItemTo.tokenSymbol}"
-                    tools:text="TZS"
-                    />
+                    app:layout_constraintEnd_toEndOf="@id/imgTokenTo"
+                    app:layout_constraintStart_toStartOf="@id/imgTokenTo"
+                    app:layout_constraintTop_toBottomOf="@id/imgTokenTo"
+                    tools:text="TZS" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgArrowDownTo"
@@ -290,16 +244,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:padding="@dimen/dp_8"
                     android:layout_marginStart="@dimen/dp_7"
-                    app:srcCompat="@drawable/ic_down_arrow"
+                    android:padding="@dimen/dp_8"
                     android:tint="@color/gray_blue_400"
-                    app:tint="@color/gray_blue_400"
-                    android:onClick="@{() -> viewModel.openSelectTokenToSwapBottomSheet()}"
-                    app:layout_constraintTop_toTopOf="@id/imgTokenTo"
                     app:layout_constraintBottom_toBottomOf="@id/imgTokenTo"
                     app:layout_constraintStart_toEndOf="@id/imgTokenTo"
-                    />
+                    app:layout_constraintTop_toTopOf="@id/imgTokenTo"
+                    app:srcCompat="@drawable/ic_down_arrow"
+                    app:tint="@color/gray_blue_400" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtAmountTo"
@@ -308,73 +260,66 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/dp_12"
-                    app:layout_constraintTop_toTopOf="@id/imgArrowDownTo"
                     app:layout_constraintBottom_toBottomOf="@id/imgArrowDownTo"
-                    app:layout_constraintStart_toEndOf="@id/imgArrowDownTo"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:text="@{viewModel.amountInConvertingToken}"
-                    tools:text="0,0000"
-                    />
+                    app:layout_constraintStart_toEndOf="@id/imgArrowDownTo"
+                    app:layout_constraintTop_toTopOf="@id/imgArrowDownTo"
+                    tools:text="0,0000" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/currencyTextView"
                     style="@style/Grey400.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="@id/txtAmountTo"
-                    app:layout_constraintTop_toTopOf="@id/txtTokenTo"
-                    app:layout_constraintBottom_toBottomOf="@id/txtTokenTo"
                     android:text="@string/select_currency"
-                    android:visibility="@{(walletItemTo == null)?View.VISIBLE:View.GONE}"
-                    />
+                    app:layout_constraintBottom_toBottomOf="@id/txtTokenTo"
+                    app:layout_constraintStart_toStartOf="@id/txtAmountTo"
+                    app:layout_constraintTop_toTopOf="@id/txtTokenTo" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/priceView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_20"
-                android:paddingTop="@dimen/dp_7"
-                android:paddingBottom="@dimen/dp_7"
-                android:paddingStart="@dimen/dp_10"
-                android:paddingEnd="@dimen/dp_10"
                 android:background="@drawable/bg_light_gray_rect_radius_12"
-                android:visibility="@{(walletItemTo == null)?View.GONE:View.VISIBLE}"
-                >
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_7"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_7">
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPriceSwap"
                     style="@style/Grey400.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/price"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/solTextView"
                     style="@style/Black300.15.SfProDisplay"
                     android:layout_width="@dimen/dp_0"
                     android:layout_height="wrap_content"
-                    app:layout_constraintStart_toEndOf="@id/txtPriceSwap"
-                    app:layout_constraintEnd_toStartOf="@id/imgSwapPrice"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginEnd="@dimen/dp_12"
-                    android:text="@{viewModel.isFromPerTo?@string/amount_token_per_token(viewModel.tokenFromPerTokenTo, walletItemFrom.tokenSymbol, walletItemTo.tokenSymbol):@string/amount_token_per_token(viewModel.tokenToPerTokenFrom, walletItemTo.tokenSymbol, walletItemFrom.tokenSymbol)}"
                     android:gravity="end"
-                    tools:text="0.000350726 SOL per DAI"
-                    />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/imgSwapPrice"
+                    app:layout_constraintStart_toEndOf="@id/txtPriceSwap"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="0.000350726 SOL per DAI" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgSwapPrice"
                     android:layout_width="@dimen/dp_18"
                     android:layout_height="@dimen/dp_18"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:onClick="@{() -> viewModel.switchTokenPrices()}"
-                    app:srcCompat="@drawable/ic_swap_"
-                    />
+                    app:srcCompat="@drawable/ic_swap_" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -383,88 +328,79 @@
         <View
             android:id="@+id/vDividerDetails"
             style="@style/HorizontalDividerGreyBlue_400_10"
-            app:layout_constraintTop_toBottomOf="@id/lSwapFromTo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="@dimen/dp_30"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lSwapFromTo" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/lDetails"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/vDividerDetails"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:orientation="vertical"
-            android:layout_marginTop="@dimen/dp_30"
             android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_30"
             android:layout_marginEnd="@dimen/dp_30"
-            android:visibility="@{(walletItemTo == null)?View.GONE:View.VISIBLE}"
-            >
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vDividerDetails">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
+                android:layout_height="wrap_content">
+
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black300.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/minimum_receive_"
-                    />
+                    android:text="@string/minimum_receive_" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black300.15.SfProDisplay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    tools:text="0.003452 DAI"
-                    />
+                    tools:text="0.003452 DAI" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15"
-                >
+                android:layout_marginTop="@dimen/dp_15">
+
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black300.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/fee_"
-                    />
+                    android:text="@string/fee_" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black300.15.SfProDisplay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    tools:text="0.0001 SOL"
-                    />
+                    tools:text="0.0001 SOL" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15"
-                >
+                android:layout_marginTop="@dimen/dp_15">
+
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black300.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/slippage_"
-                    />
+                    android:text="@string/slippage_" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black300.15.SfProDisplay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    tools:text="\u003c 0.1 %"
-                    />
+                    tools:text="\u003c 0.1 %" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -472,29 +408,26 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/swapButton"
             android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_51"
-            android:paddingBottom="@dimen/dp_19"
+            android:background="@drawable/bg_swap_button"
+            android:fontFamily="@font/sf_pro_text"
             android:paddingTop="@dimen/dp_19"
-            android:onClick="@{()->viewModel.openProcessingDialog()}"
-            android:textAllCaps="false"
+            android:paddingBottom="@dimen/dp_19"
             android:text="@string/swap_now"
+            android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/sp_15"
-            android:fontFamily="@font/sf_pro_text"
             android:textStyle="bold"
-            android:background="@drawable/bg_swap_button"
-            android:enabled="@{(walletItemTo != null)}"
-            app:layout_constraintTop_toBottomOf="@id/lDetails"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lDetails" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
-</layout>

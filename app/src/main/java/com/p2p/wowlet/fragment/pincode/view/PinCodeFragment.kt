@@ -1,15 +1,16 @@
 package com.p2p.wowlet.fragment.pincode.view
 
 import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isInvisible
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentPinCodeBinding
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.view.SecretKeyFragment
 import com.p2p.wowlet.fragment.dashboard.view.DashboardFragment
@@ -19,24 +20,24 @@ import com.p2p.wowlet.fragment.pincode.adapter.PinButtonAdapter
 import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wowlet.fragment.regfinish.view.RegFinishFragment
 import com.p2p.wowlet.fragment.reglogin.view.RegLoginFragment
+import com.p2p.wowlet.utils.args
 import com.p2p.wowlet.utils.isFingerPrintSet
 import com.p2p.wowlet.utils.openFingerprintDialog
-import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.popBackStackTo
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
 import com.wowlet.entities.enums.PinCodeFragmentType
 import kotlinx.android.synthetic.main.fragment_pin_code.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBinding>() {
-    override val viewModel: PinCodeViewModel by viewModel()
-    override val binding: FragmentPinCodeBinding by dataBinding(R.layout.fragment_pin_code)
+class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
+    private val viewModel: PinCodeViewModel by viewModel()
+    private val binding: FragmentPinCodeBinding by viewBinding()
 
     companion object {
         const val OPEN_FRAGMENT_SPLASH_SCREEN = "openFragmentSplashScreen"
         const val OPEN_FRAGMENT_BACKUP_DIALOG = "openFragmentBackupDialog"
-        const val CREATE_NEW_PIN_CODE = "createNewPinCode"
+        const val PIN_TYPE = "PIN_TYPE"
 
         fun create(
             openSplashScreen: Boolean,
@@ -46,21 +47,26 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             PinCodeFragment().withArgs(
                 OPEN_FRAGMENT_SPLASH_SCREEN to openSplashScreen,
                 OPEN_FRAGMENT_BACKUP_DIALOG to isBackupDialog,
-                CREATE_NEW_PIN_CODE to type
+                PIN_TYPE to type
             )
     }
 
     private var isSplashScreen: Boolean = false
     private var isBackupDialog: Boolean = false
     private var isFingerprintEnabled: Boolean = false
-    private lateinit var pinCodeFragmentType: PinCodeFragmentType
+    private val pinCodeFragmentType: PinCodeFragmentType by args(PIN_TYPE)
     private lateinit var pinButtonAdapter: PinButtonAdapter
 
-    override fun initView() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+        initData()
+        observeData()
+    }
+    
+    private fun initView() {
         viewModel.fingerPrintStatus()
         binding.run {
-            viewModel = this@PinCodeFragment.viewModel
-
             Log.i("FingerPring", "initView: " + requireActivity().isFingerPrintSet())
             pinView.pinCodeFragmentType = pinCodeFragmentType
             pinView.setMaxPinSize(6)
@@ -85,17 +91,16 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             gridView.numColumns = 3
 
             resetPinCode.setOnClickListener {
-                replace(SecretKeyFragment())
+                replaceFragment(SecretKeyFragment())
             }
         }
         initPinCodeMassage()
     }
 
-    override fun initData() {
+    private fun initData() {
         arguments?.let {
             isSplashScreen = it.getBoolean(OPEN_FRAGMENT_SPLASH_SCREEN, false)
             isBackupDialog = it.getBoolean(OPEN_FRAGMENT_BACKUP_DIALOG, false)
-            pinCodeFragmentType = it.get(CREATE_NEW_PIN_CODE) as PinCodeFragmentType
         }
     }
 
@@ -106,33 +111,34 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
             vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
     }
 
-    override fun observes() {
-        observe(viewModel.pinCodeSuccess) {
+    private fun observeData() {
+        viewModel.pinCodeSuccess.observe(viewLifecycleOwner) {
             if (isFingerprintEnabled) {
                 if (isBackupDialog)
-                    replace(DashboardFragment.create(true))
+                    replaceFragment(DashboardFragment.create(true))
                 else
                     viewModel.notificationStatus()
             } else {
                 if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
-                    replace(FingerPrintFragment())
+                    replaceFragment(FingerPrintFragment())
                 } else {
                     if (isBackupDialog)
-                        replace(DashboardFragment.create(true))
+                        replaceFragment(DashboardFragment.create(true))
                     else
                         viewModel.notificationStatus()
                 }
             }
         }
-        observe(viewModel.pinCodeSaved) {
+        viewModel.pinCodeSaved.observe(viewLifecycleOwner) {
             vPinCodeMessage.text = getString(R.string.confirm_pin_code)
             binding.pinView.clearPin()
             binding.pinView.isFirstPinInput = true
         }
-        observe(viewModel.pinCodeError) {
+        viewModel.pinCodeError.observe(viewLifecycleOwner) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+
         }
-        observe(viewModel.isSkipFingerPrint) {
+        viewModel.isSkipFingerPrint.observe(viewLifecycleOwner) {
             isFingerprintEnabled = it
             pinButtonAdapter.updateFingerprintStatus(isFingerprintEnabled)
             if (it) {
@@ -140,15 +146,16 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                 viewModel.openFingerprintDialog()
             }
         }
-        observe(viewModel.skipNotification) {
+        viewModel.skipNotification.observe(viewLifecycleOwner) {
             if (it) {
-                replace(RegFinishFragment())
+                replaceFragment(RegFinishFragment())
             } else {
-                replace(NotificationFragment())
+                replaceFragment(NotificationFragment())
             }
         }
 
-        observe(viewModel.verifyPinCodeError) {
+        viewModel.verifyPinCodeError.observe(viewLifecycleOwner) {
+            vPinCodeNotMatch.isInvisible = !it
             when (pinCodeFragmentType) {
                 PinCodeFragmentType.CREATE -> {
                     vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
@@ -176,13 +183,17 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
                 }
             }
         }
-        observe(viewModel.openFingerprintDialog) {
+        viewModel.openFingerprintDialog.observe(viewLifecycleOwner) {
             openFingerprintDialog {
                 if (isBackupDialog)
-                    replace(DashboardFragment.create(true))
+                    replaceFragment(DashboardFragment.create(true))
                 else
-                    replace(FingerPrintFragment())
+                    replaceFragment(FingerPrintFragment())
             }
+        }
+
+        viewModel.command.observe(viewLifecycleOwner) {
+            processViewCommand(it)
         }
 
         binding.pinView.createPinCode = {
@@ -193,14 +204,13 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
         }
     }
 
-    override fun processViewCommand(command: ViewCommand) {
+    private fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> popBackStack()
-            is Command.NavigateSecretKeyViewCommand -> replace(SecretKeyFragment())
-            is Command.NavigateFingerPrintViewCommand -> replace(FingerPrintFragment())
-            is Command.NavigateNotificationViewCommand -> replace(NotificationFragment())
-            is Command.NavigateRegLoginViewCommand -> replace(RegLoginFragment())
-            is Command.NavigateRegFinishViewCommand -> replace(RegFinishFragment())
+            is Command.NavigateSecretKeyViewCommand -> replaceFragment(SecretKeyFragment())
+            is Command.NavigateFingerPrintViewCommand -> replaceFragment(FingerPrintFragment())
+            is Command.NavigateNotificationViewCommand -> replaceFragment(NotificationFragment())
+            is Command.NavigateRegLoginViewCommand -> replaceFragment(RegLoginFragment())
+            is Command.NavigateRegFinishViewCommand -> replaceFragment(RegFinishFragment())
             is Command.OpenMainActivityViewCommand -> {
                 activity?.let {
                     val intent = Intent(it, MainActivity::class.java)
@@ -215,7 +225,7 @@ class PinCodeFragment : FragmentBaseMVVM<PinCodeViewModel, FragmentPinCodeBindin
 //        if (isSplashScreen)
 //            requireActivity().finish()
 //        else if (isBackupDialog) {
-//            replace(DashboardFragment.create(false))
+//            replaceFragment(DashboardFragment.create(false))
 //        } else {
 //            if (pinCodeFragmentType == PinCodeFragmentType.CREATE && binding.pinView.isFirstPinInput) {
 //                vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)

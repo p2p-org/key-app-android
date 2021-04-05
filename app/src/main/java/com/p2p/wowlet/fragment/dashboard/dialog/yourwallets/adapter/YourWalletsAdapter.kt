@@ -2,12 +2,13 @@ package com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemMyWalletsBinding
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.utils.bindadapter.imageSource
 import com.wowlet.entities.local.WalletItem
+import java.math.BigDecimal
 
 class YourWalletsAdapter(
     private var list: List<WalletItem>,
@@ -16,19 +17,16 @@ class YourWalletsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-        val bind: ItemMyWalletsBinding = DataBindingUtil.inflate(
+        val binding = ItemMyWalletsBinding.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_my_wallets,
             parent,
             false
         )
-        return MyViewHolder(bind)
-
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.itemWalletsBinding.walletItem = list[position]
-        holder.itemWalletsBinding.viewModel = viewModel
+        holder.onBind(list[position])
     }
 
     override fun getItemCount(): Int {
@@ -36,12 +34,26 @@ class YourWalletsAdapter(
     }
 
     fun updateList(it: List<WalletItem>) {
-        list=it
+        list = it
         notifyDataSetChanged()
     }
 
     inner class MyViewHolder(
-        val itemWalletsBinding: ItemMyWalletsBinding
-    ) : RecyclerView.ViewHolder(itemWalletsBinding.root)
+        itemWalletsBinding: ItemMyWalletsBinding
+    ) : RecyclerView.ViewHolder(itemWalletsBinding.root) {
 
+        private val vCoin = itemWalletsBinding.vCoin
+        private val vName = itemWalletsBinding.vName
+        private val vPrice = itemWalletsBinding.vPrice
+        private val vTkns = itemWalletsBinding.vTkns
+
+        fun onBind(item: WalletItem) {
+            vCoin.imageSource(item.icon)
+            vName.text = item.tokenName
+            vPrice.text = itemView.context.getString(R.string.usd, viewModel.roundCurrencyValue(item.price))
+            vTkns.text = (BigDecimal(item.amount).stripTrailingZeros().toDouble().toString() + " " + item.tokenSymbol)
+
+            itemView.setOnClickListener { viewModel.selectWalletItem(item) }
+        }
+    }
 }

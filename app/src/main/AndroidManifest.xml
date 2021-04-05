@@ -25,7 +25,7 @@
 
         </activity>
         <activity
-            android:name="com.p2p.wowlet.activity.RegistrationActivity"
+            android:name="com.p2p.wowlet.auth.RegistrationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

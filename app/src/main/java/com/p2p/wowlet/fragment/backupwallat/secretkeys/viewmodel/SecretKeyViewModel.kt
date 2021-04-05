@@ -1,21 +1,19 @@
 package com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel
 
-import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.wowlet.domain.interactors.SecretKeyInteractor
 import com.wowlet.entities.Result
-import com.wowlet.entities.enums.PinCodeFragmentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SecretKeyViewModel(val secretKeyInteractor: SecretKeyInteractor) : BaseViewModel() {
+class SecretKeyViewModel(
+    private val secretKeyInteractor: SecretKeyInteractor
+) : BaseViewModel() {
 
     private val _isCurrentCombination by lazy { MutableLiveData<Boolean>() }
     val isCurrentCombination: LiveData<Boolean> get() = _isCurrentCombination
@@ -50,6 +48,4 @@ class SecretKeyViewModel(val secretKeyInteractor: SecretKeyInteractor) : BaseVie
     fun postInvadedPhrase(errorMessage: String) {
         _invadedPhrase.value = errorMessage
     }
-
-
 }

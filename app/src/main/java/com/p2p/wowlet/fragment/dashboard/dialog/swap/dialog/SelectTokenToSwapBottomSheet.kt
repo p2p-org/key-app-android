@@ -4,17 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.BottomSheetSelectTokenToSwapBinding
-import com.p2p.wowlet.dialog.utils.makeFullScreen
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.adapter.SelectTokenToSwapAdapter
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -27,8 +28,7 @@ class SelectTokenToSwapBottomSheet(
 
     private val swapViewModel: SwapViewModel by viewModel()
 
-    private var _binding: BottomSheetSelectTokenToSwapBinding? = null
-    private val binding: BottomSheetSelectTokenToSwapBinding get() = _binding!!
+    private val binding: BottomSheetSelectTokenToSwapBinding by viewBinding()
 
     companion object {
         const val TAG_SELECT_TOKEN_TO_SWAP = "SelectTokenToSwap"
@@ -41,17 +41,12 @@ class SelectTokenToSwapBottomSheet(
         }
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.bottom_sheet_select_token_to_swap, container, false)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = DataBindingUtil.inflate(inflater, R.layout.bottom_sheet_select_token_to_swap, container, false)
-        initObserves()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.run {
-            swapViewModel = this@SelectTokenToSwapBottomSheet.swapViewModel
-            lifecycleOwner = this@SelectTokenToSwapBottomSheet
             rvSwapDestinationTokens.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = SelectTokenToSwapAdapter(selectedTokenFrom).apply {
@@ -63,13 +58,17 @@ class SelectTokenToSwapBottomSheet(
                     }
                 }
             }
+
+            txtClose.setOnClickListener { popBackStack() }
+            clearImageView.setOnClickListener { swapViewModel.clearSearchBar() }
         }
-        return binding.root
+
+        initObserves()
     }
 
     override fun onStart() {
         super.onStart()
-        dialog?.makeFullScreen(binding.root, this)
+//        dialog?.makeFullScreen(binding.root, this)
     }
 
     private fun initObserves() {
@@ -80,21 +79,18 @@ class SelectTokenToSwapBottomSheet(
                 clearFocus()
                 hideSoftKeyboard()
             }
+        }
 
+        swapViewModel.isCloseIconVisible.observe(viewLifecycleOwner) {
+            binding.clearImageView.isVisible = it
         }
     }
 
     private fun processViewCommands(command: ViewCommand) {
-        when(command) {
+        when (command) {
             is Command.NavigateUpBackStackCommand -> {
                 dismiss()
             }
         }
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
