@@ -26,17 +26,6 @@ class SecretKeyViewModel(val secretKeyInteractor: SecretKeyInteractor) : BaseVie
 
     val phrase: MutableLiveData<String> = MutableLiveData("")
 
-    fun goToPinCodeFragment() {
-        _command.value =
-            Command.NavigatePinCodeViewCommand(
-                R.id.action_navigation_secret_key_to_navigation_pin_code,
-                bundleOf(
-                    PinCodeFragment.OPEN_FRAGMENT_SPLASH_SCREEN to false,
-                    PinCodeFragment.CREATE_NEW_PIN_CODE to PinCodeFragmentType.CREATE
-                )
-            )
-    }
-
     fun navigateUp() {
         _command.value = Command.NavigateUpBackStackCommand()
     }

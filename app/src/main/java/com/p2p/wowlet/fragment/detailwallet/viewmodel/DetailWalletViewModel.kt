@@ -1,6 +1,5 @@
 package com.p2p.wowlet.fragment.detailwallet.viewmodel
 
-import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -8,7 +7,6 @@ import com.github.mikephil.charting.data.Entry
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
 import com.wowlet.domain.interactors.DetailWalletInteractor
 import com.wowlet.entities.Result
 import com.wowlet.entities.local.ActivityItem
@@ -52,7 +50,7 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
 
     fun getActivityList(publicKey: String, icon: String, tokenName: String, tokenSymbol: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val detailList = detailWalletInteractor.getActivityList(publicKey, icon, tokenName,tokenSymbol)
+            val detailList = detailWalletInteractor.getActivityList(publicKey, icon, tokenName, tokenSymbol)
             when (detailList) {
                 is Result.Success -> withContext(Dispatchers.Main) {
                     activityItemList.clear()
@@ -77,22 +75,6 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
     fun goToQrScanner(walletItem: WalletItem) {
         val enterWallet = detailWalletInteractor.generateQRrCode(walletItem)
         _command.value = Command.YourWalletDialogViewCommand(enterWallet)
-    }
-
-//    fun goToSendCoin(walletItem: WalletItem) {
-//        _command.value = Command.OpenSendCoinDialogViewCommand(
-//            walletItem = walletItem
-//        )
-//    }
-
-//    fun goToSwap(walletItem: WalletItem) {
-//        _command.value =
-//            Command.OpenSwapBottomSheetViewCommand(walletItem)
-//    }
-
-    fun openTransactionDialog(itemActivity: ActivityItem) {
-        _command.value =
-            Command.OpenTransactionDialogViewCommand(itemActivity)
     }
 
     fun getBlockTime(slot: Long) {
@@ -135,13 +117,5 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
                 }
             }
         }
-    }
-
-    fun goToBlockChainExplorer(url: String) {
-        _command.value =
-            Command.NavigateBlockChainViewCommand(
-                R.id.action_navigation_dashboard_to_navigation_block_chain_explorer,
-                bundleOf(BlockChainExplorerFragment.BLOCK_CHAIN_URL to url)
-            )
     }
 }

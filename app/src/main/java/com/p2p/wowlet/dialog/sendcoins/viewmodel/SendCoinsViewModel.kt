@@ -2,20 +2,24 @@ package com.p2p.wowlet.dialog.sendcoins.viewmodel
 
 import android.content.Context
 import android.util.Log
-import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.viewcommand.Command.*
+import com.p2p.wowlet.appbase.viewcommand.Command.NavigateBlockChainViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenMyWalletDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.SendCoinDoneViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.SendCoinViewCommand
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
-import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
 import com.p2p.wowlet.utils.roundToThousandsCurrencyValue
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.domain.interactors.SendCoinInteractor
 import com.wowlet.entities.Result
-import com.wowlet.entities.local.*
+import com.wowlet.entities.local.ActivityItem
+import com.wowlet.entities.local.QrWalletType
+import com.wowlet.entities.local.SendTransactionModel
+import com.wowlet.entities.local.UserWalletType
+import com.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -73,14 +77,12 @@ class SendCoinsViewModel(
 
     private var availableAmountInSelectedCurrency: Double = 0.0
 
-    fun getWalletItems()
-         = viewModelScope.launch(Dispatchers.IO) {
-            val walletList = dashboardInteractor.getYourWallets()
-            withContext(Dispatchers.Main) {
-                _getWalletData.value = walletList.wallets
-            }
+    fun getWalletItems() = viewModelScope.launch(Dispatchers.IO) {
+        val walletList = dashboardInteractor.getYourWallets()
+        withContext(Dispatchers.Main) {
+            _getWalletData.value = walletList.wallets
         }
-
+    }
 
     fun initData(mutableListOf: MutableList<UserWalletType>) {
         _pages.value = mutableListOf
@@ -104,20 +106,6 @@ class SendCoinsViewModel(
         _walletItemData.value = walletItem
     }
 
-    fun navigateUp() {
-        _command.value =
-            NavigateUpBackStackCommand()
-    }
-
-    fun goToQrScanner() {
-        _saveEnteredAmount.value = true
-        _command.value =
-            NavigateScannerViewCommand(
-                R.id.action_navigation_dashboard_to_navigation_scanner,
-                bundleOf(QrScannerFragment.GO_BACK_TO_SEND_COIN to true)
-            )
-    }
-
     fun sendCoinCommand() {
         _command.value =
             SendCoinViewCommand()
@@ -131,7 +119,7 @@ class SendCoinsViewModel(
         _command.value =
             NavigateBlockChainViewCommand(
                 actionId,
-                bundleOf(BlockChainExplorerFragment.BLOCK_CHAIN_URL to url)
+                url
             )
     }
 
@@ -208,22 +196,20 @@ class SendCoinsViewModel(
         val inputCoinInTokens = if (_selectedCurrency.value == "USD") {
             currency = _walletItemData.value?.tokenSymbol.toString()
             inputCountDouble.div(walletBinding)
-        }else {
+        } else {
             currency = "USD"
             inputCountDouble.times(walletBinding)
-
         }
         val inputCoinInTokensString = context.getString(R.string.around_amount_sol, inputCoinInTokens, currency)
         _inputCountInTokens.value = inputCoinInTokensString
-
     }
 
     fun insertAllBalance() {
         val yourBalance: Double = walletItemData.value?.amount ?: 0.0
         val walletBinds: Double = walletItemData.value?.walletBinds ?: 0.0
-        val balance =  if (_selectedCurrency.value == "USD") {
-            (yourBalance*walletBinds).roundToThousandsCurrencyValue()
-        }else {
+        val balance = if (_selectedCurrency.value == "USD") {
+            (yourBalance * walletBinds).roundToThousandsCurrencyValue()
+        } else {
             yourBalance
         }
         inputCount.value = balance.toBigDecimal().toString()
@@ -232,7 +218,7 @@ class SendCoinsViewModel(
     fun toggleInsertAmountCurrency() {
         if (_selectedCurrency.value == "USD") {
             _selectedCurrency.value = walletItemData.value?.tokenSymbol
-        }else {
+        } else {
             _selectedCurrency.value = "USD"
         }
     }
@@ -240,7 +226,7 @@ class SendCoinsViewModel(
     fun setSelectedCurrency(currency: String) {
         if (_selectedCurrency.value == "USD") {
             _selectedCurrency.value = "USD"
-        }else {
+        } else {
             _selectedCurrency.value = currency
         }
     }
@@ -265,5 +251,4 @@ class SendCoinsViewModel(
         val amount: Double = if (_amount == "." || _amount == "" || _amount == "null") 0.0 else _amount.toDouble()
         _isInsertedMoreThanAvailable.value = amount > availableAmountInSelectedCurrency
     }
-
 }

@@ -39,11 +39,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!--android:onClick="@{()-> viewModel.goToTermAndConditionFragment()}"-->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btCreate"
             style="@style/Widget.Black.Button"
             android:layout_width="match_parent"
-            android:onClick="@{()-> viewModel.goToTermAndConditionFragment()}"
+
             android:layout_height="@dimen/dp_56"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_20"
@@ -54,6 +55,7 @@
             android:text="@string/create_new_wallet"
             android:textStyle="bold" />
 
+        <!--android:onClick="@{()->viewModel.goToRecoveryWalletFragment()}"-->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btAlready"
             style="@style/Widget.White.Button"
@@ -62,7 +64,7 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_30"
-            android:onClick="@{()->viewModel.goToRecoveryWalletFragment()}"
+
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -23,18 +23,8 @@ class NotificationViewModel(val notificationInteractor: NotificationInteractor) 
         notificationStatus()
     }
 
-    fun navigateUp() {
-        _command.value =
-            NavigateUpViewCommand(R.id.action_navigation_notification_to_navigation_face_id)
-    }
-
     fun openEnableNotificationDialog() {
         _showNotificationDialog.value = Unit
-    }
-
-    fun goToRegFinishFragment() {
-        _command.value =
-            NavigateRegFinishViewCommand(R.id.action_navigation_notification_to_navigation_reg_finish)
     }
 
     fun doThisLater() {
@@ -46,7 +36,7 @@ class NotificationViewModel(val notificationInteractor: NotificationInteractor) 
                 )
             )
         }
-        goToRegFinishFragment()
+//        goToRegFinishFragment()
     }
 
     fun enableNotification() {
@@ -58,7 +48,7 @@ class NotificationViewModel(val notificationInteractor: NotificationInteractor) 
                 )
             )
         }
-        goToRegFinishFragment()
+//        goToRegFinishFragment()
     }
 
     private fun notificationStatus() {

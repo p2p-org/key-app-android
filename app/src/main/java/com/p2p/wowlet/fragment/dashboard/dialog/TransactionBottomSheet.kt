@@ -9,23 +9,29 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.databinding.DialogTansactionBinding
+import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.copyClipboard
+import com.p2p.wowlet.utils.replace
 import com.wowlet.domain.utils.getTransactionDate
 import com.wowlet.entities.Constants.Companion.EXPLORER_SOLANA
 import com.wowlet.entities.local.ActivityItem
-import kotlinx.android.synthetic.main.dialog_tansaction.*
+import kotlinx.android.synthetic.main.dialog_tansaction.blockChainExplorer
+import kotlinx.android.synthetic.main.dialog_tansaction.copyFromUserKey
+import kotlinx.android.synthetic.main.dialog_tansaction.copyToUserKey
+import kotlinx.android.synthetic.main.dialog_tansaction.copyTransaction
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
-class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(destinationId:Int,bundle: Bundle?)->Unit) : BottomSheetDialogFragment() {
+class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate: (url: String) -> Unit) :
+    BottomSheetDialogFragment() {
 
     lateinit var binding: DialogTansactionBinding
-    private val viewModel:DetailWalletViewModel by viewModel()
+    private val viewModel: DetailWalletViewModel by viewModel()
+
     companion object {
-        const val TRANSACTION_DIALOG="transactionDialog"
-        fun newInstance(dataInfo: ActivityItem, navigate:(destinationId:Int,bundle: Bundle?)->Unit): TransactionBottomSheet =
-            TransactionBottomSheet(dataInfo,navigate)
+        const val TRANSACTION_DIALOG = "transactionDialog"
+        fun newInstance(dataInfo: ActivityItem, navigate: (url: String) -> Unit): TransactionBottomSheet =
+            TransactionBottomSheet(dataInfo, navigate)
     }
 
     override fun onCreateView(
@@ -63,25 +69,25 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate:(d
         }
 
         blockChainExplorer.setOnClickListener {
-            viewModel.goToBlockChainExplorer(EXPLORER_SOLANA+dataInfo.signature)
+            replace(BlockChainExplorerFragment.createScreen(EXPLORER_SOLANA + dataInfo.signature))
         }
         observes()
     }
-    private fun observes(){
-        viewModel.blockTime.observe(viewLifecycleOwner,{
-            binding.yourTransactionDate.text=it.getTransactionDate()
+
+    private fun observes() {
+        viewModel.blockTime.observe(viewLifecycleOwner, {
+            binding.yourTransactionDate.text = it.getTransactionDate()
         })
-        viewModel.blockTimeError.observe(viewLifecycleOwner,{
-            binding.yourTransactionDate.text=it.getTransactionDate()
+        viewModel.blockTimeError.observe(viewLifecycleOwner, {
+            binding.yourTransactionDate.text = it.getTransactionDate()
         })
 
-        viewModel.command.observe(viewLifecycleOwner,{
-           when(it){
-               is Command.NavigateBlockChainViewCommand-> {
-                   navigate.invoke(it.destinationId,it.bundle)
-               }
-           }
+        viewModel.command.observe(viewLifecycleOwner, {
+            when (it) {
+                is Command.NavigateBlockChainViewCommand -> {
+                    navigate.invoke(it.url)
+                }
+            }
         })
     }
-
 }

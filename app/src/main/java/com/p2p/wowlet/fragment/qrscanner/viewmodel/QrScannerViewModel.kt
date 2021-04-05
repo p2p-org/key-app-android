@@ -32,13 +32,6 @@ class QrScannerViewModel(
             Command.NavigateUpBackStackCommand()
     }
 
-    fun navigateBack() {
-        _command.value =
-            Command.NavigateUpViewCommand(
-                R.id.action_navigation_scanner_to_navigation_dashboard
-            )
-    }
-
     fun goToSendCoinFragment(walletKey: String) {
         _command.value =
             Command.OpenSendCoinDialogViewCommand(

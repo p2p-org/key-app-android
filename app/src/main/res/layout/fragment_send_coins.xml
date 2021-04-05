@@ -348,7 +348,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_12"
                     android:backgroundTint="@color/gray_30"
-                    android:onClick="@{()->viewModel.goToQrScanner()}"
                     android:tint="@color/gray_blue_400"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -365,7 +364,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_close_circle"
-                    android:onClick="@{() -> viewModel.clearWalletAddress()}"
                     android:visibility="gone"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

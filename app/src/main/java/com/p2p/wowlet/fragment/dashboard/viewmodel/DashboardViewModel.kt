@@ -1,41 +1,37 @@
 package com.p2p.wowlet.fragment.dashboard.viewmodel
 
-import android.os.Bundle
-import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.PieEntry
-import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.Command.*
+import com.p2p.wowlet.appbase.viewcommand.Command.EnterWalletDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenAddCoinDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenAllMyTokensDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenBackupFailedDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenEditWalletDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenProfileDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenRecoveryPhraseDialogViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.OpenSwapBottomSheetViewCommand
+import com.p2p.wowlet.appbase.viewcommand.Command.YourWalletDialogViewCommand
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
-import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.AddCoinBottomSheet
-import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment.Companion.CREATE_NEW_PIN_CODE
-import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment.Companion.OPEN_FRAGMENT_BACKUP_DIALOG
-import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
 import com.p2p.wowlet.utils.roundCurrencyValue
 import com.wowlet.domain.interactors.DashboardInteractor
 import com.wowlet.domain.interactors.DetailWalletInteractor
 import com.wowlet.domain.interactors.FingerPrintInteractor
 import com.wowlet.entities.Result
-import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.AddCoinItem
+import com.wowlet.entities.local.EnableFingerPrintModel
 import com.wowlet.entities.local.LocalWalletItem
 import com.wowlet.entities.local.WalletItem
 import com.wowlet.entities.local.YourWallets
-import com.wowlet.entities.local.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.*
-import kotlin.math.pow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectIndexed
-
 
 class DashboardViewModel(
     val dashboardInteractor: DashboardInteractor,
@@ -46,7 +42,6 @@ class DashboardViewModel(
     val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
     private val _getAllWalletData by lazy { MutableLiveData<List<WalletItem>>() }
     val getAllWalletData: LiveData<List<WalletItem>> get() = _getAllWalletData
-
 
     private val _getWalletDataError by lazy { MutableLiveData<String>() }
     val getWalletDataError: LiveData<String> get() = _getWalletDataError
@@ -87,10 +82,6 @@ class DashboardViewModel(
         }
     }
 
-    fun showMindAddress(addCoinItem: AddCoinItem) {
-        _getAddCoinData.value = dashboardInteractor.showSelectedMintAddress(addCoinItem)
-    }
-
     fun getWalletItems() {
         clearWalletItems()
         getWalletItemsJob = viewModelScope.launch(Dispatchers.IO) {
@@ -119,7 +110,6 @@ class DashboardViewModel(
         _yourBalance.value = 0.0
         _getWalletChart.value = listOf()
     }
-
 
     fun getAllWallets() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -151,60 +141,6 @@ class DashboardViewModel(
         }
     }
 
-    fun finishApp() {
-        _command.value = FinishAppViewCommand()
-    }
-
-    fun goToScannerFragment() {
-        if (getWalletData.value.isNullOrEmpty()) return
-        _command.value =
-            NavigateScannerViewCommand(
-                R.id.action_navigation_dashboard_to_navigation_scanner
-            )
-    }
-
-    fun goToProfileDetailDialog() {
-        _command.value =
-            OpenProfileDetailDialogViewCommand()
-    }
-
-    fun goToBackupDialog() {
-        _command.value = OpenBackupDialogViewCommand()
-    }
-
-    fun goToCurrencyDialog(onCurrencySelected: () -> Unit) {
-        _command.value = OpenCurrencyDialogViewCommand(onCurrencySelected)
-    }
-
-    fun goToSavedCardDialog() {
-        _command.value = OpenSavedCardDialogViewCommand()
-    }
-
-    fun goToSecurityCardDialog(onFingerprintStateSelected: () -> Unit) {
-        _command.value = OpenSecurityDialogViewCommand(onFingerprintStateSelected)
-    }
-
-    fun goToNetworkDialog(onNetworkSelected: () -> Unit) {
-        _command.value = OpenNetworkDialogViewCommand(onNetworkSelected)
-    }
-
-    fun goToDetailWalletFragment(wallet: WalletItem) {
-        _command.value = OpenWalletDetailDialogViewCommand(wallet)
-    }
-
-
-    fun goToSendCoinFragment() {
-        _getAllWalletData.value?.let {
-            if (it.isNotEmpty()) {
-                _command.value =
-                    OpenSendCoinDialogViewCommand(
-                        walletItem = it[0]
-                    )
-            }
-        }
-    }
-
-
     fun goToQrScanner(walletItem: WalletItem) {
         val enterWallet = detailWalletInteractor.generateQRrCode(walletItem)
         _command.value = YourWalletDialogViewCommand(enterWallet)
@@ -218,26 +154,6 @@ class DashboardViewModel(
                     OpenSwapBottomSheetViewCommand(item, it)
             }
         }
-    }
-
-
-    fun goToBlockChainExplorer(url: String) {
-        _command.value =
-            NavigateBlockChainViewCommand(
-                R.id.action_navigation_dashboard_to_navigation_block_chain_explorer,
-                bundleOf(BlockChainExplorerFragment.BLOCK_CHAIN_URL to url)
-            )
-    }
-
-    fun goToPinCodeFragment() {
-        _command.value =
-            NavigatePinCodeViewCommand(
-                R.id.action_navigation_dashboard_to_navigation_pin_code,
-                bundleOf(
-                    OPEN_FRAGMENT_BACKUP_DIALOG to true,
-                    CREATE_NEW_PIN_CODE to PinCodeFragmentType.VERIFY
-                )
-            )
     }
 
     fun addCoin(addCoinItem: AddCoinItem) {

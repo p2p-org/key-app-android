@@ -32,7 +32,7 @@ class DetailWalletBottomSheet(
     private val openSendCoin: ((WalletItem) -> Unit),
     private val openReceveCoin: (() -> Unit),
     private val openSwap: ((wallet: WalletItem) -> Unit),
-    private val navigateToFragment: ((actionId: Int, bundle: Bundle?) -> Unit)
+    private val navigateToFragment: ((url: String) -> Unit)
 ) : BottomSheetDialogFragment() {
 
     private val detailWalletViewModel: DetailWalletViewModel by viewModel()
@@ -50,7 +50,7 @@ class DetailWalletBottomSheet(
             openSendCoin: ((WalletItem) -> Unit),
             openReveice: (() -> Unit),
             openSwapCoin: ((wallet: WalletItem) -> Unit),
-            navigateToFragment: ((actionId: Int, bundle: Bundle?) -> Unit)
+            navigateToFragment: ((url: String) -> Unit)
 
 
         ): DetailWalletBottomSheet {
@@ -198,8 +198,8 @@ class DetailWalletBottomSheet(
                 is Command.OpenTransactionDialogViewCommand -> {
                     TransactionBottomSheet.newInstance(
                         viewCommand.itemActivity
-                    ) { destinationId, bundle ->
-                        navigateToFragment.invoke(destinationId, bundle)
+                    ) {
+                        navigateToFragment.invoke(it)
                     }.show(
                         childFragmentManager,
                         TransactionBottomSheet.TRANSACTION_DIALOG

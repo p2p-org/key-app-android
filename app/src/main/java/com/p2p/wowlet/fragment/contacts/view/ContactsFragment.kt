@@ -9,6 +9,9 @@ import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentContactsBinding
 import com.p2p.wowlet.fragment.contacts.viewmodel.ContactsViewModel
+import com.p2p.wowlet.fragment.regwallet.view.RegWalletFragment
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ContactsFragment : FragmentBaseMVVM<ContactsViewModel,FragmentContactsBinding>() {
@@ -24,13 +27,9 @@ class ContactsFragment : FragmentBaseMVVM<ContactsViewModel,FragmentContactsBind
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
-            is Command.NavigateRegWalletViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
+            is Command.NavigateRegWalletViewCommand -> replace(RegWalletFragment())
         }
-    }
-
-    override fun navigateUp() {
-        viewModel.finishApp()
     }
 
 }

@@ -12,10 +12,13 @@ import com.p2p.wowlet.appbase.utils.dataBinding
 import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentSplashScreenBinding
+import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
+import com.p2p.wowlet.fragment.reglogin.view.RegLoginFragment
 import com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel
+import com.p2p.wowlet.utils.popAndReplace
+import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.SplashData
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class SplashScreenFragment :
     FragmentBaseMVVM<SplashScreenViewModel, FragmentSplashScreenBinding>() {
@@ -48,29 +51,18 @@ class SplashScreenFragment :
         )
         lastPage = list.size - 1
         viewModel.initData(list)
-
     }
 
     override fun initView() {
         with(binding) {
             viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
-                override fun onPageScrolled(
-                    position: Int,
-                    positionOffset: Float,
-                    positionOffsetPixels: Int
-                ) {
-                    super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-                }
 
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    if (position == lastPage)
-                        this@SplashScreenFragment.viewModel.goToRegLoginFragment()
+                    if (position == lastPage) {
+                        popAndReplace(RegLoginFragment(), inclusive = true)
+                    }
                     Log.e("Selected_Page", position.toString())
-                }
-
-                override fun onPageScrollStateChanged(state: Int) {
-                    super.onPageScrollStateChanged(state)
                 }
             })
         }
@@ -78,8 +70,15 @@ class SplashScreenFragment :
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is NavigateRegLoginViewCommand -> navigateFragment(command.destinationId)
-            is NavigatePinCodeViewCommand -> navigateFragment(command.destinationId,command.bundle)
+            is NavigateRegLoginViewCommand ->
+                popAndReplace(RegLoginFragment(), inclusive = true)
+            is NavigatePinCodeViewCommand ->
+                popAndReplace(
+                    target = PinCodeFragment.create(
+                        openSplashScreen = true, isBackupDialog = false, type = PinCodeFragmentType.VERIFY
+                    ),
+                    inclusive = true
+                )
             is OpenMainActivityViewCommand -> {
                 activity?.let {
                     val intent = Intent(it, MainActivity::class.java)
@@ -88,11 +87,5 @@ class SplashScreenFragment :
                 }
             }
         }
-
     }
-
-    override fun navigateUp() {
-        viewModel.finishApp()
-    }
-
 }

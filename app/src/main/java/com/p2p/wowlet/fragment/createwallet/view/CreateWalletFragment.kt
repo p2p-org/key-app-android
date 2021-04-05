@@ -10,7 +10,10 @@ import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.databinding.FragmentCreateWalletBinding
 import com.p2p.wowlet.fragment.createwallet.adapter.CreateWalletAdapter
 import com.p2p.wowlet.fragment.createwallet.viewmodel.CreateWalletViewModel
+import com.p2p.wowlet.fragment.regwallet.view.RegWalletFragment
 import com.p2p.wowlet.utils.copyClipboard
+import com.p2p.wowlet.utils.popBackStack
+import com.p2p.wowlet.utils.replace
 import kotlinx.android.synthetic.main.fragment_create_wallet.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -58,13 +61,9 @@ class CreateWalletFragment :
 
     override fun processViewCommand(command: ViewCommand) {
         when (command) {
-            is Command.NavigateUpViewCommand -> navigateFragment(command.destinationId)
-            is Command.NavigateRegWalletViewCommand -> navigateFragment(command.destinationId)
+            is Command.NavigateUpViewCommand -> popBackStack()
+            is Command.NavigateRegWalletViewCommand -> replace(RegWalletFragment())
         }
-    }
-
-    override fun navigateUp() {
-        viewModel.navigateUp()
     }
 
     companion object {

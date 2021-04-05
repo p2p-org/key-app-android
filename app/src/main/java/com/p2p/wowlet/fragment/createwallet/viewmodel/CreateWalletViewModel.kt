@@ -22,20 +22,6 @@ class CreateWalletViewModel(private val createWalletInteractor: CreateWalletInte
         generateRandomPhrase()
     }
 
-    fun navigateUp() {
-        _command.value =
-            Command.NavigateUpViewCommand(R.id.action_navigation_create_wallet_to_navigation_reg_login)
-    }
-
-    fun goToRegWalletFragment() {
-        viewModelScope.launch(Dispatchers.IO) {
-            createWalletInteractor.initUser()
-            withContext(Dispatchers.Main) {
-                _command.value =
-                    Command.NavigateRegWalletViewCommand(R.id.action_navigation_create_wallet_to_navigation_reg_wallet)
-            }
-        }
-    }
 
     fun generateRandomPhrase() {
         _getPhraseData.value = createWalletInteractor.generatePhrase()

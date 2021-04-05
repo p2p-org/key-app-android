@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
-        <import type="com.wowlet.entities.local.WalletItem"/>
+        <import type="com.wowlet.entities.local.WalletItem" />
+
         <variable
             name="viewModel"
             type="com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel" />
@@ -22,7 +24,6 @@
             android:layout_height="@dimen/dp_45"
             android:layout_marginStart="@dimen/dp_11"
             android:layout_marginTop="@dimen/dp_11"
-            android:onClick="@{()->viewModel.goToScannerFragment()}"
             android:tint="@color/gray_blue_400"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -35,9 +36,9 @@
             android:layout_marginEnd="@dimen/dp_20"
             android:elevation="@dimen/dp_16"
             android:onClick="@{()->viewModel.openProfileDialog()}"
+            app:layout_constraintBottom_toBottomOf="@id/lScannerContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/lScannerContainer"
-            app:layout_constraintBottom_toBottomOf="@id/lScannerContainer"
             app:srcCompat="@drawable/ic_default_coin" />
 
         <View
@@ -125,9 +126,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/vRvWallets"
-                android:layout_width="@dimen/dp_0"
                 adapter_list="@{viewModel.getWalletData}"
                 view_model="@{viewModel}"
+                android:layout_width="@dimen/dp_0"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginBottom="@dimen/dp_5"
@@ -143,11 +144,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginVertical="@dimen/dp_10"
-                app:layout_constraintTop_toBottomOf="@+id/vRvWallets"
                 android:background="@drawable/bg_already_have_account_gray_15"
                 android:onClick="@{()->viewModel.openAllMyTokensDialog()}"
                 android:visibility="gone"
-                >
+                app:layout_constraintTop_toBottomOf="@+id/vRvWallets">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Grey.17"
@@ -180,8 +180,7 @@
                 android:background="@drawable/bg_already_have_account_gray_15"
                 android:onClick="@{()->viewModel.openAddCoinDialog(viewModel.emptyLambda)}"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@+id/vRvWallets"
-                >
+                app:layout_constraintTop_toBottomOf="@+id/vRvWallets">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Black.17"
@@ -216,8 +215,7 @@
                 android:paddingVertical="@dimen/dp_17"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                >
+                app:layout_constraintStart_toStartOf="parent">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"
@@ -242,10 +240,10 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/sendButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/dp_36"
-                    android:onClick="@{()->viewModel.goToSendCoinFragment()}"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatImageView

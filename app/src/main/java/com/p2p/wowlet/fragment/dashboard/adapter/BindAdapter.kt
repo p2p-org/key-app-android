@@ -12,7 +12,9 @@ fun RecyclerView.setAdapterList(
     viewModel: DashboardViewModel
 ) {
     data?.let {
-        adapter = WalletsAdapter(viewModel, it)
+        adapter = WalletsAdapter(viewModel, it) {
+
+        }
     }
    this.layoutManager = LinearLayoutManager(this.context)
 }
