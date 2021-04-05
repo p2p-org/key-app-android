@@ -2,30 +2,29 @@ package com.p2p.wowlet.fragment.detailsaving.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel
+import com.p2p.wowlet.utils.bindadapter.walletFormat
 import com.wowlet.entities.local.ActivityItem
 
-class ActivityDetailAdapter(private val viewModel: DetailSavingViewModel,
-                            private val list: List<ActivityItem>): RecyclerView.Adapter<ActivityDetailAdapter.MyViewHolder>() {
+class ActivityDetailAdapter(
+    private val viewModel: DetailSavingViewModel,
+    private val list: List<ActivityItem>
+) : RecyclerView.Adapter<ActivityDetailAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-        val bind: ItemActivityBinding = DataBindingUtil.inflate(
+        val bind = ItemActivityBinding.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_activity,
             parent,
             false
         )
         return MyViewHolder(bind)
-
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        //holder.itemActivityBinding.itemActivity = list[position]
+        holder.onBind(list[position])
     }
 
     override fun getItemCount(): Int {
@@ -33,7 +32,14 @@ class ActivityDetailAdapter(private val viewModel: DetailSavingViewModel,
     }
 
     inner class MyViewHolder(
-        val itemActivityBinding: ItemActivityBinding
-    ) : RecyclerView.ViewHolder(itemActivityBinding.root)
+        private val binding: ItemActivityBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
+        fun onBind(item: ActivityItem) {
+            with(binding) {
+                vName.text = item.name
+                vDate.text = item.from
+            }
+        }
+    }
 }

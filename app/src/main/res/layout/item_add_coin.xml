@@ -1,254 +1,227 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-
-        <import type="android.view.View" />
-
-        <variable
-            name="viewModel"
-            type="com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel" />
-
-        <variable
-            name="itemAddCoin"
-            type="com.wowlet.entities.local.AddCoinItem" />
-    </data>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clItemAddCoin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clItemAddCoin"
-        android:layout_width="match_parent"
+        android:id="@+id/containerAddCoin"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:background="@{itemAddCoin.showMindAddress?@color/gray_300:@color/white}">
+        android:layout_marginBottom="@dimen/dp_20"
+        app:layout_constraintBottom_toTopOf="@+id/containerMintAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/containerAddCoin"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp_20"
-            app:layout_constraintBottom_toTopOf="@+id/containerMintAddress"
-            app:layout_constraintEnd_toEndOf="parent"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/vCoin"
+            android:layout_width="@dimen/dp_55"
+            android:layout_height="@dimen/dp_55"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_marginBottom="@dimen/dp_15"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_default_coin" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@+id/vCoin"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/vCoin"
-                image_source="@{itemAddCoin.icon}"
-                android:layout_width="@dimen/dp_55"
-                android:layout_height="@dimen/dp_55"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_15"
-                android:layout_marginBottom="@dimen/dp_15"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_default_coin" />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/vName"
+                style="@style/Black.15.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintStart_toEndOf="@+id/vCoin"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/vName"
-                    style="@style/Black.15.Bold"
-                    android:fontFamily="@font/sf_pro_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_15"
-                    android:layout_marginTop="@dimen/dp_21"
-                    android:text="@{itemAddCoin.tokenSymbol}"
-                    tools:text="SRM" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/Price"
-                    style="@style/Grey.12"
-                    android:fontFamily="@font/font_sf_pro_display"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_15"
-                    android:layout_marginTop="@dimen/dp_6"
-                    android:text="@{itemAddCoin.tokenName}"
-                    tools:text="Serum" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/lChartContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_21"
-                android:layout_marginEnd="@dimen/dp_15"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold"
-                    android:fontFamily="@font/sf_pro_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="@dimen/dp_10"
-                    android:text="@{String.format(@string/usd_symbol_2, itemAddCoin.currency)}"
-                    tools:text="$0.887832" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Grey.12"
-                    android:fontFamily="@font/font_sf_pro_display"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginTop="@dimen/dp_6"
-                    android:layout_marginEnd="@dimen/dp_10"
-                    android:text="@{itemAddCoin.change24hPercentagesPositive ? String.format(@string/for_24h_positive, itemAddCoin.change24hPercentages) : String.format(@string/for_24h, itemAddCoin.change24hPercentages)}"
-                    tools:text="+16.9% for 24hrs" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/containerMintAddress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/dp_20"
-            android:paddingEnd="@dimen/dp_20"
-            android:paddingBottom="@dimen/dp_20"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/containerAddCoin">
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/gray_400"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/mintAddressInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20"
-                android:text="@{String.format( @string/mint_address, itemAddCoin.tokenSymbol)}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textSize="@dimen/sp_13"
                 android:fontFamily="@font/sf_pro_text"
-                tools:text="SRM Mint Address" />
+                tools:text="SRM" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtMintAddress"
-                style="@style/Black.17"
-                android:fontFamily="@font/font_sf_pro_display"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_8"
-                android:text="@{itemAddCoin.mintAddress}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mintAddressInfo"
-                tools:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8k92jkek9j97y8" />
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/dp_20"
-                android:background="@color/gray_400"
-                app:layout_constraintTop_toBottomOf="@id/txtMintAddress" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnViewInExplorer"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:id="@+id/priceTextView"
+                style="@style/Grey.12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginStart="@dimen/dp_15"
+                android:layout_marginTop="@dimen/dp_6"
                 android:fontFamily="@font/font_sf_pro_display"
-                android:textStyle="bold"
-                android:text="@string/view_in_solana_explorer"
-                android:textAllCaps="false"
-                app:rippleColor="@color/blue_200"
-                android:textColor="@color/gray_blue_400"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtMintAddress" />
+                tools:text="Serum" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <FrameLayout
-                android:id="@+id/lAddCoin"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_60"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginEnd="@dimen/dp_20"
-                android:onClick="@{()->viewModel.addCoin(itemAddCoin)}"
-                android:paddingTop="@dimen/dp_4"
-                android:paddingBottom="@dimen/dp_4"
-                app:layout_constraintTop_toBottomOf="@id/btnViewInExplorer">
-
-                <ProgressBar
-                    android:id="@+id/pb_add_coin"
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:indeterminate="false"
-                    android:max="100"
-                    android:progress="100"
-                    android:progressDrawable="@drawable/bg_button_progress_bar" />
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtAddToken"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/add_token"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/sp_15"
-                        android:fontFamily="@font/sf_pro_text"
-                        android:textStyle="bold"
-                        />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtWillCost"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/sf_pro_text"
-                        android:textSize="@dimen/sp_13"
-                        android:gravity="center"
-                        android:text="@{@string/add_coin_cost(itemAddCoin.minBalance)}"
-                        android:textColor="@color/gray_300_65"
-                        tools:text="will cost 0.002039 SOL"
-                        />
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-            </FrameLayout>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/lChartContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/dp_21"
+            android:layout_marginEnd="@dimen/dp_15"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtErrorMessage"
-                android:layout_width="match_parent"
+                android:id="@+id/currencyTextView"
+                style="@style/Black.15.Bold"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/lAddCoin"
-                android:layout_marginTop="@dimen/dp_10"
+                android:layout_gravity="end"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:fontFamily="@font/sf_pro_text"
+                tools:text="$0.887832" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/percentTextView"
+                style="@style/Grey.12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/dp_6"
+                android:layout_marginEnd="@dimen/dp_10"
                 android:fontFamily="@font/font_sf_pro_display"
-                android:textColor="@color/red_400"
-                android:gravity="center"
-                tools:text="Error message"
-                />
+                tools:text="+16.9% for 24hrs" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</layout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerMintAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingBottom="@dimen/dp_20"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerAddCoin">
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray_400"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/mintAddressInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            android:fontFamily="@font/sf_pro_text"
+            android:textSize="@dimen/sp_13"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="SRM Mint Address" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtMintAddress"
+            style="@style/Black.17"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:fontFamily="@font/font_sf_pro_display"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mintAddressInfo"
+            tools:text="k97y8u209j08fh98yu20uiei92jkek9j290k97y8k92jkek9j97y8" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/dp_20"
+            android:background="@color/gray_400"
+            app:layout_constraintTop_toBottomOf="@id/txtMintAddress" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewInExplorer"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_30"
+            android:fontFamily="@font/font_sf_pro_display"
+            android:text="@string/view_in_solana_explorer"
+            android:textAllCaps="false"
+            android:textColor="@color/gray_blue_400"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtMintAddress"
+            app:rippleColor="@color/blue_200" />
+
+        <FrameLayout
+            android:id="@+id/lAddCoin"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:paddingTop="@dimen/dp_4"
+            android:paddingBottom="@dimen/dp_4"
+            app:layout_constraintTop_toBottomOf="@id/btnViewInExplorer">
+
+            <ProgressBar
+                android:id="@+id/pb_add_coin"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="100"
+                android:progressDrawable="@drawable/bg_button_progress_bar" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtAddToken"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_text"
+                    android:gravity="center"
+                    android:text="@string/add_token"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/sp_15"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtWillCost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_text"
+                    android:gravity="center"
+                    android:textColor="@color/gray_300_65"
+                    android:textSize="@dimen/sp_13"
+                    tools:text="will cost 0.002039 SOL" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </FrameLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:fontFamily="@font/font_sf_pro_display"
+            android:gravity="center"
+            android:textColor="@color/red_400"
+            app:layout_constraintTop_toBottomOf="@id/lAddCoin"
+            tools:text="Error message" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

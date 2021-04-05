@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSecurityBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel
 import com.p2p.wowlet.utils.openFingerprintDialog
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -21,8 +21,7 @@ class SecurityDialog(
     private val onFingerprintStateSelected: () -> Unit
 ) : DialogFragment() {
 
-    private var _binding: DialogSecurityBinding? = null
-    private val binding: DialogSecurityBinding get() = _binding!!
+    private val binding: DialogSecurityBinding by viewBinding()
 
     private val profileViewModel: ProfileViewModel by viewModel()
 
@@ -32,20 +31,10 @@ class SecurityDialog(
         fun newInstance(onFingerprintStateSelected: () -> Unit): SecurityDialog {
             return SecurityDialog(onFingerprintStateSelected)
         }
-
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_security, container, false
-        )
-        binding.profileViewModel = this.profileViewModel
-        return binding.root
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_security, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,6 +55,8 @@ class SecurityDialog(
                 }
             }
         }
+
+        binding.vSwitch.isChecked = profileViewModel.isUsesFingerprint().isEnable
     }
 
     private fun fingerprintEnableState(isFingerprintChecked: Boolean) {
@@ -86,11 +77,4 @@ class SecurityDialog(
             isCancelable = false
         }
     }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
 }

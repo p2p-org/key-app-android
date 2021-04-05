@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
+// fixme: attrs
 public class CheckableButtonGroup extends LinearLayoutCompat {
 
     private CheckableButton[] children;

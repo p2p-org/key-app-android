@@ -1,36 +1,24 @@
 package com.p2p.wowlet.fragment.termandcondition.view
 
 import android.os.Bundle
-
 import android.view.View
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentTermAndConditionBinding
 import com.p2p.wowlet.fragment.createwallet.view.CreateWalletFragment
-import com.p2p.wowlet.fragment.termandcondition.viewmodel.TermAndConditionViewModel
 import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.replace
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 
-class TermsAndConditionFragment() : FragmentBaseMVVM<TermAndConditionViewModel, FragmentTermAndConditionBinding>() {
-    override val viewModel: TermAndConditionViewModel by viewModel()
-    override val binding: FragmentTermAndConditionBinding by dataBinding(R.layout.fragment_term_and_condition)
+class TermsAndConditionFragment : BaseFragment(R.layout.fragment_term_and_condition) {
+    private val binding: FragmentTermAndConditionBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@TermsAndConditionFragment.viewModel
+            vIcBack.setOnClickListener { popBackStack() }
+            acceptButton.setOnClickListener { replaceFragment(CreateWalletFragment()) }
+            declineButton.setOnClickListener { popBackStack() }
         }
     }
-
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is Command.NavigateUpViewCommand -> popBackStack()
-            is Command.NavigateCreateWalletViewCommand -> replace(CreateWalletFragment())
-        }
-    }
-
 }

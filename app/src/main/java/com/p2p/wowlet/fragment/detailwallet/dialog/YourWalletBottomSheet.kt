@@ -7,19 +7,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSendYourWalletBinding
 import com.p2p.wowlet.fragment.detailwallet.viewmodel.DetailWalletViewModel
+import com.p2p.wowlet.utils.bindadapter.imageSource
+import com.p2p.wowlet.utils.bindadapter.imageSourceBitmap
 import com.p2p.wowlet.utils.shareText
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.local.EnterWallet
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class YourWalletBottomSheet(val enterWallet: EnterWallet) : BottomSheetDialogFragment() {
-
-    private val dashboardViewModel: DetailWalletViewModel by viewModel()
-    lateinit var binding: DialogSendYourWalletBinding
+class YourWalletBottomSheet(
+    private val enterWallet: EnterWallet
+) : BottomSheetDialogFragment() {
 
     companion object {
         const val ENTER_YOUR_WALLET = "EnterYourWallet"
@@ -28,25 +29,25 @@ class YourWalletBottomSheet(val enterWallet: EnterWallet) : BottomSheetDialogFra
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_send_your_wallet, container, false
-        )
-        return binding.root
-    }
+    private val dashboardViewModel: DetailWalletViewModel by viewModel()
+
+    private val binding: DialogSendYourWalletBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_send_your_wallet, container, false)
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.dismissDialog.setOnClickListener { dismiss() }
-//        binding.viewModel = dashboardViewModel
-        binding.itemModel = enterWallet
-        binding.shareWalletContainer.setOnClickListener {
-            context?.run { shareText(enterWallet.walletAddress) }
+        with(binding) {
+            walletQrCodeIv.imageSourceBitmap(enterWallet.qrCode)
+            iconImageView.imageSource(enterWallet.icon)
+            walletAddressTextView.text = enterWallet.name
+            tokenText.text = enterWallet.walletAddress
+            dismissDialog.setOnClickListener { dismiss() }
+            shareWalletContainer.setOnClickListener {
+                context?.run { shareText(enterWallet.walletAddress) }
+            }
         }
     }
 

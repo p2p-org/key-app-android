@@ -3,26 +3,23 @@ package com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.view
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentManualSecretKeysBinding
 import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.adapter.RandomKeyAdapter
 import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.adapter.SortKeyAdapter
 import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.enums.PinCodeFragmentType
 import com.wowlet.entities.local.SecretKeyItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ManualSecretKeysFragment :
-    FragmentBaseMVVM<ManualSecretKeyViewModel, FragmentManualSecretKeysBinding>() {
+class ManualSecretKeysFragment : BaseFragment(R.layout.fragment_manual_secret_keys) {
 
-    override val viewModel: ManualSecretKeyViewModel by viewModel()
-    override val binding: FragmentManualSecretKeysBinding by dataBinding(R.layout.fragment_manual_secret_keys)
+    private val viewModel: ManualSecretKeyViewModel by viewModel()
+    private val binding: FragmentManualSecretKeysBinding by viewBinding()
 
     private lateinit var sortAdapter: SortKeyAdapter
     private lateinit var randomAdapter: RandomKeyAdapter
@@ -34,12 +31,16 @@ class ManualSecretKeysFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.run {
-            viewModel = this@ManualSecretKeysFragment.viewModel
-        }
+
+        binding.backImageView.setOnClickListener { popBackStack() }
+
+        initData()
+        initView()
+
+        observeData()
     }
 
-    override fun initData() {
+    private fun initData() {
         val secretKey = arguments?.run { getString(MANUAL_SECRET_KEY, "") }
         val split = secretKey?.split(" ")
         split?.forEach {
@@ -50,7 +51,7 @@ class ManualSecretKeysFragment :
         }
     }
 
-    override fun initView() {
+    private fun initView() {
         with(binding) {
             sortAdapter = SortKeyAdapter(this@ManualSecretKeysFragment.viewModel, mutableListOf())
             rvSortSecretKey.adapter = sortAdapter
@@ -70,36 +71,23 @@ class ManualSecretKeysFragment :
         }
     }
 
-    override fun observes() {
-        observe(viewModel.getPhraseData) {
+    private fun observeData() {
+        viewModel.getPhraseData.observe(viewLifecycleOwner) {
             randomAdapter.hideItem(it)
             sortAdapter.addItem(it)
         }
-        observe(viewModel.resultResponseData) {
+        viewModel.resultResponseData.observe(viewLifecycleOwner) {
             if (it) {
-                replace(PinCodeFragment.create(
-                    openSplashScreen = false,
-                    isBackupDialog = false,
-                    type = PinCodeFragmentType.CREATE
-                ))
-            } else {
-                binding.vUserId.visibility = View.VISIBLE
-                binding.resetSecretKeys.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is Command.NavigateUpViewCommand -> popBackStack()
-            is Command.NavigatePinCodeViewCommand -> {
-                replace(
+                replaceFragment(
                     PinCodeFragment.create(
                         openSplashScreen = false,
                         isBackupDialog = false,
                         type = PinCodeFragmentType.CREATE
                     )
                 )
+            } else {
+                binding.vUserId.visibility = View.VISIBLE
+                binding.resetSecretKeys.visibility = View.VISIBLE
             }
         }
     }

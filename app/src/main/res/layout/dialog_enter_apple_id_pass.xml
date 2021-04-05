@@ -1,92 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp_270"
+    android:layout_height="@dimen/dp_178"
+    android:background="@drawable/bg_apple_id_dialog"
+    android:orientation="vertical">
 
-    </data>
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/White.17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_18"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:gravity="center"
+        android:text="@string/enter_apple_id_password" />
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="@dimen/dp_270"
-        android:layout_height="@dimen/dp_178"
-        android:background="@drawable/bg_apple_id_dialog"
-        android:orientation="vertical">
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/White.13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_2"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:gravity="center"
+        android:text="@string/enter_apple_id_pass_info" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/White.17"
-            android:layout_width="wrap_content"
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edMailPhone"
+        style="@style/Grey.13"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:background="@drawable/bg_enter_apple_id"
+        android:hint="@string/enter_your_apple_id_password"
+        android:paddingStart="@dimen/dp_6"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingEnd="@dimen/dp_6"
+        android:paddingBottom="@dimen/dp_4"
+        android:textColorHint="@color/gray_30"
+        android:textSize="@dimen/sp_13" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginTop="@dimen/dp_16"
+        android:background="@color/gray_30" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/vCancel"
+            style="@style/Blue.17"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginTop="@dimen/dp_18"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:gravity="center"
-            android:text="@string/enter_apple_id_password" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/White.13"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginTop="@dimen/dp_2"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:gravity="center"
-            android:text="@string/enter_apple_id_pass_info" />
-
-        <androidx.appcompat.widget.AppCompatEditText
-            style="@style/Grey.13"
-            android:id="@+id/edMailPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/dp_10"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:background="@drawable/bg_enter_apple_id"
-            android:hint="@string/enter_your_apple_id_password"
-            android:paddingStart="@dimen/dp_6"
-            android:paddingTop="@dimen/dp_4"
-            android:paddingEnd="@dimen/dp_6"
-            android:paddingBottom="@dimen/dp_4"
-            android:textColorHint="@color/gray_30"
-            android:textSize="@dimen/sp_13" />
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:text="@string/cancel" />
 
         <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_1"
-            android:layout_marginTop="@dimen/dp_16"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
             android:background="@color/gray_30" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/vEnable"
+            style="@style/Blue.17"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:text="@string/enable" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/vCancel"
-                style="@style/Blue.17"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:text="@string/cancel" />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:background="@color/gray_30" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/vEnable"
-                style="@style/Blue.17"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:text="@string/enable" />
-
-        </LinearLayout>
-    </androidx.appcompat.widget.LinearLayoutCompat>
-</layout>
+    </LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

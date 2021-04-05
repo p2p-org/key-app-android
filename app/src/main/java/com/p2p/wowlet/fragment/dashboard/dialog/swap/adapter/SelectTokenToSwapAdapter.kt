@@ -4,12 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.widget.doAfterTextChanged
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemSwapTokenBinding
+import com.p2p.wowlet.utils.bindadapter.imageSourceRadiusDp
 import com.wowlet.entities.local.WalletItem
-import kotlin.collections.ArrayList
 
 class SelectTokenToSwapAdapter(
     private val selectedWalletItem: WalletItem
@@ -21,19 +19,20 @@ class SelectTokenToSwapAdapter(
 
     inner class ViewHolder(private val binding: ItemSwapTokenBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(position: Int) {
+            val item = swapToTokenItems[position]
             binding.apply {
-                walletItem = swapToTokenItems[position]
+                txtTokenName.text = item.tokenName
+                txtTokenSymbol.text = item.tokenSymbol
+                imgTokenSwap.imageSourceRadiusDp(item.icon, 12)
                 root.setOnClickListener { onItemClick?.invoke(swapToTokenItems[position]) }
-                executePendingBindings()
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            DataBindingUtil.inflate(
+            ItemSwapTokenBinding.inflate(
                 LayoutInflater.from(parent.context),
-                R.layout.item_swap_token,
                 parent,
                 false
             )
@@ -48,7 +47,6 @@ class SelectTokenToSwapAdapter(
         return swapToTokenItems.size
     }
 
-
     private fun filterItemsByName(name: String) {
         if (name.isNotEmpty()) {
             val swapToTokenItemsFiltered: MutableList<WalletItem> = ArrayList()
@@ -58,7 +56,7 @@ class SelectTokenToSwapAdapter(
                 }
             }
             updateItems(swapToTokenItemsFiltered)
-        }else {
+        } else {
             updateItems(swapToTokenItemsInitial)
         }
     }
@@ -77,7 +75,6 @@ class SelectTokenToSwapAdapter(
         }
     }
 
-
     fun initList(walletItems: Collection<WalletItem>) {
         swapToTokenItemsInitial.apply {
             clear()
@@ -89,7 +86,4 @@ class SelectTokenToSwapAdapter(
     fun setOnItemClickListener(clickEvent: (selectedWalletItem: WalletItem) -> Unit) {
         onItemClick = clickEvent
     }
-
-
-
 }

@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
@@ -22,8 +22,10 @@ import com.p2p.wowlet.fragment.dashboard.dialog.SendCoinDoneDialog
 import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.YourWalletsBottomSheet
 import com.p2p.wowlet.fragment.dashboard.view.DashboardFragment
 import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
+import com.p2p.wowlet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.Constants
 import com.wowlet.entities.local.WalletItem
 import kotlinx.android.synthetic.main.fragment_send_coins.*
@@ -39,7 +41,7 @@ class SendCoinsBottomSheet(
 
     private val viewModel: SendCoinsViewModel by viewModel()
     private val walletAddressViewModel: WalletAddressViewModel by sharedViewModel()
-    private lateinit var binding: FragmentSendCoinsBinding
+    private val binding: FragmentSendCoinsBinding by viewBinding()
 
     private var bottomSheet: View? = null
     private var feeValue = 0.0
@@ -57,18 +59,17 @@ class SendCoinsBottomSheet(
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_send_coins, container, false
-        )
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.fragment_send_coins, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@SendCoinsBottomSheet.viewModel
-            this.lifecycleOwner = viewLifecycleOwner
+            txtAvailableBalance.setOnClickListener { viewModel.insertAllBalance() }
+            imgWalletData.setOnClickListener { viewModel.openMyWalletsDialog() }
+            imgWalletData.imageSourceRadiusDp(walletItem?.icon, 16)
+            txtToken.text = walletItem?.tokenSymbol
+            sendCoinButton.setOnClickListener { viewModel.sendCoinCommand() }
             etWalletAddress.doAfterTextChanged { text ->
                 if (text == null) return@doAfterTextChanged
                 if (text.length == Constants.PUBLIC_KEY_LENGTH) {
@@ -77,15 +78,15 @@ class SendCoinsBottomSheet(
                     this@SendCoinsBottomSheet.viewModel.setWalletIconVisibility(false)
                 }
                 if (text.isEmpty()) {
-                    binding.imgClearWalletAddress.isVisible = false
-                    binding.imgScanQrCode.isVisible = true
+                    imgClearWalletAddress.isVisible = false
+                    imgScanQrCode.isVisible = true
                     return@doAfterTextChanged
                 }
-                binding.imgScanQrCode.setOnClickListener {
-                    replace(QrScannerFragment.create(true))
+                imgScanQrCode.setOnClickListener {
+                    replaceFragment(QrScannerFragment.create(true))
                 }
-                binding.imgClearWalletAddress.isVisible = true
-                binding.imgScanQrCode.isVisible = false
+                imgClearWalletAddress.isVisible = true
+                imgScanQrCode.isVisible = false
                 for (char in text) {
                     val charToInt = char.toInt()
                     if (charToInt in 1040..1103
@@ -113,7 +114,7 @@ class SendCoinsBottomSheet(
                 }
                 this@SendCoinsBottomSheet.viewModel.isAmountBiggerThanAvailable(text.toString())
                 if (text?.isEmpty() == true) {
-                    binding.txtInputInToken.text = ""
+                    txtInputInToken.text = ""
                     return@doOnTextChanged
                 }
                 etCount.setSelection(text?.length!!)
@@ -140,7 +141,6 @@ class SendCoinsBottomSheet(
         viewModel.getWalletData()
         getWalletItemsJob = viewModel.getWalletItems()
         viewModel.getFee()
-        return binding.root
     }
 
     override fun onStart() {
@@ -164,6 +164,13 @@ class SendCoinsBottomSheet(
                 viewModel.openDoneDialog(it)
             }
         })
+        viewModel.isInsertedMoreThanAvailable.observe(viewLifecycleOwner) {
+            val color = if (it) R.color.red_500 else R.color.blue_400
+            txtAvailableBalance.setTextColor(ContextCompat.getColor(requireContext(), color))
+        }
+        viewModel.walletIconVisibility.observe(viewLifecycleOwner) {
+            imgWallet.isVisible = it
+        }
         viewModel.errorTransaction.observe(viewLifecycleOwner, { message ->
             processingDialog?.run {
                 if (isVisible) {
@@ -203,9 +210,14 @@ class SendCoinsBottomSheet(
                 }
             }
         })
+        viewModel.isInsertedMoreThanAvailable.observe(viewLifecycleOwner) {
+            sendCoinButton.isEnabled = !it
+        }
         viewModel.walletItemData.observe(viewLifecycleOwner) {
             if (it.tokenSymbol == "") return@observe
-            walletItem = it
+            imgWalletData.imageSourceRadiusDp(it.icon, 16)
+            txtToken.text = it.tokenSymbol
+
             viewModel.getFee()
             viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())
             val balanceText = getString(R.string.available, it.amount, it.tokenSymbol)
@@ -289,7 +301,7 @@ class SendCoinsBottomSheet(
                 is NavigateScannerViewCommand -> {
                     when (requireActivity().supportFragmentManager.findFragmentById(R.id.container)) {
                         is DashboardFragment -> {
-                            replace(QrScannerFragment.create(viewCommand.goBack))
+                            replaceFragment(QrScannerFragment.create(viewCommand.goBack))
                         }
                         else -> {
                             popBackStack()

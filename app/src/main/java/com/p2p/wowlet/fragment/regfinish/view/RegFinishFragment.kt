@@ -5,39 +5,26 @@ import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
 import com.p2p.wowlet.activity.MainActivity
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentRegFinishBinding
 import com.p2p.wowlet.fragment.regfinish.viewmodel.RegFinishViewModel
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+class RegFinishFragment : BaseFragment(R.layout.fragment_reg_finish) {
 
-class RegFinishFragment : FragmentBaseMVVM<RegFinishViewModel, FragmentRegFinishBinding>() {
-
-    override val viewModel: RegFinishViewModel by viewModel()
-    override val binding: FragmentRegFinishBinding by dataBinding(R.layout.fragment_reg_finish)
+    private val viewModel: RegFinishViewModel by viewModel()
+    private val binding: FragmentRegFinishBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@RegFinishFragment.viewModel
-        }
-    }
-
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-           // is Command.NavigateUpViewCommand -> popBackStack()
-            is Command.OpenMainActivityViewCommand -> {
-                activity?.let{
-                    val intent = Intent (it, MainActivity::class.java)
-                    it.startActivity(intent)
-                    it.finish()
-                }
-
+            btFinish.setOnClickListener {
+                val context = requireActivity()
+                val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
+                context.finish()
             }
         }
     }
-
 }

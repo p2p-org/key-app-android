@@ -3,60 +3,53 @@ package com.p2p.wowlet.fragment.notification.view
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentNotificationBinding
 import com.p2p.wowlet.fragment.notification.dialog.EnableNotificationDialog
 import com.p2p.wowlet.fragment.notification.viewmodel.NotificationViewModel
 import com.p2p.wowlet.fragment.regfinish.view.RegFinishFragment
-import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
-class NotificationFragment :
-    FragmentBaseMVVM<NotificationViewModel, FragmentNotificationBinding>() {
+class NotificationFragment : BaseFragment(R.layout.fragment_notification) {
 
     companion object {
         fun newInstance() = NotificationFragment()
     }
 
-    override val viewModel: NotificationViewModel by viewModel()
-    override val binding: FragmentNotificationBinding by dataBinding(R.layout.fragment_notification)
+    private val viewModel: NotificationViewModel by viewModel()
+    private val binding: FragmentNotificationBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@NotificationFragment.viewModel
+            btUseFaceID.setOnClickListener { viewModel.openEnableNotificationDialog() }
+            btLater.setOnClickListener {
+                viewModel.doThisLater()
+                replaceFragment(RegFinishFragment())
+            }
         }
 
+        observeData()
     }
 
-    override fun observes() {
-        observe(viewModel.showNotificationDialog) {
+    private fun observeData() {
+        viewModel.showNotificationDialog.observe(viewLifecycleOwner) {
             EnableNotificationDialog() {
                 viewModel.enableNotification()
+                replaceFragment(RegFinishFragment())
             }.show(
                 childFragmentManager,
                 EnableNotificationDialog.TAG_ENABLE_NOTIFICATION_DIALOG
             )
         }
-        observe(viewModel.isSkipNotification) {
+        viewModel.isSkipNotification.observe(viewLifecycleOwner) {
             viewModel.doThisLater()
+            replaceFragment(RegFinishFragment())
         }
-        observe(viewModel.isAlreadyEnableNotification) {
-            replace(RegFinishFragment())
-        }
-    }
-
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is Command.NavigateUpViewCommand -> popBackStack()
-            is Command.NavigateRegFinishViewCommand -> replace(RegFinishFragment())
+        viewModel.isAlreadyEnableNotification.observe(viewLifecycleOwner) {
+            replaceFragment(RegFinishFragment())
         }
     }
-
-
 }

@@ -3,50 +3,43 @@ package com.p2p.wowlet.fragment.fingetprint.view
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.FragmentBaseMVVM
-import com.p2p.wowlet.appbase.utils.dataBinding
-import com.p2p.wowlet.appbase.viewcommand.Command.NavigateNotificationViewCommand
-import com.p2p.wowlet.appbase.viewcommand.Command.NavigateUpViewCommand
-import com.p2p.wowlet.appbase.viewcommand.ViewCommand
+import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentFingerprintBinding
 import com.p2p.wowlet.fragment.fingetprint.viewmodel.FingerPrintViewModel
 import com.p2p.wowlet.fragment.notification.view.NotificationFragment
 import com.p2p.wowlet.utils.openFingerprintDialog
-import com.p2p.wowlet.utils.popBackStack
-import com.p2p.wowlet.utils.replace
+import com.p2p.wowlet.utils.replaceFragment
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FingerPrintFragment : FragmentBaseMVVM<FingerPrintViewModel, FragmentFingerprintBinding>() {
+class FingerPrintFragment : BaseFragment(R.layout.fragment_fingerprint) {
 
-    override val viewModel: FingerPrintViewModel by viewModel()
-    override val binding: FragmentFingerprintBinding by dataBinding(R.layout.fragment_fingerprint)
+    private val viewModel: FingerPrintViewModel by viewModel()
+    private val binding: FragmentFingerprintBinding by viewBinding()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            viewModel = this@FingerPrintFragment.viewModel
         }
         binding.btUseFaceID.setOnClickListener {
-            activity?.openFingerprintDialog() {
+            requireActivity().openFingerprintDialog {
                 viewModel.enableFingerprint()
             }
         }
+
+
+        with(binding) {
+            btLater.setOnClickListener {
+                viewModel.doThisLater(false)
+                replaceFragment(NotificationFragment.newInstance())
+            }
+        }
+        observeData()
     }
 
-    override fun observes() {
-        observe(viewModel.isSkipFingerPrint) {
+    private fun observeData() {
+        viewModel.isSkipFingerPrint.observe(viewLifecycleOwner) {
             viewModel.doThisLater(it)
         }
     }
-
-    override fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is NavigateUpViewCommand -> {
-                popBackStack()
-            }
-            is NavigateNotificationViewCommand -> {
-                replace(NotificationFragment.newInstance())
-            }
-        }
-    }
-
 }

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
@@ -14,6 +13,7 @@ import com.p2p.wowlet.databinding.DialogAllMyTokensBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.allmytokens.adapter.WalletsAdapter
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.utils.drawChart
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.wowlet.entities.local.WalletItem
 import com.wowlet.entities.local.YourWallets
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -25,7 +25,6 @@ class AllMyTokensBottomSheet(
 ) : BottomSheetDialogFragment() {
 
     private val dashboardViewModel: DashboardViewModel by viewModel()
-    private lateinit var binding: DialogAllMyTokensBinding
     private lateinit var walletsAdapter: WalletsAdapter
 
     companion object {
@@ -38,14 +37,13 @@ class AllMyTokensBottomSheet(
             AllMyTokensBottomSheet(yourWallets, addCoinClickListener, itemClickListener)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_all_my_tokens, container, false
-        )
+    private val binding: DialogAllMyTokensBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_all_my_tokens, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         dashboardViewModel.getAllWallets()
         binding.vRvWallets.layoutManager = LinearLayoutManager(requireContext())
         walletsAdapter = WalletsAdapter(dashboardViewModel, mutableListOf()) {
@@ -58,11 +56,6 @@ class AllMyTokensBottomSheet(
                 dashboardViewModel.getAllWallets()
             }
         }
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding.vPieChartData.drawChart(yourWallets.pieChartList)
         binding.vPrice.text = String.format(getString(R.string.usd_symbol_2), yourWallets.balance)
         dashboardViewModel.getWalletData.observe(viewLifecycleOwner, {

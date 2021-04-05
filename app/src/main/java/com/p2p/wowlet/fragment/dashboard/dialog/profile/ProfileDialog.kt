@@ -7,13 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogProfileBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.networks.viewmodel.NetworkViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel
-import kotlinx.android.synthetic.main.dialog_profile.*
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ProfileDialog(
@@ -24,13 +23,7 @@ class ProfileDialog(
     private val openSavedCard: () -> Unit,
     private val openSecurity: (onFingerprintStateSelected: () -> Unit) -> Unit,
 
-) : DialogFragment() {
-
-    private val profileViewModel: ProfileViewModel by viewModel()
-    private val networkViewModel: NetworkViewModel by viewModel()
-
-    private var _binding: DialogProfileBinding? = null
-    private val binding: DialogProfileBinding get() = _binding!!
+    ) : DialogFragment() {
 
     companion object {
 
@@ -54,46 +47,46 @@ class ProfileDialog(
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_profile, container, false
-        )
-        binding.apply {
-            viewModel = profileViewModel
-            networkViewModel = this@ProfileDialog.networkViewModel
-        }
-        return binding.root
-    }
+    private val profileViewModel: ProfileViewModel by viewModel()
+    private val networkViewModel: NetworkViewModel by viewModel()
+
+    private val binding: DialogProfileBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_profile, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vDone.setOnClickListener {
-            dismiss()
-        }
-        lUserInfoContainer.setOnClickListener {
-            openProfileDetail.invoke()
-        }
-        lBackupContainer.setOnClickListener {
-            openBackup.invoke()
-        }
-        lNetworkContainer.setOnClickListener {
-            openNetwork.invoke(onNetworkSelected)
-        }
-        lCurrencyContainer.setOnClickListener {
-            openCurrency.invoke(onCurrencySelected)
-        }
+        with(binding) {
+            txtCurrencyName.text = profileViewModel.getSelectedCurrencyName()
+            txtSelectedNetworkName.text = networkViewModel.getSelectedNetworkName()
+
+            val isEnabled = profileViewModel.isUsesFingerprint().isEnable
+            txtSecurityOptions.text = getString(if (isEnabled) (R.string.fingerprint_and_pin) else R.string.pin)
+
+            vDone.setOnClickListener {
+                dismiss()
+            }
+            lUserInfoContainer.setOnClickListener {
+                openProfileDetail.invoke()
+            }
+            lBackupContainer.setOnClickListener {
+                openBackup.invoke()
+            }
+            lNetworkContainer.setOnClickListener {
+                openNetwork.invoke(onNetworkSelected)
+            }
+            lCurrencyContainer.setOnClickListener {
+                openCurrency.invoke(onCurrencySelected)
+            }
 //        lSavedCardsContainer.setOnClickListener {
 //            openSavedCard.invoke()
 //        }
-        lSecurityContainer.setOnClickListener {
-            openSecurity.invoke(onFingerprintStateSelected)
+            lSecurityContainer.setOnClickListener {
+                openSecurity.invoke(onFingerprintStateSelected)
+            }
         }
-
     }
 
     private val onCurrencySelected: () -> Unit = {
@@ -108,8 +101,7 @@ class ProfileDialog(
         binding.txtSecurityOptions.text =
             if (profileViewModel.isUsesFingerprint().isEnable) {
                 getString(R.string.fingerprint_and_pin)
-            }
-            else {
+            } else {
                 getString(R.string.pin)
             }
     }
@@ -123,10 +115,4 @@ class ProfileDialog(
             isCancelable = false
         }
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
 }

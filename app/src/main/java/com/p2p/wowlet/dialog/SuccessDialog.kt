@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSuccessBinding
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 
 class SuccessDialog(val value: String) : DialogFragment() {
 
@@ -20,16 +20,14 @@ class SuccessDialog(val value: String) : DialogFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val binding: DialogSuccessBinding = DataBindingUtil.inflate(
-            inflater, R.layout.dialog_success, container, false
-        )
+    private val binding: DialogSuccessBinding by viewBinding()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_success, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.vSuccessInfo.text = value
-        return binding.root
     }
 
     override fun onResume() {
@@ -42,5 +40,4 @@ class SuccessDialog(val value: String) : DialogFragment() {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
     }
-
 }

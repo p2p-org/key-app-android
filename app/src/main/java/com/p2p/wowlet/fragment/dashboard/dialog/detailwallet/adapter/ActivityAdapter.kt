@@ -2,11 +2,11 @@ package com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.viewmodel.DetailWalletViewModel
+import com.p2p.wowlet.utils.bindadapter.imageSource
 import com.wowlet.entities.local.ActivityItem
 
 class ActivityAdapter(
@@ -16,19 +16,16 @@ class ActivityAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-        val bind: ItemActivityBinding = DataBindingUtil.inflate(
+        val bind = ItemActivityBinding.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_activity,
             parent,
             false
         )
         return MyViewHolder(bind)
-
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.itemActivityBinding.itemActivity = list[position]
-        holder.itemActivityBinding.viewModel = viewModel
+        holder.onBind(list[position])
     }
 
     override fun getItemCount(): Int {
@@ -41,7 +38,23 @@ class ActivityAdapter(
     }
 
     inner class MyViewHolder(
-        val itemActivityBinding: ItemActivityBinding
-    ) : RecyclerView.ViewHolder(itemActivityBinding.root)
+        private val itemActivityBinding: ItemActivityBinding
+    ) : RecyclerView.ViewHolder(itemActivityBinding.root) {
 
+        private val vCoin = itemActivityBinding.vCoin
+        private val vName = itemActivityBinding.vName
+        private val vDate = itemActivityBinding.vDate
+        private val vPrice = itemActivityBinding.vPrice
+        private val vLamport = itemActivityBinding.vLamport
+
+        fun onBind(item: ActivityItem) {
+            vDate.text = item.from
+            vName.text = item.name
+            val price = "${item.symbolsPrice} ${itemView.context.getString(R.string.us_new, item.price)}"
+            vPrice.text = price
+            vLamport.text = itemView.context.getString(R.string.sol, item.lamports)
+            vCoin.imageSource(item.icon)
+            itemView.setOnClickListener { viewModel.openTransactionDialog(item) }
+        }
+    }
 }
