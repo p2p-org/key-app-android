@@ -1,7 +1,9 @@
 package com.wowlet.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -12,12 +14,25 @@ import com.wowlet.data.util.cipher.Cipher.Companion.generateSecretKeyCipher
 import com.wowlet.data.util.cipher.Cipher.Companion.getSecretKey
 import com.wowlet.data.util.cipher.Cipher.Companion.strSecretKey
 import com.wowlet.entities.enums.SelectedCurrency
-import com.wowlet.entities.local.*
+import com.wowlet.entities.local.CipherData
+import com.wowlet.entities.local.EnableFingerPrintModel
+import com.wowlet.entities.local.EnableNotificationModel
+import com.wowlet.entities.local.PinCodeData
+import com.wowlet.entities.local.UserSecretData
+import com.wowlet.entities.local.WalletItem
 import org.p2p.solanaj.rpc.Cluster
-import java.io.*
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
 import java.lang.reflect.Type
 
-class PreferenceServiceImpl(val context: Context) : PreferenceService {
+class PreferenceServiceImpl(
+    private val context: Context,
+    val sharedPreferences: SharedPreferences
+) : PreferenceService {
 
     private val authenticationKey = "authenticationKeys"
     private val pinCodeKey = "pinCodeKey"
@@ -28,10 +43,7 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
     private val networkItemKey = "networkItemKey"
     private val selectedCurrencyKey = "selectedCurrencyKey"
 
-    val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
-
     override fun setPinCodeValue(codeValue: PinCodeData): Boolean = put(codeValue, pinCodeKey)
-
 
     override fun getPinCodeValue(): PinCodeData? =
         get<PinCodeData>(pinCodeKey)
@@ -50,10 +62,11 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
         put(isEnable, fingerPrintPKey)
     }
 
-    override fun isCurrentLoginReg(): Boolean = finishReg
+    override fun isCurrentLoginReg(): Boolean =
+        sharedPreferences.getBoolean(finishRegKey, false)
 
     override fun finishLoginReg(finishReg: Boolean) {
-        this.finishReg = finishReg
+        sharedPreferences.edit { putBoolean(finishRegKey, finishReg) }
     }
 
     override fun setWalletItemData(walletItem: WalletItem?) {
@@ -62,17 +75,11 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
     override fun getWalletItemData(): WalletItem? = get(walletItemKey)
 
-
     override fun setSelectedNetWork(cluster: Cluster) {
         put(cluster, networkItemKey)
     }
 
     override fun getSelectedCluster(): Cluster = get(networkItemKey) ?: Cluster.MAINNET
-
-    private var finishReg: Boolean
-        get() = sharedPreferences.getBoolean(finishRegKey, false)
-        set(enable) = sharedPreferences.edit().putBoolean(finishRegKey, enable)
-            .apply()
 
     override fun setSelectedCurrency(currency: SelectedCurrency) {
         put(currency, selectedCurrencyKey)
@@ -164,7 +171,6 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
         return null
     }
 
-
     override fun updateWallet(userSecretData: UserSecretData): Boolean {
         setSingleWalletData(userSecretData)
         return true
@@ -203,7 +209,6 @@ class PreferenceServiceImpl(val context: Context) : PreferenceService {
 
 
             Log.i("Saved to", "saveFile: " + context.filesDir.toString() + "/" + FILE_NAME)
-
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {

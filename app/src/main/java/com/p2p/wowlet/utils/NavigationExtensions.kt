@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.whenStateAtLeast
 import com.p2p.wowlet.R
-import com.p2p.wowlet.common.BaseFragmentContract
+import com.p2p.wowlet.common.mvp.BaseFragmentContract
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
