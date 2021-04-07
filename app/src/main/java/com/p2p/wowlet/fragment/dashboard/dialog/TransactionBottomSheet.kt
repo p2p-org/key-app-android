@@ -14,9 +14,9 @@ import com.p2p.wowlet.utils.bindadapter.walletFormat
 import com.p2p.wowlet.utils.copyClipboard
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.domain.utils.getTransactionDate
-import com.wowlet.entities.Constants.Companion.EXPLORER_SOLANA
-import com.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.domain.utils.getTransactionDate
+import com.p2p.wowlet.entities.Constants.Companion.EXPLORER_SOLANA
+import com.p2p.wowlet.entities.local.ActivityItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate: (url: String) -> Unit) :

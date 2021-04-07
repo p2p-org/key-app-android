@@ -12,7 +12,7 @@ import com.p2p.wowlet.utils.bindadapter.imageSourceBitmap
 import com.p2p.wowlet.utils.bindadapter.walletFormat
 import com.p2p.wowlet.utils.copyClipboard
 import com.p2p.wowlet.utils.shareText
-import com.wowlet.entities.local.EnterWallet
+import com.p2p.wowlet.entities.local.EnterWallet
 
 class EnterWalletPagerAdapter(private var list: List<EnterWallet>) :
     RecyclerView.Adapter<EnterWalletPagerAdapter.MyViewHolder>() {

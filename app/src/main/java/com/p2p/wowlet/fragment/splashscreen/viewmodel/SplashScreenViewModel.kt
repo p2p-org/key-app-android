@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.p2p.wowlet.appbase.viewmodel.SingleLiveEvent
-import com.wowlet.domain.interactors.SplashScreenInteractor
-import com.wowlet.entities.local.SplashData
+import com.p2p.wowlet.domain.interactors.SplashScreenInteractor
+import com.p2p.wowlet.entities.local.SplashData
 
 class SplashScreenViewModel(
     val splashScreenInteractor: SplashScreenInteractor

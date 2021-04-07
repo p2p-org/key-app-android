@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogEnterCodeBinding
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.enums.MailPhoneType
+import com.p2p.wowlet.entities.enums.MailPhoneType
 
 class EnterCodeDialog(private val mailPhoneType: MailPhoneType) : DialogFragment() {
 

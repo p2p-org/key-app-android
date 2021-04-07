@@ -3,11 +3,9 @@ package com.p2p.wowlet.fragment.fingetprint.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.viewcommand.Command.*
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.wowlet.domain.interactors.FingerPrintInteractor
-import com.wowlet.entities.local.EnableFingerPrintModel
+import com.p2p.wowlet.domain.interactors.FingerPrintInteractor
+import com.p2p.wowlet.entities.local.EnableFingerPrintModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

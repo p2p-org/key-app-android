@@ -1,7 +1,5 @@
 package com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel
 
-import android.graphics.Color
-import androidx.annotation.ColorRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.p2p.wowlet.R
@@ -10,10 +8,10 @@ import  com.p2p.wowlet.appbase.viewmodel.BaseViewModel
 import com.p2p.wowlet.utils.roundCurrencyValue
 import com.p2p.wowlet.utils.roundToBilCurrencyValue
 import com.p2p.wowlet.utils.roundToMilCurrencyValue
-import com.wowlet.domain.interactors.SwapInteractor
-import com.wowlet.entities.local.ActivityItem
-import com.wowlet.entities.local.CoinItem
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.domain.interactors.SwapInteractor
+import com.p2p.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.entities.local.CoinItem
+import com.p2p.wowlet.entities.local.WalletItem
 import java.lang.NullPointerException
 import java.math.BigDecimal
 
@@ -137,7 +135,7 @@ class SwapViewModel(
         _command.value = SwapCoinProcessingViewCommand()
     }
 
-    fun openDoneDialog(transactionInfo:ActivityItem) {
+    fun openDoneDialog(transactionInfo: ActivityItem) {
         _command.value = SendCoinDoneViewCommand(transactionInfo  )
     }
 

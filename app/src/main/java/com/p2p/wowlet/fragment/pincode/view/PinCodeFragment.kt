@@ -26,7 +26,7 @@ import com.p2p.wowlet.utils.openFingerprintDialog
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
-import com.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.entities.enums.PinCodeFragmentType
 import kotlinx.android.synthetic.main.fragment_pin_code.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

@@ -16,7 +16,7 @@ import com.p2p.wowlet.fragment.dashboard.dialog.swap.adapter.SelectTokenToSwapAd
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 // R.layout.bottom_sheet_select_token_to_swap

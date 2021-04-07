@@ -5,8 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.fragment.detailsaving.viewmodel.DetailSavingViewModel
-import com.p2p.wowlet.utils.bindadapter.walletFormat
-import com.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.entities.local.ActivityItem
 
 class ActivityDetailAdapter(
     private val viewModel: DetailSavingViewModel,

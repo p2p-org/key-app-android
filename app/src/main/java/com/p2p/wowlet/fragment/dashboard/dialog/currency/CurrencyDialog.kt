@@ -12,7 +12,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogCurrencyBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel.ProfileViewModel
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.enums.SelectedCurrency
+import com.p2p.wowlet.entities.enums.SelectedCurrency
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CurrencyDialog(

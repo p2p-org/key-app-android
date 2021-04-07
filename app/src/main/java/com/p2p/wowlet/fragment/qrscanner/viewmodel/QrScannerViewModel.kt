@@ -1,19 +1,14 @@
 package com.p2p.wowlet.fragment.qrscanner.viewmodel
 
-import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
-import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
-import com.wowlet.domain.interactors.DashboardInteractor
-import com.wowlet.domain.interactors.QrScannerInteractor
-import com.wowlet.entities.Result
-import com.wowlet.entities.local.QrWalletType
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.domain.interactors.DashboardInteractor
+import com.p2p.wowlet.domain.interactors.QrScannerInteractor
+import com.p2p.wowlet.entities.Result
+import com.p2p.wowlet.entities.local.QrWalletType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

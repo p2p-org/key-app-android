@@ -12,7 +12,7 @@ import com.p2p.wowlet.fragment.splashscreen.adapters.PagerAdapter
 import com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel
 import com.p2p.wowlet.utils.popAndReplaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.SplashData
+import com.p2p.wowlet.entities.local.SplashData
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SplashScreenFragment : BaseFragment(R.layout.fragment_splash_screen) {

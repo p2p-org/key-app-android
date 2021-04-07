@@ -17,8 +17,8 @@ import com.p2p.wowlet.databinding.DialogAddCoinBottomSheetBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.adapter.AddCoinAdapter
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.AddCoinItem
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.AddCoinItem
+import com.p2p.wowlet.entities.local.WalletItem
 import kotlinx.android.synthetic.main.dialog_add_coin_bottom_sheet.*
 import kotlinx.android.synthetic.main.item_add_coin.*
 import org.koin.androidx.viewmodel.ext.android.viewModel

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.databinding.ItemSecretKeyBinding
 import com.p2p.wowlet.fragment.backupwallat.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
-import com.wowlet.entities.local.SecretKeyItem
+import com.p2p.wowlet.entities.local.SecretKeyItem
 
 class RandomKeyAdapter(
     private val viewModel: ManualSecretKeyViewModel,

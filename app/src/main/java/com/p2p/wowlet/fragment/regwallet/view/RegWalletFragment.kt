@@ -10,7 +10,7 @@ import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.entities.enums.PinCodeFragmentType
 
 class RegWalletFragment : BaseFragment(R.layout.fragment_reg_wallet) {
 

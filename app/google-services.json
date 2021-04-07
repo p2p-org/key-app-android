@@ -1,42 +1,64 @@
 {
   "project_info": {
-    "project_number": "553127941597",
-    "firebase_url": "https://p2p-wallet.firebaseio.com",
-    "project_id": "p2p-wallet",
-    "storage_bucket": "p2p-wallet.appspot.com"
+    "project_number": "601745618248",
+    "firebase_url": "https://p2p-wallet-android.firebaseio.com",
+    "project_id": "p2p-wallet-android",
+    "storage_bucket": "p2p-wallet-android.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:553127941597:android:86be65d7e4326a0a2c5234",
+        "mobilesdk_app_id": "1:601745618248:android:3424e8a6621a0f8b08af7d",
         "android_client_info": {
-          "package_name": "com.p2p.wallet"
+          "package_name": "com.p2p.wowlet"
         }
       },
       "oauth_client": [
         {
-          "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+          "client_id": "601745618248-abe72n4u01g5nm1kgk8090gs9kte44oa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyALuyoazWQsOcvVJnDWphITAPH1Suna2L8"
+          "current_key": "AIzaSyDRkV09TMWIbW7cRLNCh6KIxjGY8QkmYfc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+              "client_id": "601745618248-abe72n4u01g5nm1kgk8090gs9kte44oa.apps.googleusercontent.com",
               "client_type": 3
-            },
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601745618248:android:c327553fb7bf4f7d08af7d",
+        "android_client_info": {
+          "package_name": "com.p2p.wowlet.feature"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "601745618248-abe72n4u01g5nm1kgk8090gs9kte44oa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRkV09TMWIbW7cRLNCh6KIxjGY8QkmYfc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
             {
-              "client_id": "553127941597-2cueeajq5d7rrmh7l0945j02lcdghimo.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "org.p2p.p2p-wallet"
-              }
+              "client_id": "601745618248-abe72n4u01g5nm1kgk8090gs9kte44oa.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         }

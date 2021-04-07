@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
-import com.wowlet.entities.local.SplashData
+import com.p2p.wowlet.entities.local.SplashData
 import kotlinx.android.synthetic.main.item_slpash_pager.view.*
 
 class PagerAdapter(private val list: List<SplashData>) :

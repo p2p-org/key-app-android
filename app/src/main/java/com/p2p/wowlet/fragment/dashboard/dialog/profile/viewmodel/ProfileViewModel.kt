@@ -3,10 +3,10 @@ package com.p2p.wowlet.fragment.dashboard.dialog.profile.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
-import com.wowlet.domain.interactors.DashboardInteractor
-import com.wowlet.domain.interactors.FingerPrintInteractor
-import com.wowlet.entities.enums.SelectedCurrency
-import com.wowlet.entities.local.EnableFingerPrintModel
+import com.p2p.wowlet.domain.interactors.DashboardInteractor
+import com.p2p.wowlet.domain.interactors.FingerPrintInteractor
+import com.p2p.wowlet.entities.enums.SelectedCurrency
+import com.p2p.wowlet.entities.local.EnableFingerPrintModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

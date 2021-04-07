@@ -23,7 +23,7 @@ import com.p2p.wowlet.utils.bindadapter.imageSourceRadiusDpWithDefault
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.toast
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SwapBottomSheet(

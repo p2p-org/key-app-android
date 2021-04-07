@@ -1,54 +1,48 @@
 package com.p2p.wowlet.appbase.viewcommand
 
 import android.os.Bundle
-import com.wowlet.entities.local.ActivityItem
-import com.wowlet.entities.local.EnterWallet
-import com.wowlet.entities.local.WalletItem
-import com.wowlet.entities.local.YourWallets
+import com.p2p.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.entities.local.EnterWallet
+import com.p2p.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.YourWallets
 
 sealed class Command {
 
     class NetworkErrorViewCommand : ViewCommand
 
     /*Navigate fragment commands*/
-    class FinishAppViewCommand : ViewCommand
-    class NavigateUpViewCommand(val destinationId: Int, val bundle: Bundle? = null) : ViewCommand
-    class NavigateUpBackStackCommand() : ViewCommand
-    class NavigateRegLoginViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateTermAndConditionViewCommand(val destinationId: Int) : ViewCommand
-    class NavigatePinCodeViewCommand(val destinationId: Int, val bundle: Bundle?) : ViewCommand
+    class FinishAppViewCommand constructor() : ViewCommand
+    class NavigateUpViewCommand constructor(val destinationId: Int, val bundle: Bundle? = null) : ViewCommand
+    class NavigateUpBackStackCommand constructor() : ViewCommand
+    class NavigateRegLoginViewCommand constructor(val destinationId: Int) : ViewCommand
+    // class NavigatePinCodeVerificationViewCommand constructor()(val destinationId: Int) : ViewCommand
+    class NavigateRegFinishViewCommand constructor(val destinationId: Int) : ViewCommand
+    class NavigateNotificationViewCommand constructor(val destinationId: Int) : ViewCommand
+    class NavigateFingerPrintViewCommand constructor(val destinationId: Int) : ViewCommand
+    class NavigateSecretKeyViewCommand constructor(val destinationId: Int) : ViewCommand
 
-    // class NavigatePinCodeVerificationViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateRegWalletViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateCreateWalletViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateRegFinishViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateNotificationViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateFingerPrintViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateRecoveryWalletViewCommand(val destinationId: Int) : ViewCommand
-    class NavigateSecretKeyViewCommand(val destinationId: Int) : ViewCommand
-
-    class NavigateScannerViewCommand(val destinationId: Int, val goBack: Boolean) : ViewCommand
-    class OpenSendCoinDialogViewCommand(val walletItem: WalletItem? = null, val walletAddress: String? = null) :
+    class NavigateScannerViewCommand constructor(val destinationId: Int, val goBack: Boolean) : ViewCommand
+    class OpenSendCoinDialogViewCommand constructor(val walletItem: WalletItem? = null, val walletAddress: String? = null) :
         ViewCommand
 
-    class NavigateBlockChainViewCommand(val destinationId: Int, val url: String) : ViewCommand
+    class NavigateBlockChainViewCommand constructor(val destinationId: Int, val url: String) : ViewCommand
 
-    class OpenProfileDialogViewCommand() : ViewCommand
-    class OpenMainActivityViewCommand() : ViewCommand
+    class OpenProfileDialogViewCommand constructor() : ViewCommand
+    class OpenMainActivityViewCommand constructor() : ViewCommand
 
-    class OpenSwapBottomSheetViewCommand(val walletData: WalletItem, val allMyWallets: List<WalletItem>) : ViewCommand
-    class OpenSelectTokenToSwapBottomSheet() : ViewCommand
-    class OpenSlippageSettingsBottomSheet() : ViewCommand
+    class OpenSwapBottomSheetViewCommand constructor(val walletData: WalletItem, val allMyWallets: List<WalletItem>) : ViewCommand
+    class OpenSelectTokenToSwapBottomSheet constructor() : ViewCommand
+    class OpenSlippageSettingsBottomSheet constructor() : ViewCommand
 
-    class EnterWalletDialogViewCommand(val list: List<EnterWallet>) : ViewCommand
-    class YourWalletDialogViewCommand(val enterWallet: EnterWallet) : ViewCommand
-    class OpenMyWalletDialogViewCommand() : ViewCommand
-    class OpenBackupFailedDialogViewCommand() : ViewCommand
-    class OpenRecoveryPhraseDialogViewCommand() : ViewCommand
-    class OpenTransactionDialogViewCommand(val itemActivity: ActivityItem) : ViewCommand
-    class OpenEditWalletDialogViewCommand(val walletItem: WalletItem) : ViewCommand
-    class SendCoinDoneViewCommand(val transactionInfo: ActivityItem) : ViewCommand
-    class SendCoinViewCommand() : ViewCommand
-    class SwapCoinProcessingViewCommand() : ViewCommand
-    class OpenAllMyTokensDialogViewCommand(val yourWallets: YourWallets) : ViewCommand
+    class EnterWalletDialogViewCommand constructor(val list: List<EnterWallet>) : ViewCommand
+    class YourWalletDialogViewCommand constructor(val enterWallet: EnterWallet) : ViewCommand
+    class OpenMyWalletDialogViewCommand constructor() : ViewCommand
+    class OpenBackupFailedDialogViewCommand constructor() : ViewCommand
+    class OpenRecoveryPhraseDialogViewCommand constructor() : ViewCommand
+    class OpenTransactionDialogViewCommand constructor(val itemActivity: ActivityItem) : ViewCommand
+    class OpenEditWalletDialogViewCommand constructor(val walletItem: WalletItem) : ViewCommand
+    class SendCoinDoneViewCommand constructor(val transactionInfo: ActivityItem) : ViewCommand
+    class SendCoinViewCommand constructor() : ViewCommand
+    class SwapCoinProcessingViewCommand constructor() : ViewCommand
+    class OpenAllMyTokensDialogViewCommand constructor(val yourWallets: YourWallets) : ViewCommand
 }

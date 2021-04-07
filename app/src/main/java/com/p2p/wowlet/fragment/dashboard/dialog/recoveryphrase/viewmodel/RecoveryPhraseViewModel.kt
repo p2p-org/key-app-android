@@ -3,9 +3,7 @@ package com.p2p.wowlet.fragment.dashboard.dialog.recoveryphrase.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.wowlet.domain.interactors.CreateWalletInteractor
-import com.wowlet.domain.interactors.SecretKeyInteractor
-import com.wowlet.entities.local.RecoveryPhraseItem
+import com.p2p.wowlet.domain.interactors.SecretKeyInteractor
 
 class RecoveryPhraseViewModel(val secretKeyInteractor: SecretKeyInteractor) :
     BaseViewModel() {

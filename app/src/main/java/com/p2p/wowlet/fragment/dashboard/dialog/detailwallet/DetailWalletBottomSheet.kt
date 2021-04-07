@@ -28,7 +28,7 @@ import com.p2p.wowlet.utils.getYesterday
 import com.p2p.wowlet.utils.initChart
 import com.p2p.wowlet.utils.roundCurrencyValue
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 

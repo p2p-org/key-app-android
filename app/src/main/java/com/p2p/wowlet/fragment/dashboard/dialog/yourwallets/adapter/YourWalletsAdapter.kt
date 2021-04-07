@@ -7,7 +7,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemMyWalletsBinding
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.utils.bindadapter.imageSource
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 import java.math.BigDecimal
 
 class YourWalletsAdapter(

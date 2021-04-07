@@ -10,7 +10,7 @@ import com.p2p.wowlet.databinding.DialogEnterWalletBinding
 import com.p2p.wowlet.fragment.dashboard.adapter.EnterWalletPagerAdapter
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.EnterWallet
+import com.p2p.wowlet.entities.local.EnterWallet
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EnterWalletBottomSheet(val list: List<EnterWallet>) : BottomSheetDialogFragment() {

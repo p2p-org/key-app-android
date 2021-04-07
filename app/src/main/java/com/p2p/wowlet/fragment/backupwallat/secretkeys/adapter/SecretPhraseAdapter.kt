@@ -16,7 +16,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.RvItemKeyWordBinding
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.*
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
-import com.wowlet.entities.local.Keyword
+import com.p2p.wowlet.entities.local.Keyword
 
 class SecretPhraseAdapter(
     private val context: Context,

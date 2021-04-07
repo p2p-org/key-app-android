@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.p2p.wowlet.R
-import com.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.entities.enums.PinCodeFragmentType
 
 class PinView : LinearLayoutCompat {
     private var pin = ""
@@ -70,7 +70,7 @@ class PinView : LinearLayoutCompat {
     }
 
     fun onPinButtonClicked(text: String) {
-        if(pinCodeFragmentType==PinCodeFragmentType.CREATE){
+        if(pinCodeFragmentType== PinCodeFragmentType.CREATE){
             inputPinCode(text)
         }else if (wrongPinCodeCount != 3) {
             inputPinCode(text)
@@ -83,7 +83,7 @@ class PinView : LinearLayoutCompat {
         }
         if (pin.length == pinCount && !inputCountFinish) {
             inputCountFinish = true
-            if (pinCodeFragmentType==PinCodeFragmentType.CREATE) {
+            if (pinCodeFragmentType== PinCodeFragmentType.CREATE) {
                 if (isFirstPinInput) {
                     verifyPinCode?.invoke(pin)
                     _wrongPinCodeCount++

@@ -3,7 +3,7 @@ package com.p2p.wowlet.dialog.sendcoins.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.wowlet.entities.local.QrWalletType
+import com.p2p.wowlet.entities.local.QrWalletType
 
 class WalletAddressViewModel : ViewModel() {
 
