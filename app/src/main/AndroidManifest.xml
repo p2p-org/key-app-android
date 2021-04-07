@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.p2p.wowlet">
 
     <uses-feature
@@ -11,7 +12,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="com.p2p.wowlet.App"
+        android:name=".App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,19 +21,14 @@
         android:theme="@style/Theme.Wowlet"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="com.p2p.wowlet.activity.MainActivity"
+            android:name="com.p2p.wowlet.root.RootActivity"
             android:screenOrientation="portrait">
-
-        </activity>
-        <activity
-            android:name="com.p2p.wowlet.auth.RegistrationActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
     </application>
 

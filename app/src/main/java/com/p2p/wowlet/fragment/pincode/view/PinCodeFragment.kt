@@ -1,17 +1,17 @@
 package com.p2p.wowlet.fragment.pincode.view
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isInvisible
+import com.p2p.wowlet.HomeFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.activity.MainActivity
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewcommand.ViewCommand
 import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentPinCodeBinding
+import com.p2p.wowlet.entities.enums.PinCodeFragmentType
 import com.p2p.wowlet.fragment.backupwallat.secretkeys.view.SecretKeyFragment
 import com.p2p.wowlet.fragment.dashboard.view.DashboardFragment
 import com.p2p.wowlet.fragment.fingetprint.view.FingerPrintFragment
@@ -23,10 +23,10 @@ import com.p2p.wowlet.fragment.reglogin.view.RegLoginFragment
 import com.p2p.wowlet.utils.args
 import com.p2p.wowlet.utils.isFingerPrintSet
 import com.p2p.wowlet.utils.openFingerprintDialog
+import com.p2p.wowlet.utils.popAndReplaceFragment
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
-import com.p2p.wowlet.entities.enums.PinCodeFragmentType
 import kotlinx.android.synthetic.main.fragment_pin_code.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -63,7 +63,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         initData()
         observeData()
     }
-    
+
     private fun initView() {
         viewModel.fingerPrintStatus()
         binding.run {
@@ -212,11 +212,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
             is Command.NavigateRegLoginViewCommand -> replaceFragment(RegLoginFragment())
             is Command.NavigateRegFinishViewCommand -> replaceFragment(RegFinishFragment())
             is Command.OpenMainActivityViewCommand -> {
-                activity?.let {
-                    val intent = Intent(it, MainActivity::class.java)
-                    it.startActivity(intent)
-                    it.finish()
-                }
+                popAndReplaceFragment(HomeFragment.create(), inclusive = true)
             }
         }
     }
