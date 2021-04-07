@@ -64,7 +64,6 @@ android {
             firebaseAppDistribution {
                 releaseNotes = developChangelog()
                 groups = "wowlet.test.feature"
-                appId = "1:553127941597:android:86be65d7e4326a0a2c5234"
             }
         }
 
