@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:cardCornerRadius="@dimen/dp_20"
-        app:layout_constraintBottom_toTopOf="@+id/container"
+        app:layout_constraintBottom_toTopOf="@+id/containerView"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,7 +49,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/container"
+        android:id="@+id/containerView"
         android:layout_width="match_parent"
         android:layout_height="240dp"
         android:background="@drawable/bg_radius_top"

@@ -16,7 +16,6 @@ import com.p2p.wowlet.fragment.investments.viewmodel.InvestmentsViewModel
 import com.p2p.wowlet.fragment.notification.viewmodel.NotificationViewModel
 import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wowlet.fragment.qrscanner.viewmodel.QrScannerViewModel
-import com.p2p.wowlet.fragment.regfinish.viewmodel.RegFinishViewModel
 import com.p2p.wowlet.fragment.regwallet.viewmodel.RegWalletViewModel
 import com.p2p.wowlet.fragment.search.viewmodel.SearchViewModel
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
@@ -28,7 +27,6 @@ import org.koin.dsl.module
 
 val viewModule = module {
     viewModel { SecretKeyViewModel(get()) }
-    viewModel { RegFinishViewModel(get()) }
     viewModel { SplashScreenViewModel(get()) }
     viewModel { FingerPrintViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
