@@ -176,6 +176,8 @@
     <!--        Custom slippage editor ->END -->
 
 
+<!--        android:onClick="@{() -> swapViewModel.setSelectedSlippage()}"
+-->
     <androidx.appcompat.widget.AppCompatButton
         style="@style/White.15.Bold.SfProText"
         android:layout_width="@dimen/dp_0"
@@ -185,7 +187,6 @@
         android:layout_marginEnd="@dimen/dp_20"
         android:layout_marginBottom="@dimen/dp_50"
         android:background="@drawable/bg_swap_button"
-        android:onClick="@{() -> swapViewModel.setSelectedSlippage()}"
         android:paddingTop="@dimen/dp_19"
         android:paddingBottom="@dimen/dp_19"
         android:text="@string/done"

@@ -14,8 +14,8 @@ import com.p2p.wowlet.databinding.ItemAddCoinBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.util.dpToPx
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.utils.bindadapter.imageSource
-import com.wowlet.entities.Constants
-import com.wowlet.entities.local.AddCoinItem
+import com.p2p.wowlet.entities.Constants
+import com.p2p.wowlet.entities.local.AddCoinItem
 
 class AddCoinAdapter(
     context: Context,

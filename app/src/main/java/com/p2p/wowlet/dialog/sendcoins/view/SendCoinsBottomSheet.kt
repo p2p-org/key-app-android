@@ -26,8 +26,8 @@ import com.p2p.wowlet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.Constants
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.Constants
+import com.p2p.wowlet.entities.local.WalletItem
 import kotlinx.android.synthetic.main.fragment_send_coins.*
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel

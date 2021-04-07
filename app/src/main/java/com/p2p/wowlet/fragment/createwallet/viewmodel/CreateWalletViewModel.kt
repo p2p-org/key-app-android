@@ -2,7 +2,7 @@ package com.p2p.wowlet.fragment.createwallet.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.wowlet.domain.interactors.CreateWalletInteractor
+import com.p2p.wowlet.domain.interactors.CreateWalletInteractor
 
 class CreateWalletViewModel(
     private val createWalletInteractor: CreateWalletInteractor

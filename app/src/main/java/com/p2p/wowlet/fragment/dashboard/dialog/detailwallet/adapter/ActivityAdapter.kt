@@ -7,7 +7,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wowlet.utils.bindadapter.imageSource
-import com.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.entities.local.ActivityItem
 
 class ActivityAdapter(
     private var list: List<ActivityItem>,

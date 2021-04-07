@@ -12,7 +12,7 @@ import com.p2p.wowlet.databinding.DialogMyWalletBinding
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.adapter.YourWalletsAdapter
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YourWalletsBottomSheet(

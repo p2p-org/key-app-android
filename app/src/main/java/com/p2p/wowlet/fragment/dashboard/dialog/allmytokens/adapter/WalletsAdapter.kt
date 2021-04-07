@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.p2p.wowlet.databinding.ItemAllWalletsBinding
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 
 class WalletsAdapter(
     private val viewModel: DashboardViewModel,

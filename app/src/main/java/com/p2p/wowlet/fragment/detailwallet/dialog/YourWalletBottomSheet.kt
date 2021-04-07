@@ -15,7 +15,7 @@ import com.p2p.wowlet.utils.bindadapter.imageSource
 import com.p2p.wowlet.utils.bindadapter.imageSourceBitmap
 import com.p2p.wowlet.utils.shareText
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.EnterWallet
+import com.p2p.wowlet.entities.local.EnterWallet
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YourWalletBottomSheet(

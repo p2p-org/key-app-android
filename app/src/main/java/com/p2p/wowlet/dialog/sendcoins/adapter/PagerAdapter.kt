@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
-import com.wowlet.entities.local.UserWalletType
+import com.p2p.wowlet.entities.local.UserWalletType
 import kotlinx.android.synthetic.main.item_send_coin_type.view.*
 
 class PagerAdapter(

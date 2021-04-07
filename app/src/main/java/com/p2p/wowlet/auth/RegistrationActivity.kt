@@ -9,8 +9,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
 import com.p2p.wowlet.fragment.splashscreen.view.SplashScreenFragment
 import com.p2p.wowlet.utils.replaceFragment
-import com.wowlet.domain.usecases.AuthInteractor
-import com.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.entities.enums.PinCodeFragmentType
 import org.koin.android.ext.android.inject
 
 // fixme: remove activity, and leave only [MainActivity] - we are working on single activity architecture

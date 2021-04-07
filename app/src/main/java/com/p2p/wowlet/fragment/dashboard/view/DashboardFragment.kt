@@ -51,8 +51,8 @@ import com.p2p.wowlet.utils.drawChart
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
-import com.wowlet.entities.enums.PinCodeFragmentType
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.entities.local.WalletItem
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.p2p.solanaj.rpc.RpcClient

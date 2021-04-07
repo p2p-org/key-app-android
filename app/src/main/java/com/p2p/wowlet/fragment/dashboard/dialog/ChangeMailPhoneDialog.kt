@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogChangePhoneEmailBinding
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.enums.MailPhoneType
+import com.p2p.wowlet.entities.enums.MailPhoneType
 import kotlinx.android.synthetic.main.dialog_change_phone_email.icClose
 
 class ChangeMailPhoneDialog(val mailPhoneType: MailPhoneType) : DialogFragment() {

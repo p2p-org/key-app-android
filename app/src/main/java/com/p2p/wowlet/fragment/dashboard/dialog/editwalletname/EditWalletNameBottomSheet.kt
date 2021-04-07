@@ -13,7 +13,7 @@ import com.p2p.wowlet.fragment.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.utils.bindadapter.imageSource
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EditWalletNameBottomSheet(

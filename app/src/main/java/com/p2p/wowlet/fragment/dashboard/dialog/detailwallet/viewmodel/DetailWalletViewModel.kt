@@ -1,19 +1,15 @@
 package com.p2p.wowlet.fragment.dashboard.dialog.detailwallet.viewmodel
 
-import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
-import com.p2p.wowlet.R
 import com.p2p.wowlet.appbase.viewcommand.Command
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.fragment.blockchainexplorer.view.BlockChainExplorerFragment
-import com.p2p.wowlet.fragment.detailwallet.view.DetailWalletFragment.Companion.WALLET_ITEM
-import com.wowlet.domain.interactors.DetailWalletInteractor
-import com.wowlet.entities.Result
-import com.wowlet.entities.local.ActivityItem
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.domain.interactors.DetailWalletInteractor
+import com.p2p.wowlet.entities.Result
+import com.p2p.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

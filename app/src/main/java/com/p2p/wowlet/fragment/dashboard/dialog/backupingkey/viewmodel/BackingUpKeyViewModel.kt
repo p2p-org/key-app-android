@@ -1,7 +1,7 @@
 package com.p2p.wowlet.fragment.dashboard.dialog.backupingkey.viewmodel
 
 import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.wowlet.entities.local.SecretKeyItem
+import com.p2p.wowlet.entities.local.SecretKeyItem
 
 class BackingUpKeyViewModel : BaseViewModel() {
 

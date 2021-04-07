@@ -14,8 +14,8 @@ import com.p2p.wowlet.fragment.dashboard.dialog.allmytokens.adapter.WalletsAdapt
 import com.p2p.wowlet.fragment.dashboard.viewmodel.DashboardViewModel
 import com.p2p.wowlet.utils.drawChart
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.wowlet.entities.local.WalletItem
-import com.wowlet.entities.local.YourWallets
+import com.p2p.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.YourWallets
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AllMyTokensBottomSheet(

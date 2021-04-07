@@ -7,7 +7,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.databinding.ItemSwapTokenBinding
 import com.p2p.wowlet.utils.bindadapter.imageSourceRadiusDp
-import com.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.entities.local.WalletItem
 
 class SelectTokenToSwapAdapter(
     private val selectedWalletItem: WalletItem
