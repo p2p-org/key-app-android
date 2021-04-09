@@ -15,7 +15,7 @@ import com.p2p.wowlet.dataservice.RetrofitService
 import com.p2p.wowlet.repository.DashboardRepositoryImpl
 import com.p2p.wowlet.repository.DetailActivityRepositoryImpl
 import com.p2p.wowlet.repository.LocalDatabaseRepositoryImpl
-import com.p2p.data.repository.PreferenceServiceImpl
+import com.p2p.wowlet.repository.PreferenceServiceImpl
 import com.p2p.wowlet.repository.TermAndConditionRepositoryImpl
 import com.p2p.wowlet.repository.WowletApiCallRepositoryImpl
 import com.p2p.wowlet.util.HeaderInterceptor
