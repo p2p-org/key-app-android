@@ -5,7 +5,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.common.mvp.BaseMvpActivity
 import com.p2p.wowlet.entities.enums.PinCodeFragmentType
 import com.p2p.wowlet.fragment.pincode.view.PinCodeFragment
-import com.p2p.wowlet.fragment.splashscreen.view.SplashScreenFragment
+import com.p2p.wowlet.auth.ui.OnboardingFragment
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.replaceFragment
 import org.koin.android.ext.android.inject
@@ -24,7 +24,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override fun navigateToOnboarding() {
-        replaceFragment(SplashScreenFragment())
+        replaceFragment(OnboardingFragment())
     }
 
     override fun navigateToSignIn() {

@@ -19,7 +19,7 @@ import com.p2p.wowlet.fragment.notification.view.NotificationFragment
 import com.p2p.wowlet.fragment.pincode.adapter.PinButtonAdapter
 import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wowlet.fragment.regfinish.view.RegFinishFragment
-import com.p2p.wowlet.fragment.reglogin.view.OnboardingFragment
+import com.p2p.wowlet.auth.ui.OnboardingFragment
 import com.p2p.wowlet.utils.args
 import com.p2p.wowlet.utils.isFingerPrintSet
 import com.p2p.wowlet.utils.openFingerprintDialog

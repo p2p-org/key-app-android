@@ -1,30 +1,25 @@
-package com.p2p.wowlet.fragment.reglogin.view
+package com.p2p.wowlet.auth.ui
 
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
 import com.p2p.wowlet.common.mvp.BaseFragment
-import com.p2p.wowlet.databinding.FragmentRegLoginBinding
+import com.p2p.wowlet.databinding.FragmentOnboardingBinding
 import com.p2p.wowlet.fragment.backupwallat.recoverywallat.view.RecoveryWalletFragment
-import com.p2p.wowlet.fragment.termandcondition.view.TermsAndConditionFragment
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
 
-class OnboardingFragment : BaseFragment(R.layout.fragment_reg_login) {
+class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
-    private val binding: FragmentRegLoginBinding by viewBinding()
+    private val binding: FragmentOnboardingBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
-    }
-
-    private fun initView() {
         with(binding) {
-            btCreate.setOnClickListener {
-                replaceFragment(TermsAndConditionFragment())
+            createButton.setOnClickListener {
+                replaceFragment(EnterUsernameFragment.create())
             }
-            btAlready.setOnClickListener {
+            loginButton.setOnClickListener {
                 replaceFragment(RecoveryWalletFragment())
             }
         }

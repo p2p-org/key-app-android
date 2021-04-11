@@ -20,14 +20,12 @@ import com.p2p.wowlet.fragment.regwallet.viewmodel.RegWalletViewModel
 import com.p2p.wowlet.fragment.search.viewmodel.SearchViewModel
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
-import com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel
 import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModule = module {
     viewModel { SecretKeyViewModel(get()) }
-    viewModel { SplashScreenViewModel(get()) }
     viewModel { FingerPrintViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { CompleteBackupWalletViewModel(get()) }
