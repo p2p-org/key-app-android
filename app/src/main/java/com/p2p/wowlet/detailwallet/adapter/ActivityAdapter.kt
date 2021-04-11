@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.detailwallet.viewmodel.DetailWalletViewModel
-import com.p2p.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.dashboard.model.local.ActivityItem
 import com.p2p.wowlet.utils.bindadapter.imageSource
 import com.p2p.wowlet.utils.bindadapter.walletFormat
 

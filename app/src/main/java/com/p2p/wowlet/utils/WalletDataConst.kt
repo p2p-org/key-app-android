@@ -1,6 +1,6 @@
 package com.p2p.wowlet.utils
 
-import com.p2p.wowlet.entities.local.ConstWalletItem
+import com.p2p.wowlet.dashboard.model.local.ConstWalletItem
 
 object WalletDataConst {
 

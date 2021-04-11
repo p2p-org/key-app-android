@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.p2p.wowlet.R
-import com.p2p.wowlet.dashboard.dialog.addcoin.util.dpToPx
+import com.p2p.wowlet.dashboard.ui.dialog.addcoin.util.dpToPx
 
 fun AppCompatImageView.imageSource(uri: String) {
     Glide.with(context)

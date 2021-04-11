@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.p2p.wowlet.R
-import com.p2p.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.auth.model.LaunchMode
 
 class PinView : LinearLayoutCompat {
     private var pin = ""
@@ -15,7 +15,7 @@ class PinView : LinearLayoutCompat {
     val wrongPinCodeCount
         get() = _wrongPinCodeCount
 
-    lateinit var pinCodeFragmentType: PinCodeFragmentType
+    lateinit var pinCodeFragmentType: LaunchMode
 
     var isFirstPinInput = false
     var createPinCode: ((pin: String) -> Unit)? = null
@@ -69,7 +69,7 @@ class PinView : LinearLayoutCompat {
     }
 
     fun onPinButtonClicked(text: String) {
-        if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
+        if (pinCodeFragmentType == LaunchMode.CREATE) {
             inputPinCode(text)
         } else if (wrongPinCodeCount != 3) {
             inputPinCode(text)
@@ -82,7 +82,7 @@ class PinView : LinearLayoutCompat {
         }
         if (pin.length == pinCount && !inputCountFinish) {
             inputCountFinish = true
-            if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
+            if (pinCodeFragmentType == LaunchMode.CREATE) {
                 if (isFirstPinInput) {
                     verifyPinCode?.invoke(pin)
                     _wrongPinCodeCount++

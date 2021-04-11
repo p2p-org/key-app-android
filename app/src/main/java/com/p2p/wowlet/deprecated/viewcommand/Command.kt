@@ -1,9 +1,9 @@
 package com.p2p.wowlet.deprecated.viewcommand
 
-import com.p2p.wowlet.entities.local.ActivityItem
-import com.p2p.wowlet.entities.local.EnterWallet
-import com.p2p.wowlet.entities.local.WalletItem
-import com.p2p.wowlet.entities.local.YourWallets
+import com.p2p.wowlet.dashboard.model.local.ActivityItem
+import com.p2p.wowlet.dashboard.model.local.EnterWallet
+import com.p2p.wowlet.dashboard.model.local.WalletItem
+import com.p2p.wowlet.dashboard.model.local.YourWallets
 
 @Deprecated("This will be deleted, migrating to MVP")
 sealed class Command {

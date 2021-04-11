@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.auth.interactor.FingerPrintInteractor
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.entities.local.EnableFingerPrintModel
+import com.p2p.wowlet.dashboard.model.local.EnableFingerPrintModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

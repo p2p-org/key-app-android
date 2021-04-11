@@ -1,1 +1,0 @@
-package com.p2p.wowlet.dashboard.dialog.enterwallet.viewmodel

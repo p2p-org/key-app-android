@@ -1,10 +1,10 @@
 package com.p2p.wowlet.auth.interactor
 
-import com.p2p.wowlet.datastore.PreferenceService
-import com.p2p.wowlet.entities.CallException
-import com.p2p.wowlet.entities.Constants
-import com.p2p.wowlet.entities.Result
-import com.p2p.wowlet.entities.local.PinCodeData
+import com.p2p.wowlet.infrastructure.persistence.PreferenceService
+import com.p2p.wowlet.common.network.CallException
+import com.p2p.wowlet.common.network.Constants
+import com.p2p.wowlet.common.network.Result
+import com.p2p.wowlet.dashboard.model.local.PinCodeData
 
 class PinCodeInteractor(private val preferenceService: PreferenceService) {
     suspend fun initPinCode(pinCode: String): Result<Boolean> {

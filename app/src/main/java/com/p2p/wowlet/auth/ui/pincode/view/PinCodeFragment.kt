@@ -13,11 +13,11 @@ import com.p2p.wowlet.auth.ui.pincode.adapter.PinButtonAdapter
 import com.p2p.wowlet.auth.ui.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wowlet.backupwallat.secretkeys.view.SecretKeyFragment
 import com.p2p.wowlet.common.mvp.BaseFragment
-import com.p2p.wowlet.dashboard.view.DashboardFragment
+import com.p2p.wowlet.dashboard.ui.view.DashboardFragment
 import com.p2p.wowlet.databinding.FragmentPinCodeBinding
 import com.p2p.wowlet.deprecated.viewcommand.Command
 import com.p2p.wowlet.deprecated.viewcommand.ViewCommand
-import com.p2p.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.auth.model.LaunchMode
 import com.p2p.wowlet.home.HomeFragment
 import com.p2p.wowlet.notification.view.NotificationFragment
 import com.p2p.wowlet.utils.args
@@ -42,7 +42,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         fun create(
             openSplashScreen: Boolean,
             isBackupDialog: Boolean,
-            type: PinCodeFragmentType
+            type: LaunchMode
         ): PinCodeFragment =
             PinCodeFragment().withArgs(
                 OPEN_FRAGMENT_SPLASH_SCREEN to openSplashScreen,
@@ -54,7 +54,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
     private var isSplashScreen: Boolean = false
     private var isBackupDialog: Boolean = false
     private var isFingerprintEnabled: Boolean = false
-    private val pinCodeFragmentType: PinCodeFragmentType by args(PIN_TYPE)
+    private val pinCodeFragmentType: LaunchMode by args(PIN_TYPE)
     private lateinit var pinButtonAdapter: PinButtonAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -120,7 +120,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
                 else
                     viewModel.notificationStatus()
             } else {
-                if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
+                if (pinCodeFragmentType == LaunchMode.CREATE) {
                     replaceFragment(FingerPrintFragment())
                 } else {
                     if (isBackupDialog)
@@ -157,15 +157,15 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         viewModel.verifyPinCodeError.observe(viewLifecycleOwner) {
             vPinCodeNotMatch.isInvisible = !it
             when (pinCodeFragmentType) {
-                PinCodeFragmentType.CREATE -> {
+                LaunchMode.CREATE -> {
                     vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
                     // vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
                     binding.pinView.isFirstPinInput = true
                     binding.pinView.clearPin()
                 }
-                PinCodeFragmentType.VERIFY -> {
+                LaunchMode.VERIFY -> {
                     binding.pinView.errorPinViewsDesign()
-                    if (pinCodeFragmentType == PinCodeFragmentType.VERIFY)
+                    if (pinCodeFragmentType == LaunchMode.VERIFY)
                         binding.resetPinCode.visibility = View.VISIBLE
                     else
                         binding.resetPinCode.visibility = View.GONE
