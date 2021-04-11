@@ -10,9 +10,9 @@ import androidx.core.content.ContextCompat
 import com.p2p.wowlet.R
 import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentQrScannerBinding
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
-import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
+import com.p2p.wowlet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
+import com.p2p.wowlet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
+import com.p2p.wowlet.dashboard.ui.dialog.sendcoins.viewmodel.WalletAddressViewModel
 import com.p2p.wowlet.qrscanner.viewmodel.QrScannerViewModel
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.viewbinding.viewBinding

@@ -11,7 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogSendYourWalletBinding
 import com.p2p.wowlet.detailwallet.viewmodel.DetailWalletViewModel
-import com.p2p.wowlet.entities.local.EnterWallet
+import com.p2p.wowlet.dashboard.model.local.EnterWallet
 import com.p2p.wowlet.utils.bindadapter.imageSource
 import com.p2p.wowlet.utils.bindadapter.imageSourceBitmap
 import com.p2p.wowlet.utils.shareText

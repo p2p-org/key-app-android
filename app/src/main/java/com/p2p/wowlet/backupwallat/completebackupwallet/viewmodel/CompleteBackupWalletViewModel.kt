@@ -2,7 +2,7 @@ package com.p2p.wowlet.backupwallat.completebackupwallet.viewmodel
 
 import com.p2p.wowlet.deprecated.viewcommand.Command
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.domain.usecases.CompleteBackupWalletInteractor
+import com.p2p.wowlet.backupwallat.interactor.CompleteBackupWalletInteractor
 
 class CompleteBackupWalletViewModel(val completeBackupWalletInteractor: CompleteBackupWalletInteractor) :
     BaseViewModel() {

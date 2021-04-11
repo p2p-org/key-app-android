@@ -3,7 +3,7 @@ package com.p2p.wowlet.detailsaving.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.dashboard.model.local.ActivityItem
 
 class DetailSavingViewModel : BaseViewModel() {
 

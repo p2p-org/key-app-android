@@ -15,7 +15,7 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.backupwallat.secretkeys.adapter.MultipleSpanGridLayoutManager
 import com.p2p.wowlet.backupwallat.secretkeys.adapter.SecretPhraseAdapter
 import com.p2p.wowlet.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
-import com.p2p.wowlet.entities.local.Keyword
+import com.p2p.wowlet.dashboard.model.local.Keyword
 
 class KeywordEditTextChangeListener(
     private val adapter: SecretPhraseAdapter,

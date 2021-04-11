@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.domain.usecases.NotificationInteractor
-import com.p2p.wowlet.entities.local.EnableNotificationModel
+import com.p2p.wowlet.dashboard.interactor.NotificationInteractor
+import com.p2p.wowlet.dashboard.model.local.EnableNotificationModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

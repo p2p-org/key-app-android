@@ -56,7 +56,6 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD"
-            applicationIdSuffix '.feature'
 
             firebaseAppDistribution {
                 releaseNotes = developChangelog()

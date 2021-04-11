@@ -1,8 +1,8 @@
 package com.p2p.wowlet.auth.interactor
-import com.p2p.wowlet.datastore.PreferenceService
-import com.p2p.wowlet.entities.CallException
-import com.p2p.wowlet.entities.Constants
-import com.p2p.wowlet.entities.Result
+import com.p2p.wowlet.infrastructure.persistence.PreferenceService
+import com.p2p.wowlet.common.network.CallException
+import com.p2p.wowlet.common.network.Constants
+import com.p2p.wowlet.common.network.Result
 
 class PinCodeVerificationInteractor(private val preferenceService: PreferenceService) {
 

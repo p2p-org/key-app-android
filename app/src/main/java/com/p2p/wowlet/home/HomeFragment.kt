@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.dashboard.dialog.ProfileDetailsFragment
-import com.p2p.wowlet.dashboard.view.DashboardFragment
+import com.p2p.wowlet.dashboard.ui.dialog.ProfileDetailsFragment
+import com.p2p.wowlet.dashboard.ui.view.DashboardFragment
 import com.p2p.wowlet.databinding.FragmentHomeBinding
-import com.p2p.wowlet.investments.view.InvestmentsFragment
+import com.p2p.wowlet.investments.InvestmentsFragment
 import com.p2p.wowlet.search.SearchFragment
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding

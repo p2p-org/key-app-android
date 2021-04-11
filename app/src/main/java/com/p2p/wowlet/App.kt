@@ -2,11 +2,9 @@ package com.p2p.wowlet
 
 import android.app.Application
 import com.p2p.wowlet.auth.AuthModule
+import com.p2p.wowlet.backupwallat.BackupModule
 import com.p2p.wowlet.common.di.CommonModule
-import com.p2p.wowlet.di.apiModule
-import com.p2p.wowlet.di.repositoryModule
-import com.p2p.wowlet.di.viewModule
-import com.p2p.wowlet.domain.interactorsModule
+import com.p2p.wowlet.dashboard.DashboardModule
 import com.p2p.wowlet.infrastructure.InfrastructureModule
 import com.p2p.wowlet.root.RootModule
 import org.koin.android.ext.koin.androidContext
@@ -26,12 +24,10 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 listOf(
-                    apiModule,
-                    viewModule,
-                    repositoryModule,
-                    interactorsModule,
                     AuthModule.create(),
                     RootModule.create(),
+                    BackupModule.create(),
+                    DashboardModule.create(),
                     CommonModule.create(),
                     InfrastructureModule.create()
                 )

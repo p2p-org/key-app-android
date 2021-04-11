@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.auth.interactor.FingerPrintInteractor
 import com.p2p.wowlet.auth.interactor.PinCodeInteractor
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.domain.usecases.NotificationInteractor
-import com.p2p.wowlet.entities.Constants.Companion.VERIFY_PIN_CODE_ERROR
-import com.p2p.wowlet.entities.Result
+import com.p2p.wowlet.dashboard.interactor.NotificationInteractor
+import com.p2p.wowlet.common.network.Constants.Companion.VERIFY_PIN_CODE_ERROR
+import com.p2p.wowlet.common.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

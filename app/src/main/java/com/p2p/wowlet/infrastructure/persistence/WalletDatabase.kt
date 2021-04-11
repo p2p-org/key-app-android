@@ -2,8 +2,8 @@ package com.p2p.wowlet.infrastructure.persistence
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.p2p.wowlet.dao.WalletDao
-import com.p2p.wowlet.entities.local.LocalWalletItem
+import com.p2p.wowlet.dashboard.db.WalletDao
+import com.p2p.wowlet.dashboard.model.local.LocalWalletItem
 import com.p2p.wowlet.infrastructure.persistence.WalletDatabase.Companion.DATABASE_VERSION
 
 @Database(
