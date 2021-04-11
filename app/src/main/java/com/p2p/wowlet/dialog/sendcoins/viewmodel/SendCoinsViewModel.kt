@@ -6,20 +6,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.viewcommand.Command.NavigateBlockChainViewCommand
-import com.p2p.wowlet.appbase.viewcommand.Command.OpenMyWalletDialogViewCommand
-import com.p2p.wowlet.appbase.viewcommand.Command.SendCoinDoneViewCommand
-import com.p2p.wowlet.appbase.viewcommand.Command.SendCoinViewCommand
-import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.utils.roundToThousandsCurrencyValue
-import com.p2p.wowlet.domain.interactors.DashboardInteractor
-import com.p2p.wowlet.domain.interactors.SendCoinInteractor
+import com.p2p.wowlet.deprecated.viewcommand.Command.NavigateBlockChainViewCommand
+import com.p2p.wowlet.deprecated.viewcommand.Command.OpenMyWalletDialogViewCommand
+import com.p2p.wowlet.deprecated.viewcommand.Command.SendCoinDoneViewCommand
+import com.p2p.wowlet.deprecated.viewcommand.Command.SendCoinViewCommand
+import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
+import com.p2p.wowlet.domain.usecases.DashboardInteractor
+import com.p2p.wowlet.domain.usecases.SendCoinInteractor
 import com.p2p.wowlet.entities.Result
 import com.p2p.wowlet.entities.local.ActivityItem
 import com.p2p.wowlet.entities.local.QrWalletType
 import com.p2p.wowlet.entities.local.SendTransactionModel
 import com.p2p.wowlet.entities.local.UserWalletType
 import com.p2p.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.utils.roundToThousandsCurrencyValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -125,13 +125,15 @@ class SendCoinsViewModel(
 
     fun sendCoin(toPublicKey: String, lamprots: Long, tokenSymbol: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            when (val data = sendCoinInteractor.sendCoin(
-                SendTransactionModel(
-                    toPublicKey,
-                    lamprots,
-                    tokenSymbol = tokenSymbol
+            when (
+                val data = sendCoinInteractor.sendCoin(
+                    SendTransactionModel(
+                        toPublicKey,
+                        lamprots,
+                        tokenSymbol = tokenSymbol
+                    )
                 )
-            )) {
+            ) {
                 is Result.Success -> withContext(Dispatchers.Main) {
                     _successTransaction.value = data.data
                 }

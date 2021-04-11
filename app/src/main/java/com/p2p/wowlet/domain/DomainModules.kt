@@ -1,27 +1,47 @@
 package com.p2p.wowlet.domain
 
-import com.p2p.wowlet.auth.AuthInteractor
-import com.p2p.wowlet.domain.interactors.*
-import com.p2p.wowlet.domain.usecases.*
+import com.p2p.wowlet.auth.interactor.CreateWalletInteractor
+import com.p2p.wowlet.auth.interactor.EnterPinCodeInteractor
+import com.p2p.wowlet.auth.interactor.FingerPrintInteractor
+import com.p2p.wowlet.auth.interactor.PinCodeInteractor
+import com.p2p.wowlet.auth.interactor.PinCodeVerificationInteractor
+import com.p2p.wowlet.auth.interactor.RegFinishInteractor
+import com.p2p.wowlet.domain.usecases.CompleteBackupWalletInteractor
+import com.p2p.wowlet.domain.usecases.DashboardInteractor
+import com.p2p.wowlet.domain.usecases.DetailWalletInteractor
+import com.p2p.wowlet.domain.usecases.ManualSecretKeyInteractor
+import com.p2p.wowlet.domain.usecases.NetworksInteractor
+import com.p2p.wowlet.domain.usecases.NotificationInteractor
+import com.p2p.wowlet.domain.usecases.QrScannerInteractor
+import com.p2p.wowlet.domain.usecases.SecretKeyInteractor
+import com.p2p.wowlet.domain.usecases.SendCoinInteractor
+import com.p2p.wowlet.domain.usecases.SwapInteractor
 import org.koin.dsl.module
 
 val interactorsModule = module {
-    single<RegLoginInteractor> { RegLoginUseCase(get(), get()) }
-    factory<SecretKeyInteractor> { SecretKeyUseCase(get(), get()) }
-    factory<ManualSecretKeyInteractor> { ManualSecretKeyUseCase() }
-    factory<EnterPinCodeInteractor> { EnterPinCodeUseCase(get()) }
-    single<NotificationInteractor> { NotificationUseCase(get()) }
-    single<SendCoinInteractor> { SendCoinUseCase(get(), get()) }
-    single<DashboardInteractor> { DashBoardUseCase(get(), get(), get(), get()) }
-    single<RegFinishInteractor> { RegFinishUseCase(get()) }
-    single<CompleteBackupWalletInteractor> { CompleteBackupWalletUseCase(get()) }
-    single<SplashScreenInteractor> { AuthInteractor(get()) }
-    single<DetailWalletInteractor> { DetailWalletUseCase(get(), get(), get()) }
-    single<FingerPrintInteractor> { FingerPrintUseCase(get()) }
-    factory<CreateWalletInteractor> { CreateWalletUseCase(get(), get()) }
-    factory<PinCodeVerificationInteractor> { PinCodeVerificationUseCase(get()) }
-    factory<PinCodeInteractor> { PinCodeUseCase(get()) }
-    factory<QrScannerInteractor> { QrScannerUseCase(get()) }
-    factory<NetworksInteractor> { NetworksUseCase(get()) }
-    factory<SwapInteractor> { SwapUseCase() }
+    factory { SecretKeyInteractor(get(), get()) }
+    factory { ManualSecretKeyInteractor() }
+    factory {
+        EnterPinCodeInteractor(
+            get()
+        )
+    }
+    single { NotificationInteractor(get()) }
+    single { SendCoinInteractor(get(), get()) }
+    single { DashboardInteractor(get(), get(), get(), get()) }
+    single { RegFinishInteractor(get()) }
+    single { CompleteBackupWalletInteractor(get()) }
+    single { DetailWalletInteractor(get(), get(), get()) }
+    single { FingerPrintInteractor(get()) }
+    factory {
+        CreateWalletInteractor(
+            get(),
+            get()
+        )
+    }
+    factory { PinCodeVerificationInteractor(get()) }
+    factory { PinCodeInteractor(get()) }
+    factory { QrScannerInteractor(get()) }
+    factory { NetworksInteractor(get()) }
+    factory { SwapInteractor() }
 }

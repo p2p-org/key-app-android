@@ -9,11 +9,11 @@ import com.p2p.wowlet.entities.local.SendTransactionModel
 import com.p2p.wowlet.entities.local.UserSecretData
 import com.p2p.wowlet.entities.responce.ResponceDataBonfida
 import com.p2p.wowlet.entities.responce.orderbook.OrderBooks
-import com.p2p.wowlet.util.mnemoticgenerator.English
-import com.p2p.wowlet.util.mnemoticgenerator.MnemonicGenerator
-import com.p2p.wowlet.util.mnemoticgenerator.Words
-import com.p2p.wowlet.util.analyzeResponseObject
-import com.p2p.wowlet.util.makeApiCall
+import com.p2p.wowlet.utils.analyzeResponseObject
+import com.p2p.wowlet.utils.makeApiCall
+import com.p2p.wowlet.utils.mnemoticgenerator.English
+import com.p2p.wowlet.utils.mnemoticgenerator.MnemonicGenerator
+import com.p2p.wowlet.utils.mnemoticgenerator.Words
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.bitcoinj.core.Utils.readInt64
@@ -181,20 +181,23 @@ class WowletApiCallRepositoryImpl(
                 transferInfo.setFee(meta.fee)
                 println(transferInfo)
                 return transferInfo
-            } else if (message.accountKeys[instruction.programIdIndex.toInt()] == "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") {
-                val data = Base58.decode(instruction.data)
-                val lamports = readInt64(data, 1)
+            } else {
+                val s = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                if (message.accountKeys[instruction.programIdIndex.toInt()] == s) {
+                    val data = Base58.decode(instruction.data)
+                    val lamports = readInt64(data, 1)
 
-                val transferInfo = TransferInfo(
-                    message.accountKeys[instruction.accounts[0].toInt()],
-                    message.accountKeys[instruction.accounts[1].toInt()],
-                    lamports
-                )
-                transferInfo.slot = slot
-                transferInfo.signature = signature
-                transferInfo.setFee(meta.fee)
-                println(transferInfo)
-                return transferInfo
+                    val transferInfo = TransferInfo(
+                        message.accountKeys[instruction.accounts[0].toInt()],
+                        message.accountKeys[instruction.accounts[1].toInt()],
+                        lamports
+                    )
+                    transferInfo.slot = slot
+                    transferInfo.signature = signature
+                    transferInfo.setFee(meta.fee)
+                    println(transferInfo)
+                    return transferInfo
+                }
             }
 /*
             if (instruction.programIdIndex == number) {
@@ -232,7 +235,9 @@ class WowletApiCallRepositoryImpl(
 
     @Throws(RpcException::class)
     override suspend fun createAndInitializeTokenAccount(
-        payer: Account, mintAddress: PublicKey, newAccount: Account
+        payer: Account,
+        mintAddress: PublicKey,
+        newAccount: Account
     ): String {
         val space = (32 + 32 + 8 + 93).toLong() // mint account data length: 32 + 32 + 8 + 93
         val newAccountPubKey = newAccount.publicKey

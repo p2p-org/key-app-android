@@ -2,8 +2,8 @@ package com.p2p.wowlet
 
 import android.app.Application
 import com.p2p.wowlet.auth.AuthModule
+import com.p2p.wowlet.common.di.CommonModule
 import com.p2p.wowlet.di.apiModule
-import com.p2p.wowlet.di.databaseModule
 import com.p2p.wowlet.di.repositoryModule
 import com.p2p.wowlet.di.viewModule
 import com.p2p.wowlet.domain.interactorsModule
@@ -28,11 +28,11 @@ class App : Application() {
                 listOf(
                     apiModule,
                     viewModule,
-                    databaseModule,
                     repositoryModule,
                     interactorsModule,
-                    RootModule.create(),
                     AuthModule.create(),
+                    RootModule.create(),
+                    CommonModule.create(),
                     InfrastructureModule.create()
                 )
             )

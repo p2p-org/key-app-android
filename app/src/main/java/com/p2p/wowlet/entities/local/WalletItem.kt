@@ -14,4 +14,4 @@ data class WalletItem(
     var price: Double = 0.0,
     var amount: Double = 0.0,
     var walletBinds: Double = 0.0
-): Parcelable
+) : Parcelable

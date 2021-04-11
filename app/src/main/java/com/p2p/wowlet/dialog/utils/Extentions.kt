@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.p2p.wowlet.R
@@ -15,14 +14,13 @@ fun Dialog.makeFullScreen(root: View, fragment: Fragment) {
     bottomSheet?.layoutParams?.height = ViewGroup.LayoutParams.WRAP_CONTENT
     val behavior = BottomSheetBehavior.from<View>(bottomSheet!!)
     root.viewTreeObserver?.addOnGlobalLayoutListener(object :
-        ViewTreeObserver.OnGlobalLayoutListener {
-        override fun onGlobalLayout() {
-            try {
-                root.viewTreeObserver?.removeOnGlobalLayoutListener(this)
-                behavior.peekHeight = root.height
-                fragment.view?.requestLayout()
-            }catch (e: Exception) {  }
-        }
-
-    })
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                try {
+                    root.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                    behavior.peekHeight = root.height
+                    fragment.view?.requestLayout()
+                } catch (e: Exception) { }
+            }
+        })
 }

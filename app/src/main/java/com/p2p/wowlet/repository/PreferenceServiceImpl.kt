@@ -4,15 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import com.p2p.wowlet.datastore.PreferenceService
-import com.wowlet.data.util.cipher.Cipher.Companion.decrypt
-import com.wowlet.data.util.cipher.Cipher.Companion.encrypt
-import com.wowlet.data.util.cipher.Cipher.Companion.generateSecretKeyCipher
-import com.wowlet.data.util.cipher.Cipher.Companion.getSecretKey
-import com.wowlet.data.util.cipher.Cipher.Companion.strSecretKey
 import com.p2p.wowlet.entities.enums.SelectedCurrency
 import com.p2p.wowlet.entities.local.CipherData
 import com.p2p.wowlet.entities.local.EnableFingerPrintModel
@@ -20,6 +12,14 @@ import com.p2p.wowlet.entities.local.EnableNotificationModel
 import com.p2p.wowlet.entities.local.PinCodeData
 import com.p2p.wowlet.entities.local.UserSecretData
 import com.p2p.wowlet.entities.local.WalletItem
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import com.wowlet.data.util.cipher.Cipher.Companion.decrypt
+import com.wowlet.data.util.cipher.Cipher.Companion.encrypt
+import com.wowlet.data.util.cipher.Cipher.Companion.generateSecretKeyCipher
+import com.wowlet.data.util.cipher.Cipher.Companion.getSecretKey
+import com.wowlet.data.util.cipher.Cipher.Companion.strSecretKey
 import org.p2p.solanaj.rpc.Cluster
 import java.io.BufferedReader
 import java.io.FileInputStream
@@ -156,7 +156,6 @@ class PreferenceServiceImpl(
                 val userSecretData = jsonAdapterSecretData.fromJson(decryptData)
                 return userSecretData
             }
-
         }
 
         return null
@@ -193,7 +192,6 @@ class PreferenceServiceImpl(
             decryptData?.let { data ->
                 return adapter.fromJson(data)
             }
-
         }
 
         return null
@@ -206,7 +204,6 @@ class PreferenceServiceImpl(
             fos = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE)
 
             fos.write(data)
-
 
             Log.i("Saved to", "saveFile: " + context.filesDir.toString() + "/" + FILE_NAME)
         } catch (e: FileNotFoundException) {
@@ -253,6 +250,3 @@ class PreferenceServiceImpl(
         return null
     }
 }
-
-
-

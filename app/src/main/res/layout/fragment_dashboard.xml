@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.dashboard.view.DashboardFragment">
+    tools:context=".dashboard.view.DashboardFragment">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/lScannerContainer"

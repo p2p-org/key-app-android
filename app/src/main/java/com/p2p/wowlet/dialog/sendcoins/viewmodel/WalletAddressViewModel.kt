@@ -25,5 +25,4 @@ class WalletAddressViewModel : ViewModel() {
     fun postEnteredAmount() {
         _enteredAmount.value = enteredAmount
     }
-
 }

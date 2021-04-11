@@ -1,6 +1,5 @@
 package com.p2p.wowlet.entities.responce.orderbook
 
-
 import com.squareup.moshi.Json
 
 data class Ask(

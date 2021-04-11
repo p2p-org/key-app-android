@@ -19,12 +19,17 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.MarkerView
-import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.p2p.wowlet.R
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.Executor
 
 fun LineChart.initChart(chartList: List<Entry>) {
@@ -157,7 +162,8 @@ private fun FragmentActivity.authUser(executor: Executor, requestSuccess: () -> 
         .setDeviceCredentialAllowed(true)
         .build()
 
-    val biometricPrompt = BiometricPrompt(this, executor,
+    val biometricPrompt = BiometricPrompt(
+        this, executor,
         object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
@@ -172,7 +178,8 @@ private fun FragmentActivity.authUser(executor: Executor, requestSuccess: () -> 
                 super.onAuthenticationFailed()
                 Toast.makeText(this@authUser, "Auth failed", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+    )
 
     biometricPrompt.authenticate(promptInfo)
 }
@@ -221,7 +228,8 @@ private fun Fragment.authUser(executor: Executor, requestSuccess: () -> Unit) {
         .setDeviceCredentialAllowed(true)
         .build()
 
-    val biometricPrompt = BiometricPrompt(this, executor,
+    val biometricPrompt = BiometricPrompt(
+        this, executor,
         object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
@@ -236,7 +244,8 @@ private fun Fragment.authUser(executor: Executor, requestSuccess: () -> Unit) {
                 super.onAuthenticationFailed()
                 Toast.makeText(requireContext(), "Auth failed", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+    )
 
     biometricPrompt.authenticate(promptInfo)
 }
@@ -308,6 +317,3 @@ fun Double.roundToMilCurrencyValue(): BigDecimal {
 fun Double.roundToBilCurrencyValue(): BigDecimal {
     return BigDecimal(this).setScale(9, RoundingMode.HALF_UP)
 }
-
-
-
