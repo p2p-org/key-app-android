@@ -1,19 +1,13 @@
 package com.p2p.wowlet.utils.bindadapter
 
 import android.graphics.Bitmap
-import android.text.TextWatcher
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.p2p.wowlet.R
-import com.p2p.wowlet.fragment.dashboard.dialog.addcoin.util.dpToPx
-
-fun AppCompatEditText.bindTextWatcher(textWatcher: TextWatcher?) {
-    this.addTextChangedListener(textWatcher)
-}
+import com.p2p.wowlet.dashboard.dialog.addcoin.util.dpToPx
 
 fun AppCompatImageView.imageSource(uri: String) {
     Glide.with(context)
@@ -23,20 +17,6 @@ fun AppCompatImageView.imageSource(uri: String) {
             RequestOptions()
                 .placeholder(R.drawable.bg_circule_indicator)
                 .transform(RoundedCorners(38))
-                .error(R.drawable.bg_circule_indicator)
-        )
-        .into(this)
-}
-
-fun AppCompatImageView.imageSourceRadius(uri: String) {
-    if (uri == "") return
-    Glide.with(context)
-        .load(uri)
-        .centerCrop()
-        .transform(RoundedCorners(16f.dpToPx().toInt()))
-        .apply(
-            RequestOptions()
-                .placeholder(R.drawable.bg_circule_indicator)
                 .error(R.drawable.bg_circule_indicator)
         )
         .into(this)

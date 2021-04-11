@@ -11,7 +11,6 @@ import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.rpc.types.QRAccountInfo
 import org.p2p.solanaj.rpc.types.TransferInfo
 
-
 interface WowletApiCallRepository {
     suspend fun initAccount(phraseList: List<String>): UserSecretData
     fun generatePhrase(): List<String>

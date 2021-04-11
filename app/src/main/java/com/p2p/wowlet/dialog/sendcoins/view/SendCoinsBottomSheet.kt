@@ -13,23 +13,25 @@ import androidx.core.widget.doOnTextChanged
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.viewcommand.Command.*
+import com.p2p.wowlet.dashboard.dialog.SendCoinDoneDialog
+import com.p2p.wowlet.dashboard.dialog.yourwallets.YourWalletsBottomSheet
+import com.p2p.wowlet.dashboard.view.DashboardFragment
 import com.p2p.wowlet.databinding.FragmentSendCoinsBinding
+import com.p2p.wowlet.deprecated.viewcommand.Command
 import com.p2p.wowlet.dialog.SwapCoinProcessingDialog
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.dialog.sendcoins.viewmodel.WalletAddressViewModel
-import com.p2p.wowlet.fragment.dashboard.dialog.SendCoinDoneDialog
-import com.p2p.wowlet.fragment.dashboard.dialog.yourwallets.YourWalletsBottomSheet
-import com.p2p.wowlet.fragment.dashboard.view.DashboardFragment
-import com.p2p.wowlet.fragment.qrscanner.view.QrScannerFragment
+import com.p2p.wowlet.entities.Constants
+import com.p2p.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.qrscanner.view.QrScannerFragment
 import com.p2p.wowlet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.p2p.wowlet.entities.Constants
-import com.p2p.wowlet.entities.local.WalletItem
-import kotlinx.android.synthetic.main.fragment_send_coins.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.pow
@@ -89,9 +91,9 @@ class SendCoinsBottomSheet(
                 imgScanQrCode.isVisible = false
                 for (char in text) {
                     val charToInt = char.toInt()
-                    if (charToInt in 1040..1103
-                        || charToInt == 1025
-                        || charToInt == 1105
+                    if (charToInt in 1040..1103 ||
+                        charToInt == 1025 ||
+                        charToInt == 1105
                     ) {
                         etWalletAddress.setText(text.toString().replace(char.toString(), ""))
                         etWalletAddress.setSelection(text.length - 1)
@@ -131,7 +133,6 @@ class SendCoinsBottomSheet(
                     etWalletAddress.setSelection(etWalletAddress.text.toString().length)
                 }
             }
-
         }
         walletItem?.let {
             viewModel.selectWalletItem(it)
@@ -156,67 +157,81 @@ class SendCoinsBottomSheet(
     private var processingDialog: SwapCoinProcessingDialog? = null
 
     private fun initObservers() {
-        viewModel.successTransaction.observe(viewLifecycleOwner, {
-            processingDialog?.run {
-                if (isVisible) {
-                    dismiss()
+        viewModel.successTransaction.observe(
+            viewLifecycleOwner,
+            {
+                processingDialog?.run {
+                    if (isVisible) {
+                        dismiss()
+                    }
+                    viewModel.openDoneDialog(it)
                 }
-                viewModel.openDoneDialog(it)
             }
-        })
+        )
         viewModel.isInsertedMoreThanAvailable.observe(viewLifecycleOwner) {
             val color = if (it) R.color.red_500 else R.color.blue_400
-            txtAvailableBalance.setTextColor(ContextCompat.getColor(requireContext(), color))
+            binding.txtAvailableBalance.setTextColor(ContextCompat.getColor(requireContext(), color))
         }
         viewModel.walletIconVisibility.observe(viewLifecycleOwner) {
-            imgWallet.isVisible = it
+            binding.imgWallet.isVisible = it
         }
-        viewModel.errorTransaction.observe(viewLifecycleOwner, { message ->
-            processingDialog?.run {
-                if (isVisible) {
-                    dismiss()
-                }
-            }
-            context?.let {
-                Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
-            }
-        })
-        viewModel.feeResponseLiveData.observe(viewLifecycleOwner, {
-            feeValue = it.toDouble()
-            val feeCount = "$it ${walletItem?.tokenName}"
-            binding.feeCount.text = feeCount
-        })
-        viewModel.feeErrorLiveData.observe(viewLifecycleOwner, { message ->
-            context?.run { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
-
-        })
-        viewModel.getWalletData.observe(viewLifecycleOwner, { walletItemList ->
-            walletItems = walletItemList
-            if (walletItemList.isNotEmpty()) {
-                if (!walletItem?.depositAddress.isNullOrEmpty()) {
-                    val find = walletItemList.find { item ->
-                        item.depositAddress == walletItem!!.depositAddress
-                    }
-                    find?.let {
-                        viewModel.selectWalletItem(it)
-                    }
-                } else {
-                    val find = walletItemList.find { item ->
-                        item.depositAddress == walletAddress
-                    }
-                    find?.let {
-                        viewModel.selectWalletItem(it)
+        viewModel.errorTransaction.observe(
+            viewLifecycleOwner,
+            { message ->
+                processingDialog?.run {
+                    if (isVisible) {
+                        dismiss()
                     }
                 }
+                context?.let {
+                    Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
+                }
             }
-        })
+        )
+        viewModel.feeResponseLiveData.observe(
+            viewLifecycleOwner,
+            {
+                feeValue = it.toDouble()
+                val feeCount = "$it ${walletItem?.tokenName}"
+                binding.feeCount.text = feeCount
+            }
+        )
+        viewModel.feeErrorLiveData.observe(
+            viewLifecycleOwner,
+            { message ->
+                context?.run { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
+            }
+        )
+        viewModel.getWalletData.observe(
+            viewLifecycleOwner,
+            { walletItemList ->
+                walletItems = walletItemList
+                if (walletItemList.isNotEmpty()) {
+                    if (!walletItem?.depositAddress.isNullOrEmpty()) {
+                        val find = walletItemList.find { item ->
+                            item.depositAddress == walletItem!!.depositAddress
+                        }
+                        find?.let {
+                            viewModel.selectWalletItem(it)
+                        }
+                    } else {
+                        val find = walletItemList.find { item ->
+                            item.depositAddress == walletAddress
+                        }
+                        find?.let {
+                            viewModel.selectWalletItem(it)
+                        }
+                    }
+                }
+            }
+        )
         viewModel.isInsertedMoreThanAvailable.observe(viewLifecycleOwner) {
-            sendCoinButton.isEnabled = !it
+            binding.sendCoinButton.isEnabled = !it
         }
         viewModel.walletItemData.observe(viewLifecycleOwner) {
             if (it.tokenSymbol == "") return@observe
-            imgWalletData.imageSourceRadiusDp(it.icon, 16)
-            txtToken.text = it.tokenSymbol
+            binding.imgWalletData.imageSourceRadiusDp(it.icon, 16)
+            binding.txtToken.text = it.tokenSymbol
 
             viewModel.getFee()
             viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())
@@ -252,7 +267,6 @@ class SendCoinsBottomSheet(
                 etCount.setText(walletAddressViewModel.enteredAmount)
                 imgClearWalletAddress.isVisible = true
                 imgScanQrCode.isVisible = false
-
             }
             getWalletItemsJob?.invokeOnCompletion {
                 runBlocking {
@@ -271,7 +285,6 @@ class SendCoinsBottomSheet(
                     }
                 }
             }
-
         }
         viewModel.clearWalletAddress.observe(viewLifecycleOwner) {
             if (!it) return@observe
@@ -292,100 +305,108 @@ class SendCoinsBottomSheet(
     }
 
     private fun initViewCommand() {
-        viewModel.command.observe(viewLifecycleOwner, { viewCommand ->
-            when (viewCommand) {
-                is NavigateUpBackStackCommand -> {
-                    dismiss()
-                    viewModel.setWalletData(null)
-                }
-                is NavigateScannerViewCommand -> {
-                    when (requireActivity().supportFragmentManager.findFragmentById(R.id.container)) {
-                        is DashboardFragment -> {
-                            replaceFragment(QrScannerFragment.create(viewCommand.goBack))
-                        }
-                        else -> {
-                            popBackStack()
-                            this.dismiss()
+        viewModel.command.observe(
+            viewLifecycleOwner,
+            { viewCommand ->
+                when (viewCommand) {
+                    is Command.NavigateScannerViewCommand -> {
+                        when (requireActivity().supportFragmentManager.findFragmentById(R.id.container)) {
+                            is DashboardFragment -> {
+                                replaceFragment(QrScannerFragment.create(viewCommand.goBack))
+                            }
+                            else -> {
+                                popBackStack()
+                                this.dismiss()
+                            }
                         }
                     }
-                }
-                is OpenMyWalletDialogViewCommand -> {
-                    val yourWalletsBottomSheet: YourWalletsBottomSheet =
-                        YourWalletsBottomSheet.newInstance(
-                            getString(R.string.select_wallet)
-                        ) {
-                            viewModel.selectWalletItem(it)
-                        }
-                    yourWalletsBottomSheet.show(
-                        childFragmentManager,
-                        YourWalletsBottomSheet.YOUR_WALLET
-                    )
-                }
-                is SendCoinDoneViewCommand -> {
-                    val sendCoinDoneDialog: SendCoinDoneDialog =
-                        SendCoinDoneDialog.newInstance(
-                            viewCommand.transactionInfo,
-                            navigateBack = {
-                                dismiss()
-                            })
-                    sendCoinDoneDialog.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
-                }
-                is SendCoinViewCommand -> {
-                    with(binding) {
+                    is Command.OpenMyWalletDialogViewCommand -> {
+                        val yourWalletsBottomSheet: YourWalletsBottomSheet =
+                            YourWalletsBottomSheet.newInstance(
+                                getString(R.string.select_wallet)
+                            ) {
+                                viewModel.selectWalletItem(it)
+                            }
+                        yourWalletsBottomSheet.show(
+                            childFragmentManager,
+                            YourWalletsBottomSheet.YOUR_WALLET
+                        )
+                    }
+                    is Command.SendCoinDoneViewCommand -> {
+                        val sendCoinDoneDialog: SendCoinDoneDialog =
+                            SendCoinDoneDialog.newInstance(
+                                viewCommand.transactionInfo,
+                                navigateBack = {
+                                    dismiss()
+                                }
+                            )
+                        sendCoinDoneDialog.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
+                    }
+                    is Command.SendCoinViewCommand -> {
+                        with(binding) {
 
-                        val amount =
-                            this@SendCoinsBottomSheet.viewModel.walletItemData.value?.amount
-                        val decimals =
-                            this@SendCoinsBottomSheet.viewModel.walletItemData.value?.decimals
-                        amount?.run {
-                            decimals?.run {
-                                if (walletAddress?.isNotEmpty() == true && etCount.text.toString()
+                            val amount =
+                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.amount
+                            val decimals =
+                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.decimals
+                            amount?.run {
+                                decimals?.run {
+                                    if (walletAddress?.isNotEmpty() == true && etCount.text.toString()
                                         .isNotEmpty()
-                                ) {
-                                    val amountInTokens: Double = if (viewModel?.selectedCurrency?.value == "USD") {
-                                        etCount.text.toString().toDouble().div(walletItem?.walletBinds!!)
-                                    } else {
-                                        etCount.text.toString().toDouble()
-                                    }
-                                    if (amountInTokens < walletItem?.amount!! - feeValue) {
-                                        processingDialog = SwapCoinProcessingDialog.newInstance {}
-                                        processingDialog?.show(
-                                            childFragmentManager,
-                                            SwapCoinProcessingDialog.SWAP_COIN_PROGRESS
-                                        )
-                                        val lamprots =
-                                            etCount.text.toString().toDouble() * (10.0.pow(
-                                                decimals.toDouble()
-                                            ))
-
-                                        this@SendCoinsBottomSheet.viewModel.sendCoin(
-                                            walletAddress!!,
-                                            lamprots.toLong(),
-                                            this@SendCoinsBottomSheet.viewModel.walletItemData.value?.tokenSymbol!!
-                                        )
-                                    } else {
-                                        if (isUserOwnScannedWallet) {
-                                            Toast.makeText(
-                                                requireContext(),
-                                                "There is not enough money",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                    ) {
+                                        val amountInTokens: Double = if (viewModel?.selectedCurrency?.value == "USD") {
+                                            etCount.text.toString().toDouble().div(walletItem?.walletBinds!!)
                                         } else {
+                                            etCount.text.toString().toDouble()
+                                        }
+                                        if (amountInTokens < walletItem?.amount!! - feeValue) {
+                                            processingDialog = SwapCoinProcessingDialog.newInstance {}
+                                            processingDialog?.show(
+                                                childFragmentManager,
+                                                SwapCoinProcessingDialog.SWAP_COIN_PROGRESS
+                                            )
+                                            val lamprots =
+                                                etCount.text.toString().toDouble() * (
+                                                    10.0.pow(
+                                                        decimals.toDouble()
+                                                    )
+                                                    )
+
+                                            this@SendCoinsBottomSheet.viewModel.sendCoin(
+                                                walletAddress!!,
+                                                lamprots.toLong(),
+                                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.tokenSymbol!!
+                                            )
+                                        } else {
+                                            if (isUserOwnScannedWallet) {
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    "There is not enough money",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    "You don't have corresponding wallet, please add one",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                        }
+                                    } else {
+                                        processingDialog?.dismiss()
+                                        context?.let {
                                             Toast.makeText(
-                                                requireContext(),
-                                                "You don't have corresponding wallet, please add one",
-                                                Toast.LENGTH_LONG
+                                                it,
+                                                "Invalidate input data", Toast.LENGTH_SHORT
                                             ).show()
                                         }
                                     }
-                                } else {
+                                } ?: context?.let {
                                     processingDialog?.dismiss()
-                                    context?.let {
-                                        Toast.makeText(
-                                            it,
-                                            "Invalidate input data", Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
+                                    Toast.makeText(
+                                        it,
+                                        "Not Selected wallet", Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             } ?: context?.let {
                                 processingDialog?.dismiss()
@@ -394,18 +415,11 @@ class SendCoinsBottomSheet(
                                     "Not Selected wallet", Toast.LENGTH_SHORT
                                 ).show()
                             }
-                        } ?: context?.let {
-                            processingDialog?.dismiss()
-                            Toast.makeText(
-                                it,
-                                "Not Selected wallet", Toast.LENGTH_SHORT
-                            ).show()
                         }
-
                     }
                 }
             }
-        })
+        )
     }
 
     override fun onDestroy() {

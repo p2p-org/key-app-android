@@ -9,5 +9,4 @@ interface DashboardRepository {
     fun getQrCode(publicKey: String): Bitmap
     fun getConstWallets(): List<ConstWalletItem>
     suspend fun getHistoricalPrices(symbols: String): Result<List<HistoricalPrices>>
-
 }

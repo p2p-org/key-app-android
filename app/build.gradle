@@ -7,7 +7,7 @@ plugins {
     id 'com.google.firebase.appdistribution'
 }
 
-//apply from: "$project.rootDir/scripts/ktlint.gradle" // todo: add ktlint after refactoring
+apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 
 android {

@@ -133,7 +133,7 @@ fun TransferInfo.transferInfoToActivityItem(
         }
         else -> {
             symbolPrice = "+"
-           "Receive Coin"
+            "Receive Coin"
         }
     }
     return ActivityItem(
@@ -152,4 +152,3 @@ fun TransferInfo.transferInfoToActivityItem(
         date = ""
     )
 }
-

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/darkslategray"
-    tools:context=".fragment.qrscanner.view.QrScannerFragment">
+    tools:context=".qrscanner.view.QrScannerFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/scannerCardContainer"

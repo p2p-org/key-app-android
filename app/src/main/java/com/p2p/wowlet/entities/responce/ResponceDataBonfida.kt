@@ -1,6 +1,5 @@
 package com.p2p.wowlet.entities.responce
 
-
 import com.squareup.moshi.Json
 
 data class ResponceDataBonfida<T>(

@@ -1,6 +1,6 @@
 package com.p2p.wowlet.root
 
-import com.p2p.wowlet.auth.AuthInteractor
+import com.p2p.wowlet.auth.interactor.AuthInteractor
 import com.p2p.wowlet.common.mvp.BasePresenter
 
 class RootPresenter(

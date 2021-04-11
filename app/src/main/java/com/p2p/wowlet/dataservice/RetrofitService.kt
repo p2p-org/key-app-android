@@ -1,6 +1,5 @@
 package com.p2p.wowlet.dataservice
 
-
 import com.p2p.wowlet.entities.responce.CallRequest
 import com.p2p.wowlet.entities.responce.HistoricalPrices
 import com.p2p.wowlet.entities.responce.ResponceDataBonfida
@@ -8,7 +7,12 @@ import com.p2p.wowlet.entities.responce.ResponseData
 import com.p2p.wowlet.entities.responce.ResponseDataAirDrop
 import com.p2p.wowlet.entities.responce.orderbook.OrderBooks
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RetrofitService {
     @Headers("Content-Type: application/json")

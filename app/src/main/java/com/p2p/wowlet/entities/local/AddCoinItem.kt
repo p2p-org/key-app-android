@@ -1,7 +1,5 @@
 package com.p2p.wowlet.entities.local
 
-import androidx.lifecycle.MutableLiveData
-
 data class AddCoinItem(
     val tokenSymbol: String,
     val mintAddress: String,
@@ -13,7 +11,7 @@ data class AddCoinItem(
     val currency: Double,
     var minBalance: Double? = null,
     var walletAddress: String? = null,
-    var isShowMindAddress: Boolean=false,
+    var isShowMindAddress: Boolean = false,
     var isAlreadyAdded: Boolean = false,
     var navigatingBack: Boolean = false
 )
