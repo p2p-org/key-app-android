@@ -2,7 +2,7 @@ package com.p2p.wowlet.root
 
 import android.os.Bundle
 import com.p2p.wowlet.R
-import com.p2p.wowlet.auth.onboarding.OnboardingFragment
+import com.p2p.wowlet.auth.ui.OnboardingFragment
 import com.p2p.wowlet.auth.ui.pincode.view.PinCodeFragment
 import com.p2p.wowlet.common.mvp.BaseMvpActivity
 import com.p2p.wowlet.entities.enums.PinCodeFragmentType
