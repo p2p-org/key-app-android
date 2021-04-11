@@ -1,6 +1,8 @@
 package com.p2p.wowlet.backupwallat.secretkeys.utils
 
 import android.view.View
+import androidx.core.view.marginEnd
+import androidx.core.view.marginStart
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.backupwallat.secretkeys.adapter.MultipleSpanGridLayoutManager
 import kotlin.math.roundToInt

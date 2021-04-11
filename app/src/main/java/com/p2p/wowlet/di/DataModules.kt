@@ -1,6 +1,5 @@
 package com.p2p.wowlet.di
 
-import com.p2p.data.repository.PreferenceServiceImpl
 import com.p2p.wowlet.dataservice.RetrofitService
 import com.p2p.wowlet.datastore.DashboardRepository
 import com.p2p.wowlet.datastore.DetailActivityRepository
@@ -11,6 +10,7 @@ import com.p2p.wowlet.datastore.WowletApiCallRepository
 import com.p2p.wowlet.repository.DashboardRepositoryImpl
 import com.p2p.wowlet.repository.DetailActivityRepositoryImpl
 import com.p2p.wowlet.repository.LocalDatabaseRepositoryImpl
+import com.p2p.wowlet.repository.PreferenceServiceImpl
 import com.p2p.wowlet.repository.TermAndConditionRepositoryImpl
 import com.p2p.wowlet.repository.WowletApiCallRepositoryImpl
 import com.p2p.wowlet.utils.HeaderInterceptor
@@ -24,7 +24,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 val apiModule = module {
     single { Moshi.Builder().build() }
-    single<RpcClient> {
+    single {
         val get = get<PreferenceService>()
         val selectedCluster = get.getSelectedCluster()
         RpcClient(selectedCluster)
