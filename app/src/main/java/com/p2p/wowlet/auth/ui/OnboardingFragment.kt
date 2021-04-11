@@ -3,12 +3,11 @@ package com.p2p.wowlet.auth.ui
 import android.os.Bundle
 import android.view.View
 import com.p2p.wowlet.R
-import com.p2p.wowlet.backupwallat.recoverywallat.view.RecoveryWalletFragment
 import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentOnboardingBinding
+import com.p2p.wowlet.fragment.backupwallat.recoverywallat.view.RecoveryWalletFragment
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.p2p.wowlet.view.TermsAndConditionFragment
 
 class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
@@ -16,13 +15,9 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
-    }
-
-    private fun initView() {
         with(binding) {
             createButton.setOnClickListener {
-                replaceFragment(TermsAndConditionFragment())
+                replaceFragment(EnterUsernameFragment.create())
             }
             loginButton.setOnClickListener {
                 replaceFragment(RecoveryWalletFragment())

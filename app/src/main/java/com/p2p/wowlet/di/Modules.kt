@@ -19,6 +19,7 @@ import com.p2p.wowlet.investments.viewmodel.InvestmentsViewModel
 import com.p2p.wowlet.notification.viewmodel.NotificationViewModel
 import com.p2p.wowlet.qrscanner.viewmodel.QrScannerViewModel
 import com.p2p.wowlet.search.viewmodel.SearchViewModel
+import com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel.SwapViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -32,7 +33,6 @@ val viewModule = module {
     viewModel { InvestmentsViewModel() }
     viewModel { QrScannerViewModel(get(), get()) }
     viewModel { DetailWalletViewModel(get()) }
-    viewModel { com.p2p.wowlet.detailwallet.viewmodel.DetailWalletViewModel(get()) }
     viewModel { DetailSavingViewModel() }
     viewModel { RecoveryPhraseViewModel(get()) }
     viewModel { SendCoinsViewModel(get(), get()) }

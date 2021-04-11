@@ -52,14 +52,11 @@ android {
             versionNameSuffix ".$VERSION_BUILD-debug"
         }
         feature {
-            debuggable true
             signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             versionNameSuffix ".$VERSION_BUILD"
             applicationIdSuffix '.feature'
-            matchingFallbacks = ['debug']
 
             firebaseAppDistribution {
                 releaseNotes = developChangelog()
@@ -70,6 +67,7 @@ android {
         release {
             signingConfig signingConfigs.release
             minifyEnabled false
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

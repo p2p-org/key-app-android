@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_onboarding">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/centerGuideline"
@@ -19,7 +20,8 @@
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_p2p" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/titleTextView"
@@ -46,6 +48,7 @@
         android:alpha="0.75"
         android:fontFamily="@font/font_sf_pro_display"
         android:gravity="center"
+        android:text="@string/auth_onboarding_subtitle"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,6 +61,7 @@
         android:layout_height="56dp"
         android:layout_marginHorizontal="32dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_blue_rounded"
         android:fontFamily="@font/sf_pro_text"
         android:foreground="?selectableItemBackground"
         android:text="@string/create_new_wallet"
