@@ -51,12 +51,12 @@ android {
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-debug"
         }
+
         feature {
             signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD"
-            applicationIdSuffix '.feature'
 
             firebaseAppDistribution {
                 releaseNotes = developChangelog()
