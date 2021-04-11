@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.domain.usecases.DashboardInteractor
-import com.p2p.wowlet.domain.usecases.QrScannerInteractor
-import com.p2p.wowlet.entities.Result
-import com.p2p.wowlet.entities.local.QrWalletType
+import com.p2p.wowlet.dashboard.interactor.DashboardInteractor
+import com.p2p.wowlet.dashboard.interactor.QrScannerInteractor
+import com.p2p.wowlet.common.network.Result
+import com.p2p.wowlet.dashboard.model.local.QrWalletType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

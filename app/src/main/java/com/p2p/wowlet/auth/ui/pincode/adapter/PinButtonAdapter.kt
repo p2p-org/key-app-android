@@ -11,13 +11,13 @@ import android.widget.BaseAdapter
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.p2p.wowlet.R
-import com.p2p.wowlet.entities.enums.PinCodeFragmentType
+import com.p2p.wowlet.auth.model.LaunchMode
 import com.p2p.wowlet.utils.isFingerPrintSet
 
 class PinButtonAdapter(
     var isFingerprintEnabled: Boolean,
     val context: Context,
-    val pinCodeFragmentType: PinCodeFragmentType,
+    val pinCodeFragmentType: LaunchMode,
     val pinButtonClick: (String) -> Unit,
     val pinFingerPrint: () -> Unit,
     val removeCode: () -> Unit
@@ -63,10 +63,10 @@ class PinButtonAdapter(
                 button.setOnClickListener {
                     pinFingerPrint.invoke()
                 }
-                if (pinCodeFragmentType == PinCodeFragmentType.CREATE) {
+                if (pinCodeFragmentType == LaunchMode.CREATE) {
                     button.isClickable = false
                     button.visibility = View.GONE
-                } else if (!context.isFingerPrintSet() && pinCodeFragmentType != PinCodeFragmentType.CREATE) {
+                } else if (!context.isFingerPrintSet() && pinCodeFragmentType != LaunchMode.CREATE) {
                     button.isClickable = false
                     button.visibility = View.GONE
                 } else if (!isFingerprintEnabled) {

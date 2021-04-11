@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".dashboard.dialog.swap.SwapBottomSheet">
+        tools:context=".dashboard.ui.dialog.swap.SwapBottomSheet">
 
 
         <androidx.appcompat.widget.AppCompatImageView

@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.Entry
 import com.p2p.wowlet.deprecated.viewcommand.Command
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.domain.usecases.DetailWalletInteractor
-import com.p2p.wowlet.entities.Result
-import com.p2p.wowlet.entities.local.ActivityItem
-import com.p2p.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.dashboard.interactor.DetailWalletInteractor
+import com.p2p.wowlet.common.network.Result
+import com.p2p.wowlet.dashboard.model.local.ActivityItem
+import com.p2p.wowlet.dashboard.model.local.WalletItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

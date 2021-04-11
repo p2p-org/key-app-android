@@ -11,17 +11,17 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.p2p.wowlet.R
 import com.p2p.wowlet.common.mvp.BaseFragment
-import com.p2p.wowlet.dashboard.dialog.TransactionBottomSheet
-import com.p2p.wowlet.dashboard.dialog.swap.SwapBottomSheet
+import com.p2p.wowlet.dashboard.ui.dialog.TransactionBottomSheet
+import com.p2p.wowlet.dashboard.ui.dialog.swap.SwapBottomSheet
 import com.p2p.wowlet.databinding.FragmentDetailActivityBinding
 import com.p2p.wowlet.deprecated.viewcommand.Command
 import com.p2p.wowlet.deprecated.viewcommand.ViewCommand
 import com.p2p.wowlet.detailwallet.adapter.ActivityAdapter
 import com.p2p.wowlet.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wowlet.detailwallet.viewmodel.DetailWalletViewModel
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet
-import com.p2p.wowlet.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
-import com.p2p.wowlet.entities.local.WalletItem
+import com.p2p.wowlet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
+import com.p2p.wowlet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
+import com.p2p.wowlet.dashboard.model.local.WalletItem
 import com.p2p.wowlet.utils.changeTextColor
 import com.p2p.wowlet.utils.copyClipboard
 import com.p2p.wowlet.utils.getMonthly
@@ -32,7 +32,7 @@ import com.p2p.wowlet.utils.initChart
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.roundCurrencyValue
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import com.p2p.wowlet.view.BlockChainExplorerFragment
+import com.p2p.wowlet.blockchain.BlockChainExplorerFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 

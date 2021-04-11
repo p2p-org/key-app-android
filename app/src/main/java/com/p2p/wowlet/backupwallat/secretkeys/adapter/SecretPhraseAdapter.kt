@@ -21,7 +21,7 @@ import com.p2p.wowlet.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wowlet.backupwallat.secretkeys.utils.showSoftKeyboard
 import com.p2p.wowlet.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wowlet.databinding.RvItemKeyWordBinding
-import com.p2p.wowlet.entities.local.Keyword
+import com.p2p.wowlet.dashboard.model.local.Keyword
 
 class SecretPhraseAdapter(
     private val context: Context,

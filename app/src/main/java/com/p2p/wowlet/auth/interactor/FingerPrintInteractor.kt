@@ -1,7 +1,7 @@
 package com.p2p.wowlet.auth.interactor
 
-import com.p2p.wowlet.datastore.PreferenceService
-import com.p2p.wowlet.entities.local.EnableFingerPrintModel
+import com.p2p.wowlet.infrastructure.persistence.PreferenceService
+import com.p2p.wowlet.dashboard.model.local.EnableFingerPrintModel
 
 class FingerPrintInteractor(private val preferenceService: PreferenceService) {
 

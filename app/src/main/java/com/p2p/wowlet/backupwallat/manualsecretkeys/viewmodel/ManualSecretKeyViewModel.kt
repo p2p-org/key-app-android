@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.p2p.wowlet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wowlet.domain.usecases.ManualSecretKeyInteractor
-import com.p2p.wowlet.entities.Result
-import com.p2p.wowlet.entities.local.SecretKeyItem
+import com.p2p.wowlet.backupwallat.interactor.ManualSecretKeyInteractor
+import com.p2p.wowlet.common.network.Result
+import com.p2p.wowlet.dashboard.model.local.SecretKeyItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

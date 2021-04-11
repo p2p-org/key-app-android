@@ -1,9 +1,9 @@
 package com.p2p.wowlet.utils
 
 import android.util.Log
-import com.p2p.wowlet.entities.CallException
-import com.p2p.wowlet.entities.Result
-import com.p2p.wowlet.entities.responce.ResponceDataBonfida
+import com.p2p.wowlet.common.network.CallException
+import com.p2p.wowlet.common.network.Result
+import com.p2p.wowlet.common.network.ResponceDataBonfida
 import retrofit2.Response
 import java.lang.Exception
 

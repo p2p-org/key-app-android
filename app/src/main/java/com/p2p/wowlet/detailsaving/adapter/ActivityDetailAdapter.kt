@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wowlet.databinding.ItemActivityBinding
 import com.p2p.wowlet.detailsaving.viewmodel.DetailSavingViewModel
-import com.p2p.wowlet.entities.local.ActivityItem
+import com.p2p.wowlet.dashboard.model.local.ActivityItem
 
 class ActivityDetailAdapter(
     private val viewModel: DetailSavingViewModel,

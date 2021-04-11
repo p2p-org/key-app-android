@@ -9,8 +9,8 @@ import com.p2p.wowlet.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wowlet.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentSecretKeyBinding
-import com.p2p.wowlet.entities.enums.PinCodeFragmentType
-import com.p2p.wowlet.entities.local.Keyword
+import com.p2p.wowlet.auth.model.LaunchMode
+import com.p2p.wowlet.dashboard.model.local.Keyword
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
@@ -47,7 +47,7 @@ class SecretKeyFragment : BaseFragment(R.layout.fragment_secret_key) {
 
     private fun observeData() {
         viewModel.isCurrentCombination.observe(viewLifecycleOwner) {
-            replaceFragment(PinCodeFragment.create(false, false, PinCodeFragmentType.CREATE))
+            replaceFragment(PinCodeFragment.create(false, false, LaunchMode.CREATE))
         }
         viewModel.invadedPhrase.observe(viewLifecycleOwner) { errorMessage ->
             binding.txtErrorMessage.text = errorMessage

@@ -9,8 +9,8 @@ import com.p2p.wowlet.backupwallat.manualsecretkeys.adapter.SortKeyAdapter
 import com.p2p.wowlet.backupwallat.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
 import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentManualSecretKeysBinding
-import com.p2p.wowlet.entities.enums.PinCodeFragmentType
-import com.p2p.wowlet.entities.local.SecretKeyItem
+import com.p2p.wowlet.auth.model.LaunchMode
+import com.p2p.wowlet.dashboard.model.local.SecretKeyItem
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
@@ -82,7 +82,7 @@ class ManualSecretKeysFragment : BaseFragment(R.layout.fragment_manual_secret_ke
                     PinCodeFragment.create(
                         openSplashScreen = false,
                         isBackupDialog = false,
-                        type = PinCodeFragmentType.CREATE
+                        type = LaunchMode.CREATE
                     )
                 )
             } else {
