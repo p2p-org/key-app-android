@@ -10,7 +10,7 @@ import com.p2p.wowlet.fragment.termandcondition.view.TermsAndConditionFragment
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
 
-class RegLoginFragment : BaseFragment(R.layout.fragment_reg_login) {
+class OnboardingFragment : BaseFragment(R.layout.fragment_reg_login) {
 
     private val binding: FragmentRegLoginBinding by viewBinding()
 

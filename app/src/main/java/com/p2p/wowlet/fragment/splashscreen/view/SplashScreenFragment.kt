@@ -1,16 +1,13 @@
 package com.p2p.wowlet.fragment.splashscreen.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.p2p.wowlet.R
 import com.p2p.wowlet.common.mvp.BaseFragment
 import com.p2p.wowlet.databinding.FragmentSplashScreenBinding
-import com.p2p.wowlet.fragment.reglogin.view.RegLoginFragment
 import com.p2p.wowlet.fragment.splashscreen.adapters.PagerAdapter
 import com.p2p.wowlet.fragment.splashscreen.viewmodel.SplashScreenViewModel
-import com.p2p.wowlet.utils.popAndReplaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.entities.local.SplashData
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -59,7 +56,7 @@ class SplashScreenFragment : BaseFragment(R.layout.fragment_splash_screen) {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     if (position == lastPage) {
-                        popAndReplaceFragment(RegLoginFragment(), inclusive = true)
+                        popAndReplaceFragment(OnboardingFragment(), inclusive = true)
                     }
                     Log.e("Selected_Page", position.toString())
                 }

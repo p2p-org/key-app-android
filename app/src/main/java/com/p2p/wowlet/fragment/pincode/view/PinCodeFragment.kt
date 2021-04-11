@@ -19,7 +19,7 @@ import com.p2p.wowlet.fragment.notification.view.NotificationFragment
 import com.p2p.wowlet.fragment.pincode.adapter.PinButtonAdapter
 import com.p2p.wowlet.fragment.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wowlet.fragment.regfinish.view.RegFinishFragment
-import com.p2p.wowlet.fragment.reglogin.view.RegLoginFragment
+import com.p2p.wowlet.fragment.reglogin.view.OnboardingFragment
 import com.p2p.wowlet.utils.args
 import com.p2p.wowlet.utils.isFingerPrintSet
 import com.p2p.wowlet.utils.openFingerprintDialog
@@ -209,7 +209,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
             is Command.NavigateSecretKeyViewCommand -> replaceFragment(SecretKeyFragment())
             is Command.NavigateFingerPrintViewCommand -> replaceFragment(FingerPrintFragment())
             is Command.NavigateNotificationViewCommand -> replaceFragment(NotificationFragment())
-            is Command.NavigateRegLoginViewCommand -> replaceFragment(RegLoginFragment())
+            is Command.NavigateRegLoginViewCommand -> replaceFragment(OnboardingFragment())
             is Command.NavigateRegFinishViewCommand -> replaceFragment(RegFinishFragment())
             is Command.OpenMainActivityViewCommand -> {
                 popAndReplaceFragment(HomeFragment.create(), inclusive = true)
