@@ -8,8 +8,6 @@ import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogEnterAppleIdPassBinding
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import kotlinx.android.synthetic.main.dialog_enter_apple_id_pass.vCancel
-import kotlinx.android.synthetic.main.dialog_enter_apple_id_pass.vEnable
 
 class EnterAppleIdPasswordDialog() : DialogFragment() {
 
@@ -36,10 +34,10 @@ class EnterAppleIdPasswordDialog() : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vEnable.setOnClickListener {
+        binding.vEnable.setOnClickListener {
             dismiss()
         }
-        vCancel.setOnClickListener {
+        binding.vCancel.setOnClickListener {
             dismiss()
         }
     }

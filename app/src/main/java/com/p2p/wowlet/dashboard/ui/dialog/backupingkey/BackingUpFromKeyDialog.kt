@@ -10,8 +10,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
-import kotlinx.android.synthetic.main.dialog_backing_up_keys.vClose
-import kotlinx.android.synthetic.main.dialog_backing_up_keys.vDone
+import com.p2p.wowlet.databinding.DialogBackingUpKeysBinding
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class BackingUpFromKeyDialog : DialogFragment() {
@@ -25,15 +25,17 @@ class BackingUpFromKeyDialog : DialogFragment() {
         }
     }
 
+    private val binding: DialogBackingUpKeysBinding by viewBinding()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_backing_up_keys, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vClose.setOnClickListener {
+        binding.vClose.setOnClickListener {
             dismiss()
         }
-        vDone.setOnClickListener {
+        binding.vDone.setOnClickListener {
             dismiss()
         }
     }

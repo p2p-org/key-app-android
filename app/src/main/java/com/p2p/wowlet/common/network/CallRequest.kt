@@ -1,14 +1,14 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class CallRequest(
-    @field:Json(name = "method")
+    @SerializedName("method")
     val method: String,
-    @field:Json(name = "params")
+    @SerializedName("params")
     val params: List<Any>,
-    @field:Json(name = "jsonrpc")
+    @SerializedName("jsonrpc")
     val jsonrpc: String = "2.0",
-    @field:Json(name = "id")
+    @SerializedName("id")
     val id: Int = 1
 )

@@ -1,14 +1,14 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class ResponseDataAirDrop(
-    @field:Json(name = "jsonrpc")
+    @SerializedName("jsonrpc")
     val jsonrpc: String,
-    @field:Json(name = "id")
+    @SerializedName("id")
     val id: Int,
-    @field:Json(name = "result")
+    @SerializedName("result")
     val result: String?,
-    @field:Json(name = "error")
+    @SerializedName("error")
     val error: ErrorResponse?
 )

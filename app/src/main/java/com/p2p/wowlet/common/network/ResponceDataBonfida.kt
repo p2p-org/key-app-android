@@ -1,10 +1,10 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class ResponceDataBonfida<T>(
-    @Json(name = "success")
+    @SerializedName("success")
     val success: Boolean,
-    @Json(name = "data")
+    @SerializedName("data")
     val data: T
 )

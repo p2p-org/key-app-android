@@ -12,7 +12,6 @@ import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogChangePhoneEmailBinding
 import com.p2p.wowlet.dashboard.model.MailPhoneType
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import kotlinx.android.synthetic.main.dialog_change_phone_email.icClose
 
 class ChangeMailPhoneDialog(val mailPhoneType: MailPhoneType) : DialogFragment() {
 
@@ -30,7 +29,7 @@ class ChangeMailPhoneDialog(val mailPhoneType: MailPhoneType) : DialogFragment()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        icClose.setOnClickListener {
+        binding.icClose.setOnClickListener {
             dismiss()
         }
     }

@@ -3,7 +3,7 @@ package com.p2p.wowlet.infrastructure.persistence
 import com.p2p.wowlet.dashboard.model.SelectedCurrency
 import com.p2p.wowlet.dashboard.model.local.EnableFingerPrintModel
 import com.p2p.wowlet.dashboard.model.local.EnableNotificationModel
-import com.p2p.wowlet.dashboard.model.local.PinCodeData
+import com.p2p.wowlet.dashboard.model.local.PinCodeResponse
 import com.p2p.wowlet.dashboard.model.local.UserSecretData
 import com.p2p.wowlet.dashboard.model.local.WalletItem
 import org.p2p.solanaj.rpc.Cluster
@@ -16,8 +16,8 @@ interface PreferenceService {
     fun getSingleWalletData(): UserSecretData?
     fun getActiveWallet(): UserSecretData?
     fun updateWallet(userSecretData: UserSecretData): Boolean
-    fun setPinCodeValue(codeValue: PinCodeData): Boolean
-    fun getPinCodeValue(): PinCodeData?
+    fun setPinCodeValue(codeValue: PinCodeResponse): Boolean
+    fun getPinCodeValue(): PinCodeResponse?
     fun enableNotification(isEnable: EnableNotificationModel)
     fun isAllowNotification(): EnableNotificationModel?
     fun isSetFingerPrint(): EnableFingerPrintModel?

@@ -1,22 +1,22 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class HistoricalPrices(
-    @Json(name = "close")
+    @SerializedName("close")
     val close: Double,
-    @Json(name = "open")
+    @SerializedName("open")
     val open: Double,
-    @Json(name = "low")
+    @SerializedName("low")
     val low: Double,
-    @Json(name = "high")
+    @SerializedName("high")
     val high: Double,
-    @Json(name = "startTime")
+    @SerializedName("startTime")
     val startTime: Long,
-    @Json(name = "market")
+    @SerializedName("market")
     val market: String,
-    @Json(name = "volumeBase")
+    @SerializedName("volumeBase")
     val volumeBase: Double,
-    @Json(name = "volumeQuote")
+    @SerializedName("volumeQuote")
     val volumeQuote: Double
 )

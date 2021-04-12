@@ -12,7 +12,8 @@ import com.p2p.wowlet.utils.makeApiCall
 import net.glxn.qrgen.android.QRCode
 import retrofit2.Response
 
-class DashboardRepositoryImpl(val allApiService: RetrofitService) : DashboardRepository {
+class DashboardRepositoryImpl(
+    private val api: RetrofitService) : DashboardRepository {
     override fun getQrCode(publicKey: String): Bitmap {
         return QRCode.from(publicKey).bitmap()
     }
@@ -22,7 +23,7 @@ class DashboardRepositoryImpl(val allApiService: RetrofitService) : DashboardRep
     override suspend fun getHistoricalPrices(symbols: String): Result<List<HistoricalPrices>> =
         makeApiCall({
             getHistoricalPricesData(
-                allApiService.getHistoricalPrices(
+                api.getHistoricalPrices(
                     symbols,
                     1,
                     86400

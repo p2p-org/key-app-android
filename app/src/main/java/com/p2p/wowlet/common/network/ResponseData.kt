@@ -1,14 +1,14 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class ResponseData(
-    @Json(name = "jsonrpc")
+    @SerializedName("jsonrpc")
     val jsonrpc: String,
-    @Json(name = "id")
+    @SerializedName("id")
     val id: Int,
-    @Json(name = "result")
+    @SerializedName("result")
     val result: ResultSuccess?,
-    @Json(name = "error")
+    @SerializedName("error")
     val error: ErrorResponse?
 )

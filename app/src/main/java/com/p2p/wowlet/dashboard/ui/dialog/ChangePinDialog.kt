@@ -11,7 +11,6 @@ import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
 import com.p2p.wowlet.databinding.DialogChangePinBinding
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import kotlinx.android.synthetic.main.dialog_change_pin.icClose
 
 class ChangePinDialog() : DialogFragment() {
 
@@ -29,7 +28,7 @@ class ChangePinDialog() : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        icClose.setOnClickListener {
+        binding.icClose.setOnClickListener {
             dismiss()
         }
     }

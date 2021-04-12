@@ -1,10 +1,10 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class ResultSuccess(
-    @field:Json(name = "context")
+    @SerializedName("context")
     val context: ResultContext,
-    @field:Json(name = "value")
+    @SerializedName("value")
     val value: Int,
 )

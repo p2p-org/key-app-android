@@ -8,12 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.p2p.wowlet.R
-import kotlinx.android.synthetic.main.dialog_fragment_enable_notification.*
+import com.p2p.wowlet.databinding.DialogFragmentEnableNotificationBinding
+import com.p2p.wowlet.utils.viewbinding.viewBinding
 
 class EnableNotificationDialog(private val enableData: () -> Unit) : DialogFragment() {
     companion object {
         const val TAG_ENABLE_NOTIFICATION_DIALOG = "EnableNotificationDialog"
     }
+
+    private val binding: DialogFragmentEnableNotificationBinding by viewBinding()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,11 +28,11 @@ class EnableNotificationDialog(private val enableData: () -> Unit) : DialogFragm
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btCancel.setOnClickListener {
+        binding.btCancel.setOnClickListener {
             dismiss()
         }
 
-        btEnable.setOnClickListener {
+        binding. btEnable.setOnClickListener {
             enableData.invoke()
             dismiss()
         }

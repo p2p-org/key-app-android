@@ -4,11 +4,11 @@ import com.p2p.wowlet.infrastructure.persistence.PreferenceService
 import com.p2p.wowlet.common.network.CallException
 import com.p2p.wowlet.common.network.Constants
 import com.p2p.wowlet.common.network.Result
-import com.p2p.wowlet.dashboard.model.local.PinCodeData
+import com.p2p.wowlet.dashboard.model.local.PinCodeResponse
 
 class PinCodeInteractor(private val preferenceService: PreferenceService) {
     suspend fun initPinCode(pinCode: String): Result<Boolean> {
-        return when (val data = preferenceService.setPinCodeValue(PinCodeData(pinCode.toInt()))) {
+        return when (val data = preferenceService.setPinCodeValue(PinCodeResponse(pinCode.toInt()))) {
             true -> {
                 Result.Success(data)
             }
