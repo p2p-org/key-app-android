@@ -416,7 +416,7 @@
             android:layout_marginEnd="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_51"
             android:background="@drawable/bg_swap_button"
-            android:fontFamily="@font/sf_pro_text"
+
             android:paddingTop="@dimen/dp_19"
             android:paddingBottom="@dimen/dp_19"
             android:text="@string/swap_now"

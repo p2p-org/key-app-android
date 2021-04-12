@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_30"
-                android:fontFamily="@font/font_sf_pro_display"
+
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/sp_21"
                 android:textStyle="bold"
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_5"
-                android:fontFamily="@font/sf_pro_text"
+
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txtType"
@@ -66,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_27"
-            android:fontFamily="@font/font_sf_pro_display"
+
             android:text="@{model.symbolsPrice+String.format(@string/space)+String.format(@string/us_symbol(model.price))}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_5"
-            android:fontFamily="@font/font_sf_pro_display"
+
             android:text="@{model.symbolsPrice+String.format(@string/space)+String.format(@string/token_receive_6,model.lamports, model.tokenSymbol)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -449,7 +449,7 @@
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginVertical="@dimen/dp_20"
                 android:background="@drawable/bg_dark_gray_rect"
-                android:fontFamily="@font/font_sf_pro_display"
+
                 android:paddingVertical="@dimen/dp_18"
                 android:text="@string/view_in_blockchain_explorer"
                 android:textAllCaps="false" />

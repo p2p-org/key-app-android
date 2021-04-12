@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WalletTheme.Launcher" parent="WalletTheme">
+        <item name="android:windowBackground">@drawable/bg_splash_screen</item>
+    </style>
+
+    <style name="WalletTheme" parent="WalletBase.v21" />
+
+    <style name="WalletBase.v21" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+
+        <item name="colorPrimary">@color/colorBlue</item>
+        <item name="colorPrimaryDark">@color/colorBlueLight</item>
+
+        <item name="colorSecondary">@color/colorGray</item>
+        <item name="colorControlHighlight">@color/colorGray</item>
+
+        <item name="colorAccent">@color/colorBlue</item>
+        <item name="colorControlActivated">?colorAccent</item>
+        <item name="colorControlNormal">@color/colorDark</item>
+        <!--        <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>-->
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">?colorPrimary</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <!-- fix blue text for come Lollipop devices -->
+        <!-- https://stackoverflow.com/questions/45196244/android-textcolor-ignored-in-androidtextappearance-of-the-edittext -->
+        <item name="android:editTextColor">@color/colorDark</item>
+        <item name="android:textColor">@color/colorDark</item>
+
+        <item name="android:actionMenuTextColor">?colorSecondary</item>
+    </style>
+</resources>
