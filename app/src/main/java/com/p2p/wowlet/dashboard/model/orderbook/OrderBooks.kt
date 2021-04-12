@@ -1,14 +1,14 @@
 package com.p2p.wowlet.dashboard.model.orderbook
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class OrderBooks(
-    @Json(name = "market")
+    @SerializedName("market")
     val market: String,
-    @Json(name = "bids")
+    @SerializedName("bids")
     val bids: List<Bid>,
-    @Json(name = "asks")
+    @SerializedName("asks")
     val asks: List<Ask>,
-    @Json(name = "marketAddress")
+    @SerializedName("marketAddress")
     val marketAddress: String
 )

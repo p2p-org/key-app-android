@@ -14,7 +14,6 @@ import com.p2p.wowlet.detailsaving.adapter.ActivityDetailAdapter
 import com.p2p.wowlet.detailsaving.viewmodel.DetailSavingViewModel
 import com.p2p.wowlet.utils.popBackStack
 import com.p2p.wowlet.utils.viewbinding.viewBinding
-import kotlinx.android.synthetic.main.fragment_detail_saving.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailSavingFragment : BaseFragment(R.layout.fragment_detail_saving) {
@@ -62,18 +61,18 @@ class DetailSavingFragment : BaseFragment(R.layout.fragment_detail_saving) {
             })
         }
         context?.run {
-            tabs.getTabAt(0)?.customView?.findViewById<TextView>(R.id.tab)?.apply {
+            binding.tabs.getTabAt(0)?.customView?.findViewById<TextView>(R.id.tab)?.apply {
                 background =
                     ContextCompat.getDrawable(this@run, R.drawable.bg_detail_selected_tab)
                 text =
                     getString(R.string.market)
                 setTypeface(typeface, Typeface.BOLD)
             }
-            tabs.getTabAt(1)?.customView?.findViewById<TextView>(R.id.tab)?.text =
+            binding.tabs.getTabAt(1)?.customView?.findViewById<TextView>(R.id.tab)?.text =
                 getString(R.string.activity)
-            tabs.getTabAt(2)?.customView?.findViewById<TextView>(R.id.tab)?.text =
+            binding.tabs.getTabAt(2)?.customView?.findViewById<TextView>(R.id.tab)?.text =
                 getString(R.string.news)
-            tabs.getTabAt(3)?.customView?.findViewById<TextView>(R.id.tab)?.text =
+            binding.tabs.getTabAt(3)?.customView?.findViewById<TextView>(R.id.tab)?.text =
                 getString(R.string.transactions)
         }
     }

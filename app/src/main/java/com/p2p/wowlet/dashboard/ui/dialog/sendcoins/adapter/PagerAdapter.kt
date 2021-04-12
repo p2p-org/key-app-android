@@ -4,10 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.p2p.wowlet.R
-import com.p2p.wowlet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wowlet.dashboard.model.local.UserWalletType
-import kotlinx.android.synthetic.main.item_send_coin_type.view.*
+import com.p2p.wowlet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wowlet.databinding.ItemSendCoinTypeBinding
 
 class PagerAdapter(
     private val list: List<UserWalletType>,
@@ -15,10 +14,12 @@ class PagerAdapter(
 ) : RecyclerView.Adapter<PagerAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val view: View =
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_send_coin_type, parent, false)
-        return MyViewHolder(view)
+        val binding = ItemSendCoinTypeBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -27,9 +28,12 @@ class PagerAdapter(
 
     override fun getItemCount(): Int = list.size
 
-    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder(
+        private val binding: ItemSendCoinTypeBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
         fun bindView(data: UserWalletType) {
-            with(itemView) {
+            with(binding) {
                 if (data.isContact)
                     walletUserIconIv.visibility = View.VISIBLE
                 else

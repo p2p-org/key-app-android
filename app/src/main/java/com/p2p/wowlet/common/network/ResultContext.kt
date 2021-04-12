@@ -1,8 +1,8 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class ResultContext(
-    @field:Json(name = "slot")
+    @SerializedName("slot")
     val slot: Int
 )

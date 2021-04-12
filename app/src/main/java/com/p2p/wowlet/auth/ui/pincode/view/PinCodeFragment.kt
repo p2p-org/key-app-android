@@ -27,7 +27,6 @@ import com.p2p.wowlet.utils.popAndReplaceFragment
 import com.p2p.wowlet.utils.replaceFragment
 import com.p2p.wowlet.utils.viewbinding.viewBinding
 import com.p2p.wowlet.utils.withArgs
-import kotlinx.android.synthetic.main.fragment_pin_code.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
@@ -107,9 +106,9 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
 
     private fun initPinCodeMassage() {
         if (isSplashScreen || isBackupDialog)
-            vPinCodeMessage.text = getString(R.string.enter_the_code)
+            binding.vPinCodeMessage.text = getString(R.string.enter_the_code)
         else
-            vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
+            binding.vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
     }
 
     private fun observeData() {
@@ -131,7 +130,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
             }
         }
         viewModel.pinCodeSaved.observe(viewLifecycleOwner) {
-            vPinCodeMessage.text = getString(R.string.confirm_pin_code)
+            binding.vPinCodeMessage.text = getString(R.string.confirm_pin_code)
             binding.pinView.clearPin()
             binding.pinView.isFirstPinInput = true
         }
@@ -155,10 +154,10 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         }
 
         viewModel.verifyPinCodeError.observe(viewLifecycleOwner) {
-            vPinCodeNotMatch.isInvisible = !it
+            binding.vPinCodeNotMatch.isInvisible = !it
             when (pinCodeFragmentType) {
                 LaunchMode.CREATE -> {
-                    vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
+                    binding.vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
                     // vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
                     binding.pinView.isFirstPinInput = true
                     binding.pinView.clearPin()
@@ -170,17 +169,17 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
                     else
                         binding.resetPinCode.visibility = View.GONE
                     if (isBackupDialog)
-                        vPinCodeNotMatch.text = getString(R.string.incorrect_password)
+                        binding.vPinCodeNotMatch.text = getString(R.string.incorrect_password)
                     else
                         when (binding.pinView.wrongPinCodeCount) {
                             1 ->
-                                vPinCodeNotMatch.text =
+                                binding.vPinCodeNotMatch.text =
                                     getString(R.string.wrong_pin_code_left_2)
                             2 ->
-                                vPinCodeNotMatch.text =
+                                binding.vPinCodeNotMatch.text =
                                     getString(R.string.wrong_pin_code_left_1)
                             else ->
-                                vPinCodeNotMatch.text =
+                                binding.vPinCodeNotMatch.text =
                                     getString(R.string.wrong_pin_code_block)
                         }
                 }

@@ -1,10 +1,10 @@
 package com.p2p.wowlet.common.network
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class ErrorResponse(
-    @field:Json(name = "code")
+    @SerializedName("code")
     val code: Int,
-    @field:Json(name = "message")
+    @SerializedName("message")
     val message: String,
 )

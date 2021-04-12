@@ -1,10 +1,10 @@
 package com.p2p.wowlet.dashboard.model.orderbook
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class Ask(
-    @Json(name = "price")
+    @SerializedName("price")
     val price: Double,
-    @Json(name = "size")
+    @SerializedName("size")
     val size: Double
 )

@@ -26,7 +26,7 @@ object InfrastructureModule : InjectionModule {
             context.getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
-        single<PreferenceService>(createdAtStart = true) { PreferenceServiceImpl(get(), get()) }
+        single<PreferenceService>(createdAtStart = true) { PreferenceServiceImpl(get(), get(), get()) }
         factory { NetworksInteractor(get()) }
 
     }
