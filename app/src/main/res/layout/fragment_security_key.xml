@@ -4,120 +4,94 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <!-- todo: these all will be redesigned -->
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_30">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/vIcBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_20"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_back" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/Black.27.Bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/security_key"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/vIcRefresh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_20"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_refresh" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dp_20"
-            android:background="@drawable/bg_gray_rect"
-            android:orientation="vertical"
-            android:padding="@dimen/dp_20">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/vRVPhrase"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="3"
-                tools:listitem="@layout/item_security_key" />
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/ibtCopyClipboard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/dp_22"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="@dimen/dp_10"
-                    android:src="@drawable/ic_copy_clipboard"
-                    android:tint="@color/gray_600" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/vPhrase"
-                    style="@style/Grey.15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_12"
-                    android:text="@string/copy_to_clipboard" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <androidx.appcompat.widget.AppCompatCheckBox
-        android:id="@+id/checkBox"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:layout_marginBottom="@dimen/dp_20"
-        android:text="@string/i_have_saved_these_words_in_a_sage_place"
-        app:layout_constraintBottom_toTopOf="@+id/btContinue" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/auth_security_key_title" />
 
+    <TextView
+        android:id="@+id/subTitleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/auth_security_key_hint"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+        android:textColor="@color/colorGray"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_gray_secondary_rounded"
+        app:layout_constraintBottom_toBottomOf="@id/copyTextView"
+        app:layout_constraintEnd_toEndOf="@id/keysRecyclerView"
+        app:layout_constraintStart_toStartOf="@id/keysRecyclerView"
+        app:layout_constraintTop_toTopOf="@id/keysRecyclerView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/keysRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintTop_toBottomOf="@id/subTitleTextView"
+        tools:itemCount="1"
+        tools:listitem="@layout/item_security_key" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginHorizontal="24dp"
+        android:background="@color/colorGray"
+        app:layout_constraintTop_toTopOf="@id/copyTextView" />
+
+    <TextView
+        android:id="@+id/copyTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:background="?selectableItemBackground"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:text="@string/auth_copy_to_clipboard"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+        android:textColor="@color/colorGray"
+        app:layout_constraintTop_toBottomOf="@id/keysRecyclerView" />
+
+    <CheckBox
+        android:id="@+id/savedCheckBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:text="@string/auth_confirm_words_save"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+        android:textColor="@color/colorGray"
+        app:layout_constraintBottom_toTopOf="@id/nextButton"
+        app:layout_constraintTop_toBottomOf="@id/copyTextView"
+        app:layout_constraintVertical_bias="0.95" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btContinue"
-        style="@style/Widget.Black.Button"
+        android:id="@+id/nextButton"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_56"
-        android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginTop="@dimen/dp_20"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:layout_marginBottom="@dimen/dp_30"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_blue_selector"
         android:enabled="false"
-        android:text="@string/continues"
-        android:textStyle="bold"
+        android:foreground="?selectableItemBackground"
+        android:text="@string/auth_next"
+        android:textAllCaps="false"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        tools:ignore="UnusedAttribute" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -21,7 +21,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:fontFamily="@font/font_sf_pro_display"
+
             android:text="@string/close"
             android:textColor="@color/blue_400"
             android:textSize="@dimen/sp_17"
@@ -37,7 +37,7 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_25"
             android:layout_marginBottom="@dimen/dp_20"
-            android:fontFamily="@font/font_sf_pro_display"
+
             android:text="@string/add_tokens"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_4"
             android:background="@android:color/transparent"
-            android:fontFamily="@font/sf_pro_text"
+
             android:hint="@string/search_token" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 

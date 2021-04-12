@@ -1,21 +1,5 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Wowlet" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme.RoundedCorners</item>
-    </style>
-
-
+<resources>
+    <!-- This all is deprecated, styles are not for android -->
     <style name="Black.32.Bold" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/sp_32</item>
@@ -76,7 +60,6 @@
     </style>
 
 
-
     <style name="Black.17" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/sp_17</item>
@@ -88,7 +71,7 @@
 
     <style name="Black.15.SfProDisplay" parent="Black.17">
         <item name="android:textSize">@dimen/sp_15</item>
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
 
@@ -97,7 +80,7 @@
     </style>
 
     <style name="Black300.15.SfProText" parent="Black300.15.SfProDisplay">
-        <item name="android:fontFamily">@font/sf_pro_text</item>
+<!--        <item name="android:fontFamily">@font/sf_pro_text</item>-->
     </style>
 
 
@@ -107,7 +90,7 @@
 
     <style name="GreyDark.13.SfProDisplay" parent="Black.13">
         <item name="android:textColor">@color/black_300</item>
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
     <style name="Black.13.Bold" parent="Black.17.Bold">
@@ -115,15 +98,15 @@
         <item name="android:textSize">@dimen/sp_13</item>
         <item name="android:textStyle">bold</item>
     </style>
-    
+
     <style name="Black.13.Bold.SfProDisplay" parent="Black.13.Bold">
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
     <style name="Black.13.Bold.SfProDisplay.Alfa80" parent="Black.13.Bold.SfProDisplay">
         <item name="android:textColor">@color/black_80</item>
     </style>
-    
+
     <style name="Grey.13" parent="Black.13">
         <item name="android:textColor">@color/gray_600</item>
     </style>
@@ -133,11 +116,11 @@
     </style>
 
     <style name="Grey400.13.SfProText" parent="Grey400.13">
-        <item name="android:fontFamily">@font/sf_pro_text</item>
+<!--        <item name="android:fontFamily">@font/sf_pro_text</item>-->
     </style>
 
     <style name="Grey400.13.SfProDisplay" parent="Grey400.13.SfProText">
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
     <style name="Grey.15" parent="Grey.13">
@@ -146,7 +129,7 @@
 
     <style name="Grey.15.SfProText" parent="Grey.13">
         <item name="android:textSize">@dimen/sp_15</item>
-        <item name="android:fontFamily">@font/sf_pro_text</item>
+<!--        <item name="android:fontFamily">@font/sf_pro_text</item>-->
     </style>
 
 
@@ -158,11 +141,11 @@
     <style name="Grey400.15.SfProDisplay" parent="Grey.13">
         <item name="android:textSize">@dimen/sp_15</item>
         <item name="android:textColor">@color/gray_blue_400</item>
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
     <style name="Grey400.15.SfProText" parent="Grey400.15.SfProDisplay">
-        <item name="android:fontFamily">@font/sf_pro_text</item>
+<!--        <item name="android:fontFamily">@font/sf_pro_text</item>-->
     </style>
 
 
@@ -172,9 +155,8 @@
 
 
     <style name="Green.15.SfProDisplay" parent="Green.15">
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
-
 
 
     <style name="Red.15" parent="Grey.15">
@@ -191,7 +173,7 @@
 
     <style name="Grey.17.SfProDisplay" parent="Grey.13">
         <item name="android:textSize">@dimen/sp_17</item>
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
     <style name="Black300.17.SfProText" parent="Black300.15.SfProText">
@@ -223,7 +205,7 @@
     <style name="Grey400.12.SfProText" parent="Grey.13">
         <item name="android:textSize">@dimen/sp_12</item>
         <item name="android:textColor">@color/gray_blue_400</item>
-        <item name="android:fontFamily">@font/sf_pro_text</item>
+<!--        <item name="android:fontFamily">@font/sf_pro_text</item>-->
     </style>
 
 
@@ -237,7 +219,7 @@
 
     <style name="Black.15.Bold.SfProDisplay" parent="Black.15">
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
     <style name="White.17" parent="TextAppearance.AppCompat">
@@ -248,9 +230,11 @@
     <style name="White.15" parent="White.17">
         <item name="android:textSize">@dimen/sp_15</item>
     </style>
+
     <style name="White.13" parent="White.15">
         <item name="android:textSize">@dimen/sp_13</item>
     </style>
+
     <style name="White.21" parent="White.15">
         <item name="android:textSize">@dimen/sp_21</item>
     </style>
@@ -274,9 +258,10 @@
     <style name="Black.21" parent="Black.21.Bold">
         <item name="android:textStyle">normal</item>
     </style>
+
     <style name="Black.17.Bold.SfProDisplay" parent="Black.21.Bold">
         <item name="android:textSize">@dimen/sp_17</item>
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
     </style>
 
     <style name="CornflowerBlue.17.Bold.SfProDisplay" parent="Grey.17.SfProDisplay">
@@ -293,7 +278,7 @@
 
 
     <style name="SlippageButtonStyle">
-        <item name="android:fontFamily">@font/font_sf_pro_display</item>
+<!--        <item name="android:fontFamily">@font/font_sf_pro_display</item>-->
         <item name="android:textSize">@dimen/sp_15</item>
         <item name="android:elevation">@dimen/dp_0</item>
         <item name="android:minHeight">@dimen/dp_0</item>
@@ -331,9 +316,9 @@
         <item name="colorSwitchThumbNormal">@android:color/white</item>
     </style>
 
-	 <style name="MyIOSSwitch" parent="Theme.AppCompat.Light">
-          <item name="colorControlActivated">#888888</item>
-          <item name="android:colorForeground">#888888</item>
+    <style name="MyIOSSwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">#888888</item>
+        <item name="android:colorForeground">#888888</item>
     </style>
 
     <style name="Widget.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
@@ -341,9 +326,8 @@
         <item name="boxStrokeWidthFocused">0dp</item>
     </style>
 
-    
-    <style name="BottomSheetDialogShapeAppearance.RoundedCorners"
-        parent="">
+
+    <style name="BottomSheetDialogShapeAppearance.RoundedCorners" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">@dimen/dp_20</item>
         <item name="cornerSizeTopRight">@dimen/dp_20</item>
@@ -352,13 +336,11 @@
     </style>
 
 
-    <style name="BottomSheetDialog.Style.RoundedCorners"
-        parent="Widget.MaterialComponents.BottomSheet">
+    <style name="BottomSheetDialog.Style.RoundedCorners" parent="Widget.MaterialComponents.BottomSheet">
         <item name="shapeAppearanceOverlay">@style/BottomSheetDialogShapeAppearance.RoundedCorners</item>
     </style>
-    
-    <style name="BottomSheetDialogTheme.RoundedCorners"
-        parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+
+    <style name="BottomSheetDialogTheme.RoundedCorners" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetDialog.Style.RoundedCorners</item>
     </style>
 

@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_onboarding">
+    android:background="@drawable/bg_onboarding"
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/centerGuideline"
@@ -25,15 +26,14 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/titleTextView"
-        style="@style/Black.32.Bold"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_30"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="@dimen/dp_30"
-        android:fontFamily="@font/font_sf_pro_display"
         android:gravity="center"
-        android:text="@string/splash_title"
+        android:text="@string/app_name"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Bold32"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,12 +45,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="12dp"
-        android:alpha="0.75"
-        android:fontFamily="@font/font_sf_pro_display"
+        android:alpha="0.65"
         android:gravity="center"
         android:text="@string/auth_onboarding_subtitle"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
         android:textColor="@color/white"
-        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleTextView" />
@@ -59,15 +58,14 @@
         android:id="@+id/createButton"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/bg_blue_rounded"
-        android:fontFamily="@font/sf_pro_text"
         android:foreground="?selectableItemBackground"
-        android:text="@string/create_new_wallet"
+        android:text="@string/auth_create_new_wallet"
         android:textAllCaps="false"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
         android:textColor="@color/white"
-        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/loginButton"
         tools:ignore="UnusedAttribute" />
 
@@ -75,14 +73,12 @@
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="32dp"
         android:background="?selectableItemBackground"
-        android:fontFamily="@font/sf_pro_text"
-        android:text="@string/i_already_have_a_wallet"
+        android:text="@string/auth_have_wallet"
         android:textAllCaps="false"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
         android:textColor="@color/white"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent" />
-    <!--        android:onClick="@{()->viewModel.goToRegWalletFragment()}"-->
 </androidx.constraintlayout.widget.ConstraintLayout>

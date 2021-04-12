@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_21"
-                android:fontFamily="@font/sf_pro_text"
+
                 tools:text="SRM" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_6"
-                android:fontFamily="@font/font_sf_pro_display"
+
                 tools:text="Serum" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:fontFamily="@font/sf_pro_text"
+
                 tools:text="$0.887832" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -86,7 +86,7 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="@dimen/dp_6"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:fontFamily="@font/font_sf_pro_display"
+
                 tools:text="+16.9% for 24hrs" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -117,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_20"
-            android:fontFamily="@font/sf_pro_text"
+
             android:textSize="@dimen/sp_13"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -129,7 +129,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_8"
-            android:fontFamily="@font/font_sf_pro_display"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mintAddressInfo"
@@ -149,7 +149,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_30"
-            android:fontFamily="@font/font_sf_pro_display"
+
             android:text="@string/view_in_solana_explorer"
             android:textAllCaps="false"
             android:textColor="@color/gray_blue_400"
@@ -190,7 +190,7 @@
                     android:id="@+id/txtAddToken"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text"
+
                     android:gravity="center"
                     android:text="@string/add_token"
                     android:textColor="@android:color/white"
@@ -201,7 +201,7 @@
                     android:id="@+id/txtWillCost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text"
+
                     android:gravity="center"
                     android:textColor="@color/gray_300_65"
                     android:textSize="@dimen/sp_13"
@@ -216,7 +216,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
-            android:fontFamily="@font/font_sf_pro_display"
+
             android:gravity="center"
             android:textColor="@color/red_400"
             app:layout_constraintTop_toBottomOf="@id/lAddCoin"

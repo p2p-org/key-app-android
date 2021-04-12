@@ -1,16 +1,8 @@
 <resources>
-    <string name="app_name">Wowlet</string>
+    <string name="app_name">P2P Wallet</string>
 
-    <string name="auth_onboarding_subtitle">Secure non-custodial bank of future\nSimple finance for everyone</string>
-    <string name="auth_decline">Decline</string>
-    <string name="auth_accept">Accept</string>
-
-    <string name="splash_title">P2P Wallet</string>
-    <string name="splash_hint">For athletes, high altitude produces two contradictory effects on performance. For explosive events (sprints up to 400 metres, long jump, triple jump) the reduction in atmospheric pressure means there is</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="i_already_have_a_wallet">I already have a wallet</string>
-    <string name="create_new_wallet">Create new wallet</string>
     <string name="create_a_pin_code_info">Create a PIN-code to protect your wallet</string>
     <string name="face_id_access">Use your FaceID for quick access?</string>
     <string name="fingerprint_access">Use your Fingerprint for quick access?</string>
@@ -274,6 +266,20 @@
     <string name="select_source">Select Source</string>
     <string name="select_wallet">Select wallet</string>
     <string name="create_a_unique_name_for_your_wallet">Create a unique name for your wallet.</string>
+
+    <!-- Valid resource has prefix, all above will be deleted -->
     <string name="auth_username_title">Let’s started by reserving your P2P username</string>
     <string name="auth_username">Username</string>
+    <string name="auth_security_key_title">Security key</string>
+    <string name="auth_onboarding_subtitle">Secure non-custodial bank of future\nSimple finance for everyone</string>
+    <string name="auth_decline">Decline</string>
+    <string name="auth_accept">Accept</string>
+    <string name="auth_security_key_hint">Write down or duplicate these words in the correct order and keep them in a safe place. Copy them manually</string>
+    <string name="auth_copy_to_clipboard">Copy to clipboard</string>
+    <string name="auth_confirm_words_save">I have saved these words in a safe place.</string>
+    <string name="auth_next">Next</string>
+    <string name="auth_have_wallet">I already have a wallet</string>
+    <string name="auth_create_new_wallet">Create new wallet</string>
+    <string name="auth_refresh">Refresh</string>
+    <string name="auth_copied">Copied!</string>
 </resources>

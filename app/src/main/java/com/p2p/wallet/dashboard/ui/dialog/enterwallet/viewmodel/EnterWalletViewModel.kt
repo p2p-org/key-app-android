@@ -1,0 +1,1 @@
+package com.p2p.wallet.dashboard.ui.dialog.enterwallet.viewmodel
