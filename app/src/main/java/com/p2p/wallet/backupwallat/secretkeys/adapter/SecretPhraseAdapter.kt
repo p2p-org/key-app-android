@@ -13,9 +13,9 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
-import com.p2p.wallet.backupwallat.secretkeys.utils.KeywordEditOnKeyListener
+//import com.p2p.wallet.backupwallat.secretkeys.utils.KeywordEditOnKeyListener
 import com.p2p.wallet.backupwallat.secretkeys.utils.MeasureHelper
-import com.p2p.wallet.backupwallat.secretkeys.utils.OnFocusChangeListener
+//import com.p2p.wallet.backupwallat.secretkeys.utils.OnFocusChangeListener
 import com.p2p.wallet.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.backupwallat.secretkeys.utils.showSoftKeyboard
 import com.p2p.wallet.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
@@ -35,8 +35,8 @@ class SecretPhraseAdapter(
     private val keywordList: ArrayList<Keyword> = ArrayList(PHRASE_SIZE)
     private val layoutManager: MultipleSpanGridLayoutManager = MultipleSpanGridLayoutManager(context)
 //    private val textWatcher = KeywordEditTextChangeListener(this, keywordList, viewModel)
-    private val onFocusChangeListener = OnFocusChangeListener()
-    private val onKeyListener = KeywordEditOnKeyListener(this)
+//    private val onFocusChangeListener = OnFocusChangeListener()
+//    private val onKeyListener = KeywordEditOnKeyListener(this)
 
     fun clear() {
         var count = 0
@@ -98,7 +98,7 @@ class SecretPhraseAdapter(
 //            _txtKeyword = txtKeyword
 //            _edtKeyword = edtKeyword
 //        }
-        onKeyListener._position = position - 1
+//        onKeyListener._position = position - 1
         notifyItemRemoved(position)
         edtKeyword.apply {
             isVisible = true
@@ -117,7 +117,7 @@ class SecretPhraseAdapter(
             layoutManager = this@SecretPhraseAdapter.layoutManager
         }
 //        textWatcher._recyclerView = this.recyclerView
-        onKeyListener.recyclerView = this.recyclerView
+//        onKeyListener.recyclerView = this.recyclerView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -159,14 +159,14 @@ class SecretPhraseAdapter(
 //                _txtKeyword = binding.txtKeywordNum
 //                _edtKeyword = binding.edtKeyword
 //            }
-            onKeyListener._position = position
+//            onKeyListener._position = position
         }
 
         private fun addListeners() {
             binding.edtKeyword.apply {
 //                addTextChangedListener(textWatcher)
-                onFocusChangeListener = this@SecretPhraseAdapter.onFocusChangeListener
-                setOnKeyListener(onKeyListener)
+//                onFocusChangeListener = this@SecretPhraseAdapter.onFocusChangeListener
+//                setOnKeyListener(onKeyListener)
             }
         }
 
