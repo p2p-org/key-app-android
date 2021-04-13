@@ -2,4 +2,8 @@
 <resources>
     <item name="edgetoedge" type="id" />
 
+    <declare-styleable name="NumberKeyboardButtonView">
+        <attr name="keyboard_button_text" format="string" />
+        <attr name="keyboard_button_image" format="integer" />
+    </declare-styleable>
 </resources>

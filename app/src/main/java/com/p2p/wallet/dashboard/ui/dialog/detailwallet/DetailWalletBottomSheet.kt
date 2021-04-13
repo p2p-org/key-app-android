@@ -11,16 +11,16 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
+import com.p2p.wallet.dashboard.model.local.WalletItem
 import com.p2p.wallet.dashboard.ui.dialog.TransactionBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.adapter.ActivityAdapter
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.util.DividerItemDecoration
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wallet.databinding.DialogDetailActivityBinding
 import com.p2p.wallet.deprecated.viewcommand.Command
-import com.p2p.wallet.dashboard.model.local.WalletItem
 import com.p2p.wallet.utils.bindadapter.imageSource
 import com.p2p.wallet.utils.changeTextColor
-import com.p2p.wallet.utils.copyClipboard
+import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.getFourHour
 import com.p2p.wallet.utils.getMonthly
 import com.p2p.wallet.utils.getOneHour
@@ -93,7 +93,7 @@ class DetailWalletBottomSheet(
             vPrice.text = "$${walletItem.price.roundCurrencyValue()}"
             vTokenValue.text = "${walletItem.tokenSymbol} ${walletItem.amount}"
             vWalletAddress.setOnClickListener {
-                context?.run { copyClipboard(vWalletAddress.text.toString()) }
+                context?.run { copyToClipBoard(vWalletAddress.text.toString()) }
             }
             getChartByOneHour.setOnClickListener {
                 getChartByOneHour.changeTextColor(selectedTextView)

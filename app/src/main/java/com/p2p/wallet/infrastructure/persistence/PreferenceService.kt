@@ -1,7 +1,6 @@
 package com.p2p.wallet.infrastructure.persistence
 
 import com.p2p.wallet.dashboard.model.SelectedCurrency
-import com.p2p.wallet.dashboard.model.local.EnableFingerPrintModel
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.PinCodeResponse
 import com.p2p.wallet.dashboard.model.local.UserSecretData
@@ -20,8 +19,6 @@ interface PreferenceService {
     fun getPinCodeValue(): PinCodeResponse?
     fun enableNotification(isEnable: EnableNotificationModel)
     fun isAllowNotification(): EnableNotificationModel?
-    fun isSetFingerPrint(): EnableFingerPrintModel?
-    fun enableFingerPrint(isEnable: EnableFingerPrintModel)
     fun isCurrentLoginReg(): Boolean
     fun finishLoginReg(finishReg: Boolean)
     fun setWalletItemData(walletItem: WalletItem?)

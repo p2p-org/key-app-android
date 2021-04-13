@@ -23,7 +23,6 @@ import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wallet.dashboard.model.local.WalletItem
 import com.p2p.wallet.utils.changeTextColor
-import com.p2p.wallet.utils.copyClipboard
 import com.p2p.wallet.utils.getMonthly
 import com.p2p.wallet.utils.getOneHour
 import com.p2p.wallet.utils.getWeekly
@@ -33,6 +32,7 @@ import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.roundCurrencyValue
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.blockchain.BlockChainExplorerFragment
+import com.p2p.wallet.utils.copyToClipBoard
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 
@@ -78,7 +78,7 @@ class DetailWalletFragment : BaseFragment(R.layout.fragment_detail_activity) {
             vPrice.text = "$${walletItem?.price?.roundCurrencyValue()}"
             vTokenValue.text = "${walletItem?.amount} ${walletItem?.tokenSymbol}"
             vWalletAddress.setOnClickListener {
-                context?.run { copyClipboard(vWalletAddress.text.toString()) }
+                context?.run { copyToClipBoard(vWalletAddress.text.toString()) }
             }
             getChartByDay.setOnClickListener {
                 getChartByDay.changeTextColor(selectedTextView)

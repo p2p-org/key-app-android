@@ -13,10 +13,10 @@ import com.p2p.wallet.utils.getTransactionDate
 import com.p2p.wallet.common.network.Constants.Companion.EXPLORER_SOLANA
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.utils.bindadapter.walletFormat
-import com.p2p.wallet.utils.copyClipboard
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.blockchain.BlockChainExplorerFragment
+import com.p2p.wallet.utils.copyToClipBoard
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate: (url: String) -> Unit) :
@@ -46,13 +46,13 @@ class TransactionBottomSheet(private val dataInfo: ActivityItem, val navigate: (
             toTextView.walletFormat(dataInfo.to, 4)
 
             copyToUserKey.setOnClickListener {
-                context?.copyClipboard(dataInfo.to)
+                context?.copyToClipBoard(dataInfo.to)
             }
             copyFromUserKey.setOnClickListener {
-                context?.copyClipboard(dataInfo.from)
+                context?.copyToClipBoard(dataInfo.from)
             }
             copyTransaction.setOnClickListener {
-                context?.copyClipboard(dataInfo.signature)
+                context?.copyToClipBoard(dataInfo.signature)
             }
 
             blockChainExplorer.setOnClickListener {

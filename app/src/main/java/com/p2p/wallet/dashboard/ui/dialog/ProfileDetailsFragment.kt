@@ -6,9 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.p2p.wallet.R
+import com.p2p.wallet.auth.interactor.AuthInteractor
+import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.databinding.FragmentProfileDetailsBinding
+import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
+import org.koin.android.ext.android.inject
 
 class ProfileDetailsFragment : Fragment() {
 
@@ -19,6 +23,8 @@ class ProfileDetailsFragment : Fragment() {
             return ProfileDetailsFragment()
         }
     }
+
+    private val authInteractor: AuthInteractor by inject()
 
     private val binding: FragmentProfileDetailsBinding by viewBinding()
 
@@ -36,6 +42,8 @@ class ProfileDetailsFragment : Fragment() {
                 popBackStack()
             }
             vLogOut.setOnClickListener {
+                authInteractor.logout()
+                popAndReplaceFragment(OnboardingFragment.create(), inclusive = true)
                 /*viewModel.clearSecretKey()
                 viewModel.clearFingerprint()
                 activity?.let {

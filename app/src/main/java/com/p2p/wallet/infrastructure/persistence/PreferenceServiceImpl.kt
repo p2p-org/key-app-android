@@ -8,7 +8,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.p2p.wallet.dashboard.model.SelectedCurrency
 import com.p2p.wallet.dashboard.model.local.CipherData
-import com.p2p.wallet.dashboard.model.local.EnableFingerPrintModel
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.PinCodeResponse
 import com.p2p.wallet.dashboard.model.local.UserSecretData
@@ -36,7 +35,6 @@ class PreferenceServiceImpl(
     private val authenticationKey = "authenticationKeys"
     private val pinCodeKey = "pinCodeKey"
     private val allowNotificationKey = "allowNotificationKey"
-    private val fingerPrintPKey = "fingerPrintPKey"
     private val finishRegKey = "finishRegKey"
     private val walletItemKey = "walletItemKey"
     private val networkItemKey = "networkItemKey"
@@ -53,13 +51,6 @@ class PreferenceServiceImpl(
 
     override fun isAllowNotification(): EnableNotificationModel? =
         get<EnableNotificationModel>(allowNotificationKey)
-
-    override fun isSetFingerPrint(): EnableFingerPrintModel? =
-        get<EnableFingerPrintModel>(fingerPrintPKey)
-
-    override fun enableFingerPrint(isEnable: EnableFingerPrintModel) {
-        put(isEnable, fingerPrintPKey)
-    }
 
     override fun isCurrentLoginReg(): Boolean =
         sharedPreferences.getBoolean(finishRegKey, false)

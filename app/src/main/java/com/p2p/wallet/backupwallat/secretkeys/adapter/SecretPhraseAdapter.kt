@@ -14,7 +14,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
 import com.p2p.wallet.backupwallat.secretkeys.utils.KeywordEditOnKeyListener
-import com.p2p.wallet.backupwallat.secretkeys.utils.KeywordEditTextChangeListener
 import com.p2p.wallet.backupwallat.secretkeys.utils.MeasureHelper
 import com.p2p.wallet.backupwallat.secretkeys.utils.OnFocusChangeListener
 import com.p2p.wallet.backupwallat.secretkeys.utils.hideSoftKeyboard
@@ -35,7 +34,7 @@ class SecretPhraseAdapter(
     private var recyclerView: RecyclerView? = null
     private val keywordList: ArrayList<Keyword> = ArrayList(PHRASE_SIZE)
     private val layoutManager: MultipleSpanGridLayoutManager = MultipleSpanGridLayoutManager(context)
-    private val textWatcher = KeywordEditTextChangeListener(this, keywordList, viewModel)
+//    private val textWatcher = KeywordEditTextChangeListener(this, keywordList, viewModel)
     private val onFocusChangeListener = OnFocusChangeListener()
     private val onKeyListener = KeywordEditOnKeyListener(this)
 
@@ -46,7 +45,7 @@ class SecretPhraseAdapter(
             val textView = parent.getChildAt(0) as AppCompatTextView
             val editText = parent.getChildAt(1) as AppCompatEditText
             editText.apply {
-                removeTextChangedListener(textWatcher)
+//                removeTextChangedListener(textWatcher)
                 visibility = View.VISIBLE
                 setText("")
             }
@@ -92,13 +91,13 @@ class SecretPhraseAdapter(
     ) {
 
         keywordList.removeAt(position)
-        currentEdtKeyword.removeTextChangedListener(textWatcher)
-        textWatcher.apply {
-            _itemPosition = position - 1
-            _root = root
-            _txtKeyword = txtKeyword
-            _edtKeyword = edtKeyword
-        }
+//        currentEdtKeyword.removeTextChangedListener(textWatcher)
+//        textWatcher.apply {
+//            _itemPosition = position - 1
+//            _root = root
+//            _txtKeyword = txtKeyword
+//            _edtKeyword = edtKeyword
+//        }
         onKeyListener._position = position - 1
         notifyItemRemoved(position)
         edtKeyword.apply {
@@ -117,7 +116,7 @@ class SecretPhraseAdapter(
         this.recyclerView = recyclerView.apply {
             layoutManager = this@SecretPhraseAdapter.layoutManager
         }
-        textWatcher._recyclerView = this.recyclerView
+//        textWatcher._recyclerView = this.recyclerView
         onKeyListener.recyclerView = this.recyclerView
     }
 
@@ -148,24 +147,24 @@ class SecretPhraseAdapter(
             setFocusToCurrentItem()
             openKeyboardOnFirstItem(position)
 
-            if (textWatcher.isPhrasePastedFromClipboard) {
-                handlePastedPhrase(position, item)
-            }
+//            if (textWatcher.isPhrasePastedFromClipboard) {
+//                handlePastedPhrase(position, item)
+//            }
         }
 
         private fun initListeners(position: Int) {
-            textWatcher.apply {
-                _itemPosition = position
-                _root = binding.root as ViewGroup
-                _txtKeyword = binding.txtKeywordNum
-                _edtKeyword = binding.edtKeyword
-            }
+//            textWatcher.apply {
+//                _itemPosition = position
+//                _root = binding.root as ViewGroup
+//                _txtKeyword = binding.txtKeywordNum
+//                _edtKeyword = binding.edtKeyword
+//            }
             onKeyListener._position = position
         }
 
         private fun addListeners() {
             binding.edtKeyword.apply {
-                addTextChangedListener(textWatcher)
+//                addTextChangedListener(textWatcher)
                 onFocusChangeListener = this@SecretPhraseAdapter.onFocusChangeListener
                 setOnKeyListener(onKeyListener)
             }
@@ -191,9 +190,9 @@ class SecretPhraseAdapter(
         private fun handlePastedPhrase(position: Int, item: Keyword) {
             if (position != keywordList.size - 1) {
                 binding.edtKeyword.apply {
-                    removeTextChangedListener(textWatcher)
-                    setText(item.title)
-                    addTextChangedListener(textWatcher)
+//                    removeTextChangedListener(textWatcher)
+//                    setText(item.title)
+//                    addTextChangedListener(textWatcher)
                     setSelection(binding.edtKeyword.text.toString().length)
                     isVisible = false
                 }
@@ -203,12 +202,12 @@ class SecretPhraseAdapter(
                     setTextColor(Color.WHITE)
                 }
             } else {
-                textWatcher.isPhrasePastedFromClipboard = false
+//                textWatcher.isPhrasePastedFromClipboard = false
                 binding.edtKeyword.apply {
-                    removeTextChangedListener(textWatcher)
+//                    removeTextChangedListener(textWatcher)
                     setText(item.title)
                     setSelection(binding.edtKeyword.text.toString().length)
-                    addTextChangedListener(textWatcher)
+//                    addTextChangedListener(textWatcher)
                 }
                 binding.txtKeywordNum.setTextColor(Color.BLACK)
             }

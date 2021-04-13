@@ -267,6 +267,17 @@
     <string name="select_wallet">Select wallet</string>
     <string name="create_a_unique_name_for_your_wallet">Create a unique name for your wallet.</string>
 
+    <!-- Common -->
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_no">No</string>
+
+    <!-- Error messages -->
+    <string name="error_general_message">Something went wrong, try again later</string>
+    <string name="error_network_message">No internet connection</string>
+
     <!-- Valid resource has prefix, all above will be deleted -->
     <string name="auth_username_title">Let’s started by reserving your P2P username</string>
     <string name="auth_username">Username</string>
@@ -280,6 +291,20 @@
     <string name="auth_next">Next</string>
     <string name="auth_have_wallet">I already have a wallet</string>
     <string name="auth_create_new_wallet">Create new wallet</string>
+    <string name="auth_finish_setup">Finish setup</string>
+    <string name="auth_enable_faceid">Enable FaceID</string>
+    <string name="auth_enable_touchid">Enable TouchID</string>
+    <string name="auth_enable_faceid_question">Use your FaceID for quick access?</string>
+    <string name="auth_enable_touchid_question">Use your TouchID for quick access?</string>
+    <string name="auth_no_biometric_detected">No biometric detected, cannot enable quick access</string>
+    <string name="auth_do_later">Do this later</string>
+    <string name="auth_intro_message">Explore P2P Wallet and deposit funds when you’re ready.</string>
     <string name="auth_refresh">Refresh</string>
     <string name="auth_copied">Copied!</string>
+    <string name="auth_create_pin_code">Create a PIN-code to protect your wallet</string>
+    <string name="auth_enter_pin_code">Enter PIN</string>
+    <string name="auth_repeat_new_pin_code">Confirm PIN-code</string>
+    <string name="auth_almost_done_title">Almost done!</string>
+    <string name="auth_quick_access">Quick Access</string>
+    <string name="auth_biometric_question">Use biometric for quick access?</string>
 </resources>

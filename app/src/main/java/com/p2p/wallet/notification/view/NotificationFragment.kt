@@ -3,7 +3,7 @@ package com.p2p.wallet.notification.view
 import android.os.Bundle
 import android.view.View
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.ui.RegFinishFragment
+import com.p2p.wallet.auth.ui.done.AuthDoneFragment
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentNotificationBinding
 import com.p2p.wallet.notification.dialog.EnableNotificationDialog
@@ -27,7 +27,7 @@ class NotificationFragment : BaseFragment(R.layout.fragment_notification) {
             btUseFaceID.setOnClickListener { viewModel.openEnableNotificationDialog() }
             btLater.setOnClickListener {
                 viewModel.doThisLater()
-                replaceFragment(RegFinishFragment())
+                replaceFragment(AuthDoneFragment())
             }
         }
 
@@ -38,7 +38,7 @@ class NotificationFragment : BaseFragment(R.layout.fragment_notification) {
         viewModel.showNotificationDialog.observe(viewLifecycleOwner) {
             EnableNotificationDialog() {
                 viewModel.enableNotification()
-                replaceFragment(RegFinishFragment())
+                replaceFragment(AuthDoneFragment())
             }.show(
                 childFragmentManager,
                 EnableNotificationDialog.TAG_ENABLE_NOTIFICATION_DIALOG
@@ -46,10 +46,10 @@ class NotificationFragment : BaseFragment(R.layout.fragment_notification) {
         }
         viewModel.isSkipNotification.observe(viewLifecycleOwner) {
             viewModel.doThisLater()
-            replaceFragment(RegFinishFragment())
+            replaceFragment(AuthDoneFragment())
         }
         viewModel.isAlreadyEnableNotification.observe(viewLifecycleOwner) {
-            replaceFragment(RegFinishFragment())
+            replaceFragment(AuthDoneFragment())
         }
     }
 }

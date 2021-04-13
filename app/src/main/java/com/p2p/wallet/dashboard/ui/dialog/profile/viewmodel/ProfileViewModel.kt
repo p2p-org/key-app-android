@@ -3,7 +3,6 @@ package com.p2p.wallet.dashboard.ui.dialog.profile.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.interactor.FingerPrintInteractor
 import com.p2p.wallet.dashboard.interactor.DashboardInteractor
 import com.p2p.wallet.dashboard.model.SelectedCurrency
 import com.p2p.wallet.dashboard.model.local.EnableFingerPrintModel
@@ -11,19 +10,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val dashboardInteractor: DashboardInteractor,
-    private val fingerPrintInteractor: FingerPrintInteractor
+    private val dashboardInteractor: DashboardInteractor
 ) : ViewModel() {
 
     fun setUsesFingerPrint(isEnabled: Boolean, isNotWantEnable: Boolean) =
         viewModelScope.launch(Dispatchers.IO) {
-            fingerPrintInteractor.setFingerPrint(
-                EnableFingerPrintModel(isEnabled, isNotWantEnable)
-            )
+//            fingerPrintInteractor.setFingerPrint(
+//                EnableFingerPrintModel(isEnabled, isNotWantEnable)
+//            )
         }
 
     fun isUsesFingerprint(): EnableFingerPrintModel {
-        return fingerPrintInteractor.isEnableFingerPrint()
+//        return fingerPrintInteractor.isEnableFingerPrint()
+        return EnableFingerPrintModel(false, false)
     }
 
     fun setSelectedCurrency(currency: SelectedCurrency) {

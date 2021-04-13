@@ -3,7 +3,6 @@ package com.p2p.wallet.auth.ui.pincode.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.p2p.wallet.auth.interactor.FingerPrintInteractor
 import com.p2p.wallet.auth.interactor.PinCodeInteractor
 import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
 import com.p2p.wallet.dashboard.interactor.NotificationInteractor
@@ -15,7 +14,6 @@ import kotlinx.coroutines.withContext
 
 class PinCodeViewModel(
     private val pinCodeInteractor: PinCodeInteractor,
-    private val fingerPrintInteractor: FingerPrintInteractor,
     private val notificationInteractor: NotificationInteractor
 ) : BaseViewModel() {
 
@@ -40,8 +38,8 @@ class PinCodeViewModel(
     val openFingerprintDialog: LiveData<Boolean> get() = _openFingerprintDialog
 
     fun fingerPrintStatus() {
-        val data = fingerPrintInteractor.isEnableFingerPrint()
-        _isSkipFingerPrint.value = data.isEnable
+//        val data = fingerPrintInteractor.isEnableFingerPrint()
+//        _isSkipFingerPrint.value = data.isEnable
     }
 
     fun notificationStatus() {

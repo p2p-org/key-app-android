@@ -1,47 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:navigationIcon="@drawable/ic_back"
-        app:title="@string/terms_and_conditions" />
-
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
-        android:fillViewport="true">
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="@string/policy_first_info" />
-    </ScrollView>
+            app:navigationIcon="@drawable/ic_back"
+            app:title="@string/terms_and_conditions" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?actionBarSize"
+            android:fillViewport="true">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:paddingBottom="?actionBarSize"
+                android:text="@string/policy_first_info" />
+        </ScrollView>
 
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/acceptButton"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_blue_rounded"
-        android:foreground="?selectableItemBackground"
-        android:text="@string/auth_accept"
-        android:textAllCaps="false"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-        android:textColor="@color/white"
-        tools:ignore="UnusedAttribute" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/acceptButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_blue_rounded"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/auth_accept"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textColor="@color/white"
+            tools:ignore="UnusedAttribute" />
 
-</FrameLayout>
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,7 +1,5 @@
 package com.p2p.wallet.utils
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -101,14 +99,6 @@ fun PieChart.drawChart(pieList: List<PieEntry>) {
         this.data = data
         invalidate()
     }
-}
-
-fun Context.copyClipboard(value: String) {
-    val clipboard =
-        this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = ClipData.newPlainText("label", value)
-    clipboard.setPrimaryClip(clip)
-    Toast.makeText(this, getString(R.string.you_copied), Toast.LENGTH_SHORT).show()
 }
 
 fun Context.shareText(value: String) {

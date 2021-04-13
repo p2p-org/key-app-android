@@ -13,6 +13,5 @@ object BackupModule : InjectionModule {
         viewModel { SecretKeyViewModel(get()) }
         viewModel { CompleteBackupWalletViewModel(get()) }
         single { CompleteBackupWalletInteractor(get()) }
-
     }
 }

@@ -18,7 +18,6 @@ import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.AddCoinModel
 import com.p2p.wallet.dashboard.model.local.BalanceInfo
 import com.p2p.wallet.dashboard.model.local.ConstWalletItem
-import com.p2p.wallet.dashboard.model.local.EnableFingerPrintModel
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.EnterWallet
 import com.p2p.wallet.dashboard.model.local.LocalWalletItem
@@ -203,7 +202,7 @@ class DashboardInteractor(
             it.secretKey = ""
             preferenceService.updateWallet(it)
             preferenceService.finishLoginReg(false)
-            preferenceService.enableFingerPrint(EnableFingerPrintModel(false, false))
+//            preferenceService.enableFingerPrint(EnableFingerPrintModel(false, false))
             preferenceService.enableNotification(EnableNotificationModel(false, false))
         }
     }

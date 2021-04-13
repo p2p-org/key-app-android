@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_keyboard_selector"
+    android:foreground="?selectableItemBackground"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <TextView
+        android:id="@+id/keyboardButtonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
+        android:textColor="@color/color_keyboard_button"
+        tools:text="1" />
+
+    <ImageView
+        android:id="@+id/keyboardButtonImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
+</merge>

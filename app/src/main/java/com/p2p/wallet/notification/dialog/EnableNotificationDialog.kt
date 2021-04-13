@@ -32,7 +32,7 @@ class EnableNotificationDialog(private val enableData: () -> Unit) : DialogFragm
             dismiss()
         }
 
-        binding. btEnable.setOnClickListener {
+        binding.btEnable.setOnClickListener {
             enableData.invoke()
             dismiss()
         }
