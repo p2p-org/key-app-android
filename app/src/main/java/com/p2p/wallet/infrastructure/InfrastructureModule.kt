@@ -1,12 +1,17 @@
 package com.p2p.wallet.infrastructure
 
 import android.content.Context
+import android.os.Build
 import androidx.room.Room
+import com.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
+import com.p2p.wallet.common.crypto.keystore.EncoderDecoderPreMarshmallow
+import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.dashboard.interactor.NetworksInteractor
 import com.p2p.wallet.infrastructure.persistence.PreferenceService
 import com.p2p.wallet.infrastructure.persistence.PreferenceServiceImpl
 import com.p2p.wallet.infrastructure.persistence.WalletDatabase
+import com.p2p.wallet.infrastructure.security.SecureStorage
 import org.koin.dsl.module
 
 object InfrastructureModule : InjectionModule {
@@ -26,8 +31,20 @@ object InfrastructureModule : InjectionModule {
             context.getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
+        single {
+            val encoderDecoder =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    EncoderDecoderMarshmallow(get())
+                } else {
+                    EncoderDecoderPreMarshmallow(get())
+                }
+
+            return@single KeyStoreWrapper(encoderDecoder)
+        }
+
+        factory { SecureStorage(get(), get()) }
+
         single<PreferenceService>(createdAtStart = true) { PreferenceServiceImpl(get(), get(), get()) }
         factory { NetworksInteractor(get()) }
-
     }
 }

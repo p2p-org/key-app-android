@@ -15,7 +15,7 @@ android {
     buildToolsVersion buildToolsAllVersion
 
     defaultConfig {
-        applicationId "com.p2p.wowlet"
+        applicationId "com.p2p.wallet"
         minSdkVersion sdkMinVersion
         targetSdkVersion sdkTargetVersion
         versionCode VERSION_CODE

@@ -1,116 +1,95 @@
 package com.p2p.wallet.common.widget
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
-import android.widget.ImageView
-import androidx.appcompat.widget.LinearLayoutCompat
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import androidx.core.os.postDelayed
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.model.LaunchMode
+import com.p2p.wallet.databinding.WidgetPinViewBinding
 
-class PinView : LinearLayoutCompat {
-    private var pin = ""
-    private var pinCount = 6 // default size 6
-    private var inputCountFinish = false // default size 6
-    private var _wrongPinCodeCount = 0
-    val wrongPinCodeCount
-        get() = _wrongPinCodeCount
+private const val PIN_CODE_LENGTH = 6
+private const val DELAY_MS = 50L
 
-    lateinit var pinCodeFragmentType: LaunchMode
+class PinView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr) {
 
-    var isFirstPinInput = false
-    var createPinCode: ((pin: String) -> Unit)? = null
-    var verifyPinCode: ((pin: String) -> Unit)? = null
+    var onPinCompleted: ((String) -> Unit)? = null
+    var onBiometricClicked: (() -> Unit)? = null
 
-    constructor(context: Context) : super(context) {
-        init()
-    }
+    private var pinCode: String = ""
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init()
-    }
+    private val pinHandler = Handler(Looper.getMainLooper())
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
-        init()
-    }
+    private val binding = WidgetPinViewBinding.inflate(LayoutInflater.from(context), this)
 
-    private fun init() {
-        orientation = HORIZONTAL
-        initPinView()
-    }
+    init {
+        orientation = VERTICAL
 
-    private fun initPinView() {
-        val dotSize = resources.getDimensionPixelSize(R.dimen.dp_20)
-        val dotMargin = resources.getDimensionPixelSize(R.dimen.dp_10)
-        removeAllViews()
-        (1..pinCount).forEach {
-            val imageView = ImageView(context)
-            val layoutParams = LayoutParams(dotSize, dotSize, 0.0f)
-            layoutParams.setMargins(dotMargin, dotMargin, dotMargin, dotMargin)
-            imageView.layoutParams = layoutParams
-            if (it > pin.length) {
-                imageView.setImageResource(R.drawable.bg_pin_code_dot_empty)
-            } else {
-                imageView.setImageResource(R.drawable.bg_pin_code_dot_fill)
-            }
-            this.addView(imageView)
+        binding.pinCodeView.setPinLength(PIN_CODE_LENGTH)
+
+        binding.keyboardView.setLeftButtonVisible(false)
+        binding.keyboardView.setRightButtonDrawable(R.drawable.ic_backspace)
+
+        binding.keyboardView.onNumberClicked = { number -> onNumberEntered(number) }
+
+        binding.keyboardView.onLeftButtonClicked = {
+            onBiometricClicked?.invoke()
+        }
+
+        binding.keyboardView.onRightButtonClicked = {
+            pinCode = pinCode.dropLast(1)
+            updateDots()
         }
     }
 
-    fun errorPinViewsDesign() {
-        val childCount: Int = childCount
-        for (i in 0 until childCount) {
-            val v: ImageView = getChildAt(i) as ImageView
-            v.setImageResource(R.drawable.bg_pin_code_error)
-        }
+    fun startErrorAnimation() {
+        binding.pinCodeView.startErrorAnimation()
+        clearPin()
     }
 
-    fun onPinButtonClicked(text: String) {
-        if (pinCodeFragmentType == LaunchMode.CREATE) {
-            inputPinCode(text)
-        } else if (wrongPinCodeCount != 3) {
-            inputPinCode(text)
-        }
+    fun setFingerprintVisible(isVisible: Boolean) {
+        binding.keyboardView.setLeftButtonVisible(isVisible)
     }
-    private fun inputPinCode(code: String) {
-        if (pin.length < pinCount) {
-            this.pin += code
-            initPinView()
-        }
-        if (pin.length == pinCount && !inputCountFinish) {
-            inputCountFinish = true
-            if (pinCodeFragmentType == LaunchMode.CREATE) {
-                if (isFirstPinInput) {
-                    verifyPinCode?.invoke(pin)
-                    _wrongPinCodeCount++
-                } else
-                    createPinCode?.invoke(pin)
-            } else {
-                verifyPinCode?.invoke(pin)
-                _wrongPinCodeCount++
-            }
-        }
+
+    fun showLoading(isLoading: Boolean) {
+        binding.progressBar.isVisible = isLoading
+        binding.pinCodeView.isInvisible = isLoading
+        binding.keyboardView.isEnabled = !isLoading
     }
+
     fun clearPin() {
-        inputCountFinish = false
-        pin = ""
-        initPinView()
+        pinCode = ""
+        updateDots()
     }
 
-    fun onDeleteButtonClicked() {
-        if (wrongPinCodeCount != 3) {
-            inputCountFinish = false
-            if (pin.isNotEmpty()) {
-                pin = pin.substring(0, pin.length - 1)
-                initPinView()
-            }
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        binding.keyboardView.isEnabled = enabled
+    }
+
+    private fun onNumberEntered(number: Char) {
+        if (pinCode.length == PIN_CODE_LENGTH) return
+
+        if (pinCode.length < PIN_CODE_LENGTH) {
+            pinCode += number
+            updateDots()
+        }
+
+        if (pinCode.length == PIN_CODE_LENGTH) {
+            pinHandler.postDelayed(DELAY_MS) { onPinCompleted?.invoke(pinCode) }
         }
     }
 
-    fun setMaxPinSize(pinCount: Int) {
-        this.pinCount = pinCount
+    private fun updateDots() {
+        binding.pinCodeView.refresh(pinCode.length)
+        binding.keyboardView.setRightButtonVisible(pinCode.isNotEmpty())
     }
 }

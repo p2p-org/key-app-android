@@ -6,9 +6,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.isInvisible
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.ui.RegFinishFragment
-import com.p2p.wallet.auth.ui.OnboardingFragment
-import com.p2p.wallet.auth.ui.fingerprint.view.FingerPrintFragment
+import com.p2p.wallet.auth.ui.done.AuthDoneFragment
+import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.auth.ui.pincode.adapter.PinButtonAdapter
 import com.p2p.wallet.auth.ui.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wallet.backupwallat.secretkeys.view.SecretKeyFragment
@@ -29,6 +28,7 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@Deprecated("This should be deleted. Create new screen for changing and signing in by pin")
 class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
     private val viewModel: PinCodeViewModel by viewModel()
     private val binding: FragmentPinCodeBinding by viewBinding()
@@ -120,7 +120,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
                     viewModel.notificationStatus()
             } else {
                 if (pinCodeFragmentType == LaunchMode.CREATE) {
-                    replaceFragment(FingerPrintFragment())
+//                    replaceFragment(FingerPrintFragment())
                 } else {
                     if (isBackupDialog)
                         replaceFragment(DashboardFragment.create(true))
@@ -147,7 +147,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         }
         viewModel.skipNotification.observe(viewLifecycleOwner) {
             if (it) {
-                replaceFragment(RegFinishFragment())
+                replaceFragment(AuthDoneFragment())
             } else {
                 replaceFragment(NotificationFragment())
             }
@@ -187,10 +187,10 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         }
         viewModel.openFingerprintDialog.observe(viewLifecycleOwner) {
             openFingerprintDialog {
-                if (isBackupDialog)
-                    replaceFragment(DashboardFragment.create(true))
-                else
-                    replaceFragment(FingerPrintFragment())
+                replaceFragment(DashboardFragment.create(true))
+
+//                else
+//                    replaceFragment(FingerPrintFragment())
             }
         }
 
@@ -209,10 +209,10 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
     private fun processViewCommand(command: ViewCommand) {
         when (command) {
             is Command.NavigateSecretKeyViewCommand -> replaceFragment(SecretKeyFragment())
-            is Command.NavigateFingerPrintViewCommand -> replaceFragment(FingerPrintFragment())
+//            is Command.NavigateFingerPrintViewCommand -> replaceFragment(FingerPrintFragment())
             is Command.NavigateNotificationViewCommand -> replaceFragment(NotificationFragment())
             is Command.NavigateRegLoginViewCommand -> replaceFragment(OnboardingFragment())
-            is Command.NavigateRegFinishViewCommand -> replaceFragment(RegFinishFragment())
+            is Command.NavigateRegFinishViewCommand -> replaceFragment(AuthDoneFragment())
             is Command.OpenMainActivityViewCommand -> {
                 popAndReplaceFragment(HomeFragment.create(), inclusive = true)
             }

@@ -11,7 +11,7 @@ import com.p2p.wallet.dashboard.model.local.EnterWallet
 import com.p2p.wallet.utils.bindadapter.imageSource
 import com.p2p.wallet.utils.bindadapter.imageSourceBitmap
 import com.p2p.wallet.utils.bindadapter.walletFormat
-import com.p2p.wallet.utils.copyClipboard
+import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.shareText
 
 class EnterWalletPagerAdapter(private var list: List<EnterWallet>) :
@@ -95,7 +95,7 @@ class EnterWalletPagerAdapter(private var list: List<EnterWallet>) :
                 addressTextView.text = item.walletAddress
                 copyWallet.walletFormat(item.walletAddress, 6)
                 copyWallet.setOnClickListener {
-                    it.context.copyClipboard(item.walletAddress)
+                    it.context.copyToClipBoard(item.walletAddress)
                 }
                 shareWallet.setOnClickListener {
                     it.context.shareText(item.walletAddress)

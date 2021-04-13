@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:553127941597:android:1d1f9c0658a5dad32c5234",
+        "mobilesdk_app_id": "1:553127941597:android:6d7176c1675e7b662c5234",
         "android_client_info": {
-          "package_name": "com.p2p.wowlet"
+          "package_name": "com.p2p.wallet"
         }
       },
       "oauth_client": [

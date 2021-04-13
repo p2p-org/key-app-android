@@ -13,7 +13,8 @@ import net.glxn.qrgen.android.QRCode
 import retrofit2.Response
 
 class DashboardRepositoryImpl(
-    private val api: RetrofitService) : DashboardRepository {
+    private val api: RetrofitService
+) : DashboardRepository {
     override fun getQrCode(publicKey: String): Bitmap {
         return QRCode.from(publicKey).bitmap()
     }

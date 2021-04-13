@@ -13,7 +13,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.recoveryphrase.adapter.RecoveryPhraseAdapter
 import com.p2p.wallet.dashboard.ui.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
 import com.p2p.wallet.databinding.DialogRecoveryPhraseBinding
-import com.p2p.wallet.utils.copyClipboard
+import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -47,7 +47,7 @@ class RecoveryPhraseDialog : DialogFragment() {
             lContainer.setOnClickListener {
                 if (phraseList.isNotEmpty()) {
                     val phraseStr = phraseList.joinToString(separator = " ")
-                    it.context.copyClipboard(phraseStr)
+                    it.context.copyToClipBoard(phraseStr)
                 }
             }
             with(rvSortSecretKey) {

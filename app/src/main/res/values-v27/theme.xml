@@ -3,7 +3,7 @@
 
     <style name="WalletBase.v27" parent="WalletBase.v21">
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/transparentPrimary</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
 
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowLightStatusBar">true</item>

@@ -14,11 +14,11 @@ import com.p2p.wallet.databinding.DialogSendCoinDoneBinding
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wallet.common.network.Constants.Companion.EXPLORER_SOLANA
 import com.p2p.wallet.dashboard.model.local.ActivityItem
-import com.p2p.wallet.utils.copyClipboard
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.blockchain.BlockChainExplorerFragment
+import com.p2p.wallet.utils.copyToClipBoard
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.math.BigDecimal
 
@@ -58,7 +58,7 @@ class SendCoinDoneDialog(
                 dismissAllowingStateLoss()
             }
             binding.copyTransaction.setOnClickListener {
-                context?.copyClipboard(transactionInfo.signature)
+                context?.copyToClipBoard(transactionInfo.signature)
             }
 
             binding.price.text =

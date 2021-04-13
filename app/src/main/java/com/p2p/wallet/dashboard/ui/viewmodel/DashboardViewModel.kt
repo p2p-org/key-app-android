@@ -4,7 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.PieEntry
-import com.p2p.wallet.auth.interactor.FingerPrintInteractor
+import com.p2p.wallet.common.network.Result
+import com.p2p.wallet.dashboard.interactor.DashboardInteractor
+import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
+import com.p2p.wallet.dashboard.model.local.AddCoinItem
+import com.p2p.wallet.dashboard.model.local.LocalWalletItem
+import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.dashboard.ui.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wallet.deprecated.viewcommand.Command
 import com.p2p.wallet.deprecated.viewcommand.Command.EnterWalletDialogViewCommand
@@ -16,14 +22,6 @@ import com.p2p.wallet.deprecated.viewcommand.Command.OpenRecoveryPhraseDialogVie
 import com.p2p.wallet.deprecated.viewcommand.Command.OpenSwapBottomSheetViewCommand
 import com.p2p.wallet.deprecated.viewcommand.Command.YourWalletDialogViewCommand
 import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wallet.dashboard.interactor.DashboardInteractor
-import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
-import com.p2p.wallet.common.network.Result
-import com.p2p.wallet.dashboard.model.local.AddCoinItem
-import com.p2p.wallet.dashboard.model.local.EnableFingerPrintModel
-import com.p2p.wallet.dashboard.model.local.LocalWalletItem
-import com.p2p.wallet.dashboard.model.local.WalletItem
-import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.utils.roundCurrencyValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,8 +32,7 @@ import kotlinx.coroutines.withContext
 
 class DashboardViewModel(
     val dashboardInteractor: DashboardInteractor,
-    val detailWalletInteractor: DetailWalletInteractor,
-    val fingerPrintInteractor: FingerPrintInteractor
+    val detailWalletInteractor: DetailWalletInteractor
 ) : BaseViewModel() {
     private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
     val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
@@ -233,10 +230,10 @@ class DashboardViewModel(
     }
 
     fun clearFingerprint() {
-        viewModelScope.launch(Dispatchers.IO) {
-            fingerPrintInteractor.setFingerPrint(
-                EnableFingerPrintModel(isEnable = false, isNotWantEnable = false)
-            )
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            fingerPrintInteractor.setFingerPrint(
+//                EnableFingerPrintModel(isEnable = false, isNotWantEnable = false)
+//            )
+//        }
     }
 }
