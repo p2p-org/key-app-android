@@ -76,8 +76,8 @@ class CreatePinFragment :
 
     override fun onAuthFinished() {
         when (mode) {
-            PinLaunchMode.CREATE -> popAndReplaceFragment(WelcomeBackFragment.create(), inclusive = true)
-            PinLaunchMode.RECOVER -> popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+            PinLaunchMode.RECOVER -> popAndReplaceFragment(WelcomeBackFragment.create(), inclusive = true)
+            PinLaunchMode.CREATE -> popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
         }
     }
 

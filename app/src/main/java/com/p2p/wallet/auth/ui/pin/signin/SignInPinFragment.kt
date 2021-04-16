@@ -5,10 +5,10 @@ import android.view.View
 import androidx.activity.addCallback
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import com.p2p.wallet.backupwallat.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSignInPinBinding
 import com.p2p.wallet.home.HomeFragment
+import com.p2p.wallet.restore.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.utils.BiometricPromptWrapper
 import com.p2p.wallet.utils.edgetoedge.Edge
 import com.p2p.wallet.utils.edgetoedge.edgeToEdge

@@ -1,8 +1,8 @@
 package com.p2p.wallet.dashboard
 
 import com.p2p.wallet.auth.interactor.EnterPinCodeInteractor
-import com.p2p.wallet.backupwallat.interactor.ManualSecretKeyInteractor
-import com.p2p.wallet.backupwallat.interactor.SecretKeyInteractor
+import com.p2p.wallet.restore.interactor.ManualSecretKeyInteractor
+import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.dashboard.interactor.DashboardInteractor
 import com.p2p.wallet.dashboard.interactor.NotificationInteractor

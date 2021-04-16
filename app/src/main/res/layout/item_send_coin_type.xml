@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_15"
-        android:background="@drawable/bg_gray_rect"
+        android:background="@drawable/bg_gray_secondary_stroked"
         android:paddingHorizontal="@dimen/dp_18"
         android:paddingVertical="@dimen/dp_20"
         app:layout_constraintTop_toBottomOf="@+id/paymentTypeTv">

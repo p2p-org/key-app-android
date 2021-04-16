@@ -15,7 +15,7 @@ import com.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
 import com.p2p.wallet.auth.ui.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wallet.auth.ui.security.SecurityKeyContract
 import com.p2p.wallet.auth.ui.security.SecurityKeyPresenter
-import com.p2p.wallet.backupwallat.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
+import com.p2p.wallet.restore.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
 import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
 import com.p2p.wallet.dashboard.ui.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
 import com.p2p.wallet.notification.viewmodel.NotificationViewModel

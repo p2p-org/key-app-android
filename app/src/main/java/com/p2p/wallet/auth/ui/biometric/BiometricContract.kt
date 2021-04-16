@@ -13,6 +13,6 @@ interface BiometricContract {
 
     interface Presenter : MvpPresenter<View> {
         fun enableBiometric()
-        fun createPin(pinCode: String, cipher: Cipher)
+        fun createPin(pinCode: String, cipher: Cipher?)
     }
 }

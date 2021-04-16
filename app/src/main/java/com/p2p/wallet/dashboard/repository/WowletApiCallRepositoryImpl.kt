@@ -13,6 +13,8 @@ import com.p2p.wallet.utils.makeApiCall
 import com.p2p.wallet.utils.mnemoticgenerator.English
 import com.p2p.wallet.utils.mnemoticgenerator.MnemonicGenerator
 import com.p2p.wallet.utils.mnemoticgenerator.Words
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.bitcoinj.core.Utils.readInt64
@@ -256,13 +258,13 @@ class WowletApiCallRepositoryImpl(
         return client.api.sendTransaction(transaction, listOf(payer, newAccount))
     }
 
-    override fun generatePhrase(): List<String> {
+    override suspend fun generatePhrase(): List<String> = withContext(Dispatchers.IO) {
         val sb = StringBuilder()
         val entropy = ByteArray(Words.TWELVE.byteLength())
         SecureRandom().nextBytes(entropy)
         MnemonicGenerator(English.INSTANCE)
             .createMnemonic(entropy, sb::append)
-        return sb.toString().split(" ")
+        sb.toString().split(" ")
     }
 
     override suspend fun getOrderBooks(tokenSymbol: String): Result<OrderBooks> =

@@ -2,7 +2,7 @@ package com.p2p.wallet
 
 import android.app.Application
 import com.p2p.wallet.auth.AuthModule
-import com.p2p.wallet.backupwallat.BackupModule
+import com.p2p.wallet.restore.BackupModule
 import com.p2p.wallet.common.di.CommonModule
 import com.p2p.wallet.dashboard.DashboardModule
 import com.p2p.wallet.infrastructure.InfrastructureModule

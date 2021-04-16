@@ -10,7 +10,7 @@ import com.p2p.wallet.auth.ui.done.AuthDoneFragment
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.auth.ui.pincode.adapter.PinButtonAdapter
 import com.p2p.wallet.auth.ui.pincode.viewmodel.PinCodeViewModel
-import com.p2p.wallet.backupwallat.secretkeys.view.SecretKeyFragment
+import com.p2p.wallet.restore.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.dashboard.ui.view.DashboardFragment
 import com.p2p.wallet.databinding.FragmentPinCodeBinding

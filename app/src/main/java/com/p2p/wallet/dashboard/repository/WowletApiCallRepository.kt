@@ -13,7 +13,7 @@ import org.p2p.solanaj.rpc.types.TransferInfo
 
 interface WowletApiCallRepository {
     suspend fun initAccount(phraseList: List<String>): UserSecretData
-    fun generatePhrase(): List<String>
+    suspend fun generatePhrase(): List<String>
     suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String
     suspend fun getWallets(publicKey: String): MutableList<BalanceInfo>
     suspend fun getAccountInfo(publicKey: PublicKey): AccountInfo

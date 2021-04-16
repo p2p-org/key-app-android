@@ -73,7 +73,7 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_35"
             android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/bg_gray_rect"
+            android:background="@drawable/bg_gray_secondary_stroked"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
