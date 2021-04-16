@@ -1,7 +1,7 @@
 package com.p2p.wallet.root
 
 import android.os.Bundle
-import com.kp.kompanion.utils.edgetoedge.applyTranslucentFlag
+import com.p2p.wallet.utils.edgetoedge.applyTranslucentFlag
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.auth.ui.pin.signin.SignInPinFragment

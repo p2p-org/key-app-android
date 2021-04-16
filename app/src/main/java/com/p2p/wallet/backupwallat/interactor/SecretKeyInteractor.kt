@@ -8,6 +8,7 @@ import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.SecretKeyCombinationSuccess
 import com.p2p.wallet.utils.mnemoticgenerator.English
 
+@Deprecated("Should be refactored")
 class SecretKeyInteractor(
     val preferenceService: PreferenceService,
     val wowletApiCallRepository: WowletApiCallRepository

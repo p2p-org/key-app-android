@@ -10,10 +10,13 @@ import timber.log.Timber
 import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 500L
+private const val PIN_CODE_ATTEMPT_COUNT = 3
 
 class SignInPinPresenter(
     private val authInteractor: AuthInteractor,
 ) : BasePresenter<SignInPinContract.View>(), SignInPinContract.Presenter {
+
+    private var wrongPinCounter = 0
 
     override fun signIn(pinCode: String) {
         signInActual {
@@ -77,7 +80,15 @@ class SignInPinPresenter(
     private fun handleResult(result: SignInResult) {
         when (result) {
             SignInResult.WrongPin -> {
-                view?.showWrongPinError()
+                wrongPinCounter++
+
+                if (wrongPinCounter >= PIN_CODE_ATTEMPT_COUNT) {
+                    view?.showWalletLocked()
+                    view?.vibrate(VIBRATE_DURATION)
+                    return
+                }
+
+                view?.showWrongPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
                 view?.vibrate(VIBRATE_DURATION)
             }
             is SignInResult.Success ->

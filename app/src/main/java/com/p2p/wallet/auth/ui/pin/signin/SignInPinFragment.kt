@@ -3,14 +3,15 @@ package com.p2p.wallet.auth.ui.pin.signin
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
-import com.kp.kompanion.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
+import com.p2p.wallet.backupwallat.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSignInPinBinding
 import com.p2p.wallet.home.HomeFragment
 import com.p2p.wallet.utils.BiometricPromptWrapper
 import com.p2p.wallet.utils.edgetoedge.Edge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.vibrate
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -45,6 +46,7 @@ class SignInPinFragment :
             }
             pinView.onBiometricClicked = { presenter.onBiometricSignInRequested() }
             pinView.onPinCompleted = { presenter.signIn(it) }
+            pinView.onResetClicked = { popAndReplaceFragment(SecretKeyFragment.create()) }
         }
     }
 
@@ -75,8 +77,14 @@ class SignInPinFragment :
         )
     }
 
-    override fun showWrongPinError() {
-        binding.pinView.startErrorAnimation()
+    override fun showWrongPinError(attemptsLeft: Int) {
+        val message = getString(R.string.auth_pin_code_attempts_format, attemptsLeft)
+        binding.pinView.startErrorAnimation(message)
+    }
+
+    override fun showWalletLocked() {
+        val message = getString(R.string.auth_locked_message)
+        binding.pinView.showLockedState(message)
     }
 
     override fun vibrate(duration: Long) {

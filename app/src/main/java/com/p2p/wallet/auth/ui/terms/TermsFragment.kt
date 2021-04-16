@@ -2,7 +2,7 @@ package com.p2p.wallet.auth.ui.terms
 
 import android.os.Bundle
 import android.view.View
-import com.kp.kompanion.utils.edgetoedge.edgeToEdge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import com.p2p.wallet.common.mvp.BaseFragment

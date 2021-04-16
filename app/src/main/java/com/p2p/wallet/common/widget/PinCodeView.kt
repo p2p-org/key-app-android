@@ -14,7 +14,7 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.p2p.wallet.R
 
-private const val ANIMATION_DURATION = 100L
+private const val ANIMATION_DURATION = 400L
 
 class PinCodeView @JvmOverloads constructor(
     context: Context,
@@ -57,7 +57,7 @@ class PinCodeView @JvmOverloads constructor(
     }
 
     @SuppressWarnings("MagicNumber")
-    fun startErrorAnimation() {
+    fun startErrorAnimation(onAnimationFinished: () -> Unit) {
         val animation = TranslateAnimation(-4f, 4f, 0f, 0f)
         animation.duration = ANIMATION_DURATION
         animation.repeatMode = Animation.REVERSE
@@ -65,6 +65,7 @@ class PinCodeView @JvmOverloads constructor(
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationEnd(animation: Animation?) {
                 setDotsColor(null)
+                onAnimationFinished()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {

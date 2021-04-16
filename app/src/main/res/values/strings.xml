@@ -291,6 +291,7 @@
     <string name="auth_next">Next</string>
     <string name="auth_have_wallet">I already have a wallet</string>
     <string name="auth_create_new_wallet">Create new wallet</string>
+    <string name="auth_reset_pin">Reset PIN with a seed phrase</string>
     <string name="auth_finish_setup">Finish setup</string>
     <string name="auth_enable_faceid">Enable FaceID</string>
     <string name="auth_enable_touchid">Enable TouchID</string>
@@ -307,4 +308,8 @@
     <string name="auth_almost_done_title">Almost done!</string>
     <string name="auth_quick_access">Quick Access</string>
     <string name="auth_biometric_question">Use biometric for quick access?</string>
+    <string name="auth_pin_codes_match_error">PIN-codes do not match</string>
+    <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
+    <string name="auth_locked_message">We’ve locked your wallet, try again in a 15 minutes or reset it with a seed phrase.</string>
+    <string name="auth_welcome_back">Welcome back!</string>
 </resources>

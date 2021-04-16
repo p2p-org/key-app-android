@@ -1,20 +1,21 @@
-package com.p2p.wallet.auth.ui.done
+package com.p2p.wallet.auth.ui.welcomeback
 
 import android.os.Bundle
 import android.view.View
-import com.p2p.wallet.utils.edgetoedge.edgeToEdge
+import androidx.core.view.isVisible
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentAuthDoneBinding
 import com.p2p.wallet.home.HomeFragment
 import com.p2p.wallet.utils.edgetoedge.Edge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 
-class AuthDoneFragment : BaseFragment(R.layout.fragment_auth_done) {
+class WelcomeBackFragment : BaseFragment(R.layout.fragment_auth_done) {
 
     companion object {
-        fun create() = AuthDoneFragment()
+        fun create() = WelcomeBackFragment()
     }
 
     private val binding: FragmentAuthDoneBinding by viewBinding()
@@ -25,6 +26,9 @@ class AuthDoneFragment : BaseFragment(R.layout.fragment_auth_done) {
             edgeToEdge {
                 finishButton.fitMargin { Edge.BottomArc }
             }
+
+            titleTextView.setText(R.string.auth_welcome_back)
+            subTitleTextView.isVisible = false
 
             finishButton.clipToOutline = true
             finishButton.setOnClickListener {

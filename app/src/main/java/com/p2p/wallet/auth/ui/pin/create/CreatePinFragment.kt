@@ -3,19 +3,22 @@ package com.p2p.wallet.auth.ui.pin.create
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
-import com.kp.kompanion.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.biometric.BiometricFragment
 import com.p2p.wallet.auth.ui.done.AuthDoneFragment
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
+import com.p2p.wallet.auth.ui.welcomeback.WelcomeBackFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentCreatePinBinding
+import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.edgetoedge.Edge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStackTo
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.vibrate
 import com.p2p.wallet.utils.viewbinding.viewBinding
+import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 
 class CreatePinFragment :
@@ -23,12 +26,17 @@ class CreatePinFragment :
     CreatePinContract.View {
 
     companion object {
-        fun create() = CreatePinFragment()
+        private const val EXTRA_LAUNCH_MODE = "EXTRA_LAUNCH_MODE"
+        fun create(mode: PinLaunchMode) =
+            CreatePinFragment()
+                .withArgs(EXTRA_LAUNCH_MODE to mode)
     }
 
     override val presenter: CreatePinContract.Presenter by inject()
 
     private val binding: FragmentCreatePinBinding by viewBinding()
+
+    private val mode: PinLaunchMode by args(EXTRA_LAUNCH_MODE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,7 +75,10 @@ class CreatePinFragment :
     }
 
     override fun onAuthFinished() {
-        popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+        when (mode) {
+            PinLaunchMode.CREATE -> popAndReplaceFragment(WelcomeBackFragment.create(), inclusive = true)
+            PinLaunchMode.RECOVER -> popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+        }
     }
 
     override fun navigateToBiometric(createdPin: String) {
@@ -75,7 +86,7 @@ class CreatePinFragment :
     }
 
     override fun showConfirmationError() {
-        binding.pinView.startErrorAnimation()
+        binding.pinView.startErrorAnimation(getString(R.string.auth_pin_codes_match_error))
     }
 
     override fun lockPinKeyboard() {
