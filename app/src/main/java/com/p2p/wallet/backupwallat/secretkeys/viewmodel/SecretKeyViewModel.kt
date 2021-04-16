@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Deprecated("Should be refactored")
 class SecretKeyViewModel(
     private val secretKeyInteractor: SecretKeyInteractor
 ) : BaseViewModel() {

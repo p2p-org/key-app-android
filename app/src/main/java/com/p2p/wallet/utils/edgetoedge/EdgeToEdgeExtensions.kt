@@ -1,4 +1,4 @@
-package com.kp.kompanion.utils.edgetoedge
+package com.p2p.wallet.utils.edgetoedge
 
 import android.app.Activity
 import android.app.Dialog
@@ -13,8 +13,6 @@ import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.p2p.wallet.R
-import com.p2p.wallet.utils.edgetoedge.EdgeToEdgeBuilder
-import com.p2p.wallet.utils.edgetoedge.dispatchWindowInsets
 import timber.log.Timber
 
 /**

@@ -5,9 +5,10 @@ import android.view.View
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import com.kp.kompanion.utils.edgetoedge.edgeToEdge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import com.p2p.wallet.utils.copyToClipBoard
@@ -50,7 +51,7 @@ class SecurityKeyFragment :
             savedCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 nextButton.isEnabled = isChecked
             }
-            nextButton.setOnClickListener { replaceFragment(CreatePinFragment.create()) }
+            nextButton.setOnClickListener { replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE)) }
 
             copyTextView.setOnClickListener {
                 presenter.copyKeys()

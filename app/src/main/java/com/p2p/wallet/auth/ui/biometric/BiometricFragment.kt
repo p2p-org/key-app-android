@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import com.kp.kompanion.utils.edgetoedge.edgeToEdge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.model.BiometricType
 import com.p2p.wallet.auth.ui.done.AuthDoneFragment

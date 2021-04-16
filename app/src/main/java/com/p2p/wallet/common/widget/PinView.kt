@@ -23,6 +23,7 @@ class PinView @JvmOverloads constructor(
 
     var onPinCompleted: ((String) -> Unit)? = null
     var onBiometricClicked: (() -> Unit)? = null
+    var onResetClicked: (() -> Unit)? = null
 
     private var pinCode: String = ""
 
@@ -44,15 +45,38 @@ class PinView @JvmOverloads constructor(
             onBiometricClicked?.invoke()
         }
 
+        binding.resetButton.clipToOutline = true
+        binding.resetButton.setOnClickListener {
+            onResetClicked?.invoke()
+        }
+
         binding.keyboardView.onRightButtonClicked = {
             pinCode = pinCode.dropLast(1)
             updateDots()
         }
     }
 
-    fun startErrorAnimation() {
-        binding.pinCodeView.startErrorAnimation()
+    fun startErrorAnimation(errorText: String) {
+        with(binding) {
+            messageTextView.text = errorText
+            messageTextView.isVisible = true
+            pinCodeView.startErrorAnimation(
+                onAnimationFinished = { messageTextView.isInvisible = true }
+            )
+        }
         clearPin()
+    }
+
+    fun showLockedState(message: String) {
+        with(binding) {
+            keyboardView.isEnabled = false
+            pinCodeView.isVisible = false
+            progressBar.isVisible = false
+
+            messageTextView.isVisible = true
+            messageTextView.text = message
+            resetButton.isVisible = true
+        }
     }
 
     fun setFingerprintVisible(isVisible: Boolean) {

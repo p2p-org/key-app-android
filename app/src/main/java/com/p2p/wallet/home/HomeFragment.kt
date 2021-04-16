@@ -3,7 +3,7 @@ package com.p2p.wallet.home
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.kp.kompanion.utils.edgetoedge.edgeToEdge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.ProfileDetailsFragment
 import com.p2p.wallet.dashboard.ui.view.DashboardFragment

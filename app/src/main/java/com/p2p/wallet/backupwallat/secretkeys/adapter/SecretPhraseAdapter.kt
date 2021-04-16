@@ -13,15 +13,16 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
-//import com.p2p.wallet.backupwallat.secretkeys.utils.KeywordEditOnKeyListener
+// import com.p2p.wallet.backupwallat.secretkeys.utils.KeywordEditOnKeyListener
 import com.p2p.wallet.backupwallat.secretkeys.utils.MeasureHelper
-//import com.p2p.wallet.backupwallat.secretkeys.utils.OnFocusChangeListener
+// import com.p2p.wallet.backupwallat.secretkeys.utils.OnFocusChangeListener
 import com.p2p.wallet.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.backupwallat.secretkeys.utils.showSoftKeyboard
 import com.p2p.wallet.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wallet.databinding.RvItemKeyWordBinding
 import com.p2p.wallet.dashboard.model.local.Keyword
 
+/* TODO: should be refactored, make simpler implementation */
 class SecretPhraseAdapter(
     private val context: Context,
     private val viewModel: SecretKeyViewModel

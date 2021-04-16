@@ -3,20 +3,26 @@ package com.p2p.wallet.backupwallat.secretkeys.view
 import android.os.Bundle
 import android.view.View
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.ui.pincode.view.PinCodeFragment
+import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import com.p2p.wallet.backupwallat.secretkeys.adapter.SecretPhraseAdapter
 import com.p2p.wallet.backupwallat.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.backupwallat.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wallet.common.mvp.BaseFragment
-import com.p2p.wallet.databinding.FragmentSecretKeyBinding
-import com.p2p.wallet.auth.model.LaunchMode
 import com.p2p.wallet.dashboard.model.local.Keyword
+import com.p2p.wallet.databinding.FragmentSecretKeyBinding
+import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
-import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@Deprecated("Should be refactored")
 class SecretKeyFragment : BaseFragment(R.layout.fragment_secret_key) {
+
+    companion object {
+        fun create() = SecretKeyFragment()
+    }
+
     private val viewModel: SecretKeyViewModel by viewModel()
     private val binding: FragmentSecretKeyBinding by viewBinding()
 
@@ -47,7 +53,7 @@ class SecretKeyFragment : BaseFragment(R.layout.fragment_secret_key) {
 
     private fun observeData() {
         viewModel.isCurrentCombination.observe(viewLifecycleOwner) {
-            replaceFragment(PinCodeFragment.create(false, false, LaunchMode.CREATE))
+            popAndReplaceFragment(CreatePinFragment.create(PinLaunchMode.RECOVER), inclusive = true)
         }
         viewModel.invadedPhrase.observe(viewLifecycleOwner) { errorMessage ->
             binding.txtErrorMessage.text = errorMessage
