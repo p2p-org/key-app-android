@@ -12,10 +12,11 @@ class BiometricPresenter(
     private val authInteractor: AuthInteractor
 ) : BasePresenter<BiometricContract.View>(), BiometricContract.Presenter {
 
-    override fun createPin(pinCode: String, cipher: Cipher) {
+    override fun createPin(pinCode: String, cipher: Cipher?) {
         launch {
             try {
-                authInteractor.registerComplete(pinCode, EncodeCipher(cipher))
+                val encoderCipher = if (cipher != null) EncodeCipher(cipher) else null
+                authInteractor.registerComplete(pinCode, encoderCipher)
                 view?.onAuthFinished()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")

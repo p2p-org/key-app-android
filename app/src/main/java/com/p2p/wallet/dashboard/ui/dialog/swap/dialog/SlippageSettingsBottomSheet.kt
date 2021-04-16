@@ -8,12 +8,12 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.backupwallat.secretkeys.utils.hideSoftKeyboard
-import com.p2p.wallet.backupwallat.secretkeys.utils.showSoftKeyboard
 import com.p2p.wallet.common.widget.CheckableButton
 import com.p2p.wallet.common.widget.CheckableButtonGroup
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wallet.databinding.BottomSheetSlippageSettingsBinding
+import com.p2p.wallet.restore.secretkeys.utils.hideSoftKeyboard
+import com.p2p.wallet.restore.secretkeys.utils.showSoftKeyboard
 import com.p2p.wallet.utils.toast
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel

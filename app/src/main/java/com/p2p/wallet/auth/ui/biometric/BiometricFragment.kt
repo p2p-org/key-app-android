@@ -57,6 +57,10 @@ class BiometricFragment :
                 presenter.enableBiometric()
             }
 
+            laterButton.setOnClickListener {
+                presenter.createPin(pinCode, null)
+            }
+
             when (getBiometricType(requireContext())) {
                 BiometricType.IRIS,
                 BiometricType.FACE_ID -> {

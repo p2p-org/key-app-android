@@ -8,7 +8,7 @@ import android.view.inputmethod.EditorInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.backupwallat.secretkeys.utils.hideSoftKeyboard
+import com.p2p.wallet.restore.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.DialogEditNameBinding
 import com.p2p.wallet.dashboard.model.local.WalletItem

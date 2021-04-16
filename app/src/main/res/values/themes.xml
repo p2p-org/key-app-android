@@ -296,7 +296,7 @@
     </style>
 
     <style name="Widget.Grey.Button" parent="Widget.Black.Button">
-        <item name="android:background">@drawable/bg_gray_rect</item>
+        <item name="android:background">@drawable/bg_gray_secondary_stroked</item>
     </style>
 
     <style name="Widget.Gain.Button" parent="Widget.Black.Button">
