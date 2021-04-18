@@ -314,5 +314,14 @@
     <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
     <string name="auth_locked_message">We’ve locked your wallet, try again in a 15 minutes or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
-    <string name="restore_security_key_title">Security key</string>
+    <string name="auth_go_to_wallet">Go to wallet</string>
+
+    <!-- Main -->
+    <string name="main_total_balance">Total balance</string>
+    <string name="main_receive">Receive</string>
+    <string name="main_send">Send</string>
+    <string name="main_exchange">Exchange</string>
+    <string name="main_usd_format">$ %1$.2f</string>
+    <string name="main_all_tokens">All tokens</string>
+    <string name="main_no_data">You have no wallets yet</string>
 </resources>

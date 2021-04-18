@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.ItemAllWalletsBinding
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 
 class WalletsAdapter(
     private val viewModel: DashboardViewModel,
-    private var list: MutableList<WalletItem>,
-    private val itemClickListener: ((WalletItem) -> Unit)
+    private var list: MutableList<Token>,
+    private val itemClickListener: ((Token) -> Unit)
 ) : RecyclerView.Adapter<WalletsAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -30,7 +30,7 @@ class WalletsAdapter(
 
     override fun getItemCount(): Int = list.size
 
-    fun updateData(walletItem: List<WalletItem>) {
+    fun updateData(walletItem: List<Token>) {
         list = walletItem.toMutableList()
         notifyDataSetChanged()
     }
@@ -44,10 +44,10 @@ class WalletsAdapter(
         private val vCoin = itemWalletsBinding.vCoin
         private val itemWalletContainer = itemWalletsBinding.itemWalletContainer
 
-        fun onBind(item: WalletItem) {
+        fun onBind(item: Token) {
             vItem.text = item.tokenName
             vWalletAddress.text = item.depositAddress
-            Glide.with(vCoin).load(item.icon).into(vCoin)
+            Glide.with(vCoin).load(item.iconUrl).into(vCoin)
             itemWalletContainer.setOnClickListener {
                 itemClickListener.invoke(list[position])
             }

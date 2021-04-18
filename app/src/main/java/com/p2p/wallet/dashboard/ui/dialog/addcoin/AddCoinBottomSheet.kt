@@ -17,14 +17,14 @@ import com.p2p.wallet.dashboard.ui.dialog.addcoin.adapter.AddCoinAdapter
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.DialogAddCoinBottomSheetBinding
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 import kotlin.collections.ArrayList
 
 class AddCoinBottomSheet(
-    private val goToDetailWalletFragment: (wallet: WalletItem) -> Unit,
+    private val goToDetailWalletFragment: (wallet: Token) -> Unit,
     private val goToSolanaExplorerFragment: (mintAddress: String) -> Unit,
     private val updateListInAllMyTokens: () -> Unit
 ) : BottomSheetDialogFragment() {
@@ -39,7 +39,7 @@ class AddCoinBottomSheet(
         const val TAG_ADD_COIN = "AddCoinBottomSheet"
         const val NAV_TAG_COIN_NO_ADDED_ERROR = "coin_no_added"
         fun newInstance(
-            goToDetailWalletFragment: (wallet: WalletItem) -> Unit,
+            goToDetailWalletFragment: (wallet: Token) -> Unit,
             goToSolanaExplorerFragment: (mintAddress: String) -> Unit,
             updateListInAllMyTokens: () -> Unit = {}
         ): AddCoinBottomSheet {
@@ -93,12 +93,16 @@ class AddCoinBottomSheet(
             viewLifecycleOwner,
             {
                 val walletItem = it.walletAddress?.let { walletAddress ->
-                    WalletItem(
+                    Token(
                         tokenSymbol = it.tokenSymbol,
                         mintAddress = it.mintAddress,
                         tokenName = it.tokenName,
-                        icon = it.icon,
-                        depositAddress = walletAddress
+                        iconUrl = it.icon,
+                        depositAddress = walletAddress,
+                        amount = 0.0,
+                        decimals = 0,
+                        price = 0.0,
+                        walletBinds = 0.0
                     )
                 }
                 if (it.navigatingBack) return@observe

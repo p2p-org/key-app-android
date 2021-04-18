@@ -1,83 +1,47 @@
-package com.p2p.wallet.domain.extentions
+package com.p2p.wallet.dashboard.repository
 
 import android.graphics.Bitmap
 import com.github.mikephil.charting.data.Entry
+import com.p2p.wallet.common.network.HistoricalPrices
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.BalanceInfo
-import com.p2p.wallet.dashboard.model.local.ConstWalletItem
+import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.dashboard.model.local.EnterWallet
-import com.p2p.wallet.dashboard.model.local.WalletItem
-import com.p2p.wallet.common.network.HistoricalPrices
+import com.p2p.wallet.dashboard.model.local.Token
 import org.p2p.solanaj.rpc.types.TransferInfo
 import kotlin.math.pow
 
-fun ConstWalletItem.constWalletToWallet(walletsList: List<BalanceInfo>): WalletItem {
-    var walletItem = WalletItem()
+fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
+    var walletItem = Token(
+        "", "", 0, "",
+        "", "", 0.0, 0.0, 0.0
+    )
     walletsList.forEach {
-        if (it.mint == mintAddress) {
-            if (tokenSymbol == "USDT" || tokenSymbol == "USDC") {
-                walletItem = WalletItem(
-                    tokenSymbol = tokenSymbol,
-                    mintAddress = mintAddress,
-                    tokenName = tokenName,
-                    depositAddress = it.depositAddress,
-                    decimals = it.decimals,
-                    icon = icon,
-                    price = it.amount.toDouble(),
-                    amount = it.amount.toDouble()
-                )
-            } else {
-                walletItem = WalletItem(
-                    tokenSymbol = tokenSymbol,
-                    mintAddress = mintAddress,
-                    tokenName = tokenName,
-                    depositAddress = it.depositAddress,
-                    decimals = it.decimals,
-                    icon = icon,
-                    amount = it.amount.toDouble()
-                )
-            }
-        } else {
-            walletItem = WalletItem(
-                tokenSymbol = tokenSymbol,
-                mintAddress = mintAddress,
-                tokenName = tokenName,
-                depositAddress = it.depositAddress,
-                decimals = it.decimals,
-                icon = icon,
-                amount = it.amount.toDouble() * it.decimals
-            )
-        }
-    }
-    return walletItem
-}
-
-fun BalanceInfo.walletToWallet(walletsList: List<ConstWalletItem>): WalletItem {
-    var walletItem = WalletItem()
-    walletsList.forEach {
-        if (it.mintAddress == mint) {
+        if (it.mint == mint) {
             if (it.tokenSymbol == "USDT" || it.tokenSymbol == "USDC") {
-                walletItem = WalletItem(
+                walletItem = Token(
                     tokenSymbol = it.tokenSymbol,
-                    mintAddress = it.mintAddress,
+                    mintAddress = it.mint,
                     tokenName = it.tokenName,
                     depositAddress = depositAddress,
                     decimals = decimals,
-                    icon = it.icon,
+                    iconUrl = it.icon,
                     price = amount.toDouble() / (10.0.pow(decimals)),
                     amount = amount.toDouble() / (10.0.pow(decimals)),
                     walletBinds = 1.0
                 )
             } else {
-                walletItem = WalletItem(
+                walletItem = Token(
                     tokenSymbol = it.tokenSymbol,
-                    mintAddress = it.mintAddress,
+                    mintAddress = it.mint,
                     tokenName = it.tokenName,
                     depositAddress = depositAddress,
                     decimals = decimals,
-                    icon = it.icon,
-                    amount = amount.toDouble() / (10.0.pow(decimals))
+                    iconUrl = it.icon,
+                    amount = amount.toDouble() / (10.0.pow(decimals)),
+                    price = 0.0,
+                    walletBinds = 0.0
                 )
             }
         }
@@ -85,14 +49,14 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWalletItem>): WalletItem {
     return walletItem
 }
 
-fun ConstWalletItem.fromConstWalletToAddCoinItem(
+fun ConstWallet.fromConstWalletToAddCoinItem(
     change24h: Double,
     change24hInPercentages: Double,
     currency: Double
 ): AddCoinItem {
     return AddCoinItem(
         tokenName = tokenSymbol,
-        mintAddress = mintAddress,
+        mintAddress = mint,
         tokenSymbol = tokenSymbol,
         icon = icon,
         change24hPrice = change24h,
@@ -101,11 +65,11 @@ fun ConstWalletItem.fromConstWalletToAddCoinItem(
     )
 }
 
-fun WalletItem.walletItemToQrCode(qrCode: Bitmap): EnterWallet {
+fun Token.walletItemToQrCode(qrCode: Bitmap): EnterWallet {
     return EnterWallet(
         qrCode = qrCode,
         walletAddress = depositAddress,
-        icon = icon,
+        icon = iconUrl,
         name = tokenName
     )
 }

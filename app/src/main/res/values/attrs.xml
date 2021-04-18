@@ -6,4 +6,8 @@
         <attr name="keyboard_button_text" format="string" />
         <attr name="keyboard_button_image" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="RoundedImageView">
+        <attr name="cornerRadius" />
+    </declare-styleable>
 </resources>

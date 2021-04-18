@@ -10,7 +10,7 @@
         android:id="@+id/clHeader"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_radius_top"
+        android:background="@drawable/bg_rounded_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

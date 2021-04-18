@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
 import com.p2p.wallet.databinding.ItemMyWalletsBinding
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.bindadapter.imageSource
 import java.math.BigDecimal
 
 class YourWalletsAdapter(
-    private var list: List<WalletItem>,
+    private var list: List<Token>,
     private var viewModel: SendCoinsViewModel,
 ) : RecyclerView.Adapter<YourWalletsAdapter.MyViewHolder>() {
 
@@ -33,7 +33,7 @@ class YourWalletsAdapter(
         return list.size
     }
 
-    fun updateList(it: List<WalletItem>) {
+    fun updateList(it: List<Token>) {
         list = it
         notifyDataSetChanged()
     }
@@ -47,8 +47,8 @@ class YourWalletsAdapter(
         private val vPrice = itemWalletsBinding.vPrice
         private val vTkns = itemWalletsBinding.vTkns
 
-        fun onBind(item: WalletItem) {
-            vCoin.imageSource(item.icon)
+        fun onBind(item: Token) {
+            vCoin.imageSource(item.iconUrl)
             vName.text = item.tokenName
             vPrice.text = itemView.context.getString(R.string.usd, viewModel.roundCurrencyValue(item.price))
             vTkns.text = (BigDecimal(item.amount).stripTrailingZeros().toDouble().toString() + " " + item.tokenSymbol)

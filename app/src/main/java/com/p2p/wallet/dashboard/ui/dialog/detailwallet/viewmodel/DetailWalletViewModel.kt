@@ -9,7 +9,7 @@ import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
 import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.ActivityItem
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -68,7 +68,7 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
         }
     }
 
-    fun goToQrScanner(walletItem: WalletItem) {
+    fun goToQrScanner(walletItem: Token) {
         val enterWallet = detailWalletInteractor.generateQRrCode(walletItem)
         _command.value = Command.YourWalletDialogViewCommand(enterWallet)
     }
@@ -134,7 +134,7 @@ class DetailWalletViewModel(val detailWalletInteractor: DetailWalletInteractor) 
         }
     }
 
-    fun getPercentages(walletItem: WalletItem) {
+    fun getPercentages(walletItem: Token) {
         viewModelScope.launch {
             withContext(Dispatchers.Main) {
                 val percentages = detailWalletInteractor.getPercentages(walletItem)

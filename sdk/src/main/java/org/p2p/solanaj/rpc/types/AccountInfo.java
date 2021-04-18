@@ -1,8 +1,10 @@
 package org.p2p.solanaj.rpc.types;
 
+import com.squareup.moshi.Json;
+
 import java.util.List;
 
-import com.squareup.moshi.Json;
+import androidx.annotation.Nullable;
 
 public class AccountInfo extends RpcResultObject {
 
@@ -18,6 +20,7 @@ public class AccountInfo extends RpcResultObject {
         @Json(name = "rentEpoch")
         private long rentEpoch;
 
+        @Nullable
         public List<String> getData() {
             return data;
         }

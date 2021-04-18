@@ -21,7 +21,7 @@ import com.p2p.wallet.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wallet.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.changeTextColor
 import com.p2p.wallet.utils.getMonthly
 import com.p2p.wallet.utils.getOneHour
@@ -41,7 +41,7 @@ class DetailWalletFragment : BaseFragment(R.layout.fragment_detail_activity) {
     private lateinit var activityAdapter: ActivityAdapter
     private val viewModel: DetailWalletViewModel by viewModel()
     private val binding: FragmentDetailActivityBinding by viewBinding()
-    private var walletItem: WalletItem? = null
+    private var walletItem: Token? = null
     private var selectedTextView: AppCompatTextView? = null
     private val cal = Calendar.getInstance()
 
@@ -58,10 +58,10 @@ class DetailWalletFragment : BaseFragment(R.layout.fragment_detail_activity) {
     private fun initData() {
         arguments?.let {
             walletItem = it.getParcelable(WALLET_ITEM)
-            println("debug: icon = ${walletItem?.icon}")
+            println("debug: icon = ${walletItem?.iconUrl}")
         }
         walletItem?.run {
-            viewModel.getActivityList(this.depositAddress, icon, tokenName, this.tokenSymbol)
+            viewModel.getActivityList(this.depositAddress, iconUrl, tokenName, this.tokenSymbol)
             viewModel.getChartData(this.tokenSymbol)
         }
     }
@@ -70,7 +70,7 @@ class DetailWalletFragment : BaseFragment(R.layout.fragment_detail_activity) {
     private fun initView() {
         binding.run {
             Glide.with(this@DetailWalletFragment)
-                .load(walletItem?.icon)
+                .load(walletItem?.iconUrl)
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(38)))
                 .into(currencyIcon)
             vTitle.text = walletItem?.tokenName

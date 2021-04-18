@@ -3,7 +3,7 @@ package com.p2p.wallet.dashboard.repository
 import android.graphics.Bitmap
 import com.p2p.wallet.dashboard.api.RetrofitService
 import com.p2p.wallet.common.network.Result
-import com.p2p.wallet.dashboard.model.local.ConstWalletItem
+import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.common.network.HistoricalPrices
 import com.p2p.wallet.common.network.ResponceDataBonfida
 import com.p2p.wallet.utils.WalletDataConst
@@ -19,7 +19,7 @@ class DashboardRepositoryImpl(
         return QRCode.from(publicKey).bitmap()
     }
 
-    override fun getConstWallets(): List<ConstWalletItem> = WalletDataConst.getWalletConstList()
+    override fun getConstWallets(): List<ConstWallet> = WalletDataConst.getWalletConstList()
 
     override suspend fun getHistoricalPrices(symbols: String): Result<List<HistoricalPrices>> =
         makeApiCall({

@@ -49,7 +49,7 @@ object DashboardModule : InjectionModule {
         factory { QrScannerInteractor(get()) }
         factory { SwapInteractor() }
 
-        factory { SecretKeyInteractor(get(), get()) }
+        factory { SecretKeyInteractor(get(), get(), get()) }
         factory { ManualSecretKeyInteractor() }
         factory { EnterPinCodeInteractor(get()) }
         single { NotificationInteractor(get()) }

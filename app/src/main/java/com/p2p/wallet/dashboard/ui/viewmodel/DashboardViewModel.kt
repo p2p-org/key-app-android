@@ -9,7 +9,7 @@ import com.p2p.wallet.dashboard.interactor.DashboardInteractor
 import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.LocalWalletItem
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.dashboard.ui.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wallet.deprecated.viewcommand.Command
@@ -34,10 +34,10 @@ class DashboardViewModel(
     val dashboardInteractor: DashboardInteractor,
     val detailWalletInteractor: DetailWalletInteractor
 ) : BaseViewModel() {
-    private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
-    val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
-    private val _getAllWalletData by lazy { MutableLiveData<List<WalletItem>>() }
-    val getAllWalletData: LiveData<List<WalletItem>> get() = _getAllWalletData
+    private val _getWalletData by lazy { MutableLiveData<List<Token>>() }
+    val getWalletData: LiveData<List<Token>> get() = _getWalletData
+    private val _getAllWalletData by lazy { MutableLiveData<List<Token>>() }
+    val getAllWalletData: LiveData<List<Token>> get() = _getAllWalletData
 
     private val _getWalletDataError by lazy { MutableLiveData<String>() }
     val getWalletDataError: LiveData<String> get() = _getWalletDataError
@@ -135,15 +135,15 @@ class DashboardViewModel(
         }
     }
 
-    fun goToQrScanner(walletItem: WalletItem) {
+    fun goToQrScanner(walletItem: Token) {
         val enterWallet = detailWalletInteractor.generateQRrCode(walletItem)
         _command.value = YourWalletDialogViewCommand(enterWallet)
     }
 
-    fun openSwapBottomSheet(walletItem: WalletItem? = null) {
+    fun openSwapBottomSheet(walletItem: Token? = null) {
         _getAllWalletData.value?.let {
             if (it.isNotEmpty()) {
-                val item: WalletItem = walletItem ?: it[0]
+                val item: Token = walletItem ?: it[0]
                 _command.value =
                     OpenSwapBottomSheetViewCommand(item, it)
             }
@@ -177,7 +177,7 @@ class DashboardViewModel(
         }
     }
 
-    fun goToSendCoin(walletItem: WalletItem) {
+    fun goToSendCoin(walletItem: Token) {
         _command.value = Command.OpenSendCoinDialogViewCommand(
             walletItem = walletItem
         )
@@ -225,7 +225,7 @@ class DashboardViewModel(
         _coinNoAddedError.value = AddCoinBottomSheet.NAV_TAG_COIN_NO_ADDED_ERROR
     }
 
-    fun openEditWalletDialog(walletItem: WalletItem) {
+    fun openEditWalletDialog(walletItem: Token) {
         _command.value = OpenEditWalletDialogViewCommand(walletItem)
     }
 

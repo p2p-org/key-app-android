@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.restore.secretkeys.viewmodel.SecretKeyViewModel
+import com.p2p.wallet.restore.ui.secretkeys.viewmodel.SecretKeyViewModel
 import com.p2p.wallet.databinding.DialogBackingUpKeysBinding
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel

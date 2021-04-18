@@ -15,7 +15,7 @@ import com.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
 import com.p2p.wallet.auth.ui.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wallet.auth.ui.security.SecurityKeyContract
 import com.p2p.wallet.auth.ui.security.SecurityKeyPresenter
-import com.p2p.wallet.restore.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
+import com.p2p.wallet.restore.ui.manualsecretkeys.viewmodel.ManualSecretKeyViewModel
 import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
 import com.p2p.wallet.dashboard.ui.dialog.recoveryphrase.viewmodel.RecoveryPhraseViewModel
 import com.p2p.wallet.notification.viewmodel.NotificationViewModel
@@ -35,7 +35,7 @@ object AuthModule {
         viewModel { RecoveryPhraseViewModel(get()) }
         viewModel { PinCodeViewModel(get(), get()) }
         viewModel { ManualSecretKeyViewModel(get()) }
-        factory { SecurityKeyPresenter(get()) } bind SecurityKeyContract.Presenter::class
+        factory { SecurityKeyPresenter(get(), get()) } bind SecurityKeyContract.Presenter::class
 
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class

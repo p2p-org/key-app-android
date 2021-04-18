@@ -1,27 +1,31 @@
 package org.p2p.solanaj.rpc;
 
+import org.p2p.solanaj.core.Account;
+import org.p2p.solanaj.core.PublicKey;
+import org.p2p.solanaj.core.Transaction;
+import org.p2p.solanaj.rpc.types.AccountInfo;
+import org.p2p.solanaj.rpc.types.ConfigObjects.ConfirmedSignFAddr2;
+import org.p2p.solanaj.rpc.types.ConfigObjects.DataSize;
+import org.p2p.solanaj.rpc.types.ConfigObjects.Filter;
+import org.p2p.solanaj.rpc.types.ConfigObjects.Memcmp;
+import org.p2p.solanaj.rpc.types.ConfigObjects.ProgramAccountConfig;
+import org.p2p.solanaj.rpc.types.ConfirmedTransaction;
+import org.p2p.solanaj.rpc.types.ProgramAccount;
+import org.p2p.solanaj.rpc.types.QRAccountInfo;
+import org.p2p.solanaj.rpc.types.RecentBlockhash;
+import org.p2p.solanaj.rpc.types.RpcQrAccountInfoConfig;
+import org.p2p.solanaj.rpc.types.RpcResultTypes.ValueLong;
+import org.p2p.solanaj.rpc.types.RpcSendTransactionConfig;
+import org.p2p.solanaj.rpc.types.SignatureInformation;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-import org.p2p.solanaj.core.Account;
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.Transaction;
-import org.p2p.solanaj.rpc.types.ConfigObjects.*;
-import org.p2p.solanaj.rpc.types.AccountInfo;
-import org.p2p.solanaj.rpc.types.ConfirmedTransaction;
-import org.p2p.solanaj.rpc.types.ProgramAccount;
-import org.p2p.solanaj.rpc.types.QRAccountInfo;
-import org.p2p.solanaj.rpc.types.RecentBlockhash;
-import org.p2p.solanaj.rpc.types.RpcQrAccountInfoConfig;
-import org.p2p.solanaj.rpc.types.RpcSendTransactionConfig;
-import org.p2p.solanaj.rpc.types.SignatureInformation;
-import org.p2p.solanaj.rpc.types.RpcResultTypes.ValueLong;
-
 public class RpcApi {
-    private RpcClient client;
+    private final RpcClient client;
 
     public RpcApi(RpcClient client) {
         this.client = client;
@@ -53,7 +57,7 @@ public class RpcApi {
                     android.util.Base64.DEFAULT
             );
         }
-       // String base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
+        // String base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
 
         List<Object> params = new ArrayList<Object>();
 

@@ -18,7 +18,7 @@ import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.QrWalletType
 import com.p2p.wallet.dashboard.model.local.SendTransactionModel
 import com.p2p.wallet.dashboard.model.local.UserWalletType
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.roundToThousandsCurrencyValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,11 +34,11 @@ class SendCoinsViewModel(
     private val _pages: MutableLiveData<List<UserWalletType>> by lazy { MutableLiveData() }
     val pages: LiveData<List<UserWalletType>> get() = _pages
 
-    private val _getWalletData by lazy { MutableLiveData<List<WalletItem>>() }
-    val getWalletData: LiveData<List<WalletItem>> get() = _getWalletData
+    private val _getWalletData by lazy { MutableLiveData<List<Token>>() }
+    val getWalletData: LiveData<List<Token>> get() = _getWalletData
 
-    private val _walletItemData by lazy { MutableLiveData<WalletItem>(WalletItem()) }
-    val walletItemData: LiveData<WalletItem> get() = _walletItemData
+    private val _walletItemData by lazy { MutableLiveData<Token>(Token()) }
+    val walletItemData: LiveData<Token> get() = _walletItemData
 
     val inputCount: MutableLiveData<String> by lazy { MutableLiveData("") }
 
@@ -57,8 +57,8 @@ class SendCoinsViewModel(
     private val _feeErrorLiveData by lazy { MutableLiveData<String>() }
     val feeErrorLiveData: LiveData<String> get() = _feeErrorLiveData
 
-    private val _savedWalletItemData by lazy { MutableLiveData(WalletItem()) }
-    val savedWalletItemData: LiveData<WalletItem> get() = _savedWalletItemData
+    private val _savedWalletItemData by lazy { MutableLiveData(Token()) }
+    val savedWalletItemData: LiveData<Token> get() = _savedWalletItemData
 
     private val _selectedCurrency by lazy { MutableLiveData("--") }
     val selectedCurrency: LiveData<String> get() = _selectedCurrency
@@ -92,16 +92,21 @@ class SendCoinsViewModel(
         _command.value = OpenMyWalletDialogViewCommand()
     }
 
-    fun selectWalletItem(item: WalletItem) {
+    fun selectWalletItem(item: Token) {
         _walletItemData.value = item
     }
 
     fun selectFromConstWalletItems(item: QrWalletType) {
-        val walletItem = WalletItem(
+        val walletItem = Token(
             tokenSymbol = item.walletItem.tokenSymbol,
             tokenName = item.walletItem.tokenName,
-            mintAddress = item.walletItem.mintAddress,
-            icon = item.walletItem.icon
+            mintAddress = item.walletItem.mint,
+            iconUrl = item.walletItem.icon,
+            decimals = 0,
+            depositAddress = "",
+            walletBinds = 0.0,
+            price = 0.0,
+            amount = 0.0
         )
         _walletItemData.value = walletItem
     }
@@ -144,7 +149,7 @@ class SendCoinsViewModel(
         }
     }
 
-    fun setWalletData(walletItem: WalletItem?) {
+    fun setWalletData(walletItem: Token?) {
         sendCoinInteractor.saveWalletItem(walletItem)
     }
 

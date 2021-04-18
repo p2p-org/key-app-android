@@ -45,7 +45,7 @@ import com.p2p.wallet.deprecated.viewcommand.ViewCommand
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wallet.auth.model.LaunchMode
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.qrscanner.view.QrScannerFragment
 import com.p2p.wallet.utils.OnSwipeTouchListener
 import com.p2p.wallet.utils.drawChart
@@ -57,6 +57,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.p2p.solanaj.rpc.RpcClient
 
+@Deprecated("This will be replaced with [MainFragment]")
 class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
     private val viewModel: DashboardViewModel by viewModel()
@@ -236,7 +237,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
         }
     }
 
-    private fun openWalletDetails(it: WalletItem) {
+    private fun openWalletDetails(it: Token) {
         DetailWalletBottomSheet.newInstance(
             it,
             {
