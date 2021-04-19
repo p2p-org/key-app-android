@@ -11,11 +11,11 @@ data class Token(
     val depositAddress: String,
     val decimals: Int,
     val mintAddress: String,
-    var tokenName: String,
+    val tokenName: String,
     val iconUrl: String,
-    var price: Double,
-    var amount: Double,
-    var walletBinds: Double
+    val price: Double,
+    val amount: Double,
+    val walletBinds: Double
 ) : Parcelable {
 
     // fixme: remove this after refactoring. We should avoid creating objects with default params

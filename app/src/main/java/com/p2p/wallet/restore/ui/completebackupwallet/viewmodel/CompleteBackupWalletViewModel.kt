@@ -1,4 +1,4 @@
-package com.p2p.wallet.restore.completebackupwallet.viewmodel
+package com.p2p.wallet.restore.ui.completebackupwallet.viewmodel
 
 import com.p2p.wallet.deprecated.viewcommand.Command
 import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
