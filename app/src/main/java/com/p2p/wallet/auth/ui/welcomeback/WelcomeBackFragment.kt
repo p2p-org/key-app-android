@@ -6,7 +6,7 @@ import androidx.core.view.isVisible
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentAuthDoneBinding
-import com.p2p.wallet.home.HomeFragment
+import com.p2p.wallet.main.ui.MainFragment
 import com.p2p.wallet.utils.edgetoedge.Edge
 import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popAndReplaceFragment
@@ -30,9 +30,10 @@ class WelcomeBackFragment : BaseFragment(R.layout.fragment_auth_done) {
             titleTextView.setText(R.string.auth_welcome_back)
             subTitleTextView.isVisible = false
 
+            finishButton.setText(R.string.auth_go_to_wallet)
             finishButton.clipToOutline = true
             finishButton.setOnClickListener {
-                popAndReplaceFragment(HomeFragment.create(), inclusive = true)
+                popAndReplaceFragment(MainFragment.create(), inclusive = true)
             }
         }
     }

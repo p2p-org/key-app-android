@@ -38,14 +38,6 @@ class WowletApiCallRepositoryImpl(
     private val client: RpcClient
 ) : WowletApiCallRepository {
 
-    override suspend fun initAccount(phraseList: List<String>): UserSecretData {
-        val account = Account.fromMnemonic(phraseList, "")
-        val publicKey = Base58.encode(account.publicKey.toByteArray())
-        val secretKey = Base58.encode(account.secretKey)
-
-        return UserSecretData(secretKey, publicKey, phraseList)
-    }
-
     override suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String {
         val fromPublicKey = PublicKey(sendTransactionModel.fromPublicKey)
         val toPublicKey = PublicKey(sendTransactionModel.toPublickKey)
@@ -65,20 +57,6 @@ class WowletApiCallRepositoryImpl(
 
     override suspend fun getBalance(accountAddress: String): Long {
         return client.api.getBalance(PublicKey(accountAddress))
-    }
-
-    override suspend fun getProgramAccounts(publicKey: String) {
-        val programAccounts = client.api
-            .getProgramAccounts(
-                PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-                32,
-                publicKey
-            )
-
-        programAccounts.map { programAccount ->
-            println("owner = ${programAccount.account.owner}")
-            println("pub key = ${programAccount.pubkey}")
-        }
     }
 
     override suspend fun getWallets(publicKey: String): MutableList<BalanceInfo> {
@@ -269,11 +247,7 @@ class WowletApiCallRepositoryImpl(
 
     override suspend fun getOrderBooks(tokenSymbol: String): Result<OrderBooks> =
         makeApiCall({
-            getOrderBooksData(
-                allApiService.getOrderBooks(
-                    tokenSymbol
-                )
-            )
+            getOrderBooksData(allApiService.getOrderBooks(tokenSymbol))
         })
 
     private fun getOrderBooksData(response: Response<ResponceDataBonfida<OrderBooks>>): Result<OrderBooks> =

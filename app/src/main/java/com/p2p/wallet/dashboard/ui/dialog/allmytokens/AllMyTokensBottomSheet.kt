@@ -12,7 +12,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.allmytokens.adapter.WalletsAdapter
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.DialogAllMyTokensBinding
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.utils.drawChart
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -21,7 +21,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class AllMyTokensBottomSheet(
     private var yourWallets: YourWallets,
     private val addCoinClickListener: ((updateAllMyTokens: () -> Unit) -> Unit),
-    private val itemClickListener: ((WalletItem) -> Unit)
+    private val itemClickListener: ((Token) -> Unit)
 ) : BottomSheetDialogFragment() {
 
     private val dashboardViewModel: DashboardViewModel by viewModel()
@@ -32,7 +32,7 @@ class AllMyTokensBottomSheet(
         fun newInstance(
             yourWallets: YourWallets,
             addCoinClickListener: ((updateAllMyTokens: () -> Unit) -> Unit),
-            itemClickListener: ((WalletItem) -> Unit)
+            itemClickListener: ((Token) -> Unit)
         ): AllMyTokensBottomSheet =
             AllMyTokensBottomSheet(yourWallets, addCoinClickListener, itemClickListener)
     }

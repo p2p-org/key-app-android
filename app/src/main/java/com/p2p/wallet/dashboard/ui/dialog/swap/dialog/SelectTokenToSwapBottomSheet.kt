@@ -11,17 +11,17 @@ import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.swap.adapter.SelectTokenToSwapAdapter
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wallet.databinding.BottomSheetSelectTokenToSwapBinding
-import com.p2p.wallet.dashboard.model.local.WalletItem
-import com.p2p.wallet.restore.secretkeys.utils.hideSoftKeyboard
+import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.restore.ui.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 // R.layout.bottom_sheet_select_token_to_swap
 class SelectTokenToSwapBottomSheet(
-    private val selectedTokenFrom: WalletItem,
-    private val allMyWallets: List<WalletItem>,
-    private val selectTokenToSwap: (walletItem: WalletItem) -> Unit
+    private val selectedTokenFrom: Token,
+    private val allMyWallets: List<Token>,
+    private val selectTokenToSwap: (walletItem: Token) -> Unit
 ) : BottomSheetDialogFragment() {
 
     private val swapViewModel: SwapViewModel by viewModel()
@@ -31,9 +31,9 @@ class SelectTokenToSwapBottomSheet(
     companion object {
         const val TAG_SELECT_TOKEN_TO_SWAP = "SelectTokenToSwap"
         fun newInstance(
-            selectedTokenFrom: WalletItem,
-            allMyWallets: List<WalletItem>,
-            selectTokenToSwap: (walletItem: WalletItem) -> Unit
+            selectedTokenFrom: Token,
+            allMyWallets: List<Token>,
+            selectTokenToSwap: (walletItem: Token) -> Unit
         ): SelectTokenToSwapBottomSheet {
             return SelectTokenToSwapBottomSheet(selectedTokenFrom, allMyWallets, selectTokenToSwap)
         }

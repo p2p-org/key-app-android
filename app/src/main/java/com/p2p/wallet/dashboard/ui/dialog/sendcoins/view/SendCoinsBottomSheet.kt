@@ -22,7 +22,7 @@ import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.WalletAddressViewModel
 import com.p2p.wallet.common.network.Constants
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.qrscanner.view.QrScannerFragment
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wallet.utils.popBackStack
@@ -37,7 +37,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.pow
 
 class SendCoinsBottomSheet(
-    private var walletItem: WalletItem?,
+    private var walletItem: Token?,
     private var walletAddress: String?
 ) : BottomSheetDialogFragment() {
 
@@ -47,14 +47,14 @@ class SendCoinsBottomSheet(
 
     private var bottomSheet: View? = null
     private var feeValue = 0.0
-    private var walletItems: List<WalletItem>? = null
+    private var walletItems: List<Token>? = null
     private var isUserOwnScannedWallet = false
     private var getWalletItemsJob: Job? = null
 
     companion object {
         const val TAG_SEND_COIN = "SendCoinsDialogFragment"
         fun newInstance(
-            walletItem: WalletItem? = null,
+            walletItem: Token? = null,
             walletAddress: String?
         ): SendCoinsBottomSheet {
             return SendCoinsBottomSheet(walletItem, walletAddress)
@@ -69,7 +69,7 @@ class SendCoinsBottomSheet(
         binding.run {
             txtAvailableBalance.setOnClickListener { viewModel.insertAllBalance() }
             imgWalletData.setOnClickListener { viewModel.openMyWalletsDialog() }
-            imgWalletData.imageSourceRadiusDp(walletItem?.icon, 16)
+            imgWalletData.imageSourceRadiusDp(walletItem?.iconUrl, 16)
             txtToken.text = walletItem?.tokenSymbol
             sendCoinButton.setOnClickListener { viewModel.sendCoinCommand() }
             etWalletAddress.doAfterTextChanged { text ->
@@ -230,7 +230,7 @@ class SendCoinsBottomSheet(
         }
         viewModel.walletItemData.observe(viewLifecycleOwner) {
             if (it.tokenSymbol == "") return@observe
-            binding.imgWalletData.imageSourceRadiusDp(it.icon, 16)
+            binding.imgWalletData.imageSourceRadiusDp(it.iconUrl, 16)
             binding.txtToken.text = it.tokenSymbol
 
             viewModel.getFee()
@@ -273,7 +273,7 @@ class SendCoinsBottomSheet(
                     withContext(Dispatchers.Main) {
                         walletItems?.let { myWallets ->
                             val find = myWallets.find {
-                                it.mintAddress == walletData.walletItem.mintAddress
+                                it.mintAddress == walletData.walletItem.mint
                             }
                             find?.let {
                                 isUserOwnScannedWallet = true

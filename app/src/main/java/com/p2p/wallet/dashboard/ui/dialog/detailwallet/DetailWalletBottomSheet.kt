@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.ui.dialog.TransactionBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.adapter.ActivityAdapter
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.util.DividerItemDecoration
@@ -33,24 +33,24 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 
 class DetailWalletBottomSheet(
-    private val walletItem: WalletItem,
-    private val openQRScanner: ((WalletItem) -> Unit),
+    private val walletItem: Token,
+    private val openQRScanner: ((Token) -> Unit),
     private val openAddCoin: (() -> Unit),
-    private val openSendCoin: ((WalletItem) -> Unit),
+    private val openSendCoin: ((Token) -> Unit),
     private val openReceveCoin: (() -> Unit),
-    private val openSwap: ((wallet: WalletItem) -> Unit),
+    private val openSwap: ((wallet: Token) -> Unit),
     private val navigateToFragment: ((url: String) -> Unit)
 ) : BottomSheetDialogFragment() {
 
     companion object {
         const val DETAIL_WALLET = "DetailWallet"
         fun newInstance(
-            walletItem: WalletItem,
-            openQRScanner: ((WalletItem) -> Unit),
+            walletItem: Token,
+            openQRScanner: ((Token) -> Unit),
             openAddCoin: (() -> Unit),
-            openSendCoin: ((WalletItem) -> Unit),
+            openSendCoin: ((Token) -> Unit),
             openReveice: (() -> Unit),
-            openSwapCoin: ((wallet: WalletItem) -> Unit),
+            openSwapCoin: ((wallet: Token) -> Unit),
             navigateToFragment: ((url: String) -> Unit)
 
         ): DetailWalletBottomSheet {
@@ -74,7 +74,7 @@ class DetailWalletBottomSheet(
         super.onViewCreated(view, savedInstanceState)
         walletItem.run {
             detailWalletViewModel.getActivityList(
-                this.depositAddress, icon, tokenName, this.tokenSymbol
+                this.depositAddress, iconUrl, tokenName, this.tokenSymbol
             )
             detailWalletViewModel.getChartData(this.tokenSymbol)
             detailWalletViewModel.getPercentages(this)
@@ -87,7 +87,7 @@ class DetailWalletBottomSheet(
     @SuppressLint("SetTextI18n")
     private fun initView() {
         binding.run {
-            currencyIcon.imageSource(walletItem.icon)
+            currencyIcon.imageSource(walletItem.iconUrl)
             vTitle.text = walletItem.tokenName
             vWalletAddress.text = walletItem.depositAddress
             vPrice.text = "$${walletItem.price.roundCurrencyValue()}"

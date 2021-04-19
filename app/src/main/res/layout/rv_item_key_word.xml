@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/dp_6"
-    android:layout_marginTop="@dimen/dp_6"
-    android:layout_marginEnd="@dimen/dp_6"
+    android:layout_marginTop="12dp"
     android:background="@drawable/bg_secret_keyword_selected"
-    android:padding="@dimen/dp_6">
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="12dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txt_keyword_num"
@@ -19,7 +17,6 @@
         android:textColor="@color/hintColor"
         android:textSize="@dimen/sp_15"
         tools:text="1." />
-
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edt_keyword"

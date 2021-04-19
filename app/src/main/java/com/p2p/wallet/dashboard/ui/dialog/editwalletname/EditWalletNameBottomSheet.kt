@@ -8,24 +8,24 @@ import android.view.inputmethod.EditorInfo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.restore.secretkeys.utils.hideSoftKeyboard
+import com.p2p.wallet.restore.ui.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.DialogEditNameBinding
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.bindadapter.imageSource
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EditWalletNameBottomSheet(
-    val walletItem: WalletItem,
-    private val changedName: (WalletItem) -> Unit
+    val walletItem: Token,
+    private val changedName: (Token) -> Unit
 ) : BottomSheetDialogFragment() {
 
     companion object {
         const val EDIT_WALLET_NAME = "EditWalletName"
         fun newInstance(
-            walletItem: WalletItem,
-            changedName: (WalletItem) -> Unit
+            walletItem: Token,
+            changedName: (Token) -> Unit
         ): EditWalletNameBottomSheet =
             EditWalletNameBottomSheet(walletItem, changedName)
     }
@@ -41,14 +41,14 @@ class EditWalletNameBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            currencyIcon.imageSource(walletItem.icon)
+            currencyIcon.imageSource(walletItem.iconUrl)
             vEditTitle.setText(walletItem.tokenName)
             closeBtn.setOnClickListener { dismiss() }
             vEditTitle.setOnEditorActionListener { _, keyCode, _ ->
                 if (keyCode == EditorInfo.IME_ACTION_DONE) {
                     val walletTitle = vEditTitle.text.toString()
                     dashboardViewModel.setChangeWallet(walletItem.depositAddress, walletTitle)
-                    walletItem.apply { tokenName = walletTitle }
+//                    walletItem.apply { tokenName = walletTitle }
                     activity?.run { hideSoftKeyboard(this@EditWalletNameBottomSheet) }
                     dismiss()
                     return@setOnEditorActionListener true

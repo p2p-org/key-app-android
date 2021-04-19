@@ -11,13 +11,13 @@ import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.yourwallets.adapter.YourWalletsAdapter
 import com.p2p.wallet.databinding.DialogMyWalletBinding
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class YourWalletsBottomSheet(
     private val title: String,
-    private val itemWallet: (data: WalletItem) -> Unit
+    private val itemWallet: (data: Token) -> Unit
 ) :
     BottomSheetDialogFragment() {
 
@@ -30,7 +30,7 @@ class YourWalletsBottomSheet(
         const val YOUR_WALLET = "yourWallet"
         fun newInstance(
             title: String,
-            itemWallet: (data: WalletItem) -> Unit
+            itemWallet: (data: Token) -> Unit
         ): YourWalletsBottomSheet =
             YourWalletsBottomSheet(title, itemWallet)
     }

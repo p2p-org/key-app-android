@@ -2,7 +2,7 @@ package com.p2p.wallet.deprecated.viewcommand
 
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.EnterWallet
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 
 @Deprecated("This will be deleted, migrating to MVP")
@@ -20,7 +20,7 @@ sealed class Command {
 
     class NavigateScannerViewCommand constructor(val destinationId: Int, val goBack: Boolean) : ViewCommand
     class OpenSendCoinDialogViewCommand constructor(
-        val walletItem: WalletItem? = null,
+        val walletItem: Token? = null,
         val walletAddress: String? = null
     ) :
         ViewCommand
@@ -30,7 +30,7 @@ sealed class Command {
     class OpenProfileDialogViewCommand constructor() : ViewCommand
     class OpenMainActivityViewCommand constructor() : ViewCommand
 
-    class OpenSwapBottomSheetViewCommand constructor(val walletData: WalletItem, val allMyWallets: List<WalletItem>) :
+    class OpenSwapBottomSheetViewCommand constructor(val walletData: Token, val allMyWallets: List<Token>) :
         ViewCommand
 
     class OpenSelectTokenToSwapBottomSheet constructor() : ViewCommand
@@ -42,7 +42,7 @@ sealed class Command {
     class OpenBackupFailedDialogViewCommand constructor() : ViewCommand
     class OpenRecoveryPhraseDialogViewCommand constructor() : ViewCommand
     class OpenTransactionDialogViewCommand constructor(val itemActivity: ActivityItem) : ViewCommand
-    class OpenEditWalletDialogViewCommand constructor(val walletItem: WalletItem) : ViewCommand
+    class OpenEditWalletDialogViewCommand constructor(val walletItem: Token) : ViewCommand
     class SendCoinDoneViewCommand constructor(val transactionInfo: ActivityItem) : ViewCommand
     class SendCoinViewCommand constructor() : ViewCommand
     class SwapCoinProcessingViewCommand constructor() : ViewCommand

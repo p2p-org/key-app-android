@@ -4,7 +4,7 @@ import com.p2p.wallet.dashboard.model.SelectedCurrency
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.PinCodeResponse
 import com.p2p.wallet.dashboard.model.local.UserSecretData
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import org.p2p.solanaj.rpc.Cluster
 
 @Deprecated("Workaround, remove unnecessary data storing logic, remove interfaces")
@@ -21,8 +21,8 @@ interface PreferenceService {
     fun isAllowNotification(): EnableNotificationModel?
     fun isCurrentLoginReg(): Boolean
     fun finishLoginReg(finishReg: Boolean)
-    fun setWalletItemData(walletItem: WalletItem?)
-    fun getWalletItemData(): WalletItem?
+    fun setWalletItemData(walletItem: Token?)
+    fun getWalletItemData(): Token?
     fun setSelectedNetWork(cluster: Cluster)
     fun getSelectedCluster(): Cluster
     fun setSelectedCurrency(currency: SelectedCurrency)

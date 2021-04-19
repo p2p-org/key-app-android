@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_radius_top"
+    android:background="@drawable/bg_rounded_top"
     android:orientation="vertical"
     app:layout_behavior="@string/bottom_sheet_behavior">
 

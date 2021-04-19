@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -7,8 +7,24 @@
     android:layout_marginStart="12dp"
     android:layout_marginTop="12dp"
     android:background="@drawable/bg_security_key"
-    android:gravity="center"
+    android:orientation="horizontal"
     android:paddingHorizontal="12dp"
-    android:paddingVertical="12dp"
-    android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-    tools:text="3. Austin" />
+    android:paddingVertical="12dp">
+
+    <TextView
+        android:id="@+id/indexTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+        android:textColor="@color/colorGray"
+        tools:text="3. " />
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+        tools:text="Austin" />
+</LinearLayout>

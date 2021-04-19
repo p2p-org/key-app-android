@@ -6,12 +6,14 @@ import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.SecretKeyCombinationSuccess
 import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
 import com.p2p.wallet.infrastructure.persistence.PreferenceService
+import com.p2p.wallet.user.UserInteractor
 import com.p2p.wallet.utils.mnemoticgenerator.English
 
 @Deprecated("Should be refactored")
 class SecretKeyInteractor(
     val preferenceService: PreferenceService,
-    val wowletApiCallRepository: WowletApiCallRepository
+    val wowletApiCallRepository: WowletApiCallRepository,
+    private val userInteractor: UserInteractor
 ) {
 
     private lateinit var combinationValue: SecretKeyCombinationSuccess
@@ -85,9 +87,7 @@ class SecretKeyInteractor(
 //
 //                }
 
-                val userAccount = wowletApiCallRepository.initAccount(phrase)
-
-                preferenceService.updateWallet(userAccount)
+                userInteractor.createAndSaveAccount(phrase)
                 Result.Success(true)
             } else {
                 Result.Error(
@@ -105,11 +105,11 @@ class SecretKeyInteractor(
 
     fun currentPhrase(): String {
         val walletList = preferenceService.getActiveWallet()
-        val phrase = walletList?.phrase?.joinToString(separator = " ")
+        val phrase = walletList?.keys?.joinToString(separator = " ")
         return phrase ?: ""
     }
 
     fun currentListPhrase(): List<String> {
-        return preferenceService.getActiveWallet()?.phrase ?: listOf()
+        return preferenceService.getActiveWallet()?.keys ?: listOf()
     }
 }

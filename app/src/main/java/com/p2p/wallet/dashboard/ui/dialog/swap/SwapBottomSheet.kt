@@ -18,7 +18,7 @@ import com.p2p.wallet.deprecated.viewcommand.Command
 import com.p2p.wallet.deprecated.viewcommand.ViewCommand
 import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
 import com.p2p.wallet.dialog.utils.makeFullScreen
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDpWithDefault
 import com.p2p.wallet.utils.toast
@@ -26,15 +26,15 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SwapBottomSheet(
-    private val allMyWallets: List<WalletItem>,
-    private var selectedWalletFrom: WalletItem
+    private val allMyWallets: List<Token>,
+    private var selectedWalletFrom: Token
 ) : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG_SWAP_BOTTOM_SHEET = "swapBottomSheet"
         fun newInstance(
-            allMyWallets: List<WalletItem>,
-            selectedWalletItems: WalletItem
+            allMyWallets: List<Token>,
+            selectedWalletItems: Token
         ): SwapBottomSheet {
             return SwapBottomSheet(allMyWallets, selectedWalletItems)
         }
@@ -64,7 +64,7 @@ class SwapBottomSheet(
             }
             availableTextView.text = text
 
-            imgTokenFrom.imageSourceRadiusDp(selectedWalletFrom.icon, 12)
+            imgTokenFrom.imageSourceRadiusDp(selectedWalletFrom.iconUrl, 12)
             imgTokenFrom.setOnClickListener { viewModel.openMyWalletsDialog() }
             txtTokenFrom.text = selectedWalletFrom.tokenSymbol
             imgArrowDownFrom.setOnClickListener { viewModel.openMyWalletsDialog() }
@@ -97,7 +97,7 @@ class SwapBottomSheet(
             }
 
             imgTokenTo.imageSourceRadiusDpWithDefault(
-                selectedWalletFrom.icon, 12, R.drawable.ic_wallet_blue,
+                selectedWalletFrom.iconUrl, 12, R.drawable.ic_wallet_blue,
                 R.drawable.ic_wallet_blue
             )
             txtTokenTo.text = selectedWalletFrom.tokenSymbol

@@ -118,7 +118,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/myBalanceContainer"
             tools:itemCount="4"
-            tools:listitem="@layout/item_wallets" />
+            tools:listitem="@layout/item_wallet" />
 
         <RelativeLayout
             android:id="@+id/allMyTokensContainer"
@@ -187,7 +187,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_30"
-            android:background="@drawable/bg_radius_top"
+            android:background="@drawable/bg_rounded_top"
             android:elevation="@dimen/dp_10"
             android:gravity="center"
             android:orientation="horizontal"

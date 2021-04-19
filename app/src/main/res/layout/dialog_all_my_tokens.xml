@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_radius_top"
+    android:background="@drawable/bg_rounded_top"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -126,5 +126,5 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_5"
-        tools:listitem="@layout/item_wallets" />
+        tools:listitem="@layout/item_wallet" />
 </androidx.appcompat.widget.LinearLayoutCompat>

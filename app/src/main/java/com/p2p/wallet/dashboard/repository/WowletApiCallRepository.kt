@@ -12,7 +12,6 @@ import org.p2p.solanaj.rpc.types.QRAccountInfo
 import org.p2p.solanaj.rpc.types.TransferInfo
 
 interface WowletApiCallRepository {
-    suspend fun initAccount(phraseList: List<String>): UserSecretData
     suspend fun generatePhrase(): List<String>
     suspend fun sendTransaction(sendTransactionModel: SendTransactionModel): String
     suspend fun getWallets(publicKey: String): MutableList<BalanceInfo>
@@ -26,5 +25,4 @@ interface WowletApiCallRepository {
     suspend fun getBlockTime(slot: Long): Long
     suspend fun getFee(): Long
     suspend fun createAndInitializeTokenAccount(payer: Account, mintAddress: PublicKey, newAccount: Account): String
-    suspend fun getProgramAccounts(publicKey: String)
 }
