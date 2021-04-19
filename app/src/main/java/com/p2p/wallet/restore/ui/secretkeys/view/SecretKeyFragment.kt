@@ -63,7 +63,7 @@ class SecretKeyFragment : BaseFragment(R.layout.fragment_secret_key) {
 
     private fun observeData() {
         with(viewModel) {
-            isCurrentCombination.observe(viewLifecycleOwner) { isCorrect ->
+            isCurrentCombination.observe(viewLifecycleOwner) {
                 popAndReplaceFragment(CreatePinFragment.create(PinLaunchMode.RECOVER), inclusive = true)
             }
             invadedPhrase.observe(viewLifecycleOwner) { errorMessage ->

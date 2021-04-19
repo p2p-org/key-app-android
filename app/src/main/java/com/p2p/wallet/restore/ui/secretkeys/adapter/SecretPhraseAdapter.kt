@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
@@ -13,6 +14,8 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
+import com.p2p.wallet.dashboard.model.local.Keyword
+import com.p2p.wallet.databinding.RvItemKeyWordBinding
 import com.p2p.wallet.restore.ui.secretkeys.utils.KeywordEditOnKeyListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.KeywordEditTextChangeListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.MeasureHelper
@@ -20,8 +23,6 @@ import com.p2p.wallet.restore.ui.secretkeys.utils.OnFocusChangeListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.restore.ui.secretkeys.utils.showSoftKeyboard
 import com.p2p.wallet.restore.ui.secretkeys.viewmodel.SecretKeyViewModel
-import com.p2p.wallet.databinding.RvItemKeyWordBinding
-import com.p2p.wallet.dashboard.model.local.Keyword
 
 /* TODO: should be refactored, make simpler implementation */
 class SecretPhraseAdapter(
@@ -140,7 +141,9 @@ class SecretPhraseAdapter(
         return keywordList.size
     }
 
-    inner class ViewHolder(val binding: RvItemKeyWordBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(
+        val binding: RvItemKeyWordBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(position: Int, item: Keyword) {
 
             initListeners(position)
@@ -169,6 +172,14 @@ class SecretPhraseAdapter(
                 addTextChangedListener(textWatcher)
                 onFocusChangeListener = this@SecretPhraseAdapter.onFocusChangeListener
                 setOnKeyListener(onKeyListener)
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        append(" ")
+                        return@setOnEditorActionListener true
+                    }
+
+                    return@setOnEditorActionListener false
+                }
             }
         }
 
@@ -201,7 +212,7 @@ class SecretPhraseAdapter(
                 binding.txtKeywordNum.apply {
                     val tag = "${position + 1}. ${item.title}"
                     text = tag
-                    setTextColor(Color.WHITE)
+                    setTextColor(Color.BLACK)
                 }
             } else {
                 textWatcher.isPhrasePastedFromClipboard = false
