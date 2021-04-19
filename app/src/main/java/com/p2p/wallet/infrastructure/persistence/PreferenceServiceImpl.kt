@@ -11,7 +11,7 @@ import com.p2p.wallet.dashboard.model.local.CipherData
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.PinCodeResponse
 import com.p2p.wallet.dashboard.model.local.UserSecretData
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.cipher.Cipher.Companion.decrypt
 import com.p2p.wallet.utils.cipher.Cipher.Companion.encrypt
 import com.p2p.wallet.utils.cipher.Cipher.Companion.generateSecretKeyCipher
@@ -59,11 +59,11 @@ class PreferenceServiceImpl(
         sharedPreferences.edit { putBoolean(finishRegKey, finishReg) }
     }
 
-    override fun setWalletItemData(walletItem: WalletItem?) {
+    override fun setWalletItemData(walletItem: Token?) {
         put(walletItem, walletItemKey)
     }
 
-    override fun getWalletItemData(): WalletItem? = get(walletItemKey)
+    override fun getWalletItemData(): Token? = get(walletItemKey)
 
     override fun setSelectedNetWork(cluster: Cluster) {
         put(cluster, networkItemKey)

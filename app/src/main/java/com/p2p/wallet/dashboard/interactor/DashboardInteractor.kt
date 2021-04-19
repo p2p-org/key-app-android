@@ -1,14 +1,6 @@
 package com.p2p.wallet.dashboard.interactor
 
 import com.github.mikephil.charting.data.PieEntry
-import com.p2p.wallet.dashboard.repository.DashboardRepository
-import com.p2p.wallet.dashboard.repository.LocalDatabaseRepository
-import com.p2p.wallet.infrastructure.persistence.PreferenceService
-import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
-import com.p2p.wallet.domain.extentions.fromConstWalletToAddCoinItem
-import com.p2p.wallet.domain.extentions.transferInfoToActivityItem
-import com.p2p.wallet.domain.extentions.walletItemToQrCode
-import com.p2p.wallet.domain.extentions.walletToWallet
 import com.p2p.wallet.common.network.CallException
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.common.network.Constants.Companion.ERROR_NULL_DATA
@@ -17,12 +9,20 @@ import com.p2p.wallet.dashboard.model.SelectedCurrency
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.AddCoinModel
 import com.p2p.wallet.dashboard.model.local.BalanceInfo
-import com.p2p.wallet.dashboard.model.local.ConstWalletItem
+import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.EnterWallet
 import com.p2p.wallet.dashboard.model.local.LocalWalletItem
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
+import com.p2p.wallet.dashboard.repository.DashboardRepository
+import com.p2p.wallet.dashboard.repository.LocalDatabaseRepository
+import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
+import com.p2p.wallet.dashboard.repository.fromConstWalletToAddCoinItem
+import com.p2p.wallet.dashboard.repository.transferInfoToActivityItem
+import com.p2p.wallet.dashboard.repository.walletItemToQrCode
+import com.p2p.wallet.dashboard.repository.walletToWallet
+import com.p2p.wallet.infrastructure.persistence.PreferenceService
 import com.p2p.wallet.utils.WalletDataConst
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -36,21 +36,22 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import kotlin.math.pow
 
+@Deprecated("Too complex logic, should be refactored")
 class DashboardInteractor(
     private val dashboardRepository: DashboardRepository,
     private val wowletApiCallRepository: WowletApiCallRepository,
     private val preferenceService: PreferenceService,
     private val localDatabaseRepository: LocalDatabaseRepository
 ) {
-    private var walletData: MutableList<WalletItem> = mutableListOf()
-    private var sendCoinWalletList: MutableList<WalletItem> = mutableListOf()
+    private var walletData: MutableList<Token> = mutableListOf()
+    private var sendCoinWalletList: MutableList<Token> = mutableListOf()
     private var pirChatList: MutableList<PieEntry> = mutableListOf()
     private var yourWalletBalance: Double = 0.0
     private var addCoinData: MutableList<AddCoinItem> = mutableListOf() // 30
     private var minBalance: Long = 0
 
     val ownerAccountAddress = "22CbwPktYBVbTctjfsr35ozanxwfVjNbBofsnWY4C2YR"
-    fun generateQRrCode(list: List<WalletItem>): List<EnterWallet> {
+    fun generateQRrCode(list: List<Token>): List<EnterWallet> {
         return list.map {
             it.walletItemToQrCode(dashboardRepository.getQrCode(it.depositAddress))
         }
@@ -80,7 +81,7 @@ class DashboardInteractor(
             walletData.forEach {
                 yourWalletBalance += it.price
             }
-            val itemComparator = Comparator<WalletItem> { o1, o2 ->
+            val itemComparator = Comparator<Token> { o1, o2 ->
                 when {
                     o1?.tokenSymbol == "SOL" -> -1
                     o2?.tokenSymbol == "SOL" -> 1
@@ -111,7 +112,7 @@ class DashboardInteractor(
         }
     }
 
-    suspend fun getAllWallets(): Result<List<WalletItem>> {
+    suspend fun getAllWallets(): Result<List<Token>> {
         return if (walletData.isNotEmpty()) Result.Success(walletData)
         else Result.Error(CallException(Constants.ERROR_EMPTY_ALL_WALLETS))
     }
@@ -199,8 +200,8 @@ class DashboardInteractor(
     suspend fun clearSecretKey() {
         val secretData = preferenceService.getActiveWallet()
         secretData?.let {
-            it.secretKey = ""
-            preferenceService.updateWallet(it)
+//            it.secretKey = ""
+            preferenceService.updateWallet(it.copy(secretKey = ""))
             preferenceService.finishLoginReg(false)
 //            preferenceService.enableFingerPrint(EnableFingerPrintModel(false, false))
             preferenceService.enableNotification(EnableNotificationModel(false, false))
@@ -216,7 +217,7 @@ class DashboardInteractor(
     }
 
     suspend fun saveEditedWallet(localWalletItem: LocalWalletItem) =
-        channelFlow<List<WalletItem>> {
+        channelFlow<List<Token>> {
             localDatabaseRepository.saveEditedWallet(localWalletItem)
             walletData.forEach { item ->
                 val wallet = localDatabaseRepository.getWallet(item.depositAddress)
@@ -228,13 +229,13 @@ class DashboardInteractor(
             awaitClose {}
         }
 
-    fun checkWalletFromList(mintAddress: String): Result<ConstWalletItem> {
+    fun checkWalletFromList(mintAddress: String): Result<ConstWallet> {
         return if (sendCoinWalletList.isNotEmpty()) {
             if (mintAddress == Constants.OWNER_SOL) {
                 return Result.Success(WalletDataConst.getWalletConstList()[0])
             }
             val findFromAll =
-                WalletDataConst.getWalletConstList().find { walletItem -> walletItem.mintAddress == mintAddress }
+                WalletDataConst.getWalletConstList().find { walletItem -> walletItem.mint == mintAddress }
             if (findFromAll != null) {
                 Result.Success(findFromAll)
             } else

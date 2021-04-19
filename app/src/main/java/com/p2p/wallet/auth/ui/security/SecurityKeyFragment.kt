@@ -51,7 +51,9 @@ class SecurityKeyFragment :
             savedCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 nextButton.isEnabled = isChecked
             }
-            nextButton.setOnClickListener { replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE)) }
+            nextButton.setOnClickListener {
+                presenter.createAccount()
+            }
 
             copyTextView.setOnClickListener {
                 presenter.copyKeys()
@@ -71,6 +73,10 @@ class SecurityKeyFragment :
 
     override fun showKeys(keys: List<String>) {
         keysAdapter.setItems(keys)
+    }
+
+    override fun navigateToCreatePin() {
+        replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
     override fun copyToClipboard(keys: List<String>) {

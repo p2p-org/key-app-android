@@ -36,11 +36,13 @@ class KeysAdapter : RecyclerView.Adapter<KeysAdapter.KeyViewHolder>() {
         binding: ItemSecurityKeyBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val keyTextView = binding.root as TextView
+        private val nameTextView = binding.nameTextView
+        private val indexTextView = binding.indexTextView
 
         @SuppressLint("SetTextI18n")
         fun bind(value: String) {
-            keyTextView.text = "${adapterPosition + 1}. $value"
+            indexTextView.text = "${adapterPosition + 1}. "
+            nameTextView.text = value
         }
     }
 }

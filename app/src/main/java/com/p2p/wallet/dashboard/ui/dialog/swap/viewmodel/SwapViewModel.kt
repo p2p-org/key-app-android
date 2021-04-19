@@ -8,7 +8,7 @@ import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
 import com.p2p.wallet.dashboard.interactor.SwapInteractor
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.CoinItem
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.roundCurrencyValue
 import com.p2p.wallet.utils.roundToBilCurrencyValue
 import com.p2p.wallet.utils.roundToMilCurrencyValue
@@ -19,11 +19,11 @@ class SwapViewModel(
     private val swapInteractor: SwapInteractor
 ) : BaseViewModel() {
 
-    private val _selectedWalletFrom by lazy { MutableLiveData<WalletItem>() }
-    val selectedWalletFrom: LiveData<WalletItem> get() = _selectedWalletFrom
+    private val _selectedWalletFrom by lazy { MutableLiveData<Token>() }
+    val selectedWalletFrom: LiveData<Token> get() = _selectedWalletFrom
 
-    private val _selectedWalletTo by lazy { MutableLiveData<WalletItem>() }
-    val selectedWalletTo: LiveData<WalletItem> get() = _selectedWalletTo
+    private val _selectedWalletTo by lazy { MutableLiveData<Token>() }
+    val selectedWalletTo: LiveData<Token> get() = _selectedWalletTo
 
     private val _isInCryptoCurrency by lazy { MutableLiveData<Boolean>(true) }
     val isInCryptoCurrency: LiveData<Boolean> get() = _isInCryptoCurrency
@@ -150,13 +150,13 @@ class SwapViewModel(
         amountBinding.value = amountBinding.value
     }
 
-    fun setSelectedWalletFrom(walletItem: WalletItem) {
+    fun setSelectedWalletFrom(walletItem: Token) {
         _selectedWalletFrom.value = walletItem
         val to: Double = _selectedWalletTo.value?.walletBinds ?: return
         setTokenRatios(walletItem.walletBinds, to)
     }
 
-    fun setSelectedWalletTo(walletItem: WalletItem) {
+    fun setSelectedWalletTo(walletItem: Token) {
         _selectedWalletTo.value = walletItem
         val from = selectedWalletFrom.value?.walletBinds ?: return
         setTokenRatios(from, walletItem.walletBinds)

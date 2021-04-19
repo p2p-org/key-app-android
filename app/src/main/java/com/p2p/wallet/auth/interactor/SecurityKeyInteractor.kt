@@ -11,8 +11,8 @@ class SecurityKeyInteractor(
 
     var phraseList = mutableListOf<String>()
     suspend fun initUser() {
-        val userData = wowletApiCallRepository.initAccount(phraseList)
-        preferenceService.setSingleWalletData(userData)
+//        val userData = wowletApiCallRepository.initAccount(phraseList)
+//        preferenceService.setSingleWalletData(userData)
     }
 
     suspend fun generateKeys(): List<String> =

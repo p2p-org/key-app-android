@@ -24,15 +24,15 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?actionBarSize"
-            android:fillViewport="true">
+            android:layout_marginTop="?actionBarSize">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="80dp"
                 android:padding="16dp"
-                android:paddingBottom="?actionBarSize"
-                android:text="@string/policy_first_info" />
+                android:text="@string/policy_first_info"
+                tools:text="@tools:sample/lorem/random" />
         </ScrollView>
 
 

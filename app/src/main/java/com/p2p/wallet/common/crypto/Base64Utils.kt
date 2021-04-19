@@ -3,6 +3,14 @@ package com.p2p.wallet.common.crypto
 import android.util.Base64
 
 object Base64Utils {
-    fun encode(data: String) = String(Base64.encode(data.toByteArray(), Base64.DEFAULT or Base64.NO_WRAP))
-    fun decode(data: String) = String(Base64.decode(data, Base64.DEFAULT or Base64.NO_WRAP))
+
+    fun encode(bytes: ByteArray): String =
+        Base64.encodeToString(bytes, Base64.DEFAULT)
+
+    fun decode(stringToDecode: String): ByteArray =
+        Base64.decode(stringToDecode, Base64.DEFAULT)
+
+    fun encodeFromString(string: String) = encode(string.toByteArray())
+
+    fun decodeToString(data: String) = String(decode(data))
 }

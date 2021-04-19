@@ -22,8 +22,8 @@ public class RpcClient {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private String endpoint;
-    private OkHttpClient httpClient;
-    private RpcApi rpcApi;
+    private final OkHttpClient httpClient;
+    private final RpcApi rpcApi;
 
     public RpcClient(Cluster endpoint) {
         this(endpoint.getEndpoint());
@@ -44,7 +44,7 @@ public class RpcClient {
 
         JsonAdapter<RpcRequest> rpcRequestJsonAdapter = new Moshi.Builder().build().adapter(RpcRequest.class);
         JsonAdapter<RpcResponse<T>> resultAdapter = new Moshi.Builder().build()
-                .adapter(Types.newParameterizedType(RpcResponse.class, Type.class.cast(clazz)));
+                .adapter(Types.newParameterizedType(RpcResponse.class, clazz));
 
         Request request = new Request.Builder().url(endpoint)
                 .post(RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest))).build();

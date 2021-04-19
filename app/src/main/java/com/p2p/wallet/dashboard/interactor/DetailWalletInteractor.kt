@@ -4,9 +4,9 @@ import com.github.mikephil.charting.data.Entry
 import com.p2p.wallet.dashboard.repository.DashboardRepository
 import com.p2p.wallet.dashboard.repository.DetailActivityRepository
 import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
-import com.p2p.wallet.domain.extentions.fromHistoricalPricesToChartItem
-import com.p2p.wallet.domain.extentions.transferInfoToActivityItem
-import com.p2p.wallet.domain.extentions.walletItemToQrCode
+import com.p2p.wallet.dashboard.repository.fromHistoricalPricesToChartItem
+import com.p2p.wallet.dashboard.repository.transferInfoToActivityItem
+import com.p2p.wallet.dashboard.repository.walletItemToQrCode
 import com.p2p.wallet.utils.getActivityDate
 import com.p2p.wallet.utils.secondToDate
 import com.p2p.wallet.common.network.CallException
@@ -14,7 +14,7 @@ import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.EnterWallet
-import com.p2p.wallet.dashboard.model.local.WalletItem
+import com.p2p.wallet.dashboard.model.local.Token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -134,7 +134,7 @@ class DetailWalletInteractor(
         }
     }
 
-    suspend fun getPercentages(walletItem: WalletItem): Double {
+    suspend fun getPercentages(walletItem: Token): Double {
         var change24hInPercentages = 0.0
         coroutineScope {
             withContext(Dispatchers.IO) {
@@ -168,6 +168,6 @@ class DetailWalletInteractor(
         return change24hInPercentages
     }
 
-    fun generateQRrCode(walletItem: WalletItem): EnterWallet =
+    fun generateQRrCode(walletItem: Token): EnterWallet =
         walletItem.walletItemToQrCode(detailActivityRepository.getQrCode(walletItem.depositAddress))
 }
