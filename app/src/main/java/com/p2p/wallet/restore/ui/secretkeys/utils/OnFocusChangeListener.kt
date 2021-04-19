@@ -8,7 +8,7 @@ class OnFocusChangeListener : View.OnFocusChangeListener {
     override fun onFocusChange(v: View?, hasFocus: Boolean) {
         val parent = v?.parent as ViewGroup
         if (!hasFocus) {
-            parent.setBackgroundResource(R.drawable.bg_secret_keyword)
+            parent.setBackgroundResource(R.drawable.bg_security_key)
         }
     }
 }

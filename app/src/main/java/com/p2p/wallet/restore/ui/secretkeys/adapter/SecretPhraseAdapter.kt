@@ -199,7 +199,7 @@ class SecretPhraseAdapter(
                     isVisible = false
                 }
                 binding.txtKeywordNum.apply {
-                    val tag = "${position + 1}.${item.title}"
+                    val tag = "${position + 1}. ${item.title}"
                     text = tag
                     setTextColor(Color.WHITE)
                 }

@@ -40,7 +40,7 @@ class WalletsAdapter(
     fun setItemData(walletItem: Token) {
         list.find { item ->
             if (item.depositAddress == walletItem.depositAddress) {
-                item.tokenName = walletItem.tokenName
+//                item.tokenName = walletItem.tokenName
                 true
             } else
                 false

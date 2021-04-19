@@ -48,7 +48,7 @@ class EditWalletNameBottomSheet(
                 if (keyCode == EditorInfo.IME_ACTION_DONE) {
                     val walletTitle = vEditTitle.text.toString()
                     dashboardViewModel.setChangeWallet(walletItem.depositAddress, walletTitle)
-                    walletItem.apply { tokenName = walletTitle }
+//                    walletItem.apply { tokenName = walletTitle }
                     activity?.run { hideSoftKeyboard(this@EditWalletNameBottomSheet) }
                     dismiss()
                     return@setOnEditorActionListener true

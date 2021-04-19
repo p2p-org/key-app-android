@@ -73,8 +73,8 @@ class DashboardInteractor(
             walletData.removeAll { it.depositAddress.isEmpty() }
             walletData.forEach { item ->
                 val wallet = localDatabaseRepository.getWallet(item.depositAddress)
-                if (wallet != null)
-                    item.tokenName = wallet.walletName
+//                if (wallet != null)
+//                    item.tokenName = wallet.walletName
             }
             sendCoinWalletList.addAll(walletData)
             // sendCoinWalletList.removeAll { it.amount == 0.0 }
@@ -221,9 +221,9 @@ class DashboardInteractor(
             localDatabaseRepository.saveEditedWallet(localWalletItem)
             walletData.forEach { item ->
                 val wallet = localDatabaseRepository.getWallet(item.depositAddress)
-                if (wallet != null) {
-                    item.tokenName = wallet.walletName
-                }
+//                if (wallet != null) {
+//                    item.tokenName = wallet.walletName
+//                }
             }
             channel.offer(walletData)
             awaitClose {}
@@ -295,8 +295,8 @@ class DashboardInteractor(
                             overbookData.data?.let {
                                 if (it.bids.isNotEmpty()) {
                                     val price = it.bids[0].price
-                                    walletsItem.walletBinds = price
-                                    walletsItem.price = price * walletsItem.amount
+//                                    walletsItem.walletBinds = price
+//                                    walletsItem.price = price * walletsItem.amount
                                 }
                             }
                         }

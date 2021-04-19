@@ -53,10 +53,6 @@ class KeywordEditTextChangeListener(
 
         textLengthAfter = s.toString().length
 
-        //The value should be true when user inputs space
-        //at the end of the word
-        var isMovingToNextWord = false
-
         //Saving the value of edit text for the secret phrase
         keywordList[itemPosition].title = edtKeyword.text.toString()
 
@@ -116,20 +112,13 @@ class KeywordEditTextChangeListener(
                     //When this case triggered, the word definitely is not empty,
                     //and user clicked the space, so we pass the current text
                     //from editText to textView in rv_item_key_word.xml
-                    isMovingToNextWord = true
                     val allText = "${txtKeyword.text}${s.toString()}"
                     txtKeyword.text = allText
+                    txtKeyword.setTextColor(Color.BLACK)
                     edtKeyword.visibility = View.GONE
                     adapter.addItem(Keyword(""))
                 }
                 s?.replace(s.indexOf(" "), s.indexOf(" ") + 1, "")
-            }
-
-            //Changing the color of textView when moving to the next word
-            if (!isMovingToNextWord) {
-                txtKeyword.setTextColor(Color.BLACK)
-            } else {
-                txtKeyword.setTextColor(Color.WHITE)
             }
         }
 
