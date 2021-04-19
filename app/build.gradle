@@ -59,7 +59,7 @@ android {
             versionNameSuffix ".$VERSION_BUILD"
 
             firebaseAppDistribution {
-                releaseNotes = developChangelog()
+                releaseNotes = featureChangelog()
                 groups = "wowlet.test.feature"
             }
         }
