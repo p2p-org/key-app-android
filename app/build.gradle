@@ -60,7 +60,7 @@ android {
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
-                groups = "wowlet.test.feature"
+                groups = "wallet.test.feature"
             }
         }
 
