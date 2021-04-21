@@ -5,7 +5,7 @@ import android.view.View
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentCompleteBackupWalletBinding
-import com.p2p.wallet.main.ui.MainFragment
+import com.p2p.wallet.main.ui.main.MainFragment
 import com.p2p.wallet.restore.ui.completebackupwallet.viewmodel.CompleteBackupWalletViewModel
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding

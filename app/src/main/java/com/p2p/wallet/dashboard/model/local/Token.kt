@@ -1,8 +1,9 @@
 package com.p2p.wallet.dashboard.model.local
 
 import android.os.Parcelable
-import com.p2p.wallet.utils.roundCurrencyValue
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.pow
 
 @Parcelize
@@ -13,8 +14,8 @@ data class Token(
     val mintAddress: String,
     val tokenName: String,
     val iconUrl: String,
-    val price: Double,
-    val amount: Double,
+    val price: BigDecimal,
+    val total: BigDecimal,
     val walletBinds: Double
 ) : Parcelable {
 
@@ -26,13 +27,14 @@ data class Token(
         "",
         "",
         "",
-        0.0,
-        0.0,
+        BigDecimal.ZERO,
+        BigDecimal.ZERO,
         0.0
     )
 
     companion object {
         private const val ADDRESS_SYMBOL_COUNT = 10
+        private const val SOL_DECIMALS = 9
 
         /* fixme: workaround about adding hardcode wallet, looks strange */
         fun getSOL(publicKey: String, amount: Long) = Token(
@@ -42,8 +44,8 @@ data class Token(
             iconUrl = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
             depositAddress = publicKey,
             decimals = 9,
-            amount = amount.toDouble() / (10.0.pow(9)),
-            price = 0.0,
+            total = BigDecimal(amount).divide(BigDecimal(10.0.pow(SOL_DECIMALS))),
+            price = BigDecimal.ZERO,
             walletBinds = 0.0
         )
     }
@@ -54,12 +56,12 @@ data class Token(
             return depositAddress
         }
 
-        val firstSix = depositAddress.take(6)
+        val firstSix = depositAddress.take(4)
         val lastFour = depositAddress.takeLast(4)
         return "$firstSix...$lastFour"
     }
 
-    fun getFormattedPrice(): String = "${price.roundCurrencyValue()} $"
+    fun getFormattedPrice(): String = "${price.setScale(2, RoundingMode.HALF_EVEN)} $"
 
-    fun getFormattedTotal(): String = "$amount $tokenSymbol"
+    fun getFormattedTotal(): String = "$total $tokenSymbol"
 }

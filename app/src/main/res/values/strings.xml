@@ -320,8 +320,13 @@
     <string name="main_total_balance">Total balance</string>
     <string name="main_receive">Receive</string>
     <string name="main_send">Send</string>
-    <string name="main_exchange">Exchange</string>
-    <string name="main_usd_format">$ %1$.2f</string>
+    <string name="main_usd_format">$ %s</string>
     <string name="main_all_tokens">All tokens</string>
     <string name="main_no_data">You have no wallets yet</string>
+    <string name="main_swap">Swap</string>
+    <string name="main_from">From</string>
+    <string name="main_swap_hint">0,0000</string>
+    <string name="main_to">To</string>
+    <string name="main_select_currency">Select currency</string>
+    <string name="main_swap_now">Swap now</string>
 </resources>

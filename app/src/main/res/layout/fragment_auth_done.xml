@@ -80,7 +80,7 @@
             android:foreground="?selectableItemBackground"
             android:text="@string/auth_finish_setup"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="UnusedAttribute" />

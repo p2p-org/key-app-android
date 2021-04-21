@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.channelFlow
 import org.bitcoinj.core.Base58
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
+import java.math.BigDecimal
 import kotlin.math.pow
 
 @Deprecated("Too complex logic, should be refactored")
@@ -79,7 +80,7 @@ class DashboardInteractor(
             sendCoinWalletList.addAll(walletData)
             // sendCoinWalletList.removeAll { it.amount == 0.0 }
             walletData.forEach {
-                yourWalletBalance += it.price
+                yourWalletBalance += it.price.toDouble()
             }
             val itemComparator = Comparator<Token> { o1, o2 ->
                 when {
@@ -96,7 +97,7 @@ class DashboardInteractor(
                 walletData
 
             walletData.forEach {
-                if (it.price != 0.0)
+                if (it.price != BigDecimal.ZERO)
                     pirChatList.add(PieEntry(it.price.toFloat()))
             }
             return Result.Success(

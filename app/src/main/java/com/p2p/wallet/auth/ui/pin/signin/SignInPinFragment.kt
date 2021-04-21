@@ -7,7 +7,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSignInPinBinding
-import com.p2p.wallet.main.ui.MainFragment
+import com.p2p.wallet.main.ui.main.MainFragment
 import com.p2p.wallet.restore.ui.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.utils.BiometricPromptWrapper
 import com.p2p.wallet.utils.edgetoedge.Edge

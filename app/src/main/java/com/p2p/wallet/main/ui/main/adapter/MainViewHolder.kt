@@ -1,4 +1,4 @@
-package com.p2p.wallet.main.ui.adapter
+package com.p2p.wallet.main.ui.main.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -24,7 +24,7 @@ class MainViewHolder(
 
     fun onBind(item: Token) {
         Glide.with(tokenImageView).load(item.iconUrl).into(tokenImageView)
-        nameTextView.text = item.tokenName
+        nameTextView.text = item.tokenSymbol
         addressTextView.text = item.getFormattedAddress()
         valueTextView.text = item.getFormattedPrice()
         totalTextView.text = item.getFormattedTotal()

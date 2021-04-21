@@ -4,6 +4,4 @@ import org.p2p.solanaj.rpc.RpcClient
 
 class MainRepositoryImpl(
     private val client: RpcClient
-) : MainRepository {
-
-}
+) : MainRepository

@@ -5,7 +5,7 @@ import android.view.View
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentAuthDoneBinding
-import com.p2p.wallet.main.ui.MainFragment
+import com.p2p.wallet.main.ui.main.MainFragment
 import com.p2p.wallet.utils.edgetoedge.Edge
 import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popAndReplaceFragment

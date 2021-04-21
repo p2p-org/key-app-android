@@ -35,7 +35,7 @@
             android:foreground="?selectableItemBackground"
             android:text="@string/auth_reset_pin"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/colorGray"
             android:visibility="gone"
             tools:ignore="UnusedAttribute"

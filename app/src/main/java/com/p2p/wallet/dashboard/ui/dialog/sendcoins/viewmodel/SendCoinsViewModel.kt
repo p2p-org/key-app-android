@@ -105,8 +105,8 @@ class SendCoinsViewModel(
             decimals = 0,
             depositAddress = "",
             walletBinds = 0.0,
-            price = 0.0,
-            amount = 0.0
+            price = BigDecimal.ZERO,
+            total = BigDecimal.ZERO
         )
         _walletItemData.value = walletItem
     }
@@ -208,7 +208,7 @@ class SendCoinsViewModel(
     }
 
     fun insertAllBalance() {
-        val yourBalance: Double = walletItemData.value?.amount ?: 0.0
+        val yourBalance: Double = walletItemData.value?.total?.toDouble() ?: 0.0
         val walletBinds: Double = walletItemData.value?.walletBinds ?: 0.0
         val balance = if (_selectedCurrency.value == "USD") {
             (yourBalance * walletBinds).roundToThousandsCurrencyValue()

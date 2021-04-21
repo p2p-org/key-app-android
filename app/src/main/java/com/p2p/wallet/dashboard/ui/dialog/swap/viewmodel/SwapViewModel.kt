@@ -116,9 +116,9 @@ class SwapViewModel(
 
     fun openProcessingDialog() {
         val selectedWalletAmount: Double = if (_isInCryptoCurrency.value == true) {
-            _selectedWalletFrom.value?.amount ?: 0.0
+            _selectedWalletFrom.value?.total?.toDouble() ?: 0.0
         } else {
-            _selectedWalletFrom.value?.price ?: 0.0
+            _selectedWalletFrom.value?.price?.toDouble() ?: 0.0
         }
         val insertedAmount: Double = if (amount.value == "" || amount.value == ".") {
             0.0

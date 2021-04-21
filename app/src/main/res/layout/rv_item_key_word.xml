@@ -14,8 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
         android:textColor="@color/hintColor"
-        android:textSize="@dimen/sp_15"
         tools:text="1." />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -27,6 +27,6 @@
         android:inputType="text"
         android:maxLines="1"
         android:minWidth="@dimen/dp_50"
-        android:textSize="@dimen/sp_15" />
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

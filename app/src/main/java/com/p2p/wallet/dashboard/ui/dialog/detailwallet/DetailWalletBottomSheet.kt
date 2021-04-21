@@ -90,8 +90,8 @@ class DetailWalletBottomSheet(
             currencyIcon.imageSource(walletItem.iconUrl)
             vTitle.text = walletItem.tokenName
             vWalletAddress.text = walletItem.depositAddress
-            vPrice.text = "$${walletItem.price.roundCurrencyValue()}"
-            vTokenValue.text = "${walletItem.tokenSymbol} ${walletItem.amount}"
+            vPrice.text = "$${walletItem.price.toDouble().roundCurrencyValue()}"
+            vTokenValue.text = "${walletItem.tokenSymbol} ${walletItem.total}"
             vWalletAddress.setOnClickListener {
                 context?.run { copyToClipBoard(vWalletAddress.text.toString()) }
             }

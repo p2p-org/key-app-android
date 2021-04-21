@@ -75,8 +75,8 @@ class DetailWalletFragment : BaseFragment(R.layout.fragment_detail_activity) {
                 .into(currencyIcon)
             vTitle.text = walletItem?.tokenName
             vWalletAddress.text = walletItem?.depositAddress
-            vPrice.text = "$${walletItem?.price?.roundCurrencyValue()}"
-            vTokenValue.text = "${walletItem?.amount} ${walletItem?.tokenSymbol}"
+            vPrice.text = "$${walletItem?.price?.toDouble()?.roundCurrencyValue()}"
+            vTokenValue.text = "${walletItem?.total} ${walletItem?.tokenSymbol}"
             vWalletAddress.setOnClickListener {
                 context?.run { copyToClipBoard(vWalletAddress.text.toString()) }
             }
