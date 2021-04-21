@@ -24,7 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:title="@string/auth_almost_done_title" />
+            app:title="@string/auth_almost_done_title"
+            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
         <FrameLayout
             android:id="@+id/biometricView"
@@ -53,7 +54,7 @@
             android:layout_marginTop="28dp"
             android:gravity="center"
             android:text="@string/auth_biometric_question"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium24"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold24"
             app:layout_constraintTop_toBottomOf="@id/biometricView" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -66,7 +67,7 @@
             android:foreground="?selectableItemBackground"
             android:text="@string/auth_enable_faceid"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/laterButton"
             tools:ignore="UnusedAttribute" />
@@ -81,7 +82,7 @@
             android:foreground="?selectableItemBackground"
             android:text="@string/auth_do_later"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="UnusedAttribute" />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.p2p.wallet.main.ui.adapter
+package com.p2p.wallet.main.ui.main.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

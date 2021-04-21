@@ -1,6 +1,5 @@
 package com.p2p.wallet.common.di
 
-import com.google.gson.GsonBuilder
 import com.p2p.wallet.dashboard.api.RetrofitService
 import com.p2p.wallet.infrastructure.persistence.PreferenceService
 import com.p2p.wallet.utils.HeaderInterceptor
@@ -14,7 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 object CommonModule : InjectionModule {
 
     override fun create() = module {
-        single { GsonBuilder().create() }
         single {
             val get = get<PreferenceService>()
             val selectedCluster = get.getSelectedCluster()

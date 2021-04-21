@@ -70,7 +70,7 @@
             android:foreground="?selectableItemBackground"
             android:text="@string/auth_create_new_wallet"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/loginButton"
             tools:ignore="UnusedAttribute" />
@@ -84,7 +84,7 @@
             android:background="@drawable/bg_dark_rounded"
             android:text="@string/auth_have_wallet"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

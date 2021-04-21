@@ -10,12 +10,13 @@ import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.dashboard.model.local.EnterWallet
 import com.p2p.wallet.dashboard.model.local.Token
 import org.p2p.solanaj.rpc.types.TransferInfo
+import java.math.BigDecimal
 import kotlin.math.pow
 
 fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
     var walletItem = Token(
         "", "", 0, "",
-        "", "", 0.0, 0.0, 0.0
+        "", "", BigDecimal.ZERO, BigDecimal.ZERO, 0.0
     )
     walletsList.forEach {
         if (it.mint == mint) {
@@ -27,8 +28,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
                     depositAddress = depositAddress,
                     decimals = decimals,
                     iconUrl = it.icon,
-                    price = amount.toDouble() / (10.0.pow(decimals)),
-                    amount = amount.toDouble() / (10.0.pow(decimals)),
+                    price = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
+                    total = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
                     walletBinds = 1.0
                 )
             } else {
@@ -39,8 +40,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
                     depositAddress = depositAddress,
                     decimals = decimals,
                     iconUrl = it.icon,
-                    amount = amount.toDouble() / (10.0.pow(decimals)),
-                    price = 0.0,
+                    total = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
+                    price = BigDecimal.ZERO,
                     walletBinds = 0.0
                 )
             }

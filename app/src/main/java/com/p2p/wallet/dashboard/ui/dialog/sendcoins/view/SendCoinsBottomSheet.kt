@@ -34,6 +34,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.math.BigDecimal
 import kotlin.math.pow
 
 class SendCoinsBottomSheet(
@@ -235,7 +236,7 @@ class SendCoinsBottomSheet(
 
             viewModel.getFee()
             viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())
-            val balanceText = getString(R.string.available, it.amount, it.tokenSymbol)
+            val balanceText = getString(R.string.available, it.total, it.tokenSymbol)
             binding.txtAvailableBalance.text = balanceText
             viewModel.setSelectedCurrency(it.tokenSymbol)
             if (it.walletBinds != 0.0) {
@@ -249,11 +250,11 @@ class SendCoinsBottomSheet(
 //            }
 //        })
         viewModel.selectedCurrency.observe(viewLifecycleOwner) {
-            var amount = walletItem?.amount
+            var amount = walletItem?.total
             if (it == "USD") {
-                amount = walletItem?.walletBinds?.let { it1 -> amount?.times(it1) }
+                amount = walletItem?.walletBinds?.let { it1 -> amount?.times(BigDecimal(it1)) }
             }
-            amount?.let { availableAmount -> viewModel.setAvailableAmountInSelectedCurrency(availableAmount) }
+            amount?.let { availableAmount -> viewModel.setAvailableAmountInSelectedCurrency(availableAmount.toDouble()) }
             val balanceText = getString(R.string.available, amount, it)
             binding.txtAvailableBalance.text = balanceText
             viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())
@@ -346,7 +347,7 @@ class SendCoinsBottomSheet(
                         with(binding) {
 
                             val amount =
-                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.amount
+                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.total
                             val decimals =
                                 this@SendCoinsBottomSheet.viewModel.walletItemData.value?.decimals
                             amount?.run {
@@ -359,7 +360,7 @@ class SendCoinsBottomSheet(
                                         } else {
                                             etCount.text.toString().toDouble()
                                         }
-                                        if (amountInTokens < walletItem?.amount!! - feeValue) {
+                                        if (amountInTokens < walletItem?.total!!.toDouble() - feeValue) {
                                             processingDialog = SwapCoinProcessingDialog.newInstance {}
                                             processingDialog?.show(
                                                 childFragmentManager,

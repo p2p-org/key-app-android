@@ -27,7 +27,7 @@
             android:layout_marginHorizontal="32dp"
             android:gravity="center"
             android:text="@string/auth_enter_pin_code"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium20"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
             android:textColor="@color/colorDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

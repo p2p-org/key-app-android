@@ -16,7 +16,7 @@ import com.p2p.wallet.dashboard.ui.view.DashboardFragment
 import com.p2p.wallet.databinding.FragmentPinCodeBinding
 import com.p2p.wallet.deprecated.viewcommand.Command
 import com.p2p.wallet.deprecated.viewcommand.ViewCommand
-import com.p2p.wallet.main.ui.MainFragment
+import com.p2p.wallet.main.ui.main.MainFragment
 import com.p2p.wallet.notification.view.NotificationFragment
 import com.p2p.wallet.restore.ui.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.utils.args

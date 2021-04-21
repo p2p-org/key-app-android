@@ -20,6 +20,7 @@ import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.math.BigDecimal
 import java.util.Locale
 import kotlin.collections.ArrayList
 
@@ -77,7 +78,7 @@ class AddCoinBottomSheet(
                     val filteredList = ArrayList<AddCoinItem>()
                     addCoinItems.forEach {
                         if (it.tokenName.toLowerCase(Locale.ROOT)
-                            .contains(text.toString().toLowerCase(Locale.ROOT))
+                                .contains(text.toString().toLowerCase(Locale.ROOT))
                         ) {
                             filteredList.add(it)
                         }
@@ -99,9 +100,9 @@ class AddCoinBottomSheet(
                         tokenName = it.tokenName,
                         iconUrl = it.icon,
                         depositAddress = walletAddress,
-                        amount = 0.0,
+                        total = BigDecimal.ZERO,
                         decimals = 0,
-                        price = 0.0,
+                        price = BigDecimal.ZERO,
                         walletBinds = 0.0
                     )
                 }

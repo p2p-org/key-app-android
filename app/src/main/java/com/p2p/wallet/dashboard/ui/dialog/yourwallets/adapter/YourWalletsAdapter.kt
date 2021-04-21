@@ -50,8 +50,8 @@ class YourWalletsAdapter(
         fun onBind(item: Token) {
             vCoin.imageSource(item.iconUrl)
             vName.text = item.tokenName
-            vPrice.text = itemView.context.getString(R.string.usd, viewModel.roundCurrencyValue(item.price))
-            vTkns.text = (BigDecimal(item.amount).stripTrailingZeros().toDouble().toString() + " " + item.tokenSymbol)
+            vPrice.text = itemView.context.getString(R.string.usd, viewModel.roundCurrencyValue(item.price.toDouble()))
+            vTkns.text = (item.total.stripTrailingZeros().toDouble().toString() + " " + item.tokenSymbol)
 
             itemView.setOnClickListener { viewModel.selectWalletItem(item) }
         }

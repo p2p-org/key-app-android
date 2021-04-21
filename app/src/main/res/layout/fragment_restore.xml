@@ -78,7 +78,7 @@
             android:background="@drawable/bg_dark_rounded"
             android:text="@string/auth_restore_manually"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

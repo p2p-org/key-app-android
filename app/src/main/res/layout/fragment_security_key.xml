@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/auth_security_key_title" />
+            app:title="@string/auth_security_key_title"
+            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
         <TextView
             android:id="@+id/subTitleTextView"
@@ -70,7 +71,7 @@
             android:gravity="center"
             android:paddingVertical="16dp"
             android:text="@string/auth_copy_to_clipboard"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/colorGray"
             app:layout_constraintTop_toBottomOf="@id/keysRecyclerView" />
 
@@ -98,7 +99,7 @@
             android:foreground="?selectableItemBackground"
             android:text="@string/auth_next"
             android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="UnusedAttribute" />

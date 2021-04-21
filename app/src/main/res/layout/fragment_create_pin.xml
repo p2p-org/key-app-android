@@ -26,11 +26,11 @@
             android:layout_marginHorizontal="32dp"
             android:gravity="center"
             android:text="@string/auth_create_pin_code"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium20"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
             android:textColor="@color/colorDark"
+            app:layout_constraintBottom_toBottomOf="@id/headerGuideline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/headerGuideline" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.p2p.wallet.common.widget.PinView
             android:id="@+id/pinView"

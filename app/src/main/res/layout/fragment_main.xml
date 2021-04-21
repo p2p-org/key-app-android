@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="5dp"
             app:layout_constraintTop_toBottomOf="@id/scanImageView">
@@ -46,20 +46,21 @@
                 android:id="@+id/headerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingVertical="12dp">
 
                     <TextView
                         android:id="@+id/balanceTitleTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="12dp"
                         android:text="@string/main_total_balance"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
 
@@ -68,7 +69,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="8dp"
                         android:text="$ 0.00"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
                         tools:ignore="HardcodedText" />
@@ -78,7 +79,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="8dp"
                         android:text="@string/main_all_tokens"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
                         android:textColor="@color/colorGray" />
@@ -141,14 +142,14 @@
         <View
             android:id="@+id/bottomView"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <ImageView
             android:id="@+id/receiveImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/ic_receive"
             app:layout_constraintEnd_toStartOf="@id/sendImageView"
@@ -158,19 +159,19 @@
 
         <ImageView
             android:id="@+id/sendImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/ic_send"
-            app:layout_constraintEnd_toStartOf="@id/exchangeImageView"
+            app:layout_constraintEnd_toStartOf="@id/swapImageView"
             app:layout_constraintStart_toEndOf="@id/receiveImageView"
             app:layout_constraintTop_toTopOf="@id/receiveImageView"
             tools:ignore="ContentDescription" />
 
         <ImageView
-            android:id="@+id/exchangeImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_exchange"
+            android:id="@+id/swapImageView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_swap"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/sendImageView"
             app:layout_constraintTop_toTopOf="@id/receiveImageView"
@@ -184,6 +185,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@string/main_receive"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
             android:textColor="@color/colorGray"
             app:layout_constraintEnd_toEndOf="@id/receiveImageView"
             app:layout_constraintStart_toStartOf="@id/receiveImageView"
@@ -197,22 +199,24 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@string/main_send"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
             android:textColor="@color/colorGray"
             app:layout_constraintEnd_toEndOf="@id/sendImageView"
             app:layout_constraintStart_toStartOf="@id/sendImageView"
             app:layout_constraintTop_toBottomOf="@id/sendImageView" />
 
         <TextView
-            android:id="@+id/exchangeTextView"
+            android:id="@+id/swapTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@string/main_exchange"
+            android:text="@string/main_swap"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
             android:textColor="@color/colorGray"
-            app:layout_constraintEnd_toEndOf="@id/exchangeImageView"
-            app:layout_constraintStart_toStartOf="@id/exchangeImageView"
-            app:layout_constraintTop_toBottomOf="@id/exchangeImageView" />
+            app:layout_constraintEnd_toEndOf="@id/swapImageView"
+            app:layout_constraintStart_toStartOf="@id/swapImageView"
+            app:layout_constraintTop_toBottomOf="@id/swapImageView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

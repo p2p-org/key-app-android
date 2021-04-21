@@ -58,7 +58,7 @@ class SwapBottomSheet(
         binding.run {
             settingsImageView.setOnClickListener { viewModel.openSlippageSettingsBottomSheet() }
             val text = if (viewModel.isInCryptoCurrency.value == true) {
-                getString(R.string.available_swap, selectedWalletFrom.amount)
+                getString(R.string.available_swap, selectedWalletFrom.total)
             } else {
                 getString(R.string.available_swap, selectedWalletFrom.price)
             }
@@ -90,7 +90,7 @@ class SwapBottomSheet(
                 viewModel.swapFromAmountCurrencyTypes()
             }
 
-            balanceTextView.text = getString(R.string.balance_, selectedWalletFrom.amount)
+            balanceTextView.text = getString(R.string.balance_, selectedWalletFrom.total)
 
             imgTokenTo.setOnClickListener {
                 viewModel.openSelectTokenToSwapBottomSheet()
