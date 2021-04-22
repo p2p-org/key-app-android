@@ -7,18 +7,7 @@ import org.p2p.solanaj.rpc.types.ProgramAccount
 
 object UserConverter {
 
-//    fun fromNetwork(response: ProgramAccount): TokenAccount {
-//        val data = Base58Utils.decode(response.account.data)
-//        val amount = Utils.readInt64(data, 32 + 32)
-//        val mintArray = data.sliceArray(IntRange(0, 32))
-//        return TokenAccount(
-//            depositAddress = response.pubkey,
-//            amount = amount,
-//            mintAddress = Base58Utils.encode(mintArray)
-//        )
-//    }
-
-    fun fromNetwork(response: ProgramAccount): TokenAccount {
+    fun fromNetwork(response: ProgramAccount): TokenProgramAccount {
         val data = Base58Utils.decode(response.account.data)
 
         val mintData = ByteArray(32)
@@ -27,11 +16,11 @@ object UserConverter {
         val mint = Base58Utils.encode(mintData)
         val total = Utils.readInt64(data, 32 + 32)
 
-        return TokenAccount(response.pubkey, total, mint)
+        return TokenProgramAccount(response.pubkey, total, mint)
     }
 
-    fun fromNetwork(data: List<String>): Int {
-        val stringToDecode = data.firstOrNull() ?: return 0
+    fun fromNetwork(decimalsData: List<String>): Int {
+        val stringToDecode = decimalsData.firstOrNull() ?: return 0
         val decodedArray = Base64Utils.decode(stringToDecode)
         return decodedArray[44].toInt()
     }

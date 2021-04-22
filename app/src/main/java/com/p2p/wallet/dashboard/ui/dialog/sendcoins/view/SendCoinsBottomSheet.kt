@@ -254,7 +254,9 @@ class SendCoinsBottomSheet(
             if (it == "USD") {
                 amount = walletItem?.walletBinds?.let { it1 -> amount?.times(BigDecimal(it1)) }
             }
-            amount?.let { availableAmount -> viewModel.setAvailableAmountInSelectedCurrency(availableAmount.toDouble()) }
+            amount?.let { availableAmount ->
+                viewModel.setAvailableAmountInSelectedCurrency(availableAmount.toDouble())
+            }
             val balanceText = getString(R.string.available, amount, it)
             binding.txtAvailableBalance.text = balanceText
             viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())

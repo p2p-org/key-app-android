@@ -1,14 +1,18 @@
-package com.p2p.wallet.user
+package com.p2p.wallet.user.interactor
 
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.infrastructure.network.provider.PublicKeyProvider
 import com.p2p.wallet.infrastructure.security.SecureStorage
+import com.p2p.wallet.main.repository.MainLocalRepository
+import com.p2p.wallet.user.repository.UserRepository
+import kotlinx.coroutines.flow.Flow
 import org.bitcoinj.core.Base58
 
 private const val KEY_SECRET_KEY = "KEY_SECRET_KEY"
 
 class UserInteractor(
     private val userRepository: UserRepository,
+    private val mainLocalRepository: MainLocalRepository,
     private val secureStorage: SecureStorage,
     private val tokenProvider: PublicKeyProvider
 ) {
@@ -23,6 +27,14 @@ class UserInteractor(
         tokenProvider.publicKey = publicKey
     }
 
-    suspend fun loadTokens(targetCurrency: String): List<Token> =
-        userRepository.loadTokens(targetCurrency)
+    suspend fun loadTokens(targetCurrency: String) {
+        val tokens = userRepository.loadTokens(targetCurrency)
+        mainLocalRepository.setTokens(tokens)
+    }
+
+    suspend fun getTokensFlow(): Flow<List<Token>> =
+        mainLocalRepository.getTokensFlow()
+
+    suspend fun getTokens(): List<Token> =
+        mainLocalRepository.getTokens()
 }

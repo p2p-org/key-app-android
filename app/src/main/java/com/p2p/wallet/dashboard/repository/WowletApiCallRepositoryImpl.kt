@@ -5,7 +5,6 @@ import com.p2p.wallet.dashboard.api.RetrofitService
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.BalanceInfo
 import com.p2p.wallet.dashboard.model.local.SendTransactionModel
-import com.p2p.wallet.dashboard.model.local.UserSecretData
 import com.p2p.wallet.common.network.ResponceDataBonfida
 import com.p2p.wallet.dashboard.model.orderbook.OrderBooks
 import com.p2p.wallet.utils.analyzeResponseObject

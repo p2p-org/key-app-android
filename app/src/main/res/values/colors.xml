@@ -54,5 +54,16 @@
     <color name="colorGrayDark">#202020</color>
     <color name="colorDark">#CC000000</color>
 
+    <color name="chartPrimary">#6FECB5</color>
+    <color name="chartBrown">#473733</color>
+    <color name="chartBlue">#3D73C4</color>
+    <color name="chartBlueDark">#3C5CCB</color>
+    <color name="chartBlueSecondary">#677DE3</color>
+    <color name="chartLightBlue">#4BA6BA</color>
+    <color name="chartLightBlueSecondary">#7FD4E3</color>
+    <color name="chartGreen">#4F9E7E</color>
+    <color name="chartOrange">#FEB150</color>
+    <color name="chartPink">#D765A3</color>
+
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/colorGray</color>
 </resources>

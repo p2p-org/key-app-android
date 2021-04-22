@@ -23,7 +23,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
 import com.p2p.wallet.R
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -69,36 +68,39 @@ fun LineChart.initChart(chartList: List<Entry>) {
 }
 
 fun PieChart.drawChart(pieList: List<PieEntry>) {
-    val dataSet = PieDataSet(pieList, "Election Results")
-    dataSet.sliceSpace = 6f
+    val dataSet = PieDataSet(pieList, null)
+    dataSet.sliceSpace = 1f
     dataSet.selectionShift = 15f
 
-    val colors = ArrayList<Int>()
-    for (c in ColorTemplate.VORDIPLOM_COLORS) colors.add(c)
-    for (c in ColorTemplate.JOYFUL_COLORS) colors.add(c)
-    for (c in ColorTemplate.COLORFUL_COLORS) colors.add(c)
-    for (c in ColorTemplate.LIBERTY_COLORS) colors.add(c)
-    for (c in ColorTemplate.PASTEL_COLORS) colors.add(c)
-    colors.add(ColorTemplate.getHoloBlue())
-    dataSet.colors = colors
+    val colorsList = intArrayOf(
+        R.color.chartPrimary,
+        R.color.chartBrown,
+        R.color.chartBlue,
+        R.color.chartBlueDark,
+        R.color.chartBlueSecondary,
+        R.color.chartLightBlue,
+        R.color.chartLightBlueSecondary,
+        R.color.chartGreen,
+        R.color.chartPink,
+        R.color.chartOrange
+    )
+    dataSet.setColors(colorsList, context)
 
     val data = PieData(dataSet)
     data.setDrawValues(false)
 
-    apply {
-        setUsePercentValues(false)
-        setTouchEnabled(false)
-        description.isEnabled = false
-        isDrawHoleEnabled = true
-        setHoleColor(Color.WHITE)
-        holeRadius = 68f
-        setDrawCenterText(false)
-        animateY(500)
-        legend.isEnabled = false
-        setDrawEntryLabels(false)
-        this.data = data
-        invalidate()
-    }
+    setUsePercentValues(true)
+    setTouchEnabled(false)
+    description.isEnabled = false
+    isDrawHoleEnabled = true
+    setHoleColor(Color.WHITE)
+    holeRadius = 70f
+    setDrawCenterText(false)
+    animateY(500)
+    legend.isEnabled = false
+    setDrawEntryLabels(false)
+    this.data = data
+    invalidate()
 }
 
 fun Context.shareText(value: String) {
