@@ -1,8 +1,9 @@
-package com.p2p.wallet.user
+package com.p2p.wallet.user.repository
 
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.infrastructure.network.provider.PublicKeyProvider
 import com.p2p.wallet.main.api.CompareApi
+import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.UserConverter
 import com.p2p.wallet.utils.WalletDataConst
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,7 @@ import java.math.BigDecimal
 interface UserRepository {
     suspend fun createAccount(keys: List<String>): Account
     suspend fun loadSolBalance(): Long
+    suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokens(targetCurrency: String): List<Token>
     suspend fun loadDecimals(publicKey: String): Int
 }
@@ -27,6 +29,11 @@ class UserRepositoryImpl(
 
     override suspend fun createAccount(keys: List<String>): Account = withContext(Dispatchers.IO) {
         Account.fromMnemonic(keys, "")
+    }
+
+    override suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice> {
+        val response = compareApi.getTokensPrice(tokens.joinToString(","), targetCurrency)
+        return emptyList() // todo: the purpose of this is to cache tokens price to quickly update data from memory
     }
 
     /**

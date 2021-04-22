@@ -40,10 +40,10 @@ class MainFragment :
             mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             mainRecyclerView.adapter = mainAdapter
 
-            pieCharView.drawChart(emptyList())
+            mainPieChart.drawChart(emptyList())
 
             refreshLayout.setOnRefreshListener {
-                presenter.loadData(true)
+                presenter.refresh()
             }
 
             receiveImageView.setOnClickListener {
@@ -57,7 +57,7 @@ class MainFragment :
             }
         }
 
-        presenter.loadData(false)
+        presenter.loadData()
     }
 
     override fun showData(tokens: List<Token>, balance: BigDecimal) {
@@ -65,8 +65,8 @@ class MainFragment :
             balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
             mainAdapter.setItems(tokens)
 
-            val pieCharts = tokens.map { PieEntry(it.total.toFloat()) }
-            pieCharView.drawChart(pieCharts)
+            val pieData = tokens.map { PieEntry(it.price.toFloat()) }
+            mainPieChart.drawChart(pieData)
 
             val isEmpty = tokens.isEmpty()
             mainRecyclerView.isVisible = !isEmpty
@@ -76,9 +76,15 @@ class MainFragment :
 
     override fun showLoading(isLoading: Boolean) {
         with(binding) {
-            if (!isLoading) refreshLayout.isRefreshing = false
             progressBar.isVisible = isLoading
             mainRecyclerView.isVisible = !isLoading
+            if (isLoading) emptyTextView.isVisible = false
+        }
+    }
+
+    override fun showRefreshing(isRefreshing: Boolean) {
+        with(binding) {
+            refreshLayout.isRefreshing = isRefreshing
         }
     }
 

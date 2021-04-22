@@ -2,7 +2,7 @@ package com.p2p.wallet.auth.ui.security
 
 import com.p2p.wallet.auth.interactor.SecurityKeyInteractor
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.user.UserInteractor
+import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 

@@ -8,7 +8,6 @@ import com.p2p.wallet.databinding.ItemMyWalletsBinding
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.utils.bindadapter.imageSource
-import java.math.BigDecimal
 
 class YourWalletsAdapter(
     private var list: List<Token>,

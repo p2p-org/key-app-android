@@ -78,7 +78,7 @@ class AddCoinBottomSheet(
                     val filteredList = ArrayList<AddCoinItem>()
                     addCoinItems.forEach {
                         if (it.tokenName.toLowerCase(Locale.ROOT)
-                                .contains(text.toString().toLowerCase(Locale.ROOT))
+                            .contains(text.toString().toLowerCase(Locale.ROOT))
                         ) {
                             filteredList.add(it)
                         }

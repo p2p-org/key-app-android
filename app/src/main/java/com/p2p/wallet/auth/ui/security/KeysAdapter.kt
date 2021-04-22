@@ -3,7 +3,6 @@ package com.p2p.wallet.auth.ui.security
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.databinding.ItemSecurityKeyBinding
 

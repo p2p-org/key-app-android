@@ -10,9 +10,11 @@ interface MainContract {
     interface View : MvpView {
         fun showData(tokens: List<Token>, balance: BigDecimal)
         fun showLoading(isLoading: Boolean)
+        fun showRefreshing(isRefreshing: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadData(isRefreshing: Boolean)
+        fun loadData()
+        fun refresh()
     }
 }
