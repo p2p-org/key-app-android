@@ -103,7 +103,8 @@ class AddCoinBottomSheet(
                         total = BigDecimal.ZERO,
                         decimals = 0,
                         price = BigDecimal.ZERO,
-                        walletBinds = 0.0
+                        walletBinds = 0.0,
+                        color = R.color.chartSOL
                     )
                 }
                 if (it.navigatingBack) return@observe

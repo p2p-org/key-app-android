@@ -48,7 +48,6 @@ import com.p2p.wallet.auth.model.LaunchMode
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.qrscanner.view.QrScannerFragment
 import com.p2p.wallet.utils.OnSwipeTouchListener
-import com.p2p.wallet.utils.drawChart
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
@@ -274,7 +273,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             binding.vPrice.text = getString(R.string.usd_symbol_2, it)
         }
         viewModel.getWalletChart.observe(viewLifecycleOwner) {
-            binding.vPieChartData.drawChart(it)
+//            binding.vPieChartData.drawChart(it)
         }
         viewModel.getWalletData.observe(viewLifecycleOwner) {
             val adapter = WalletsAdapter(viewModel, it) {

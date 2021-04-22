@@ -1,6 +1,8 @@
 package com.p2p.wallet.dashboard.model.local
 
 import android.os.Parcelable
+import androidx.annotation.ColorRes
+import com.p2p.wallet.R
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -16,7 +18,8 @@ data class Token(
     val iconUrl: String,
     val price: BigDecimal,
     val total: BigDecimal,
-    val walletBinds: Double
+    val walletBinds: Double,
+    @ColorRes val color: Int
 ) : Parcelable {
 
     // fixme: remove this after refactoring. We should avoid creating objects with default params
@@ -29,7 +32,8 @@ data class Token(
         "",
         BigDecimal.ZERO,
         BigDecimal.ZERO,
-        0.0
+        0.0,
+        R.color.chartSOL
     )
 
     companion object {
@@ -46,7 +50,8 @@ data class Token(
             decimals = 9,
             total = BigDecimal(amount).divide(BigDecimal(10.0.pow(SOL_DECIMALS))),
             price = BigDecimal.ZERO,
-            walletBinds = 0.0
+            walletBinds = 0.0,
+            color = R.color.chartSOL
         )
     }
 

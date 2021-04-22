@@ -14,7 +14,6 @@ import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.DialogAllMyTokensBinding
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
-import com.p2p.wallet.utils.drawChart
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -56,7 +55,7 @@ class AllMyTokensBottomSheet(
                 dashboardViewModel.getAllWallets()
             }
         }
-        binding.vPieChartData.drawChart(yourWallets.pieChartList)
+//        binding.vPieChartData.drawChart(yourWallets.pieChartList)
         binding.vPrice.text = String.format(getString(R.string.usd_symbol_2), yourWallets.balance)
         dashboardViewModel.getWalletData.observe(
             viewLifecycleOwner,
