@@ -69,7 +69,8 @@ class UserRepositoryImpl(
                     price = account.getFormattedPrice(exchangeRate, decimals),
                     total = account.getAmount(decimals),
                     decimals = decimals,
-                    walletBinds = if (wallet.isUS()) 1.0 else 0.0
+                    walletBinds = if (wallet.isUS()) 1.0 else 0.0,
+                    color = wallet.color
                 )
             }
             .toMutableList()

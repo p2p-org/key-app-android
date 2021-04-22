@@ -2,6 +2,7 @@ package com.p2p.wallet.dashboard.repository
 
 import android.graphics.Bitmap
 import com.github.mikephil.charting.data.Entry
+import com.p2p.wallet.R
 import com.p2p.wallet.common.network.HistoricalPrices
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
@@ -16,7 +17,7 @@ import kotlin.math.pow
 fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
     var walletItem = Token(
         "", "", 0, "",
-        "", "", BigDecimal.ZERO, BigDecimal.ZERO, 0.0
+        "", "", BigDecimal.ZERO, BigDecimal.ZERO, 0.0, R.color.chartSOL
     )
     walletsList.forEach {
         if (it.mint == mint) {
@@ -30,7 +31,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
                     iconUrl = it.icon,
                     price = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
                     total = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
-                    walletBinds = 1.0
+                    walletBinds = 1.0,
+                    color = it.color
                 )
             } else {
                 walletItem = Token(
@@ -42,7 +44,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
                     iconUrl = it.icon,
                     total = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
                     price = BigDecimal.ZERO,
-                    walletBinds = 0.0
+                    walletBinds = 0.0,
+                    color = it.color
                 )
             }
         }

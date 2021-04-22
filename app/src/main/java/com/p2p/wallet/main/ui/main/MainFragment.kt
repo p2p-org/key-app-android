@@ -1,9 +1,12 @@
 package com.p2p.wallet.main.ui.main
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
@@ -11,7 +14,6 @@ import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentMainBinding
 import com.p2p.wallet.main.ui.main.adapter.MainAdapter
 import com.p2p.wallet.main.ui.swap.SwapFragment
-import com.p2p.wallet.utils.drawChart
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
@@ -40,7 +42,7 @@ class MainFragment :
             mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             mainRecyclerView.adapter = mainAdapter
 
-            mainPieChart.drawChart(emptyList())
+            showPieChart(emptyList())
 
             refreshLayout.setOnRefreshListener {
                 presenter.refresh()
@@ -65,12 +67,11 @@ class MainFragment :
             balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
             mainAdapter.setItems(tokens)
 
-            val pieData = tokens.map { PieEntry(it.price.toFloat()) }
-            mainPieChart.drawChart(pieData)
-
             val isEmpty = tokens.isEmpty()
             mainRecyclerView.isVisible = !isEmpty
             emptyTextView.isVisible = isEmpty
+
+            showPieChart(tokens)
         }
     }
 
@@ -85,6 +86,36 @@ class MainFragment :
     override fun showRefreshing(isRefreshing: Boolean) {
         with(binding) {
             refreshLayout.isRefreshing = isRefreshing
+        }
+    }
+
+    @Suppress("MagicNumber")
+    private fun showPieChart(tokens: List<Token>) {
+        val pieData = tokens.map { PieEntry(it.price.toFloat()) }
+        val colors = tokens.map { it.color }.toIntArray()
+
+        binding.mainPieChart.apply {
+            val dataSet = PieDataSet(pieData, null)
+            dataSet.sliceSpace = 1f
+            dataSet.selectionShift = 15f
+
+            dataSet.setColors(colors, context)
+
+            val data = PieData(dataSet)
+            data.setDrawValues(false)
+
+            setUsePercentValues(true)
+            setTouchEnabled(false)
+            description.isEnabled = false
+            isDrawHoleEnabled = true
+            setHoleColor(Color.WHITE)
+            holeRadius = 70f
+            setDrawCenterText(false)
+            animateY(500)
+            legend.isEnabled = false
+            setDrawEntryLabels(false)
+            this.data = data
+            invalidate()
         }
     }
 

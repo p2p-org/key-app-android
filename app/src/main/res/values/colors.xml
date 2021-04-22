@@ -54,16 +54,30 @@
     <color name="colorGrayDark">#202020</color>
     <color name="colorDark">#CC000000</color>
 
-    <color name="chartPrimary">#6FECB5</color>
-    <color name="chartBrown">#473733</color>
-    <color name="chartBlue">#3D73C4</color>
-    <color name="chartBlueDark">#3C5CCB</color>
-    <color name="chartBlueSecondary">#677DE3</color>
-    <color name="chartLightBlue">#4BA6BA</color>
-    <color name="chartLightBlueSecondary">#7FD4E3</color>
-    <color name="chartGreen">#4F9E7E</color>
-    <color name="chartOrange">#FEB150</color>
-    <color name="chartPink">#D765A3</color>
+    <color name="chartSOL">#6FECB5</color>
+    <color name="chartETH">#677DE3</color>
+    <color name="chartSRM">#7FD4E3</color>
+    <color name="chartBTC">#FEB150</color>
+    <color name="chartFTX">#7FCEE2</color>
+    <color name="chartYFI">#006AE3</color>
+    <color name="chartXRP">#24292E</color>
+    <color name="chartUSDT">#4F9E7E</color>
+    <color name="chartUSDC">#3D73C4</color>
+    <color name="chartSUSHI">#D765A3</color>
+    <color name="chartALEPH">#518BE6</color>
+    <color name="chartSXP">#FA7850</color>
+    <color name="chartHGET">#F0CA5D</color>
+    <color name="chartCREAM">#89DFDB</color>
+    <color name="chartUBXT">#4BA6BA</color>
+    <color name="chartHNT">#57A0F8</color>
+    <color name="chartFRONT">#473733</color>
+    <color name="chartLINK">#3C5CCB</color>
+    <color name="chartAKRO">#B85BF4</color>
+    <color name="chartHXRO">#56B838</color>
+    <color name="chartUNI">#FBEBF5</color>
+    <color name="chartMATH">#000000</color>
+    <color name="chartTOMO">#252829</color>
+    <color name="chartLUA">#F1BE5C</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/colorGray</color>
 </resources>

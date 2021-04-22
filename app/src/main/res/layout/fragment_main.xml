@@ -94,6 +94,14 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/headerBarrier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:barrierMargin="-8dp"
+            app:constraint_referenced_ids="headerCardView" />
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
@@ -123,12 +131,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/bottomView"
-            app:layout_constraintTop_toBottomOf="@id/headerCardView">
+            app:layout_constraintTop_toBottomOf="@id/headerBarrier">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mainRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:overScrollMode="never"
                 tools:listitem="@layout/item_wallet" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
