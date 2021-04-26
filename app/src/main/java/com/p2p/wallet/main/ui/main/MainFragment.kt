@@ -13,6 +13,7 @@ import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentMainBinding
 import com.p2p.wallet.main.ui.main.adapter.MainAdapter
+import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.swap.SwapFragment
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -49,6 +50,7 @@ class MainFragment :
             }
 
             receiveImageView.setOnClickListener {
+                replaceFragment(ReceiveFragment.create())
             }
 
             sendImageView.setOnClickListener {

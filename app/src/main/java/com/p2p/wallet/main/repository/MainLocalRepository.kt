@@ -5,10 +5,10 @@ import com.p2p.wallet.main.model.TokenPrice
 import kotlinx.coroutines.flow.Flow
 
 interface MainLocalRepository {
-    fun setTokens(tokens: List<Token>)
-    fun getTokensFlow(): Flow<List<Token>>
-    fun getTokens(): List<Token>
+    suspend fun setTokens(tokens: List<Token>)
+    suspend fun getTokensFlow(): Flow<List<Token>>
+    suspend fun getTokens(): List<Token>
 
-    fun setTokenPrices(tokens: List<TokenPrice>)
-    fun getTokenPrices(): List<TokenPrice>
+    suspend fun setTokenPrices(tokens: List<TokenPrice>)
+    suspend fun getTokenPrices(): List<TokenPrice>
 }

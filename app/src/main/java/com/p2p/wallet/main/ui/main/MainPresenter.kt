@@ -2,6 +2,8 @@ package com.p2p.wallet.main.ui.main
 
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.user.interactor.UserInteractor
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -16,51 +18,36 @@ class MainPresenter(
         private const val BALANCE_CURRENCY = "USD"
     }
 
-    init {
-        launch {
-            userInteractor.getTokensFlow().collect { tokens ->
-                val balance = tokens
-                    .map { it.price }
-                    .fold(BigDecimal.ZERO, BigDecimal::add)
-                    .setScale(2, RoundingMode.HALF_EVEN)
-
-                view?.showData(tokens, balance)
-            }
-        }
-    }
-
     override fun loadData() {
+        view?.showLoading(true)
         launch {
             try {
-                /**
-                 * Loading tokens from remote is expensive, we are caching all data and fetching from remote on refresh
-                 * */
-                val tokens = userInteractor.getTokens()
-                if (tokens.isNotEmpty()) {
+                userInteractor.getTokensFlow().collect { tokens ->
                     val balance = tokens
                         .map { it.price }
                         .fold(BigDecimal.ZERO, BigDecimal::add)
                         .setScale(2, RoundingMode.HALF_EVEN)
-                    view?.showData(tokens, balance)
-                    return@launch
-                }
 
-                view?.showLoading(true)
-                userInteractor.loadTokens(BALANCE_CURRENCY)
+                    view?.showData(tokens, balance)
+                    view?.showLoading(false)
+                    view?.showRefreshing(false)
+                }
+            } catch (e: CancellationException) {
+                Timber.d("Loading tokens job cancelled")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading user data")
                 view?.showErrorMessage(e)
-            } finally {
-                view?.showLoading(false)
             }
         }
     }
 
     override fun refresh() {
         view?.showRefreshing(true)
-        launch {
+        GlobalScope.launch {
             try {
                 userInteractor.loadTokens(BALANCE_CURRENCY)
+            } catch (e: CancellationException) {
+                Timber.d("Loading tokens job cancelled")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading user data")
                 view?.showErrorMessage(e)
