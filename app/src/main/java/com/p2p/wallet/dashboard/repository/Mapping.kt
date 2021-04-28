@@ -17,7 +17,7 @@ import kotlin.math.pow
 fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
     var walletItem = Token(
         "", "", 0, "",
-        "", "", BigDecimal.ZERO, BigDecimal.ZERO, 0.0, R.color.chartSOL
+        "", "", BigDecimal.ZERO, BigDecimal.ZERO, 0.0, R.color.chartSOL, BigDecimal.ZERO
     )
     walletsList.forEach {
         if (it.mint == mint) {
@@ -32,7 +32,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
                     price = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
                     total = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
                     walletBinds = 1.0,
-                    color = it.color
+                    color = it.color,
+                    exchangeRate = BigDecimal.ZERO
                 )
             } else {
                 walletItem = Token(
@@ -45,7 +46,8 @@ fun BalanceInfo.walletToWallet(walletsList: List<ConstWallet>): Token {
                     total = BigDecimal(amount.toDouble() / (10.0.pow(decimals))),
                     price = BigDecimal.ZERO,
                     walletBinds = 0.0,
-                    color = it.color
+                    color = it.color,
+                    exchangeRate = BigDecimal.ZERO
                 )
             }
         }

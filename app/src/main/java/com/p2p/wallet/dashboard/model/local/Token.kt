@@ -19,7 +19,8 @@ data class Token(
     val price: BigDecimal,
     val total: BigDecimal,
     val walletBinds: Double,
-    @ColorRes val color: Int
+    @ColorRes val color: Int,
+    val exchangeRate: BigDecimal
 ) : Parcelable {
 
     // fixme: remove this after refactoring. We should avoid creating objects with default params
@@ -33,7 +34,8 @@ data class Token(
         BigDecimal.ZERO,
         BigDecimal.ZERO,
         0.0,
-        R.color.chartSOL
+        R.color.chartSOL,
+        BigDecimal.ZERO
     )
 
     companion object {
@@ -51,7 +53,8 @@ data class Token(
             total = BigDecimal(amount).divide(BigDecimal(10.0.pow(SOL_DECIMALS))),
             price = BigDecimal.ZERO,
             walletBinds = 0.0,
-            color = R.color.chartSOL
+            color = R.color.chartSOL,
+            exchangeRate = BigDecimal.ZERO
         )
     }
 
@@ -69,4 +72,6 @@ data class Token(
     fun getFormattedPrice(): String = "${price.setScale(2, RoundingMode.HALF_EVEN)} $"
 
     fun getFormattedTotal(): String = "$total $tokenSymbol"
+
+    fun getFormattedExchangeRate(): String = "${exchangeRate.setScale(2, RoundingMode.HALF_EVEN)}"
 }

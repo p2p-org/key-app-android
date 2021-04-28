@@ -1,9 +1,11 @@
 package com.p2p.wallet.main.ui.main
 
 import com.p2p.wallet.common.mvp.BasePresenter
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -18,19 +20,21 @@ class MainPresenter(
         private const val BALANCE_CURRENCY = "USD"
     }
 
+    private var job: Job? = null
+
     override fun loadData() {
         view?.showLoading(true)
-        launch {
+        job?.cancel()
+        job = launch {
             try {
                 userInteractor.getTokensFlow().collect { tokens ->
-                    val balance = tokens
-                        .map { it.price }
-                        .fold(BigDecimal.ZERO, BigDecimal::add)
-                        .setScale(2, RoundingMode.HALF_EVEN)
+                    if (tokens.isNotEmpty()) {
+                        val balance = mapBalance(tokens)
 
-                    view?.showData(tokens, balance)
-                    view?.showLoading(false)
-                    view?.showRefreshing(false)
+                        view?.showData(tokens, balance)
+                        view?.showLoading(false)
+                        view?.showRefreshing(false)
+                    }
                 }
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")
@@ -40,6 +44,12 @@ class MainPresenter(
             }
         }
     }
+
+    private fun mapBalance(tokens: List<Token>): BigDecimal =
+        tokens
+            .map { it.price }
+            .fold(BigDecimal.ZERO, BigDecimal::add)
+            .setScale(2, RoundingMode.HALF_EVEN)
 
     override fun refresh() {
         view?.showRefreshing(true)

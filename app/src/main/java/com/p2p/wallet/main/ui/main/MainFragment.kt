@@ -12,8 +12,9 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentMainBinding
-import com.p2p.wallet.main.ui.main.adapter.MainAdapter
+import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
+import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.main.ui.swap.SwapFragment
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -32,8 +33,8 @@ class MainFragment :
 
     private val binding: FragmentMainBinding by viewBinding()
 
-    private val mainAdapter: MainAdapter by lazy {
-        MainAdapter { onTokenClicked(it) }
+    private val mainAdapter: TokenAdapter by lazy {
+        TokenAdapter { onTokenClicked(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,6 +55,7 @@ class MainFragment :
             }
 
             sendImageView.setOnClickListener {
+                replaceFragment(SendFragment.create())
             }
 
             swapImageView.setOnClickListener {

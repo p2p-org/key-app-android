@@ -1,7 +1,7 @@
 package com.p2p.wallet.user.repository
 
 import com.p2p.wallet.dashboard.model.local.Token
-import com.p2p.wallet.infrastructure.network.provider.PublicKeyProvider
+import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.UserConverter
@@ -19,12 +19,13 @@ interface UserRepository {
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokens(targetCurrency: String): List<Token>
     suspend fun loadDecimals(publicKey: String): Int
+    suspend fun getPriceByToken(fromToken: String, toToken: String): BigDecimal
 }
 
 class UserRepositoryImpl(
     private val client: RpcClient,
     private val compareApi: CompareApi,
-    private val tokenProvider: PublicKeyProvider
+    private val tokenProvider: TokenKeyProvider
 ) : UserRepository {
 
     override suspend fun createAccount(keys: List<String>): Account = withContext(Dispatchers.IO) {
@@ -70,7 +71,8 @@ class UserRepositoryImpl(
                     total = account.getAmount(decimals),
                     decimals = decimals,
                     walletBinds = if (wallet.isUS()) 1.0 else 0.0,
-                    color = wallet.color
+                    color = wallet.color,
+                    exchangeRate = exchangeRate
                 )
             }
             .toMutableList()
@@ -78,9 +80,12 @@ class UserRepositoryImpl(
                 sortByDescending { it.total }
             }
 
+        /*
+        * Assuming that SOL is our default token
+        * */
         val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
-        val solRate = getPriceByToken(sol.tokenSymbol, targetCurrency)
-        result.add(0, sol.copy(price = sol.total.times(solRate)))
+        val solExchangeRate = getPriceByToken(sol.tokenSymbol, targetCurrency)
+        result.add(0, sol.copy(price = sol.total.times(solExchangeRate), exchangeRate = solExchangeRate))
         return@withContext result
     }
 
@@ -89,6 +94,6 @@ class UserRepositoryImpl(
         UserConverter.fromNetwork(response.value.data ?: emptyList())
     }
 
-    private suspend fun getPriceByToken(fromToken: String, toToken: String): BigDecimal =
-        BigDecimal(compareApi.getUSPrice(fromToken, toToken).value)
+    override suspend fun getPriceByToken(fromToken: String, toToken: String): BigDecimal =
+        compareApi.getUSPrice(fromToken, toToken).value.toBigDecimal()
 }

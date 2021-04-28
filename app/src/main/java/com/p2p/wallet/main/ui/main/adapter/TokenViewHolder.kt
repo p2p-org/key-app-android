@@ -8,7 +8,7 @@ import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.ItemWalletBinding
 import com.p2p.wallet.utils.dip
 
-class MainViewHolder(
+class TokenViewHolder(
     binding: ItemWalletBinding,
     private val onItemClicked: (Token) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
