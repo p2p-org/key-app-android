@@ -59,6 +59,11 @@ class SignInPinFragment :
         presenter.checkIfBiometricAvailable()
     }
 
+    override fun onStop() {
+        super.onStop()
+        presenter.stopTimer()
+    }
+
     override fun showBiometricDialog(cipher: Cipher) {
         biometricWrapper.authenticate(cipher)
     }
@@ -82,9 +87,13 @@ class SignInPinFragment :
         binding.pinView.startErrorAnimation(message)
     }
 
-    override fun showWalletLocked() {
-        val message = getString(R.string.auth_locked_message)
+    override fun showWalletLocked(seconds: Long) {
+        val message = getString(R.string.auth_locked_message, seconds.toString())
         binding.pinView.showLockedState(message)
+    }
+
+    override fun showWalletUnlocked() {
+        binding.pinView.showUnlockedState()
     }
 
     override fun vibrate(duration: Long) {

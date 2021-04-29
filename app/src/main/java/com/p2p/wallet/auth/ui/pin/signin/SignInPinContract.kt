@@ -10,7 +10,8 @@ interface SignInPinContract {
         fun onLogout()
         fun showBiometricDialog(cipher: Cipher)
         fun showWrongPinError(attemptsLeft: Int)
-        fun showWalletLocked()
+        fun showWalletLocked(seconds: Long)
+        fun showWalletUnlocked()
         fun showLoading(isLoading: Boolean)
         fun vibrate(duration: Long)
         fun clearPin()
@@ -21,6 +22,7 @@ interface SignInPinContract {
         fun signInByBiometric(cipher: Cipher)
         fun onBiometricSignInRequested()
         fun checkIfBiometricAvailable()
+        fun stopTimer()
         fun logout()
     }
 }

@@ -194,6 +194,7 @@
         app:layout_constraintTop_toBottomOf="@id/middleDividerView" />
 
     <View
+        android:id="@+id/addressBackgroundView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="20dp"
@@ -203,7 +204,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/addressEditText" />
 
-    <EditText
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/addressEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -214,22 +215,26 @@
         android:inputType="text"
         android:padding="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        app:layout_constraintEnd_toStartOf="@id/scanImageView"
+        app:layout_constraintEnd_toStartOf="@id/endIconBarrier"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toTextView"
-        tools:ignore="Autofill" />
+        app:layout_constraintTop_toBottomOf="@id/toTextView" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/endIconBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="start"
+        app:constraint_referenced_ids="scanImageView,clearImageView" />
 
     <ImageView
         android:id="@+id/scanImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
         android:padding="12dp"
         android:src="@drawable/ic_qr_code"
-        app:layout_constraintBottom_toBottomOf="@id/addressEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/addressEditText"
-        app:layout_constraintTop_toTopOf="@id/addressEditText"
+        app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"
+        app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"
+        app:layout_constraintTop_toTopOf="@id/addressBackgroundView"
         app:tint="@color/colorGray"
         tools:ignore="ContentDescription" />
 
@@ -237,14 +242,12 @@
         android:id="@+id/clearImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
         android:padding="8dp"
         android:src="@drawable/ic_close"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/addressEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/addressEditText"
-        app:layout_constraintTop_toTopOf="@id/addressEditText"
+        app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"
+        app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"
+        app:layout_constraintTop_toTopOf="@id/addressBackgroundView"
         app:tint="@color/colorGray"
         tools:ignore="ContentDescription" />
 
@@ -270,6 +273,16 @@
         android:layout_marginTop="20dp"
         android:background="@color/colorGray"
         app:layout_constraintTop_toBottomOf="@id/errorTextView" />
+
+    <ProgressBar
+        android:id="@+id/buttonProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/sendButton"
+        app:layout_constraintEnd_toEndOf="@id/sendButton"
+        app:layout_constraintStart_toStartOf="@id/sendButton"
+        app:layout_constraintTop_toTopOf="@id/sendButton" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/sendButton"

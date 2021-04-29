@@ -13,16 +13,16 @@ import androidx.core.widget.doOnTextChanged
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
+import com.p2p.wallet.common.network.Constants
+import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.ui.dialog.SendCoinDoneDialog
+import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
+import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
+import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.WalletAddressViewModel
 import com.p2p.wallet.dashboard.ui.dialog.yourwallets.YourWalletsBottomSheet
 import com.p2p.wallet.dashboard.ui.view.DashboardFragment
 import com.p2p.wallet.databinding.FragmentSendCoinsBinding
 import com.p2p.wallet.deprecated.viewcommand.Command
-import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
-import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
-import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.WalletAddressViewModel
-import com.p2p.wallet.common.network.Constants
-import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.qrscanner.view.QrScannerFragment
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wallet.utils.popBackStack
@@ -229,20 +229,20 @@ class SendCoinsBottomSheet(
         viewModel.isInsertedMoreThanAvailable.observe(viewLifecycleOwner) {
             binding.sendCoinButton.isEnabled = !it
         }
-        viewModel.walletItemData.observe(viewLifecycleOwner) {
-            if (it.tokenSymbol == "") return@observe
-            binding.imgWalletData.imageSourceRadiusDp(it.iconUrl, 16)
-            binding.txtToken.text = it.tokenSymbol
-
-            viewModel.getFee()
-            viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())
-            val balanceText = getString(R.string.available, it.total, it.tokenSymbol)
-            binding.txtAvailableBalance.text = balanceText
-            viewModel.setSelectedCurrency(it.tokenSymbol)
-            if (it.walletBinds != 0.0) {
-                isUserOwnScannedWallet = true
-            }
-        }
+//        viewModel.walletItemData.observe(viewLifecycleOwner) {
+//            if (it.tokenSymbol == "") return@observe
+//            binding.imgWalletData.imageSourceRadiusDp(it.iconUrl, 16)
+//            binding.txtToken.text = it.tokenSymbol
+//
+//            viewModel.getFee()
+//            viewModel.setInputCountInTokens(requireContext(), binding.etCount.text.toString())
+//            val balanceText = getString(R.string.available, it.total, it.tokenSymbol)
+//            binding.txtAvailableBalance.text = balanceText
+//            viewModel.setSelectedCurrency(it.tokenSymbol)
+//            if (it.walletBinds != 0.0) {
+//                isUserOwnScannedWallet = true
+//            }
+//        }
 //        viewModel.savedWalletItemData.observe(viewLifecycleOwner, {
 //            if (it.depositAddress.isNotEmpty()) {
 //                walletItem = it
@@ -348,10 +348,10 @@ class SendCoinsBottomSheet(
                     is Command.SendCoinViewCommand -> {
                         with(binding) {
 
-                            val amount =
-                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.total
-                            val decimals =
-                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.decimals
+                            val amount = BigDecimal.ONE
+//                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.total
+                            val decimals = BigDecimal.ONE
+//                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.decimals
                             amount?.run {
                                 decimals?.run {
                                     if (walletAddress?.isNotEmpty() == true && etCount.text.toString()
@@ -378,7 +378,8 @@ class SendCoinsBottomSheet(
                                             this@SendCoinsBottomSheet.viewModel.sendCoin(
                                                 walletAddress!!,
                                                 lamprots.toLong(),
-                                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.tokenSymbol!!
+                                                ""
+//                                                this@SendCoinsBottomSheet.viewModel.walletItemData.value?.tokenSymbol!!
                                             )
                                         } else {
                                             if (isUserOwnScannedWallet) {

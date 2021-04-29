@@ -2,14 +2,28 @@ package com.p2p.wallet.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+
+fun View.requireActivity(): AppCompatActivity {
+    var context: Context = context
+    while (context is ContextWrapper) {
+        if (context is AppCompatActivity) {
+            return context
+        }
+        context = context.baseContext
+    }
+
+    throw IllegalStateException("View is not attached to any activity")
+}
 
 fun Activity.hideKeyboard() {
     currentFocus?.hideKeyboard()

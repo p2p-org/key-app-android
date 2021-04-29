@@ -23,12 +23,12 @@ class TokenKeyProvider(
             Base58Utils.decodeToString(result)
         }
         set(value) {
-            field = value
-            runBlocking {
-                val result = Base58Utils.encodeFromString(value)
-                secureStorage.saveString(KEY_PUBLIC_KEY, result)
+                field = value
+                runBlocking {
+                    val result = Base58Utils.encodeFromString(value)
+                    secureStorage.saveString(KEY_PUBLIC_KEY, result)
+                }
             }
-        }
 
     var secretKey: ByteArray =
         runBlocking {
@@ -36,12 +36,12 @@ class TokenKeyProvider(
             Base58Utils.decode(result)
         }
         set(value) {
-            field = value
-            runBlocking {
-                val result = Base58Utils.encode(value)
-                secureStorage.saveString(KEY_SECRET_KEY, result)
+                field = value
+                runBlocking {
+                    val result = Base58Utils.encode(value)
+                    secureStorage.saveString(KEY_SECRET_KEY, result)
+                }
             }
-        }
 
     val programPublicKey: String =
         context.getString(R.string.programPublicKey)

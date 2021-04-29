@@ -273,10 +273,14 @@
     <string name="common_retry">Retry</string>
     <string name="common_yes">Yes</string>
     <string name="common_no">No</string>
+    <string name="common_done">Done</string>
 
     <!-- Error messages -->
+    <string name="error_title">Error occurred</string>
+    <string name="error_general_title">Unknown error</string>
     <string name="error_general_message">Something went wrong, try again later</string>
-    <string name="error_network_message">No internet connection</string>
+    <string name="error_network_title">Connection error</string>
+    <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
 
     <!-- Valid resource has prefix, all above will be deleted -->
     <string name="auth_username_title">Let’s started by reserving your P2P username</string>
@@ -312,7 +316,7 @@
     <string name="auth_biometric_question">Use biometric for quick access?</string>
     <string name="auth_pin_codes_match_error">PIN-codes do not match</string>
     <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
-    <string name="auth_locked_message">We’ve locked your wallet, try again in a 15 minutes or reset it with a seed phrase.</string>
+    <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
 
@@ -341,4 +345,13 @@
     <string name="main_single_value_format">1 %s:</string>
     <string name="main_fee">Fee:</string>
     <string name="main_share">Share</string>
+    <string name="main_send_to_yourself_error">You can not send tokens to yourself</string>
+    <string name="main_send_transaction_id">Transaction ID</string>
+    <string name="main_send_view_in_explorer">View in blockchain explorer</string>
+    <string name="main_send_success">Success</string>
+    <string name="main_send_transaction_confirmed">Transaction has been confirmed</string>
+    <string name="main_send_wrong_wallet">Wrong wallet address</string>
+    <string name="main_send_wrong_wallet_message">Check entered wallet address and try again.</string>
+    <string name="main_receive_public_address">Your public %s address</string>
+    <string name="main_receive_mint_address">%s mint address</string>
 </resources>

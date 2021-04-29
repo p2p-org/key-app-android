@@ -8,7 +8,7 @@ class ServerException(
     errorMessage: String?
 ) : IOException("statusCode: $errorCode, errorMessage: $errorMessage") {
 
-    private val description: String = errorDescription ?: errorMessage.orEmpty()
+    private val description: String? = errorDescription ?: errorMessage
 
     fun getErrorDescription() = description
 }

@@ -16,6 +16,7 @@ import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.main.ui.swap.SwapFragment
+import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
@@ -42,9 +43,7 @@ class MainFragment :
 
         with(binding) {
             mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            mainRecyclerView.adapter = mainAdapter
-
-            showPieChart(emptyList())
+            mainRecyclerView.attachAdapter(mainAdapter)
 
             refreshLayout.setOnRefreshListener {
                 presenter.refresh()

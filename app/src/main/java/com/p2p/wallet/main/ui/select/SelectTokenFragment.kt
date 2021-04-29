@@ -11,6 +11,7 @@ import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentSelectTokenBinding
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.utils.args
+import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
@@ -42,7 +43,7 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            tokenRecyclerView.adapter = tokenAdapter
+            tokenRecyclerView.attachAdapter(tokenAdapter)
 
             tokenAdapter.setItems(tokens)
         }

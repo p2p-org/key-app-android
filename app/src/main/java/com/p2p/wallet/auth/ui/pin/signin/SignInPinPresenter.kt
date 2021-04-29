@@ -1,5 +1,6 @@
 package com.p2p.wallet.auth.ui.pin.signin
 
+import android.os.CountDownTimer
 import com.p2p.wallet.auth.interactor.AuthInteractor
 import com.p2p.wallet.auth.model.BiometricStatus
 import com.p2p.wallet.auth.model.SignInResult
@@ -12,11 +13,16 @@ import javax.crypto.Cipher
 private const val VIBRATE_DURATION = 500L
 private const val PIN_CODE_ATTEMPT_COUNT = 3
 
+private const val TIMER_MILLIS = 10000L
+private const val TIMER_INTERVAL = 1000L
+
 class SignInPinPresenter(
     private val authInteractor: AuthInteractor,
 ) : BasePresenter<SignInPinContract.View>(), SignInPinContract.Presenter {
 
     private var wrongPinCounter = 0
+
+    private var timer: CountDownTimer? = null
 
     override fun signIn(pinCode: String) {
         signInActual {
@@ -54,7 +60,12 @@ class SignInPinPresenter(
         }
     }
 
+    override fun stopTimer() {
+        timer?.cancel()
+    }
+
     override fun logout() {
+        timer?.cancel()
         authInteractor.logout()
         view?.onLogout()
     }
@@ -83,16 +94,43 @@ class SignInPinPresenter(
                 wrongPinCounter++
 
                 if (wrongPinCounter >= PIN_CODE_ATTEMPT_COUNT) {
-                    view?.showWalletLocked()
+                    startTimer()
                     view?.vibrate(VIBRATE_DURATION)
+                    view?.clearPin()
                     return
                 }
 
                 view?.showWrongPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
                 view?.vibrate(VIBRATE_DURATION)
             }
-            is SignInResult.Success ->
+            is SignInResult.Success -> {
+                timer?.cancel()
                 view?.onSignInSuccess()
+            }
         } ?: Unit
+    }
+
+    private fun startTimer() {
+        timer = object : CountDownTimer(TIMER_MILLIS, TIMER_INTERVAL) {
+
+            @SuppressWarnings("MagicNumber")
+            override fun onTick(millisUntilFinished: Long) {
+                val remainingInSeconds = millisUntilFinished / 1000L
+                val seconds = remainingInSeconds % 60
+                view?.showWalletLocked(seconds)
+            }
+
+            override fun onFinish() {
+                wrongPinCounter = 0
+                view?.showWalletUnlocked()
+                view?.showLoading(false)
+            }
+        }.start()
+    }
+
+    override fun detach() {
+        timer?.cancel()
+        timer = null
+        super.detach()
     }
 }

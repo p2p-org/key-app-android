@@ -53,14 +53,14 @@ class YourWalletsBottomSheet(
                 adapter.updateList(it)
             }
         )
-        sendCoinsViewModel.walletItemData.observe(
-            viewLifecycleOwner,
-            {
-                if (it.tokenSymbol.isNotEmpty()) {
-                    itemWallet.invoke(it)
-                    dismiss()
-                }
-            }
-        )
+//        sendCoinsViewModel.walletItemData.observe(
+//            viewLifecycleOwner,
+//            {
+//                if (it.tokenSymbol.isNotEmpty()) {
+//                    itemWallet.invoke(it)
+//                    dismiss()
+//                }
+//            }
+//        )
     }
 }

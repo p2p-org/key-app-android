@@ -23,21 +23,6 @@ data class Token(
     val exchangeRate: BigDecimal
 ) : Parcelable {
 
-    // fixme: remove this after refactoring. We should avoid creating objects with default params
-    constructor() : this(
-        "",
-        "",
-        0,
-        "",
-        "",
-        "",
-        BigDecimal.ZERO,
-        BigDecimal.ZERO,
-        0.0,
-        R.color.chartSOL,
-        BigDecimal.ZERO
-    )
-
     companion object {
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9

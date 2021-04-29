@@ -4,14 +4,19 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.FragmentResultListener
 import com.bumptech.glide.Glide
 import com.p2p.wallet.R
+import com.p2p.wallet.common.bottomsheet.ErrorBottomSheet
+import com.p2p.wallet.common.bottomsheet.TextContainer
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentSendBinding
+import com.p2p.wallet.main.ui.info.TransactionInfo
+import com.p2p.wallet.main.ui.info.TransactionStatusBottomSheet
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.popBackStack
@@ -38,7 +43,7 @@ class SendFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             sendButton.setOnClickListener {
                 val address = addressEditText.text.toString()
-                val amount = amountEditText.text.toString().toDoubleOrNull() ?: return@setOnClickListener
+                val amount = amountEditText.text.toString().toBigDecimalOrNull() ?: return@setOnClickListener
                 presenter.sendToken(address, amount)
             }
         }
@@ -60,14 +65,18 @@ class SendFragment :
         addFragment(
             target = SelectTokenFragment.create(tokens),
             enter = R.anim.slide_up,
-            exit = R.anim.slide_down,
-            popExit = 0,
+            exit = 0,
+            popExit = R.anim.slide_down,
             popEnter = 0
         )
     }
 
-    override fun showSuccess() {
-
+    override fun showSuccess(info: TransactionInfo) {
+        TransactionStatusBottomSheet.show(
+            fragment = this,
+            info = info,
+            onDismiss = { popBackStack() }
+        )
     }
 
     @SuppressLint("SetTextI18n")
@@ -90,7 +99,7 @@ class SendFragment :
 
                 aroundTextView.text = getString(R.string.main_send_around_in_usd, around)
 
-                val isEnabled = amount == BigDecimal.ZERO || !isMoreThanBalance
+                val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance
                 sendButton.isEnabled = isEnabled && addressEditText.text.toString().isNotEmpty()
             }
 
@@ -103,13 +112,37 @@ class SendFragment :
                 sendButton.isEnabled = !isEmpty && amountEditText.text.toString().isNotEmpty()
             }
 
+            clearImageView.setOnClickListener {
+                addressEditText.text?.clear()
+            }
+
+            scanImageView.setOnClickListener {
+                // todo: open scanner
+            }
+
             sourceImageView.setOnClickListener {
                 presenter.loadTokensForSelection()
             }
         }
     }
 
+    override fun showLoading(isLoading: Boolean) {
+        with(binding) {
+            sendButton.isInvisible = isLoading
+            buttonProgressBar.isVisible = isLoading
+        }
+    }
+
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+    }
+
+    override fun showWrongWalletError() {
+        ErrorBottomSheet.show(
+            fragment = this,
+            iconRes = R.drawable.ic_wallet_error,
+            title = TextContainer(R.string.main_send_wrong_wallet),
+            message = TextContainer(R.string.main_send_wrong_wallet_message)
+        )
     }
 }
