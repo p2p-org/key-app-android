@@ -17,6 +17,6 @@ object UserModule : InjectionModule {
             val compareApi = get<Retrofit>(named("cryptocompare")).create(CompareApi::class.java)
             UserRepositoryImpl(get(), compareApi, get())
         } bind UserRepository::class
-        single { UserInteractor(get(), get(), get(), get()) }
+        single { UserInteractor(get(), get(), get()) }
     }
 }

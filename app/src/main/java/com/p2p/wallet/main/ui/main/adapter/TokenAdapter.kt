@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.dashboard.model.local.Token
 
-class MainAdapter(
+class TokenAdapter(
     private val onItemClicked: (Token) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -19,9 +19,9 @@ class MainAdapter(
     override fun getItemCount(): Int = data.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        MainViewHolder(parent, onItemClicked)
+        TokenViewHolder(parent, onItemClicked)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as MainViewHolder).onBind(data[position])
+        (holder as TokenViewHolder).onBind(data[position])
     }
 }

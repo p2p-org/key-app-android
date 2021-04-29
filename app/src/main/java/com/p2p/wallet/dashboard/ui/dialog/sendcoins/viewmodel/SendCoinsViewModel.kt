@@ -107,7 +107,8 @@ class SendCoinsViewModel(
             walletBinds = 0.0,
             price = BigDecimal.ZERO,
             total = BigDecimal.ZERO,
-            color = R.color.chartSOL
+            color = R.color.chartSOL,
+            exchangeRate = BigDecimal.ZERO
         )
         _walletItemData.value = walletItem
     }

@@ -7,7 +7,7 @@ import com.google.gson.JsonParser
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
-import com.p2p.wallet.infrastructure.network.provider.PublicKeyProvider
+import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -26,7 +26,7 @@ object NetworkModule : InjectionModule {
     private const val DEFAULT_READ_TIMEOUT_SECONDS = 60L
 
     override fun create() = module {
-        single { PublicKeyProvider(get(), get()) }
+        single { TokenKeyProvider(get(), get(), get()) }
 
         single {
             GsonBuilder()

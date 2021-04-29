@@ -321,6 +321,7 @@
     <string name="main_receive">Receive</string>
     <string name="main_send">Send</string>
     <string name="main_usd_format">$ %s</string>
+    <string name="main_usd_end_format">%s $</string>
     <string name="main_all_tokens">All tokens</string>
     <string name="main_no_data">You have no wallets yet</string>
     <string name="main_swap">Swap</string>
@@ -329,4 +330,15 @@
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
     <string name="main_swap_now">Swap now</string>
+    <string name="main_send_now">Send now</string>
+    <string name="main_send_to">Send to</string>
+    <string name="main_wallet_address">Wallet address</string>
+    <string name="main_send_token_info">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
+    <string name="main_send_in_usd">%s USD</string>
+    <string name="main_send_around_in_usd">≈ %s USD</string>
+    <string name="main_send_available">Available: %s</string>
+    <string name="main_select_token">Select token</string>
+    <string name="main_single_value_format">1 %s:</string>
+    <string name="main_fee">Fee:</string>
+    <string name="main_share">Share</string>
 </resources>
