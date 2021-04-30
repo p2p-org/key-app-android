@@ -19,7 +19,6 @@ import com.p2p.wallet.dashboard.model.local.QrWalletType
 import com.p2p.wallet.dashboard.model.local.SendTransactionModel
 import com.p2p.wallet.dashboard.model.local.UserWalletType
 import com.p2p.wallet.dashboard.model.local.Token
-import com.p2p.wallet.utils.roundToThousandsCurrencyValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,8 +36,8 @@ class SendCoinsViewModel(
     private val _getWalletData by lazy { MutableLiveData<List<Token>>() }
     val getWalletData: LiveData<List<Token>> get() = _getWalletData
 
-    private val _walletItemData by lazy { MutableLiveData<Token>(Token()) }
-    val walletItemData: LiveData<Token> get() = _walletItemData
+//    private val _walletItemData by lazy { MutableLiveData<Token>(Token()) }
+//    val walletItemData: LiveData<Token> get() = _walletItemData
 
     val inputCount: MutableLiveData<String> by lazy { MutableLiveData("") }
 
@@ -57,8 +56,8 @@ class SendCoinsViewModel(
     private val _feeErrorLiveData by lazy { MutableLiveData<String>() }
     val feeErrorLiveData: LiveData<String> get() = _feeErrorLiveData
 
-    private val _savedWalletItemData by lazy { MutableLiveData(Token()) }
-    val savedWalletItemData: LiveData<Token> get() = _savedWalletItemData
+//    private val _savedWalletItemData by lazy { MutableLiveData(Token()) }
+//    val savedWalletItemData: LiveData<Token> get() = _savedWalletItemData
 
     private val _selectedCurrency by lazy { MutableLiveData("--") }
     val selectedCurrency: LiveData<String> get() = _selectedCurrency
@@ -93,7 +92,7 @@ class SendCoinsViewModel(
     }
 
     fun selectWalletItem(item: Token) {
-        _walletItemData.value = item
+//        _walletItemData.value = item
     }
 
     fun selectFromConstWalletItems(item: QrWalletType) {
@@ -110,7 +109,7 @@ class SendCoinsViewModel(
             color = R.color.chartSOL,
             exchangeRate = BigDecimal.ZERO
         )
-        _walletItemData.value = walletItem
+//        _walletItemData.value = walletItem
     }
 
     fun sendCoinCommand() {
@@ -159,7 +158,7 @@ class SendCoinsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             when (val data = sendCoinInteractor.getWalletItem()) {
                 is Result.Success -> withContext(Dispatchers.Main) {
-                    _savedWalletItemData.value = data.data
+//                    _savedWalletItemData.value = data.data
                 }
                 is Result.Error -> withContext(Dispatchers.Main) {
                     Log.e("TAG", "getWalletData: ${data.errors.errorCode}")
@@ -191,38 +190,38 @@ class SendCoinsViewModel(
             return
         }
         val inputCountDouble: Double = inputCount.toDouble()
-        val walletBinding: Double? = _walletItemData.value?.walletBinds
-        if (walletBinding == null || walletBinding == 0.0) {
-            _inputCountInTokens.value = ""
-            return
-        }
+//        val walletBinding: Double? = _walletItemData.value?.walletBinds
+//        if (walletBinding == null || walletBinding == 0.0) {
+//            _inputCountInTokens.value = ""
+//            return
+//        }
 
         var currency = ""
         val inputCoinInTokens = if (_selectedCurrency.value == "USD") {
-            currency = _walletItemData.value?.tokenSymbol.toString()
-            inputCountDouble.div(walletBinding)
+//            currency = _walletItemData.value?.tokenSymbol.toString()
+//            inputCountDouble.div(walletBinding)
         } else {
             currency = "USD"
-            inputCountDouble.times(walletBinding)
+//            inputCountDouble.times(walletBinding)
         }
-        val inputCoinInTokensString = context.getString(R.string.around_amount_sol, inputCoinInTokens, currency)
-        _inputCountInTokens.value = inputCoinInTokensString
+//        val inputCoinInTokensString = context.getString(R.string.around_amount_sol, inputCoinInTokens, currency)
+//        _inputCountInTokens.value = inputCoinInTokensString
     }
 
     fun insertAllBalance() {
-        val yourBalance: Double = walletItemData.value?.total?.toDouble() ?: 0.0
-        val walletBinds: Double = walletItemData.value?.walletBinds ?: 0.0
+//        val yourBalance: Double = walletItemData.value?.total?.toDouble() ?: 0.0
+//        val walletBinds: Double = walletItemData.value?.walletBinds ?: 0.0
         val balance = if (_selectedCurrency.value == "USD") {
-            (yourBalance * walletBinds).roundToThousandsCurrencyValue()
+//            (yourBalance * walletBinds).roundToThousandsCurrencyValue()
         } else {
-            yourBalance
+//            yourBalance
         }
-        inputCount.value = balance.toBigDecimal().toString()
+//        inputCount.value = balance.toBigDecimal().toString()
     }
 
     fun toggleInsertAmountCurrency() {
         if (_selectedCurrency.value == "USD") {
-            _selectedCurrency.value = walletItemData.value?.tokenSymbol
+//            _selectedCurrency.value = walletItemData.value?.tokenSymbol
         } else {
             _selectedCurrency.value = "USD"
         }

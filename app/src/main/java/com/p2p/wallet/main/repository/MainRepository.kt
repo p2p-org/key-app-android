@@ -4,5 +4,5 @@ import org.p2p.solanaj.rpc.types.TransferInfo
 
 interface MainRepository {
     suspend fun sendToken(targetAddress: String, lamports: Long, tokenSymbol: String): String
-    suspend fun getTransaction(signature: String, slot: Long): TransferInfo?
+    suspend fun getTransaction(signature: String, slot: Long = 0): TransferInfo?
 }

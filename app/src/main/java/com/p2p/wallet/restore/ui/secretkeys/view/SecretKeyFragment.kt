@@ -12,6 +12,7 @@ import com.p2p.wallet.databinding.FragmentSecretKeyBinding
 import com.p2p.wallet.restore.ui.secretkeys.adapter.SecretPhraseAdapter
 import com.p2p.wallet.restore.ui.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.restore.ui.secretkeys.viewmodel.SecretKeyViewModel
+import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -40,7 +41,7 @@ class SecretKeyFragment : BaseFragment(R.layout.fragment_secret_key) {
                 requireContext().hideSoftKeyboard(this@SecretKeyFragment)
             }
 
-            keysRecyclerView.adapter = phraseAdapter
+            keysRecyclerView.attachAdapter(phraseAdapter)
 
             phraseEditText.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {

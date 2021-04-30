@@ -7,6 +7,7 @@ import com.p2p.wallet.dashboard.DashboardModule
 import com.p2p.wallet.infrastructure.InfrastructureModule
 import com.p2p.wallet.infrastructure.network.NetworkModule
 import com.p2p.wallet.main.MainModule
+import com.p2p.wallet.qr.QrModule
 import com.p2p.wallet.restore.BackupModule
 import com.p2p.wallet.root.RootModule
 import com.p2p.wallet.user.UserModule
@@ -35,6 +36,7 @@ class App : Application() {
                     UserModule.create(),
                     MainModule.create(),
                     NetworkModule.create(),
+                    QrModule.create(),
                     DashboardModule.create(),
                     CommonModule.create(),
                     InfrastructureModule.create()

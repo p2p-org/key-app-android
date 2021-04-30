@@ -79,6 +79,18 @@ class PinView @JvmOverloads constructor(
         }
     }
 
+    fun showUnlockedState() {
+        with(binding) {
+            keyboardView.isEnabled = true
+            pinCodeView.isVisible = true
+            progressBar.isVisible = true
+
+            messageTextView.isVisible = false
+            messageTextView.text = ""
+            resetButton.isVisible = false
+        }
+    }
+
     fun setFingerprintVisible(isVisible: Boolean) {
         binding.keyboardView.setLeftButtonVisible(isVisible)
     }

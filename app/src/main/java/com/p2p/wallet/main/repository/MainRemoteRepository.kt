@@ -22,7 +22,7 @@ class MainRemoteRepository(
         withContext(Dispatchers.IO) {
             val sourcePublicKey = PublicKey(tokenProvider.publicKey)
             val targetPublicKey = PublicKey(targetAddress)
-            val signer = Account()
+            val signer = Account(tokenProvider.secretKey)
 
             val transaction = Transaction()
             transaction.addInstruction(

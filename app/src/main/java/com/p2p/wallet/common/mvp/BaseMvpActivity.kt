@@ -23,10 +23,10 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
     }
 
     override fun showErrorMessage(messageRes: Int) {
-        showInfoDialog(messageRes, this)
+        showInfoDialog(messageRes = messageRes)
     }
 
     override fun showErrorMessage(e: Throwable?) {
-        showInfoDialog(e, this)
+        showInfoDialog(e)
     }
 }

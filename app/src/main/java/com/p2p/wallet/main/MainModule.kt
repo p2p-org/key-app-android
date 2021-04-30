@@ -20,13 +20,13 @@ import org.koin.dsl.module
 object MainModule : InjectionModule {
 
     override fun create() = module {
-        single { MainInteractor(get()) }
+        single { MainInteractor(get(), get()) }
         single { MainInMemoryRepository() } bind MainLocalRepository::class
         single { MainRemoteRepository(get(), get()) } bind MainRepository::class
         single { MainPresenter(get()) } bind MainContract.Presenter::class
 
         factory { SwapPresenter() } bind SwapContract.Presenter::class
-        factory { ReceivePresenter(get()) } bind ReceiveContract.Presenter::class
+        factory { ReceivePresenter(get(), get(), get()) } bind ReceiveContract.Presenter::class
         factory { SendPresenter(get(), get()) } bind SendContract.Presenter::class
     }
 }
