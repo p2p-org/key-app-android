@@ -274,6 +274,11 @@
     <string name="common_yes">Yes</string>
     <string name="common_no">No</string>
     <string name="common_done">Done</string>
+    <string name="common_settings">Settings</string>
+
+    <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
+    <string name="camera_permission_alert_title">Permission required</string>
+    <string name="camera_permission_not_granted">Camera permission denied</string>
 
     <!-- Error messages -->
     <string name="error_title">Error occurred</string>
@@ -354,4 +359,11 @@
     <string name="main_send_wrong_wallet_message">Check entered wallet address and try again.</string>
     <string name="main_receive_public_address">Your public %s address</string>
     <string name="main_receive_mint_address">%s mint address</string>
+
+    <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
+    <string name="qr_scan_hint">Scan QR</string>
+    <string name="qr_give_camera_permission">Grant camera permission</string>
+    <string name="qr_try_again">Invalid QR, please try again</string>
+    <string name="qr_invalid">Invalid QR</string>
+
 </resources>

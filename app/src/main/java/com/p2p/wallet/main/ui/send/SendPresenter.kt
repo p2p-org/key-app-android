@@ -65,6 +65,11 @@ class SendPresenter(
         }
     }
 
+    override fun onAmountChanged(amount: BigDecimal) {
+        val token = token ?: return
+        view?.updateState(token, amount)
+    }
+
     private fun handleResult(result: TransactionResult) {
         when (result) {
             is TransactionResult.Success -> {

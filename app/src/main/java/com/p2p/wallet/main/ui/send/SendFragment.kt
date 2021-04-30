@@ -3,6 +3,7 @@ package com.p2p.wallet.main.ui.send
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -18,6 +19,7 @@ import com.p2p.wallet.databinding.FragmentSendBinding
 import com.p2p.wallet.main.ui.info.TransactionInfo
 import com.p2p.wallet.main.ui.info.TransactionStatusBottomSheet
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
+import com.p2p.wallet.qr.ScanQrFragment
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -45,6 +47,42 @@ class SendFragment :
                 val address = addressEditText.text.toString()
                 val amount = amountEditText.text.toString().toBigDecimalOrNull() ?: return@setOnClickListener
                 presenter.sendToken(address, amount)
+            }
+
+            addressEditText.doAfterTextChanged {
+                val isEmpty = it.toString().isEmpty()
+
+                scanImageView.isVisible = isEmpty
+                clearImageView.isVisible = !isEmpty
+
+                sendButton.isEnabled = !isEmpty && amountEditText.text.toString().isNotEmpty()
+            }
+
+            amountEditText.doAfterTextChanged {
+                val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+                presenter.onAmountChanged(amount)
+            }
+
+            clearImageView.setOnClickListener {
+                addressEditText.text?.clear()
+            }
+
+            scanImageView.setOnClickListener {
+                addFragment(
+                    ScanQrFragment.create(
+                        successCallback = {
+                            addressEditText.text?.clear()
+                            addressEditText.setText(it)
+                        },
+                        errorCallback = {
+                            Toast.makeText(requireContext(), R.string.qr_invalid, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                )
+            }
+
+            sourceImageView.setOnClickListener {
+                presenter.loadTokensForSelection()
             }
         }
 
@@ -79,6 +117,21 @@ class SendFragment :
         )
     }
 
+    override fun updateState(token: Token, amount: BigDecimal) {
+        with(binding) {
+            val around = token.exchangeRate.times(amount)
+
+            val isMoreThanBalance = amount > token.total
+            val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
+            availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
+
+            aroundTextView.text = getString(R.string.main_send_around_in_usd, around)
+
+            val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance
+            sendButton.isEnabled = isEnabled && addressEditText.text.toString().isNotEmpty()
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     override fun showSourceToken(token: Token) {
         with(binding) {
@@ -101,27 +154,6 @@ class SendFragment :
 
                 val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance
                 sendButton.isEnabled = isEnabled && addressEditText.text.toString().isNotEmpty()
-            }
-
-            addressEditText.doAfterTextChanged {
-                val isEmpty = it.toString().isEmpty()
-
-                scanImageView.isVisible = isEmpty
-                clearImageView.isVisible = !isEmpty
-
-                sendButton.isEnabled = !isEmpty && amountEditText.text.toString().isNotEmpty()
-            }
-
-            clearImageView.setOnClickListener {
-                addressEditText.text?.clear()
-            }
-
-            scanImageView.setOnClickListener {
-                // todo: open scanner
-            }
-
-            sourceImageView.setOnClickListener {
-                presenter.loadTokensForSelection()
             }
         }
     }

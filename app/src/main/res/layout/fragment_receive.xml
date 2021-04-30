@@ -98,8 +98,8 @@
 
     <ImageView
         android:id="@+id/qrImageView"
-        android:layout_width="210dp"
-        android:layout_height="210dp"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

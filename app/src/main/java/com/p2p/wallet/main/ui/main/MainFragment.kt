@@ -45,6 +45,8 @@ class MainFragment :
             mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             mainRecyclerView.attachAdapter(mainAdapter)
 
+            showPieChart(emptyList())
+
             refreshLayout.setOnRefreshListener {
                 presenter.refresh()
             }

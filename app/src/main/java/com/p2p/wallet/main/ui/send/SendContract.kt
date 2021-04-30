@@ -14,6 +14,7 @@ interface SendContract {
         fun showWrongWalletError()
         fun navigateToTokenSelection(tokens: List<Token>)
         fun showFullScreenLoading(isLoading: Boolean)
+        fun updateState(token: Token, amount: BigDecimal)
         fun showLoading(isLoading: Boolean)
     }
 
@@ -22,5 +23,6 @@ interface SendContract {
         fun loadInitialData()
         fun loadTokensForSelection()
         fun setSourceToken(newToken: Token)
+        fun onAmountChanged(amount: BigDecimal)
     }
 }
