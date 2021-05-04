@@ -12,10 +12,12 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentMainBinding
+import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.main.ui.swap.SwapFragment
+import com.p2p.wallet.settings.ui.SettingsFragment
 import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -47,6 +49,10 @@ class MainFragment :
 
             showPieChart(emptyList())
 
+            settingsImageView.setOnClickListener {
+                replaceFragment(SettingsFragment.create())
+            }
+
             refreshLayout.setOnRefreshListener {
                 presenter.refresh()
             }
@@ -67,7 +73,7 @@ class MainFragment :
         presenter.loadData()
     }
 
-    override fun showData(tokens: List<Token>, balance: BigDecimal) {
+    override fun showData(tokens: List<TokenItem>, balance: BigDecimal) {
         with(binding) {
             balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
             mainAdapter.setItems(tokens)
@@ -76,7 +82,8 @@ class MainFragment :
             mainRecyclerView.isVisible = !isEmpty
             emptyTextView.isVisible = isEmpty
 
-            showPieChart(tokens)
+            val pieChart = tokens.mapNotNull { (it as? TokenItem.Shown)?.token }
+            showPieChart(pieChart)
         }
     }
 
@@ -125,5 +132,6 @@ class MainFragment :
     }
 
     private fun onTokenClicked(token: Token) {
+        // todo: navigate to details
     }
 }

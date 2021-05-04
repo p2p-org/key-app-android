@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorGraySecondary"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/settings_title"
+        app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+
+    <LinearLayout
+        android:id="@+id/zeroBalanceView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/white"
+        android:foreground="?selectableItemBackground"
+        android:orientation="horizontal"
+        tools:ignore="UnusedAttribute">
+
+        <TextView
+            android:id="@+id/zeroBalanceTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:text="@string/settings_hide_zero_balances"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            app:drawableStartCompat="@drawable/ic_hide" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/hideZeroSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="16dp"
+            android:checked="true"
+            android:clickable="false"
+            android:focusable="false" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/logoutTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/white"
+        android:drawablePadding="16dp"
+        android:foreground="?selectableItemBackground"
+        android:padding="16dp"
+        android:text="@string/auth_logout"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+        app:drawableEndCompat="@drawable/ic_arrow_right"
+        app:drawableStartCompat="@drawable/ic_logout"
+        tools:ignore="UnusedAttribute" />
+
+    <TextView
+        android:id="@+id/versionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textColor="@color/colorGray"
+        tools:text="App version: 1.0.0" />
+
+</LinearLayout>

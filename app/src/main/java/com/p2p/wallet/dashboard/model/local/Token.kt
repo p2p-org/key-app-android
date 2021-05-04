@@ -3,6 +3,7 @@ package com.p2p.wallet.dashboard.model.local
 import android.os.Parcelable
 import androidx.annotation.ColorRes
 import com.p2p.wallet.R
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -42,6 +43,10 @@ data class Token(
             exchangeRate = BigDecimal.ZERO
         )
     }
+
+    @IgnoredOnParcel
+    val isZero: Boolean
+        get() = total == BigDecimal.ZERO
 
     @Suppress("MagicNumber")
     fun getFormattedAddress(): String {

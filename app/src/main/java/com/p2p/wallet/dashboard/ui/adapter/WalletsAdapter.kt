@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
-import com.p2p.wallet.databinding.ItemWalletBinding
+import com.p2p.wallet.databinding.ItemTokenBinding
 
 class WalletsAdapter(
     private val viewModel: DashboardViewModel,
@@ -16,7 +16,7 @@ class WalletsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-        val bind = ItemWalletBinding.inflate(
+        val bind = ItemTokenBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -49,7 +49,7 @@ class WalletsAdapter(
     }
 
     inner class MyViewHolder(
-        val binding: ItemWalletBinding
+        val binding: ItemTokenBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
 //        private val itemWalletView = binding.itemWalletView

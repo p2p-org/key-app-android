@@ -1,4 +1,4 @@
-package com.p2p.wallet.qr
+package com.p2p.wallet.qr.model
 
 import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat

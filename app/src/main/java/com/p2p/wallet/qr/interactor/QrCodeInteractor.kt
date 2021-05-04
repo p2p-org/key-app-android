@@ -1,7 +1,9 @@
-package com.p2p.wallet.qr
+package com.p2p.wallet.qr.interactor
 
 import android.graphics.Bitmap
 import com.google.zxing.BarcodeFormat
+import com.p2p.wallet.qr.model.BarcodeEncoder
+import com.p2p.wallet.qr.model.QrColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

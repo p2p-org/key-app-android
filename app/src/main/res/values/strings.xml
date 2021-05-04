@@ -324,6 +324,7 @@
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
+    <string name="auth_logout">Logout</string>
 
     <!-- Main -->
     <string name="main_total_balance">Total balance</string>
@@ -365,5 +366,9 @@
     <string name="qr_give_camera_permission">Grant camera permission</string>
     <string name="qr_try_again">Invalid QR, please try again</string>
     <string name="qr_invalid">Invalid QR</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_hide_zero_balances">Hide zero balances</string>
+    <string name="main_hidden_wallets">%d hidden wallets</string>
+    <string name="main_hide">Hide</string>
 
 </resources>

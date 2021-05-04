@@ -19,7 +19,7 @@ import com.p2p.wallet.databinding.FragmentSendBinding
 import com.p2p.wallet.main.ui.info.TransactionInfo
 import com.p2p.wallet.main.ui.info.TransactionStatusBottomSheet
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
-import com.p2p.wallet.qr.ScanQrFragment
+import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding

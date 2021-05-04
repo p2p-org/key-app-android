@@ -126,5 +126,5 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_5"
-        tools:listitem="@layout/item_wallet" />
+        tools:listitem="@layout/item_token" />
 </androidx.appcompat.widget.LinearLayoutCompat>

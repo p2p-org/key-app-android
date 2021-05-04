@@ -138,7 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:overScrollMode="never"
-                tools:listitem="@layout/item_wallet" />
+                tools:listitem="@layout/item_token" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <View

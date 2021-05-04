@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/hiddenView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="horizontal">
+
+        <!-- fixme: We have wrong size icon, temporary correcting the size by padding -->
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:padding="19dp"
+            android:src="@drawable/ic_show"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/groupTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:gravity="center_vertical"
+            android:paddingVertical="12dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textColor="@color/colorGray"
+            tools:ignore="UnusedAttribute"
+            tools:text="3 hidden wallets" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/shownView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:src="@drawable/ic_hide"
+            app:tint="@color/colorDark"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:gravity="center_vertical"
+            android:paddingVertical="12dp"
+            android:text="@string/main_hide"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textColor="@color/colorDark" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/hiddenRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_token"
+        tools:visibility="visible" />
+</LinearLayout>

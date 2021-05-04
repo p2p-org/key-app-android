@@ -9,6 +9,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentSelectTokenBinding
+import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.attachAdapter
@@ -45,7 +46,8 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokenRecyclerView.attachAdapter(tokenAdapter)
 
-            tokenAdapter.setItems(tokens)
+            val data = tokens.map { TokenItem.Shown(it) }
+            tokenAdapter.setItems(data)
         }
     }
 }

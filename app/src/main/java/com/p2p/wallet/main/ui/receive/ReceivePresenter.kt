@@ -3,8 +3,8 @@ package com.p2p.wallet.main.ui.receive
 import android.graphics.Bitmap
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.dashboard.model.local.Token
-import com.p2p.wallet.qr.QrCodeInteractor
-import com.p2p.wallet.qr.QrColors
+import com.p2p.wallet.qr.interactor.QrCodeInteractor
+import com.p2p.wallet.qr.model.QrColors
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

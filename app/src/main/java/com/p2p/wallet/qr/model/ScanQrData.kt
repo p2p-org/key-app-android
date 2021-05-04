@@ -1,4 +1,4 @@
-package com.p2p.wallet.qr
+package com.p2p.wallet.qr.model
 
 sealed class ScanQrData {
     class Success(val data: String) : ScanQrData()
