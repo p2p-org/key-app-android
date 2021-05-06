@@ -23,7 +23,7 @@ object MainModule : InjectionModule {
         single { MainInteractor(get(), get()) }
         single { MainInMemoryRepository() } bind MainLocalRepository::class
         single { MainRemoteRepository(get(), get()) } bind MainRepository::class
-        single { MainPresenter(get()) } bind MainContract.Presenter::class
+        single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
 
         factory { SwapPresenter() } bind SwapContract.Presenter::class
         factory { ReceivePresenter(get(), get(), get()) } bind ReceiveContract.Presenter::class

@@ -16,7 +16,7 @@ object PermissionsUtil {
 
     fun isGranted(context: Context, permission: String): Boolean =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-                ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
 
     fun getPermissionStatus(activity: Activity, permission: String): PermissionState {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
