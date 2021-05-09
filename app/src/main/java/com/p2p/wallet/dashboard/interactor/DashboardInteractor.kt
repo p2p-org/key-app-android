@@ -11,9 +11,7 @@ import com.p2p.wallet.dashboard.model.local.AddCoinModel
 import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.dashboard.model.local.LocalWalletItem
 import com.p2p.wallet.dashboard.model.local.YourWallets
-import com.p2p.wallet.dashboard.repository.DashboardRepository
 import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
-import com.p2p.wallet.dashboard.repository.fromConstWalletToAddCoinItem
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.WalletDataConst
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +27,6 @@ import kotlin.math.pow
 
 @Deprecated("Too complex logic, should be refactored")
 class DashboardInteractor(
-    private val dashboardRepository: DashboardRepository,
     private val wowletApiCallRepository: WowletApiCallRepository
 ) {
     private var walletData: MutableList<Token> = mutableListOf()
@@ -49,15 +46,15 @@ class DashboardInteractor(
         addCoinData.clear()
         coroutineScope {
 
-            dashboardRepository.getConstWallets().map { walletsItem ->
-
-                addCoinData.add(
-                    walletsItem.fromConstWalletToAddCoinItem(
-                        0.0,
-                        0.0,
-                        0.0
-                    )
-                )
+//            dashboardRepository.getConstWallets().map { walletsItem ->
+//
+//                addCoinData.add(
+//                    walletsItem.fromConstWalletToAddCoinItem(
+//                        0.0,
+//                        0.0,
+//                        0.0
+//                    )
+//                )
 
 //                async(Dispatchers.IO) {
 //                    when (val historicalPrice =
@@ -95,7 +92,7 @@ class DashboardInteractor(
 //                    }
 //
 //                }
-            } // .awaitAll()
+//            } // .awaitAll()
 
             for (wallet in walletData) {
                 for (addCoinItem in addCoinData) {
