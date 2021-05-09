@@ -8,20 +8,14 @@ import androidx.core.view.isInvisible
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.model.LaunchMode
 import com.p2p.wallet.auth.ui.done.AuthDoneFragment
-import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.auth.ui.pincode.adapter.PinButtonAdapter
 import com.p2p.wallet.auth.ui.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wallet.common.mvp.BaseFragment
-import com.p2p.wallet.dashboard.ui.view.DashboardFragment
 import com.p2p.wallet.databinding.FragmentPinCodeBinding
-import com.p2p.wallet.deprecated.viewcommand.Command
-import com.p2p.wallet.deprecated.viewcommand.ViewCommand
-import com.p2p.wallet.main.ui.main.MainFragment
 import com.p2p.wallet.restore.ui.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.isFingerPrintSet
 import com.p2p.wallet.utils.openFingerprintDialog
-import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
@@ -114,7 +108,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         viewModel.pinCodeSuccess.observe(viewLifecycleOwner) {
             if (isFingerprintEnabled) {
                 if (isBackupDialog)
-                    replaceFragment(DashboardFragment.create(true))
+//                    replaceFragment(DashboardFragment.create(true))
                 else
                     viewModel.notificationStatus()
             } else {
@@ -122,7 +116,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
 //                    replaceFragment(FingerPrintFragment())
                 } else {
                     if (isBackupDialog)
-                        replaceFragment(DashboardFragment.create(true))
+//                        replaceFragment(DashboardFragment.create(true))
                     else
                         viewModel.notificationStatus()
                 }
@@ -186,16 +180,16 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         }
         viewModel.openFingerprintDialog.observe(viewLifecycleOwner) {
             openFingerprintDialog {
-                replaceFragment(DashboardFragment.create(true))
+//                replaceFragment(DashboardFragment.create(true))
 
 //                else
 //                    replaceFragment(FingerPrintFragment())
             }
         }
 
-        viewModel.command.observe(viewLifecycleOwner) {
-            processViewCommand(it)
-        }
+//        viewModel.command.observe(viewLifecycleOwner) {
+//            processViewCommand(it)
+//        }
 
 //        binding.pinView.createPinCode = {
 //            viewModel.initCode(it)
@@ -205,18 +199,18 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
 //        }
     }
 
-    private fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is Command.NavigateSecretKeyViewCommand -> replaceFragment(SecretKeyFragment())
+//    private fun processViewCommand(command: ViewCommand) {
+//        when (command) {
+//            is Command.NavigateSecretKeyViewCommand -> replaceFragment(SecretKeyFragment())
 //            is Command.NavigateFingerPrintViewCommand -> replaceFragment(FingerPrintFragment())
 //            is Command.NavigateNotificationViewCommand -> replaceFragment(NotificationFragment())
-            is Command.NavigateRegLoginViewCommand -> replaceFragment(OnboardingFragment())
-            is Command.NavigateRegFinishViewCommand -> replaceFragment(AuthDoneFragment())
-            is Command.OpenMainActivityViewCommand -> {
-                popAndReplaceFragment(MainFragment.create(), inclusive = true)
-            }
-        }
-    }
+//            is Command.NavigateRegLoginViewCommand -> replaceFragment(OnboardingFragment())
+//            is Command.NavigateRegFinishViewCommand -> replaceFragment(AuthDoneFragment())
+//            is Command.OpenMainActivityViewCommand -> {
+//                popAndReplaceFragment(MainFragment.create(), inclusive = true)
+//            }
+//        }
+//    }
 
 //    override fun navigateUp() {
 //        if (isSplashScreen)

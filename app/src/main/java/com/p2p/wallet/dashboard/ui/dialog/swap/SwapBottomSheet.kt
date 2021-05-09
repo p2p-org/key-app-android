@@ -4,23 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.ui.dialog.SendCoinDoneDialog
-import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
-import com.p2p.wallet.dashboard.ui.dialog.swap.dialog.SelectTokenToSwapBottomSheet
-import com.p2p.wallet.dashboard.ui.dialog.swap.dialog.SlippageSettingsBottomSheet
-import com.p2p.wallet.dashboard.ui.dialog.swap.utils.enableDecimalInputTextWatcher
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wallet.databinding.BottomSheetSwapBinding
-import com.p2p.wallet.deprecated.viewcommand.Command
-import com.p2p.wallet.deprecated.viewcommand.ViewCommand
-import com.p2p.wallet.dialog.utils.makeFullScreen
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDpWithDefault
-import com.p2p.wallet.utils.toast
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -130,9 +123,9 @@ class SwapBottomSheet(
         }
     }
 
-    private fun processViewCommand(command: ViewCommand) {
-        when (command) {
-            is Command.OpenMyWalletDialogViewCommand -> {
+//    private fun processViewCommand(command: ViewCommand) {
+//        when (command) {
+//            is Command.OpenMyWalletDialogViewCommand -> {
 //                YourWalletsBottomSheet.newInstance(
 //                    getString(R.string.select_source)
 //                ) {
@@ -141,75 +134,85 @@ class SwapBottomSheet(
 //                    childFragmentManager,
 //                    YourWalletsBottomSheet.YOUR_WALLET
 //                )
-            }
-            is Command.OpenSelectTokenToSwapBottomSheet -> {
-                SelectTokenToSwapBottomSheet.newInstance(
-                    selectedWalletFrom,
-                    allMyWallets
-                ) {
-                    viewModel.setSelectedWalletTo(it)
-                }.show(
-                    childFragmentManager,
-                    SelectTokenToSwapBottomSheet.TAG_SELECT_TOKEN_TO_SWAP
-                )
-            }
-            is Command.OpenSlippageSettingsBottomSheet -> {
-                SlippageSettingsBottomSheet.newInstance {
-                    toast("Slippage is $it%")
-                    dialog?.makeFullScreen(binding.root, this)
-                }.show(
-                    childFragmentManager,
-                    SlippageSettingsBottomSheet.TAG_SLIPPAGE_SETTINGS
-                )
-            }
-            is Command.SwapCoinProcessingViewCommand -> {
-                val swapCoinProcessingDialog: SwapCoinProcessingDialog =
-                    SwapCoinProcessingDialog.newInstance() {
-                        // viewModel.openDoneDialog(command.)
-                    }
-                swapCoinProcessingDialog.show(
-                    childFragmentManager,
-                    SwapCoinProcessingDialog.SWAP_COIN_PROGRESS
-                )
-            }
-            is Command.SendCoinDoneViewCommand -> {
-                val sendCoinDone: SendCoinDoneDialog =
-                    SendCoinDoneDialog.newInstance(
-                        command.transactionInfo
-                    ) {
-                        dismiss()
-                    }
-
-                sendCoinDone.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
-            }
+//            }
+//            is Command.OpenSelectTokenToSwapBottomSheet -> {
+//                SelectTokenToSwapBottomSheet.newInstance(
+//                    selectedWalletFrom,
+//                    allMyWallets
+//                ) {
+//                    viewModel.setSelectedWalletTo(it)
+//                }.show(
+//                    childFragmentManager,
+//                    SelectTokenToSwapBottomSheet.TAG_SELECT_TOKEN_TO_SWAP
+//                )
+//            }
+//            is Command.OpenSlippageSettingsBottomSheet -> {
+//                SlippageSettingsBottomSheet.newInstance {
+//                    toast("Slippage is $it%")
+//                    dialog?.makeFullScreen(binding.root, this)
+//                }.show(
+//                    childFragmentManager,
+//                    SlippageSettingsBottomSheet.TAG_SLIPPAGE_SETTINGS
+//                )
+//            }
+//            is Command.SwapCoinProcessingViewCommand -> {
+//                val swapCoinProcessingDialog: SwapCoinProcessingDialog =
+//                    SwapCoinProcessingDialog.newInstance() {
+//                        // viewModel.openDoneDialog(command.)
+//                    }
+//                swapCoinProcessingDialog.show(
+//                    childFragmentManager,
+//                    SwapCoinProcessingDialog.SWAP_COIN_PROGRESS
+//                )
+//            }
+//            is Command.SendCoinDoneViewCommand -> {
+//                val sendCoinDone: SendCoinDoneDialog =
+//                    SendCoinDoneDialog.newInstance(
+//                        command.transactionInfo
+//                    ) {
+//                        dismiss()
+//                    }
+//
+//                sendCoinDone.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
+//            }
         }
-    }
+//    }
 
     private fun initObserves() {
-        viewModel.command.observe(viewLifecycleOwner) {
-            processViewCommand(it)
-        }
-        viewModel.selectedWalletFrom.observe(viewLifecycleOwner) {
-            selectedWalletFrom = it
-            updateData()
-        }
-        viewModel.selectedWalletTo.observe(viewLifecycleOwner) {
-            viewModel.makeDialogFullScreen()
-            viewModel.setAmountOfConvertingToken(binding.edtAmountFrom.text.toString())
-            updateData()
-        }
-        viewModel.selectedWalletTo.observe(viewLifecycleOwner) {
-            binding.swapButton.isEnabled = it != null
-        }
-        viewModel.amount.observe(viewLifecycleOwner) {
-            viewModel.setAroundToCurrency(it)
-            viewModel.setAmountOfConvertingToken(it)
-        }
-        viewModel.makeDialogFullScreen.observe(viewLifecycleOwner) {
-            dialog?.makeFullScreen(binding.root, this)
-        }
-        viewModel.insufficientFoundsError.observe(viewLifecycleOwner) {
-            toast("Insufficient founds")
+//        viewModel.command.observe(viewLifecycleOwner) {
+//            processViewCommand(it)
+//        }
+//        viewModel.selectedWalletFrom.observe(viewLifecycleOwner) {
+//            selectedWalletFrom = it
+//            updateData()
+//        }
+//        viewModel.selectedWalletTo.observe(viewLifecycleOwner) {
+//            viewModel.makeDialogFullScreen()
+//            viewModel.setAmountOfConvertingToken(binding.edtAmountFrom.text.toString())
+//            updateData()
+//        }
+//        viewModel.selectedWalletTo.observe(viewLifecycleOwner) {
+//            binding.swapButton.isEnabled = it != null
+//        }
+//        viewModel.amount.observe(viewLifecycleOwner) {
+//            viewModel.setAroundToCurrency(it)
+//            viewModel.setAmountOfConvertingToken(it)
+//        }
+//        viewModel.makeDialogFullScreen.observe(viewLifecycleOwner) {
+//            dialog?.makeFullScreen(binding.root, this)
+//        }
+//        viewModel.insufficientFoundsError.observe(viewLifecycleOwner) {
+//            toast("Insufficient founds")
+//        }
+//    }
+}
+
+fun AppCompatEditText.enableDecimalInputTextWatcher(enable: Boolean) {
+    if (!enable) return
+    doAfterTextChanged {
+        if (it.toString() == ".") {
+            setText("0.")
+            setSelection(it.toString().length + 1)
         }
     }
 }

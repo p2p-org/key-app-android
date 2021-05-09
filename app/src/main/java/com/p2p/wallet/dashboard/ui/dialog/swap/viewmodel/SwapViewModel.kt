@@ -3,21 +3,19 @@ package com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.p2p.wallet.R
-import com.p2p.wallet.deprecated.viewcommand.Command
-import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
 import com.p2p.wallet.dashboard.interactor.SwapInteractor
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.CoinItem
+import androidx.lifecycle.ViewModel
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.roundCurrencyValue
 import com.p2p.wallet.utils.roundToBilCurrencyValue
 import com.p2p.wallet.utils.roundToMilCurrencyValue
-import java.lang.NullPointerException
 import java.math.BigDecimal
 
 class SwapViewModel(
     private val swapInteractor: SwapInteractor
-) : BaseViewModel() {
+) : ViewModel() {
 
     private val _selectedWalletFrom by lazy { MutableLiveData<Token>() }
     val selectedWalletFrom: LiveData<Token> get() = _selectedWalletFrom
@@ -74,7 +72,7 @@ class SwapViewModel(
     var tokenToPerTokenFrom: BigDecimal = 0.0.toBigDecimal()
 
     fun openMyWalletsDialog() {
-        _command.value = Command.OpenMyWalletDialogViewCommand()
+//        _command.value = Command.OpenMyWalletDialogViewCommand()
     }
 
     private val listAddCoinData = mutableListOf(
@@ -129,19 +127,19 @@ class SwapViewModel(
             _insufficientFoundsError.value = true
             return
         }
-        _command.value = Command.SwapCoinProcessingViewCommand()
+//        _command.value = Command.SwapCoinProcessingViewCommand()
     }
 
     fun openDoneDialog(transactionInfo: ActivityItem) {
-        _command.value = Command.SendCoinDoneViewCommand(transactionInfo)
+//        _command.value = Command.SendCoinDoneViewCommand(transactionInfo)
     }
 
     fun openSelectTokenToSwapBottomSheet() {
-        _command.value = Command.OpenSelectTokenToSwapBottomSheet()
+//        _command.value = Command.OpenSelectTokenToSwapBottomSheet()
     }
 
     fun openSlippageSettingsBottomSheet() {
-        _command.value = Command.OpenSlippageSettingsBottomSheet()
+//        _command.value = Command.OpenSlippageSettingsBottomSheet()
     }
 
     fun swapFromAmountCurrencyTypes() {

@@ -8,5 +8,4 @@ import com.p2p.wallet.main.api.PriceHistoryResponse
 interface DashboardRepository {
     fun getQrCode(publicKey: String): Bitmap
     fun getConstWallets(): List<ConstWallet>
-    suspend fun getHistoricalPrices(symbols: String): Result<List<PriceHistoryResponse>>
 }

@@ -21,19 +21,4 @@ class DashboardRepositoryImpl(
 
     override fun getConstWallets(): List<ConstWallet> = WalletDataConst.getWalletConstList()
 
-    override suspend fun getHistoricalPrices(symbols: String): Result<List<PriceHistoryResponse>> =
-        makeApiCall({
-            getHistoricalPricesData(
-                api.getHistoricalPrices(
-                    symbols,
-                    1,
-                    86400
-                )
-            )
-        })
-
-    private fun getHistoricalPricesData(
-        response: Response<ResponceDataBonfida<List<PriceHistoryResponse>>>
-    ): Result<List<PriceHistoryResponse>> =
-        analyzeResponseObject(response)
 }

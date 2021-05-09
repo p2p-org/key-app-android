@@ -2,11 +2,11 @@ package com.p2p.wallet.auth.ui.pincode.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
+import androidx.lifecycle.ViewModel
 
 class PinCodeViewModel(
 //    private val notificationInteractor: NotificationInteractor
-) : BaseViewModel() {
+) : ViewModel() {
 
     private val _pinCodeSuccess by lazy { MutableLiveData<Unit>() }
     val pinCodeSuccess: LiveData<Unit> get() = _pinCodeSuccess
