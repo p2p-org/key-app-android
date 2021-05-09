@@ -2,7 +2,7 @@ package com.p2p.wallet.deprecated.viewcommand
 
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.EnterWallet
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 
 @Deprecated("This will be deleted, migrating to MVP")

@@ -10,14 +10,14 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/lScannerContainer"
-        android:layout_width="@dimen/dp_45"
-        android:layout_height="@dimen/dp_45"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_marginStart="@dimen/dp_11"
         android:layout_marginTop="@dimen/dp_11"
         android:tint="@color/gray_blue_400"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_qr_scaner" />
+        app:srcCompat="@drawable/ic_qr_code_scan" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgProfilePic"

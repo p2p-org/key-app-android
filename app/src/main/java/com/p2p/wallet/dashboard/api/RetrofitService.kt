@@ -1,7 +1,7 @@
 package com.p2p.wallet.dashboard.api
 
 import com.p2p.wallet.common.network.CallRequest
-import com.p2p.wallet.common.network.HistoricalPrices
+import com.p2p.wallet.main.api.PriceHistoryResponse
 import com.p2p.wallet.common.network.ResponceDataBonfida
 import com.p2p.wallet.common.network.ResponseData
 import com.p2p.wallet.common.network.ResponseDataAirDrop
@@ -33,17 +33,18 @@ interface RetrofitService {
         @Query("resolution") resolution: Int,
         @Query("startTime") startTime: Long,
         @Query("endTime") endTime: Long,
-    ): Response<ResponceDataBonfida<List<HistoricalPrices>>>
+    ): Response<ResponceDataBonfida<List<PriceHistoryResponse>>>
 
     @GET("candles/{tokenSymbol}")
     suspend fun getHistoricalPrices(
         @Path("tokenSymbol") symbol: String,
         @Query("limit") limit: Int,
         @Query("resolution") resolution: Int
-    ): Response<ResponceDataBonfida<List<HistoricalPrices>>>
+    ): Response<ResponceDataBonfida<List<PriceHistoryResponse>>>
+
     @GET("candles/{tokenSymbol}")
     suspend fun getAllHistoricalPrices(
         @Path("tokenSymbol") symbol: String,
         @Query("resolution") resolution: Int
-    ): Response<ResponceDataBonfida<List<HistoricalPrices>>>
+    ): Response<ResponceDataBonfida<List<PriceHistoryResponse>>>
 }

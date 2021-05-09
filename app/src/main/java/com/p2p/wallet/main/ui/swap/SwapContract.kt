@@ -3,7 +3,7 @@ package com.p2p.wallet.main.ui.swap
 import androidx.annotation.ColorRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import java.math.BigDecimal
 
 interface SwapContract {

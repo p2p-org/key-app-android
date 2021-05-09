@@ -1,4 +1,4 @@
-package com.p2p.wallet.dashboard.model.local
+package com.p2p.wallet.token.model
 
 import android.os.Parcelable
 import androidx.annotation.ColorRes
@@ -24,26 +24,6 @@ data class Token(
     val exchangeRate: BigDecimal
 ) : Parcelable {
 
-    companion object {
-        private const val ADDRESS_SYMBOL_COUNT = 10
-        private const val SOL_DECIMALS = 9
-
-        /* fixme: workaround about adding hardcode wallet, looks strange */
-        fun getSOL(publicKey: String, amount: Long) = Token(
-            tokenSymbol = "SOL",
-            tokenName = "SOL",
-            mintAddress = "SOLMINT",
-            iconUrl = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-            depositAddress = publicKey,
-            decimals = 9,
-            total = BigDecimal(amount).divide(BigDecimal(10.0.pow(SOL_DECIMALS))),
-            price = BigDecimal.ZERO,
-            walletBinds = 0.0,
-            color = R.color.chartSOL,
-            exchangeRate = BigDecimal.ZERO
-        )
-    }
-
     @IgnoredOnParcel
     val isZero: Boolean
         get() = total == BigDecimal.ZERO
@@ -64,4 +44,24 @@ data class Token(
     fun getFormattedTotal(): String = "$total $tokenSymbol"
 
     fun getFormattedExchangeRate(): String = "${exchangeRate.setScale(2, RoundingMode.HALF_EVEN)}"
+
+    companion object {
+        private const val ADDRESS_SYMBOL_COUNT = 10
+        private const val SOL_DECIMALS = 9
+
+        /* fixme: workaround about adding hardcode wallet, looks strange */
+        fun getSOL(publicKey: String, amount: Long) = Token(
+            tokenSymbol = "SOL",
+            tokenName = "SOL",
+            mintAddress = "SOLMINT",
+            iconUrl = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
+            depositAddress = publicKey,
+            decimals = 9,
+            total = BigDecimal(amount).divide(BigDecimal(10.0.pow(SOL_DECIMALS))),
+            price = BigDecimal.ZERO,
+            walletBinds = 0.0,
+            color = R.color.chartSOL,
+            exchangeRate = BigDecimal.ZERO
+        )
+    }
 }

@@ -10,7 +10,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.databinding.FragmentSwapBinding
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.utils.addFragment

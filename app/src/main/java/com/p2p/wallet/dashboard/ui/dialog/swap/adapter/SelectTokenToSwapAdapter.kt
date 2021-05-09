@@ -6,7 +6,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.databinding.ItemSwapTokenBinding
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
 
 class SelectTokenToSwapAdapter(

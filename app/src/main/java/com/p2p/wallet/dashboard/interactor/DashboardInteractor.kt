@@ -13,7 +13,7 @@ import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.EnterWallet
 import com.p2p.wallet.dashboard.model.local.LocalWalletItem
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.dashboard.repository.DashboardRepository
 import com.p2p.wallet.dashboard.repository.LocalDatabaseRepository

@@ -52,6 +52,7 @@
     <color name="colorGraySecondary">#F6F6F8</color>
     <color name="colorGrayDark">#202020</color>
     <color name="colorDark">#CC000000</color>
+    <color name="colorGreen">#2DB533</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>

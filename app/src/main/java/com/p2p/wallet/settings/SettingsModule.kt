@@ -12,6 +12,6 @@ object SettingsModule : InjectionModule {
     override fun create() = module {
         factory { SettingsInteractor(get()) }
 
-        single { SettingsPresenter(get(), get()) } bind SettingsContract.Presenter::class
+        single { SettingsPresenter(get(), get(), get()) } bind SettingsContract.Presenter::class
     }
 }

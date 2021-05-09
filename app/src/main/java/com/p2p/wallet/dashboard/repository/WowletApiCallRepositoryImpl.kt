@@ -19,14 +19,14 @@ import org.bitcoinj.core.Utils
 import org.bitcoinj.core.Utils.readInt64
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.core.TransactionResponse
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.rpc.types.AccountInfo
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction
 import org.p2p.solanaj.rpc.types.QRAccountInfo
-import org.p2p.solanaj.rpc.types.TransferInfo
+import org.p2p.solanaj.rpc.types.TransferInfoResponse
 import retrofit2.Response
 import java.security.SecureRandom
 import java.util.Arrays
@@ -42,7 +42,7 @@ class WowletApiCallRepositoryImpl(
         val toPublicKey = PublicKey(sendTransactionModel.toPublickKey)
         val signer = Account(Base58.decode(sendTransactionModel.secretKey))
 
-        val transaction = Transaction()
+        val transaction = TransactionResponse()
         transaction.addInstruction(
             SystemProgram.transfer(
                 fromPublicKey,
@@ -113,13 +113,13 @@ class WowletApiCallRepositoryImpl(
         return minimumBalance
     }
 
-    override suspend fun getDetailActivityData(publicKey: String): List<TransferInfo> {
+    override suspend fun getDetailActivityData(publicKey: String): List<TransferInfoResponse> {
         val signatures = client.api
             .getConfirmedSignaturesForAddress2(
                 PublicKey(publicKey),
                 10
             )
-        val transferInfoList = mutableListOf<TransferInfo>()
+        val transferInfoList = mutableListOf<TransferInfoResponse>()
 
         for (signature in signatures) {
             println("mint $signature")
@@ -138,7 +138,7 @@ class WowletApiCallRepositoryImpl(
 
     override suspend fun getFee(): Long = client.api.feeBlockhash
 
-    override suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfo? {
+    override suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfoResponse? {
         val trx = client.api.getConfirmedTransaction(signature)
         val message: ConfirmedTransaction.Message = trx.transaction.message
         val meta: ConfirmedTransaction.Meta = trx.meta
@@ -149,15 +149,14 @@ class WowletApiCallRepositoryImpl(
                 val data = Base58.decode(instruction.data)
                 val lamports = readInt64(data, 4)
 
-                val transferInfo = TransferInfo(
+                val transferInfo = TransferInfoResponse(
                     message.accountKeys[instruction.accounts[0].toInt()],
                     message.accountKeys[instruction.accounts[1].toInt()],
-                    lamports
+                    lamports,
+                    slot,
+                    signature,
+                    meta.fee
                 )
-                transferInfo.slot = slot
-                transferInfo.signature = signature
-                transferInfo.setFee(meta.fee)
-                println(transferInfo)
                 return transferInfo
             } else {
                 val s = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
@@ -165,48 +164,17 @@ class WowletApiCallRepositoryImpl(
                     val data = Base58.decode(instruction.data)
                     val lamports = readInt64(data, 1)
 
-                    val transferInfo = TransferInfo(
+                    val transferInfo = TransferInfoResponse(
                         message.accountKeys[instruction.accounts[0].toInt()],
                         message.accountKeys[instruction.accounts[1].toInt()],
-                        lamports
+                        lamports,
+                        slot,
+                        signature,
+                        meta.fee
                     )
-                    transferInfo.slot = slot
-                    transferInfo.signature = signature
-                    transferInfo.setFee(meta.fee)
-                    println(transferInfo)
                     return transferInfo
                 }
             }
-/*
-            if (instruction.programIdIndex == number) {
-                val data = Base58.decode(instruction.data)
-                val lamports = readInt64(data, 4)
-
-                val transferInfo = TransferInfo(
-                    message.accountKeys[instruction.accounts[0].toInt()],
-                    message.accountKeys[instruction.accounts[1].toInt()],
-                    lamports
-                )
-                transferInfo.slot = slot
-                transferInfo.signature = signature
-                transferInfo.setFee(meta.fee)
-                println(transferInfo)
-                return transferInfo
-            }else{
-                val data = Base58.decode(instruction.data)
-                val lamports = readInt64(data, 3)
-
-                val transferInfo = TransferInfo(
-                    message.accountKeys[instruction.accounts[0].toInt()],
-                    message.accountKeys[instruction.accounts[instruction.programIdIndex.toInt()].toInt()],
-                    lamports
-                )
-                transferInfo.slot = slot
-                transferInfo.signature = signature
-                transferInfo.setFee(meta.fee)
-                println(transferInfo)
-                return transferInfo
-            }*/
         }
         return null
     }
@@ -229,7 +197,7 @@ class WowletApiCallRepositoryImpl(
             newAccountPubKey, mintAddress,
             payerPubKey
         )
-        val transaction = Transaction()
+        val transaction = TransactionResponse()
         transaction.addInstruction(createAccount)
         transaction.addInstruction(initializeAccount)
         return client.api.sendTransaction(transaction, listOf(payer, newAccount))

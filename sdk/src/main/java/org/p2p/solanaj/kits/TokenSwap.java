@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.kits.Pool.*;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.Transaction;
+import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.core.TransactionInstruction;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.programs.TokenSwapProgram;
@@ -45,7 +45,7 @@ public class TokenSwap {
                 poolInfo.getSwapData().getTokenPool(), poolInfo.getSwapData().getFeeAccount(), null,
                 TokenProgram.PROGRAM_ID, swapProgramId, amountIn, minimumAmountOut);
 
-        Transaction transaction = new Transaction();
+        TransactionResponse transaction = new TransactionResponse();
         transaction.addInstruction(approve);
         transaction.addInstruction(swap);
 

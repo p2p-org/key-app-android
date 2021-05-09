@@ -35,7 +35,7 @@ fun LineChart.initChart(chartList: List<Entry>) {
     lineDataSet.highLightColor = R.color.cornflowerblue
 
     context?.run {
-        val fillGradient = ContextCompat.getDrawable(this, R.drawable.bg_chart)
+        val fillGradient = ContextCompat.getDrawable(this, R.drawable.bg_line_chart)
         lineDataSet.fillDrawable = fillGradient
     }
     this.apply {

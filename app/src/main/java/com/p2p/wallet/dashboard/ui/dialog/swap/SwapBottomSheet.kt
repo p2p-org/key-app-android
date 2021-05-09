@@ -18,7 +18,7 @@ import com.p2p.wallet.deprecated.viewcommand.Command
 import com.p2p.wallet.deprecated.viewcommand.ViewCommand
 import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
 import com.p2p.wallet.dialog.utils.makeFullScreen
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDpWithDefault
 import com.p2p.wallet.utils.toast

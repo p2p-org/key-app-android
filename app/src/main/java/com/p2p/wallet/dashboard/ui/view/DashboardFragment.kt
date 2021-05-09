@@ -45,7 +45,7 @@ import com.p2p.wallet.deprecated.viewcommand.ViewCommand
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wallet.auth.model.LaunchMode
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.qrscanner.view.QrScannerFragment
 import com.p2p.wallet.utils.OnSwipeTouchListener
 import com.p2p.wallet.utils.replaceFragment

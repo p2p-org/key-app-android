@@ -128,7 +128,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/bg_gray_rounded"
+        android:background="@drawable/bg_gray_secondary_rounded_small"
         android:inputType="numberDecimal"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"

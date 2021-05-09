@@ -20,7 +20,6 @@ class RootPresenter(
         }
     }
 
-
     override fun openRootScreen() {
         launch {
             if (authInteractor.isAuthorized()) {

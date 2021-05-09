@@ -1,20 +1,21 @@
 package org.p2p.solanaj.rpc.types;
 
-public class TransferInfo {
+public class TransferInfoResponse {
 
-    String from;
-    String to;
-    long lamports;
-    long slot;
-    String signature;
-    public long fee;
+    private String from;
+    private String to;
+    private long lamports;
+    private long slot;
+    private String signature;
+    private long fee;
 
-
-
-    public TransferInfo(String from, String to, long lamports) {
+    public TransferInfoResponse(String from, String to, long lamports, long slot, String signature, long fee) {
         this.from = from;
         this.to = to;
         this.lamports = lamports;
+        this.slot = slot;
+        this.signature = signature;
+        this.fee = fee;
     }
 
     public long getFee() {

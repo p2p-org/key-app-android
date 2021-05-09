@@ -3,7 +3,7 @@ package com.p2p.wallet.dashboard.repository
 import android.graphics.Bitmap
 import com.p2p.wallet.dashboard.api.RetrofitService
 import com.p2p.wallet.common.network.Result
-import com.p2p.wallet.common.network.HistoricalPrices
+import com.p2p.wallet.main.api.PriceHistoryResponse
 import com.p2p.wallet.common.network.ResponceDataBonfida
 import com.p2p.wallet.utils.analyzeResponseObject
 import com.p2p.wallet.utils.makeApiCall
@@ -16,7 +16,7 @@ class DetailActivityRepositoryImpl(val allApiService: RetrofitService) : DetailA
         symbols: String,
         startTime: Long,
         endTime: Long
-    ): Result<List<HistoricalPrices>> =
+    ): Result<List<PriceHistoryResponse>> =
         makeApiCall({
             getHistoricalPricesData(
                 allApiService.getHistoricalPrices(
@@ -28,7 +28,7 @@ class DetailActivityRepositoryImpl(val allApiService: RetrofitService) : DetailA
             )
         })
 
-    override suspend fun getAllHistoricalPrices(symbols: String): Result<List<HistoricalPrices>> =
+    override suspend fun getAllHistoricalPrices(symbols: String): Result<List<PriceHistoryResponse>> =
         makeApiCall({
             getHistoricalPricesData(
                 allApiService.getAllHistoricalPrices(
@@ -41,7 +41,7 @@ class DetailActivityRepositoryImpl(val allApiService: RetrofitService) : DetailA
     override fun getQrCode(publicKey: String): Bitmap = QRCode.from(publicKey).bitmap()
 
     private fun getHistoricalPricesData(
-        response: Response<ResponceDataBonfida<List<HistoricalPrices>>>
-    ): Result<List<HistoricalPrices>> =
+        response: Response<ResponceDataBonfida<List<PriceHistoryResponse>>>
+    ): Result<List<PriceHistoryResponse>> =
         analyzeResponseObject(response)
 }

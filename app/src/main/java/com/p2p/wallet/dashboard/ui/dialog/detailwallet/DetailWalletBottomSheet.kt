@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.dashboard.ui.dialog.TransactionBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.adapter.ActivityAdapter
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.util.DividerItemDecoration

@@ -1,10 +1,10 @@
 package com.p2p.wallet.user.repository
 
-import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.model.UserConverter
 import com.p2p.wallet.utils.WalletDataConst
 import kotlinx.coroutines.Dispatchers
@@ -48,14 +48,14 @@ class UserRepositoryImpl(
 
     override suspend fun loadTokens(): List<Token> = withContext(Dispatchers.IO) {
         val response = client.api.getProgramAccounts(
-            PublicKey(tokenProvider.programPublicKey),
+            PublicKey(tokenProvider.rpcPublicKey),
             32,
             tokenProvider.publicKey
         )
 
         val tokenAccounts = response.map { UserConverter.fromNetwork(it) }
         val solBalance = loadSolBalance()
-        val wallets = WalletDataConst.getWalletConstList()
+        val wallets = WalletDataConst.getWalletConstList().toMutableList()
 
         val result = wallets
             .mapNotNull { wallet ->
@@ -63,19 +63,7 @@ class UserRepositoryImpl(
                 val decimals = loadDecimals(account.mintAddress)
                 val exchangeRate = userLocalRepository.getPriceByToken(wallet.tokenSymbol).price
 
-                Token(
-                    tokenSymbol = wallet.tokenSymbol,
-                    tokenName = wallet.tokenName,
-                    iconUrl = wallet.icon,
-                    depositAddress = account.depositAddress,
-                    mintAddress = account.mintAddress,
-                    price = account.getFormattedPrice(exchangeRate, decimals),
-                    total = account.getAmount(decimals),
-                    decimals = decimals,
-                    walletBinds = if (wallet.isUS()) 1.0 else 0.0,
-                    color = wallet.color,
-                    exchangeRate = exchangeRate
-                )
+                TokenConverter.fromNetwork(wallet, account, exchangeRate, decimals)
             }
             .toMutableList()
             .apply {
@@ -83,8 +71,8 @@ class UserRepositoryImpl(
             }
 
         /*
-        * Assuming that SOL is our default token
-        * */
+         * Assuming that SOL is our default token
+         * */
         val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
         val solPrice = userLocalRepository.getPriceByToken(sol.tokenSymbol)
         val solExchangeRate = solPrice.price

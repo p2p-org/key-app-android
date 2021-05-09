@@ -1,7 +1,7 @@
 package com.p2p.wallet.user.interactor
 
 import com.p2p.wallet.common.crypto.Base58Utils
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.user.repository.UserLocalRepository
@@ -42,4 +42,9 @@ class UserInteractor(
 
     suspend fun getPriceByToken(source: String, destination: String): BigDecimal =
         userRepository.getRate(source, destination)
+
+    suspend fun clearMemoryData() {
+        userLocalRepository.setTokenPrices(emptyList())
+        mainLocalRepository.setTokens(emptyList())
+    }
 }

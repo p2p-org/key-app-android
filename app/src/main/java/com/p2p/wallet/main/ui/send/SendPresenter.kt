@@ -2,10 +2,10 @@ package com.p2p.wallet.main.ui.send
 
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.TransactionResult
-import com.p2p.wallet.main.ui.info.TransactionInfo
+import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.launch
 import timber.log.Timber

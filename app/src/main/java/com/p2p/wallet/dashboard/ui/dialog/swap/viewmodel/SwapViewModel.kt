@@ -8,7 +8,7 @@ import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
 import com.p2p.wallet.dashboard.interactor.SwapInteractor
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.CoinItem
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.roundCurrencyValue
 import com.p2p.wallet.utils.roundToBilCurrencyValue
 import com.p2p.wallet.utils.roundToMilCurrencyValue
@@ -41,7 +41,7 @@ class SwapViewModel(
     val clearSearchBar: LiveData<Boolean> get() = _clearSearchBar
 
     private val _makeDialogFullScreen by lazy { MutableLiveData<Boolean>() }
-    val makeDialogFullScreen: LiveData<Boolean>  get() = _makeDialogFullScreen
+    val makeDialogFullScreen: LiveData<Boolean> get() = _makeDialogFullScreen
 
     private val _selectedSlippage by lazy { MutableLiveData<Boolean>() }
     val selectedSlippage: LiveData<Boolean> get() = _selectedSlippage

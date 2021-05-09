@@ -12,24 +12,26 @@
 
         <ImageView
             android:id="@+id/scanImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:background="?selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/ic_qr_code"
+            android:src="@drawable/ic_qr_code_scan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorGray"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/settingsImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:background="?selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/ic_settings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorGray"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.card.MaterialCardView

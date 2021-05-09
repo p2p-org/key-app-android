@@ -20,7 +20,7 @@ public class TransactionTest {
         Account signer = new Account(Base58
                 .decode("4Z7cXSyeFR8wNGMVXUE1TwtKn5D5Vu7FzEv69dokLv7KrQk7h6pu4LF8ZRR9yQBhc7uSM6RTTZtU1fmaxiNrxXrs"));
 
-        Transaction transaction = new Transaction();
+        TransactionResponse transaction = new TransactionResponse();
         transaction.addInstruction(SystemProgram.transfer(fromPublicKey, toPublickKey, lamports));
         transaction.setRecentBlockHash("Eit7RCyhUixAe2hGBS8oqnw59QK3kgMMjfLME5bm9wRn");
         transaction.sign(signer);

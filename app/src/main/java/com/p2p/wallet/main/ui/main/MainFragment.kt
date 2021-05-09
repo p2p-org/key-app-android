@@ -10,14 +10,16 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
-import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentMainBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.main.ui.swap.SwapFragment
+import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.settings.ui.SettingsFragment
+import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.ui.TokenDetailsFragment
 import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -58,7 +60,7 @@ class MainFragment :
             }
 
             receiveImageView.setOnClickListener {
-                replaceFragment(ReceiveFragment.create())
+                replaceFragment(ReceiveFragment.create(null))
             }
 
             sendImageView.setOnClickListener {
@@ -67,6 +69,13 @@ class MainFragment :
 
             swapImageView.setOnClickListener {
                 replaceFragment(SwapFragment.create())
+            }
+
+            scanImageView.setOnClickListener {
+                val target = ScanQrFragment.create(
+                    successCallback = { replaceFragment(SendFragment.create(it)) }
+                )
+                replaceFragment(target)
             }
         }
 
@@ -132,6 +141,6 @@ class MainFragment :
     }
 
     private fun onTokenClicked(token: Token) {
-        // todo: navigate to details
+        replaceFragment(TokenDetailsFragment.create(token))
     }
 }

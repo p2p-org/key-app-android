@@ -1,7 +1,7 @@
 package com.p2p.wallet.main.ui.main
 
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.settings.interactor.SettingsInteractor
 import com.p2p.wallet.user.interactor.UserInteractor

@@ -1,4 +1,4 @@
-package com.p2p.wallet.main.ui.info
+package com.p2p.wallet.main.ui.transaction
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

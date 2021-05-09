@@ -4,6 +4,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.main.repository.MainRepository
+import com.p2p.wallet.token.model.Transaction
 import org.p2p.solanaj.core.PublicKey
 import java.math.BigDecimal
 import kotlin.math.pow
@@ -36,4 +37,7 @@ class MainInteractor(
         val signature = mainRepository.sendToken(target, lamports.toLong(), tokenSymbol)
         return TransactionResult.Success(signature, amount, usdAmount, tokenSymbol)
     }
+
+    suspend fun getHistory(depositAddress: String, tokenSymbol: String, limit: Int): List<Transaction> =
+        mainRepository.getHistory(depositAddress, tokenSymbol, limit)
 }

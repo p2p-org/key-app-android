@@ -4,7 +4,7 @@ import com.p2p.wallet.dashboard.model.SelectedCurrency
 import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.PinCodeResponse
 import com.p2p.wallet.dashboard.model.local.UserSecretData
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import org.p2p.solanaj.rpc.Cluster
 
 @Deprecated("Workaround, remove unnecessary data storing logic, remove interfaces")

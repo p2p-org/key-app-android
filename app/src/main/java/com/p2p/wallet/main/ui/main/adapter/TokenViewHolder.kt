@@ -2,11 +2,12 @@ package com.p2p.wallet.main.ui.main.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.ItemTokenBinding
 import com.p2p.wallet.main.model.TokenItem
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.dip
 
 class TokenViewHolder(
@@ -27,6 +28,7 @@ class TokenViewHolder(
     private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
+    private val colorView = binding.colorView
 
     fun onBind(item: TokenItem.Shown) {
         if (adapterPosition == 0) {
@@ -40,6 +42,7 @@ class TokenViewHolder(
         addressTextView.text = token.getFormattedAddress()
         valueTextView.text = token.getFormattedPrice()
         totalTextView.text = token.getFormattedTotal()
+        colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, token.color))
 
         itemView.setOnClickListener { onItemClicked(token) }
     }

@@ -4,7 +4,6 @@ import com.p2p.wallet.common.network.CallException
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.SecretKeyCombinationSuccess
-import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
 import com.p2p.wallet.infrastructure.persistence.PreferenceService
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.mnemoticgenerator.English
@@ -12,7 +11,6 @@ import com.p2p.wallet.utils.mnemoticgenerator.English
 @Deprecated("Should be refactored")
 class SecretKeyInteractor(
     val preferenceService: PreferenceService,
-    val wowletApiCallRepository: WowletApiCallRepository,
     private val userInteractor: UserInteractor
 ) {
 
