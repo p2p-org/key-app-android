@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:navigationIcon="@drawable/ic_back"
-        app:title="@string/terms_and_conditions"
+        app:title="@string/auth_terms_and_conditions"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
     <ScrollView
@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="16dp"
-                android:text="@string/policy_first_info"
+                android:text="@string/auth_policy"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Regular14" />
 
             <androidx.appcompat.widget.AppCompatButton

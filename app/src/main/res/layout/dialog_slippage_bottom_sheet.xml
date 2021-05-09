@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_alert_elevation_rounded_top"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="16dp"
+        android:text="@string/main_slippage_settings"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+
+    <View
+        android:id="@+id/dividerView"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/colorGray" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/main_slippage_description"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textColor="@color/colorGray" />
+
+    <com.p2p.wallet.common.widget.SlippageRadioView
+        android:id="@+id/slippageRadioView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/doneButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="16dp"
+        android:background="@drawable/bg_blue_selector"
+        android:foreground="?selectableItemBackground"
+        android:text="@string/common_done"
+        android:textAllCaps="false"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+        android:textColor="@color/white"
+        tools:ignore="UnusedAttribute" />
+</LinearLayout>

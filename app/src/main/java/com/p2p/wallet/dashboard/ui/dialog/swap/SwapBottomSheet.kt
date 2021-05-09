@@ -50,11 +50,11 @@ class SwapBottomSheet(
         binding.run {
             settingsImageView.setOnClickListener { viewModel.openSlippageSettingsBottomSheet() }
             val text = if (viewModel.isInCryptoCurrency.value == true) {
-                getString(R.string.available_swap, selectedWalletFrom.total)
+//                getString(R.string.available_swap, selectedWalletFrom.total)
             } else {
-                getString(R.string.available_swap, selectedWalletFrom.price)
+//                getString(R.string.available_swap, selectedWalletFrom.price)
             }
-            availableTextView.text = text
+//            availableTextView.text = text
 
             imgTokenFrom.imageSourceRadiusDp(selectedWalletFrom.iconUrl, 12)
             imgTokenFrom.setOnClickListener { viewModel.openMyWalletsDialog() }
@@ -63,26 +63,26 @@ class SwapBottomSheet(
             edtAmountFrom.enableDecimalInputTextWatcher(true)
             edtAmountFrom.setText(viewModel.amountBinding.value.toString())
 
-            val aroundToText = if (viewModel.isInCryptoCurrency.value == true) {
-                getString(
-                    R.string.around_amount_sol_2,
-                    viewModel.aroundToCurrency.value?.toDouble(),
-                    getString(R.string.usd_symbol)
-                )
-            } else {
-                getString(
-                    R.string.around_amount_sol,
-                    viewModel.aroundToCurrency.value?.toDouble(),
-                    selectedWalletFrom.tokenSymbol
-                )
-            }
-            aroundTo.text = aroundToText
+//            val aroundToText = if (viewModel.isInCryptoCurrency.value == true) {
+//                getString(
+//                    R.string.around_amount_sol_2,
+//                    viewModel.aroundToCurrency.value?.toDouble(),
+//                    getString(R.string.usd_symbol)
+//                )
+//            } else {
+//                getString(
+//                    R.string.around_amount_sol,
+//                    viewModel.aroundToCurrency.value?.toDouble(),
+//                    selectedWalletFrom.tokenSymbol
+//                )
+//            }
+//            aroundTo.text = aroundToText
 
             currencyTypeImageView.setOnClickListener {
                 viewModel.swapFromAmountCurrencyTypes()
             }
 
-            balanceTextView.text = getString(R.string.balance_, selectedWalletFrom.total)
+//            balanceTextView.text = getString(R.string.balance_, selectedWalletFrom.total)
 
             imgTokenTo.setOnClickListener {
                 viewModel.openSelectTokenToSwapBottomSheet()
@@ -99,21 +99,21 @@ class SwapBottomSheet(
             lDetails.isVisible = viewModel.selectedWalletTo.value != null
 
             val sol = if (viewModel.isFromPerTo.value == true) {
-                getString(
-                    R.string.amount_token_per_token,
-                    viewModel.tokenFromPerTokenTo,
-                    selectedWalletFrom.tokenSymbol,
-                    viewModel.selectedWalletTo.value?.tokenSymbol
-                )
+//                getString(
+//                    R.string.amount_token_per_token,
+//                    viewModel.tokenFromPerTokenTo,
+//                    selectedWalletFrom.tokenSymbol,
+//                    viewModel.selectedWalletTo.value?.tokenSymbol
+//                )
             } else {
-                getString(
-                    R.string.amount_token_per_token,
-                    viewModel.tokenToPerTokenFrom,
-                    viewModel.selectedWalletTo.value?.tokenSymbol,
-                    selectedWalletFrom.tokenSymbol
-                )
+//                getString(
+//                    R.string.amount_token_per_token,
+//                    viewModel.tokenToPerTokenFrom,
+//                    viewModel.selectedWalletTo.value?.tokenSymbol,
+//                    selectedWalletFrom.tokenSymbol
+//                )
             }
-            solTextView.text = sol
+//            solTextView.text = sol
 
             imgSwapPrice.setOnClickListener {
                 viewModel.switchTokenPrices()
@@ -175,10 +175,10 @@ class SwapBottomSheet(
 //
 //                sendCoinDone.show(childFragmentManager, SendCoinDoneDialog.SEND_COIN_DONE)
 //            }
-        }
+}
 //    }
 
-    private fun initObserves() {
+private fun initObserves() {
 //        viewModel.command.observe(viewLifecycleOwner) {
 //            processViewCommand(it)
 //        }

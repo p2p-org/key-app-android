@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="12dp"
-    android:background="@drawable/bg_secret_keyword_selected"
+    android:background="@drawable/bg_rounded"
     android:paddingHorizontal="12dp"
     android:paddingVertical="12dp">
 
@@ -26,7 +26,7 @@
         android:imeOptions="actionDone"
         android:inputType="text"
         android:maxLines="1"
-        android:minWidth="@dimen/dp_50"
+        android:minWidth="50dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>
