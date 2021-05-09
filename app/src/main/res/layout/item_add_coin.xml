@@ -176,8 +176,7 @@
                 android:layout_height="match_parent"
                 android:indeterminate="false"
                 android:max="100"
-                android:progress="100"
-                android:progressDrawable="@drawable/bg_button_progress_bar" />
+                android:progress="100" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"

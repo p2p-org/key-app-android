@@ -9,7 +9,9 @@ import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wallet.R
+import com.p2p.wallet.auth.model.LaunchMode
 import com.p2p.wallet.auth.ui.pincode.view.PinCodeFragment
+import com.p2p.wallet.blockchain.BlockChainExplorerFragment
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.dashboard.ui.adapter.WalletsAdapter
 import com.p2p.wallet.dashboard.ui.dialog.BackupDialog
@@ -25,9 +27,7 @@ import com.p2p.wallet.dashboard.ui.dialog.detailwallet.DetailWalletBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.detailwallet.DetailWalletBottomSheet.Companion.DETAIL_WALLET
 import com.p2p.wallet.dashboard.ui.dialog.enterwallet.EnterWalletBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.enterwallet.EnterWalletBottomSheet.Companion.ENTER_WALLET
-import com.p2p.wallet.dashboard.ui.dialog.networks.NetworksDialog
 import com.p2p.wallet.dashboard.ui.dialog.profile.ProfileDialog
-import com.p2p.wallet.dashboard.ui.dialog.recoveryphrase.RecoveryPhraseDialog
 import com.p2p.wallet.dashboard.ui.dialog.savedcards.SavedCardsDialog
 import com.p2p.wallet.dashboard.ui.dialog.sendyourwallet.YourWalletBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.swap.SwapBottomSheet
@@ -42,16 +42,11 @@ import com.p2p.wallet.deprecated.viewcommand.Command.OpenRecoveryPhraseDialogVie
 import com.p2p.wallet.deprecated.viewcommand.Command.OpenSwapBottomSheetViewCommand
 import com.p2p.wallet.deprecated.viewcommand.Command.YourWalletDialogViewCommand
 import com.p2p.wallet.deprecated.viewcommand.ViewCommand
-import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
-import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
-import com.p2p.wallet.auth.model.LaunchMode
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.qrscanner.view.QrScannerFragment
 import com.p2p.wallet.utils.OnSwipeTouchListener
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
-import com.p2p.wallet.blockchain.BlockChainExplorerFragment
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.p2p.solanaj.rpc.RpcClient
@@ -92,7 +87,7 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             }
 
             lScannerContainer.setOnClickListener {
-                replaceFragment(QrScannerFragment())
+//                replaceFragment(QrScannerFragment())
             }
 
             enterWalletView.setOnClickListener { viewModel.enterWalletDialog() }
@@ -100,13 +95,13 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
             myBalanceContainer.setOnClickListener { viewModel.openAllMyTokensDialog() }
 
             sendButton.setOnClickListener {
-                val item = (viewModel as? DashboardViewModel)?.getAllWalletData?.value?.firstOrNull()
-                SendCoinsBottomSheet.newInstance(
-                    item, null
-                ).show(
-                    childFragmentManager,
-                    TAG_SEND_COIN
-                )
+//                val item = (viewModel as? DashboardViewModel)?.getAllWalletData?.value?.firstOrNull()
+//                SendCoinsBottomSheet.newInstance(
+//                    item, null
+//                ).show(
+//                    childFragmentManager,
+//                    TAG_SEND_COIN
+//                )
             }
 
             with(vRvWallets) {
@@ -128,12 +123,12 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
 
         binding.rootContainer.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeRight() {
-                replaceFragment(QrScannerFragment())
+//                replaceFragment(QrScannerFragment())
             }
         })
         binding.vRvWallets.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onSwipeRight() {
-                replaceFragment(QrScannerFragment())
+//                replaceFragment(QrScannerFragment())
             }
         })
     }
@@ -180,11 +175,11 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                         }.show(childFragmentManager, BackupDialog.TAG_BACKUP_DIALOG)
                     },
                     {
-                        NetworksDialog.newInstance {
-                            rpcClient.updateEndpoint(it.endpoint)
-                            viewModel.getWalletItems()
-                            it()
-                        }.show(childFragmentManager, NetworksDialog.TAG_NETWORKS_DIALOG)
+//                        NetworksDialog.newInstance {
+//                            rpcClient.updateEndpoint(it.endpoint)
+//                            viewModel.getWalletItems()
+//                            it()
+//                        }.show(childFragmentManager, NetworksDialog.TAG_NETWORKS_DIALOG)
                     },
                     {
                         CurrencyDialog.newInstance(it)
@@ -216,8 +211,8 @@ class DashboardFragment : BaseFragment(R.layout.fragment_dashboard) {
                 )
             }
             is OpenRecoveryPhraseDialogViewCommand -> {
-                RecoveryPhraseDialog.newInstance()
-                    .show(childFragmentManager, RecoveryPhraseDialog.TAG_RECOVERY_DIALOG)
+//                RecoveryPhraseDialog.newInstance()
+//                    .show(childFragmentManager, RecoveryPhraseDialog.TAG_RECOVERY_DIALOG)
             }
             is OpenBackupFailedDialogViewCommand -> {
             }

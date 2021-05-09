@@ -4,7 +4,6 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.p2p.wallet.R
@@ -38,15 +37,15 @@ class DetailSavingFragment : BaseFragment(R.layout.fragment_detail_saving) {
                 override fun onTabSelected(tab: TabLayout.Tab?) {
                     tab?.customView?.findViewById<TextView>(R.id.tab)?.apply {
                         setTypeface(typeface, Typeface.BOLD)
-                        background =
-                            ContextCompat.getDrawable(context, R.drawable.bg_detail_selected_tab)
+//                        background =
+//                            ContextCompat.getDrawable(context, R.drawable.bg_detail_selected_tab)
                     }
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
                     tab?.customView?.findViewById<TextView>(R.id.tab)?.apply {
-                        background =
-                            ContextCompat.getDrawable(context, R.drawable.bg_detail_unselected_tab)
+//                        background =
+//                            ContextCompat.getDrawable(context, R.drawable.bg_detail_unselected_tab)
                         setTypeface(typeface, Typeface.NORMAL)
                     }
                 }
@@ -54,16 +53,14 @@ class DetailSavingFragment : BaseFragment(R.layout.fragment_detail_saving) {
                 override fun onTabReselected(tab: TabLayout.Tab?) {
                     tab?.customView?.findViewById<TextView>(R.id.tab)?.apply {
                         setTypeface(typeface, Typeface.BOLD)
-                        background =
-                            ContextCompat.getDrawable(context, R.drawable.bg_detail_selected_tab)
+//                        background =
+//                            ContextCompat.getDrawable(context, R.drawable.bg_detail_selected_tab)
                     }
                 }
             })
         }
         context?.run {
             binding.tabs.getTabAt(0)?.customView?.findViewById<TextView>(R.id.tab)?.apply {
-                background =
-                    ContextCompat.getDrawable(this@run, R.drawable.bg_detail_selected_tab)
                 text =
                     getString(R.string.market)
                 setTypeface(typeface, Typeface.BOLD)

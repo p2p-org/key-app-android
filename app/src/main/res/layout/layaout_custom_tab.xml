@@ -13,7 +13,6 @@
             android:gravity="center"
             android:text="sdfhsfh"
             android:paddingStart="@dimen/dp_22"
-            android:paddingEnd="@dimen/dp_22"
-            android:background="@drawable/bg_detail_unselected_tab" />
+            android:paddingEnd="@dimen/dp_22" />
 
 </LinearLayout>

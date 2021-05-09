@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_already_have_account"
+    android:background="@drawable/bg_white_rounded"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -30,7 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_20"
-        android:background="@drawable/bg_done_text"
         android:paddingStart="@dimen/dp_16"
         android:paddingTop="@dimen/dp_5"
         android:paddingEnd="@dimen/dp_16"

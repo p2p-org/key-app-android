@@ -11,7 +11,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.p2p.wallet.R
 import com.p2p.wallet.databinding.DialogSendCoinDoneBinding
-import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel
 import com.p2p.wallet.common.network.Constants.Companion.EXPLORER_SOLANA
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.utils.popBackStack
@@ -19,15 +18,12 @@ import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.blockchain.BlockChainExplorerFragment
 import com.p2p.wallet.utils.copyToClipBoard
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.math.BigDecimal
 
 class SendCoinDoneDialog(
     private val transactionInfo: ActivityItem,
     private val navigateBack: () -> Unit
 ) : DialogFragment() {
-
-    private val viewModel: SendCoinsViewModel by viewModel()
 
     companion object {
         const val SEND_COIN_DONE = "SEND_COIN_DONE"

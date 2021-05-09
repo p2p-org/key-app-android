@@ -62,7 +62,7 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/bg_already_have_account"
+            android:background="@drawable/bg_white_rounded"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="@+id/vDividerTitle">
 
@@ -283,7 +283,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_20"
-                android:background="@drawable/bg_light_gray_rect_radius_12"
                 android:paddingStart="@dimen/dp_10"
                 android:paddingTop="@dimen/dp_7"
                 android:paddingEnd="@dimen/dp_10"

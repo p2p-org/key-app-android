@@ -139,7 +139,6 @@
             style="@style/White.15"
             android:layout_width="@dimen/dp_80"
             android:layout_height="@dimen/dp_56"
-            android:background="@drawable/bg_send_coin_bt"
             android:gravity="center"
             android:text="@string/top_up" />
 

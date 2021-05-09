@@ -9,7 +9,6 @@
     android:layout_width="match_parent"
 
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_profile_dialog"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,7 +59,6 @@
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_30"
         android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/bg_change_phone_email"
         android:hint="@string/current_pin"
         app:endIconMode="clear_text"
         app:endIconTint="@color/black"
@@ -82,7 +80,6 @@
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/bg_change_phone_email"
         android:hint="@string/new_pin"
         app:endIconMode="clear_text"
         app:endIconTint="@color/black"
@@ -104,7 +101,6 @@
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/bg_change_phone_email"
         android:hint="@string/repeat_new_pin"
         app:endIconMode="clear_text"
         app:endIconTint="@color/black"

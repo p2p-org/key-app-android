@@ -2,19 +2,10 @@ package com.p2p.wallet.auth.ui.pincode.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.p2p.wallet.auth.interactor.PinCodeInteractor
 import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
-import com.p2p.wallet.dashboard.interactor.NotificationInteractor
-import com.p2p.wallet.common.network.Constants.Companion.VERIFY_PIN_CODE_ERROR
-import com.p2p.wallet.common.network.Result
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PinCodeViewModel(
-    private val pinCodeInteractor: PinCodeInteractor,
-    private val notificationInteractor: NotificationInteractor
+//    private val notificationInteractor: NotificationInteractor
 ) : BaseViewModel() {
 
     private val _pinCodeSuccess by lazy { MutableLiveData<Unit>() }
@@ -43,54 +34,18 @@ class PinCodeViewModel(
     }
 
     fun notificationStatus() {
-        val data = notificationInteractor.isEnableNotification()
-        when {
-            data.isEnable -> {
-                _skipNotification.value = true
-            }
-            data.isNotWantEnable -> {
-                _skipNotification.value = true
-            }
-            else -> {
-                _skipNotification.value = false
-            }
-        }
-    }
-
-    fun initCode(value: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            when (val data = pinCodeInteractor.initPinCode(value)) {
-                is Result.Success -> withContext(Dispatchers.Main) {
-                    _pinCodeSaved.value = Unit
-                }
-                is Result.Error -> withContext(Dispatchers.Main) {
-                    if (data.errors.errorCode == VERIFY_PIN_CODE_ERROR) {
-                        _verifyPinCodeError.value = true
-                    } else {
-                        _pinCodeError.value = data.errors.errorMessage
-                    }
-                }
-            }
-        }
-    }
-
-    fun verifyPinCode(value: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            when (val data = pinCodeInteractor.verifyPinCode(value)) {
-                is Result.Success -> withContext(Dispatchers.Main) {
-                    data.data?.let {
-                        if (it) {
-                            _pinCodeSuccess.value = Unit
-                        } else {
-                            _verifyPinCodeError.value = true
-                        }
-                    }
-                }
-                is Result.Error -> withContext(Dispatchers.Main) {
-                    _verifyPinCodeError.value = true
-                }
-            }
-        }
+//        val data = notificationInteractor.isEnableNotification()
+//        when {
+//            data.isEnable -> {
+//                _skipNotification.value = true
+//            }
+//            data.isNotWantEnable -> {
+//                _skipNotification.value = true
+//            }
+//            else -> {
+//                _skipNotification.value = false
+//            }
+//        }
     }
 
     fun openFingerprintDialog() {

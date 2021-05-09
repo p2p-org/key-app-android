@@ -17,7 +17,6 @@ import com.p2p.wallet.databinding.FragmentPinCodeBinding
 import com.p2p.wallet.deprecated.viewcommand.Command
 import com.p2p.wallet.deprecated.viewcommand.ViewCommand
 import com.p2p.wallet.main.ui.main.MainFragment
-import com.p2p.wallet.notification.view.NotificationFragment
 import com.p2p.wallet.restore.ui.secretkeys.view.SecretKeyFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.isFingerPrintSet
@@ -149,7 +148,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
             if (it) {
                 replaceFragment(AuthDoneFragment())
             } else {
-                replaceFragment(NotificationFragment())
+//                replaceFragment(NotificationFragment())
             }
         }
 
@@ -210,7 +209,7 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         when (command) {
             is Command.NavigateSecretKeyViewCommand -> replaceFragment(SecretKeyFragment())
 //            is Command.NavigateFingerPrintViewCommand -> replaceFragment(FingerPrintFragment())
-            is Command.NavigateNotificationViewCommand -> replaceFragment(NotificationFragment())
+//            is Command.NavigateNotificationViewCommand -> replaceFragment(NotificationFragment())
             is Command.NavigateRegLoginViewCommand -> replaceFragment(OnboardingFragment())
             is Command.NavigateRegFinishViewCommand -> replaceFragment(AuthDoneFragment())
             is Command.OpenMainActivityViewCommand -> {

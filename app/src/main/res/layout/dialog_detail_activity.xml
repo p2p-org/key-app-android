@@ -6,7 +6,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_rounded_top"
     android:orientation="vertical"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
@@ -285,7 +284,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_85"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/bg_radius_top_dark"
         android:elevation="@dimen/dp_10"
         android:gravity="center"
         android:orientation="horizontal">

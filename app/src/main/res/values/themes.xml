@@ -289,48 +289,19 @@
     </style>
 
     <style name="Widget.Gain.Button" parent="Widget.Black.Button">
-        <item name="android:background">@drawable/bg_gain_rect</item>
+<!--        <item name="android:background">@drawable/bg_gain_rect</item>-->
         <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="Widget.White.Button" parent="TextAppearance.AppCompat">
         <item name="textAllCaps">false</item>
         <item name="android:textSize">@dimen/sp_15</item>
-        <item name="android:background">@drawable/bg_already_have_account</item>
-    </style>
-
-    <style name="SwitchStyle">
-        <item name="colorControlNormal">@android:color/black</item>
-        <item name="colorControlActivated">@android:color/black</item>
-        <item name="colorSwitchThumbNormal">@android:color/white</item>
-    </style>
-
-    <style name="MyIOSSwitch" parent="Theme.AppCompat.Light">
-        <item name="colorControlActivated">#888888</item>
-        <item name="android:colorForeground">#888888</item>
+        <item name="android:background">@drawable/bg_white_rounded</item>
     </style>
 
     <style name="Widget.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="boxStrokeWidth">0dp</item>
         <item name="boxStrokeWidthFocused">0dp</item>
-    </style>
-
-
-    <style name="BottomSheetDialogShapeAppearance.RoundedCorners" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopLeft">@dimen/dp_20</item>
-        <item name="cornerSizeTopRight">@dimen/dp_20</item>
-        <item name="cornerSizeBottomLeft">@dimen/dp_0</item>
-        <item name="cornerSizeBottomRight">@dimen/dp_0</item>
-    </style>
-
-
-    <style name="BottomSheetDialog.Style.RoundedCorners" parent="Widget.MaterialComponents.BottomSheet">
-        <item name="shapeAppearanceOverlay">@style/BottomSheetDialogShapeAppearance.RoundedCorners</item>
-    </style>
-
-    <style name="BottomSheetDialogTheme.RoundedCorners" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/BottomSheetDialog.Style.RoundedCorners</item>
     </style>
 
 </resources>

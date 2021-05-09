@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_rounded_top"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,7 +60,6 @@
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/bg_light_gray_rect_radius_10"
         android:padding="@dimen/dp_8">
 
         <androidx.appcompat.widget.AppCompatImageView
