@@ -3,8 +3,6 @@ package com.p2p.wallet.dashboard
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.dashboard.interactor.DashboardInteractor
 import com.p2p.wallet.dashboard.interactor.SwapInteractor
-import com.p2p.wallet.dashboard.repository.DashboardRepository
-import com.p2p.wallet.dashboard.repository.DashboardRepositoryImpl
 import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
 import com.p2p.wallet.dashboard.repository.WowletApiCallRepositoryImpl
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
@@ -17,12 +15,11 @@ object DashboardModule : InjectionModule {
     // todo: workaround, split to modules, make dashboard simpler
     override fun create() = module {
         single<WowletApiCallRepository> { WowletApiCallRepositoryImpl(get()) }
-        single<DashboardRepository> { DashboardRepositoryImpl(get()) }
         viewModel { SwapViewModel(get()) }
 
         factory { SwapInteractor() }
 
         factory { SecretKeyInteractor(get()) }
-        single { DashboardInteractor(get(), get()) }
+        single { DashboardInteractor(get()) }
     }
 }
