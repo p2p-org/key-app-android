@@ -8,7 +8,7 @@
     <style name="PayTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/colorBlue</item>
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:windowBackground">@drawable/bg_dialog</item>
+        <item name="android:windowBackground">@drawable/bg_white_rounded</item>
         <item name="android:windowMinWidthMinor">280dp</item>
     </style>
 </resources>

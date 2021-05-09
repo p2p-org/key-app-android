@@ -10,10 +10,8 @@ import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.AddCoinModel
 import com.p2p.wallet.dashboard.model.local.BalanceInfo
 import com.p2p.wallet.dashboard.model.local.ConstWallet
-import com.p2p.wallet.dashboard.model.local.EnableNotificationModel
 import com.p2p.wallet.dashboard.model.local.EnterWallet
 import com.p2p.wallet.dashboard.model.local.LocalWalletItem
-import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.dashboard.repository.DashboardRepository
 import com.p2p.wallet.dashboard.repository.LocalDatabaseRepository
@@ -22,7 +20,7 @@ import com.p2p.wallet.dashboard.repository.fromConstWalletToAddCoinItem
 import com.p2p.wallet.dashboard.repository.transferInfoToActivityItem
 import com.p2p.wallet.dashboard.repository.walletItemToQrCode
 import com.p2p.wallet.dashboard.repository.walletToWallet
-import com.p2p.wallet.infrastructure.persistence.PreferenceService
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.WalletDataConst
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -41,7 +39,6 @@ import kotlin.math.pow
 class DashboardInteractor(
     private val dashboardRepository: DashboardRepository,
     private val wowletApiCallRepository: WowletApiCallRepository,
-    private val preferenceService: PreferenceService,
     private val localDatabaseRepository: LocalDatabaseRepository
 ) {
     private var walletData: MutableList<Token> = mutableListOf()
@@ -63,7 +60,8 @@ class DashboardInteractor(
     }
 
     suspend fun getWallets(): Result<YourWallets> {
-        val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
+//        val publicKey = preferenceService.getActiveWallet()?.publicKey ?: ""
+        val publicKey = ""
 
         try {
             val balance = wowletApiCallRepository.getBalance(publicKey)
@@ -199,22 +197,23 @@ class DashboardInteractor(
     }
 
     suspend fun clearSecretKey() {
-        val secretData = preferenceService.getActiveWallet()
-        secretData?.let {
+//        val secretData = preferenceService.getActiveWallet()
+//        secretData?.let {
 //            it.secretKey = ""
-            preferenceService.updateWallet(it.copy(secretKey = ""))
-            preferenceService.finishLoginReg(false)
+//            preferenceService.updateWallet(it.copy(secretKey = ""))
+//            preferenceService.finishLoginReg(false)
 //            preferenceService.enableFingerPrint(EnableFingerPrintModel(false, false))
-            preferenceService.enableNotification(EnableNotificationModel(false, false))
-        }
+//            preferenceService.enableNotification(EnableNotificationModel(false, false))
+//        }
     }
 
     fun setSelectedCurrency(currency: SelectedCurrency) {
-        preferenceService.setSelectedCurrency(currency)
+//        preferenceService.setSelectedCurrency(currency)
     }
 
     fun getSelectedCurrency(): SelectedCurrency? {
-        return preferenceService.getSelectedCurrency()
+//        return preferenceService.getSelectedCurrency()
+        return null
     }
 
     suspend fun saveEditedWallet(localWalletItem: LocalWalletItem) =
@@ -247,13 +246,15 @@ class DashboardInteractor(
     }
 
     suspend fun addCoin(addCoinItem: AddCoinItem): Result<Boolean> {
-        val secretKey = preferenceService.getActiveWallet()?.secretKey
+//        val secretKey = preferenceService.getActiveWallet()?.secretKey
+        val secretKey = "preferenceService.getActiveWallet()?.secretKey"
         val payer = Account(Base58.decode(secretKey))
         val mintAddress = PublicKey(addCoinItem.mintAddress)
         val newAccount = Account()
         addCoinItem.walletAddress = newAccount.publicKey.toBase58()
-        val activeWallet = preferenceService.getActiveWallet()
-        val fromPublicKey = activeWallet?.publicKey!!
+//        val activeWallet = preferenceService.getActiveWallet()
+//        val fromPublicKey = activeWallet?.publicKey!!
+        val fromPublicKey = "activeWallet?.publicKey!!"
         try {
             val signature = wowletApiCallRepository.createAndInitializeTokenAccount(
                 payer,

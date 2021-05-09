@@ -62,7 +62,6 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/dp_1"
             android:layout_weight="85"
-            android:background="@drawable/bg_copy_wallet_address_to_clipboard_btn"
             android:gravity="center_vertical"
             android:paddingStart="@dimen/dp_20"
             android:paddingEnd="@dimen/dp_20"
@@ -75,8 +74,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dp_1"
-            android:layout_weight="15"
-            android:background="@drawable/bg_share_upload_btn" />
+            android:layout_weight="15"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="wrap_content"

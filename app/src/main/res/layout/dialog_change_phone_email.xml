@@ -7,7 +7,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_profile_dialog"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -46,7 +45,6 @@
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_25"
         android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/bg_change_phone_email"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatEditText

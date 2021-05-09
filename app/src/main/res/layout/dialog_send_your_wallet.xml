@@ -36,7 +36,7 @@
         android:layout_marginHorizontal="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginBottom="@dimen/dp_48"
-        android:background="@drawable/bg_already_have_account"
+        android:background="@drawable/bg_white_rounded"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/enter_you_wallet_title">
 
@@ -82,7 +82,6 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_15"
             android:layout_marginEnd="@dimen/dp_2"
-            android:background="@drawable/bg_gray_token"
             android:gravity="center_vertical"
             android:lines="1"
             android:paddingHorizontal="@dimen/dp_15"
@@ -98,7 +97,6 @@
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/dp_15"
             android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/bg_gray_token_share"
             app:layout_constraintBottom_toBottomOf="@+id/tokenText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/walletAddressTextView">

@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.p2p.wallet.R
+import com.p2p.wallet.blockchain.BlockChainExplorerFragment
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.dashboard.ui.dialog.TransactionBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.swap.SwapBottomSheet
@@ -19,10 +20,9 @@ import com.p2p.wallet.deprecated.viewcommand.ViewCommand
 import com.p2p.wallet.detailwallet.adapter.ActivityAdapter
 import com.p2p.wallet.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wallet.detailwallet.viewmodel.DetailWalletViewModel
-import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
-import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.changeTextColor
+import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.getMonthly
 import com.p2p.wallet.utils.getOneHour
 import com.p2p.wallet.utils.getWeekly
@@ -31,8 +31,6 @@ import com.p2p.wallet.utils.initChart
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.roundCurrencyValue
 import com.p2p.wallet.utils.viewbinding.viewBinding
-import com.p2p.wallet.blockchain.BlockChainExplorerFragment
-import com.p2p.wallet.utils.copyToClipBoard
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Calendar
 
@@ -177,13 +175,13 @@ class DetailWalletFragment : BaseFragment(R.layout.fragment_detail_activity) {
     private fun processViewCommand(command: ViewCommand) {
         when (command) {
             is Command.OpenSendCoinDialogViewCommand -> {
-                SendCoinsBottomSheet.newInstance(
-                    command.walletItem,
-                    command.walletAddress,
-                ).show(
-                    childFragmentManager,
-                    TAG_SEND_COIN
-                )
+//                SendCoinsBottomSheet.newInstance(
+//                    command.walletItem,
+//                    command.walletAddress,
+//                ).show(
+//                    childFragmentManager,
+//                    TAG_SEND_COIN
+//                )
             }
             is Command.OpenSwapBottomSheetViewCommand -> {
                 SwapBottomSheet.newInstance(

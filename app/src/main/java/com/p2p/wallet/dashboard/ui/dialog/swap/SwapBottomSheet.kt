@@ -8,15 +8,14 @@ import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.SendCoinDoneDialog
+import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
 import com.p2p.wallet.dashboard.ui.dialog.swap.dialog.SelectTokenToSwapBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.swap.dialog.SlippageSettingsBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.swap.utils.enableDecimalInputTextWatcher
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
-import com.p2p.wallet.dashboard.ui.dialog.yourwallets.YourWalletsBottomSheet
 import com.p2p.wallet.databinding.BottomSheetSwapBinding
 import com.p2p.wallet.deprecated.viewcommand.Command
 import com.p2p.wallet.deprecated.viewcommand.ViewCommand
-import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
 import com.p2p.wallet.dialog.utils.makeFullScreen
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
@@ -97,8 +96,7 @@ class SwapBottomSheet(
             }
 
             imgTokenTo.imageSourceRadiusDpWithDefault(
-                selectedWalletFrom.iconUrl, 12, R.drawable.ic_wallet_blue,
-                R.drawable.ic_wallet_blue
+                selectedWalletFrom.iconUrl, 12
             )
             txtTokenTo.text = selectedWalletFrom.tokenSymbol
             imgArrowDownTo.setOnClickListener { viewModel.openSelectTokenToSwapBottomSheet() }
@@ -135,14 +133,14 @@ class SwapBottomSheet(
     private fun processViewCommand(command: ViewCommand) {
         when (command) {
             is Command.OpenMyWalletDialogViewCommand -> {
-                YourWalletsBottomSheet.newInstance(
-                    getString(R.string.select_source)
-                ) {
-                    viewModel.setSelectedWalletFrom(it)
-                }.show(
-                    childFragmentManager,
-                    YourWalletsBottomSheet.YOUR_WALLET
-                )
+//                YourWalletsBottomSheet.newInstance(
+//                    getString(R.string.select_source)
+//                ) {
+//                    viewModel.setSelectedWalletFrom(it)
+//                }.show(
+//                    childFragmentManager,
+//                    YourWalletsBottomSheet.YOUR_WALLET
+//                )
             }
             is Command.OpenSelectTokenToSwapBottomSheet -> {
                 SelectTokenToSwapBottomSheet.newInstance(

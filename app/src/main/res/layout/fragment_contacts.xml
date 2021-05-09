@@ -35,7 +35,6 @@
         android:layout_marginStart="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_25"
         android:layout_marginEnd="@dimen/dp_20"
-        android:background="@drawable/bg_gray_border"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

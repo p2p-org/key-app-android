@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.ui.dialog.networks.viewmodel.NetworkViewModel
 import com.p2p.wallet.dashboard.ui.dialog.profile.viewmodel.ProfileViewModel
 import com.p2p.wallet.databinding.DialogProfileBinding
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -48,7 +47,6 @@ class ProfileDialog(
     }
 
     private val profileViewModel: ProfileViewModel by viewModel()
-    private val networkViewModel: NetworkViewModel by viewModel()
 
     private val binding: DialogProfileBinding by viewBinding()
 
@@ -60,7 +58,6 @@ class ProfileDialog(
 
         with(binding) {
             txtCurrencyName.text = profileViewModel.getSelectedCurrencyName()
-            txtSelectedNetworkName.text = networkViewModel.getSelectedNetworkName()
 
             val isEnabled = profileViewModel.isUsesFingerprint().isEnable
             txtSecurityOptions.text = getString(if (isEnabled) (R.string.fingerprint_and_pin) else R.string.pin)
@@ -94,7 +91,6 @@ class ProfileDialog(
     }
 
     private val onNetworkSelected: () -> Unit = {
-        binding.txtSelectedNetworkName.text = networkViewModel.getSelectedNetworkName()
     }
 
     private val onFingerprintStateSelected: () -> Unit = {

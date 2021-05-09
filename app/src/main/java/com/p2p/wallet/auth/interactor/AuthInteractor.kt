@@ -68,7 +68,6 @@ class AuthInteractor(
          */
         secureStorage.saveString(KEY_PIN_CODE_ALTERNATE_HASH, Hex.encode(hash.toByteArray()))
         secureStorage.saveBytes(KEY_PIN_CODE_SALT, salt)
-//        getAndRegisterPushToken()
     }
 
     fun getPinDecodeCipher(): DecodeCipher = keyStoreWrapper.getDecodeCipher(KEY_PIN_CODE_HASH)

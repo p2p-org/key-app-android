@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_rounded_top"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +15,6 @@
             android:id="@+id/clHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_radius_top_gray"
             android:paddingBottom="@dimen/dp_50"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -97,7 +95,6 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/bg_green_rect"
             android:paddingHorizontal="@dimen/dp_16"
             android:paddingVertical="@dimen/dp_8"
             android:text="@string/completed"
@@ -182,7 +179,6 @@
                     android:id="@+id/copyFromUserKey"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_lighter_gray_rect"
                     android:padding="@dimen/dp_10"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -252,7 +248,6 @@
                     android:id="@+id/copyToUserKey"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_lighter_gray_rect"
                     android:padding="@dimen/dp_10"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -426,7 +421,6 @@
                     android:id="@+id/copyTransaction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_lighter_gray_rect"
                     android:padding="@dimen/dp_10"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -448,7 +442,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginVertical="@dimen/dp_20"
-                android:background="@drawable/bg_dark_gray_rect"
 
                 android:paddingVertical="@dimen/dp_18"
                 android:text="@string/view_in_blockchain_explorer"

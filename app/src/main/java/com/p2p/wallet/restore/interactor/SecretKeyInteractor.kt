@@ -4,13 +4,11 @@ import com.p2p.wallet.common.network.CallException
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.SecretKeyCombinationSuccess
-import com.p2p.wallet.infrastructure.persistence.PreferenceService
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.mnemoticgenerator.English
 
 @Deprecated("Should be refactored")
 class SecretKeyInteractor(
-    val preferenceService: PreferenceService,
     private val userInteractor: UserInteractor
 ) {
 
@@ -52,18 +50,6 @@ class SecretKeyInteractor(
     }
 
     suspend fun resetPhrase(inputPhrase: String): Result<Boolean> {
-        /*     val walletList = preferenceService.getWalletList()
-             walletList?.let {
-                 it.forEach { userData ->
-                     if (userData.phrase.joinToString(separator = " ") == inputPhrase) {
-                         val userAccount=wowletApiCallRepository.initAccount(userData.phrase)
-                         preferenceService.updateWallet(userAccount)
-                         return true
-                     }
-                 }
-             }
-
-                 return false*/
         return if (inputPhrase.isNotEmpty()) {
             val phrase = inputPhrase.split(" ")
             val words = English.INSTANCE.words
@@ -77,13 +63,6 @@ class SecretKeyInteractor(
             }
 
             if (wordsAreValid) {
-                // Temporary comparing to the list from CreateWalletUseCase class
-//                CreateWalletUseCase(preferenceService, wowletApiCallRepository).generatePhrase().forEach {
-//                    if (!phrase.contains(it)) {
-//                        return Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE,"Phrase is invalid"))
-//                    }
-//
-//                }
 
                 userInteractor.createAndSaveAccount(phrase)
                 Result.Success(true)
@@ -99,15 +78,5 @@ class SecretKeyInteractor(
         } else {
             Result.Error(CallException(Constants.ERROR_INCORRECT_PHRASE, "Phrase empty"))
         }
-    }
-
-    fun currentPhrase(): String {
-        val walletList = preferenceService.getActiveWallet()
-        val phrase = walletList?.keys?.joinToString(separator = " ")
-        return phrase ?: ""
-    }
-
-    fun currentListPhrase(): List<String> {
-        return preferenceService.getActiveWallet()?.keys ?: listOf()
     }
 }

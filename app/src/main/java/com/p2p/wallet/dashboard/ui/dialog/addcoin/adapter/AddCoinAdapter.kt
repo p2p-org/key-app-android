@@ -150,8 +150,8 @@ class AddCoinAdapter(
                     btnViewInExplorerClickEvent.invoke(Constants.EXPLORER_SOLANA_ADD_TOKEN + item.mintAddress)
                 }
                 txtWillCost.text = txtWillCost.context.getString(R.string.add_coin_cost)
-                pbAddCoin.progressDrawable =
-                    ContextCompat.getDrawable(pbAddCoin.context, R.drawable.bg_button_progress_bar)
+//                pbAddCoin.progressDrawable =
+//                    ContextCompat.getDrawable(pbAddCoin.context, R.drawable.bg_button_progress_bar)
                 lAddCoin.isEnabled = true
                 vName.text = item.tokenSymbol
                 priceTextView.text = item.tokenName
