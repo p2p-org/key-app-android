@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.ContextWrapper
+import android.content.Intent
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -50,4 +51,11 @@ fun Context.copyToClipBoard(content: String) {
     val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(getString(R.string.app_name), content)
     clipboard.setPrimaryClip(clip)
+}
+
+fun Context.shareText(value: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND)
+    shareIntent.type = "text/plain"
+    shareIntent.putExtra(Intent.EXTRA_TEXT, value)
+    startActivity(Intent.createChooser(shareIntent, "Share Text"))
 }

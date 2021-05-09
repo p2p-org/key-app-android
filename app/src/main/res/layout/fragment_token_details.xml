@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackgroundBorderless"
                 android:padding="4dp"
-                android:src="@drawable/ic_qrcode_blue"
+                android:src="@drawable/ic_qr"
                 app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tokenImageView"

@@ -21,7 +21,6 @@
         <item name="colorControlActivated">?colorAccent</item>
         <item name="colorControlNormal">@color/colorDark</item>
         <!--        <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>-->
-        <item name="android:textCursorDrawable">@drawable/cursor</item>
 
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">?colorPrimary</item>

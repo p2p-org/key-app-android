@@ -98,7 +98,7 @@ class KeywordEditTextChangeListener(
             return
         }
         if (isPastedPhraseBiggerThanAllowed) {
-            viewModel.postInvadedPhrase(root.context.getString(R.string.secret_phrase_can_not_contain_more_than_12_words_error_message))
+            viewModel.postInvadedPhrase(root.context.getString(R.string.auth_seed_phrase_limit))
             viewModel.resetPhrase()
             return
         }

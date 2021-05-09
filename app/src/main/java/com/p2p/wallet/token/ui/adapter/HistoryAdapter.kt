@@ -51,7 +51,7 @@ class HistoryAdapter(
         when (viewType) {
             R.layout.item_transaction -> TransactionViewHolder(parent, onTransactionClicked)
             R.layout.item_history_date -> DateViewHolder(parent)
-            R.layout.item_progressbar -> ProgressViewHolder(parent)
+            R.layout.item_progress -> ProgressViewHolder(parent)
             else -> ErrorViewHolder(parent)
         }
 
@@ -76,7 +76,7 @@ class HistoryAdapter(
 
     override fun getItemViewType(position: Int): Int = when {
         !stateRequiresExtraItem(pagingState) || position < itemCount - 1 -> getAdapterViewType(position)
-        pagingState is PagingState.Loading -> R.layout.item_progressbar
+        pagingState is PagingState.Loading -> R.layout.item_progress
         else -> R.layout.item_error
     }
 

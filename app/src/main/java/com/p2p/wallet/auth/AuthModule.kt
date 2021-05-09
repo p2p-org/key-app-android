@@ -11,11 +11,8 @@ import com.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import com.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import com.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import com.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
-import com.p2p.wallet.auth.ui.pincode.viewmodel.PinCodeViewModel
 import com.p2p.wallet.auth.ui.security.SecurityKeyContract
 import com.p2p.wallet.auth.ui.security.SecurityKeyPresenter
-import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -26,13 +23,11 @@ object AuthModule {
 
         single { AuthInteractor(get(), get(), get(), get()) }
         single { AuthRemoteRepository() } bind AuthRepository::class
-        viewModel { PinCodeViewModel() }
         factory { SecurityKeyPresenter(get(), get()) } bind SecurityKeyContract.Presenter::class
 
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
         factory { SecurityKeyInteractor(get()) }
-        single { DetailWalletInteractor(get(), get(), get()) }
     }
 }

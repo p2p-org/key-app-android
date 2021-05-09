@@ -15,7 +15,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.model.local.Keyword
-import com.p2p.wallet.databinding.RvItemKeyWordBinding
+import com.p2p.wallet.databinding.ItemKeyWordBinding
 import com.p2p.wallet.restore.ui.secretkeys.utils.KeywordEditOnKeyListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.KeywordEditTextChangeListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.MeasureHelper
@@ -25,6 +25,7 @@ import com.p2p.wallet.restore.ui.secretkeys.utils.showSoftKeyboard
 import com.p2p.wallet.restore.ui.secretkeys.viewmodel.SecretKeyViewModel
 
 /* TODO: should be refactored, make simpler implementation */
+@Deprecated("will be refactored")
 class SecretPhraseAdapter(
     private val context: Context,
     private val viewModel: SecretKeyViewModel
@@ -125,7 +126,7 @@ class SecretPhraseAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            RvItemKeyWordBinding.inflate(
+            ItemKeyWordBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -142,7 +143,7 @@ class SecretPhraseAdapter(
     }
 
     inner class ViewHolder(
-        val binding: RvItemKeyWordBinding
+        val binding: ItemKeyWordBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(position: Int, item: Keyword) {
 

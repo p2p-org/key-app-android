@@ -113,7 +113,7 @@ class TokenDetailsFragment :
             xAxis.setDrawLabels(false)
             setTouchEnabled(true)
             legend.isEnabled = false
-            val mv = MarkerView(context, R.layout.layout_dot)
+            val mv = MarkerView(context, R.layout.view_line_chart_dot)
             mv.setOffset(
                 (-mv.measuredWidth / 2).toFloat(),
                 (-mv.measuredHeight).toFloat() / 2

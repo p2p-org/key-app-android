@@ -21,7 +21,6 @@ object InfrastructureModule : InjectionModule {
                 .build()
         }
 
-        single { get<WalletDatabase>().walletDAO() }
         single {
             val context = get<Context>()
             val name = "${context.packageName}.prefs"

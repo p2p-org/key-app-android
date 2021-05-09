@@ -3,7 +3,7 @@ package com.p2p.wallet.restore.ui.secretkeys.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
+import androidx.lifecycle.ViewModel
 import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.common.network.Result
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 @Deprecated("Should be refactored")
 class SecretKeyViewModel(
     private val secretKeyInteractor: SecretKeyInteractor
-) : BaseViewModel() {
+) : ViewModel() {
 
     private val _isCurrentCombination by lazy { MutableLiveData<Boolean>() }
     val isCurrentCombination: LiveData<Boolean> get() = _isCurrentCombination
