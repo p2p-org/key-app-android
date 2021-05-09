@@ -41,7 +41,7 @@ class SwapViewModel(
     val clearSearchBar: LiveData<Boolean> get() = _clearSearchBar
 
     private val _makeDialogFullScreen by lazy { MutableLiveData<Boolean>() }
-    val makeDialogFullScreen: LiveData<Boolean> get() = _makeDialogFullScreen
+    val makeDialogFullScreen: LiveData<Boolean>  get() = _makeDialogFullScreen
 
     private val _selectedSlippage by lazy { MutableLiveData<Boolean>() }
     val selectedSlippage: LiveData<Boolean> get() = _selectedSlippage

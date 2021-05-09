@@ -6,13 +6,13 @@ import retrofit2.http.Query
 interface CompareApi {
 
     @GET("data/pricemulti")
-    suspend fun getTokensPrice(
-        @Query("fsym") tokensFrom: String,
+    suspend fun getMultiPrice(
+        @Query("fsyms") tokensFrom: String,
         @Query("tsyms") tokenTo: String
     ): TokenPriceResponse
 
     @GET("data/price")
-    suspend fun getUSPrice(
+    suspend fun getPrice(
         @Query("fsym") tokenFrom: String,
         @Query("tsyms") tokenTo: String,
     ): PriceResponse

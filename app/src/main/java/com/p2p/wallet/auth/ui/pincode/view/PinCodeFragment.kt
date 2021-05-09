@@ -67,23 +67,23 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         viewModel.fingerPrintStatus()
         binding.run {
             Log.i("FingerPring", "initView: " + requireActivity().isFingerPrintSet())
-            pinView.pinCodeFragmentType = pinCodeFragmentType
-            pinView.setMaxPinSize(6)
+//            pinView.pinCodeFragmentType = pinCodeFragmentType
+//            pinView.setMaxPinSize(6)
             context?.let { context ->
                 pinButtonAdapter = PinButtonAdapter(
                     isFingerprintEnabled,
                     context,
                     pinCodeFragmentType,
                     pinButtonClick = {
-                        pinView.onPinButtonClicked(text = it)
-                        vPinCodeNotMatch.visibility = View.INVISIBLE
+//                        pinView.onPinButtonClicked(text = it)
+//                        vPinCodeNotMatch.visibility = View.INVISIBLE
                     },
                     pinFingerPrint = {
                         this@PinCodeFragment.viewModel.openFingerprintDialog()
                     },
                     removeCode = {
-                        pinView.onDeleteButtonClicked()
-                        vPinCodeNotMatch.visibility = View.INVISIBLE
+//                        pinView.onDeleteButtonClicked()
+//                        vPinCodeNotMatch.visibility = View.INVISIBLE
                     }
                 )
                 gridView.adapter = pinButtonAdapter
@@ -131,8 +131,8 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
         }
         viewModel.pinCodeSaved.observe(viewLifecycleOwner) {
             binding.vPinCodeMessage.text = getString(R.string.confirm_pin_code)
-            binding.pinView.clearPin()
-            binding.pinView.isFirstPinInput = true
+//            binding.pinView.clearPin()
+//            binding.pinView.isFirstPinInput = true
         }
         viewModel.pinCodeError.observe(viewLifecycleOwner) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -159,29 +159,29 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
                 LaunchMode.CREATE -> {
                     binding.vPinCodeNotMatch.text = getString(R.string.pin_codes_invalid)
                     // vPinCodeMessage.text = getString(R.string.create_a_pin_code_info)
-                    binding.pinView.isFirstPinInput = true
-                    binding.pinView.clearPin()
+//                    binding.pinView.isFirstPinInput = true
+//                    binding.pinView.clearPin()
                 }
                 LaunchMode.VERIFY -> {
-                    binding.pinView.errorPinViewsDesign()
+//                    binding.pinView.errorPinViewsDesign()
                     if (pinCodeFragmentType == LaunchMode.VERIFY)
                         binding.resetPinCode.visibility = View.VISIBLE
                     else
                         binding.resetPinCode.visibility = View.GONE
                     if (isBackupDialog)
                         binding.vPinCodeNotMatch.text = getString(R.string.incorrect_password)
-                    else
-                        when (binding.pinView.wrongPinCodeCount) {
-                            1 ->
-                                binding.vPinCodeNotMatch.text =
-                                    getString(R.string.wrong_pin_code_left_2)
-                            2 ->
-                                binding.vPinCodeNotMatch.text =
-                                    getString(R.string.wrong_pin_code_left_1)
-                            else ->
-                                binding.vPinCodeNotMatch.text =
-                                    getString(R.string.wrong_pin_code_block)
-                        }
+//                    else
+//                        when (binding.pinView.wrongPinCodeCount) {
+//                            1 ->
+//                                binding.vPinCodeNotMatch.text =
+//                                    getString(R.string.wrong_pin_code_left_2)
+//                            2 ->
+//                                binding.vPinCodeNotMatch.text =
+//                                    getString(R.string.wrong_pin_code_left_1)
+//                            else ->
+//                                binding.vPinCodeNotMatch.text =
+//                                    getString(R.string.wrong_pin_code_block)
+//                        }
                 }
             }
         }
@@ -198,12 +198,12 @@ class PinCodeFragment : BaseFragment(R.layout.fragment_pin_code) {
             processViewCommand(it)
         }
 
-        binding.pinView.createPinCode = {
-            viewModel.initCode(it)
-        }
-        binding.pinView.verifyPinCode = {
-            viewModel.verifyPinCode(it)
-        }
+//        binding.pinView.createPinCode = {
+//            viewModel.initCode(it)
+//        }
+//        binding.pinView.verifyPinCode = {
+//            viewModel.verifyPinCode(it)
+//        }
     }
 
     private fun processViewCommand(command: ViewCommand) {

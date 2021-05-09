@@ -3,6 +3,7 @@ package com.p2p.wallet.user.repository
 import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
+import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.UserConverter
 import com.p2p.wallet.utils.WalletDataConst
@@ -17,15 +18,16 @@ interface UserRepository {
     suspend fun createAccount(keys: List<String>): Account
     suspend fun loadSolBalance(): Long
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
-    suspend fun loadTokens(targetCurrency: String): List<Token>
+    suspend fun loadTokens(): List<Token>
     suspend fun loadDecimals(publicKey: String): Int
-    suspend fun getPriceByToken(fromToken: String, toToken: String): BigDecimal
+    suspend fun getRate(source: String, destination: String): BigDecimal
 }
 
 class UserRepositoryImpl(
     private val client: RpcClient,
     private val compareApi: CompareApi,
-    private val tokenProvider: TokenKeyProvider
+    private val tokenProvider: TokenKeyProvider,
+    private val userLocalRepository: UserLocalRepository
 ) : UserRepository {
 
     override suspend fun createAccount(keys: List<String>): Account = withContext(Dispatchers.IO) {
@@ -33,8 +35,8 @@ class UserRepositoryImpl(
     }
 
     override suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice> {
-        val response = compareApi.getTokensPrice(tokens.joinToString(","), targetCurrency)
-        return emptyList() // todo: the purpose of this is to cache tokens price to quickly update data from memory
+        val response = compareApi.getMultiPrice(tokens.joinToString(","), targetCurrency)
+        return tokens.map { TokenConverter.fromNetwork(it, response) }
     }
 
     /**
@@ -44,7 +46,7 @@ class UserRepositoryImpl(
         client.api.getBalance(PublicKey(tokenProvider.publicKey))
     }
 
-    override suspend fun loadTokens(targetCurrency: String): List<Token> = withContext(Dispatchers.IO) {
+    override suspend fun loadTokens(): List<Token> = withContext(Dispatchers.IO) {
         val response = client.api.getProgramAccounts(
             PublicKey(tokenProvider.programPublicKey),
             32,
@@ -59,7 +61,7 @@ class UserRepositoryImpl(
             .mapNotNull { wallet ->
                 val account = tokenAccounts.find { it.mintAddress == wallet.mint } ?: return@mapNotNull null
                 val decimals = loadDecimals(account.mintAddress)
-                val exchangeRate = getPriceByToken(wallet.tokenSymbol, targetCurrency)
+                val exchangeRate = userLocalRepository.getPriceByToken(wallet.tokenSymbol).price
 
                 Token(
                     tokenSymbol = wallet.tokenSymbol,
@@ -84,7 +86,8 @@ class UserRepositoryImpl(
         * Assuming that SOL is our default token
         * */
         val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
-        val solExchangeRate = getPriceByToken(sol.tokenSymbol, targetCurrency)
+        val solPrice = userLocalRepository.getPriceByToken(sol.tokenSymbol)
+        val solExchangeRate = solPrice.price
         result.add(0, sol.copy(price = sol.total.times(solExchangeRate), exchangeRate = solExchangeRate))
         return@withContext result
     }
@@ -94,6 +97,6 @@ class UserRepositoryImpl(
         UserConverter.fromNetwork(response.value.data ?: emptyList())
     }
 
-    override suspend fun getPriceByToken(fromToken: String, toToken: String): BigDecimal =
-        compareApi.getUSPrice(fromToken, toToken).value.toBigDecimal()
+    override suspend fun getRate(source: String, destination: String): BigDecimal =
+        compareApi.getPrice(source, destination).value.toBigDecimal()
 }

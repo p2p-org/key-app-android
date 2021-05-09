@@ -143,7 +143,7 @@ class SendFragment :
             availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
             feeValueTextView.text = "0,000005 SOL" // todo: get valid fee
             amountEditText.doAfterTextChanged {
-                val amount = it.toString().toDoubleOrNull()?.toBigDecimal() ?: BigDecimal.ZERO
+                val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
                 val around = token.exchangeRate.times(amount)
 
                 val isMoreThanBalance = amount > token.total
