@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.p2p.wallet.dashboard.api.RetrofitService
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.ConstWallet
-import com.p2p.wallet.common.network.HistoricalPrices
+import com.p2p.wallet.main.api.PriceHistoryResponse
 import com.p2p.wallet.common.network.ResponceDataBonfida
 import com.p2p.wallet.utils.WalletDataConst
 import com.p2p.wallet.utils.analyzeResponseObject
@@ -21,7 +21,7 @@ class DashboardRepositoryImpl(
 
     override fun getConstWallets(): List<ConstWallet> = WalletDataConst.getWalletConstList()
 
-    override suspend fun getHistoricalPrices(symbols: String): Result<List<HistoricalPrices>> =
+    override suspend fun getHistoricalPrices(symbols: String): Result<List<PriceHistoryResponse>> =
         makeApiCall({
             getHistoricalPricesData(
                 api.getHistoricalPrices(
@@ -33,7 +33,7 @@ class DashboardRepositoryImpl(
         })
 
     private fun getHistoricalPricesData(
-        response: Response<ResponceDataBonfida<List<HistoricalPrices>>>
-    ): Result<List<HistoricalPrices>> =
+        response: Response<ResponceDataBonfida<List<PriceHistoryResponse>>>
+    ): Result<List<PriceHistoryResponse>> =
         analyzeResponseObject(response)
 }

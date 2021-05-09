@@ -3,7 +3,7 @@ package com.p2p.wallet.main.ui.main.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.main.model.TokenItem
 
 class TokenAdapter(

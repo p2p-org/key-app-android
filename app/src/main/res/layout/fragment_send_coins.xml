@@ -320,7 +320,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_qr_35" />
+                app:srcCompat="@drawable/ic_qr_code_scan" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClearWalletAddress"
@@ -360,7 +360,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_30"
-            android:layout_marginBottom="@dimen/dp_45"
+            android:layout_marginBottom="44dp"
 
             android:text="@string/physical_space_is_often_conceived_in_three_linear_dimensions_although_modern_physicists_usually_consider_it_with_time" />
     </androidx.appcompat.widget.LinearLayoutCompat>

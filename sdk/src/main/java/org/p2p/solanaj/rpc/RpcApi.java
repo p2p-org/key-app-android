@@ -2,7 +2,7 @@ package org.p2p.solanaj.rpc;
 
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.Transaction;
+import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.rpc.types.AccountInfo;
 import org.p2p.solanaj.rpc.types.ConfigObjects.ConfirmedSignFAddr2;
 import org.p2p.solanaj.rpc.types.ConfigObjects.DataSize;
@@ -39,11 +39,11 @@ public class RpcApi {
         return client.call("getRecentBlockhash", null, RecentBlockhash.class).getFeeBlockhash().getLamportsPerSignature();
     }
 
-    public String sendTransaction(Transaction transaction, Account signer) throws RpcException {
+    public String sendTransaction(TransactionResponse transaction, Account signer) throws RpcException {
         return sendTransaction(transaction, Arrays.asList(signer));
     }
 
-    public String sendTransaction(Transaction transaction, List<Account> signers) throws RpcException {
+    public String sendTransaction(TransactionResponse transaction, List<Account> signers) throws RpcException {
         String recentBlockhash = getRecentBlockhash();
         transaction.setRecentBlockHash(recentBlockhash);
         transaction.sign(signers);

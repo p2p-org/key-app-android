@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
 import com.p2p.wallet.common.network.Constants
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.dashboard.ui.dialog.SendCoinDoneDialog
 import com.p2p.wallet.dashboard.ui.dialog.SwapCoinProcessingDialog
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.viewmodel.SendCoinsViewModel

@@ -13,8 +13,8 @@
 -->
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/vCoin"
-        android:layout_width="@dimen/dp_45"
-        android:layout_height="@dimen/dp_45"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_marginStart="@dimen/dp_15"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

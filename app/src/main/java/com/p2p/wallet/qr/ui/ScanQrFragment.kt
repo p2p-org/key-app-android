@@ -25,16 +25,13 @@ class ScanQrFragment :
 
     companion object {
         fun create(
-            successCallback: (String) -> Unit,
-            errorCallback: () -> Unit
+            successCallback: (String) -> Unit
         ) = ScanQrFragment().apply {
             this.successCallback = successCallback
-            this.errorCallback = errorCallback
         }
     }
 
     private var successCallback: ((String) -> Unit)? = null
-    private var errorCallback: (() -> Unit)? = null
 
     private val binding: FragmentScanQrBinding by viewBinding()
 
@@ -58,6 +55,7 @@ class ScanQrFragment :
 
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
+            closeImageView.setOnClickListener { popBackStack() }
         }
     }
 

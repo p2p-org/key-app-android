@@ -2,7 +2,7 @@ package com.p2p.wallet.main.ui.swap
 
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch

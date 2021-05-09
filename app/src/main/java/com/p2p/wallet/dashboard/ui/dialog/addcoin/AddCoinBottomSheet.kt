@@ -17,7 +17,7 @@ import com.p2p.wallet.dashboard.ui.dialog.addcoin.adapter.AddCoinAdapter
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.DialogAddCoinBottomSheetBinding
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.math.BigDecimal

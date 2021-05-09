@@ -9,7 +9,7 @@ import com.p2p.wallet.deprecated.viewmodel.BaseViewModel
 import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.ActivityItem
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

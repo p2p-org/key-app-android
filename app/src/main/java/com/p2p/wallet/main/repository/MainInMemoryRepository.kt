@@ -1,7 +1,6 @@
 package com.p2p.wallet.main.repository
 
-import com.p2p.wallet.dashboard.model.local.Token
-import com.p2p.wallet.main.model.TokenPrice
+import com.p2p.wallet.token.model.Token
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -16,12 +15,4 @@ class MainInMemoryRepository : MainLocalRepository {
     override suspend fun getTokensFlow(): Flow<List<Token>> = tokensFlow
 
     override suspend fun getTokens(): List<Token> = tokensFlow.value
-
-    private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
-
-    override suspend fun setTokenPrices(tokens: List<TokenPrice>) {
-        pricesFlow.value = tokens
-    }
-
-    override suspend fun getTokenPrices(): List<TokenPrice> = pricesFlow.value
 }

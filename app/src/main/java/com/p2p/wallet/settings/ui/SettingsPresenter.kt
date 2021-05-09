@@ -3,10 +3,12 @@ package com.p2p.wallet.settings.ui
 import com.p2p.wallet.auth.interactor.AuthInteractor
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.settings.interactor.SettingsInteractor
+import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.launch
 
 class SettingsPresenter(
     private val authInteractor: AuthInteractor,
+    private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
@@ -23,6 +25,7 @@ class SettingsPresenter(
     override fun logout() {
         launch {
             authInteractor.logout()
+            userInteractor.clearMemoryData()
             view?.showAuthorization()
         }
     }

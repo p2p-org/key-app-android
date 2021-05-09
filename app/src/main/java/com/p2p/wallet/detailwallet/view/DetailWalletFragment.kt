@@ -21,7 +21,7 @@ import com.p2p.wallet.detailwallet.dialog.YourWalletBottomSheet
 import com.p2p.wallet.detailwallet.viewmodel.DetailWalletViewModel
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet
 import com.p2p.wallet.dashboard.ui.dialog.sendcoins.view.SendCoinsBottomSheet.Companion.TAG_SEND_COIN
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.changeTextColor
 import com.p2p.wallet.utils.getMonthly
 import com.p2p.wallet.utils.getOneHour

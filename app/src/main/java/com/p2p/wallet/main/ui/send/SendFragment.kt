@@ -3,7 +3,6 @@ package com.p2p.wallet.main.ui.send
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -14,15 +13,17 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.bottomsheet.ErrorBottomSheet
 import com.p2p.wallet.common.bottomsheet.TextContainer
 import com.p2p.wallet.common.mvp.BaseMvpFragment
-import com.p2p.wallet.dashboard.model.local.Token
 import com.p2p.wallet.databinding.FragmentSendBinding
-import com.p2p.wallet.main.ui.info.TransactionInfo
-import com.p2p.wallet.main.ui.info.TransactionStatusBottomSheet
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
+import com.p2p.wallet.main.ui.transaction.TransactionInfo
+import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import com.p2p.wallet.qr.ui.ScanQrFragment
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.addFragment
+import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
+import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 
@@ -31,12 +32,17 @@ class SendFragment :
     SendContract.View {
 
     companion object {
-        fun create() = SendFragment()
+        private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
+        fun create(address: String? = null) = SendFragment().withArgs(
+            EXTRA_ADDRESS to address
+        )
     }
 
     override val presenter: SendContract.Presenter by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
+
+    private val address: String? by args(EXTRA_ADDRESS)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,20 +75,20 @@ class SendFragment :
 
             scanImageView.setOnClickListener {
                 addFragment(
-                    ScanQrFragment.create(
-                        successCallback = {
-                            addressEditText.text?.clear()
-                            addressEditText.setText(it)
-                        },
-                        errorCallback = {
-                            Toast.makeText(requireContext(), R.string.qr_invalid, Toast.LENGTH_SHORT).show()
-                        }
-                    )
+                    ScanQrFragment.create {
+                        addressEditText.text?.clear()
+                        addressEditText.setText(it)
+                    }
                 )
             }
 
             sourceImageView.setOnClickListener {
                 presenter.loadTokensForSelection()
+            }
+
+            address?.let {
+                addressEditText.text?.clear()
+                addressEditText.setText(it)
             }
         }
 

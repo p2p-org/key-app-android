@@ -9,7 +9,7 @@ import com.p2p.wallet.dashboard.interactor.DashboardInteractor
 import com.p2p.wallet.dashboard.interactor.DetailWalletInteractor
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.LocalWalletItem
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.dashboard.ui.dialog.addcoin.AddCoinBottomSheet
 import com.p2p.wallet.deprecated.viewcommand.Command

@@ -3,14 +3,14 @@ package com.p2p.wallet.dashboard.repository
 import android.graphics.Bitmap
 import com.github.mikephil.charting.data.Entry
 import com.p2p.wallet.R
-import com.p2p.wallet.common.network.HistoricalPrices
+import com.p2p.wallet.main.api.PriceHistoryResponse
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.BalanceInfo
 import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.dashboard.model.local.EnterWallet
-import com.p2p.wallet.dashboard.model.local.Token
-import org.p2p.solanaj.rpc.types.TransferInfo
+import com.p2p.wallet.token.model.Token
+import org.p2p.solanaj.rpc.types.TransferInfoResponse
 import java.math.BigDecimal
 import kotlin.math.pow
 
@@ -80,11 +80,11 @@ fun Token.walletItemToQrCode(qrCode: Bitmap): EnterWallet {
     )
 }
 
-fun HistoricalPrices.fromHistoricalPricesToChartItem(index: Int): Entry {
-    return Entry(index.toFloat(), close.toFloat())
+fun PriceHistoryResponse.fromHistoricalPricesToChartItem(index: Int): Entry {
+    return Entry(index.toFloat(), 0.toFloat())
 }
 
-fun TransferInfo.transferInfoToActivityItem(
+fun TransferInfoResponse.transferInfoToActivityItem(
     publicKey: String,
     icon: String,
     tokenName: String,

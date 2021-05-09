@@ -9,7 +9,7 @@ import com.p2p.wallet.common.network.Constants.Companion.REQUEST_EXACTION
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.SendTransactionModel
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
 import java.math.RoundingMode

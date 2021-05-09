@@ -43,8 +43,11 @@ class TokenKeyProvider(
                 }
             }
 
-    val programPublicKey: String =
-        context.getString(R.string.programPublicKey)
+    val rpcPublicKey: String =
+        context.getString(R.string.rpcPublicKey)
+
+    val ownerKey: String =
+        context.getString(R.string.ownerKey)
 
     fun clear() {
         sharedPreferences.edit { remove(KEY_PUBLIC_KEY) }

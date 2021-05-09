@@ -7,7 +7,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.databinding.FragmentSelectTokenBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter

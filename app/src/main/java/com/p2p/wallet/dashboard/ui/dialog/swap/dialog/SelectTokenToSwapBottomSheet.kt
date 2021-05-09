@@ -11,7 +11,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.swap.adapter.SelectTokenToSwapAdapter
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wallet.databinding.BottomSheetSelectTokenToSwapBinding
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.restore.ui.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding

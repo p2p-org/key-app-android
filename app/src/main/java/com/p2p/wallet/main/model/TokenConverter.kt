@@ -1,37 +1,97 @@
 package com.p2p.wallet.main.model
 
-import com.p2p.wallet.main.api.TokenPriceResponse
+import com.p2p.wallet.dashboard.model.local.ConstWallet
+import com.p2p.wallet.main.api.MultiPriceResponse
+import com.p2p.wallet.main.api.SinglePriceResponse
+import com.p2p.wallet.token.model.Status
+import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.model.Transaction
+import com.p2p.wallet.user.model.TokenProgramAccount
+import org.p2p.solanaj.rpc.types.TransferInfoResponse
+import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
+import kotlin.math.pow
 
 object TokenConverter {
 
-    fun fromNetwork(tokenSymbol: String, response: TokenPriceResponse): TokenPrice = when (tokenSymbol) {
-        "SOL" -> TokenPrice(tokenSymbol, BigDecimal(response.SOL?.value ?: 0.0))
-        "BTC" -> TokenPrice(tokenSymbol, BigDecimal(response.BTC?.value ?: 0.0))
-        "SRM" -> TokenPrice(tokenSymbol, BigDecimal(response.SRM?.value ?: 0.0))
-        "MSRM" -> TokenPrice(tokenSymbol, BigDecimal(response.MSRM?.value ?: 0.0))
-        "ETH" -> TokenPrice(tokenSymbol, BigDecimal(response.ETH?.value ?: 0.0))
-        "FTT" -> TokenPrice(tokenSymbol, BigDecimal(response.FTT?.value ?: 0.0))
-        "YFI" -> TokenPrice(tokenSymbol, BigDecimal(response.YFI?.value ?: 0.0))
-        "LINK" -> TokenPrice(tokenSymbol, BigDecimal(response.LINK?.value ?: 0.0))
-        "XRP" -> TokenPrice(tokenSymbol, BigDecimal(response.XRP?.value ?: 0.0))
-        "USDT" -> TokenPrice(tokenSymbol, BigDecimal(response.USDT?.value ?: 0.0))
-        "USDC" -> TokenPrice(tokenSymbol, BigDecimal(response.USDC?.value ?: 0.0))
-        "WUSDC" -> TokenPrice(tokenSymbol, BigDecimal(response.WUSDC?.value ?: 0.0))
-        "SUSHI" -> TokenPrice(tokenSymbol, BigDecimal(response.SUSHI?.value ?: 0.0))
-        "ALEPH" -> TokenPrice(tokenSymbol, BigDecimal(response.ALEPH?.value ?: 0.0))
-        "SXP" -> TokenPrice(tokenSymbol, BigDecimal(response.SXP?.value ?: 0.0))
-        "HGET" -> TokenPrice(tokenSymbol, BigDecimal(response.HGET?.value ?: 0.0))
-        "CREAM" -> TokenPrice(tokenSymbol, BigDecimal(response.CREAM?.value ?: 0.0))
-        "UBXT" -> TokenPrice(tokenSymbol, BigDecimal(response.UBXT?.value ?: 0.0))
-        "HNT" -> TokenPrice(tokenSymbol, BigDecimal(response.HNT?.value ?: 0.0))
-        "FRONT" -> TokenPrice(tokenSymbol, BigDecimal(response.FRONT?.value ?: 0.0))
-        "AKRO" -> TokenPrice(tokenSymbol, BigDecimal(response.AKRO?.value ?: 0.0))
-        "HXRO" -> TokenPrice(tokenSymbol, BigDecimal(response.HXRO?.value ?: 0.0))
-        "UNI" -> TokenPrice(tokenSymbol, BigDecimal(response.UNI?.value ?: 0.0))
-        "MATH" -> TokenPrice(tokenSymbol, BigDecimal(response.MATH?.value ?: 0.0))
-        "TOMO" -> TokenPrice(tokenSymbol, BigDecimal(response.TOMO?.value ?: 0.0))
-        "LUA" -> TokenPrice(tokenSymbol, BigDecimal(response.LUA?.value ?: 0.0))
+    fun fromNetwork(
+        wallet: ConstWallet,
+        account: TokenProgramAccount,
+        exchangeRate: BigDecimal,
+        decimals: Int
+    ) = Token(
+        tokenSymbol = wallet.tokenSymbol,
+        tokenName = wallet.tokenName,
+        iconUrl = wallet.icon,
+        depositAddress = account.depositAddress,
+        mintAddress = account.mintAddress,
+        price = account.getFormattedPrice(exchangeRate, decimals),
+        total = account.getAmount(decimals),
+        decimals = decimals,
+        walletBinds = if (wallet.isUS()) 1.0 else 0.0,
+        color = wallet.color,
+        exchangeRate = exchangeRate
+    )
+
+    fun fromNetwork(tokenSymbol: String, response: MultiPriceResponse): TokenPrice = when (tokenSymbol) {
+        "SOL" -> TokenPrice(tokenSymbol, getOrZero(response.SOL))
+        "BTC" -> TokenPrice(tokenSymbol, getOrZero(response.BTC))
+        "SRM" -> TokenPrice(tokenSymbol, getOrZero(response.SRM))
+        "MSRM" -> TokenPrice(tokenSymbol, getOrZero(response.MSRM))
+        "ETH" -> TokenPrice(tokenSymbol, getOrZero(response.ETH))
+        "FTT" -> TokenPrice(tokenSymbol, getOrZero(response.FTT))
+        "YFI" -> TokenPrice(tokenSymbol, getOrZero(response.YFI))
+        "LINK" -> TokenPrice(tokenSymbol, getOrZero(response.LINK))
+        "XRP" -> TokenPrice(tokenSymbol, getOrZero(response.XRP))
+        "USDT" -> TokenPrice(tokenSymbol, getOrZero(response.USDT))
+        "USDC" -> TokenPrice(tokenSymbol, getOrZero(response.USDC))
+        "WUSDC" -> TokenPrice(tokenSymbol, getOrZero(response.WUSDC))
+        "SUSHI" -> TokenPrice(tokenSymbol, getOrZero(response.SUSHI))
+        "ALEPH" -> TokenPrice(tokenSymbol, getOrZero(response.ALEPH))
+        "SXP" -> TokenPrice(tokenSymbol, getOrZero(response.SXP))
+        "HGET" -> TokenPrice(tokenSymbol, getOrZero(response.HGET))
+        "CREAM" -> TokenPrice(tokenSymbol, getOrZero(response.CREAM))
+        "UBXT" -> TokenPrice(tokenSymbol, getOrZero(response.UBXT))
+        "HNT" -> TokenPrice(tokenSymbol, getOrZero(response.HNT))
+        "FRONT" -> TokenPrice(tokenSymbol, getOrZero(response.FRONT))
+        "AKRO" -> TokenPrice(tokenSymbol, getOrZero(response.AKRO))
+        "HXRO" -> TokenPrice(tokenSymbol, getOrZero(response.HXRO))
+        "UNI" -> TokenPrice(tokenSymbol, getOrZero(response.UNI))
+        "MATH" -> TokenPrice(tokenSymbol, getOrZero(response.MATH))
+        "TOMO" -> TokenPrice(tokenSymbol, getOrZero(response.TOMO))
+        "LUA" -> TokenPrice(tokenSymbol, getOrZero(response.LUA))
         else -> throw IllegalStateException("Unknown token symbol: $tokenSymbol")
     }
+
+    private fun getOrZero(response: SinglePriceResponse?): BigDecimal = response?.getValue() ?: BigDecimal.ZERO
+
+    /* todo: validate Swap operation, parse amount and total amount of token, validate status */
+    fun fromNetwork(
+        response: TransferInfoResponse,
+        publicKey: String,
+        tokenSymbol: String,
+        date: ZonedDateTime
+    ): Transaction =
+        when {
+            response.from == publicKey ->
+                Transaction.Send(
+                    transactionId = response.signature,
+                    destination = response.to,
+                    amount = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
+                    total = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
+                    status = Status.SUCCESS,
+                    date = date,
+                    tokenSymbol = tokenSymbol
+                )
+            else ->
+                Transaction.Receive(
+                    transactionId = response.signature,
+                    amount = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
+                    total = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
+                    status = Status.SUCCESS,
+                    date = date,
+                    senderAddress = response.from,
+                    tokenSymbol = tokenSymbol
+                )
+        }
 }

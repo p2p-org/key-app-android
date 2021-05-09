@@ -12,7 +12,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.allmytokens.adapter.WalletsAdapter
 import com.p2p.wallet.dashboard.ui.viewmodel.DashboardViewModel
 import com.p2p.wallet.databinding.DialogAllMyTokensBinding
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel

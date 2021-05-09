@@ -18,7 +18,7 @@ import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.QrWalletType
 import com.p2p.wallet.dashboard.model.local.SendTransactionModel
 import com.p2p.wallet.dashboard.model.local.UserWalletType
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

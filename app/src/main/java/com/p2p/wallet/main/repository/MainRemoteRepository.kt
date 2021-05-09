@@ -1,17 +1,21 @@
 package com.p2p.wallet.main.repository
 
+import com.p2p.wallet.common.date.toZonedDateTime
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.main.model.TokenConverter
+import com.p2p.wallet.token.model.Transaction
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.core.TransactionResponse
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction
-import org.p2p.solanaj.rpc.types.TransferInfo
+import org.p2p.solanaj.rpc.types.TransferInfoResponse
 
 class MainRemoteRepository(
     private val client: RpcClient,
@@ -24,7 +28,7 @@ class MainRemoteRepository(
             val targetPublicKey = PublicKey(targetAddress)
             val signer = Account(tokenProvider.secretKey)
 
-            val transaction = Transaction()
+            val transaction = TransactionResponse()
             transaction.addInstruction(
                 SystemProgram.transfer(
                     sourcePublicKey,
@@ -36,43 +40,70 @@ class MainRemoteRepository(
             client.api.sendTransaction(transaction, signer)
         }
 
-    override suspend fun getTransaction(signature: String, slot: Long): TransferInfo? = withContext(Dispatchers.IO) {
-        val trx = client.api.getConfirmedTransaction(signature)
-        val message: ConfirmedTransaction.Message = trx.transaction.message
-        val meta: ConfirmedTransaction.Meta = trx.meta
-        val instructions: List<ConfirmedTransaction.Instruction> = message.instructions
+    override suspend fun getHistory(depositAddress: String, tokenSymbol: String, limit: Int): List<Transaction> =
+        withContext(Dispatchers.IO) {
+            val signatures = client.api.getConfirmedSignaturesForAddress2(PublicKey(depositAddress), limit)
 
-        instructions.forEach {
-            if (message.accountKeys[it.programIdIndex.toInt()] == "11111111111111111111111111111111") {
-                val data = Base58.decode(it.data)
-                val lamports = Utils.readInt64(data, 4)
-
-                val transferInfo = TransferInfo(
-                    message.accountKeys[it.accounts[0].toInt()],
-                    message.accountKeys[it.accounts[1].toInt()],
-                    lamports
-                )
-                transferInfo.slot = slot
-                transferInfo.signature = signature
-                transferInfo.setFee(meta.fee)
-                transferInfo
-            } else {
-                if (message.accountKeys[it.programIdIndex.toInt()] == tokenProvider.programPublicKey) {
-                    val data = Base58.decode(it.data)
-                    val lamports = Utils.readInt64(data, 1)
-
-                    val transferInfo = TransferInfo(
-                        message.accountKeys[it.accounts[0].toInt()],
-                        message.accountKeys[it.accounts[1].toInt()],
-                        lamports
+            return@withContext signatures
+                .map {
+                    async { getConfirmedTransaction(it.signature, it.slot.toLong()) }
+                }
+                .mapNotNull {
+                    val response = it.await() ?: return@mapNotNull null
+                    val dateRequest = async { getBlockTime(response.slot) }
+                    response to dateRequest
+                }
+                .map { (response, dateRequest) ->
+                    TokenConverter.fromNetwork(
+                        response,
+                        tokenProvider.publicKey,
+                        tokenSymbol,
+                        dateRequest.await().toZonedDateTime()
                     )
-                    transferInfo.slot = slot
-                    transferInfo.signature = signature
-                    transferInfo.setFee(meta.fee)
-                    transferInfo
+                }
+                .sortedByDescending { it.date.toInstant().toEpochMilli() }
+        }
+
+    private suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfoResponse? =
+        withContext(Dispatchers.IO) {
+            val trx = client.api.getConfirmedTransaction(signature)
+            val message: ConfirmedTransaction.Message = trx.transaction.message
+            val meta: ConfirmedTransaction.Meta = trx.meta
+            val instructions = message.instructions
+
+            for (instruction in instructions) {
+                if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.ownerKey) {
+                    val data = Base58.decode(instruction.data)
+                    val lamports = Utils.readInt64(data, 4)
+
+                    return@withContext TransferInfoResponse(
+                        message.accountKeys[instruction.accounts[0].toInt()],
+                        message.accountKeys[instruction.accounts[1].toInt()],
+                        lamports,
+                        slot,
+                        signature,
+                        meta.fee
+                    )
+                } else {
+                    if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.rpcPublicKey) {
+                        val data = Base58.decode(instruction.data)
+                        val lamports = Utils.readInt64(data, 1)
+
+                        return@withContext TransferInfoResponse(
+                            message.accountKeys[instruction.accounts[0].toInt()],
+                            message.accountKeys[instruction.accounts[1].toInt()],
+                            lamports,
+                            slot,
+                            signature,
+                            meta.fee
+                        )
+                    }
                 }
             }
+            return@withContext null
         }
-        null
+
+    private suspend fun getBlockTime(slot: Long) = withContext(Dispatchers.IO) {
+        client.api.getBlockTime(slot)
     }
 }

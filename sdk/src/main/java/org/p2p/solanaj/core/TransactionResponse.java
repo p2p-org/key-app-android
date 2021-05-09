@@ -9,7 +9,7 @@ import org.bitcoinj.core.Base58;
 import org.p2p.solanaj.utils.ShortvecEncoding;
 import org.p2p.solanaj.utils.TweetNaclFast;
 
-public class Transaction {
+public class TransactionResponse {
 
     public static final int SIGNATURE_LENGTH = 64;
 
@@ -17,12 +17,12 @@ public class Transaction {
     private List<String> signatures;
     private byte[] serializedMessage;
 
-    public Transaction() {
+    public TransactionResponse() {
         this.messgae = new Message();
         this.signatures = new ArrayList<String>();
     }
 
-    public Transaction addInstruction(TransactionInstruction instruction) {
+    public TransactionResponse addInstruction(TransactionInstruction instruction) {
         messgae.addInstruction(instruction);
 
         return this;

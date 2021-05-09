@@ -2,8 +2,8 @@ package com.p2p.wallet.main.ui.send
 
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
-import com.p2p.wallet.dashboard.model.local.Token
-import com.p2p.wallet.main.ui.info.TransactionInfo
+import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import java.math.BigDecimal
 
 interface SendContract {

@@ -273,6 +273,7 @@
     <string name="common_no">No</string>
     <string name="common_done">Done</string>
     <string name="common_settings">Settings</string>
+    <string name="common_copied">Copied to clipboard</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -361,6 +362,16 @@
     <string name="main_price">Price:</string>
     <string name="main_slippage_settings">Slippage settings</string>
     <string name="main_slippage_description">Slippage refers to the difference between the expected price of a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.</string>
+    <string name="main_min_receive">Minimum receive:</string>
+    <string name="main_swap_fee">Fee (Transaction, New wallet):</string>
+    <string name="main_slippage">Slippage</string>
+    <string name="main_powered_by_project_serum">Powered by Project Serum</string>
+    <string name="main_swap_slippage">Slippage</string>
+    <string name="main_slippage_min">0.1%</string>
+    <string name="main_slippage_medium">0.5%</string>
+    <string name="main_slippage_percent">1%</string>
+    <string name="main_slippage_five_percent">5%</string>
+    <string name="main_custom">Custom</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -372,16 +383,16 @@
     <!-- settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_hide_zero_balances">Hide zero balances</string>
-    <string name="main_min_receive">Minimum receive:</string>
-    <string name="main_swap_fee">Fee (Transaction, New wallet):</string>
-    <string name="main_slippage">Slippage</string>
-    <string name="main_powered_by_project_serum">Powered by Project Serum</string>
-    <string name="main_swap_slippage">Slippage</string>
-    <string name="main_slippage_min">0.1%</string>
-    <string name="main_slippage_medium">0.5%</string>
-    <string name="main_slippage_percent">1%</string>
-    <string name="main_slippage_five_percent">5%</string>
-    <string name="main_custom">Custom</string>
+
+
+    <!-- details -->
+    <string name="details_1h">1H</string>
+    <string name="details_4h">4H</string>
+    <string name="details_1d">1D</string>
+    <string name="details_1w">1W</string>
+    <string name="details_1m">1M</string>
+    <string name="details_activity">Activity</string>
+    <string name="details_today">Today</string>
 
 
 </resources>

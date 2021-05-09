@@ -14,7 +14,7 @@ import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.common.network.Result
 import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.EnterWallet
-import com.p2p.wallet.dashboard.model.local.Token
+import com.p2p.wallet.token.model.Token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -58,8 +58,8 @@ class DetailWalletInteractor(
                             is Result.Success -> {
                                 historicalPrices.data?.let {
                                     if (it.isNotEmpty()) {
-                                        val close = it[0].close
-                                        activityItem.currency = close
+//                                        val close = it[0].data
+//                                        activityItem.currency = close
                                     }
                                 }
                             }
@@ -142,14 +142,14 @@ class DetailWalletInteractor(
                     is Result.Success -> {
                         historicalPrice.data?.let {
                             if (it.isNotEmpty()) {
-                                val close = it[0].close
-                                val open = it[0].open
-                                val change24h = close - open
-                                change24hInPercentages = if (open == 0.0) {
-                                    change24h / 1
-                                } else {
-                                    change24h / open
-                                }
+//                                val close = it[0].close
+//                                val open = it[0].open
+//                                val change24h = close - open
+//                                change24hInPercentages = if (open == 0.0) {
+//                                    change24h / 1
+//                                } else {
+//                                    change24h / open
+//                                }
                             }
                         }
                     }
