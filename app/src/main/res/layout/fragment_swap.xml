@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_swap"
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/main_swap"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
@@ -39,7 +40,7 @@
         tools:text="Available: 2140.0000" />
 
     <com.p2p.wallet.common.widget.RoundedImageView
-        android:id="@+id/fromImageView"
+        android:id="@+id/sourceImageView"
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:layout_marginStart="20dp"
@@ -49,15 +50,15 @@
         tools:src="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/tokenTextView"
+        android:id="@+id/sourceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/main_from"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        app:layout_constraintEnd_toEndOf="@id/fromImageView"
-        app:layout_constraintStart_toStartOf="@id/fromImageView"
-        app:layout_constraintTop_toBottomOf="@id/fromImageView"
+        app:layout_constraintEnd_toEndOf="@id/sourceImageView"
+        app:layout_constraintStart_toStartOf="@id/sourceImageView"
+        app:layout_constraintTop_toBottomOf="@id/sourceImageView"
         tools:text="SOL" />
 
     <ImageView
@@ -66,9 +67,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:src="@drawable/ic_triangle_down"
-        app:layout_constraintBottom_toBottomOf="@id/fromImageView"
-        app:layout_constraintStart_toEndOf="@id/fromImageView"
-        app:layout_constraintTop_toTopOf="@id/fromImageView"
+        app:layout_constraintBottom_toBottomOf="@id/sourceImageView"
+        app:layout_constraintStart_toEndOf="@id/sourceImageView"
+        app:layout_constraintTop_toTopOf="@id/sourceImageView"
         tools:ignore="ContentDescription" />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -79,6 +80,7 @@
         android:layout_marginEnd="20dp"
         android:background="@android:color/transparent"
         android:hint="@string/main_swap_hint"
+        android:imeOptions="actionDone"
         android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
         android:textColorHint="@color/colorGray"
         app:layout_constraintBottom_toBottomOf="@id/downImageView"
@@ -132,14 +134,14 @@
         app:layout_constraintTop_toBottomOf="@id/dividerView" />
 
     <com.p2p.wallet.common.widget.RoundedImageView
-        android:id="@+id/toImageView"
+        android:id="@+id/destinationImageView"
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="24dp"
+        android:src="@drawable/ic_wallet"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toTitleTextView"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toBottomOf="@id/toTitleTextView" />
 
     <ImageView
         android:id="@+id/toDownImageView"
@@ -147,25 +149,25 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:src="@drawable/ic_triangle_down"
-        app:layout_constraintBottom_toBottomOf="@id/toImageView"
-        app:layout_constraintStart_toEndOf="@id/toImageView"
-        app:layout_constraintTop_toTopOf="@id/toImageView"
+        app:layout_constraintBottom_toBottomOf="@id/destinationImageView"
+        app:layout_constraintStart_toEndOf="@id/destinationImageView"
+        app:layout_constraintTop_toTopOf="@id/destinationImageView"
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:id="@+id/toTextView"
+        android:id="@+id/destinationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/main_from"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        app:layout_constraintEnd_toEndOf="@id/toImageView"
-        app:layout_constraintStart_toStartOf="@id/toImageView"
-        app:layout_constraintTop_toBottomOf="@id/toImageView"
+        app:layout_constraintEnd_toEndOf="@id/destinationImageView"
+        app:layout_constraintStart_toStartOf="@id/destinationImageView"
+        app:layout_constraintTop_toBottomOf="@id/destinationImageView"
         tools:text="BTC" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/toAmountTextView"
+        android:id="@+id/destinationAmountTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -185,52 +187,49 @@
         android:text="@string/main_select_currency"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="@color/colorGray"
-        app:layout_constraintStart_toStartOf="@id/toAmountTextView"
-        app:layout_constraintTop_toBottomOf="@id/toAmountTextView" />
+        app:layout_constraintStart_toStartOf="@id/destinationAmountTextView"
+        app:layout_constraintTop_toBottomOf="@id/destinationAmountTextView" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/priceGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="valueBackgroundView,priceTextView,exchangeTextView,reverseImageView"
+        tools:visibility="visible" />
 
     <View
+        android:id="@+id/valueBackgroundView"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_gray_rounded"
-        app:layout_constraintBottom_toBottomOf="@id/priceTextView"
-        app:layout_constraintTop_toTopOf="@id/priceTextView" />
+        app:layout_constraintTop_toBottomOf="@id/currencyTextView" />
 
     <TextView
         android:id="@+id/priceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
         android:paddingHorizontal="8dp"
         android:text="@string/main_price"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
         android:textColor="@color/colorGray"
+        app:layout_constraintBottom_toBottomOf="@id/valueBackgroundView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/currencyTextView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:paddingHorizontal="8dp"
-        android:text="@string/main_price"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="@color/colorGray"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/currencyTextView" />
+        app:layout_constraintTop_toTopOf="@id/valueBackgroundView" />
 
     <TextView
         android:id="@+id/exchangeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
         android:paddingHorizontal="8dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+        app:layout_constraintBottom_toBottomOf="@id/priceTextView"
         app:layout_constraintEnd_toStartOf="@id/reverseImageView"
-        app:layout_constraintTop_toBottomOf="@id/currencyTextView"
+        app:layout_constraintTop_toTopOf="@id/priceTextView"
         tools:text="0.000350726 SOL per DAI" />
 
     <ImageView
@@ -253,6 +252,13 @@
         android:layout_marginTop="32dp"
         android:background="@color/colorGray"
         app:layout_constraintTop_toBottomOf="@id/priceTextView" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/calculationsGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="minReceiveTextView,receiveValueTextView,feeTextView,feeValueTextView,slippageTextView,slippageValueTextView" />
 
     <TextView
         android:id="@+id/minReceiveTextView"
@@ -363,4 +369,19 @@
         app:layout_constraintStart_toEndOf="@id/serumTextView"
         app:layout_constraintTop_toTopOf="@id/serumTextView"
         tools:ignore="ContentDescription" />
+
+    <FrameLayout
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

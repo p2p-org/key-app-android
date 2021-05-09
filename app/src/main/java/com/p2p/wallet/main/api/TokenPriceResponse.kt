@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class TokenPriceResponse(
     @SerializedName("SOL")
-    val SOL: PriceResponse,
+    val SOL: PriceResponse?,
     @SerializedName("SRM")
     val SRM: PriceResponse?,
     @SerializedName("MSRM")

@@ -4,16 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.common.widget.CheckableButton
-import com.p2p.wallet.common.widget.CheckableButtonGroup
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
-import com.p2p.wallet.databinding.BottomSheetSlippageSettingsBinding
-import com.p2p.wallet.restore.ui.secretkeys.utils.hideSoftKeyboard
-import com.p2p.wallet.restore.ui.secretkeys.utils.showSoftKeyboard
+import com.p2p.wallet.databinding.DialogSlippageBottomSheetBinding
 import com.p2p.wallet.utils.toast
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -24,7 +18,7 @@ class SlippageSettingsBottomSheet(
 
     private val swapViewModel: SwapViewModel by viewModel()
 
-    private val binding: BottomSheetSlippageSettingsBinding by viewBinding()
+    private val binding: DialogSlippageBottomSheetBinding by viewBinding()
 
     private var slippage: Double = 0.1
 
@@ -38,21 +32,21 @@ class SlippageSettingsBottomSheet(
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.bottom_sheet_slippage_settings, container, false)
+        inflater.inflate(R.layout.dialog_slippage_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            lSlippageCheckableBG.addClickEvents(
-                selectSlippageClickEvent,
-                HashMap<Int, CheckableButtonGroup.OnClickEvent>().apply {
-                    put(5, customSlippageClickEVent)
-                }
-            )
-
-            editorView.setOnClickListener { swapViewModel.setFocusOnSlippageEditor() }
-            editorTextView.isVisible = swapViewModel.isSlippageEditorEmpty.value == true
-            closeImageView.setOnClickListener { swapViewModel.clearSlippageEditor() }
+//            lSlippageCheckableBG.addClickEvents(
+//                selectSlippageClickEvent,
+//                HashMap<Int, CheckableButtonGroup.OnClickEvent>().apply {
+//                    put(5, customSlippageClickEVent)
+//                }
+//            )
+//
+//            editorView.setOnClickListener { swapViewModel.setFocusOnSlippageEditor() }
+//            editorTextView.isVisible = swapViewModel.isSlippageEditorEmpty.value == true
+//            closeImageView.setOnClickListener { swapViewModel.clearSlippageEditor() }
         }
         observeData()
     }
@@ -69,31 +63,31 @@ class SlippageSettingsBottomSheet(
             dismiss()
         }
         swapViewModel.isFocusOnCustomSlippageEditor.observe(viewLifecycleOwner) {
-            binding.edtCustomSlippage.apply {
-                requestFocus()
-                showSoftKeyboard()
-            }
+//            binding.edtCustomSlippage.apply {
+//                requestFocus()
+//                showSoftKeyboard()
+//            }
         }
         swapViewModel.clearSlippageEditor.observe(viewLifecycleOwner) {
-            binding.edtCustomSlippage.setText("")
+//            binding.edtCustomSlippage.setText("")
         }
     }
 
-    private val selectSlippageClickEvent: (v: CheckableButton) -> Unit = {
-        slippage = it.text.removeSuffix("%").toString().toDouble()
-        swapViewModel.makeCustomSlippageEditorVisible(false)
-        binding.edtCustomSlippage.hideSoftKeyboard()
-    }
-
-    private val customSlippageClickEVent: (v: CheckableButton) -> Unit = {
-        val slippageText = binding.edtCustomSlippage.text.toString()
-        slippage = if (slippageText == "." || slippageText == "") 0.0 else slippageText.toDouble()
-        binding.edtCustomSlippage.doAfterTextChanged {
-            swapViewModel.setIsSlippageEditorEmpty(it.toString().isEmpty())
-            val plainText: String = it.toString()
-            slippage = if (plainText == "." || plainText == "") 0.0 else plainText.toDouble()
-        }
-        swapViewModel.makeCustomSlippageEditorVisible(true)
-        swapViewModel.setFocusOnSlippageEditor()
-    }
+//    private val selectSlippageClickEvent: (v: CheckableButton) -> Unit = {
+//        slippage = it.text.removeSuffix("%").toString().toDouble()
+//        swapViewModel.makeCustomSlippageEditorVisible(false)
+//        binding.edtCustomSlippage.hideSoftKeyboard()
+//    }
+//
+//    private val customSlippageClickEVent: (v: CheckableButton) -> Unit = {
+//        val slippageText = binding.edtCustomSlippage.text.toString()
+//        slippage = if (slippageText == "." || slippageText == "") 0.0 else slippageText.toDouble()
+//        binding.edtCustomSlippage.doAfterTextChanged {
+//            swapViewModel.setIsSlippageEditorEmpty(it.toString().isEmpty())
+//            val plainText: String = it.toString()
+//            slippage = if (plainText == "." || plainText == "") 0.0 else plainText.toDouble()
+//        }
+//        swapViewModel.makeCustomSlippageEditorVisible(true)
+//        swapViewModel.setFocusOnSlippageEditor()
+//    }
 }

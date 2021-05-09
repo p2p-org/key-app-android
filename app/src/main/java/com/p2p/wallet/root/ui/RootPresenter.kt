@@ -14,14 +14,17 @@ class RootPresenter(
         private const val BALANCE_CURRENCY = "USD"
     }
 
-    /**
-     * Loading tokens is expensive operation, therefore we are starting it asap
-     * */
+    init {
+        launch {
+            userInteractor.loadTokenPrices(BALANCE_CURRENCY)
+        }
+    }
+
+
     override fun openRootScreen() {
         launch {
             if (authInteractor.isAuthorized()) {
                 view?.navigateToSignIn()
-                userInteractor.loadTokens(BALANCE_CURRENCY)
             } else {
                 view?.navigateToOnboarding()
             }

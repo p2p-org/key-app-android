@@ -17,13 +17,22 @@ import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 
-class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
+class SelectTokenFragment(
+    private val onSelected: ((Token) -> Unit)?
+) : BaseFragment(R.layout.fragment_select_token) {
 
     companion object {
         const val REQUEST_KEY = "SELECT_TOKEN_KEY"
         const val EXTRA_TOKEN = "EXTRA_TOKEN"
         private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
-        fun create(tokens: List<Token>) = SelectTokenFragment().withArgs(
+        fun create(tokens: List<Token>) = SelectTokenFragment(null).withArgs(
+            EXTRA_ALL_TOKENS to tokens
+        )
+
+        /**
+         * Callback for individual callback catch
+         * */
+        fun create(tokens: List<Token>, onSelected: ((Token) -> Unit)?) = SelectTokenFragment(onSelected).withArgs(
             EXTRA_ALL_TOKENS to tokens
         )
     }
@@ -34,6 +43,7 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
 
     private val tokenAdapter: TokenAdapter by lazy {
         TokenAdapter {
+            onSelected?.invoke(it)
             setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TOKEN to it))
             parentFragmentManager.popBackStack()
         }

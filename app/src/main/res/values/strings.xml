@@ -254,8 +254,6 @@
     <string name="my_tokens_set">My tokens set</string>
     <string name="token_exchange">Token Exchange</string>
     <string name="search_uniswap">Search uniswap</string>
-    <string name="slippage_settings">Slippage settings</string>
-    <string name="slippage_description">Slippage refers to the difference between the expected price of a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.</string>
     <string name="_0_1_percent">0.1%</string>
     <string name="_5_percent">5%</string>
     <string name="_1_percent">1%</string>
@@ -361,6 +359,8 @@
     <string name="main_hidden_wallets">%d hidden wallets</string>
     <string name="main_hide">Hide</string>
     <string name="main_price">Price:</string>
+    <string name="main_slippage_settings">Slippage settings</string>
+    <string name="main_slippage_description">Slippage refers to the difference between the expected price of a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -376,6 +376,12 @@
     <string name="main_swap_fee">Fee (Transaction, New wallet):</string>
     <string name="main_slippage">Slippage</string>
     <string name="main_powered_by_project_serum">Powered by Project Serum</string>
+    <string name="main_swap_slippage">Slippage</string>
+    <string name="main_slippage_min">0.1%</string>
+    <string name="main_slippage_medium">0.5%</string>
+    <string name="main_slippage_percent">1%</string>
+    <string name="main_slippage_five_percent">5%</string>
+    <string name="main_custom">Custom</string>
 
 
 </resources>
