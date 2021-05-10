@@ -111,12 +111,11 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="7dp"
                     android:padding="8dp"
-                    android:tint="@color/gray_blue_400"
                     app:layout_constraintBottom_toBottomOf="@id/imgTokenFrom"
                     app:layout_constraintStart_toEndOf="@id/imgTokenFrom"
                     app:layout_constraintTop_toTopOf="@id/imgTokenFrom"
                     app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="@color/gray_blue_400" />
+                    app:tint="@color/colorGray" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtAmountFrom"
@@ -220,12 +219,11 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="7dp"
                     android:padding="8dp"
-                    android:tint="@color/gray_blue_400"
                     app:layout_constraintBottom_toBottomOf="@id/imgTokenTo"
                     app:layout_constraintStart_toEndOf="@id/imgTokenTo"
                     app:layout_constraintTop_toTopOf="@id/imgTokenTo"
                     app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="@color/gray_blue_400" />
+                    app:tint="@color/colorGray" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtAmountTo"
@@ -373,7 +371,7 @@
             android:paddingBottom="19dp"
             android:text="Swap_now"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/colorWhite"
             android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

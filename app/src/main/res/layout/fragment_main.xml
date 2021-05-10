@@ -154,7 +154,7 @@
             android:id="@+id/bottomView"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:background="@color/white"
+            android:background="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <ImageView

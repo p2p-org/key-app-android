@@ -62,7 +62,7 @@ class SwapViewModel(
     private val _insufficientFoundsError by lazy { MutableLiveData<Boolean>() }
     val insufficientFoundsError: LiveData<Boolean> get() = _insufficientFoundsError
 
-    private val _tintOnSearchBarFocusChange by lazy { MutableLiveData<Int>(R.color.gray_blue_400) }
+    private val _tintOnSearchBarFocusChange by lazy { MutableLiveData<Int>(R.color.colorGray) }
     val tintOnSearchBarFocusChange: LiveData<Int> get() = _tintOnSearchBarFocusChange
 
     private val _isCloseIconVisible by lazy { MutableLiveData(false) }

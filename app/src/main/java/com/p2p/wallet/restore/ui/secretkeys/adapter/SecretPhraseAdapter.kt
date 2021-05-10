@@ -53,7 +53,7 @@ class SecretPhraseAdapter(
                 visibility = View.VISIBLE
                 setText("")
             }
-            textView.setTextColor(ContextCompat.getColor(context, R.color.hintColor))
+            textView.setTextColor(ContextCompat.getColor(context, R.color.colorGray))
             layoutManager.spanSizes[count++] = MultipleSpanGridLayoutManager.SPAN_SIZE
         }
         keywordList.clear()
