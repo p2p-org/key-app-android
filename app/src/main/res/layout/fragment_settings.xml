@@ -12,7 +12,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/settings_title"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:foreground="?selectableItemBackground"
         android:orientation="horizontal"
         tools:ignore="UnusedAttribute">
@@ -53,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:drawablePadding="16dp"
         android:foreground="?selectableItemBackground"
         android:padding="16dp"

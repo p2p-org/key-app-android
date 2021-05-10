@@ -57,7 +57,7 @@ class PermissionDeniedDialog : DialogFragment() {
     private val message: String? by args(DIALOG_MESSAGE_EXTRA)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(requireContext(), R.style.PayTheme_AlertDialog)
+        return AlertDialog.Builder(requireContext(), R.style.WalletTheme_AlertDialog)
             .setCancelable(true)
             .setTitle(title ?: getTitle(permission))
             .setMessage(message ?: getText(permission))

@@ -50,6 +50,6 @@
         android:text="@string/common_done"
         android:textAllCaps="false"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="@color/white"
+        android:textColor="@color/colorWhite"
         tools:ignore="UnusedAttribute" />
 </LinearLayout>

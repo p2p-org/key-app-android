@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        android:textColor="@color/hintColor"
+        android:textColor="@color/colorGray"
         tools:text="1." />
 
     <androidx.appcompat.widget.AppCompatEditText

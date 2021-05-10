@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.p2p.wallet.utils.edgetoedge
 
 import android.app.Activity

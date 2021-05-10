@@ -20,7 +20,7 @@
         <item name="colorAccent">@color/colorBlue</item>
         <item name="colorControlActivated">?colorAccent</item>
         <item name="colorControlNormal">@color/colorDark</item>
-        <!--        <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>-->
+        <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>
 
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">?colorPrimary</item>

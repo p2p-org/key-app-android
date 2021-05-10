@@ -1,49 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="green_30">#4D2DB533</color>
-    <color name="green_500">#17971D</color>
-    <color name="black">#FF000000</color>
-    <color name="black_80">#CC000000</color>
-    <color name="grey_dark">#202020</color>
-    <color name="gray_600">#757575</color>
-    <color name="gray_500">#565656</color>
-    <color name="blue_500">#0A84FF</color>
-    <color name="blue_400">#5887FF</color>
-    <color name="blue_300">#64B5F6</color>
-    <color name="blue_200">#a7befc</color>
-    <color name="gray_blue_400">#A3A5BA</color>
-    <color name="gray_blue_10">#1AA3A5BA</color>
-    <color name="gray_blue_50">#80A3A5BA</color>
-    <color name="gray_400">#C4C4C4</color>
-    <color name="gray_300">#F6F6F8</color>
-    <color name="gray_300_65">#A6F6F6F8</color>
-    <color name="gray_80">#CCDBDBDB</color>
-    <color name="hintColor">#808080</color>
-    <color name="gray_30">#4DD9D9D9</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="red_400">#F43D3D</color>
-    <color name="red_500">#FF0000</color>
-    <color name="background_screens">#1A282828</color>
-    <color name="colorTranslucent">#99000000</color>
-    <color name="darkgray">#33A3A5BA</color>
-    <color name="lightgray">#CFCFCF</color>
-    <color name="black_1">#1b1b1b</color>
-    <color name="darkslategray">#2a2a2a</color>
-    <color name="gainsboro">#E3E3E3</color>
-    <color name="limegreen">#2DB533</color>
-    <color name="cornflowerblue">#5887FF</color>
-    <color name="black_300">#202020</color>
-    <color name="lavender">#E9E9E9</color>
-    <color name="whitesmoke">#F7F7F9</color>
-
-
     <color name="colorBlue">#5887FF</color>
     <color name="colorBlueDisabled">#96B1F8</color>
     <color name="colorBlueLight">#EFF3FF</color>
@@ -53,6 +9,7 @@
     <color name="colorGrayDark">#202020</color>
     <color name="colorDark">#CC000000</color>
     <color name="colorGreen">#2DB533</color>
+    <color name="colorWhite">#FFFFFFFF</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>

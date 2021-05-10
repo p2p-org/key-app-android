@@ -125,7 +125,7 @@ class KeywordEditTextChangeListener(
         //To create an illusion for the user, the color of textView
         //is set to the same as the color if hint in editText
         if (s.toString().isEmpty()) {
-            txtKeyword.setTextColor(ContextCompat.getColor(root.context, R.color.hintColor))
+            txtKeyword.setTextColor(ContextCompat.getColor(root.context, R.color.colorGray))
         }
     }
 

@@ -104,7 +104,7 @@ class TokenDetailsFragment :
             setViewPortOffsets(0f, 0f, 0f, 0f)
             description = Description().apply { text = "" }
             setDrawBorders(false)
-            setBorderColor(R.color.background_screens)
+            setBorderColor(R.color.colorBlue)
             axisRight.setDrawGridLines(false)
             axisLeft.setDrawGridLines(false)
             xAxis.setDrawGridLines(false)
