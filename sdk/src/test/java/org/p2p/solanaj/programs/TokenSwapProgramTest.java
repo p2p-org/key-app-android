@@ -86,7 +86,7 @@ public class TokenSwapProgramTest {
         assertEquals(BigInteger.valueOf(1000), tokenSwapData.getOwnerWithdrawFeeDenominator());
         assertEquals(BigInteger.valueOf(1), tokenSwapData.getHostFeeNumerator());
         assertEquals(BigInteger.valueOf(1000), tokenSwapData.getHostFeeDenominator());
-        assertEquals(BigInteger.valueOf(0), tokenSwapData.getAmp());
+        //assertEquals(BigInteger.valueOf(0), tokenSwapData.getAmp());
 
     }
 

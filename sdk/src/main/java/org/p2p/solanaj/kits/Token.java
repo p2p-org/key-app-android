@@ -7,7 +7,7 @@ import java.util.Base64;
 
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionResponse;
+import org.p2p.solanaj.core.Transaction;
 import org.p2p.solanaj.core.TransactionInstruction;
 import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
@@ -92,7 +92,7 @@ public class Token {
         TransactionInstruction createMint = TokenProgram.initializeMintInstruction(TokenProgram.PROGRAM_ID,
                 newAccountPubKey, decimals, mintAuthority, freezeAuthority);
 
-        TransactionResponse transaction = new TransactionResponse();
+        Transaction transaction = new Transaction();
         transaction.addInstruction(createAccount);
         transaction.addInstruction(createMint);
 
@@ -115,7 +115,7 @@ public class Token {
         TransactionInstruction initializeAccount = TokenProgram.initializeAccountInstruction(TokenProgram.PROGRAM_ID,
                 newAccountPubKey, mintAddress, owner);
 
-        TransactionResponse transaction = new TransactionResponse();
+        Transaction transaction = new Transaction();
         transaction.addInstruction(createAccount);
         transaction.addInstruction(initializeAccount);
 
@@ -130,7 +130,7 @@ public class Token {
         TransactionInstruction mintTo = TokenProgram.mintToInstruction(TokenProgram.PROGRAM_ID, mintAddress,
                 destination, payer.getPublicKey(), amount);
 
-        TransactionResponse transaction = new TransactionResponse();
+        Transaction transaction = new Transaction();
         transaction.addInstruction(mintTo);
 
         return client.getApi().sendTransaction(transaction, Arrays.asList(payer));

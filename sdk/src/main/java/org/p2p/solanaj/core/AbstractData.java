@@ -7,8 +7,8 @@ import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.utils.ByteUtils;
 
 public abstract class AbstractData {
-    private byte[] data;
-    private int cursor = 0;
+    private transient byte[] data;
+    private transient int cursor = 0;
 
     protected AbstractData(byte[] data, int dataLength) {
         if (data.length < dataLength) {

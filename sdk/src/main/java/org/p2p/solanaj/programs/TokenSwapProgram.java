@@ -10,6 +10,7 @@ import org.p2p.solanaj.core.AccountMeta;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
 
+import org.p2p.solanaj.kits.Pool;
 import org.p2p.solanaj.utils.ByteUtils;
 
 public class TokenSwapProgram {
@@ -19,11 +20,11 @@ public class TokenSwapProgram {
     public static final int INSTRUCTION_INDEX_WITHDRAW = 3;
 
     public static TransactionInstruction initializeSwapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
-            PublicKey tokenAccountA, PublicKey tokenAccountB, PublicKey tokenPool, PublicKey feeAccount,
-            PublicKey tokenAccountPool, PublicKey tokenProgramId, PublicKey swapProgramId, int nonce, int curveType,
-            BigInteger tradeFeeNumerator, BigInteger tradeFeeDenominator, BigInteger ownerTradeFeeNumerator,
-            BigInteger ownerTradeFeeDenominator, BigInteger ownerWithdrawFeeNumerator,
-            BigInteger ownerWithdrawFeeDenominator, BigInteger hostFeeNumerator, BigInteger hostFeeDenominator) {
+                                                                   PublicKey tokenAccountA, PublicKey tokenAccountB, PublicKey tokenPool, PublicKey feeAccount,
+                                                                   PublicKey tokenAccountPool, PublicKey tokenProgramId, PublicKey swapProgramId, int nonce, int curveType,
+                                                                   BigInteger tradeFeeNumerator, BigInteger tradeFeeDenominator, BigInteger ownerTradeFeeNumerator,
+                                                                   BigInteger ownerTradeFeeDenominator, BigInteger ownerWithdrawFeeNumerator,
+                                                                   BigInteger ownerWithdrawFeeDenominator, BigInteger hostFeeNumerator, BigInteger hostFeeDenominator) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, true));
         keys.add(new AccountMeta(authority, false, false));
@@ -52,7 +53,7 @@ public class TokenSwapProgram {
         }
 
         bos.write(curveType);
-      //  bos.writeBytes(new byte[32]);
+        //  bos.writeBytes(new byte[32]);
         byte[] byteArray=new byte[32];
         bos.write(byteArray,0,byteArray.length);
 
@@ -63,7 +64,7 @@ public class TokenSwapProgram {
     public static TransactionInstruction swapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
                                                          PublicKey userSource, PublicKey poolSource, PublicKey poolDestination, PublicKey userDestination,
                                                          PublicKey poolMint, PublicKey feeAccount, PublicKey hostFeeAccount, PublicKey tokenProgramId,
-                                                         PublicKey swapProgramId, BigInteger amountIn, BigInteger minimumAmountOut) {
+                                                         PublicKey swapProgramId, BigInteger minimumAmountOut, BigInteger amountIn) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, false));
         keys.add(new AccountMeta(authority, false, false));
@@ -158,13 +159,13 @@ public class TokenSwapProgram {
 
         private boolean isInitialized;
         private int nonce;
-        private PublicKey tokenProgramId;
-        private PublicKey tokenAccountA;
-        private PublicKey tokenAccountB;
-        private PublicKey tokenPool;
-        private PublicKey mintA;
-        private PublicKey mintB;
-        private PublicKey feeAccount;
+        private String tokenProgramId;
+        private String tokenAccountA;
+        private String tokenAccountB;
+        private String tokenPool;
+        private String mintA;
+        private String mintB;
+        private String feeAccount;
         private int curveType;
         private BigInteger tradeFeeNumerator;
         private BigInteger tradeFeeDenominator;
@@ -180,13 +181,13 @@ public class TokenSwapProgram {
 
             isInitialized = readByte() == 1;
             nonce = readByte();
-            tokenProgramId = readPublicKey();
-            tokenAccountA = readPublicKey();
-            tokenAccountB = readPublicKey();
-            tokenPool = readPublicKey();
-            mintA = readPublicKey();
-            mintB = readPublicKey();
-            feeAccount = readPublicKey();
+            tokenProgramId = readPublicKey().toBase58();
+            tokenAccountA = readPublicKey().toBase58();
+            tokenAccountB = readPublicKey().toBase58();
+            tokenPool = readPublicKey().toBase58();
+            mintA = readPublicKey().toBase58();
+            mintB = readPublicKey().toBase58();
+            feeAccount = readPublicKey().toBase58();
             curveType = readByte();
             tradeFeeNumerator = readUint64();
             tradeFeeDenominator = readUint64();
@@ -202,6 +203,20 @@ public class TokenSwapProgram {
             return new TokenSwapData(data);
         }
 
+        public TokenSwapData swapMintData() {
+            final String mintAOld = mintA;
+            this.mintA = mintB;
+            this.mintB = mintAOld;
+            return this;
+        }
+
+        public TokenSwapData swapTokenAccount() {
+            final String tokenAccountAOld = tokenAccountA;
+            this.tokenAccountA = tokenAccountB;
+            this.tokenAccountB = tokenAccountAOld;
+            return this;
+        }
+
         public boolean isInitialized() {
             return isInitialized;
         }
@@ -211,31 +226,31 @@ public class TokenSwapProgram {
         }
 
         public PublicKey getTokenProgramId() {
-            return tokenProgramId;
+            return new PublicKey(tokenProgramId);
         }
 
         public PublicKey getTokenAccountA() {
-            return tokenAccountA;
+            return new PublicKey(tokenAccountA);
         }
 
         public PublicKey getTokenAccountB() {
-            return tokenAccountB;
+            return new PublicKey(tokenAccountB);
         }
 
         public PublicKey getTokenPool() {
-            return tokenPool;
+            return new PublicKey(tokenPool);
         }
 
         public PublicKey getMintA() {
-            return mintA;
+            return new PublicKey(mintA);
         }
 
         public PublicKey getMintB() {
-            return mintB;
+            return new PublicKey(mintB);
         }
 
         public PublicKey getFeeAccount() {
-            return feeAccount;
+            return new PublicKey(feeAccount);
         }
 
         public int getCurveType() {

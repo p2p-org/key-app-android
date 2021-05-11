@@ -131,7 +131,7 @@ public class TokenProgram {
                 + ByteUtils.UINT_64_LENGTH + 1 + 1 + ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH;
 
         private long mintAuthorityOption;
-        private PublicKey mintAuthority;
+        private String mintAuthority;
         private BigInteger supply;
         private int decimals;
         private boolean isInitialized;
@@ -142,7 +142,7 @@ public class TokenProgram {
             super(data, MINT_DATA_LENGTH);
 
             mintAuthorityOption = readUint32();
-            mintAuthority = readPublicKey();
+            mintAuthority = readPublicKey().toBase58();
             supply = readUint64();
             decimals = readByte();
             isInitialized = readByte() != 0;
@@ -162,8 +162,12 @@ public class TokenProgram {
             return new MintData(data);
         }
 
-        public PublicKey getMintAuthority() {
+        public String getMintAuthority() {
             return mintAuthority;
+        }
+
+        public PublicKey getMintAuthorityPublicKey() {
+            return new PublicKey(mintAuthority);
         }
 
         public BigInteger getSupply() {
