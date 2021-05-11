@@ -98,9 +98,7 @@ class MainFragment :
 
     override fun showLoading(isLoading: Boolean) {
         with(binding) {
-            progressBar.isVisible = isLoading
-            mainRecyclerView.isVisible = !isLoading
-            if (isLoading) emptyTextView.isVisible = false
+            progressView.isVisible = isLoading
         }
     }
 

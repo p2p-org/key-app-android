@@ -312,18 +312,8 @@
         android:textColor="@color/colorGray"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <FrameLayout
+    <com.p2p.wallet.common.widget.ProgressView
         android:id="@+id/progressView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/colorWhite"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-    </FrameLayout>
+        android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
