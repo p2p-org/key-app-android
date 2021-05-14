@@ -9,7 +9,6 @@ interface SwapRepository {
     suspend fun loadPoolInfoList(swapProgramId: String): List<Pool.PoolInfo>
     suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance
 
-
     suspend fun swap(
         keys: List<String>,
         pool: Pool.PoolInfo,

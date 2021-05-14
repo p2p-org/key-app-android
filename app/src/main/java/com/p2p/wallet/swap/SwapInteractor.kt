@@ -9,8 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.kits.TokenSwap
 import org.p2p.solanaj.rpc.types.TokenAccountBalance
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -44,7 +44,6 @@ class SwapInteractor(
 
     suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance =
         swapRepository.loadTokenBalance(publicKey)
-
 
     suspend fun swap(
         pool: Pool.PoolInfo,
@@ -80,6 +79,17 @@ class SwapInteractor(
             calculateAmountInOtherToken(pool, sourceAmount, false, tokenABalance, tokenBBalance)
 
         return swappedAmountWithoutFee.subtract(swappedAmountWithFee)
+    }
+
+    fun calculateMinReceive(
+        tokenABalance: TokenAccountBalance,
+        tokenBBalance: TokenAccountBalance,
+        amount: BigInteger,
+        slippage: Double
+    ): BigInteger {
+        val estimated =
+            TokenSwap.calculateSwapEstimatedAmount(tokenABalance, tokenBBalance, amount)
+        return TokenSwap.calculateSwapMinimumReceiveAmount(estimated, slippage)
     }
 
     fun calculateAmountInOtherToken(

@@ -11,7 +11,7 @@ import java.math.RoundingMode
 import kotlin.math.pow
 
 class SwapUseCase(
-    private val swapRepository: SwapRepositoryOld
+    private val swapRepository: SwapREI
 ) : SwapInteractor {
 
     override fun getAroundToCurrencyValue(

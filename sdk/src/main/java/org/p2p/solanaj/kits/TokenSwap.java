@@ -129,7 +129,6 @@ public class TokenSwap {
         return client.getApi().sendTransaction(transaction, signers);
     }
 
-
     public static BigInteger calculateSwapMinimumReceiveAmount(BigInteger estimatedAmount, double slippage) {
         return BigDecimal.valueOf(estimatedAmount.doubleValue() * (1 - slippage)).toBigInteger();
     }

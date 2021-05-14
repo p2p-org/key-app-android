@@ -14,6 +14,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
+import kotlin.math.pow
 import kotlin.properties.Delegates
 
 class SwapPresenter(
@@ -140,23 +141,31 @@ class SwapPresenter(
             }
             currentPool = pool
 
+            val finalAmount = sourceAmount.multiply(10.0.pow(source.decimals.toDouble()).toBigDecimal())
+
             sourceBalance = swapInteractor.loadTokenBalance(pool.tokenAccountA)
             destinationBalance = swapInteractor.loadTokenBalance(pool.tokenAccountB)
 
             val destinationAmount = swapInteractor.calculateAmountInOtherToken(
-                pool, sourceAmount.toBigInteger(), true, sourceBalance!!, destinationBalance!!
+                pool, finalAmount.toBigInteger(), true, sourceBalance!!, destinationBalance!!
             )
 
             view?.showPrice(destinationAmount, destination.tokenSymbol, source.tokenSymbol)
 
             val fee = swapInteractor.calculateFee(
                 currentPool!!,
-                sourceAmount.toBigInteger(),
+                finalAmount.toBigInteger(),
                 sourceBalance!!,
                 destinationBalance!!
             )
+            val minReceive = swapInteractor.calculateMinReceive(
+                sourceBalance!!,
+                destinationBalance!!,
+                finalAmount.toBigInteger()!!,
+                slippage
+            )
             val data = CalculationsData(
-                BigDecimal.ZERO,
+                minReceive,
                 destination.tokenSymbol,
                 fee,
                 source.tokenSymbol,
@@ -168,7 +177,7 @@ class SwapPresenter(
 }
 
 data class CalculationsData(
-    val minReceive: BigDecimal,
+    val minReceive: BigInteger,
     val minReceiveSymbol: String,
     val fee: BigInteger,
     val feeSymbol: String,
