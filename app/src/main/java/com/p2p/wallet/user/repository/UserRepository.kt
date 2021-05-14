@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.rpc.RpcClient
+import timber.log.Timber
 import java.math.BigDecimal
 
 interface UserRepository {
@@ -52,6 +53,8 @@ class UserRepositoryImpl(
             32,
             tokenProvider.publicKey
         )
+
+        Timber.d("### responmse ${response.size}")
 
         val tokenAccounts = response.map { UserConverter.fromNetwork(it) }
         val solBalance = loadSolBalance()

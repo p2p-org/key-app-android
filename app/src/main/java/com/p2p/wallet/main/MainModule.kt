@@ -12,8 +12,8 @@ import com.p2p.wallet.main.ui.receive.ReceiveContract
 import com.p2p.wallet.main.ui.receive.ReceivePresenter
 import com.p2p.wallet.main.ui.send.SendContract
 import com.p2p.wallet.main.ui.send.SendPresenter
-import com.p2p.wallet.main.ui.swap.SwapContract
-import com.p2p.wallet.main.ui.swap.SwapPresenter
+import com.p2p.wallet.swap.swap.SwapContract
+import com.p2p.wallet.swap.swap.SwapPresenter
 import com.p2p.wallet.token.model.Token
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -26,8 +26,15 @@ object MainModule : InjectionModule {
         single { MainRemoteRepository(get(), get()) } bind MainRepository::class
         single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
 
-        factory { SwapPresenter(get()) } bind SwapContract.Presenter::class
-        factory { (token: Token?) -> ReceivePresenter(token, get(), get(), get()) } bind ReceiveContract.Presenter::class
+        factory { SwapPresenter(get(), get(), get()) } bind SwapContract.Presenter::class
+        factory { (token: Token?) ->
+            ReceivePresenter(
+                token,
+                get(),
+                get(),
+                get()
+            )
+        } bind ReceiveContract.Presenter::class
         factory { SendPresenter(get(), get()) } bind SendContract.Presenter::class
     }
 }

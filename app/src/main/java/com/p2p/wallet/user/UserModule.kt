@@ -51,7 +51,7 @@ object UserModule : InjectionModule {
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }
 
         single { UserInMemoryRepository() } bind UserLocalRepository::class
-        single { UserInteractor(get(), get(), get(), get()) }
+        single { UserInteractor(get(), get(), get(), get(), get()) }
     }
 
     private fun Scope.createLoggingInterceptor(tag: String): HttpLoggingInterceptor {

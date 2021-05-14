@@ -1,10 +1,10 @@
-package com.wowlet.data.datastore
+package com.p2p.wallet.main.repository
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
 import java.math.BigInteger
 
-interface SwapRepository {
+interface SwapRepositoryOld {
 
     suspend fun swap(
         pool: Pool.PoolInfo,

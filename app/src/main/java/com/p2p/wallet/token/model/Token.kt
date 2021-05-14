@@ -3,6 +3,7 @@ package com.p2p.wallet.token.model
 import android.os.Parcelable
 import androidx.annotation.ColorRes
 import com.p2p.wallet.R
+import com.p2p.wallet.common.network.Constants
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -28,6 +29,12 @@ data class Token(
     val isZero: Boolean
         get() = total == BigDecimal.ZERO
 
+    fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
+        Constants.WRAPPED_SOL_MINT
+    } else {
+        mintAddress
+    }
+
     @Suppress("MagicNumber")
     fun getFormattedAddress(): String {
         if (depositAddress.length < ADDRESS_SYMBOL_COUNT) {
@@ -48,12 +55,13 @@ data class Token(
     companion object {
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9
+        private const val SOL_MINT = "SOLMINT"
 
         /* fixme: workaround about adding hardcode wallet, looks strange */
         fun getSOL(publicKey: String, amount: Long) = Token(
             tokenSymbol = "SOL",
             tokenName = "SOL",
-            mintAddress = "SOLMINT",
+            mintAddress = SOL_MINT,
             iconUrl = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
             depositAddress = publicKey,
             decimals = 9,

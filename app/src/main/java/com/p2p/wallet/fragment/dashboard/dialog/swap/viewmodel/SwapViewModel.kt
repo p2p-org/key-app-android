@@ -1,21 +1,12 @@
-package com.p2p.wowlet.fragment.dashboard.dialog.swap.viewmodel
+package com.p2p.wallet.fragment.dashboard.dialog.swap.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.p2p.wowlet.R
-import com.p2p.wowlet.appbase.viewcommand.Command.*
-import com.p2p.wowlet.appbase.viewmodel.BaseViewModel
-import com.p2p.wowlet.utils.roundCurrencyValue
-import com.p2p.wowlet.utils.roundToBilCurrencyValue
-import com.p2p.wowlet.utils.roundToMilCurrencyValue
+import androidx.lifecycle.ViewModel
+import com.p2p.wallet.R
+import com.p2p.wallet.dashboard.model.local.CoinItem
 import com.wowlet.domain.interactors.SwapInteractor
-import com.wowlet.entities.Constants
-import com.wowlet.entities.local.ActivityItem
-import com.wowlet.entities.local.CoinItem
-import com.wowlet.entities.local.WalletItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
 import java.math.BigDecimal
@@ -25,15 +16,15 @@ private const val DEFAULT_SLIPPAGE = 0.1
 
 class SwapViewModel(
     private val swapInteractor: SwapInteractor
-) : BaseViewModel() {
+) : ViewModel() {
 
     private var poolInfo: Pool.PoolInfo? = null
 
-    private val _selectedWalletFrom by lazy { MutableLiveData<WalletItem>() }
-    val selectedWalletFrom: LiveData<WalletItem> get() = _selectedWalletFrom
-
-    private val _selectedWalletTo by lazy { MutableLiveData<WalletItem>() }
-    val selectedWalletTo: LiveData<WalletItem> get() = _selectedWalletTo
+//    private val _selectedWalletFrom by lazy { MutableLiveData<WalletItem>() }
+//    val selectedWalletFrom: LiveData<WalletItem> get() = _selectedWalletFrom
+//
+//    private val _selectedWalletTo by lazy { MutableLiveData<WalletItem>() }
+//    val selectedWalletTo: LiveData<WalletItem> get() = _selectedWalletTo
 
     private val _isInCryptoCurrency by lazy { MutableLiveData<Boolean>(true) }
     val isInCryptoCurrency: LiveData<Boolean> get() = _isInCryptoCurrency
@@ -47,7 +38,7 @@ class SwapViewModel(
     val amountBinding by lazy { MutableLiveData("") }
     val amount: LiveData<String> get() = amountBinding
 
-    private val _minReceiveAmount by lazy {MutableLiveData("")}
+    private val _minReceiveAmount by lazy { MutableLiveData("") }
     val minReceiveAmount: LiveData<String> get() = _minReceiveAmount
 
     private val _aroundToCurrency by lazy { MutableLiveData<Double>(0.0) }
@@ -80,7 +71,7 @@ class SwapViewModel(
     private val _insufficientFoundsError by lazy { MutableLiveData<Boolean>() }
     val insufficientFoundsError: LiveData<Boolean> get() = _insufficientFoundsError
 
-    private val _tintOnSearchBarFocusChange by lazy { MutableLiveData<Int>(R.color.gray_blue_400) }
+    private val _tintOnSearchBarFocusChange by lazy { MutableLiveData<Int>(R.color.colorGray) }
     val tintOnSearchBarFocusChange: LiveData<Int> get() = _tintOnSearchBarFocusChange
 
     private val _isCloseIconVisible by lazy { MutableLiveData(false) }
@@ -92,9 +83,8 @@ class SwapViewModel(
     var tokenFromPerTokenTo: BigDecimal = 0.0.toBigDecimal()
     var tokenToPerTokenFrom: BigDecimal = 0.0.toBigDecimal()
 
-
     fun openMyWalletsDialog() {
-        _command.value = OpenMyWalletDialogViewCommand()
+//        _command.value = OpenMyWalletDialogViewCommand()
     }
 
     private val listAddCoinData = mutableListOf(
@@ -132,197 +122,196 @@ class SwapViewModel(
     )
 
     fun getCoinList() {
-
     }
 
     fun openProcessingDialog() {
-        val selectedWalletAmount: Double = if (_isInCryptoCurrency.value == true) {
-            _selectedWalletFrom.value?.amount ?: 0.0
-        } else {
-            _selectedWalletFrom.value?.price ?: 0.0
-        }
+//        val selectedWalletAmount: Double = if (_isInCryptoCurrency.value == true) {
+//            _selectedWalletFrom.value?.amount ?: 0.0
+//        } else {
+//            _selectedWalletFrom.value?.price ?: 0.0
+//        }
         val insertedAmount: Double = if (amount.value == "" || amount.value == ".") {
             0.0
         } else {
             amount.value?.toDouble()!!
         }
-        if (selectedWalletAmount == 0.0 || insertedAmount == 0.0 || selectedWalletAmount < insertedAmount) {
-            _insufficientFoundsError.value = true
-            return
-        }
+//        if (selectedWalletAmount == 0.0 || insertedAmount == 0.0 || selectedWalletAmount < insertedAmount) {
+//            _insufficientFoundsError.value = true
+//            return
+//        }
 
-        val fromMintAddress = _selectedWalletFrom.value?.mintAddress
-        val toMintAddress = _selectedWalletTo.value?.mintAddress
-        viewModelScope.launch(Dispatchers.IO) {
-            val multiply = 10.0.pow(_selectedWalletFrom.value?.decimals?.toDouble()?: return@launch)
-            val data = swapInteractor.swap(
-                fromMintAddress,
-                toMintAddress,
-                (insertedAmount * multiply).toBigDecimal().toBigInteger(),
-                _slippage.value ?: DEFAULT_SLIPPAGE,
-                poolInfo ?: return@launch
-            )
-            if (data.isNotEmpty()) {
-                _command.value = SwapCoinProcessingViewCommand()
-            }
-        }
-        _command.value = SwapCoinProcessingViewCommand()
+//        val fromMintAddress = _selectedWalletFrom.value?.mintAddress
+//        val toMintAddress = _selectedWalletTo.value?.mintAddress
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val multiply = 10.0.pow(_selectedWalletFrom.value?.decimals?.toDouble()?: return@launch)
+//            val data = swapInteractor.swap(
+//                fromMintAddress,
+//                toMintAddress,
+//                (insertedAmount * multiply).toBigDecimal().toBigInteger(),
+//                _slippage.value ?: DEFAULT_SLIPPAGE,
+//                poolInfo ?: return@launch
+//            )
+//            if (data.isNotEmpty()) {
+//                _command.value = SwapCoinProcessingViewCommand()
+//            }
+//        }
+//        _command.value = SwapCoinProcessingViewCommand()
     }
 
-    fun openDoneDialog(transactionInfo: ActivityItem) {
-        _command.value = SendCoinDoneViewCommand(transactionInfo)
-    }
-
-    fun openSelectTokenToSwapBottomSheet() {
-        _command.value = OpenSelectTokenToSwapBottomSheet()
-    }
-
-    fun openSlippageSettingsBottomSheet() {
-        _command.value = OpenSlippageSettingsBottomSheet()
-    }
-
-    fun navigateUp() {
-        _command.value = NavigateUpBackStackCommand()
-    }
-
+//    fun openDoneDialog(transactionInfo: ActivityItem) {
+//        _command.value = SendCoinDoneViewCommand(transactionInfo)
+//    }
+//
+//    fun openSelectTokenToSwapBottomSheet() {
+//        _command.value = OpenSelectTokenToSwapBottomSheet()
+//    }
+//
+//    fun openSlippageSettingsBottomSheet() {
+//        _command.value = OpenSlippageSettingsBottomSheet()
+//    }
+//
+//    fun navigateUp() {
+//        _command.value = NavigateUpBackStackCommand()
+//    }
+}
 
     fun swapFromAmountCurrencyTypes() {
-        val isCryptoCurrency = _isInCryptoCurrency.value ?: true
-        _isInCryptoCurrency.value = !isCryptoCurrency
-        amountBinding.value = amountBinding.value
+//        val isCryptoCurrency = _isInCryptoCurrency.value ?: true
+//        _isInCryptoCurrency.value = !isCryptoCurrency
+//        amountBinding.value = amountBinding.value
     }
 
-    fun setSelectedWalletFrom(walletItem: WalletItem) {
-        _selectedWalletFrom.value = walletItem
+//    fun setSelectedWalletFrom(walletItem: WalletItem) {
+//        _selectedWalletFrom.value = walletItem
+//
+//        _selectedWalletTo.value?.mintAddress?.let {
+//            getPool()
+//        }
+//
+//        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
+//        setTokenRatios(walletItem.walletBinds, to)
+//    }
 
-        _selectedWalletTo.value?.mintAddress?.let {
-            getPool()
-        }
-
-        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
-        setTokenRatios(walletItem.walletBinds, to)
-    }
-
-    fun setSelectedWalletTo(walletItem: WalletItem) {
-        _selectedWalletTo.value = walletItem
-
-        _selectedWalletFrom.value?.mintAddress?.let {
-            getPool()
-        }
-
-        val from = selectedWalletFrom.value?.walletBinds ?: return
-        setTokenRatios(from, walletItem.walletBinds)
-    }
-
+//    fun setSelectedWalletTo(walletItem: WalletItem) {
+//        _selectedWalletTo.value = walletItem
+//
+//        _selectedWalletFrom.value?.mintAddress?.let {
+//            getPool()
+//        }
+//
+//        val from = selectedWalletFrom.value?.walletBinds ?: return
+//        setTokenRatios(from, walletItem.walletBinds)
+//    }
+//
     private fun getPool() {
-        val fromMintAddress = swapAddressIfSOL(_selectedWalletFrom.value?.mintAddress)
-        val toMintAddress = swapAddressIfSOL(selectedWalletTo.value?.mintAddress)
-
-        viewModelScope.launch(Dispatchers.IO) {
-            poolInfo = swapInteractor.getPool(PublicKey(fromMintAddress), PublicKey(toMintAddress))
-        }
+//        val fromMintAddress = swapAddressIfSOL(_selectedWalletFrom.value?.mintAddress)
+//        val toMintAddress = swapAddressIfSOL(selectedWalletTo.value?.mintAddress)
+//
+//        viewModelScope.launch(Dispatchers.IO) {
+//            poolInfo = swapInteractor.getPool(PublicKey(fromMintAddress), PublicKey(toMintAddress))
+//        }
     }
 
-    private fun swapAddressIfSOL(mintAddress: String?): String = if (mintAddress == "SOLMINT") Constants.SWAP_SOL else mintAddress ?: ""
+//    private fun swapAddressIfSOL(mintAddress: String?): String = if (mintAddress == "SOLMINT") Constants.SWAP_SOL else mintAddress ?: ""
+//
+//    private fun setTokenRatios(from: Double, to: Double) {
+//        if (from == 0.0 || to == 0.0) return
+//        tokenFromPerTokenTo = swapInteractor.getTokenPerToken(from, to).roundToBilCurrencyValue()
+//        tokenToPerTokenFrom = swapInteractor.getTokenPerToken(to, from).roundToBilCurrencyValue()
+//    }
+//
+//    fun setSlippage(slippage: Double) {
+//        _slippage.value = slippage
+//    }
+//
+//    fun clearSearchBar() {
+//        _clearSearchBar.value = true
+//    }
 
-    private fun setTokenRatios(from: Double, to: Double) {
-        if (from == 0.0 || to == 0.0) return
-        tokenFromPerTokenTo = swapInteractor.getTokenPerToken(from, to).roundToBilCurrencyValue()
-        tokenToPerTokenFrom = swapInteractor.getTokenPerToken(to, from).roundToBilCurrencyValue()
-    }
-
-    fun setSlippage(slippage: Double) {
-        _slippage.value = slippage
-    }
-
-    fun clearSearchBar() {
-        _clearSearchBar.value = true
-    }
-
-    fun makeDialogFullScreen() {
-        _makeDialogFullScreen.value = true
-    }
-
-    fun setSelectedSlippage() {
-        _selectedSlippage.value = true
-    }
-
-    fun makeCustomSlippageEditorVisible(isVisible: Boolean) {
-        _isCustomSlippageEditorVisible.value = isVisible
-    }
-
-    fun setFocusOnSlippageEditor() {
-        _isFocusOnCustomSlippageEditor.value = true
-    }
-
-    fun setIsSlippageEditorEmpty(isEmpty: Boolean) {
-        _isSlippageEditorEmpty.value = isEmpty
-    }
-
-    fun clearSlippageEditor() {
-        _clearSlippageEditor.value = true
-    }
-
-    fun switchTokenPrices() {
-        _isFromPerTo.value = !_isFromPerTo.value!!
-    }
-
-    fun setTintOnSearchBarFocusChange(tint: Int) {
-        _tintOnSearchBarFocusChange.value = tint
-    }
-
-    fun setCloseIconVisibility(isVisible: Boolean) {
-        _isCloseIconVisible.value = isVisible
-    }
+//    fun makeDialogFullScreen() {
+//        _makeDialogFullScreen.value = true
+//    }
+//
+//    fun setSelectedSlippage() {
+//        _selectedSlippage.value = true
+//    }
+//
+//    fun makeCustomSlippageEditorVisible(isVisible: Boolean) {
+//        _isCustomSlippageEditorVisible.value = isVisible
+//    }
+//
+//    fun setFocusOnSlippageEditor() {
+//        _isFocusOnCustomSlippageEditor.value = true
+//    }
+//
+//    fun setIsSlippageEditorEmpty(isEmpty: Boolean) {
+//        _isSlippageEditorEmpty.value = isEmpty
+//    }
+//
+//    fun clearSlippageEditor() {
+//        _clearSlippageEditor.value = true
+//    }
+//
+//    fun switchTokenPrices() {
+//        _isFromPerTo.value = !_isFromPerTo.value!!
+//    }
+//
+//    fun setTintOnSearchBarFocusChange(tint: Int) {
+//        _tintOnSearchBarFocusChange.value = tint
+//    }
+//
+//    fun setCloseIconVisibility(isVisible: Boolean) {
+//        _isCloseIconVisible.value = isVisible
+//    }
 
 
     /**
      * @throws NullPointerException when WalletItem or _isInCryptoCurrency is null
      * Notice:Those cases expected to never happen
      */
-    fun setAroundToCurrency(amount: String) {
-        val walletBinds: Double = _selectedWalletFrom.value?.walletBinds
-            ?: throw NullPointerException("WalletItem is null in Swap screen")
-        val isInCryptoCurrency: Boolean = _isInCryptoCurrency.value
-            ?: throw NullPointerException("_isInCryptoCurrency is null in Swap screen")
-        _aroundToCurrency.value =
-            swapInteractor.getAroundToCurrencyValue(amount, walletBinds, isInCryptoCurrency)
-                .roundCurrencyValue()
-    }
+//    fun setAroundToCurrency(amount: String) {
+//        val walletBinds: Double = _selectedWalletFrom.value?.walletBinds
+//            ?: throw NullPointerException("WalletItem is null in Swap screen")
+//        val isInCryptoCurrency: Boolean = _isInCryptoCurrency.value
+//            ?: throw NullPointerException("_isInCryptoCurrency is null in Swap screen")
+//        _aroundToCurrency.value =
+//            swapInteractor.getAroundToCurrencyValue(amount, walletBinds, isInCryptoCurrency)
+//                .roundCurrencyValue()
+//    }
 
     /**
      * @throws NullPointerException when _selectedWalletFrom is null
      * Notice:This case expected to never happen
      */
-    fun setAmountOfConvertingToken(amount: String) {
-        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
-        val from: Double = _selectedWalletFrom.value?.walletBinds
-            ?: throw NullPointerException("WalletItem is null in Swap screen")
-        val amountOfConvertingToken: BigDecimal =
-            swapInteractor.getAmountInConvertingToken(amount, from, to).roundToMilCurrencyValue()
-        val amountOfConvertingTokenStr: String =
-            if (amountOfConvertingToken == 0.0.toBigDecimal()) "0.0000" else amountOfConvertingToken.toString()
-        _amountInConvertingToken.value = amountOfConvertingTokenStr
-
-        val fromMintAddress = _selectedWalletFrom.value?.mintAddress
-        val toMintAddress = _selectedWalletTo.value?.mintAddress
-        val toBigInteger = amountOfConvertingToken.toBigInteger()
-
-        val pool = poolInfo
-        pool ?: return
-
-        // TODO fix this amount should multiply by 10.pow(decimal)
-        val minimumReceiveAmount =
-            swapInteractor.getMinimumReceiveAmount(
-                pool,
-                amountOfConvertingToken.toBigInteger(),
-                _slippage.value ?: DEFAULT_SLIPPAGE
-            )
-        _minReceiveAmount.value = "$minimumReceiveAmount ${selectedWalletTo.value?.tokenSymbol}"
-        viewModelScope.launch(Dispatchers.IO) {
-            val fee = swapInteractor.getFee(toBigInteger, fromMintAddress, toMintAddress, pool)
-            _swapFeeData.postValue("$fee SOL")
-        }
-
-    }
-}
+//    fun setAmountOfConvertingToken(amount: String) {
+//        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
+//        val from: Double = _selectedWalletFrom.value?.walletBinds
+//            ?: throw NullPointerException("WalletItem is null in Swap screen")
+//        val amountOfConvertingToken: BigDecimal =
+//            swapInteractor.getAmountInConvertingToken(amount, from, to).roundToMilCurrencyValue()
+//        val amountOfConvertingTokenStr: String =
+//            if (amountOfConvertingToken == 0.0.toBigDecimal()) "0.0000" else amountOfConvertingToken.toString()
+//        _amountInConvertingToken.value = amountOfConvertingTokenStr
+//
+//        val fromMintAddress = _selectedWalletFrom.value?.mintAddress
+//        val toMintAddress = _selectedWalletTo.value?.mintAddress
+//        val toBigInteger = amountOfConvertingToken.toBigInteger()
+//
+//        val pool = poolInfo
+//        pool ?: return
+//
+//        // TODO fix this amount should multiply by 10.pow(decimal)
+//        val minimumReceiveAmount =
+//            swapInteractor.getMinimumReceiveAmount(
+//                pool,
+//                amountOfConvertingToken.toBigInteger(),
+//                _slippage.value ?: DEFAULT_SLIPPAGE
+//            )
+//        _minReceiveAmount.value = "$minimumReceiveAmount ${selectedWalletTo.value?.tokenSymbol}"
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val fee = swapInteractor.getFee(toBigInteger, fromMintAddress, toMintAddress, pool)
+//            _swapFeeData.postValue("$fee SOL")
+//        }
+//
+//    }
+//}

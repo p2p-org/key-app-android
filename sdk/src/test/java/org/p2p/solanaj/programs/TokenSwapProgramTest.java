@@ -1,17 +1,21 @@
 package org.p2p.solanaj.programs;
 
+
 import org.junit.Test;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
 
 import static org.junit.Assert.*;
-import static org.p2p.solanaj.programs.TokenSwapProgram.*;
 
 import java.math.BigInteger;
 import java.util.Base64;
 
 import org.bitcoinj.core.Base58;
 
+import static org.p2p.solanaj.programs.TokenSwapProgram.depositInstruction;
+import static org.p2p.solanaj.programs.TokenSwapProgram.initializeSwapInstruction;
+import static org.p2p.solanaj.programs.TokenSwapProgram.swapInstruction;
+import static org.p2p.solanaj.programs.TokenSwapProgram.withdrawInstruction;
 
 public class TokenSwapProgramTest {
     PublicKey publicKey = new PublicKey("11111111111111111111111111111111");
@@ -57,15 +61,16 @@ public class TokenSwapProgramTest {
 
     @Test
     public void decodeSwapData() {
-        String base64Data = "Af8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJtI5Id8QBhfDU9HbNjlM8tWzr5NFhnaIL7zaMrcQO6xAAMAAAAAAAAA6AMAAAAAAAABAAAAAAAAAOgDAAAAAAAAAAAAAAAAAAA=";
+        String base64Data = "AQH8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAABAnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
         PublicKey publicKey = new PublicKey("11111111111111111111111111111111");
 
         byte data[] = Base64.getDecoder().decode(base64Data);
         TokenSwapProgram.TokenSwapData tokenSwapData = TokenSwapProgram.TokenSwapData.decode(data);
 
+        assertEquals(1, tokenSwapData.getVersion());
         assertTrue(tokenSwapData.isInitialized());
-        assertEquals(-1 /* 255 */, tokenSwapData.getNonce());
+        assertEquals(-4, tokenSwapData.getNonce());
 
         assertEquals(publicKey.toString(), tokenSwapData.getTokenProgramId().toString());
         assertEquals(publicKey.toString(), tokenSwapData.getTokenAccountA().toString());
@@ -75,19 +80,16 @@ public class TokenSwapProgramTest {
         assertEquals(publicKey.toString(), tokenSwapData.getMintB().toString());
         assertEquals(publicKey.toString(), tokenSwapData.getFeeAccount().toString());
 
-        assertEquals(-101 /* 155 */, tokenSwapData.getCurveType());
+        assertEquals(BigInteger.valueOf(30), tokenSwapData.getTradeFeeNumerator());
+        assertEquals(BigInteger.valueOf(10000), tokenSwapData.getTradeFeeDenominator());
+        assertEquals(BigInteger.valueOf(0), tokenSwapData.getOwnerTradeFeeNumerator());
+        assertEquals(BigInteger.valueOf(0), tokenSwapData.getOwnerTradeFeeDenominator());
+        assertEquals(BigInteger.valueOf(0), tokenSwapData.getOwnerWithdrawFeeNumerator());
+        assertEquals(BigInteger.valueOf(0), tokenSwapData.getOwnerWithdrawFeeDenominator());
+        assertEquals(BigInteger.valueOf(0), tokenSwapData.getHostFeeNumerator());
+        assertEquals(BigInteger.valueOf(0), tokenSwapData.getHostFeeDenominator());
 
-        assertEquals(new BigInteger("963515510526829640"), tokenSwapData.getTradeFeeNumerator());
-        assertEquals(new BigInteger("6254149569805567823"), tokenSwapData.getTradeFeeDenominator());
-        assertEquals(new BigInteger("13700189867744280270"),
-                new BigInteger(1, tokenSwapData.getOwnerTradeFeeNumerator().toByteArray()));
-        assertEquals(new BigInteger("50083033227356403"), tokenSwapData.getOwnerTradeFeeDenominator());
-        assertEquals(BigInteger.valueOf(3), tokenSwapData.getOwnerWithdrawFeeNumerator());
-        assertEquals(BigInteger.valueOf(1000), tokenSwapData.getOwnerWithdrawFeeDenominator());
-        assertEquals(BigInteger.valueOf(1), tokenSwapData.getHostFeeNumerator());
-        assertEquals(BigInteger.valueOf(1000), tokenSwapData.getHostFeeDenominator());
-        //assertEquals(BigInteger.valueOf(0), tokenSwapData.getAmp());
-
+        assertEquals(0, tokenSwapData.getCurveType());
     }
 
 }

@@ -1,8 +1,8 @@
-package com.wowlet.domain.usecases
+package com.p2p.wallet.usecases
 
-import com.wowlet.data.datastore.SwapRepository
+import com.p2p.wallet.common.network.Constants
+import com.p2p.wallet.main.repository.SwapRepositoryOld
 import com.wowlet.domain.interactors.SwapInteractor
-import com.wowlet.entities.Constants
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
 import java.math.BigDecimal
@@ -10,7 +10,9 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.math.pow
 
-class SwapUseCase(private val swapRepository: SwapRepository) : SwapInteractor {
+class SwapUseCase(
+    private val swapRepository: SwapRepositoryOld
+) : SwapInteractor {
 
     override fun getAroundToCurrencyValue(
         amount: String,
@@ -43,8 +45,8 @@ class SwapUseCase(private val swapRepository: SwapRepository) : SwapInteractor {
         slippage: Double,
         poolInfo: Pool.PoolInfo
     ): String {
-        val fromMintAddress = if (source == "SOLMINT") Constants.SWAP_SOL else source
-        val toMintAddress = if (destination == "SOLMINT") Constants.SWAP_SOL else destination
+        val fromMintAddress = if (source == "SOLMINT") Constants.WRAPPED_SOL_MINT else source
+        val toMintAddress = if (destination == "SOLMINT") Constants.WRAPPED_SOL_MINT else destination
         return swapRepository.swap(
             poolInfo,
             PublicKey(fromMintAddress),
@@ -60,9 +62,9 @@ class SwapUseCase(private val swapRepository: SwapRepository) : SwapInteractor {
     override suspend fun getFee(
         amount: BigInteger, tokenSource: String?, tokenDestination: String?, pool: Pool.PoolInfo
     ): BigDecimal {
-        val fromMintAddress = if (tokenSource == "SOLMINT") Constants.SWAP_SOL else tokenSource
+        val fromMintAddress = if (tokenSource == "SOLMINT") Constants.WRAPPED_SOL_MINT else tokenSource
         val toMintAddress =
-            if (tokenDestination == "SOLMINT") Constants.SWAP_SOL else tokenDestination
+            if (tokenDestination == "SOLMINT") Constants.WRAPPED_SOL_MINT else tokenDestination
         val fee =
             swapRepository.getFee(amount, PublicKey(fromMintAddress), PublicKey(toMintAddress), pool)
         val feeValue = (fee.toInt() / 10.0.pow(9.0))

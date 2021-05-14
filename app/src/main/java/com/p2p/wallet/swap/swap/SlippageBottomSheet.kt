@@ -1,4 +1,4 @@
-package com.p2p.wallet.main.ui.swap
+package com.p2p.wallet.swap.swap
 
 import android.os.Bundle
 import android.view.LayoutInflater

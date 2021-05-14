@@ -1,17 +1,15 @@
 package org.p2p.solanaj.programs;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-
 import org.p2p.solanaj.core.AbstractData;
 import org.p2p.solanaj.core.AccountMeta;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
-
-import org.p2p.solanaj.kits.Pool;
 import org.p2p.solanaj.utils.ByteUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 public class TokenSwapProgram {
     public static final int INSTRUCTION_INDEX_INITIALIZE_SWAP = 0;
@@ -54,8 +52,8 @@ public class TokenSwapProgram {
 
         bos.write(curveType);
         //  bos.writeBytes(new byte[32]);
-        byte[] byteArray=new byte[32];
-        bos.write(byteArray,0,byteArray.length);
+        byte[] byteArray = new byte[32];
+        bos.write(byteArray, 0, byteArray.length);
 
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
@@ -152,21 +150,20 @@ public class TokenSwapProgram {
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
 
-
     public static class TokenSwapData extends AbstractData {
-        public static final int TOKEN_SWAP_DATA_LENGTH = 1 + 1 + 7 * PublicKey.PUBLIC_KEY_LENGTH + 1
-                + 8 * ByteUtils.UINT_64_LENGTH;
+        public static final int TOKEN_SWAP_DATA_LENGTH = 1 + 1 + 1 + 7 * PublicKey.PUBLIC_KEY_LENGTH
+                + 8 * ByteUtils.UINT_64_LENGTH + 1 + 32;
 
+        private int version;
         private boolean isInitialized;
         private int nonce;
-        private String tokenProgramId;
-        private String tokenAccountA;
-        private String tokenAccountB;
-        private String tokenPool;
-        private String mintA;
-        private String mintB;
-        private String feeAccount;
-        private int curveType;
+        private PublicKey tokenProgramId;
+        private PublicKey tokenAccountA;
+        private PublicKey tokenAccountB;
+        private PublicKey tokenPool;
+        private PublicKey mintA;
+        private PublicKey mintB;
+        private PublicKey feeAccount;
         private BigInteger tradeFeeNumerator;
         private BigInteger tradeFeeDenominator;
         private BigInteger ownerTradeFeeNumerator;
@@ -175,20 +172,22 @@ public class TokenSwapProgram {
         private BigInteger ownerWithdrawFeeDenominator;
         private BigInteger hostFeeNumerator;
         private BigInteger hostFeeDenominator;
+        private int curveType;
+        // private byte[] curveParameters;
 
         private TokenSwapData(byte[] data) {
             super(data, TOKEN_SWAP_DATA_LENGTH);
 
+            version = readByte();
             isInitialized = readByte() == 1;
             nonce = readByte();
-            tokenProgramId = readPublicKey().toBase58();
-            tokenAccountA = readPublicKey().toBase58();
-            tokenAccountB = readPublicKey().toBase58();
-            tokenPool = readPublicKey().toBase58();
-            mintA = readPublicKey().toBase58();
-            mintB = readPublicKey().toBase58();
-            feeAccount = readPublicKey().toBase58();
-            curveType = readByte();
+            tokenProgramId = readPublicKey();
+            tokenAccountA = readPublicKey();
+            tokenAccountB = readPublicKey();
+            tokenPool = readPublicKey();
+            mintA = readPublicKey();
+            mintB = readPublicKey();
+            feeAccount = readPublicKey();
             tradeFeeNumerator = readUint64();
             tradeFeeDenominator = readUint64();
             ownerTradeFeeNumerator = readUint64();
@@ -197,6 +196,8 @@ public class TokenSwapProgram {
             ownerWithdrawFeeDenominator = readUint64();
             hostFeeNumerator = readUint64();
             hostFeeDenominator = readUint64();
+            curveType = readByte();
+            // curveParameters = new byte[32];
         }
 
         public static TokenSwapData decode(byte[] data) {
@@ -204,17 +205,21 @@ public class TokenSwapProgram {
         }
 
         public TokenSwapData swapMintData() {
-            final String mintAOld = mintA;
+            final PublicKey mintAOld = mintA;
             this.mintA = mintB;
             this.mintB = mintAOld;
             return this;
         }
 
         public TokenSwapData swapTokenAccount() {
-            final String tokenAccountAOld = tokenAccountA;
+            final PublicKey tokenAccountAOld = tokenAccountA;
             this.tokenAccountA = tokenAccountB;
             this.tokenAccountB = tokenAccountAOld;
             return this;
+        }
+
+        public int getVersion() {
+            return version;
         }
 
         public boolean isInitialized() {
@@ -226,31 +231,31 @@ public class TokenSwapProgram {
         }
 
         public PublicKey getTokenProgramId() {
-            return new PublicKey(tokenProgramId);
+            return tokenProgramId;
         }
 
         public PublicKey getTokenAccountA() {
-            return new PublicKey(tokenAccountA);
+            return tokenAccountA;
         }
 
         public PublicKey getTokenAccountB() {
-            return new PublicKey(tokenAccountB);
+            return tokenAccountB;
         }
 
         public PublicKey getTokenPool() {
-            return new PublicKey(tokenPool);
+            return tokenPool;
         }
 
         public PublicKey getMintA() {
-            return new PublicKey(mintA);
+            return mintA;
         }
 
         public PublicKey getMintB() {
-            return new PublicKey(mintB);
+            return mintB;
         }
 
         public PublicKey getFeeAccount() {
-            return new PublicKey(feeAccount);
+            return feeAccount;
         }
 
         public int getCurveType() {

@@ -10,7 +10,7 @@
     <color name="colorDark">#CC000000</color>
     <color name="colorGreen">#2DB533</color>
     <color name="colorWhite">#FFFFFFFF</color>
-    <color name="colorProgressBackground">#CCFFFFFF</color>
+    <color name="colorProgressBackground">#33FFFFFF</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>

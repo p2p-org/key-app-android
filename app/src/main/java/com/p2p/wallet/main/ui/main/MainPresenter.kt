@@ -1,9 +1,9 @@
 package com.p2p.wallet.main.ui.main
 
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.settings.interactor.SettingsInteractor
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +73,11 @@ class MainPresenter(
     private fun loadTokensFromRemote() {
         launch {
             try {
+                val tokens = userInteractor.getTokens()
+                if (tokens.isNotEmpty()) {
+                    Timber.d("Tokens are already loaded, skipping refresh")
+                    return@launch
+                }
                 userInteractor.loadTokens()
                 Timber.d("Successfully loaded tokens")
             } catch (e: Throwable) {

@@ -9,7 +9,6 @@ import com.p2p.wallet.dashboard.model.SelectedCurrency
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.AddCoinModel
 import com.p2p.wallet.dashboard.model.local.ConstWallet
-import com.p2p.wallet.dashboard.model.local.LocalWalletItem
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
 import com.p2p.wallet.token.model.Token
@@ -142,7 +141,7 @@ class DashboardInteractor(
         return null
     }
 
-    suspend fun saveEditedWallet(localWalletItem: LocalWalletItem) =
+    suspend fun saveEditedWallet() =
         channelFlow<List<Token>> {
 //            localDatabaseRepository.saveEditedWallet(localWalletItem)
             walletData.forEach { item ->

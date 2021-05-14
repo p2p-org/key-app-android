@@ -12,4 +12,5 @@ dependencies {
     def okHttpVersion = '4.8.1'
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
 
+    testImplementation "junit:junit:4.13.2"
 }

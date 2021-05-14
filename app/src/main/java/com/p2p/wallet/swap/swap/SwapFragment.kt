@@ -1,23 +1,26 @@
-package com.p2p.wallet.main.ui.swap
+package com.p2p.wallet.swap.swap
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
-import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.databinding.FragmentSwapBinding
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
+import java.math.BigInteger
 
 class SwapFragment :
     BaseMvpFragment<SwapContract.View, SwapContract.Presenter>(R.layout.fragment_swap),
@@ -48,6 +51,12 @@ class SwapFragment :
                 val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
                 presenter.setSourceAmount(amount)
             }
+
+            reverseImageView.setOnClickListener {
+                //todo: reverse
+            }
+
+            swapButton.setOnClickListener { presenter.swap() }
         }
 
         presenter.loadInitialData()
@@ -65,18 +74,19 @@ class SwapFragment :
         with(binding) {
             Glide.with(destinationImageView).load(token.iconUrl).into(destinationImageView)
             destinationTextView.text = token.tokenSymbol
-            currencyTextView.isVisible = false
+            currencyTextView.isInvisible = true
         }
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showPrice(exchangeRate: BigDecimal, exchangeToken: String, perToken: String) {
+    override fun showPrice(destinationAmount: BigInteger, exchangeToken: String, perToken: String) {
         binding.priceGroup.isVisible = true
-        binding.priceTextView.text = "$exchangeRate $exchangeToken per $perToken"
+        binding.destinationAmountTextView.text = destinationAmount.toString()
     }
 
     @SuppressLint("SetTextI18n")
     override fun showCalculations(data: CalculationsData) {
+        binding.calculationsGroup.isVisible = true
         binding.receiveValueTextView.text = "${data.minReceive} ${data.minReceiveSymbol}"
         binding.feeValueTextView.text = "${data.fee} ${data.feeSymbol}"
         binding.slippageValueTextView.text = "${data.slippage} %"
@@ -92,6 +102,14 @@ class SwapFragment :
 
     override fun showButtonEnabled(isEnabled: Boolean) {
         binding.swapButton.isEnabled = isEnabled
+    }
+
+    override fun showSwapSuccess() {
+        Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showNoPoolFound() {
+        Toast.makeText(requireContext(), "Pool not found", Toast.LENGTH_SHORT).show()
     }
 
     override fun openSourceSelection(tokens: List<Token>) {
@@ -116,5 +134,10 @@ class SwapFragment :
 
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+        binding.buttonProgressBar.isVisible = isLoading
+        binding.swapButton.isVisible = !isLoading
     }
 }

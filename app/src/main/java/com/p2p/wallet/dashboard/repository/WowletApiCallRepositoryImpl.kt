@@ -18,8 +18,6 @@ class WowletApiCallRepositoryImpl(
         return minimumBalance
     }
 
-    override suspend fun getFee(): Long = client.api.feeBlockhash
-
     @Throws(RpcException::class)
     override suspend fun createAndInitializeTokenAccount(
         payer: Account,

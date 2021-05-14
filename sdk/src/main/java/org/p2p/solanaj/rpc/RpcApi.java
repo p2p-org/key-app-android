@@ -1,31 +1,31 @@
 package org.p2p.solanaj.rpc;
 
+import android.util.Base64;
+
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.rpc.types.AccountInfo;
+import org.p2p.solanaj.rpc.types.ConfigObjects;
 import org.p2p.solanaj.rpc.types.ConfigObjects.ConfirmedSignFAddr2;
-import org.p2p.solanaj.rpc.types.ConfigObjects.DataSize;
 import org.p2p.solanaj.rpc.types.ConfigObjects.Filter;
 import org.p2p.solanaj.rpc.types.ConfigObjects.Memcmp;
 import org.p2p.solanaj.rpc.types.ConfigObjects.ProgramAccountConfig;
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction;
 import org.p2p.solanaj.rpc.types.ProgramAccount;
-import org.p2p.solanaj.rpc.types.QRAccountInfo;
 import org.p2p.solanaj.rpc.types.RecentBlockhash;
-import org.p2p.solanaj.rpc.types.RpcQrAccountInfoConfig;
 import org.p2p.solanaj.rpc.types.RpcResultTypes.ValueLong;
 import org.p2p.solanaj.rpc.types.RpcSendTransactionConfig;
+import org.p2p.solanaj.rpc.types.RpcSendTransactionConfig.Encoding;
 import org.p2p.solanaj.rpc.types.SignatureInformation;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 public class RpcApi {
-    private final RpcClient client;
+    private RpcClient client;
 
     public RpcApi(RpcClient client) {
         this.client = client;
@@ -33,10 +33,6 @@ public class RpcApi {
 
     public String getRecentBlockhash() throws RpcException {
         return client.call("getRecentBlockhash", null, RecentBlockhash.class).getRecentBlockhash();
-    }
-
-    public long getFeeBlockhash() throws RpcException {
-        return client.call("getRecentBlockhash", null, RecentBlockhash.class).getFeeBlockhash().getLamportsPerSignature();
     }
 
     public String sendTransaction(TransactionResponse transaction, Account signer) throws RpcException {
@@ -48,16 +44,8 @@ public class RpcApi {
         transaction.setRecentBlockHash(recentBlockhash);
         transaction.sign(signers);
         byte[] serializedTransaction = transaction.serialize();
-        String base64Trx;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
-        } else {
-            base64Trx = android.util.Base64.encodeToString(
-                    serializedTransaction,
-                    android.util.Base64.DEFAULT
-            );
-        }
-        // String base64Trx = Base64.getEncoder().encodeToString(serializedTransaction);
+
+        String base64Trx = Base64.encodeToString(serializedTransaction, Base64.DEFAULT);
 
         List<Object> params = new ArrayList<Object>();
 
@@ -104,7 +92,6 @@ public class RpcApi {
         return result;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public List<ProgramAccount> getProgramAccounts(PublicKey account, long offset, String bytes) throws RpcException {
         List<Object> params = new ArrayList<Object>();
 
@@ -112,10 +99,35 @@ public class RpcApi {
 
         List<Object> filters = new ArrayList<Object>();
         filters.add(new Filter(new Memcmp(offset, bytes)));
-        filters.add(new DataSize(DataSize.SPAN));
+        filters.add(new ConfigObjects.DataSize(ConfigObjects.DataSize.SPAN));
 
         ProgramAccountConfig programAccountConfig = new ProgramAccountConfig(filters);
         params.add(programAccountConfig);
+
+        List<AbstractMap> rawResult = client.call("getProgramAccounts", params, List.class);
+
+        List<ProgramAccount> result = new ArrayList<ProgramAccount>();
+        for (AbstractMap item : rawResult) {
+            result.add(new ProgramAccount(item));
+        }
+
+        return result;
+    }
+
+    public List<ProgramAccount> getProgramAccounts(PublicKey account) throws RpcException {
+        return getProgramAccounts(account, new ProgramAccountConfig(Encoding.base64));
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public List<ProgramAccount> getProgramAccounts(PublicKey account, ProgramAccountConfig programAccountConfig)
+            throws RpcException {
+        List<Object> params = new ArrayList<Object>();
+
+        params.add(account.toString());
+
+        if (programAccountConfig != null) {
+            params.add(programAccountConfig);
+        }
 
         List<AbstractMap> rawResult = client.call("getProgramAccounts", params, List.class);
 
@@ -134,15 +146,6 @@ public class RpcApi {
         params.add(new RpcSendTransactionConfig());
 
         return client.call("getAccountInfo", params, AccountInfo.class);
-    }
-
-    public QRAccountInfo getQRAccountInfo(PublicKey account) throws RpcException {
-        List<Object> params = new ArrayList<Object>();
-
-        params.add(account.toString());
-        params.add(new RpcQrAccountInfoConfig());
-
-        return client.call("getAccountInfo", params, QRAccountInfo.class);
     }
 
     public long getMinimumBalanceForRentExemption(long dataLength) throws RpcException {

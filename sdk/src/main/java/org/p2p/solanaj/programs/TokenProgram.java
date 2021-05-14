@@ -13,7 +13,10 @@ import org.p2p.solanaj.utils.ByteUtils;
 import org.p2p.solanaj.core.Sysvar;
 
 public class TokenProgram {
-    public static final PublicKey PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    public static final PublicKey PROGRAM_ID =
+            new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    public static final PublicKey ASSOCIATED_TOKEN_PROGRAM_ID =
+            new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
     public static final int INSTRUCTION_INDEX_INITIALIZE_MINT = 0;
     public static final int INSTRUCTION_INDEX_INITIALIZE_ACCOUNT = 1;

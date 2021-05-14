@@ -1,13 +1,10 @@
 package org.p2p.solanaj.kits;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
+import android.util.Base64;
 
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.Transaction;
+import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.core.TransactionInstruction;
 import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
@@ -16,6 +13,9 @@ import org.p2p.solanaj.rpc.RpcException;
 import org.p2p.solanaj.rpc.types.AccountInfo;
 import org.p2p.solanaj.rpc.types.TokenAccountBalance;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Token {
 
@@ -40,15 +40,7 @@ public class Token {
         }
 
         String base64Data = accountInfo.getValue().getData().get(0);
-        byte[] data;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            data = Base64.getDecoder().decode(base64Data);
-        } else {
-            data = android.util.Base64.decode(
-                    base64Data,
-                    android.util.Base64.DEFAULT
-            );
-        }
+        byte[] data = Base64.decode(base64Data, Base64.DEFAULT);
 
         return TokenProgram.MintData.decode(data);
     }
@@ -66,15 +58,8 @@ public class Token {
         }
 
         String base64Data = accountInfo.getValue().getData().get(0);
-        byte[] data;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            data = Base64.getDecoder().decode(base64Data);
-        } else {
-            data = android.util.Base64.decode(
-                    base64Data,
-                    android.util.Base64.DEFAULT
-            );
-        }
+        byte[] data = Base64.decode(base64Data, Base64.DEFAULT);
+
         return TokenProgram.AccountInfoData.decode(data);
     }
 
@@ -92,7 +77,7 @@ public class Token {
         TransactionInstruction createMint = TokenProgram.initializeMintInstruction(TokenProgram.PROGRAM_ID,
                 newAccountPubKey, decimals, mintAuthority, freezeAuthority);
 
-        Transaction transaction = new Transaction();
+        TransactionResponse transaction = new TransactionResponse();
         transaction.addInstruction(createAccount);
         transaction.addInstruction(createMint);
 
@@ -115,7 +100,7 @@ public class Token {
         TransactionInstruction initializeAccount = TokenProgram.initializeAccountInstruction(TokenProgram.PROGRAM_ID,
                 newAccountPubKey, mintAddress, owner);
 
-        Transaction transaction = new Transaction();
+        TransactionResponse transaction = new TransactionResponse();
         transaction.addInstruction(createAccount);
         transaction.addInstruction(initializeAccount);
 
@@ -130,11 +115,12 @@ public class Token {
         TransactionInstruction mintTo = TokenProgram.mintToInstruction(TokenProgram.PROGRAM_ID, mintAddress,
                 destination, payer.getPublicKey(), amount);
 
-        Transaction transaction = new Transaction();
+        TransactionResponse transaction = new TransactionResponse();
         transaction.addInstruction(mintTo);
 
         return client.getApi().sendTransaction(transaction, Arrays.asList(payer));
     }
+
     public static TokenAccountBalance getTokenAccountBalance(RpcClient client, PublicKey account) throws RpcException {
         ArrayList<Object> params = new ArrayList<Object>();
 
@@ -142,4 +128,20 @@ public class Token {
 
         return client.call("getTokenAccountBalance", params, TokenAccountBalance.class);
     }
+
+    public static PublicKey getAssociatedTokenAddress(PublicKey mint, PublicKey owner) throws Exception {
+        return getAssociatedTokenAddress(TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID, TokenProgram.PROGRAM_ID, mint,
+                owner);
+    }
+
+    public static PublicKey getAssociatedTokenAddress(PublicKey associatedProgramId, PublicKey programId,
+                                                      PublicKey mint, PublicKey owner) throws Exception {
+        return PublicKey
+                .findProgramAddress(
+                        Arrays.asList(owner.toByteArray(), programId.toByteArray(), mint.toByteArray()),
+                        associatedProgramId
+                )
+                .getAddress();
+    }
+
 }
