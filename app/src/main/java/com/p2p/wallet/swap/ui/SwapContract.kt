@@ -1,4 +1,4 @@
-package com.p2p.wallet.swap.swap
+package com.p2p.wallet.swap.ui
 
 import androidx.annotation.ColorRes
 import com.p2p.wallet.common.mvp.MvpPresenter

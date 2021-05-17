@@ -15,7 +15,7 @@ import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
-import com.p2p.wallet.swap.swap.SwapFragment
+import com.p2p.wallet.swap.ui.SwapFragment
 import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.settings.ui.SettingsFragment
 import com.p2p.wallet.token.model.Token

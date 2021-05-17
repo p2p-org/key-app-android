@@ -1,4 +1,4 @@
-package com.p2p.wallet.swap.swap
+package com.p2p.wallet.swap.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle

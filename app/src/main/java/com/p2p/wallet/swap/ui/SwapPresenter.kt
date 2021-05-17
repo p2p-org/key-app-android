@@ -1,8 +1,8 @@
-package com.p2p.wallet.swap.swap
+package com.p2p.wallet.swap.ui
 
 import com.p2p.wallet.R
+import com.p2p.wallet.amount.toDecimalValue
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.swap.SwapInteractor
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
@@ -14,11 +14,9 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
-import kotlin.math.pow
 import kotlin.properties.Delegates
 
 class SwapPresenter(
-    private val mainInteractor: MainInteractor,
     private val userInteractor: UserInteractor,
     private val swapInteractor: SwapInteractor
 ) : BasePresenter<SwapContract.View>(), SwapContract.Presenter {
@@ -78,12 +76,14 @@ class SwapPresenter(
 
     override fun setNewSourceToken(newToken: Token) {
         sourceToken = newToken
+        setButtonEnabled()
     }
 
     override fun setNewDestinationToken(newToken: Token) {
         destinationToken = newToken
 
         calculateData(sourceToken!!, newToken)
+        setButtonEnabled()
     }
 
     override fun setSlippage(slippage: Double) {
@@ -101,8 +101,7 @@ class SwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(around.setScale(6, RoundingMode.HALF_EVEN))
 
-        val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance && destinationToken != null
-//        view?.showButtonEnabled(isEnabled)
+        setButtonEnabled()
 
         if (destinationToken != null) calculateData(sourceToken!!, destinationToken!!)
     }
@@ -117,7 +116,7 @@ class SwapPresenter(
                     currentPool!!,
                     sourceMint,
                     destinationMint,
-                    sourceAmount,
+                    sourceAmount.toDecimalValue(),
                     slippage,
                     sourceBalance!!,
                     destinationBalance!!
@@ -141,7 +140,7 @@ class SwapPresenter(
             }
             currentPool = pool
 
-            val finalAmount = sourceAmount.multiply(10.0.pow(source.decimals.toDouble()).toBigDecimal())
+            val finalAmount = sourceAmount.multiply(source.decimals.toDecimalValue())
 
             sourceBalance = swapInteractor.loadTokenBalance(pool.tokenAccountA)
             destinationBalance = swapInteractor.loadTokenBalance(pool.tokenAccountB)
@@ -149,6 +148,8 @@ class SwapPresenter(
             val destinationAmount = swapInteractor.calculateAmountInOtherToken(
                 pool, finalAmount.toBigInteger(), true, sourceBalance!!, destinationBalance!!
             )
+
+            Timber.d("### source ${sourceAmount} final $finalAmount dest $destinationAmount")
 
             view?.showPrice(destinationAmount, destination.tokenSymbol, source.tokenSymbol)
 
@@ -173,6 +174,12 @@ class SwapPresenter(
             )
             view?.showCalculations(data)
         }
+    }
+
+    private fun setButtonEnabled() {
+//        val isMoreThanBalance = sourceAmount > sourceToken?.total
+//        val isEnabled = sourceAmount == BigDecimal.ZERO && !isMoreThanBalance && destinationToken != null
+//        view?.showButtonEnabled(isEnabled)
     }
 }
 
