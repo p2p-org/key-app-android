@@ -1,16 +1,16 @@
 package org.p2p.solanaj.programs;
 
+import org.p2p.solanaj.core.AbstractData;
+import org.p2p.solanaj.core.AccountMeta;
+import org.p2p.solanaj.core.PublicKey;
+import org.p2p.solanaj.core.Sysvar;
+import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.utils.ByteUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-
-import org.p2p.solanaj.core.AbstractData;
-import org.p2p.solanaj.core.AccountMeta;
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionInstruction;
-import org.p2p.solanaj.utils.ByteUtils;
-import org.p2p.solanaj.core.Sysvar;
 
 public class TokenProgram {
     public static final PublicKey PROGRAM_ID =
@@ -34,7 +34,7 @@ public class TokenProgram {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(INSTRUCTION_INDEX_INITIALIZE_MINT);
         bos.write(decimals);
-       // bos.writeBytes(authority.toByteArray());
+        // bos.writeBytes(authority.toByteArray());
         bos.write(authority.toByteArray(), 0, authority.toByteArray().length);
         bos.write(freezeAuthority == null ? 0 : 1);
         //bos.writeBytes(freezeAuthority != null ? freezeAuthority.toByteArray() : new byte[PublicKey.PUBLIC_KEY_LENGTH]);
@@ -117,8 +117,13 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction closeAccountInstruction(PublicKey tokenProgramId, PublicKey account,
-                                                                 PublicKey destination, PublicKey owner) {
+    public static TransactionInstruction closeAccountInstruction(
+            PublicKey tokenProgramId,
+            PublicKey account,
+            PublicKey destination,
+            PublicKey owner
+    ) {
+
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(destination, false, true));

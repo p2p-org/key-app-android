@@ -1,7 +1,8 @@
-package com.p2p.wallet.swap
+package com.p2p.wallet.swap.interactor
 
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.swap.repository.SwapLocalRepository
 import com.p2p.wallet.swap.repository.SwapRepository
 import com.p2p.wallet.user.interactor.UserInteractor
@@ -26,6 +27,9 @@ class SwapInteractor(
         swapLocalRepository.setPools(pools)
     }
 
+    fun getAllPools() =
+        swapLocalRepository.getPools()
+
     suspend fun findPool(sourceMint: String, destinationMint: String): Pool.PoolInfo? = withContext(Dispatchers.IO) {
         val allPools = swapLocalRepository.getPools()
         val pool = allPools.find {
@@ -45,26 +49,11 @@ class SwapInteractor(
     suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance =
         swapRepository.loadTokenBalance(publicKey)
 
-    suspend fun swap(
-        pool: Pool.PoolInfo,
-        sourceMint: String,
-        destinationMint: String,
-        amount: BigDecimal,
-        slippage: Double,
-        balanceA: TokenAccountBalance,
-        balanceB: TokenAccountBalance
-    ): String {
-
-        return swapRepository.swap(
-            userInteractor.getSecretKeys(),
-            pool,
-            sourceMint,
-            destinationMint,
-            slippage,
-            amount,
-            balanceA,
-            balanceB
-        )
+    suspend fun swap(request: SwapRequest): String {
+        val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA)
+        val accountAddressB = userInteractor.findAccountAddress(request.pool.mintB)
+        val keys = userInteractor.getSecretKeys()
+        return swapRepository.swap(keys, request, accountAddressA, accountAddressB)
     }
 
     fun calculateFee(
@@ -82,13 +71,12 @@ class SwapInteractor(
     }
 
     fun calculateMinReceive(
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance,
+        balanceA: TokenAccountBalance,
+        balanceB: TokenAccountBalance,
         amount: BigInteger,
         slippage: Double
     ): BigInteger {
-        val estimated =
-            TokenSwap.calculateSwapEstimatedAmount(tokenABalance, tokenBBalance, amount)
+        val estimated = TokenSwap.calculateSwapEstimatedAmount(balanceA, balanceB, amount)
         return TokenSwap.calculateSwapMinimumReceiveAmount(estimated, slippage)
     }
 

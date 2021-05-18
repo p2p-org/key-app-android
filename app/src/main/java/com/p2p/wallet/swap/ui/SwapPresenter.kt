@@ -3,7 +3,9 @@ package com.p2p.wallet.swap.ui
 import com.p2p.wallet.R
 import com.p2p.wallet.amount.toDecimalValue
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.swap.SwapInteractor
+import com.p2p.wallet.swap.interactor.SwapInteractor
+import com.p2p.wallet.swap.model.Slippage
+import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.Job
@@ -41,6 +43,9 @@ class SwapPresenter(
     private var sourceBalance: TokenAccountBalance? = null
     private var destinationBalance: TokenAccountBalance? = null
 
+    private var isReverse: Boolean = false
+    private var reverseJob: Job? = null
+
     private var sourceAmount: BigDecimal = BigDecimal.ZERO
 
     private var slippage: Double = 0.1
@@ -63,14 +68,24 @@ class SwapPresenter(
     override fun loadTokensForSourceSelection() {
         launch {
             val tokens = userInteractor.getTokens()
-            view?.openSourceSelection(tokens)
+            val pools = swapInteractor.getAllPools()
+            val result = tokens.filter { token ->
+                val pool = pools.firstOrNull { it.swapData.mintA.toBase58() == token.getFormattedMintAddress() }
+                pool != null
+            }
+            view?.openSourceSelection(result)
         }
     }
 
     override fun loadTokensForDestinationSelection() {
         launch {
             val tokens = userInteractor.getTokens()
-            view?.openDestinationSelection(tokens)
+            val pools = swapInteractor.getAllPools()
+            val result = tokens.filter { token ->
+                val pool = pools.firstOrNull { it.swapData.mintB.toBase58() == token.getFormattedMintAddress() }
+                pool != null
+            }
+            view?.openDestinationSelection(result)
         }
     }
 
@@ -88,6 +103,31 @@ class SwapPresenter(
 
     override fun setSlippage(slippage: Double) {
         this.slippage = slippage
+        view?.showSlippage(slippage)
+    }
+
+    override fun loadSlippageForSelection() {
+        view?.openSlippageSelection(Slippage.parse(slippage))
+    }
+
+    override fun loadAvailableAmount() {
+        view?.updateInputValue(sourceToken!!.total)
+    }
+
+    override fun togglePrice() {
+        reverseJob?.cancel()
+        reverseJob = launch {
+            try {
+                val sourceSymbol = if (isReverse) destinationToken!!.tokenSymbol else sourceToken!!.tokenSymbol
+                val destinationSymbol = if (isReverse) sourceToken!!.tokenSymbol else destinationToken!!.tokenSymbol
+                val priceInSingleValue = userInteractor.getPriceByToken(sourceSymbol, destinationSymbol)
+                view?.showPrice(priceInSingleValue, destinationSymbol, sourceSymbol)
+
+                isReverse = !isReverse
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading price")
+            }
+        }
     }
 
     override fun setSourceAmount(amount: BigDecimal) {
@@ -110,17 +150,15 @@ class SwapPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val sourceMint = sourceToken!!.getFormattedMintAddress()
-                val destinationMint = destinationToken!!.getFormattedMintAddress()
-                val data = swapInteractor.swap(
-                    currentPool!!,
-                    sourceMint,
-                    destinationMint,
-                    sourceAmount.toDecimalValue(),
+                val pool = currentPool!!
+                val request = SwapRequest(
+                    pool,
                     slippage,
+                    sourceAmount.toDecimalValue().toBigInteger(),
                     sourceBalance!!,
                     destinationBalance!!
                 )
+                val data = swapInteractor.swap(request)
                 view?.showSwapSuccess()
             } catch (e: Throwable) {
                 Timber.e(e, "Error swapping tokens")
@@ -133,6 +171,8 @@ class SwapPresenter(
     private fun calculateData(source: Token, destination: Token) {
         calculationJob?.cancel()
         calculationJob = launch {
+            togglePrice()
+
             val pool = swapInteractor.findPool(source.getFormattedMintAddress(), destination.getFormattedMintAddress())
             if (pool == null) {
                 view?.showNoPoolFound()
@@ -140,37 +180,38 @@ class SwapPresenter(
             }
             currentPool = pool
 
-            val finalAmount = sourceAmount.multiply(source.decimals.toDecimalValue())
+            val finalAmount = sourceAmount.multiply(source.decimals.toDecimalValue()).toBigInteger()
 
-            sourceBalance = swapInteractor.loadTokenBalance(pool.tokenAccountA)
-            destinationBalance = swapInteractor.loadTokenBalance(pool.tokenAccountB)
-
-            val destinationAmount = swapInteractor.calculateAmountInOtherToken(
-                pool, finalAmount.toBigInteger(), true, sourceBalance!!, destinationBalance!!
-            )
-
-            Timber.d("### source ${sourceAmount} final $finalAmount dest $destinationAmount")
-
-            view?.showPrice(destinationAmount, destination.tokenSymbol, source.tokenSymbol)
+            val sourceBalance =
+                swapInteractor.loadTokenBalance(pool.tokenAccountA).also { sourceBalance = it }
+            val destinationBalance =
+                swapInteractor.loadTokenBalance(pool.tokenAccountB).also { destinationBalance = it }
 
             val fee = swapInteractor.calculateFee(
-                currentPool!!,
-                finalAmount.toBigInteger(),
-                sourceBalance!!,
-                destinationBalance!!
+                pool,
+                finalAmount,
+                sourceBalance,
+                destinationBalance
             )
             val minReceive = swapInteractor.calculateMinReceive(
-                sourceBalance!!,
-                destinationBalance!!,
-                finalAmount.toBigInteger()!!,
+                sourceBalance,
+                destinationBalance,
+                finalAmount,
                 slippage
             )
+
+            Timber.d("### fee $fee minReceive $minReceive final $finalAmount")
+
+            val destinationAmount = swapInteractor.calculateAmountInOtherToken(
+                pool, finalAmount, true, sourceBalance, destinationBalance
+            )
+
             val data = CalculationsData(
+                destinationAmount,
                 minReceive,
                 destination.tokenSymbol,
                 fee,
-                source.tokenSymbol,
-                slippage
+                source.tokenSymbol
             )
             view?.showCalculations(data)
         }
@@ -184,9 +225,9 @@ class SwapPresenter(
 }
 
 data class CalculationsData(
+    val destinationAmount: BigInteger,
     val minReceive: BigInteger,
     val minReceiveSymbol: String,
     val fee: BigInteger,
-    val feeSymbol: String,
-    val slippage: Double
+    val feeSymbol: String
 )

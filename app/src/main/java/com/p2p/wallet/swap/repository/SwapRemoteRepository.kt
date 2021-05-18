@@ -1,16 +1,17 @@
 package com.p2p.wallet.swap.repository
 
 import com.p2p.wallet.common.network.Constants
+import com.p2p.wallet.swap.model.SwapRequest
+import com.p2p.wallet.token.model.Token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.kits.Token
 import org.p2p.solanaj.kits.TokenSwap
+import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.types.TokenAccountBalance
-import java.math.BigDecimal
 
 class SwapRemoteRepository(
     private val client: RpcClient
@@ -22,43 +23,29 @@ class SwapRemoteRepository(
     }
 
     override suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance = withContext(Dispatchers.IO) {
-        Token.getTokenAccountBalance(client, publicKey)
+        TokenTransaction.getTokenAccountBalance(client, publicKey)
     }
 
     override suspend fun swap(
         keys: List<String>,
-        pool: Pool.PoolInfo,
-        source: String,
-        destination: String,
-        slippage: Double,
-        amountIn: BigDecimal,
-        balanceA: TokenAccountBalance,
-        balanceB: TokenAccountBalance
+        request: SwapRequest,
+        accountAddressA: Token,
+        accountAddressB: Token
     ): String = withContext(Dispatchers.IO) {
-
         val owner = Account.fromMnemonic(keys, "")
 
-        val tokenSwap = TokenSwap(client, swapProgramId())
+        val tokenSwap = TokenSwap(client, PublicKey(Constants.SWAP_PROGRAM_ID))
 
         return@withContext tokenSwap.swap(
             owner,
-            pool,
-            PublicKey(source),
-            PublicKey(destination),
-            slippage,
-            amountIn.toBigInteger(),
-            balanceA,
-            balanceB,
-            Constants.WRAPPED_SOL_MINT
+            request.pool,
+            request.slippage,
+            request.amountIn,
+            request.balanceA,
+            request.balanceB,
+            Constants.WRAPPED_SOL_MINT,
+            PublicKey(accountAddressA.depositAddress),
+            PublicKey(accountAddressB.depositAddress)
         )
     }
-
-
-    //    private fun swapProgramId(): PublicKey = when (preferenceService.getSelectedCluster()) {
-//        Cluster.MAINNET -> PublicKey(Constants.MAIN_NET_PUBLIC_KEY)
-//        Cluster.DEVNET -> PublicKey(Constants.DEV_NET_PUBLIC_KEY)
-//        Cluster.TESTNET -> PublicKey(Constants.TEST_NET_PUBLIC_KEY)
-//        else -> PublicKey("")
-//    }
-    private fun swapProgramId(): PublicKey = PublicKey(Constants.MAIN_NET_PUBLIC_KEY)
 }

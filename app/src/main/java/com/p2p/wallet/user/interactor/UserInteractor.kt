@@ -10,6 +10,7 @@ import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import com.p2p.wallet.utils.WalletDataConst
 import kotlinx.coroutines.flow.Flow
+import org.p2p.solanaj.core.PublicKey
 import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
@@ -56,6 +57,11 @@ class UserInteractor(
         userLocalRepository.setTokenPrices(emptyList())
         mainLocalRepository.setTokens(emptyList())
     }
+
+    suspend fun findAccountAddress(mintAddress: PublicKey) =
+        mainLocalRepository.getTokens().first {
+            it.getFormattedMintAddress() == mintAddress.toString()
+        }
 
     fun getSecretKeys(): List<String> =
         sharedPreferences.getString(KEY_PHRASES, "").orEmpty().split(",")

@@ -1,7 +1,6 @@
 package com.p2p.wallet.main.api
 
 import com.google.gson.annotations.SerializedName
-import java.math.BigDecimal
 
 data class MultiPriceResponse(
     @SerializedName("SOL")
@@ -57,11 +56,3 @@ data class MultiPriceResponse(
     @SerializedName("LUA")
     val LUA: SinglePriceResponse?
 )
-
-data class SinglePriceResponse(
-    @SerializedName("USD")
-    val value: Double
-) {
-
-    fun getValue(): BigDecimal = BigDecimal(value)
-}

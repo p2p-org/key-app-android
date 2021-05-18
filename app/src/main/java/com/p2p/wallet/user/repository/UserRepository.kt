@@ -12,7 +12,6 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.rpc.RpcClient
-import timber.log.Timber
 import java.math.BigDecimal
 
 interface UserRepository {
@@ -54,8 +53,6 @@ class UserRepositoryImpl(
             tokenProvider.publicKey
         )
 
-        Timber.d("### responmse ${response.size}")
-
         val tokenAccounts = response.map { UserConverter.fromNetwork(it) }
         val solBalance = loadSolBalance()
         val wallets = WalletDataConst.getWalletConstList().toMutableList()
@@ -88,6 +85,8 @@ class UserRepositoryImpl(
         UserConverter.fromNetwork(response.value.data ?: emptyList())
     }
 
-    override suspend fun getRate(source: String, destination: String): BigDecimal =
-        compareApi.getPrice(source, destination).value.toBigDecimal()
+    override suspend fun getRate(source: String, destination: String): BigDecimal {
+        val data = compareApi.getPrice(source, destination)
+        return TokenConverter.fromNetwork(destination, data).price
+    }
 }

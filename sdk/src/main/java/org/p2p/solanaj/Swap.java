@@ -1,21 +1,22 @@
 package org.p2p.solanaj;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
 
 import org.bitcoinj.core.Base58;
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.kits.Pool;
-import org.p2p.solanaj.kits.Token;
+import org.p2p.solanaj.kits.TokenTransaction;
 import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.programs.TokenSwapProgram;
 import org.p2p.solanaj.rpc.Cluster;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.types.TokenAccountBalance;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 public class Swap {
     private static PublicKey WRAPPED_SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
@@ -62,13 +63,13 @@ public class Swap {
         PublicKey mintA = isTokenAEqTokenAccountA ? pool.getMintA() : pool.getMintB();
         PublicKey mintB = isTokenAEqTokenAccountA ? pool.getMintB() : pool.getMintA();
 
-        TokenAccountBalance tokenABalance = Token.getTokenAccountBalance(client, tokenA);
-        TokenAccountBalance tokenBBalance = Token.getTokenAccountBalance(client, tokenB);
+        TokenAccountBalance tokenABalance = TokenTransaction.getTokenAccountBalance(client, tokenA);
+        TokenAccountBalance tokenBBalance = TokenTransaction.getTokenAccountBalance(client, tokenB);
 
         BigInteger minAmountIn = calculateAmount(tokenABalance.getAmount(), tokenBBalance.getAmount(), SLIPPAGE,
                 tokenInputAmount);
 
-        TokenProgram.AccountInfoData tokenAInfo = Token.getAccountInfoData(client, tokenA, TokenProgram.PROGRAM_ID);
+        TokenProgram.AccountInfoData tokenAInfo = TokenTransaction.getAccountInfoData(client, tokenA, TokenProgram.PROGRAM_ID);
         int space = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH;
         long balanceNeeded = client.getApi().getMinimumBalanceForRentExemption(space);
 
@@ -77,12 +78,20 @@ public class Swap {
             Account newAccount = new Account();
             PublicKey newAccountPubKey = newAccount.getPublicKey();
 
-            TransactionInstruction createAccountInstruction = SystemProgram.createAccount(ownerPubKey, newAccountPubKey,
-                    tokenInputAmount.longValue() + balanceNeeded, TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH,
-                    TokenProgram.PROGRAM_ID);
+            TransactionInstruction createAccountInstruction = SystemProgram.createAccount(
+                    ownerPubKey,
+                    newAccountPubKey,
+                    tokenInputAmount.longValue() + balanceNeeded,
+                    TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH,
+                    TokenProgram.PROGRAM_ID
+            );
 
             TransactionInstruction initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
-                    TokenProgram.PROGRAM_ID, newAccountPubKey, WRAPPED_SOL_MINT, ownerPubKey);
+                    TokenProgram.PROGRAM_ID,
+                    newAccountPubKey,
+                    WRAPPED_SOL_MINT,
+                    ownerPubKey
+            );
 
             transaction.addInstruction(createAccountInstruction);
             transaction.addInstruction(initializeAccountInstruction);
@@ -97,18 +106,24 @@ public class Swap {
         PublicKey toAccount = findAccountAddress(mintB);
         boolean isWrappedSol = mintB.equals(WRAPPED_SOL_MINT);
 
-        // вот здесь есть проверка - если у тебя нет аккаунта с mintB то создать
-        // аналогично если ты пытаешься свопнуть SOL-> другой токен
-        // нужно сначала создать wrapped Sol акк если ты используешь вот этот метод TokenSwap.swap()
         if (toAccount == null) {
             Account newAccount = new Account();
             PublicKey newAccountPubKey = newAccount.getPublicKey();
 
-            TransactionInstruction createAccountInstruction = SystemProgram.createAccount(ownerPubKey, newAccountPubKey,
-                    balanceNeeded, TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH, TokenProgram.PROGRAM_ID);
+            TransactionInstruction createAccountInstruction = SystemProgram.createAccount(
+                    ownerPubKey,
+                    newAccountPubKey,
+                    balanceNeeded,
+                    TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH,
+                    TokenProgram.PROGRAM_ID
+            );
 
-            TransactionInstruction initializeAccountInstruction = TokenProgram
-                    .initializeAccountInstruction(TokenProgram.PROGRAM_ID, newAccountPubKey, mintB, ownerPubKey);
+            TransactionInstruction initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    newAccountPubKey,
+                    mintB,
+                    ownerPubKey
+            );
 
             transaction.addInstruction(createAccountInstruction);
             transaction.addInstruction(initializeAccountInstruction);
@@ -118,13 +133,29 @@ public class Swap {
             toAccount = newAccountPubKey;
         }
 
-        TransactionInstruction approveInstruction = TokenProgram.approveInstruction(TokenProgram.PROGRAM_ID,
-                fromAccount, pool.getAuthority(), ownerPubKey, tokenInputAmount);
+        TransactionInstruction approveInstruction = TokenProgram.approveInstruction(
+                TokenProgram.PROGRAM_ID,
+                fromAccount,
+                pool.getAuthority(),
+                ownerPubKey,
+                tokenInputAmount
+        );
 
-        TransactionInstruction swapInstruction = TokenSwapProgram.swapInstruction(poolAddress, pool.getAuthority(),
-                fromAccount, tokenA, tokenB, toAccount, pool.getTokenPool(),
-                pool.getFeeAccount(), pool.getFeeAccount(), TokenProgram.PROGRAM_ID,
-                SWAP_PROGRAM_ID, tokenInputAmount, minAmountIn);
+        TransactionInstruction swapInstruction = TokenSwapProgram.swapInstruction(
+                poolAddress,
+                pool.getAuthority(),
+                fromAccount,
+                tokenA,
+                tokenB,
+                toAccount,
+                pool.getTokenPool(),
+                pool.getFeeAccount(),
+                pool.getFeeAccount(),
+                TokenProgram.PROGRAM_ID,
+                SWAP_PROGRAM_ID,
+                tokenInputAmount,
+                minAmountIn
+        );
 
         transaction.addInstruction(approveInstruction);
         transaction.addInstruction(swapInstruction);
@@ -138,8 +169,12 @@ public class Swap {
         }
 
         if (isNeedCloaseAccount && closeAccountPublicKey != null) {
-            TransactionInstruction closeAccountInstruction = TokenProgram
-                    .closeAccountInstruction(TokenProgram.PROGRAM_ID, closeAccountPublicKey, ownerPubKey, ownerPubKey);
+            TransactionInstruction closeAccountInstruction = TokenProgram.closeAccountInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    closeAccountPublicKey,
+                    ownerPubKey,
+                    ownerPubKey
+            );
             transaction.addInstruction(closeAccountInstruction);
         }
 

@@ -1,6 +1,7 @@
 package com.p2p.wallet.amount
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.math.pow
 
 private const val POWER_VALUE = 10.0

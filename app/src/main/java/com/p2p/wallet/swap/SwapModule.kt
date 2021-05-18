@@ -1,6 +1,7 @@
 package com.p2p.wallet.swap
 
 import com.p2p.wallet.common.di.InjectionModule
+import com.p2p.wallet.swap.interactor.SwapInteractor
 import com.p2p.wallet.swap.repository.SwapInMemoryRepository
 import com.p2p.wallet.swap.repository.SwapLocalRepository
 import com.p2p.wallet.swap.repository.SwapRemoteRepository

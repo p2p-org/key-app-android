@@ -3,9 +3,9 @@ package com.p2p.wallet.swap.ui
 import androidx.annotation.ColorRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
+import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.token.model.Token
 import java.math.BigDecimal
-import java.math.BigInteger
 
 interface SwapContract {
 
@@ -14,14 +14,17 @@ interface SwapContract {
         fun showDestinationToken(token: Token)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
-        fun showPrice(destinationAmount: BigInteger, exchangeToken: String, perToken: String)
+        fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String)
+        fun showSlippage(slippage: Double)
         fun showCalculations(data: CalculationsData)
         fun setAvailableTextColor(@ColorRes availableColor: Int)
         fun showAroundValue(aroundValue: BigDecimal)
         fun showButtonEnabled(isEnabled: Boolean)
         fun showSwapSuccess()
+        fun updateInputValue(available: BigDecimal)
         fun openSourceSelection(tokens: List<Token>)
         fun openDestinationSelection(tokens: List<Token>)
+        fun openSlippageSelection(currentSlippage: Slippage)
         fun showNoPoolFound()
     }
 
@@ -29,10 +32,13 @@ interface SwapContract {
         fun loadInitialData()
         fun loadTokensForSourceSelection()
         fun loadTokensForDestinationSelection()
+        fun loadSlippageForSelection()
         fun setNewSourceToken(newToken: Token)
         fun setNewDestinationToken(newToken: Token)
         fun setSourceAmount(amount: BigDecimal)
         fun setSlippage(slippage: Double)
         fun swap()
+        fun togglePrice()
+        fun loadAvailableAmount()
     }
 }

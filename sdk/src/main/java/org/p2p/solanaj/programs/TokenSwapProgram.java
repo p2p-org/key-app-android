@@ -59,10 +59,21 @@ public class TokenSwapProgram {
     }
 
 
-    public static TransactionInstruction swapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
-                                                         PublicKey userSource, PublicKey poolSource, PublicKey poolDestination, PublicKey userDestination,
-                                                         PublicKey poolMint, PublicKey feeAccount, PublicKey hostFeeAccount, PublicKey tokenProgramId,
-                                                         PublicKey swapProgramId, BigInteger minimumAmountOut, BigInteger amountIn) {
+    public static TransactionInstruction swapInstruction(
+            PublicKey tokenSwapAccount,
+            PublicKey authority,
+            PublicKey userSource,
+            PublicKey poolSource,
+            PublicKey poolDestination,
+            PublicKey userDestination,
+            PublicKey poolMint,
+            PublicKey feeAccount,
+            PublicKey hostFeeAccount,
+            PublicKey tokenProgramId,
+            PublicKey swapProgramId,
+            BigInteger amountIn,
+            BigInteger minimumAmountOut
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, false));
         keys.add(new AccountMeta(authority, false, false));

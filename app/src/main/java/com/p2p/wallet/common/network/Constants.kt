@@ -18,9 +18,5 @@ class Constants {
         const val ERROR_WALLET_ITEM_IS_NULL = 1007
 
         const val SWAP_PROGRAM_ID = "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1"
-
-        const val MAIN_NET_PUBLIC_KEY = "9qvG1zUp8xF1Bi4m6UdRNby1BAAuaDrUxSpv4CmRRMjL"
-        const val DEV_NET_PUBLIC_KEY = "E7G3NKPwVcuPXjqL11J2ZZWBVRsocb6Lu3nK5BrRwBNd"
-        const val TEST_NET_PUBLIC_KEY = "FmgrCQX1JJSAkJEk8fiL85Cgnh7g3DS1rmakEjP1eCyL"
     }
 }

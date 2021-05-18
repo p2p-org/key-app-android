@@ -12,7 +12,7 @@ public abstract class AbstractData {
 
     protected AbstractData(byte[] data, int dataLength) {
         if (data.length < dataLength) {
-            throw new IllegalArgumentException("wrong data");
+            throw new IllegalArgumentException("Wrong data");
         }
 
         this.data = data;

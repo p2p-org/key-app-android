@@ -4,8 +4,8 @@ import android.util.Base64;
 
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.rpc.RpcClient;
@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Token {
+public class TokenTransaction {
 
     public static long getMinBalanceRentForExemptMint(RpcClient client) throws RpcException {
         return client.getApi().getMinimumBalanceForRentExemption(TokenProgram.MintData.MINT_DATA_LENGTH);
@@ -45,8 +45,11 @@ public class Token {
         return TokenProgram.MintData.decode(data);
     }
 
-    public static TokenProgram.AccountInfoData getAccountInfoData(RpcClient client, PublicKey accountAddress,
-                                                                  PublicKey programId) throws RpcException {
+    public static TokenProgram.AccountInfoData getAccountInfoData(
+            RpcClient client,
+            PublicKey accountAddress,
+            PublicKey programId
+    ) throws RpcException {
         AccountInfo accountInfo = client.getApi().getAccountInfo(accountAddress);
 
         if (accountInfo.getValue() == null) {

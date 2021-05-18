@@ -14,13 +14,13 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSwapBinding
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
+import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
-import java.math.BigInteger
 
 class SwapFragment :
     BaseMvpFragment<SwapContract.View, SwapContract.Presenter>(R.layout.fragment_swap),
@@ -40,20 +40,21 @@ class SwapFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.setOnMenuItemClickListener { menu ->
                 if (menu.itemId == R.id.slippageMenuItem) {
-                    SlippageBottomSheet.show(childFragmentManager) { presenter.setSlippage(it) }
+                    presenter.loadSlippageForSelection()
                     return@setOnMenuItemClickListener true
                 }
                 return@setOnMenuItemClickListener false
             }
             sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
             destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+            availableTextView.setOnClickListener { presenter.loadAvailableAmount() }
             amountEditText.doAfterTextChanged {
                 val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
                 presenter.setSourceAmount(amount)
             }
 
             reverseImageView.setOnClickListener {
-                //todo: reverse
+                presenter.togglePrice()
             }
 
             swapButton.setOnClickListener { presenter.swap() }
@@ -78,10 +79,14 @@ class SwapFragment :
         }
     }
 
+    override fun updateInputValue(available: BigDecimal) {
+        binding.amountEditText.setText("$available")
+    }
+
     @SuppressLint("SetTextI18n")
-    override fun showPrice(destinationAmount: BigInteger, exchangeToken: String, perToken: String) {
+    override fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String) {
         binding.priceGroup.isVisible = true
-        binding.destinationAmountTextView.text = destinationAmount.toString()
+        binding.exchangeTextView.text = "$amount $exchangeToken per $perToken"
     }
 
     @SuppressLint("SetTextI18n")
@@ -89,7 +94,7 @@ class SwapFragment :
         binding.calculationsGroup.isVisible = true
         binding.receiveValueTextView.text = "${data.minReceive} ${data.minReceiveSymbol}"
         binding.feeValueTextView.text = "${data.fee} ${data.feeSymbol}"
-        binding.slippageValueTextView.text = "${data.slippage} %"
+        binding.destinationAmountTextView.text = "${data.destinationAmount}"
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
@@ -102,6 +107,11 @@ class SwapFragment :
 
     override fun showButtonEnabled(isEnabled: Boolean) {
         binding.swapButton.isEnabled = isEnabled
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun showSlippage(slippage: Double) {
+        binding.slippageValueTextView.text = "$slippage %"
     }
 
     override fun showSwapSuccess() {
@@ -130,6 +140,10 @@ class SwapFragment :
             popExit = R.anim.slide_down,
             popEnter = 0
         )
+    }
+
+    override fun openSlippageSelection(currentSlippage: Slippage) {
+        SlippageBottomSheet.show(childFragmentManager, currentSlippage) { presenter.setSlippage(it) }
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {
