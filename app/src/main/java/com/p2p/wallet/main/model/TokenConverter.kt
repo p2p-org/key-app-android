@@ -23,7 +23,7 @@ object TokenConverter {
         tokenSymbol = wallet.tokenSymbol,
         tokenName = wallet.tokenName,
         iconUrl = wallet.icon,
-        depositAddress = account.depositAddress,
+        publicKey = account.publicKey,
         mintAddress = account.mintAddress,
         price = account.getFormattedPrice(exchangeRate, decimals),
         total = account.getAmount(decimals),
@@ -64,6 +64,7 @@ object TokenConverter {
     }
 
     fun fromNetwork(tokenSymbol: String, response: SinglePriceResponse): TokenPrice = when (tokenSymbol) {
+        "USD" -> TokenPrice(tokenSymbol, getOrZero(response.usdValue))
         "SOL" -> TokenPrice(tokenSymbol, getOrZero(response.SOL))
         "BTC" -> TokenPrice(tokenSymbol, getOrZero(response.BTC))
         "SRM" -> TokenPrice(tokenSymbol, getOrZero(response.SRM))

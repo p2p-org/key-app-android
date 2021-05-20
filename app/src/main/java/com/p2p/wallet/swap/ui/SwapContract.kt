@@ -15,7 +15,6 @@ interface SwapContract {
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String)
-        fun showSlippage(slippage: Double)
         fun showCalculations(data: CalculationsData)
         fun setAvailableTextColor(@ColorRes availableColor: Int)
         fun showAroundValue(aroundValue: BigDecimal)
@@ -38,7 +37,7 @@ interface SwapContract {
         fun setSourceAmount(amount: BigDecimal)
         fun setSlippage(slippage: Double)
         fun swap()
-        fun togglePrice()
-        fun loadAvailableAmount()
+        fun loadPrice(toggle: Boolean)
+        fun feedAvailableValue()
     }
 }

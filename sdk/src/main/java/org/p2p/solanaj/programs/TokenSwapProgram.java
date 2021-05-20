@@ -17,12 +17,27 @@ public class TokenSwapProgram {
     public static final int INSTRUCTION_INDEX_DEPOSIT = 2;
     public static final int INSTRUCTION_INDEX_WITHDRAW = 3;
 
-    public static TransactionInstruction initializeSwapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
-                                                                   PublicKey tokenAccountA, PublicKey tokenAccountB, PublicKey tokenPool, PublicKey feeAccount,
-                                                                   PublicKey tokenAccountPool, PublicKey tokenProgramId, PublicKey swapProgramId, int nonce, int curveType,
-                                                                   BigInteger tradeFeeNumerator, BigInteger tradeFeeDenominator, BigInteger ownerTradeFeeNumerator,
-                                                                   BigInteger ownerTradeFeeDenominator, BigInteger ownerWithdrawFeeNumerator,
-                                                                   BigInteger ownerWithdrawFeeDenominator, BigInteger hostFeeNumerator, BigInteger hostFeeDenominator) {
+    public static TransactionInstruction initializeSwapInstruction(
+            PublicKey tokenSwapAccount,
+            PublicKey authority,
+            PublicKey tokenAccountA,
+            PublicKey tokenAccountB,
+            PublicKey tokenPool,
+            PublicKey feeAccount,
+            PublicKey tokenAccountPool,
+            PublicKey tokenProgramId,
+            PublicKey swapProgramId,
+            int nonce,
+            int curveType,
+            BigInteger tradeFeeNumerator,
+            BigInteger tradeFeeDenominator,
+            BigInteger ownerTradeFeeNumerator,
+            BigInteger ownerTradeFeeDenominator,
+            BigInteger ownerWithdrawFeeNumerator,
+            BigInteger ownerWithdrawFeeDenominator,
+            BigInteger hostFeeNumerator,
+            BigInteger hostFeeDenominator
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, true));
         keys.add(new AccountMeta(authority, false, false));
@@ -102,10 +117,21 @@ public class TokenSwapProgram {
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction depositInstruction(PublicKey tokenSwap, PublicKey authority, PublicKey sourceA,
-                                                            PublicKey sourceB, PublicKey intoA, PublicKey intoB, PublicKey poolToken, PublicKey poolAccount,
-                                                            PublicKey tokenProgramId, PublicKey swapProgramId, BigInteger poolTokenAmount, BigInteger maximumTokenA,
-                                                            BigInteger maximumTokenB) {
+    public static TransactionInstruction depositInstruction(
+            PublicKey tokenSwap,
+            PublicKey authority,
+            PublicKey sourceA,
+            PublicKey sourceB,
+            PublicKey intoA,
+            PublicKey intoB,
+            PublicKey poolToken,
+            PublicKey poolAccount,
+            PublicKey tokenProgramId,
+            PublicKey swapProgramId,
+            BigInteger poolTokenAmount,
+            BigInteger maximumTokenA,
+            BigInteger maximumTokenB
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwap, false, false));
         keys.add(new AccountMeta(authority, false, false));
@@ -131,10 +157,22 @@ public class TokenSwapProgram {
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction withdrawInstruction(PublicKey tokenSwap, PublicKey authority,
-                                                             PublicKey poolMint, PublicKey feeAccount, PublicKey sourcePoolAccount, PublicKey fromA, PublicKey fromB,
-                                                             PublicKey userAccountA, PublicKey userAccountB, PublicKey swapProgramId, PublicKey tokenProgramId,
-                                                             BigInteger poolTokenAmount, BigInteger minimumTokenA, BigInteger minimumTokenB) {
+    public static TransactionInstruction withdrawInstruction(
+            PublicKey tokenSwap,
+            PublicKey authority,
+            PublicKey poolMint,
+            PublicKey feeAccount,
+            PublicKey sourcePoolAccount,
+            PublicKey fromA,
+            PublicKey fromB,
+            PublicKey userAccountA,
+            PublicKey userAccountB,
+            PublicKey swapProgramId,
+            PublicKey tokenProgramId,
+            BigInteger poolTokenAmount,
+            BigInteger minimumTokenA,
+            BigInteger minimumTokenB
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwap, false, false));
         keys.add(new AccountMeta(authority, false, false));

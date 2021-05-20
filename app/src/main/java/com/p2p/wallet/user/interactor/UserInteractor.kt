@@ -8,7 +8,7 @@ import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
-import com.p2p.wallet.utils.WalletDataConst
+import com.p2p.wallet.main.api.AllWallets
 import kotlinx.coroutines.flow.Flow
 import org.p2p.solanaj.core.PublicKey
 import java.math.BigDecimal
@@ -34,7 +34,7 @@ class UserInteractor(
     }
 
     suspend fun loadTokenPrices(targetCurrency: String) {
-        val tokens = WalletDataConst.getWalletConstList().map { it.tokenSymbol }
+        val tokens = AllWallets.getWalletConstList().map { it.tokenSymbol }
         val prices = userRepository.loadTokensPrices(tokens, targetCurrency)
         userLocalRepository.setTokenPrices(prices)
     }
@@ -59,7 +59,7 @@ class UserInteractor(
     }
 
     suspend fun findAccountAddress(mintAddress: PublicKey) =
-        mainLocalRepository.getTokens().first {
+        mainLocalRepository.getTokens().firstOrNull {
             it.getFormattedMintAddress() == mintAddress.toString()
         }
 

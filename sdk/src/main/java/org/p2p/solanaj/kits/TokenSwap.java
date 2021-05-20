@@ -1,10 +1,11 @@
 package org.p2p.solanaj.kits;
 
+import android.util.Log;
+
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
-import org.p2p.solanaj.core.TransactionResponse;
-import org.p2p.solanaj.kits.Pool.PoolInfo;
+import org.p2p.solanaj.core.TransactionRequest;
 import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.programs.TokenSwapProgram;
@@ -18,34 +19,33 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class TokenSwap {
 
     private final RpcClient client;
-    private final PublicKey swapProgramId;
 
-    public TokenSwap(RpcClient client, PublicKey swapProgramId) {
+    public TokenSwap(RpcClient client) {
         this.client = client;
-        this.swapProgramId = swapProgramId;
     }
 
     public String swap(
             Account owner,
-            @NonNull PoolInfo pool,
+            @NonNull Pool.PoolInfo pool,
             Double slippage,
             BigInteger amountIn,
             TokenAccountBalance balanceA,
             TokenAccountBalance balanceB,
-            String wrappedSolMint,
-            PublicKey accountAddressA,
-            PublicKey accountAddressB
+            PublicKey wrappedSolAccount,
+            @Nullable PublicKey accountAddressA,
+            @Nullable PublicKey accountAddressB
     ) throws RpcException {
+
+        Log.d("###", " a " + accountAddressA.toBase58() + " b " + accountAddressB.toBase58());
 
         final ArrayList<Account> signers = new ArrayList<>(Collections.singletonList(owner));
 
-        TransactionResponse transaction = new TransactionResponse();
-
-        PublicKey wrappedSolAccount = new PublicKey(wrappedSolMint);
+        TransactionRequest transaction = new TransactionRequest();
 
         // swap type
         PublicKey source = pool.getTokenAccountA();
@@ -56,6 +56,16 @@ public class TokenSwap {
         PublicKey tokenB = isTokenAEqTokenAccountA ? pool.getTokenAccountB() : pool.getTokenAccountA();
         PublicKey mintA = isTokenAEqTokenAccountA ? pool.getMintA() : pool.getMintB();
         PublicKey mintB = isTokenAEqTokenAccountA ? pool.getMintB() : pool.getMintA();
+
+        PublicKey addressA = new PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo");
+        PublicKey addressB = new PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo");
+//        if (isTokenAEqTokenAccountA) {
+//            addressA = accountAddressA;
+//            addressB = accountAddressB;
+//        } else {
+//            addressA = accountAddressB;
+//            addressB = accountAddressA;
+//        }
 
         TokenProgram.AccountInfoData tokenAInfo = TokenTransaction.getAccountInfoData(client, tokenA, TokenProgram.PROGRAM_ID);
         int space = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH;
@@ -88,10 +98,10 @@ public class TokenSwap {
 
             fromAccount = newAccountPubKey;
         } else {
-            fromAccount = accountAddressA;
+            fromAccount = addressA;
         }
 
-        PublicKey toAccount = accountAddressB;
+        PublicKey toAccount = addressB;
         boolean isWrappedSol = mintB.equals(wrappedSolAccount);
 
         if (toAccount == null) {
@@ -139,6 +149,8 @@ public class TokenSwap {
                 slippage
         );
 
+        Log.d("###", " from " + fromAccount.toBase58() + " to " + toAccount.toBase58());
+
         TransactionInstruction swap = TokenSwapProgram.swapInstruction(
                 pool.getAddress(),
                 pool.getAuthority(),
@@ -150,7 +162,7 @@ public class TokenSwap {
                 pool.getFeeAccount(),
                 pool.getFeeAccount(),
                 TokenProgram.PROGRAM_ID,
-                swapProgramId,
+                pool.getSwapProgramId(),
                 amountIn,
                 minimumAmountOut
         );

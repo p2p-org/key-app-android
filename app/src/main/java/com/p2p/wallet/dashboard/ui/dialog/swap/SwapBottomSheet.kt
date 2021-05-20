@@ -12,8 +12,8 @@ import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.ui.dialog.swap.viewmodel.SwapViewModel
 import com.p2p.wallet.databinding.BottomSheetSwapBinding
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
-import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDpWithDefault
+//import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDp
+//import com.p2p.wallet.utils.bindadapter.imageSourceRadiusDpWithDefault
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -56,7 +56,7 @@ class SwapBottomSheet(
             }
 //            availableTextView.text = text
 
-            imgTokenFrom.imageSourceRadiusDp(selectedWalletFrom.iconUrl, 12)
+//            imgTokenFrom.imageSourceRadiusDp(selectedWalletFrom.iconUrl, 12)
             imgTokenFrom.setOnClickListener { viewModel.openMyWalletsDialog() }
             txtTokenFrom.text = selectedWalletFrom.tokenSymbol
             imgArrowDownFrom.setOnClickListener { viewModel.openMyWalletsDialog() }
@@ -88,9 +88,9 @@ class SwapBottomSheet(
                 viewModel.openSelectTokenToSwapBottomSheet()
             }
 
-            imgTokenTo.imageSourceRadiusDpWithDefault(
-                selectedWalletFrom.iconUrl, 12
-            )
+//            imgTokenTo.imageSourceRadiusDpWithDefault(
+//                selectedWalletFrom.iconUrl, 12
+//            )
             txtTokenTo.text = selectedWalletFrom.tokenSymbol
             imgArrowDownTo.setOnClickListener { viewModel.openSelectTokenToSwapBottomSheet() }
             txtAmountTo.text = viewModel.amountInConvertingToken.toString()

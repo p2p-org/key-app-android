@@ -15,11 +15,7 @@ fun Context.showUrlInCustomTabs(url: String) {
 }
 
 fun Fragment.showUrlInCustomTabs(url: String) {
-    val uri = Uri.parse(url)
-    val customTabsIntent = CustomTabsIntent.Builder()
-        .setShowTitle(true)
-        .build()
-    customTabsIntent.launchUrl(requireContext(), uri)
+    requireContext().showUrlInCustomTabs(url)
 }
 
 fun AppCompatActivity.showUrlInCustomTabs(url: String) {

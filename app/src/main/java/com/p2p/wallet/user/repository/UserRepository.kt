@@ -6,7 +6,7 @@ import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.model.UserConverter
-import com.p2p.wallet.utils.WalletDataConst
+import com.p2p.wallet.main.api.AllWallets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
@@ -55,7 +55,7 @@ class UserRepositoryImpl(
 
         val tokenAccounts = response.map { UserConverter.fromNetwork(it) }
         val solBalance = loadSolBalance()
-        val wallets = WalletDataConst.getWalletConstList().toMutableList()
+        val wallets = AllWallets.getWalletConstList().toMutableList()
 
         val result = wallets
             .mapNotNull { wallet ->

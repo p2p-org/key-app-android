@@ -13,7 +13,7 @@ import kotlin.math.pow
 @Parcelize
 data class Token(
     val tokenSymbol: String,
-    val depositAddress: String,
+    val publicKey: String,
     val decimals: Int,
     val mintAddress: String,
     val tokenName: String,
@@ -37,12 +37,12 @@ data class Token(
 
     @Suppress("MagicNumber")
     fun getFormattedAddress(): String {
-        if (depositAddress.length < ADDRESS_SYMBOL_COUNT) {
-            return depositAddress
+        if (publicKey.length < ADDRESS_SYMBOL_COUNT) {
+            return publicKey
         }
 
-        val firstSix = depositAddress.take(4)
-        val lastFour = depositAddress.takeLast(4)
+        val firstSix = publicKey.take(4)
+        val lastFour = publicKey.takeLast(4)
         return "$firstSix...$lastFour"
     }
 
@@ -56,15 +56,17 @@ data class Token(
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9
         private const val SOL_MINT = "SOLMINT"
+        private const val SOL_NAME = "SOL"
+        private const val SOL_LOGO_URL = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
 
         /* fixme: workaround about adding hardcode wallet, looks strange */
         fun getSOL(publicKey: String, amount: Long) = Token(
-            tokenSymbol = "SOL",
-            tokenName = "SOL",
+            tokenSymbol = SOL_NAME,
+            tokenName = SOL_NAME,
             mintAddress = SOL_MINT,
-            iconUrl = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
-            depositAddress = publicKey,
-            decimals = 9,
+            iconUrl = SOL_LOGO_URL,
+            publicKey = publicKey,
+            decimals = SOL_DECIMALS,
             total = BigDecimal(amount).divide(BigDecimal(10.0.pow(SOL_DECIMALS))),
             price = BigDecimal.ZERO,
             walletBinds = 0.0,

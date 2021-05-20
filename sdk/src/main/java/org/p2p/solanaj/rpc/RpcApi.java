@@ -4,7 +4,7 @@ import android.util.Base64;
 
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionResponse;
+import org.p2p.solanaj.core.TransactionRequest;
 import org.p2p.solanaj.rpc.types.AccountInfo;
 import org.p2p.solanaj.rpc.types.ConfigObjects;
 import org.p2p.solanaj.rpc.types.ConfigObjects.ConfirmedSignFAddr2;
@@ -35,17 +35,19 @@ public class RpcApi {
         return client.call("getRecentBlockhash", null, RecentBlockhash.class).getRecentBlockhash();
     }
 
-    public String sendTransaction(TransactionResponse transaction, Account signer) throws RpcException {
+    public String sendTransaction(TransactionRequest transaction, Account signer) throws RpcException {
         return sendTransaction(transaction, Arrays.asList(signer));
     }
 
-    public String sendTransaction(TransactionResponse transaction, List<Account> signers) throws RpcException {
+    public String sendTransaction(TransactionRequest transaction, List<Account> signers) throws RpcException {
         String recentBlockhash = getRecentBlockhash();
         transaction.setRecentBlockHash(recentBlockhash);
         transaction.sign(signers);
         byte[] serializedTransaction = transaction.serialize();
 
-        String base64Trx = Base64.encodeToString(serializedTransaction, Base64.DEFAULT);
+        String base64Trx = Base64
+                .encodeToString(serializedTransaction, Base64.DEFAULT)
+                .replace("\n", "");
 
         List<Object> params = new ArrayList<Object>();
 

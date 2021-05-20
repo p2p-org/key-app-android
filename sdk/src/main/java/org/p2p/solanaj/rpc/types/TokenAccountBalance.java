@@ -1,5 +1,6 @@
 package org.p2p.solanaj.rpc.types;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import com.squareup.moshi.Json;

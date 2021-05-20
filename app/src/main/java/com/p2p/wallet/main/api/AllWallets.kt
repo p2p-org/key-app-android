@@ -1,9 +1,9 @@
-package com.p2p.wallet.utils
+package com.p2p.wallet.main.api
 
 import com.p2p.wallet.R
 import com.p2p.wallet.dashboard.model.local.ConstWallet
 
-object WalletDataConst {
+object AllWallets {
 
     @SuppressWarnings("all")
     fun getWalletConstList() = mutableListOf(

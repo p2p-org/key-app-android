@@ -9,10 +9,5 @@ import org.p2p.solanaj.rpc.types.TokenAccountBalance
 interface SwapRepository {
     suspend fun loadPoolInfoList(swapProgramId: String): List<Pool.PoolInfo>
     suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance
-    suspend fun swap(
-        keys: List<String>,
-        request: SwapRequest,
-        accountAddressA: Token,
-        accountAddressB: Token
-    ): String
+    suspend fun swap(keys: List<String>, request: SwapRequest, accountA: Token?, accountB: Token?): String
 }

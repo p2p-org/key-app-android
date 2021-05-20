@@ -1,7 +1,6 @@
 package com.p2p.wallet.main.repository
 
 import com.p2p.wallet.common.date.toZonedDateTime
-import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.token.model.Transaction
@@ -12,15 +11,11 @@ import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.TransactionResponse
-import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.kits.TokenSwap
+import org.p2p.solanaj.core.TransactionRequest
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.types.ConfirmedTransaction
-import org.p2p.solanaj.rpc.types.TokenAccountBalance
 import org.p2p.solanaj.rpc.types.TransferInfoResponse
-import java.math.BigDecimal
 
 class MainRemoteRepository(
     private val client: RpcClient,
@@ -33,7 +28,7 @@ class MainRemoteRepository(
             val targetPublicKey = PublicKey(targetAddress)
             val signer = Account(tokenProvider.secretKey)
 
-            val transaction = TransactionResponse()
+            val transaction = TransactionRequest()
             transaction.addInstruction(
                 SystemProgram.transfer(
                     sourcePublicKey,

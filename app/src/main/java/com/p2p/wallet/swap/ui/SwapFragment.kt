@@ -47,14 +47,14 @@ class SwapFragment :
             }
             sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
             destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-            availableTextView.setOnClickListener { presenter.loadAvailableAmount() }
+            availableTextView.setOnClickListener { presenter.feedAvailableValue() }
             amountEditText.doAfterTextChanged {
                 val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
                 presenter.setSourceAmount(amount)
             }
 
             reverseImageView.setOnClickListener {
-                presenter.togglePrice()
+                presenter.loadPrice(true)
             }
 
             swapButton.setOnClickListener { presenter.swap() }
@@ -95,6 +95,7 @@ class SwapFragment :
         binding.receiveValueTextView.text = "${data.minReceive} ${data.minReceiveSymbol}"
         binding.feeValueTextView.text = "${data.fee} ${data.feeSymbol}"
         binding.destinationAmountTextView.text = "${data.destinationAmount}"
+        binding.slippageValueTextView.text = "${data.slippage}"
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
@@ -107,11 +108,6 @@ class SwapFragment :
 
     override fun showButtonEnabled(isEnabled: Boolean) {
         binding.swapButton.isEnabled = isEnabled
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun showSlippage(slippage: Double) {
-        binding.slippageValueTextView.text = "$slippage %"
     }
 
     override fun showSwapSuccess() {

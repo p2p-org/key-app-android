@@ -7,7 +7,7 @@ import kotlin.math.pow
 
 @Parcelize
 data class TokenProgramAccount(
-    val depositAddress: String,
+    val publicKey: String,
     val total: Long,
     val mintAddress: String
 ) : Parcelable {

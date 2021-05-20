@@ -3,6 +3,7 @@ package com.p2p.wallet.swap.repository
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
@@ -29,12 +30,12 @@ class SwapRemoteRepository(
     override suspend fun swap(
         keys: List<String>,
         request: SwapRequest,
-        accountAddressA: Token,
-        accountAddressB: Token
+        accountA: Token?,
+        accountB: Token?
     ): String = withContext(Dispatchers.IO) {
         val owner = Account.fromMnemonic(keys, "")
 
-        val tokenSwap = TokenSwap(client, PublicKey(Constants.SWAP_PROGRAM_ID))
+        val tokenSwap = TokenSwap(client)
 
         return@withContext tokenSwap.swap(
             owner,
@@ -43,9 +44,9 @@ class SwapRemoteRepository(
             request.amountIn,
             request.balanceA,
             request.balanceB,
-            Constants.WRAPPED_SOL_MINT,
-            PublicKey(accountAddressA.depositAddress),
-            PublicKey(accountAddressB.depositAddress)
+            PublicKey(Constants.WRAPPED_SOL_MINT),
+            accountA?.publicKey?.toPublicKey(),
+            accountB?.publicKey?.toPublicKey()
         )
     }
 }

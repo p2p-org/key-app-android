@@ -2,7 +2,7 @@ package com.p2p.wallet.dashboard.repository
 
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.TransactionResponse
+import org.p2p.solanaj.core.TransactionRequest
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.rpc.RpcClient
 import org.p2p.solanaj.rpc.RpcException
@@ -36,7 +36,7 @@ class WowletApiCallRepositoryImpl(
             newAccountPubKey, mintAddress,
             payerPubKey
         )
-        val transaction = TransactionResponse()
+        val transaction = TransactionRequest()
         transaction.addInstruction(createAccount)
         transaction.addInstruction(initializeAccount)
         return client.api.sendTransaction(transaction, listOf(payer, newAccount))

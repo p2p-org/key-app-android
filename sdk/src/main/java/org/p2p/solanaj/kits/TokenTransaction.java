@@ -5,7 +5,7 @@ import android.util.Base64;
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
-import org.p2p.solanaj.core.TransactionResponse;
+import org.p2p.solanaj.core.TransactionRequest;
 import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.rpc.RpcClient;
@@ -80,7 +80,7 @@ public class TokenTransaction {
         TransactionInstruction createMint = TokenProgram.initializeMintInstruction(TokenProgram.PROGRAM_ID,
                 newAccountPubKey, decimals, mintAuthority, freezeAuthority);
 
-        TransactionResponse transaction = new TransactionResponse();
+        TransactionRequest transaction = new TransactionRequest();
         transaction.addInstruction(createAccount);
         transaction.addInstruction(createMint);
 
@@ -103,7 +103,7 @@ public class TokenTransaction {
         TransactionInstruction initializeAccount = TokenProgram.initializeAccountInstruction(TokenProgram.PROGRAM_ID,
                 newAccountPubKey, mintAddress, owner);
 
-        TransactionResponse transaction = new TransactionResponse();
+        TransactionRequest transaction = new TransactionRequest();
         transaction.addInstruction(createAccount);
         transaction.addInstruction(initializeAccount);
 
@@ -118,7 +118,7 @@ public class TokenTransaction {
         TransactionInstruction mintTo = TokenProgram.mintToInstruction(TokenProgram.PROGRAM_ID, mintAddress,
                 destination, payer.getPublicKey(), amount);
 
-        TransactionResponse transaction = new TransactionResponse();
+        TransactionRequest transaction = new TransactionRequest();
         transaction.addInstruction(mintTo);
 
         return client.getApi().sendTransaction(transaction, Arrays.asList(payer));
