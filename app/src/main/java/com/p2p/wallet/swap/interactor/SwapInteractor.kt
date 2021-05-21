@@ -1,6 +1,5 @@
 package com.p2p.wallet.swap.interactor
 
-import com.p2p.wallet.amount.divideRounded
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.swap.model.SwapRequest
@@ -12,7 +11,6 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.TokenSwap
-import org.p2p.solanaj.programs.TokenSwapProgram.TokenSwapData
 import org.p2p.solanaj.rpc.types.TokenAccountBalance
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -80,27 +78,6 @@ class SwapInteractor(
     ): BigInteger {
         val estimated = TokenSwap.calculateSwapEstimatedAmount(balanceA, balanceB, amount)
         return TokenSwap.calculateSwapMinimumReceiveAmount(estimated, slippage)
-    }
-
-    fun calculateAmountInOtherToken(
-        tokenSource: PublicKey,
-        swapData: TokenSwapData,
-        tokenABalance: BigInteger,
-        tokenBBalance: BigInteger,
-        tokenInputAmount: BigInteger,
-        includeFees: Boolean
-    ): BigInteger {
-        val isReverse = swapData.tokenAccountB.equals(tokenSource)
-        val feeRatio = BigDecimal(swapData.tradeFeeNumerator)
-            .divide(BigDecimal(swapData.tradeFeeDenominator))
-        val firstAmountInPool: BigInteger = if (isReverse) tokenBBalance else tokenABalance
-        val secondAmountInPool: BigInteger = if (isReverse) tokenABalance else tokenBBalance
-        val invariant: BigInteger = firstAmountInPool.multiply(secondAmountInPool)
-        val newFromAmountInPool: BigInteger = firstAmountInPool.add(tokenInputAmount)
-        val newToAmountInPool: BigInteger = invariant.divide(newFromAmountInPool)
-        val grossToAmount: BigInteger = secondAmountInPool.subtract(newToAmountInPool)
-        val fees = if (includeFees) BigDecimal(grossToAmount).multiply(feeRatio) else BigDecimal.valueOf(0)
-        return BigDecimal(grossToAmount).subtract(fees).toBigInteger()
     }
 
     fun calculateAmountInOtherToken(

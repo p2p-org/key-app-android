@@ -20,7 +20,7 @@ interface UserRepository {
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokens(): List<Token>
     suspend fun loadDecimals(publicKey: String): Int
-    suspend fun getRate(source: String, destination: String): BigDecimal
+    suspend fun getRate(source: String, destination: String): Double
 }
 
 class UserRepositoryImpl(
@@ -76,7 +76,7 @@ class UserRepositoryImpl(
         val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
         val solPrice = userLocalRepository.getPriceByToken(sol.tokenSymbol)
         val solExchangeRate = solPrice.price
-        result.add(0, sol.copy(price = sol.total.times(solExchangeRate), exchangeRate = solExchangeRate))
+        result.add(0, sol.copy(price = sol.total.times(BigDecimal(solExchangeRate)), exchangeRate = solExchangeRate))
         return@withContext result
     }
 
@@ -85,7 +85,7 @@ class UserRepositoryImpl(
         UserConverter.fromNetwork(response.value.data ?: emptyList())
     }
 
-    override suspend fun getRate(source: String, destination: String): BigDecimal {
+    override suspend fun getRate(source: String, destination: String): Double {
         val data = compareApi.getPrice(source, destination)
         return TokenConverter.fromNetwork(destination, data).price
     }

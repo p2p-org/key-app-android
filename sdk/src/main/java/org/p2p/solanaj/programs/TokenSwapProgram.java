@@ -77,6 +77,7 @@ public class TokenSwapProgram {
     public static TransactionInstruction swapInstruction(
             PublicKey tokenSwapAccount,
             PublicKey authority,
+            PublicKey userTransferAuthority,
             PublicKey userSource,
             PublicKey poolSource,
             PublicKey poolDestination,
@@ -92,6 +93,7 @@ public class TokenSwapProgram {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, false));
         keys.add(new AccountMeta(authority, false, false));
+        keys.add(new AccountMeta(userTransferAuthority, true, false));
         keys.add(new AccountMeta(userSource, false, true));
         keys.add(new AccountMeta(poolSource, false, true));
         keys.add(new AccountMeta(poolDestination, false, true));

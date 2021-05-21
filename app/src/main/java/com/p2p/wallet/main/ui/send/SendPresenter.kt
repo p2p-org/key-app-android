@@ -34,7 +34,7 @@ class SendPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val usdAmount = token.exchangeRate.times(amount)
+                val usdAmount = token.exchangeRate.toBigDecimal().times(amount)
                 val result =
                     mainInteractor.sendToken(targetAddress, amount, usdAmount, token.decimals, token.tokenSymbol)
                 handleResult(result)

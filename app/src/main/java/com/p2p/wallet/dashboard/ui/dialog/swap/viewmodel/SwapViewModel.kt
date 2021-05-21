@@ -12,6 +12,7 @@ import com.p2p.wallet.token.model.Token
 //import com.p2p.wallet.utils.roundToBilCurrencyValue
 //import com.p2p.wallet.utils.roundToMilCurrencyValue
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 class SwapViewModel(
     private val swapInteractor: SwapInteractor
@@ -235,4 +236,18 @@ class SwapViewModel(
 //            if (amountOfConvertingToken == 0.0.toBigDecimal()) "0.0000" else amountOfConvertingToken.toString()
 //        _amountInConvertingToken.value = amountOfConvertingTokenStr
     }
+
+}
+
+
+fun Double.roundCurrencyValue(): Double {
+    return BigDecimal(this).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+}
+
+fun Double.roundToMilCurrencyValue(): BigDecimal {
+    return BigDecimal(this).setScale(6, RoundingMode.HALF_UP)
+}
+
+fun Double.roundToBilCurrencyValue(): BigDecimal {
+    return BigDecimal(this).setScale(9, RoundingMode.HALF_UP)
 }

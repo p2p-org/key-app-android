@@ -9,7 +9,6 @@ import org.p2p.solanaj.utils.ByteUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -80,12 +79,16 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction approveInstruction(PublicKey tokenProgramId, PublicKey account,
-                                                            PublicKey delegate, PublicKey owner, BigInteger amount) {
+    public static TransactionInstruction approveInstruction(
+            PublicKey tokenProgramId,
+            PublicKey account,
+            PublicKey delegate,
+            PublicKey owner,
+            BigInteger amount) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(delegate, false, false));
-        keys.add(new AccountMeta(owner, true, true));
+        keys.add(new AccountMeta(owner, true, false));
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(INSTRUCTION_INDEX_APPROVE);

@@ -1,21 +1,18 @@
 package com.p2p.wallet.swap.ui
 
 import com.p2p.wallet.R
-import com.p2p.wallet.amount.scaleDefault
-import com.p2p.wallet.amount.toDecimalValue
+import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.swap.interactor.SwapInteractor
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
-import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.rpc.types.TokenAccountBalance
 import timber.log.Timber
-import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
 
@@ -47,7 +44,7 @@ class SwapPresenter(
     private var isReverse: Boolean = false
     private var reverseJob: Job? = null
 
-    private var sourceAmount: BigDecimal = BigDecimal.ZERO
+    private var sourceAmount: BigInteger = BigInteger.ZERO
 
     private var slippage: Double = 0.1
 
@@ -112,7 +109,7 @@ class SwapPresenter(
     }
 
     override fun feedAvailableValue() {
-        view?.updateInputValue(requireSourceToken().total)
+        view?.updateInputValue(requireSourceToken().total.toBigInteger())
     }
 
     override fun loadPrice(toggle: Boolean) {
@@ -133,16 +130,16 @@ class SwapPresenter(
         }
     }
 
-    override fun setSourceAmount(amount: BigDecimal) {
-        sourceAmount = amount
+    override fun setSourceAmount(amount: String) {
+        sourceAmount = amount.toBigIntegerOrNull() ?: BigInteger.ZERO
         val token = sourceToken ?: return
-        val around = token.exchangeRate.times(amount)
+        val around = token.exchangeRate.toBigDecimal().times(sourceAmount.toBigDecimal())
 
-        val isMoreThanBalance = amount > token.total
+        val isMoreThanBalance = sourceAmount > token.total.toBigInteger()
         val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
 
         view?.setAvailableTextColor(availableColor)
-        view?.showAroundValue(around.scaleDefault())
+        view?.showAroundValue(around)
 
         setButtonEnabled()
 
@@ -153,7 +150,7 @@ class SwapPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val finalAmount = sourceAmount.divide(requireSourceToken().decimals.toDecimalValue()).toBigInteger()
+                val finalAmount = sourceAmount.divide(requireSourceToken().decimals.toPowerValue())
 
                 val request = SwapRequest(
                     requirePool(),
@@ -176,7 +173,7 @@ class SwapPresenter(
         calculationJob?.cancel()
         calculationJob = launch {
             val pool = requirePool()
-            val finalAmount = sourceAmount.divide(source.decimals.toDecimalValue()).toBigInteger()
+            val finalAmount = sourceAmount.multiply(source.decimals.toPowerValue())
 
             val sourceBalance =
                 swapInteractor.loadTokenBalance(pool.tokenAccountA).also { sourceBalance = it }
@@ -198,16 +195,12 @@ class SwapPresenter(
 
             Timber.d("### fee $fee minReceive $minReceive final $finalAmount")
 
-//            val destinationAmount = swapInteractor.calculateAmountInOtherToken(
-//                pool, finalAmount, true, sourceBalance, destinationBalance
-//            )
             val destinationAmount = swapInteractor.calculateAmountInOtherToken(
-                source.publicKey.toPublicKey(),
-                pool.swapData,
-                sourceBalance.amount,
-                destinationBalance.amount,
-                finalAmount,
-                true
+                pool = pool,
+                inputAmount = finalAmount,
+                withFee = true,
+                tokenABalance = sourceBalance,
+                tokenBBalance = destinationBalance
             )
 
             val data = CalculationsData(

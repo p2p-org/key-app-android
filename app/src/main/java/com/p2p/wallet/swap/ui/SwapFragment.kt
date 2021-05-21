@@ -21,6 +21,7 @@ import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
+import java.math.BigInteger
 
 class SwapFragment :
     BaseMvpFragment<SwapContract.View, SwapContract.Presenter>(R.layout.fragment_swap),
@@ -49,8 +50,7 @@ class SwapFragment :
             destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
             availableTextView.setOnClickListener { presenter.feedAvailableValue() }
             amountEditText.doAfterTextChanged {
-                val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
-                presenter.setSourceAmount(amount)
+                presenter.setSourceAmount(it.toString())
             }
 
             reverseImageView.setOnClickListener {
@@ -79,12 +79,12 @@ class SwapFragment :
         }
     }
 
-    override fun updateInputValue(available: BigDecimal) {
+    override fun updateInputValue(available: BigInteger) {
         binding.amountEditText.setText("$available")
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String) {
+    override fun showPrice(amount: Double, exchangeToken: String, perToken: String) {
         binding.priceGroup.isVisible = true
         binding.exchangeTextView.text = "$amount $exchangeToken per $perToken"
     }

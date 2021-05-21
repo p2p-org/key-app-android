@@ -50,7 +50,7 @@ class UserInteractor(
     suspend fun getTokens(): List<Token> =
         mainLocalRepository.getTokens()
 
-    suspend fun getPriceByToken(source: String, destination: String): BigDecimal =
+    suspend fun getPriceByToken(source: String, destination: String): Double =
         userRepository.getRate(source, destination)
 
     suspend fun clearMemoryData() {

@@ -30,8 +30,12 @@ public class Swap {
         return new PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo");
     }
 
-    private static BigInteger calculateAmount(BigInteger tokenABalance, BigInteger tokenBBalance, double slippage,
-                                              BigInteger inputAmoutn) {
+    private static BigInteger calculateAmount(
+            BigInteger tokenABalance,
+            BigInteger tokenBBalance,
+            double slippage,
+            BigInteger inputAmoutn
+    ) {
         BigInteger estimateAmount = tokenBBalance.multiply(inputAmoutn).divide(tokenABalance.add(inputAmoutn));
 
         return new BigDecimal(estimateAmount).multiply(BigDecimal.valueOf(1 - slippage)).toBigInteger();
@@ -101,6 +105,8 @@ public class Swap {
             fromAccount = findAccountAddress(client, mintA);
         }
 
+        Account userTransferAuthority = new Account();
+
         PublicKey toAccount = findAccountAddress(client, mintB);
         boolean isWrappedSol = mintB.equals(WRAPPED_SOL_MINT);
 
@@ -130,12 +136,14 @@ public class Swap {
 
         TransactionInstruction approveInstruction = TokenProgram.approveInstruction(TokenProgram.PROGRAM_ID,
                 fromAccount,
-                pool.getAuthority(),
+                userTransferAuthority.getPublicKey(),
                 ownerPubKey,
                 tokenInputAmount);
 
-        TransactionInstruction swapInstruction = TokenSwapProgram.swapInstruction(poolAddress,
+        TransactionInstruction swapInstruction = TokenSwapProgram.swapInstruction(
+                poolAddress,
                 pool.getAuthority(),
+                userTransferAuthority.getPublicKey(),
                 fromAccount,
                 tokenA,
                 tokenB,
@@ -165,6 +173,7 @@ public class Swap {
                     .closeAccountInstruction(TokenProgram.PROGRAM_ID, closeAccountPublicKey, ownerPubKey, ownerPubKey);
             transaction.addInstruction(closeAccountInstruction);
         }
+        signers.add(userTransferAuthority);
 
         client.getApi().sendTransaction(transaction, signers);
     }

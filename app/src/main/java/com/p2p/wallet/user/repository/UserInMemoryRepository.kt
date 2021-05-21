@@ -19,7 +19,7 @@ class UserInMemoryRepository : UserLocalRepository {
             price
         } else {
             Timber.w("No price found for token $token, continuing with 0")
-            TokenPrice(token, BigDecimal.ZERO)
+            TokenPrice(token, 0.toDouble())
         }
     }
 }

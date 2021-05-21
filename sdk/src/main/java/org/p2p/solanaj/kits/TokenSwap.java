@@ -57,16 +57,6 @@ public class TokenSwap {
         PublicKey mintA = isTokenAEqTokenAccountA ? pool.getMintA() : pool.getMintB();
         PublicKey mintB = isTokenAEqTokenAccountA ? pool.getMintB() : pool.getMintA();
 
-        PublicKey addressA = new PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo");
-        PublicKey addressB = new PublicKey("QqCCvshxtqMAL2CVALqiJB7uEeE5mjSPsseQdDzsRUo");
-//        if (isTokenAEqTokenAccountA) {
-//            addressA = accountAddressA;
-//            addressB = accountAddressB;
-//        } else {
-//            addressA = accountAddressB;
-//            addressB = accountAddressA;
-//        }
-
         TokenProgram.AccountInfoData tokenAInfo = TokenTransaction.getAccountInfoData(client, tokenA, TokenProgram.PROGRAM_ID);
         int space = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH;
         long balanceNeeded = client.getApi().getMinimumBalanceForRentExemption(space);
@@ -98,10 +88,10 @@ public class TokenSwap {
 
             fromAccount = newAccountPubKey;
         } else {
-            fromAccount = addressA;
+            fromAccount = accountAddressA;
         }
 
-        PublicKey toAccount = addressB;
+        PublicKey toAccount = accountAddressB;
         boolean isWrappedSol = mintB.equals(wrappedSolAccount);
 
         if (toAccount == null) {
@@ -131,10 +121,12 @@ public class TokenSwap {
             toAccount = newAccountPubKey;
         }
 
+        Account userTransferAuthority = new Account();
+
         TransactionInstruction approve = TokenProgram.approveInstruction(
                 TokenProgram.PROGRAM_ID,
                 fromAccount,
-                pool.getAuthority(),
+                userTransferAuthority.getPublicKey(),
                 owner.getPublicKey(),
                 amountIn
         );
@@ -149,11 +141,11 @@ public class TokenSwap {
                 slippage
         );
 
-        Log.d("###", " from " + fromAccount.toBase58() + " to " + toAccount.toBase58());
 
         TransactionInstruction swap = TokenSwapProgram.swapInstruction(
                 pool.getAddress(),
                 pool.getAuthority(),
+                userTransferAuthority.getPublicKey(),
                 fromAccount,
                 tokenA,
                 tokenB,
@@ -187,6 +179,8 @@ public class TokenSwap {
             );
             transaction.addInstruction(closeAccountInstruction);
         }
+
+        signers.add(userTransferAuthority);
 
         return client.getApi().sendTransaction(transaction, signers);
     }

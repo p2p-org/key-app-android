@@ -27,7 +27,7 @@ class ReceiveFragment :
     ReceiveContract.View {
 
     companion object {
-        private const val EXTRA_TOKEN = ""
+        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
         fun create(token: Token?) = ReceiveFragment().withArgs(
             EXTRA_TOKEN to token
         )

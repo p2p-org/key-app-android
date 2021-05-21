@@ -3,12 +3,12 @@ package com.p2p.wallet.token.model
 import android.os.Parcelable
 import androidx.annotation.ColorRes
 import com.p2p.wallet.R
+import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.common.network.Constants
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
-import kotlin.math.pow
 
 @Parcelize
 data class Token(
@@ -22,7 +22,7 @@ data class Token(
     val total: BigDecimal,
     val walletBinds: Double,
     @ColorRes val color: Int,
-    val exchangeRate: BigDecimal
+    val exchangeRate: Double
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -50,14 +50,15 @@ data class Token(
 
     fun getFormattedTotal(): String = "$total $tokenSymbol"
 
-    fun getFormattedExchangeRate(): String = "${exchangeRate.setScale(2, RoundingMode.HALF_EVEN)}"
+    fun getFormattedExchangeRate(): String = String.format("%.2f", exchangeRate)
 
     companion object {
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9
         private const val SOL_MINT = "SOLMINT"
         private const val SOL_NAME = "SOL"
-        private const val SOL_LOGO_URL = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
+        private const val SOL_LOGO_URL =
+            "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
 
         /* fixme: workaround about adding hardcode wallet, looks strange */
         fun getSOL(publicKey: String, amount: Long) = Token(
@@ -67,11 +68,11 @@ data class Token(
             iconUrl = SOL_LOGO_URL,
             publicKey = publicKey,
             decimals = SOL_DECIMALS,
-            total = BigDecimal(amount).divide(BigDecimal(10.0.pow(SOL_DECIMALS))),
+            total = BigDecimal(amount).divide(BigDecimal(SOL_DECIMALS.toPowerValue())),
             price = BigDecimal.ZERO,
             walletBinds = 0.0,
             color = R.color.chartSOL,
-            exchangeRate = BigDecimal.ZERO
+            exchangeRate = 0.0
         )
     }
 }
