@@ -24,7 +24,7 @@ object MainModule : InjectionModule {
         single { MainInteractor(get(), get()) }
         single { MainInMemoryRepository() } bind MainLocalRepository::class
         single { MainRemoteRepository(get(), get()) } bind MainRepository::class
-        single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
+        factory { MainPresenter(get(), get()) } bind MainContract.Presenter::class
 
         factory { SwapPresenter(get()) } bind SwapContract.Presenter::class
         factory { (token: Token?) -> ReceivePresenter(token, get(), get(), get()) } bind ReceiveContract.Presenter::class
