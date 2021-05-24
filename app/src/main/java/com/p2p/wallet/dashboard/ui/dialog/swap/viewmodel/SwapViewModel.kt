@@ -8,10 +8,11 @@ import com.p2p.wallet.dashboard.model.local.ActivityItem
 import com.p2p.wallet.dashboard.model.local.CoinItem
 import androidx.lifecycle.ViewModel
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.utils.roundCurrencyValue
-import com.p2p.wallet.utils.roundToBilCurrencyValue
-import com.p2p.wallet.utils.roundToMilCurrencyValue
+//import com.p2p.wallet.utils.roundCurrencyValue
+//import com.p2p.wallet.utils.roundToBilCurrencyValue
+//import com.p2p.wallet.utils.roundToMilCurrencyValue
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 class SwapViewModel(
     private val swapInteractor: SwapInteractor
@@ -161,8 +162,8 @@ class SwapViewModel(
     }
 
     private fun setTokenRatios(from: Double, to: Double) {
-        tokenFromPerTokenTo = swapInteractor.getTokenPerToken(from, to).roundToBilCurrencyValue()
-        tokenToPerTokenFrom = swapInteractor.getTokenPerToken(to, from).roundToBilCurrencyValue()
+//        tokenFromPerTokenTo = swapInteractor.getTokenPerToken(from, to).roundToBilCurrencyValue()
+//        tokenToPerTokenFrom = swapInteractor.getTokenPerToken(to, from).roundToBilCurrencyValue()
     }
 
     fun clearSearchBar() {
@@ -214,8 +215,8 @@ class SwapViewModel(
             ?: throw NullPointerException("WalletItem is null in Swap screen")
         val isInCryptoCurrency: Boolean = _isInCryptoCurrency.value
             ?: throw NullPointerException("_isInCryptoCurrency is null in Swap screen")
-        _aroundToCurrency.value =
-            swapInteractor.getAroundToCurrencyValue(amount, walletBinds, isInCryptoCurrency).roundCurrencyValue()
+//        _aroundToCurrency.value =
+//            swapInteractor.getAroundToCurrencyValue(amount, walletBinds, isInCryptoCurrency).roundCurrencyValue()
     }
     /**
      * @throws NullPointerException when _selectedWalletFrom is null
@@ -229,10 +230,11 @@ class SwapViewModel(
         if (_isInCryptoCurrency.value == false) {
             amount = _aroundToCurrency.value.toString()
         }
-        val amountOfConvertingToken: BigDecimal =
-            swapInteractor.getAmountInConvertingToken(amount, from, to).roundToMilCurrencyValue()
-        val amountOfConvertingTokenStr: String =
-            if (amountOfConvertingToken == 0.0.toBigDecimal()) "0.0000" else amountOfConvertingToken.toString()
-        _amountInConvertingToken.value = amountOfConvertingTokenStr
+//        val amountOfConvertingToken: BigDecimal =
+//            swapInteractor.getAmountInConvertingToken(amount, from, to).roundToMilCurrencyValue()
+//        val amountOfConvertingTokenStr: String =
+//            if (amountOfConvertingToken == 0.0.toBigDecimal()) "0.0000" else amountOfConvertingToken.toString()
+//        _amountInConvertingToken.value = amountOfConvertingTokenStr
     }
+
 }

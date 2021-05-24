@@ -38,7 +38,7 @@ class ReceivePresenter(
     override fun setReceiveToken(newToken: Token) {
         token = newToken
 
-        generateQrCode(newToken.depositAddress)
+        generateQrCode(newToken.publicKey)
     }
 
     override fun loadData() {
@@ -48,7 +48,7 @@ class ReceivePresenter(
             val receive = defaultToken ?: tokens.firstOrNull() ?: return@launch
             token = receive
 
-            generateQrCode(receive.depositAddress)
+            generateQrCode(receive.publicKey)
 
             view?.showFullScreenLoading(false)
         }

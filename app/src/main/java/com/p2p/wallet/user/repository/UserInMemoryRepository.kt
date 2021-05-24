@@ -1,9 +1,9 @@
 package com.p2p.wallet.user.repository
 
 import com.p2p.wallet.main.model.TokenPrice
+import com.p2p.wallet.user.model.TokenBid
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
-import java.math.BigDecimal
 
 class UserInMemoryRepository : UserLocalRepository {
 
@@ -19,7 +19,23 @@ class UserInMemoryRepository : UserLocalRepository {
             price
         } else {
             Timber.w("No price found for token $token, continuing with 0")
-            TokenPrice(token, BigDecimal.ZERO)
+            TokenPrice(token, 0.toDouble())
+        }
+    }
+
+    private val bidsFlow = MutableStateFlow<List<TokenBid>>(emptyList())
+
+    override fun setTokenBids(bids: List<TokenBid>) {
+        bidsFlow.value = bids
+    }
+
+    override fun getBidByToken(token: String): TokenBid {
+        val price = bidsFlow.value.firstOrNull { it.symbol == token }
+        return if (price != null) {
+            price
+        } else {
+            Timber.w("No bid found for token $token, continuing with 0")
+            TokenBid(token, 0.toDouble())
         }
     }
 }

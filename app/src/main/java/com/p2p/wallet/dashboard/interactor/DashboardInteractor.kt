@@ -9,11 +9,10 @@ import com.p2p.wallet.dashboard.model.SelectedCurrency
 import com.p2p.wallet.dashboard.model.local.AddCoinItem
 import com.p2p.wallet.dashboard.model.local.AddCoinModel
 import com.p2p.wallet.dashboard.model.local.ConstWallet
-import com.p2p.wallet.dashboard.model.local.LocalWalletItem
 import com.p2p.wallet.dashboard.model.local.YourWallets
 import com.p2p.wallet.dashboard.repository.WowletApiCallRepository
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.utils.WalletDataConst
+import com.p2p.wallet.main.api.AllWallets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
@@ -142,7 +141,7 @@ class DashboardInteractor(
         return null
     }
 
-    suspend fun saveEditedWallet(localWalletItem: LocalWalletItem) =
+    suspend fun saveEditedWallet() =
         channelFlow<List<Token>> {
 //            localDatabaseRepository.saveEditedWallet(localWalletItem)
             walletData.forEach { item ->
@@ -158,10 +157,10 @@ class DashboardInteractor(
     fun checkWalletFromList(mintAddress: String): Result<ConstWallet> {
         return if (sendCoinWalletList.isNotEmpty()) {
             if (mintAddress == Constants.OWNER_SOL) {
-                return Result.Success(WalletDataConst.getWalletConstList()[0])
+                return Result.Success(AllWallets.getWalletConstList()[0])
             }
             val findFromAll =
-                WalletDataConst.getWalletConstList().find { walletItem -> walletItem.mint == mintAddress }
+                AllWallets.getWalletConstList().find { walletItem -> walletItem.mint == mintAddress }
             if (findFromAll != null) {
                 Result.Success(findFromAll)
             } else

@@ -1,16 +1,15 @@
 package org.p2p.solanaj.programs;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-
 import org.p2p.solanaj.core.AbstractData;
 import org.p2p.solanaj.core.AccountMeta;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
-
 import org.p2p.solanaj.utils.ByteUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 public class TokenSwapProgram {
     public static final int INSTRUCTION_INDEX_INITIALIZE_SWAP = 0;
@@ -18,12 +17,27 @@ public class TokenSwapProgram {
     public static final int INSTRUCTION_INDEX_DEPOSIT = 2;
     public static final int INSTRUCTION_INDEX_WITHDRAW = 3;
 
-    public static TransactionInstruction initializeSwapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
-            PublicKey tokenAccountA, PublicKey tokenAccountB, PublicKey tokenPool, PublicKey feeAccount,
-            PublicKey tokenAccountPool, PublicKey tokenProgramId, PublicKey swapProgramId, int nonce, int curveType,
-            BigInteger tradeFeeNumerator, BigInteger tradeFeeDenominator, BigInteger ownerTradeFeeNumerator,
-            BigInteger ownerTradeFeeDenominator, BigInteger ownerWithdrawFeeNumerator,
-            BigInteger ownerWithdrawFeeDenominator, BigInteger hostFeeNumerator, BigInteger hostFeeDenominator) {
+    public static TransactionInstruction initializeSwapInstruction(
+            PublicKey tokenSwapAccount,
+            PublicKey authority,
+            PublicKey tokenAccountA,
+            PublicKey tokenAccountB,
+            PublicKey tokenPool,
+            PublicKey feeAccount,
+            PublicKey tokenAccountPool,
+            PublicKey tokenProgramId,
+            PublicKey swapProgramId,
+            int nonce,
+            int curveType,
+            BigInteger tradeFeeNumerator,
+            BigInteger tradeFeeDenominator,
+            BigInteger ownerTradeFeeNumerator,
+            BigInteger ownerTradeFeeDenominator,
+            BigInteger ownerWithdrawFeeNumerator,
+            BigInteger ownerWithdrawFeeDenominator,
+            BigInteger hostFeeNumerator,
+            BigInteger hostFeeDenominator
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, true));
         keys.add(new AccountMeta(authority, false, false));
@@ -52,21 +66,34 @@ public class TokenSwapProgram {
         }
 
         bos.write(curveType);
-      //  bos.writeBytes(new byte[32]);
-        byte[] byteArray=new byte[32];
-        bos.write(byteArray,0,byteArray.length);
+        //  bos.writeBytes(new byte[32]);
+        byte[] byteArray = new byte[32];
+        bos.write(byteArray, 0, byteArray.length);
 
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
 
 
-    public static TransactionInstruction swapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
-                                                         PublicKey userSource, PublicKey poolSource, PublicKey poolDestination, PublicKey userDestination,
-                                                         PublicKey poolMint, PublicKey feeAccount, PublicKey hostFeeAccount, PublicKey tokenProgramId,
-                                                         PublicKey swapProgramId, BigInteger amountIn, BigInteger minimumAmountOut) {
+    public static TransactionInstruction swapInstruction(
+            PublicKey tokenSwapAccount,
+            PublicKey authority,
+            PublicKey userTransferAuthority,
+            PublicKey userSource,
+            PublicKey poolSource,
+            PublicKey poolDestination,
+            PublicKey userDestination,
+            PublicKey poolMint,
+            PublicKey feeAccount,
+            PublicKey hostFeeAccount,
+            PublicKey tokenProgramId,
+            PublicKey swapProgramId,
+            BigInteger amountIn,
+            BigInteger minimumAmountOut
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwapAccount, false, false));
         keys.add(new AccountMeta(authority, false, false));
+        keys.add(new AccountMeta(userTransferAuthority, true, false));
         keys.add(new AccountMeta(userSource, false, true));
         keys.add(new AccountMeta(poolSource, false, true));
         keys.add(new AccountMeta(poolDestination, false, true));
@@ -92,10 +119,21 @@ public class TokenSwapProgram {
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction depositInstruction(PublicKey tokenSwap, PublicKey authority, PublicKey sourceA,
-                                                            PublicKey sourceB, PublicKey intoA, PublicKey intoB, PublicKey poolToken, PublicKey poolAccount,
-                                                            PublicKey tokenProgramId, PublicKey swapProgramId, BigInteger poolTokenAmount, BigInteger maximumTokenA,
-                                                            BigInteger maximumTokenB) {
+    public static TransactionInstruction depositInstruction(
+            PublicKey tokenSwap,
+            PublicKey authority,
+            PublicKey sourceA,
+            PublicKey sourceB,
+            PublicKey intoA,
+            PublicKey intoB,
+            PublicKey poolToken,
+            PublicKey poolAccount,
+            PublicKey tokenProgramId,
+            PublicKey swapProgramId,
+            BigInteger poolTokenAmount,
+            BigInteger maximumTokenA,
+            BigInteger maximumTokenB
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwap, false, false));
         keys.add(new AccountMeta(authority, false, false));
@@ -121,10 +159,22 @@ public class TokenSwapProgram {
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction withdrawInstruction(PublicKey tokenSwap, PublicKey authority,
-                                                             PublicKey poolMint, PublicKey feeAccount, PublicKey sourcePoolAccount, PublicKey fromA, PublicKey fromB,
-                                                             PublicKey userAccountA, PublicKey userAccountB, PublicKey swapProgramId, PublicKey tokenProgramId,
-                                                             BigInteger poolTokenAmount, BigInteger minimumTokenA, BigInteger minimumTokenB) {
+    public static TransactionInstruction withdrawInstruction(
+            PublicKey tokenSwap,
+            PublicKey authority,
+            PublicKey poolMint,
+            PublicKey feeAccount,
+            PublicKey sourcePoolAccount,
+            PublicKey fromA,
+            PublicKey fromB,
+            PublicKey userAccountA,
+            PublicKey userAccountB,
+            PublicKey swapProgramId,
+            PublicKey tokenProgramId,
+            BigInteger poolTokenAmount,
+            BigInteger minimumTokenA,
+            BigInteger minimumTokenB
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(tokenSwap, false, false));
         keys.add(new AccountMeta(authority, false, false));
@@ -151,11 +201,11 @@ public class TokenSwapProgram {
         return new TransactionInstruction(swapProgramId, keys, bos.toByteArray());
     }
 
-
     public static class TokenSwapData extends AbstractData {
-        public static final int TOKEN_SWAP_DATA_LENGTH = 1 + 1 + 7 * PublicKey.PUBLIC_KEY_LENGTH + 1
-                + 8 * ByteUtils.UINT_64_LENGTH;
+        public static final int TOKEN_SWAP_DATA_LENGTH = 1 + 1 + 1 + 7 * PublicKey.PUBLIC_KEY_LENGTH
+                + 8 * ByteUtils.UINT_64_LENGTH + 1 + 32;
 
+        private int version;
         private boolean isInitialized;
         private int nonce;
         private PublicKey tokenProgramId;
@@ -165,7 +215,6 @@ public class TokenSwapProgram {
         private PublicKey mintA;
         private PublicKey mintB;
         private PublicKey feeAccount;
-        private int curveType;
         private BigInteger tradeFeeNumerator;
         private BigInteger tradeFeeDenominator;
         private BigInteger ownerTradeFeeNumerator;
@@ -174,10 +223,13 @@ public class TokenSwapProgram {
         private BigInteger ownerWithdrawFeeDenominator;
         private BigInteger hostFeeNumerator;
         private BigInteger hostFeeDenominator;
+        private int curveType;
+        // private byte[] curveParameters;
 
         private TokenSwapData(byte[] data) {
             super(data, TOKEN_SWAP_DATA_LENGTH);
 
+            version = readByte();
             isInitialized = readByte() == 1;
             nonce = readByte();
             tokenProgramId = readPublicKey();
@@ -187,7 +239,6 @@ public class TokenSwapProgram {
             mintA = readPublicKey();
             mintB = readPublicKey();
             feeAccount = readPublicKey();
-            curveType = readByte();
             tradeFeeNumerator = readUint64();
             tradeFeeDenominator = readUint64();
             ownerTradeFeeNumerator = readUint64();
@@ -196,10 +247,30 @@ public class TokenSwapProgram {
             ownerWithdrawFeeDenominator = readUint64();
             hostFeeNumerator = readUint64();
             hostFeeDenominator = readUint64();
+            curveType = readByte();
+            // curveParameters = new byte[32];
         }
 
         public static TokenSwapData decode(byte[] data) {
             return new TokenSwapData(data);
+        }
+
+        public TokenSwapData swapMintData() {
+            final PublicKey mintAOld = mintA;
+            this.mintA = mintB;
+            this.mintB = mintAOld;
+            return this;
+        }
+
+        public TokenSwapData swapTokenAccount() {
+            final PublicKey tokenAccountAOld = tokenAccountA;
+            this.tokenAccountA = tokenAccountB;
+            this.tokenAccountB = tokenAccountAOld;
+            return this;
+        }
+
+        public int getVersion() {
+            return version;
         }
 
         public boolean isInitialized() {

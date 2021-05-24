@@ -65,12 +65,12 @@ class TokenDetailsFragment :
             toolbar.title = token.tokenSymbol
             balanceTextView.text = token.getFormattedPrice()
             totalTextView.text = token.getFormattedTotal()
-            addressTextView.text = token.depositAddress
+            addressTextView.text = token.publicKey
 
             toolbar.setNavigationOnClickListener { popBackStack() }
             qrImageView.setOnClickListener { replaceFragment(ReceiveFragment.create(token)) }
             addressView.setOnClickListener {
-                requireContext().copyToClipBoard(token.depositAddress)
+                requireContext().copyToClipBoard(token.publicKey)
                 Toast.makeText(requireContext(), R.string.common_copied, Toast.LENGTH_SHORT).show()
             }
 
@@ -80,7 +80,7 @@ class TokenDetailsFragment :
             }
         }
 
-        presenter.loadHistory(token.depositAddress, token.tokenSymbol)
+        presenter.loadHistory(token.publicKey, token.tokenSymbol)
     }
 
     override fun showHistory(transactions: List<Transaction>) {

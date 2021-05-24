@@ -1,16 +1,18 @@
 package org.p2p.solanaj.kits;
 
-import java.util.Base64;
+import android.util.Base64;
 
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.programs.TokenProgram;
-import org.p2p.solanaj.programs.TokenProgram.MintData;
 import org.p2p.solanaj.programs.TokenSwapProgram;
-import org.p2p.solanaj.programs.TokenSwapProgram.TokenSwapData;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.RpcException;
 import org.p2p.solanaj.rpc.types.AccountInfo;
+import org.p2p.solanaj.rpc.types.ProgramAccount;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Pool {
 
@@ -18,62 +20,100 @@ public class Pool {
         AccountInfo accountInfo = client.getApi().getAccountInfo(address);
 
         String base64Data = accountInfo.getValue().getData().get(0);
-        byte[] data;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            data = Base64.getDecoder().decode(base64Data);
-        } else {
-            data = android.util.Base64.decode(
-                    base64Data,
-                    android.util.Base64.DEFAULT
-            );
+        byte[] decode = Base64.decode(base64Data, Base64.DEFAULT);
+        TokenSwapProgram.TokenSwapData swapData = TokenSwapProgram.TokenSwapData.decode(decode);
+
+        return new PoolInfo(address, new PublicKey(accountInfo.getValue().getOwner()), swapData);
+    }
+
+    public static List<PoolInfo> getPools(RpcClient client, PublicKey swapProgramId) throws RpcException {
+        List<ProgramAccount> programAccounts = client.getApi().getProgramAccounts(swapProgramId);
+
+        List<PoolInfo> result = new ArrayList<>();
+
+        for (ProgramAccount programAccount : programAccounts) {
+            result.add(PoolInfo.fromProgramAccount(programAccount));
         }
 
-        TokenSwapProgram.TokenSwapData swapData = TokenSwapProgram.TokenSwapData.decode(data);
-
-        MintData tokenAInfo = Token.getMintData(client, swapData.getMintA(), TokenProgram.PROGRAM_ID);
-        MintData tokenBInfo = Token.getMintData(client, swapData.getMintB(), TokenProgram.PROGRAM_ID);
-        MintData poolTokenMint = Token.getMintData(client, swapData.getTokenPool(), TokenProgram.PROGRAM_ID);
-
-        PublicKey authority = poolTokenMint.getMintAuthority();
-
-        return new PoolInfo(tokenAInfo, tokenBInfo, poolTokenMint, authority, swapData);
+        return result;
     }
 
     public static class PoolInfo {
-        private MintData tokenAInfo;
-        private MintData tokenBInfo;
-        private MintData poolTokenMint;
-        private PublicKey authority;
-        private TokenSwapData swapData;;
+        private PublicKey address;
+        private PublicKey swapProgramId;
+        private TokenSwapProgram.TokenSwapData swapData;
 
-        public PoolInfo(MintData tokenAInfo, MintData tokenBInfo, MintData poolTokenMint, PublicKey authority,
-                        TokenSwapData swapData) {
-            this.tokenAInfo = tokenAInfo;
-            this.tokenBInfo = tokenBInfo;
-            this.poolTokenMint = poolTokenMint;
-            this.authority = authority;
+        public PoolInfo(PublicKey address, PublicKey swapProgramId, TokenSwapProgram.TokenSwapData swapData) {
+            this.address = address;
+            this.swapProgramId = swapProgramId;
             this.swapData = swapData;
         }
 
-        public MintData getTokenAInfo() {
-            return tokenAInfo;
+        public static PoolInfo fromProgramAccount(ProgramAccount programAccount) {
+            return new PoolInfo(new PublicKey(programAccount.getPubkey()),
+                    new PublicKey(programAccount.getAccount().getOwner()),
+                    TokenSwapProgram.TokenSwapData.decode(programAccount.getAccount().getDecodedData())
+            );
         }
 
-        public MintData getTokenBInfo() {
-            return tokenBInfo;
+        public PublicKey getAddress() {
+            return address;
         }
 
-        public MintData getPoolTokenMint() {
-            return poolTokenMint;
+        public PublicKey getSwapProgramId() {
+            return swapProgramId;
+        }
+
+        public TokenSwapProgram.TokenSwapData getSwapData() {
+            return swapData;
         }
 
         public PublicKey getAuthority() {
+            PublicKey authority;
+            try {
+                authority = PublicKey.findProgramAddress(Arrays.asList(address.toByteArray()), swapProgramId)
+                        .getAddress();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             return authority;
         }
 
-        public TokenSwapData getSwapData() {
-            return swapData;
+        public PublicKey getTokenProgramId() {
+            return swapData.getTokenProgramId();
         }
-    }
 
+        public PublicKey getTokenAccountA() {
+            return swapData.getTokenAccountA();
+        }
+
+        public PublicKey getTokenAccountB() {
+            return swapData.getTokenAccountB();
+        }
+
+        public PublicKey getTokenPool() {
+            return swapData.getTokenPool();
+        }
+
+        public PublicKey getMintA() {
+            return swapData.getMintA();
+        }
+
+        public PublicKey getMintB() {
+            return swapData.getMintB();
+        }
+
+        public PublicKey getFeeAccount() {
+            return swapData.getFeeAccount();
+        }
+
+        public BigInteger getTradeFeeNumerator() {
+            return swapData.getTradeFeeNumerator();
+        }
+
+        public BigInteger getTradeFeeDenominator() {
+            return swapData.getTradeFeeDenominator();
+        }
+
+    }
 }

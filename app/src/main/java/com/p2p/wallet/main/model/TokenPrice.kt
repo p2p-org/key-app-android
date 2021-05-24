@@ -7,5 +7,5 @@ import java.math.BigDecimal
 @Parcelize
 data class TokenPrice(
     val tokenSymbol: String,
-    val price: BigDecimal
+    val price: Double
 ) : Parcelable

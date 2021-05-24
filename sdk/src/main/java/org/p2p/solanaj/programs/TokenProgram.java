@@ -1,19 +1,22 @@
 package org.p2p.solanaj.programs;
 
+import org.p2p.solanaj.core.AbstractData;
+import org.p2p.solanaj.core.AccountMeta;
+import org.p2p.solanaj.core.PublicKey;
+import org.p2p.solanaj.core.Sysvar;
+import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.utils.ByteUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import org.p2p.solanaj.core.AbstractData;
-import org.p2p.solanaj.core.AccountMeta;
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionInstruction;
-import org.p2p.solanaj.utils.ByteUtils;
-import org.p2p.solanaj.core.Sysvar;
-
 public class TokenProgram {
-    public static final PublicKey PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    public static final PublicKey PROGRAM_ID =
+            new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    public static final PublicKey ASSOCIATED_TOKEN_PROGRAM_ID =
+            new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
     public static final int INSTRUCTION_INDEX_INITIALIZE_MINT = 0;
     public static final int INSTRUCTION_INDEX_INITIALIZE_ACCOUNT = 1;
@@ -31,7 +34,7 @@ public class TokenProgram {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(INSTRUCTION_INDEX_INITIALIZE_MINT);
         bos.write(decimals);
-       // bos.writeBytes(authority.toByteArray());
+        // bos.writeBytes(authority.toByteArray());
         bos.write(authority.toByteArray(), 0, authority.toByteArray().length);
         bos.write(freezeAuthority == null ? 0 : 1);
         //bos.writeBytes(freezeAuthority != null ? freezeAuthority.toByteArray() : new byte[PublicKey.PUBLIC_KEY_LENGTH]);
@@ -76,12 +79,16 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction approveInstruction(PublicKey tokenProgramId, PublicKey account,
-                                                            PublicKey delegate, PublicKey owner, BigInteger amount) {
+    public static TransactionInstruction approveInstruction(
+            PublicKey tokenProgramId,
+            PublicKey account,
+            PublicKey delegate,
+            PublicKey owner,
+            BigInteger amount) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(delegate, false, false));
-        keys.add(new AccountMeta(owner, true, true));
+        keys.add(new AccountMeta(owner, true, false));
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(INSTRUCTION_INDEX_APPROVE);
@@ -114,8 +121,13 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction closeAccountInstruction(PublicKey tokenProgramId, PublicKey account,
-                                                                 PublicKey destination, PublicKey owner) {
+    public static TransactionInstruction closeAccountInstruction(
+            PublicKey tokenProgramId,
+            PublicKey account,
+            PublicKey destination,
+            PublicKey owner
+    ) {
+
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(destination, false, true));
@@ -131,7 +143,7 @@ public class TokenProgram {
                 + ByteUtils.UINT_64_LENGTH + 1 + 1 + ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH;
 
         private long mintAuthorityOption;
-        private PublicKey mintAuthority;
+        private String mintAuthority;
         private BigInteger supply;
         private int decimals;
         private boolean isInitialized;
@@ -142,7 +154,7 @@ public class TokenProgram {
             super(data, MINT_DATA_LENGTH);
 
             mintAuthorityOption = readUint32();
-            mintAuthority = readPublicKey();
+            mintAuthority = readPublicKey().toBase58();
             supply = readUint64();
             decimals = readByte();
             isInitialized = readByte() != 0;
@@ -162,8 +174,12 @@ public class TokenProgram {
             return new MintData(data);
         }
 
-        public PublicKey getMintAuthority() {
+        public String getMintAuthority() {
             return mintAuthority;
+        }
+
+        public PublicKey getMintAuthorityPublicKey() {
+            return new PublicKey(mintAuthority);
         }
 
         public BigInteger getSupply() {

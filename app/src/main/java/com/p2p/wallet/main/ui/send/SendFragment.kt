@@ -125,7 +125,7 @@ class SendFragment :
 
     override fun updateState(token: Token, amount: BigDecimal) {
         with(binding) {
-            val around = token.exchangeRate.times(amount)
+            val around = token.exchangeRate.toBigDecimal().times(amount)
 
             val isMoreThanBalance = amount > token.total
             val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
@@ -149,17 +149,18 @@ class SendFragment :
             availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
             feeValueTextView.text = "0,000005 SOL" // todo: get valid fee
             amountEditText.doAfterTextChanged {
-                val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
-                val around = token.exchangeRate.times(amount)
-
-                val isMoreThanBalance = amount > token.total
-                val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
-                availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
-
-                aroundTextView.text = getString(R.string.main_send_around_in_usd, around)
-
-                val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance
-                sendButton.isEnabled = isEnabled && addressEditText.text.toString().isNotEmpty()
+                // fixme: move to presenter
+//                val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
+//                val around = token.exchangeRate.times(amount)
+//
+//                val isMoreThanBalance = amount > token.total
+//                val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
+//                availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
+//
+//                aroundTextView.text = getString(R.string.main_send_around_in_usd, around)
+//
+//                val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance
+//                sendButton.isEnabled = isEnabled && addressEditText.text.toString().isNotEmpty()
             }
         }
     }

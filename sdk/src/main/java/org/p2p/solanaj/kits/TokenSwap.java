@@ -1,55 +1,195 @@
 package org.p2p.solanaj.kits;
 
-import java.math.BigInteger;
+import android.util.Log;
 
 import org.p2p.solanaj.core.Account;
-import org.p2p.solanaj.kits.Pool.*;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionResponse;
 import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.core.TransactionRequest;
+import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.programs.TokenSwapProgram;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.RpcException;
+import org.p2p.solanaj.rpc.types.TokenAccountBalance;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class TokenSwap {
 
+    private final RpcClient client;
 
-    private RpcClient client;
-    private PublicKey tokenSwapAccount;
-    private PublicKey swapProgramId;
-    private Account payer;
-    private PoolInfo poolInfo;
-
-    public TokenSwap(RpcClient client, PublicKey tokenSwapAccount, PublicKey swapProgramId, PoolInfo poolInfo,
-                     Account payer) {
+    public TokenSwap(RpcClient client) {
         this.client = client;
-        this.swapProgramId = tokenSwapAccount;
-        this.swapProgramId = swapProgramId;
-        this.poolInfo = poolInfo;
-        this.payer = payer;
     }
 
-    public String swap(PublicKey tokenSource, PublicKey tokenDestination, BigInteger amountIn,
-                       BigInteger minimumAmountOut) throws RpcException {
+    public String swap(
+            Account owner,
+            @NonNull Pool.PoolInfo pool,
+            Double slippage,
+            BigInteger amountIn,
+            TokenAccountBalance balanceA,
+            TokenAccountBalance balanceB,
+            PublicKey wrappedSolAccount,
+            @Nullable PublicKey accountAddressA,
+            @Nullable PublicKey accountAddressB
+    ) throws RpcException {
 
-        if (poolInfo == null) {
-            throw new RuntimeException("Pool doesn't exsist");
+        Log.d("###", "swap amount " + amountIn);
+
+        final ArrayList<Account> signers = new ArrayList<>(Collections.singletonList(owner));
+
+        TransactionRequest transaction = new TransactionRequest();
+
+        // swap type
+        PublicKey source = pool.getTokenAccountA();
+        PublicKey tokenA = source.equals(pool.getTokenAccountA()) ? pool.getTokenAccountA() : pool.getTokenAccountB();
+
+        boolean isTokenAEqTokenAccountA = tokenA.equals(pool.getTokenAccountA());
+
+        PublicKey tokenB = isTokenAEqTokenAccountA ? pool.getTokenAccountB() : pool.getTokenAccountA();
+        PublicKey mintA = isTokenAEqTokenAccountA ? pool.getMintA() : pool.getMintB();
+        PublicKey mintB = isTokenAEqTokenAccountA ? pool.getMintB() : pool.getMintA();
+
+        TokenProgram.AccountInfoData tokenAInfo = TokenTransaction.getAccountInfoData(client, tokenA, TokenProgram.PROGRAM_ID);
+        int space = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH;
+        long balanceNeeded = client.getApi().getMinimumBalanceForRentExemption(space);
+
+        PublicKey fromAccount;
+        if (tokenAInfo.isNative()) {
+            Account newAccount = new Account();
+            PublicKey newAccountPubKey = newAccount.getPublicKey();
+
+            TransactionInstruction createAccountInstruction = SystemProgram.createAccount(
+                    owner.getPublicKey(),
+                    newAccountPubKey,
+                    amountIn.longValue() + balanceNeeded,
+                    TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH,
+                    TokenProgram.PROGRAM_ID
+            );
+
+            TransactionInstruction initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    newAccountPubKey,
+                    wrappedSolAccount,
+                    owner.getPublicKey()
+            );
+
+            transaction.addInstruction(createAccountInstruction);
+            transaction.addInstruction(initializeAccountInstruction);
+
+            signers.add(newAccount);
+
+            fromAccount = newAccountPubKey;
+        } else {
+            fromAccount = accountAddressA;
         }
 
-        TransactionInstruction approve = TokenProgram.approveInstruction(TokenProgram.PROGRAM_ID, tokenSource,
-                poolInfo.getAuthority(), payer.getPublicKey(), amountIn);
+        PublicKey toAccount = accountAddressB;
+        boolean isWrappedSol = mintB.equals(wrappedSolAccount);
 
-        TransactionInstruction swap = TokenSwapProgram.swapInstruction(tokenSwapAccount, poolInfo.getAuthority(),
-                tokenSource, poolInfo.getSwapData().getMintA(), poolInfo.getSwapData().getMintB(), tokenDestination,
-                poolInfo.getSwapData().getTokenPool(), poolInfo.getSwapData().getFeeAccount(), null,
-                TokenProgram.PROGRAM_ID, swapProgramId, amountIn, minimumAmountOut);
+        if (toAccount == null) {
+            Account newAccount = new Account();
+            PublicKey newAccountPubKey = newAccount.getPublicKey();
 
-        TransactionResponse transaction = new TransactionResponse();
+            TransactionInstruction createAccountInstruction = SystemProgram.createAccount(
+                    owner.getPublicKey(),
+                    newAccountPubKey,
+                    balanceNeeded,
+                    TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH,
+                    TokenProgram.PROGRAM_ID
+            );
+
+            TransactionInstruction initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    newAccountPubKey,
+                    mintB,
+                    owner.getPublicKey()
+            );
+
+            transaction.addInstruction(createAccountInstruction);
+            transaction.addInstruction(initializeAccountInstruction);
+
+            signers.add(newAccount);
+
+            toAccount = newAccountPubKey;
+        }
+
+        Account userTransferAuthority = new Account();
+
+        TransactionInstruction approve = TokenProgram.approveInstruction(
+                TokenProgram.PROGRAM_ID,
+                fromAccount,
+                userTransferAuthority.getPublicKey(),
+                owner.getPublicKey(),
+                amountIn
+        );
+
+        final BigInteger estimatedAmount = TokenSwap.calculateSwapEstimatedAmount(
+                balanceA,
+                balanceB,
+                amountIn
+        );
+        final BigInteger minimumAmountOut = TokenSwap.calculateSwapMinimumReceiveAmount(
+                estimatedAmount,
+                slippage
+        );
+
+
+        TransactionInstruction swap = TokenSwapProgram.swapInstruction(
+                pool.getAddress(),
+                pool.getAuthority(),
+                userTransferAuthority.getPublicKey(),
+                fromAccount,
+                tokenA,
+                tokenB,
+                toAccount,
+                pool.getTokenPool(),
+                pool.getFeeAccount(),
+                pool.getFeeAccount(),
+                TokenProgram.PROGRAM_ID,
+                pool.getSwapProgramId(),
+                amountIn,
+                minimumAmountOut
+        );
+
         transaction.addInstruction(approve);
         transaction.addInstruction(swap);
 
-        return client.getApi().sendTransaction(transaction, payer);
+        boolean isNeedCloseAccount = tokenAInfo.isNative() || isWrappedSol;
+        PublicKey closeAccountPublicKey = null;
+        if (tokenAInfo.isNative()) {
+            closeAccountPublicKey = fromAccount;
+        } else if (isWrappedSol) {
+            closeAccountPublicKey = toAccount;
+        }
+
+        if (isNeedCloseAccount && closeAccountPublicKey != null) {
+            TransactionInstruction closeAccountInstruction = TokenProgram.closeAccountInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    closeAccountPublicKey,
+                    owner.getPublicKey(),
+                    owner.getPublicKey()
+            );
+            transaction.addInstruction(closeAccountInstruction);
+        }
+
+        signers.add(userTransferAuthority);
+
+        return client.getApi().sendTransaction(transaction, signers);
     }
 
+    public static BigInteger calculateSwapMinimumReceiveAmount(BigInteger estimatedAmount, double slippage) {
+        return BigDecimal.valueOf(estimatedAmount.doubleValue() * (1 - slippage)).toBigInteger();
+    }
+
+    public static BigInteger calculateSwapEstimatedAmount(TokenAccountBalance tokenABalance, TokenAccountBalance tokenBBalance, BigInteger inputAmount) {
+        return tokenBBalance.getAmount().multiply(inputAmount).divide(tokenABalance.getAmount().add(inputAmount));
+    }
 }

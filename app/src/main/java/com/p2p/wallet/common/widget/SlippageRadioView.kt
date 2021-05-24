@@ -8,19 +8,13 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.p2p.wallet.R
 import com.p2p.wallet.databinding.WidgetSlippageRadioViewBinding
+import com.p2p.wallet.swap.model.Slippage
 
 class SlippageRadioView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
-
-    companion object {
-        private const val MIN_SLIPPAGE = 0.1
-        private const val MEDIUM_SLIPPAGE = 0.5
-        private const val PERCENT_SLIPPAGE = 1.0
-        private const val FIVE_PERCENT_SLIPPAGE = 5.0
-    }
 
     var onSlippageChanged: ((Double) -> Unit)? = null
 
@@ -41,27 +35,42 @@ class SlippageRadioView @JvmOverloads constructor(
             }
 
             customEditText.doAfterTextChanged {
-                val slippage = it.toString().toDoubleOrNull() ?: MIN_SLIPPAGE
+                val slippage = it.toString().toDoubleOrNull() ?: Slippage.MIN.doubleValue
                 onSlippageChanged?.invoke(slippage)
             }
+
             customImageView.setOnClickListener {
-                customRadioButton.isChecked = true
-                slippageRadioGroup.clearCheck()
-                customTextView.isVisible = true
-                customEditText.isVisible = true
+                checkCustomButton()
             }
+        }
+    }
+
+    private fun checkCustomButton() {
+        binding.customRadioButton.isChecked = true
+        binding.slippageRadioGroup.clearCheck()
+        binding.customTextView.isVisible = true
+        binding.customEditText.isVisible = true
+    }
+
+    fun setCurrentSlippage(slippage: Slippage) {
+        when (slippage) {
+            Slippage.MIN -> binding.slippageRadioGroup.check(R.id.minSlippageButton)
+            Slippage.MEDIUM -> binding.slippageRadioGroup.check(R.id.mediumSlippageButton)
+            Slippage.PERCENT -> binding.slippageRadioGroup.check(R.id.percentSlippageButton)
+            Slippage.FIVE -> binding.slippageRadioGroup.check(R.id.fivePercentSlippageButton)
+            Slippage.CUSTOM -> checkCustomButton()
         }
     }
 
     private fun onButtonChecked(checkedId: Int) {
         val slippage = when (checkedId) {
-            R.id.minSlippageButton -> MIN_SLIPPAGE
-            R.id.mediumSlippageButton -> MEDIUM_SLIPPAGE
-            R.id.percentSlippageButton -> PERCENT_SLIPPAGE
-            R.id.fivePercentSlippageButton -> FIVE_PERCENT_SLIPPAGE
-            else -> MIN_SLIPPAGE
+            R.id.minSlippageButton -> Slippage.MIN
+            R.id.mediumSlippageButton -> Slippage.MEDIUM
+            R.id.percentSlippageButton -> Slippage.PERCENT
+            R.id.fivePercentSlippageButton -> Slippage.FIVE
+            else -> Slippage.MIN
         }
 
-        binding.customEditText.setText(slippage.toString())
+        binding.customEditText.setText(slippage.doubleValue.toString())
     }
 }

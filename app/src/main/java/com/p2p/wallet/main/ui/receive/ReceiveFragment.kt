@@ -27,7 +27,7 @@ class ReceiveFragment :
     ReceiveContract.View {
 
     companion object {
-        private const val EXTRA_TOKEN = ""
+        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
         fun create(token: Token?) = ReceiveFragment().withArgs(
             EXTRA_TOKEN to token
         )
@@ -80,7 +80,7 @@ class ReceiveFragment :
             addressTextView.text = token.getFormattedAddress()
 
             qrTitleTextView.text = getString(R.string.main_receive_public_address, token.tokenSymbol)
-            fullAddressTextView.text = token.depositAddress
+            fullAddressTextView.text = token.publicKey
 
             mintTitleTextView.text = getString(R.string.main_receive_mint_address, token.tokenSymbol)
             mintTextView.text = token.mintAddress

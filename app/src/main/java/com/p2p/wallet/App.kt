@@ -11,6 +11,7 @@ import com.p2p.wallet.qr.QrModule
 import com.p2p.wallet.restore.BackupModule
 import com.p2p.wallet.root.RootModule
 import com.p2p.wallet.settings.SettingsModule
+import com.p2p.wallet.swap.SwapModule
 import com.p2p.wallet.token.TokenModule
 import com.p2p.wallet.user.UserModule
 import org.koin.android.ext.koin.androidContext
@@ -41,6 +42,7 @@ class App : Application() {
                     QrModule.create(),
                     TokenModule.create(),
                     SettingsModule.create(),
+                    SwapModule.create(),
                     DashboardModule.create(),
                     CommonModule.create(),
                     InfrastructureModule.create()

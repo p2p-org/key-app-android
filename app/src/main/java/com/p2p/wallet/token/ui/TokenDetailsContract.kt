@@ -13,7 +13,7 @@ interface TokenDetailsContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadHistory(depositAddress: String, tokenSymbol: String)
+        fun loadHistory(publicKey: String, tokenSymbol: String)
         fun loadDailyChartData(tokenSymbol: String, days: Int)
         fun loadHourlyChartData(tokenSymbol: String, hours: Int)
     }
