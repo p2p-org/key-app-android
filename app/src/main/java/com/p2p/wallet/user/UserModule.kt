@@ -7,6 +7,7 @@ import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.CompareTokenInterceptor
+import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
@@ -29,12 +30,14 @@ object UserModule : InjectionModule {
     private const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 60L
     private const val DEFAULT_READ_TIMEOUT_SECONDS = 60L
 
-    private const val CRYPTO_COMPARE_QUALIFIER = "cryptocompare.com/"
+    private const val CRYPTO_COMPARE_QUALIFIER = "cryptocompare.com"
+    private const val BONFIDA_QUALIFIER = "serum.bonfida"
 
     override fun create() = module {
 
         single(named(CRYPTO_COMPARE_QUALIFIER)) {
             val client = createOkHttpClient()
+                .addInterceptor(CompareTokenInterceptor(get()))
                 .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("CompareApi")) }
                 .build()
 
@@ -44,14 +47,27 @@ object UserModule : InjectionModule {
                 .client(client)
                 .build()
         }
-        single {
-            UserRepositoryImpl(get(), get(), get(), get())
+
+        single(named(BONFIDA_QUALIFIER)) {
+            val client = createOkHttpClient()
+                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("BonfidaApi")) }
+                .build()
+
+            Retrofit.Builder()
+                .baseUrl(get<Context>().getString(R.string.bonfidaBaseUrl))
+                .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
+                .client(client)
+                .build()
+        }
+        factory {
+            UserRepositoryImpl(get(), get(), get(), get(), get())
         } bind UserRepository::class
 
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }
+        factory { get<Retrofit>(named(BONFIDA_QUALIFIER)).create(BonfidaApi::class.java) }
 
         single { UserInMemoryRepository() } bind UserLocalRepository::class
-        single { UserInteractor(get(), get(), get(), get(), get()) }
+        factory { UserInteractor(get(), get(), get(), get(), get()) }
     }
 
     private fun Scope.createLoggingInterceptor(tag: String): HttpLoggingInterceptor {
@@ -77,9 +93,8 @@ object UserModule : InjectionModule {
         }
     }
 
-    private fun Scope.createOkHttpClient(): OkHttpClient.Builder =
+    private fun createOkHttpClient(): OkHttpClient.Builder =
         OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .addInterceptor(CompareTokenInterceptor(get()))
 }

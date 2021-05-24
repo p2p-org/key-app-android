@@ -38,6 +38,6 @@ class MainInteractor(
         return TransactionResult.Success(signature, amount, usdAmount, tokenSymbol)
     }
 
-    suspend fun getHistory(depositAddress: String, tokenSymbol: String, limit: Int): List<Transaction> =
-        mainRepository.getHistory(depositAddress, tokenSymbol, limit)
+    suspend fun getHistory(publicKey: String, tokenSymbol: String, limit: Int): List<Transaction> =
+        mainRepository.getHistory(publicKey, tokenSymbol, limit)
 }

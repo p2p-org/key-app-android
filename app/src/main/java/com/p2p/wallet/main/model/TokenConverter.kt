@@ -1,5 +1,6 @@
 package com.p2p.wallet.main.model
 
+import com.p2p.wallet.amount.fromLamports
 import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.main.api.MultiPriceResponse
@@ -19,7 +20,8 @@ object TokenConverter {
         wallet: ConstWallet,
         account: TokenProgramAccount,
         exchangeRate: Double,
-        decimals: Int
+        decimals: Int,
+        bid: Double
     ) = Token(
         tokenSymbol = wallet.tokenSymbol,
         tokenName = wallet.tokenName,
@@ -29,7 +31,7 @@ object TokenConverter {
         price = account.getFormattedPrice(exchangeRate, decimals),
         total = account.getAmount(decimals),
         decimals = decimals,
-        walletBinds = if (wallet.isUS()) 1.0 else 0.0,
+        walletBinds = bid,
         color = wallet.color,
         exchangeRate = exchangeRate
     )
@@ -109,8 +111,8 @@ object TokenConverter {
                 Transaction.Send(
                     transactionId = response.signature,
                     destination = response.to,
-                    amount = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
-                    total = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
+                    amount = response.lamports.fromLamports(),
+                    total = response.lamports.fromLamports(),
                     status = Status.SUCCESS,
                     date = date,
                     tokenSymbol = tokenSymbol
@@ -118,8 +120,8 @@ object TokenConverter {
             else ->
                 Transaction.Receive(
                     transactionId = response.signature,
-                    amount = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
-                    total = BigDecimal(response.lamports.toDouble() / (10.0.pow(9))),
+                    amount = response.lamports.fromLamports(),
+                    total = response.lamports.fromLamports(),
                     status = Status.SUCCESS,
                     date = date,
                     senderAddress = response.from,

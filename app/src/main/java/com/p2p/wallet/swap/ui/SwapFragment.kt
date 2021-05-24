@@ -14,6 +14,8 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSwapBinding
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
+import com.p2p.wallet.main.ui.transaction.TransactionInfo
+import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.addFragment
@@ -79,7 +81,7 @@ class SwapFragment :
         }
     }
 
-    override fun updateInputValue(available: BigInteger) {
+    override fun updateInputValue(available: BigDecimal) {
         binding.amountEditText.setText("$available")
     }
 
@@ -94,7 +96,7 @@ class SwapFragment :
         binding.calculationsGroup.isVisible = true
         binding.receiveValueTextView.text = "${data.minReceive} ${data.minReceiveSymbol}"
         binding.feeValueTextView.text = "${data.fee} ${data.feeSymbol}"
-        binding.destinationAmountTextView.text = "${data.destinationAmount}"
+        binding.destinationAmountTextView.text = data.destinationAmount
         binding.slippageValueTextView.text = "${data.slippage}"
     }
 
@@ -110,8 +112,12 @@ class SwapFragment :
         binding.swapButton.isEnabled = isEnabled
     }
 
-    override fun showSwapSuccess() {
-        Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+    override fun showSwapSuccess(info: TransactionInfo) {
+        TransactionStatusBottomSheet.show(
+            fragment = this,
+            info = info,
+            onDismiss = { popBackStack() }
+        )
     }
 
     override fun showNoPoolFound() {

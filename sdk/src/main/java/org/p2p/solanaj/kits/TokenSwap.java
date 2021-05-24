@@ -41,7 +41,7 @@ public class TokenSwap {
             @Nullable PublicKey accountAddressB
     ) throws RpcException {
 
-        Log.d("###", " a " + accountAddressA.toBase58() + " b " + accountAddressB.toBase58());
+        Log.d("###", "swap amount " + amountIn);
 
         final ArrayList<Account> signers = new ArrayList<>(Collections.singletonList(owner));
 

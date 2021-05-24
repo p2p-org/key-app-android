@@ -3,7 +3,11 @@ package com.p2p.wallet.root.ui
 import com.p2p.wallet.auth.interactor.AuthInteractor
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.user.interactor.UserInteractor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class RootPresenter(
     private val authInteractor: AuthInteractor,
@@ -16,16 +20,24 @@ class RootPresenter(
 
     init {
         launch {
-            userInteractor.loadTokenPrices(BALANCE_CURRENCY)
+            try {
+                userInteractor.loadTokenPrices(BALANCE_CURRENCY)
+                userInteractor.loadTokenBids()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading initial data prices and bids")
+            }
         }
     }
 
     override fun openRootScreen() {
         launch {
-            if (authInteractor.isAuthorized()) {
-                view?.navigateToSignIn()
-            } else {
-                view?.navigateToOnboarding()
+            withContext(Dispatchers.Default) {
+                delay(500L)
+                if (authInteractor.isAuthorized()) {
+                    view?.navigateToSignIn()
+                } else {
+                    view?.navigateToOnboarding()
+                }
             }
         }
     }

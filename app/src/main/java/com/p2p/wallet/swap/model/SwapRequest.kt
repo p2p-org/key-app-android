@@ -8,7 +8,7 @@ import java.math.BigInteger
 data class SwapRequest(
     val pool: Pool.PoolInfo,
     val slippage: Double,
-    val amountIn: BigInteger,
+    val amount: BigInteger,
     val balanceA: TokenAccountBalance,
     val balanceB: TokenAccountBalance
 )

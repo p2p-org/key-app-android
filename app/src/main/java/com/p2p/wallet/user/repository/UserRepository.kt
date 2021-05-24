@@ -1,13 +1,19 @@
 package com.p2p.wallet.user.repository
 
+import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.main.api.AllWallets
+import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.user.model.TokenBid
 import com.p2p.wallet.user.model.UserConverter
-import com.p2p.wallet.main.api.AllWallets
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
@@ -18,6 +24,7 @@ interface UserRepository {
     suspend fun createAccount(keys: List<String>): Account
     suspend fun loadSolBalance(): Long
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
+    suspend fun loadTokenBids(tokens: List<String>): List<TokenBid>
     suspend fun loadTokens(): List<Token>
     suspend fun loadDecimals(publicKey: String): Int
     suspend fun getRate(source: String, destination: String): Double
@@ -26,6 +33,7 @@ interface UserRepository {
 class UserRepositoryImpl(
     private val client: RpcClient,
     private val compareApi: CompareApi,
+    private val bonfidaApi: BonfidaApi,
     private val tokenProvider: TokenKeyProvider,
     private val userLocalRepository: UserLocalRepository
 ) : UserRepository {
@@ -62,8 +70,9 @@ class UserRepositoryImpl(
                 val account = tokenAccounts.find { it.mintAddress == wallet.mint } ?: return@mapNotNull null
                 val decimals = loadDecimals(account.mintAddress)
                 val exchangeRate = userLocalRepository.getPriceByToken(wallet.tokenSymbol).price
+                val bid = userLocalRepository.getBidByToken(wallet.tokenSymbol).bid
 
-                TokenConverter.fromNetwork(wallet, account, exchangeRate, decimals)
+                TokenConverter.fromNetwork(wallet, account, exchangeRate, decimals, bid)
             }
             .toMutableList()
             .apply {
@@ -75,8 +84,14 @@ class UserRepositoryImpl(
          * */
         val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
         val solPrice = userLocalRepository.getPriceByToken(sol.tokenSymbol)
+        val solBid = userLocalRepository.getBidByToken(sol.tokenSymbol)
         val solExchangeRate = solPrice.price
-        result.add(0, sol.copy(price = sol.total.times(BigDecimal(solExchangeRate)), exchangeRate = solExchangeRate))
+        val element = sol.copy(
+            price = sol.total.times(BigDecimal(solExchangeRate)),
+            exchangeRate = solExchangeRate,
+            walletBinds = solBid.bid
+        )
+        result.add(0, element)
         return@withContext result
     }
 
@@ -85,8 +100,28 @@ class UserRepositoryImpl(
         UserConverter.fromNetwork(response.value.data ?: emptyList())
     }
 
+    override suspend fun loadTokenBids(tokens: List<String>): List<TokenBid> =
+        coroutineScope {
+            tokens
+                .map { symbol ->
+                    async {
+                        try {
+                            val response = bonfidaApi.getOrderBooks(symbol.toOrderBookValue())
+                            val bid = response.data.bids.firstOrNull()?.price.valueOrZero()
+                            TokenBid(symbol, bid)
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                            TokenBid(symbol, 0.toDouble())
+                        }
+                    }
+                }
+                .awaitAll()
+        }
+
     override suspend fun getRate(source: String, destination: String): Double {
         val data = compareApi.getPrice(source, destination)
         return TokenConverter.fromNetwork(destination, data).price
     }
+
+    private fun String.toOrderBookValue() : String = "${this}USDT"
 }

@@ -1,8 +1,13 @@
 package com.p2p.wallet.swap.interactor
 
+import com.p2p.wallet.amount.scalePrice
+import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.main.model.TransactionResult
+import com.p2p.wallet.main.model.roundToDefaultScale
 import com.p2p.wallet.swap.model.SwapRequest
+import com.p2p.wallet.swap.model.SwapResult
 import com.p2p.wallet.swap.repository.SwapLocalRepository
 import com.p2p.wallet.swap.repository.SwapRepository
 import com.p2p.wallet.user.interactor.UserInteractor
@@ -49,11 +54,17 @@ class SwapInteractor(
     suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance =
         swapRepository.loadTokenBalance(publicKey)
 
-    suspend fun swap(request: SwapRequest): String {
+    suspend fun swap(
+        request: SwapRequest,
+        receivedAmount: BigDecimal,
+        usdReceivedAmount: BigDecimal,
+        tokenSymbol: String
+    ): SwapResult {
         val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA)
         val accountAddressB = userInteractor.findAccountAddress(request.pool.mintB)
         val keys = userInteractor.getSecretKeys()
-        return swapRepository.swap(keys, request, accountAddressA, accountAddressB)
+        val signature = swapRepository.swap(keys, request, accountAddressA, accountAddressB)
+        return SwapResult.Success(signature, receivedAmount, usdReceivedAmount, tokenSymbol)
     }
 
     fun calculateFee(
@@ -80,7 +91,13 @@ class SwapInteractor(
         return TokenSwap.calculateSwapMinimumReceiveAmount(estimated, slippage)
     }
 
-    fun calculateAmountInOtherToken(
+    fun calculateAmountInConvertingToken(amount: String, from: Double, to: Double): Double {
+        val currencyInFrom = from.div(to)
+        val amountAsDouble = amount.toDoubleOrNull().valueOrZero()
+        return amountAsDouble.times(currencyInFrom)
+    }
+
+    private fun calculateAmountInOtherToken(
         pool: Pool.PoolInfo,
         inputAmount: BigInteger,
         withFee: Boolean,

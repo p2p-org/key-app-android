@@ -4,14 +4,13 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.p2p.wallet.common.crypto.Base58Utils
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.main.api.AllWallets
 import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
-import com.p2p.wallet.main.api.AllWallets
 import kotlinx.coroutines.flow.Flow
 import org.p2p.solanaj.core.PublicKey
-import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
 
@@ -37,6 +36,12 @@ class UserInteractor(
         val tokens = AllWallets.getWalletConstList().map { it.tokenSymbol }
         val prices = userRepository.loadTokensPrices(tokens, targetCurrency)
         userLocalRepository.setTokenPrices(prices)
+    }
+
+    suspend fun loadTokenBids() {
+        val tokens = AllWallets.getWalletConstList().map { it.tokenSymbol }
+        val bids = userRepository.loadTokenBids(tokens)
+        userLocalRepository.setTokenBids(bids)
     }
 
     suspend fun loadTokens() {

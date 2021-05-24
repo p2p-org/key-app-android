@@ -41,7 +41,7 @@ class SwapRemoteRepository(
             owner,
             request.pool,
             request.slippage,
-            request.amountIn,
+            request.amount,
             request.balanceA,
             request.balanceB,
             PublicKey(Constants.WRAPPED_SOL_MINT),

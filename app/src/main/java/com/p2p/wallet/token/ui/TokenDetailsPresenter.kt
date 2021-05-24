@@ -17,10 +17,10 @@ class TokenDetailsPresenter(
         private const val HISTORY_LIMIT = 10
     }
 
-    override fun loadHistory(depositAddress: String, tokenSymbol: String) {
+    override fun loadHistory(publicKey: String, tokenSymbol: String) {
         launch {
             try {
-                val history = mainInteractor.getHistory(depositAddress, tokenSymbol, HISTORY_LIMIT)
+                val history = mainInteractor.getHistory(publicKey, tokenSymbol, HISTORY_LIMIT)
                 view?.showHistory(history)
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")

@@ -3,6 +3,7 @@ package com.p2p.wallet.swap.ui
 import androidx.annotation.ColorRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
+import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.token.model.Token
 import java.math.BigDecimal
@@ -20,8 +21,8 @@ interface SwapContract {
         fun setAvailableTextColor(@ColorRes availableColor: Int)
         fun showAroundValue(aroundValue: BigDecimal)
         fun showButtonEnabled(isEnabled: Boolean)
-        fun showSwapSuccess()
-        fun updateInputValue(available: BigInteger)
+        fun showSwapSuccess(info: TransactionInfo)
+        fun updateInputValue(available: BigDecimal)
         fun openSourceSelection(tokens: List<Token>)
         fun openDestinationSelection(tokens: List<Token>)
         fun openSlippageSelection(currentSlippage: Slippage)
