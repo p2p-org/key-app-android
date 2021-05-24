@@ -1,12 +1,11 @@
 package com.p2p.wallet.root.ui
 
+import android.os.Handler
+import android.os.Looper
 import com.p2p.wallet.auth.interactor.AuthInteractor
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.user.interactor.UserInteractor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class RootPresenter(
@@ -17,6 +16,8 @@ class RootPresenter(
     companion object {
         private const val BALANCE_CURRENCY = "USD"
     }
+
+    private val handler = Handler(Looper.getMainLooper())
 
     init {
         launch {
@@ -30,15 +31,10 @@ class RootPresenter(
     }
 
     override fun openRootScreen() {
-        launch {
-            withContext(Dispatchers.Default) {
-                delay(500L)
-                if (authInteractor.isAuthorized()) {
-                    view?.navigateToSignIn()
-                } else {
-                    view?.navigateToOnboarding()
-                }
-            }
+        if (authInteractor.isAuthorized()) {
+            view?.navigateToSignIn()
+        } else {
+            view?.navigateToOnboarding()
         }
     }
 }

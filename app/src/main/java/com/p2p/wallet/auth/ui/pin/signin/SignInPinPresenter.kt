@@ -6,6 +6,7 @@ import com.p2p.wallet.auth.model.BiometricStatus
 import com.p2p.wallet.auth.model.SignInResult
 import com.p2p.wallet.common.crypto.keystore.DecodeCipher
 import com.p2p.wallet.common.mvp.BasePresenter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -76,6 +77,7 @@ class SignInPinPresenter(
         launch {
             try {
                 view?.showLoading(true)
+                delay(500L)
                 val result = performSignIn()
                 handleResult(result)
             } catch (e: Throwable) {
