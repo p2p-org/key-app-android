@@ -30,7 +30,8 @@ class TokenGroupViewHolder(
 
     fun onBind(group: TokenItem.Group) {
         val tokens = group.hiddenTokens
-        groupTextView.text = itemView.context.getString(R.string.main_hidden_wallets, tokens.size)
+        val resources = itemView.context.resources
+        groupTextView.text = resources.getQuantityString(R.plurals.hidden_wallets, tokens.size, tokens.size)
 
         with(hiddenRecyclerView) {
             layoutManager = tokenLayoutManager

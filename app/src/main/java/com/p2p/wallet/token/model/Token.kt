@@ -29,6 +29,10 @@ data class Token(
     val isZero: Boolean
         get() = total == BigDecimal.ZERO
 
+    @IgnoredOnParcel
+    val isSOL: Boolean
+        get() = tokenName == SOL_NAME
+
     fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
         Constants.WRAPPED_SOL_MINT
     } else {
