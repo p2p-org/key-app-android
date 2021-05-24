@@ -3,8 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.appdistribution'
 }
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
@@ -58,10 +56,10 @@ android {
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD"
 
-            firebaseAppDistribution {
-                releaseNotes = featureChangelog()
-                groups = "wallet.feature.test"
-            }
+//            firebaseAppDistribution {
+//                releaseNotes = featureChangelog()
+//                groups = "wallet.feature.test"
+//            }
         }
 
         release {
