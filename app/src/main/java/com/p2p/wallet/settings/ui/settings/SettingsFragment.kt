@@ -1,4 +1,4 @@
-package com.p2p.wallet.settings.ui
+package com.p2p.wallet.settings.ui.settings
 
 import android.os.Bundle
 import android.view.View
@@ -7,8 +7,10 @@ import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSettingsBinding
+import com.p2p.wallet.settings.ui.security.SecurityFragment
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
+import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
@@ -30,6 +32,11 @@ class SettingsFragment :
             toolbar.setNavigationOnClickListener {
                 popBackStack()
             }
+
+            securityTextView.setOnClickListener {
+                replaceFragment(SecurityFragment.create())
+            }
+
             zeroBalanceView.setOnClickListener {
                 presenter.setZeroBalanceHidden(!hideZeroSwitch.isChecked)
             }

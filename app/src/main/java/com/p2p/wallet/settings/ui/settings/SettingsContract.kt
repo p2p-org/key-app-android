@@ -1,4 +1,4 @@
-package com.p2p.wallet.settings.ui
+package com.p2p.wallet.settings.ui.settings
 
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
