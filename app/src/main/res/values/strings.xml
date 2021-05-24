@@ -67,6 +67,11 @@
     <string name="auth_logout">Logout</string>
 
     <!-- Main -->
+    <plurals name="hidden_wallets">
+        <item quantity="one">%d hidden wallet</item>
+        <item quantity="other">%d hidden wallets</item>
+    </plurals>
+
     <string name="main_total_balance">Total balance</string>
     <string name="main_receive">Receive</string>
     <string name="main_send">Send</string>
