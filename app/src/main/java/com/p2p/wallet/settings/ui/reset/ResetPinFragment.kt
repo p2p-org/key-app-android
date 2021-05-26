@@ -50,8 +50,9 @@ class ResetPinFragment :
     }
 
     override fun showConfirmationError() {
-        val message = getString(R.string.auth_pin_code_wrong)
+        val message = getString(R.string.settings_security_pin_codes_matching)
         binding.pinView.startErrorAnimation(message)
+        binding.pinView.clearPin()
     }
 
     override fun showLoading(isLoading: Boolean) {
