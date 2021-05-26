@@ -113,7 +113,7 @@
     <string name="main_min_receive">Minimum receive:</string>
     <string name="main_swap_fee">Fee (Transaction, New wallet):</string>
     <string name="main_slippage">Slippage</string>
-    <string name="main_powered_by_project_serum">Powered by Project Serum</string>
+    <string name="main_powered_by">Powered by</string>
     <string name="main_swap_slippage">Slippage</string>
     <string name="main_slippage_min">0.1%</string>
     <string name="main_slippage_medium">0.5%</string>
