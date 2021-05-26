@@ -92,9 +92,7 @@ class ResetPinPresenter(
         }
 
         if (createdPin != pinCode) {
-            createdPin = ""
             view?.showConfirmationError()
-            view?.showEnterNewPin()
             view?.vibrate(VIBRATE_DURATION)
             return
         }
