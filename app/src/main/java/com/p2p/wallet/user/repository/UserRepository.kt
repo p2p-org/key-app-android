@@ -44,7 +44,7 @@ class UserRepositoryImpl(
 
     override suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice> {
         val response = compareApi.getMultiPrice(tokens.joinToString(","), targetCurrency)
-        return tokens.map { TokenConverter.fromNetwork(it, response) }
+        return tokens.map { UserConverter.fromNetwork(it, response) }
     }
 
     /**
@@ -120,8 +120,8 @@ class UserRepositoryImpl(
 
     override suspend fun getRate(source: String, destination: String): Double {
         val data = compareApi.getPrice(source, destination)
-        return TokenConverter.fromNetwork(destination, data).price
+        return UserConverter.fromNetwork(destination, data).price
     }
 
-    private fun String.toOrderBookValue() : String = "${this}USDT"
+    private fun String.toOrderBookValue(): String = "${this}USDT"
 }

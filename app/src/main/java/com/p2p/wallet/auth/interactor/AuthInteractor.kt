@@ -14,7 +14,10 @@ import com.p2p.wallet.common.crypto.keystore.DecodeCipher
 import com.p2p.wallet.common.crypto.keystore.EncodeCipher
 import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import com.p2p.wallet.infrastructure.security.SecureStorage
+import com.p2p.wallet.main.repository.MainLocalRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
@@ -26,7 +29,8 @@ class AuthInteractor(
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorage,
     private val sharedPreferences: SharedPreferences,
-    private val biometricManager: BiometricManager
+    private val biometricManager: BiometricManager,
+    private val mainLocalRepository: MainLocalRepository
 ) {
 
     // region signing in
@@ -149,6 +153,9 @@ class AuthInteractor(
     fun logout() {
         sharedPreferences.edit { clear() }
         secureStorage.clear()
+        GlobalScope.launch {
+            mainLocalRepository.clear()
+        }
     }
 
     private fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED

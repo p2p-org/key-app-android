@@ -91,7 +91,7 @@ class SwapPresenter(
             val pools = swapInteractor.getAllPools()
             val result = tokens.filter { token ->
                 val pool = pools.firstOrNull { it.swapData.mintB.toBase58() == token.getFormattedMintAddress() }
-                pool != null
+                pool != null && token.publicKey != sourceToken?.publicKey
             }
             view?.openDestinationSelection(result)
         }
