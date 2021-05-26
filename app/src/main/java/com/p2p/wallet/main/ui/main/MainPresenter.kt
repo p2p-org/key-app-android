@@ -98,8 +98,12 @@ class MainPresenter(
                 tokens.map { TokenItem.Shown(it) }
             isHidden && tokens.size > 1 -> {
                 val hiddenTokens = tokens.filter { it.isZero && !it.isSOL }
-                val hiddenGroup = TokenItem.Group(hiddenTokens)
-                tokens.mapNotNull { if (!it.isZero || it.isSOL) TokenItem.Shown(it) else null } + listOf(hiddenGroup)
+                if (hiddenTokens.isEmpty()) {
+                    tokens.mapNotNull { if (!it.isZero || it.isSOL) TokenItem.Shown(it) else null }
+                } else {
+                    val hiddenGroup = TokenItem.Group(hiddenTokens)
+                    tokens.mapNotNull { if (!it.isZero || it.isSOL) TokenItem.Shown(it) else null } + listOf(hiddenGroup)
+                }
             }
             else -> {
                 tokens.map { TokenItem.Shown(it) }

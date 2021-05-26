@@ -45,15 +45,31 @@ class UserInteractor(
     }
 
     suspend fun loadTokens() {
-        val tokens = userRepository.loadTokens()
-        mainLocalRepository.setTokens(tokens)
+        val newTokens = userRepository.loadTokens()
+        val hiddenTokens = mainLocalRepository.getTokens().filter { it.isHidden }.map { it.publicKey }
+
+        if (hiddenTokens.isEmpty()) {
+            mainLocalRepository.setTokens(newTokens)
+            return
+        }
+
+        /* Starting check if token was previously hidden4 */
+        val result = newTokens + newTokens.map { token ->
+            val old = hiddenTokens.firstOrNull { it == token.publicKey }
+            if (old != null) token.copy(isHidden = true) else token
+        }
+
+        mainLocalRepository.setTokens(result)
     }
 
-    suspend fun getTokensFlow(): Flow<List<Token>> =
+    fun getTokensFlow(): Flow<List<Token>> =
         mainLocalRepository.getTokensFlow()
 
     suspend fun getTokens(): List<Token> =
         mainLocalRepository.getTokens()
+
+    suspend fun setTokenHidden(publicKey: String, isHidden: Boolean) =
+        mainLocalRepository.setTokenHidden(publicKey, isHidden)
 
     suspend fun getPriceByToken(source: String, destination: String): Double =
         userRepository.getRate(source, destination)

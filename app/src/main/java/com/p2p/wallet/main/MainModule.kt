@@ -2,7 +2,7 @@ package com.p2p.wallet.main
 
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.main.interactor.MainInteractor
-import com.p2p.wallet.main.repository.MainInMemoryRepository
+import com.p2p.wallet.main.repository.MainDatabaseRepository
 import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.main.repository.MainRemoteRepository
 import com.p2p.wallet.main.repository.MainRepository
@@ -21,9 +21,9 @@ import org.koin.dsl.module
 object MainModule : InjectionModule {
 
     override fun create() = module {
-        single { MainInteractor(get(), get()) }
-        single { MainInMemoryRepository() } bind MainLocalRepository::class
         single { MainRemoteRepository(get(), get()) } bind MainRepository::class
+        single { MainDatabaseRepository(get()) } bind MainLocalRepository::class
+        factory { MainInteractor(get(), get()) }
         factory { MainPresenter(get(), get()) } bind MainContract.Presenter::class
 
         factory { SwapPresenter(get(), get()) } bind SwapContract.Presenter::class

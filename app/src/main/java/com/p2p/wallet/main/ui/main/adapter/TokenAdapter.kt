@@ -27,7 +27,7 @@ class TokenAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
         R.layout.item_token -> TokenViewHolder(parent, onItemClicked)
-        R.layout.item_token_group -> TokenGroupViewHolder(parent)
+        R.layout.item_token_group -> TokenGroupViewHolder(parent, onItemClicked)
         else -> throw IllegalStateException("Unknown viewType: $viewType")
     }
 

@@ -22,12 +22,13 @@ data class Token(
     val total: BigDecimal,
     val walletBinds: Double,
     @ColorRes val color: Int,
-    val exchangeRate: Double
+    val exchangeRate: Double,
+    val isHidden: Boolean
 ) : Parcelable {
 
     @IgnoredOnParcel
     val isZero: Boolean
-        get() = total == BigDecimal.ZERO
+        get() = total.compareTo(BigDecimal.ZERO) == 0
 
     @IgnoredOnParcel
     val isSOL: Boolean
@@ -76,7 +77,8 @@ data class Token(
             price = BigDecimal.ZERO,
             walletBinds = 0.0,
             color = R.color.chartSOL,
-            exchangeRate = 0.0
+            exchangeRate = 0.0,
+            isHidden = false
         )
     }
 }
