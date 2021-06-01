@@ -1,11 +1,12 @@
 package com.p2p.wallet.swap.ui
 
 import com.p2p.wallet.R
+import com.p2p.wallet.amount.fromLamports
 import com.p2p.wallet.amount.scaleAmount
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.toBigDecimalOrZero
+import com.p2p.wallet.amount.toLamports
 import com.p2p.wallet.amount.toPowerValue
-import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.interactor.SwapInteractor
@@ -20,7 +21,6 @@ import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.rpc.types.TokenAccountBalance
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.BigInteger
 import kotlin.properties.Delegates
 
 class SwapPresenter(
@@ -111,6 +111,7 @@ class SwapPresenter(
 
     override fun setSlippage(slippage: Double) {
         this.slippage = slippage
+        view?.showSlippage(slippage)
     }
 
     override fun loadSlippageForSelection() {
@@ -157,16 +158,22 @@ class SwapPresenter(
         setButtonEnabled()
     }
 
+    override fun reverseTokens() {
+        val source = sourceToken
+        sourceToken = destinationToken
+        destinationToken = source
+
+        searchPool()
+        setButtonEnabled()
+    }
+
     override fun swap() {
         launch {
             try {
                 view?.showLoading(true)
-                val decimalValue = sourceAmount.toDoubleOrNull().valueOrZero()
-                val finalAmount =
-                    decimalValue
-                        .toBigDecimal()
-                        .multiply(requireSourceToken().decimals.toPowerValue().toBigDecimal())
-                        .toBigInteger()
+                val finalAmount = sourceAmount.toBigDecimalOrZero()
+                    .multiply(requireSourceToken().decimals.toPowerValue())
+                    .toBigInteger()
 
                 val request = SwapRequest(
                     pool = requirePool(),
@@ -210,25 +217,24 @@ class SwapPresenter(
                 swapInteractor.loadTokenBalance(pool.tokenAccountB).also { destinationBalance = it }
 
             val fee = swapInteractor.calculateFee(
-                pool,
-                calculatedAmount.toBigInteger(),
-                sourceBalance,
-                destinationBalance
+                pool = pool,
+                sourceAmount = calculatedAmount.toLamports(source.decimals),
+                tokenABalance = sourceBalance,
+                tokenBBalance = destinationBalance
             )
             val minReceive = swapInteractor.calculateMinReceive(
-                sourceBalance,
-                destinationBalance,
-                calculatedAmount.toBigInteger(),
-                slippage
+                balanceA = sourceBalance,
+                balanceB = destinationBalance,
+                amount = calculatedAmount.toLamports(source.decimals),
+                slippage = slippage
             )
 
             val data = CalculationsData(
-                destinationAmount,
-                minReceive,
-                destination.tokenSymbol,
-                fee,
-                source.tokenSymbol,
-                slippage
+                destinationAmount = destinationAmount,
+                minReceive = minReceive.fromLamports(destination.decimals).scaleAmount(),
+                minReceiveSymbol = destination.tokenSymbol,
+                fee = fee.fromLamports(destination.decimals).scaleAmount(),
+                feeSymbol = source.tokenSymbol
             )
             view?.showCalculations(data)
         }
@@ -294,9 +300,8 @@ class SwapPresenter(
 
 data class CalculationsData(
     val destinationAmount: String,
-    val minReceive: BigInteger,
+    val minReceive: BigDecimal,
     val minReceiveSymbol: String,
-    val fee: BigInteger,
-    val feeSymbol: String,
-    val slippage: Double
+    val fee: BigDecimal,
+    val feeSymbol: String
 )

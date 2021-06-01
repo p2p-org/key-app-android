@@ -13,7 +13,7 @@ data class TokenProgramAccount(
 ) : Parcelable {
 
     fun getTotal(decimals: Int): BigDecimal =
-        BigDecimal(total).divide(BigDecimal(decimals.toPowerValue()))
+        BigDecimal(total).divide(decimals.toPowerValue())
 
     fun getFormattedPrice(swapRate: Double, decimals: Int): BigDecimal =
         getTotal(decimals).times(swapRate.toBigDecimal())

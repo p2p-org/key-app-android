@@ -37,7 +37,7 @@ data class TokenEntity(
     val total: BigDecimal,
 
     @ColumnInfo(name = COLUMN_WALLET_BINDS)
-    val walletBinds: Double,
+    val walletBinds: BigDecimal,
 
     @ColumnInfo(name = COLUMN_COLOR)
     val color: Int,

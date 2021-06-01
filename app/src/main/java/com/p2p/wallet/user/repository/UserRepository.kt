@@ -89,7 +89,7 @@ class UserRepositoryImpl(
         val element = sol.copy(
             price = sol.total.times(BigDecimal(solExchangeRate)),
             exchangeRate = solExchangeRate,
-            walletBinds = solBid.bid
+            walletBinds = solBid.bid.toBigDecimal()
         )
         result.add(0, element)
         return@withContext result

@@ -1,11 +1,8 @@
 package com.p2p.wallet.swap.interactor
 
-import com.p2p.wallet.amount.scalePrice
-import com.p2p.wallet.amount.valueOrZero
+import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import com.p2p.wallet.main.model.TransactionResult
-import com.p2p.wallet.main.model.roundToDefaultScale
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.swap.model.SwapResult
 import com.p2p.wallet.swap.repository.SwapLocalRepository
@@ -91,10 +88,10 @@ class SwapInteractor(
         return TokenSwap.calculateSwapMinimumReceiveAmount(estimated, slippage)
     }
 
-    fun calculateAmountInConvertingToken(amount: String, from: Double, to: Double): Double {
+    fun calculateAmountInConvertingToken(amount: String, from: BigDecimal, to: BigDecimal): BigDecimal {
         val currencyInFrom = from.div(to)
-        val amountAsDouble = amount.toDoubleOrNull().valueOrZero()
-        return amountAsDouble.times(currencyInFrom)
+        val amountAsDouble = amount.toBigDecimalOrZero()
+        return amountAsDouble.multiply(currencyInFrom)
     }
 
     private fun calculateAmountInOtherToken(

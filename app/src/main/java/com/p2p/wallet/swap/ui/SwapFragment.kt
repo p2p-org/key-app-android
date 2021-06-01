@@ -23,7 +23,6 @@ import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
-import java.math.BigInteger
 
 class SwapFragment :
     BaseMvpFragment<SwapContract.View, SwapContract.Presenter>(R.layout.fragment_swap),
@@ -54,6 +53,8 @@ class SwapFragment :
             amountEditText.doAfterTextChanged {
                 presenter.setSourceAmount(it.toString())
             }
+
+            exchangeImageView.setOnClickListener { presenter.reverseTokens() }
 
             reverseImageView.setOnClickListener {
                 presenter.loadPrice(true)
@@ -97,7 +98,10 @@ class SwapFragment :
         binding.receiveValueTextView.text = "${data.minReceive} ${data.minReceiveSymbol}"
         binding.feeValueTextView.text = "${data.fee} ${data.feeSymbol}"
         binding.destinationAmountTextView.text = data.destinationAmount
-        binding.slippageValueTextView.text = "${data.slippage}"
+    }
+
+    override fun showSlippage(slippage: Double) {
+        binding.slippageValueTextView.text = "$slippage"
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {

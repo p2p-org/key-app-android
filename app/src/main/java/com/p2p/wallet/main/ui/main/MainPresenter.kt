@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlin.properties.Delegates
 
 class MainPresenter(
     private val userInteractor: UserInteractor,
@@ -22,6 +23,23 @@ class MainPresenter(
 
     companion object {
         private const val BALANCE_CURRENCY = "USD"
+    }
+
+    private val isHidden = settingsInteractor.isHidden()
+
+    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
+        if (newValue == oldValue) {
+            view?.showLoading(false)
+            view?.showRefreshing(false)
+            return@observable
+        }
+
+        val balance = mapBalance(newValue)
+        val mappedTokens = mapTokens(newValue, isHidden)
+
+        view?.showData(mappedTokens, balance)
+        view?.showLoading(false)
+        view?.showRefreshing(false)
     }
 
     override fun attach(view: MainContract.View) {
@@ -33,17 +51,7 @@ class MainPresenter(
         view?.showLoading(true)
         launch {
             try {
-                val isHidden = settingsInteractor.isHidden()
-                userInteractor.getTokensFlow().collect { tokens ->
-                    if (tokens.isNotEmpty()) {
-                        val balance = mapBalance(tokens)
-                        val mappedTokens = mapTokens(tokens, isHidden)
-
-                        view?.showData(mappedTokens, balance)
-                        view?.showLoading(false)
-                        view?.showRefreshing(false)
-                    }
-                }
+                userInteractor.getTokensFlow().collect { tokens = it }
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")
             } catch (e: Throwable) {
@@ -71,13 +79,10 @@ class MainPresenter(
     }
 
     private fun loadTokensFromRemote() {
+        if (tokens.isNotEmpty()) return
+
         launch {
             try {
-                val tokens = userInteractor.getTokens()
-                if (tokens.isNotEmpty()) {
-                    Timber.d("Tokens are already loaded, skipping refresh")
-                    return@launch
-                }
                 userInteractor.loadTokens()
                 Timber.d("Successfully loaded tokens")
             } catch (e: Throwable) {

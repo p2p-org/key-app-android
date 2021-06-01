@@ -8,6 +8,7 @@ import kotlin.math.pow
 private const val POWER_VALUE = 10.0
 private const val DEFAULT_DECIMAL = 9
 
+private const val SCALE_VALUE_SHORT = 2
 private const val SCALE_VALUE = 6
 private const val SCALE_VALUE_PRICE = 9
 
@@ -19,26 +20,20 @@ fun Double?.valueOrZero() = this ?: DOUBLE_ZERO_VALUE
 
 fun Double.validatedValue() = if (this.isInfinite() || this.isNaN()) DOUBLE_ZERO_VALUE else this
 
-fun Int.toPowerValue(): BigInteger =
-    POWER_VALUE.pow(this).toBigDecimal().toBigInteger()
+fun Int.toPowerValue(): BigDecimal =
+    POWER_VALUE.pow(this).toBigDecimal()
 
-fun Double.toBigInteger() =
-    BigDecimal(this).toBigInteger()
+fun BigDecimal.scaleShort(): BigDecimal =
+    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
 
-fun Double.scaleShort(): Double {
-    return BigDecimal(this.validatedValue()).setScale(2, RoundingMode.HALF_EVEN).toDouble()
-}
+fun BigDecimal.scaleAmount(): BigDecimal =
+    this.setScale(SCALE_VALUE, RoundingMode.HALF_UP)
 
-fun Double.scaleAmount(): BigDecimal {
-    return BigDecimal(this.validatedValue()).setScale(SCALE_VALUE, RoundingMode.HALF_UP)
-}
+fun BigDecimal.scalePrice(): BigDecimal =
+    this.setScale(SCALE_VALUE_PRICE, RoundingMode.HALF_UP)
 
-fun Double.scalePrice(): BigDecimal {
-    return BigDecimal(this.validatedValue()).setScale(SCALE_VALUE_PRICE, RoundingMode.HALF_UP)
-}
+fun Long.fromLamports(decimals: Int = DEFAULT_DECIMAL) = BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals)))
 
-fun BigDecimal.scalePrice(): BigDecimal {
-    return this.setScale(SCALE_VALUE_PRICE, RoundingMode.HALF_UP)
-}
+fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL) = BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals)))
 
-fun Long.fromLamports() = BigDecimal(this.toDouble() / (POWER_VALUE.pow(DEFAULT_DECIMAL)))
+fun BigDecimal.toLamports(decimals: Int) = this.multiply(decimals.toPowerValue()).toBigInteger()

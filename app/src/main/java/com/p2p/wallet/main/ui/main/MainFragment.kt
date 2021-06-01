@@ -4,20 +4,22 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
+import com.p2p.wallet.common.recycler.SwipeController
 import com.p2p.wallet.databinding.FragmentMainBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
-import com.p2p.wallet.swap.ui.SwapFragment
 import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.settings.ui.settings.SettingsFragment
+import com.p2p.wallet.swap.ui.SwapFragment
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.ui.TokenDetailsFragment
 import com.p2p.wallet.utils.attachAdapter
@@ -48,6 +50,10 @@ class MainFragment :
         with(binding) {
             mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             mainRecyclerView.attachAdapter(mainAdapter)
+
+            val swipeController = SwipeController()
+            val touchHelper = ItemTouchHelper(swipeController)
+            touchHelper.attachToRecyclerView(mainRecyclerView)
 
             showPieChart(emptyList())
 
@@ -86,11 +92,7 @@ class MainFragment :
         with(binding) {
             balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
             mainAdapter.setItems(tokens)
-
-            val isEmpty = tokens.isEmpty()
-            mainRecyclerView.isVisible = !isEmpty
-            emptyTextView.isVisible = isEmpty
-
+            
             val pieChart = tokens.mapNotNull { (it as? TokenItem.Shown)?.token }
             showPieChart(pieChart)
         }
