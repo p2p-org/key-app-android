@@ -1,5 +1,6 @@
 package com.p2p.wallet.main.ui.main
 
+import com.p2p.wallet.amount.scaleShort
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.settings.interactor.SettingsInteractor
@@ -13,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.RoundingMode
 import kotlin.properties.Delegates
 
 class MainPresenter(
@@ -25,19 +25,17 @@ class MainPresenter(
         private const val BALANCE_CURRENCY = "USD"
     }
 
-    private val isHidden = settingsInteractor.isHidden()
+    private var balance: BigDecimal by Delegates.observable(BigDecimal.ZERO) { _, oldValue, newValue ->
+        if (newValue != oldValue) view?.showBalance(newValue)
+    }
 
     private var tokens: List<Token> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
-        if (newValue == oldValue) {
-            view?.showLoading(false)
-            view?.showRefreshing(false)
-            return@observable
-        }
+        balance = mapBalance(newValue)
+        val mappedTokens = mapTokens(newValue, settingsInteractor.isHidden())
 
-        val balance = mapBalance(newValue)
-        val mappedTokens = mapTokens(newValue, isHidden)
+        if (tokens.size != oldValue.size) view?.showChart(newValue)
 
-        view?.showData(mappedTokens, balance)
+        view?.showTokens(mappedTokens)
         view?.showLoading(false)
         view?.showRefreshing(false)
     }
@@ -101,7 +99,7 @@ class MainPresenter(
         tokens
             .map { it.price }
             .fold(BigDecimal.ZERO, BigDecimal::add)
-            .setScale(2, RoundingMode.HALF_EVEN)
+            .scaleShort()
 
     private fun mapTokens(tokens: List<Token>, isHidden: Boolean): List<TokenItem> =
         if (isHidden) {

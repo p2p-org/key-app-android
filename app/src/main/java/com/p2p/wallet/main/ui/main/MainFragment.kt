@@ -87,20 +87,20 @@ class MainFragment :
         presenter.loadData()
     }
 
-    override fun showData(tokens: List<TokenItem>, balance: BigDecimal) {
-        with(binding) {
-            balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
-            mainAdapter.setItems(tokens)
+    override fun showTokens(tokens: List<TokenItem>) {
+        mainAdapter.setItems(tokens)
+    }
 
-            val pieChart = tokens.mapNotNull { (it as? TokenItem.Shown)?.token }
-            showPieChart(pieChart)
-        }
+    override fun showBalance(balance: BigDecimal) {
+        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
+    }
+
+    override fun showChart(tokens: List<Token>) {
+        showPieChart(tokens)
     }
 
     override fun showLoading(isLoading: Boolean) {
-        with(binding) {
-            progressView.isVisible = isLoading
-        }
+        binding.progressView.isVisible = isLoading
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

@@ -35,6 +35,7 @@ class TokenHiddenViewHolder(
     private val colorView = binding.colorView
     private val deleteImageView = binding.deleteImageView
     private val editImageView = binding.editImageView
+    private val contentView = binding.contentView
 
     fun onBind(item: Token) {
         Glide.with(tokenImageView).load(item.iconUrl).into(tokenImageView)
@@ -46,6 +47,6 @@ class TokenHiddenViewHolder(
         deleteImageView.setImageResource(item.visibilityIcon)
         deleteImageView.setOnClickListener { onDeleteClicked(item) }
         editImageView.setOnClickListener { onEditClicked(item) }
-        itemView.setOnClickListener { onItemClicked(item) }
+        contentView.setOnClickListener { onItemClicked(item) }
     }
 }

@@ -11,4 +11,10 @@
         <item name="android:windowBackground">@drawable/bg_white_rounded</item>
         <item name="android:windowMinWidthMinor">280dp</item>
     </style>
+
+    <style name="SwitchStyle" parent="Theme.Design.BottomSheetDialog">
+        <item name="colorControlActivated">@color/colorBlue</item>
+        <item name="colorSwitchThumbNormal">@color/colorGray</item>
+        <item name="android:colorForeground">@color/colorGray</item>
+    </style>
 </resources>

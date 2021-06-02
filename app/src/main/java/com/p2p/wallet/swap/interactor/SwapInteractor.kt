@@ -12,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.kits.TokenSwap
 import org.p2p.solanaj.rpc.types.TokenAccountBalance
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -84,8 +83,8 @@ class SwapInteractor(
         amount: BigInteger,
         slippage: Double
     ): BigInteger {
-        val estimated = TokenSwap.calculateSwapEstimatedAmount(balanceA, balanceB, amount)
-        return TokenSwap.calculateSwapMinimumReceiveAmount(estimated, slippage)
+        val estimated = balanceB.amount.multiply(amount).divide(balanceA.amount.add(amount)).toBigDecimal()
+        return estimated.multiply((1 - slippage).toBigDecimal()).toBigInteger()
     }
 
     fun calculateAmountInConvertingToken(amount: String, from: BigDecimal, to: BigDecimal): BigDecimal {
