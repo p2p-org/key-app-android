@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.StringRes
@@ -25,6 +26,37 @@ fun View.requireActivity(): AppCompatActivity {
     throw IllegalStateException("View is not attached to any activity")
 }
 
+fun View.focusAndShowKeyboard() {
+    /**
+     * This is to be called when the window already has focus.
+     */
+    fun View.showTheKeyboardNow() {
+        if (isFocused) {
+            post {
+                // We still post the call, just in case we are being notified of the windows focus
+                // but InputMethodManager didn't get properly setup yet.
+                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
+    }
+
+    requestFocus()
+    if (hasWindowFocus()) {
+        // No need to wait for the window to get focus.
+        showTheKeyboardNow()
+    } else {
+        val listener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
+            // This notification will arrive just before the InputMethodManager gets set up.
+            if (hasFocus) showTheKeyboardNow()
+        }
+        // We need to wait until the window gets focus.
+        viewTreeObserver.addOnWindowFocusChangeListener(listener)
+
+        doOnDetach { viewTreeObserver.removeOnWindowFocusChangeListener(listener) }
+    }
+}
+
 fun Activity.hideKeyboard() {
     currentFocus?.hideKeyboard()
 }
@@ -35,6 +67,7 @@ fun View.hideKeyboard() {
             .hideSoftInputFromWindow(windowToken, 0)
     }
 }
+
 
 fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, text, duration).show()
