@@ -4,17 +4,16 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
-import com.p2p.wallet.common.recycler.SwipeController
 import com.p2p.wallet.databinding.FragmentMainBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
+import com.p2p.wallet.main.ui.options.TokenOptionsDialog
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.qr.ui.ScanQrFragment
@@ -41,7 +40,11 @@ class MainFragment :
     private val binding: FragmentMainBinding by viewBinding()
 
     private val mainAdapter: TokenAdapter by lazy {
-        TokenAdapter { onTokenClicked(it) }
+        TokenAdapter(
+            onItemClicked = { onTokenClicked(it) },
+            onEditClicked = { onEditClicked(it) },
+            onDeleteClicked = { onDeleteClicked(it) }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,10 +53,6 @@ class MainFragment :
         with(binding) {
             mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             mainRecyclerView.attachAdapter(mainAdapter)
-
-            val swipeController = SwipeController()
-            val touchHelper = ItemTouchHelper(swipeController)
-            touchHelper.attachToRecyclerView(mainRecyclerView)
 
             showPieChart(emptyList())
 
@@ -92,7 +91,7 @@ class MainFragment :
         with(binding) {
             balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
             mainAdapter.setItems(tokens)
-            
+
             val pieChart = tokens.mapNotNull { (it as? TokenItem.Shown)?.token }
             showPieChart(pieChart)
         }
@@ -142,5 +141,13 @@ class MainFragment :
 
     private fun onTokenClicked(token: Token) {
         replaceFragment(TokenDetailsFragment.create(token))
+    }
+
+    private fun onEditClicked(token: Token) {
+        TokenOptionsDialog.show(childFragmentManager, token)
+    }
+
+    private fun onDeleteClicked(token: Token) {
+        presenter.toggleVisibility(token)
     }
 }

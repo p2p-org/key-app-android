@@ -34,6 +34,10 @@ data class Token(
     val isSOL: Boolean
         get() = tokenName == SOL_NAME
 
+    @IgnoredOnParcel
+    val visibilityIcon: Int
+        get() = if (isHidden) R.drawable.ic_show else R.drawable.ic_hide
+
     fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
         Constants.WRAPPED_SOL_MINT
     } else {

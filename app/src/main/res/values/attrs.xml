@@ -10,4 +10,22 @@
     <declare-styleable name="RoundedImageView">
         <attr name="cornerRadius" />
     </declare-styleable>
+
+    <declare-styleable name="SwipeLayout">
+        <attr name="swipeDirection" format="integer">
+            <flag name="left" value="1"/>
+            <flag name="right" value="2"/>
+        </attr>
+        <attr name="isEnabledSwipe" format="boolean"/>
+        <attr name="isFreeDragAfterOpen" format="boolean"/>
+        <attr name="isFreeHorizontalDrag" format="boolean"/>
+        <attr name="isContinuousSwipe" format="boolean"/>
+        <attr name="isTogether" format="boolean"/>
+        <attr name="rightItem" format="reference"/>
+        <attr name="leftItem" format="reference"/>
+        <attr name="draggedItem" format="reference"/>
+        <attr name="autoMovingSensitivity" format="integer"/>
+        <attr name="rightDragViewPadding" format="dimension"/>
+        <attr name="leftDragViewPadding" format="dimension"/>
+    </declare-styleable>
 </resources>

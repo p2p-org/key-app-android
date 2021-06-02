@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.token.model.Token
@@ -12,15 +13,25 @@ import com.p2p.wallet.utils.dip
 
 class TokenViewHolder(
     binding: ItemTokenBinding,
-    private val onItemClicked: (Token) -> Unit
+    private val onItemClicked: (Token) -> Unit,
+    private val onEditClicked: (Token) -> Unit,
+    private val onDeleteClicked: (Token) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
         private const val LIST_TOP_MARGIN_IN_DP = 16
     }
 
-    constructor(parent: ViewGroup, onItemClicked: (Token) -> Unit) : this(
-        ItemTokenBinding.inflate(LayoutInflater.from(parent.context), parent, false), onItemClicked
+    constructor(
+        parent: ViewGroup,
+        onItemClicked: (Token) -> Unit,
+        onEditClicked: (Token) -> Unit,
+        onDeleteClicked: (Token) -> Unit
+    ) : this(
+        binding = ItemTokenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+        onItemClicked = onItemClicked,
+        onEditClicked = onEditClicked,
+        onDeleteClicked = onDeleteClicked
     )
 
     private val tokenImageView = binding.tokenImageView
@@ -29,10 +40,14 @@ class TokenViewHolder(
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
     private val colorView = binding.colorView
+    private val deleteImageView = binding.deleteImageView
+    private val editImageView = binding.editImageView
 
     fun onBind(item: TokenItem.Shown) {
         if (adapterPosition == 0) {
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
+
+            (itemView as SwipeLayout).isEnabledSwipe = false
         }
 
         val token = item.token
@@ -43,6 +58,10 @@ class TokenViewHolder(
         valueTextView.text = token.getFormattedPrice()
         totalTextView.text = token.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, token.color))
+
+        deleteImageView.setImageResource(item.token.visibilityIcon)
+        deleteImageView.setOnClickListener { onDeleteClicked(token) }
+        editImageView.setOnClickListener { onEditClicked(token) }
 
         itemView.setOnClickListener { onItemClicked(token) }
     }

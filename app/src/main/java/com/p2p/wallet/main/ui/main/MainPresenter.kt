@@ -18,7 +18,7 @@ import kotlin.properties.Delegates
 
 class MainPresenter(
     private val userInteractor: UserInteractor,
-    private val settingsInteractor: SettingsInteractor
+    settingsInteractor: SettingsInteractor
 ) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
     companion object {
@@ -78,6 +78,12 @@ class MainPresenter(
         }
     }
 
+    override fun toggleVisibility(token: Token) {
+        launch {
+            userInteractor.setTokenHidden(token.publicKey, !token.isHidden)
+        }
+    }
+
     private fun loadTokensFromRemote() {
         if (tokens.isNotEmpty()) return
 
@@ -98,20 +104,12 @@ class MainPresenter(
             .setScale(2, RoundingMode.HALF_EVEN)
 
     private fun mapTokens(tokens: List<Token>, isHidden: Boolean): List<TokenItem> =
-        when {
-            tokens.size == 1 ->
-                tokens.map { TokenItem.Shown(it) }
-            isHidden && tokens.size > 1 -> {
-                val hiddenTokens = tokens.filter { it.isZero && !it.isSOL }
-                if (hiddenTokens.isEmpty()) {
-                    tokens.mapNotNull { if (!it.isZero || it.isSOL) TokenItem.Shown(it) else null }
-                } else {
-                    val hiddenGroup = TokenItem.Group(hiddenTokens)
-                    tokens.mapNotNull { if (!it.isZero || it.isSOL) TokenItem.Shown(it) else null } + listOf(hiddenGroup)
-                }
-            }
-            else -> {
-                tokens.map { TokenItem.Shown(it) }
-            }
+        if (isHidden) {
+            val hiddenTokens = tokens.filter { it.isHidden }
+            val hiddenGroup = listOf(TokenItem.Group(hiddenTokens))
+            val result = tokens.filter { !it.isHidden }.map { TokenItem.Shown(it) }
+            if (hiddenTokens.isEmpty()) result else result + hiddenGroup
+        } else {
+            tokens.map { TokenItem.Shown(it) }
         }
 }
