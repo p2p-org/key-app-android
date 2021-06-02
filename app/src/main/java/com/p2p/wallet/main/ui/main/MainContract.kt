@@ -9,7 +9,9 @@ import java.math.BigDecimal
 interface MainContract {
 
     interface View : MvpView {
-        fun showData(tokens: List<TokenItem>, balance: BigDecimal)
+        fun showTokens(tokens: List<TokenItem>)
+        fun showBalance(balance: BigDecimal)
+        fun showChart(tokens: List<Token>)
         fun showLoading(isLoading: Boolean)
         fun showRefreshing(isRefreshing: Boolean)
     }

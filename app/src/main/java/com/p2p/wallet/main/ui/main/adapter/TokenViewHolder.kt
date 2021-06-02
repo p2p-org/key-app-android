@@ -9,7 +9,6 @@ import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.utils.dip
 
 class TokenViewHolder(
     binding: ItemTokenBinding,
@@ -42,15 +41,12 @@ class TokenViewHolder(
     private val colorView = binding.colorView
     private val deleteImageView = binding.deleteImageView
     private val editImageView = binding.editImageView
+    private val contentView = binding.contentView
 
     fun onBind(item: TokenItem.Shown) {
-        if (adapterPosition == 0) {
-            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
-
-            (itemView as SwipeLayout).isEnabledSwipe = false
-        }
-
         val token = item.token
+
+        (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 
         Glide.with(tokenImageView).load(token.iconUrl).into(tokenImageView)
         nameTextView.text = token.tokenSymbol
@@ -63,6 +59,6 @@ class TokenViewHolder(
         deleteImageView.setOnClickListener { onDeleteClicked(token) }
         editImageView.setOnClickListener { onEditClicked(token) }
 
-        itemView.setOnClickListener { onItemClicked(token) }
+        contentView.setOnClickListener { onItemClicked(token) }
     }
 }

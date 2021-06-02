@@ -44,7 +44,9 @@
         android:id="@id/contentView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite">
+        android:background="@color/colorWhite"
+        android:clickable="true"
+        android:focusable="true">
 
         <com.p2p.wallet.common.widget.RoundedImageView
             android:id="@+id/tokenImageView"
