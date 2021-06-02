@@ -7,10 +7,8 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
-import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.databinding.FragmentSelectTokenBinding
-import com.p2p.wallet.main.model.TokenItem
-import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.popBackStack
@@ -41,8 +39,8 @@ class SelectTokenFragment(
 
     private val binding: FragmentSelectTokenBinding by viewBinding()
 
-    private val tokenAdapter: TokenAdapter by lazy {
-        TokenAdapter {
+    private val tokenAdapter: SelectTokenAdapter by lazy {
+        SelectTokenAdapter {
             onSelected?.invoke(it)
             setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TOKEN to it))
             parentFragmentManager.popBackStack()
@@ -55,9 +53,7 @@ class SelectTokenFragment(
             toolbar.setNavigationOnClickListener { popBackStack() }
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokenRecyclerView.attachAdapter(tokenAdapter)
-
-            val data = tokens.map { TokenItem.Shown(it) }
-            tokenAdapter.setItems(data)
+            tokenAdapter.setItems(tokens)
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.p2p.wallet.token.model
 
+import com.p2p.wallet.amount.scaleAmount
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 sealed class Transaction(
     open val status: Status,
@@ -14,9 +14,9 @@ sealed class Transaction(
     abstract val amount: BigDecimal
     abstract val total: BigDecimal
 
-    fun getFormattedAmount(): String = "${amount.setScale(2, RoundingMode.HALF_EVEN)} $"
+    fun getFormattedAmount(): String = "${amount.scaleAmount()} $"
 
-    fun getFormattedTotal(): String = "${total.setScale(6, RoundingMode.HALF_EVEN)} $tokenSymbol"
+    fun getFormattedTotal(): String = "${total.scaleAmount()} $tokenSymbol"
 
     data class Swap(
         override val transactionId: String,

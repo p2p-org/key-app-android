@@ -91,8 +91,10 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="20dp"
             android:background="@android:color/transparent"
+            android:digits="0123456789."
             android:hint="@string/main_swap_hint"
             android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
             android:textColorHint="@color/colorGray"
             app:layout_constraintBottom_toBottomOf="@id/downImageView"
@@ -128,6 +130,7 @@
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_marginEnd="20dp"
+            android:background="?selectableItemBackground"
             android:src="@drawable/ic_swap"
             app:layout_constraintBottom_toBottomOf="@id/dividerView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -171,7 +174,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="@string/main_from"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
             app:layout_constraintEnd_toEndOf="@id/destinationImageView"
             app:layout_constraintStart_toStartOf="@id/destinationImageView"
@@ -184,6 +186,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="20dp"
+            android:hint="@string/main_swap_hint"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
             app:layout_constraintBottom_toBottomOf="@id/toDownImageView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -217,7 +220,7 @@
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_gray_secondary_rounded_small"
-            app:layout_constraintTop_toBottomOf="@id/currencyTextView" />
+            app:layout_constraintTop_toBottomOf="@id/destinationTextView" />
 
         <TextView
             android:id="@+id/priceTextView"

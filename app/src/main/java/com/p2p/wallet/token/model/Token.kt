@@ -20,7 +20,7 @@ data class Token(
     val iconUrl: String,
     val price: BigDecimal,
     val total: BigDecimal,
-    val walletBinds: Double,
+    val walletBinds: BigDecimal,
     @ColorRes val color: Int,
     val exchangeRate: Double,
     val isHidden: Boolean
@@ -33,6 +33,10 @@ data class Token(
     @IgnoredOnParcel
     val isSOL: Boolean
         get() = tokenName == SOL_NAME
+
+    @IgnoredOnParcel
+    val visibilityIcon: Int
+        get() = if (isHidden) R.drawable.ic_show else R.drawable.ic_hide
 
     fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
         Constants.WRAPPED_SOL_MINT
@@ -73,9 +77,9 @@ data class Token(
             iconUrl = SOL_LOGO_URL,
             publicKey = publicKey,
             decimals = SOL_DECIMALS,
-            total = BigDecimal(amount).divide(BigDecimal(SOL_DECIMALS.toPowerValue())),
+            total = BigDecimal(amount).divide(SOL_DECIMALS.toPowerValue()),
             price = BigDecimal.ZERO,
-            walletBinds = 0.0,
+            walletBinds = BigDecimal.ZERO,
             color = R.color.chartSOL,
             exchangeRate = 0.0,
             isHidden = false

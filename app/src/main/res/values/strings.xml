@@ -120,6 +120,9 @@
     <string name="main_slippage_percent">1%</string>
     <string name="main_slippage_five_percent">5%</string>
     <string name="main_custom">Custom</string>
+    <string name="main_visibility_title">Visibility in token list</string>
+    <string name="main_visible">Visible</string>
+    <string name="main_invisible">Invisible</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -154,6 +157,7 @@
     <string name="details_1m">1M</string>
     <string name="details_activity">Activity</string>
     <string name="details_today">Today</string>
+    <string name="main_wallet_settings">Wallet settings</string>
 
 
 </resources>

@@ -1,11 +1,8 @@
 package com.p2p.wallet.main.repository
 
-import com.p2p.wallet.R
-import com.p2p.wallet.amount.fromLamports
 import com.p2p.wallet.common.date.toZonedDateTime
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TokenConverter
-import com.p2p.wallet.swap.model.SwapResult
 import com.p2p.wallet.token.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

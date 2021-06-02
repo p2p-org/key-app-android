@@ -7,7 +7,6 @@ import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.token.model.Token
 import java.math.BigDecimal
-import java.math.BigInteger
 
 interface SwapContract {
 
@@ -22,6 +21,7 @@ interface SwapContract {
         fun showAroundValue(aroundValue: BigDecimal)
         fun showButtonEnabled(isEnabled: Boolean)
         fun showSwapSuccess(info: TransactionInfo)
+        fun showSlippage(slippage: Double)
         fun updateInputValue(available: BigDecimal)
         fun openSourceSelection(tokens: List<Token>)
         fun openDestinationSelection(tokens: List<Token>)
@@ -41,5 +41,6 @@ interface SwapContract {
         fun swap()
         fun loadPrice(toggle: Boolean)
         fun feedAvailableValue()
+        fun reverseTokens()
     }
 }

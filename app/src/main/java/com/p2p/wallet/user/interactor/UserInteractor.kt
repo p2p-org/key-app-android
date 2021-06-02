@@ -53,12 +53,13 @@ class UserInteractor(
             return
         }
 
-        /* Starting check if token was previously hidden4 */
-        val result = newTokens + newTokens.map { token ->
-            val old = hiddenTokens.firstOrNull { it == token.publicKey }
-            if (old != null) token.copy(isHidden = true) else token
+        /* Starting check if token was previously hidden */
+        val result = newTokens.map { token ->
+            val isHidden = hiddenTokens.contains(token.publicKey)
+            if (isHidden) token.copy(isHidden = true) else token
         }
 
+        mainLocalRepository.clear()
         mainLocalRepository.setTokens(result)
     }
 

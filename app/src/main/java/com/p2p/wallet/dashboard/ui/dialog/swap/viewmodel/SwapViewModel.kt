@@ -151,14 +151,14 @@ class SwapViewModel(
 
     fun setSelectedWalletFrom(walletItem: Token) {
         _selectedWalletFrom.value = walletItem
-        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
-        setTokenRatios(walletItem.walletBinds, to)
+//        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
+//        setTokenRatios(walletItem.walletBinds, to)
     }
 
     fun setSelectedWalletTo(walletItem: Token) {
         _selectedWalletTo.value = walletItem
         val from = selectedWalletFrom.value?.walletBinds ?: return
-        setTokenRatios(from, walletItem.walletBinds)
+//        setTokenRatios(from, walletItem.walletBinds)
     }
 
     private fun setTokenRatios(from: Double, to: Double) {
@@ -211,8 +211,8 @@ class SwapViewModel(
      * Notice:Those cases expected to never happen
      */
     fun setAroundToCurrency(amount: String) {
-        val walletBinds: Double = _selectedWalletFrom.value?.walletBinds
-            ?: throw NullPointerException("WalletItem is null in Swap screen")
+//        val walletBinds: Double = _selectedWalletFrom.value?.walletBinds
+//            ?: throw NullPointerException("WalletItem is null in Swap screen")
         val isInCryptoCurrency: Boolean = _isInCryptoCurrency.value
             ?: throw NullPointerException("_isInCryptoCurrency is null in Swap screen")
 //        _aroundToCurrency.value =
@@ -224,12 +224,12 @@ class SwapViewModel(
      */
     fun setAmountOfConvertingToken(_amount: String) {
         var amount = _amount
-        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
-        val from: Double = _selectedWalletFrom.value?.walletBinds
-            ?: throw NullPointerException("WalletItem is null in Swap screen")
-        if (_isInCryptoCurrency.value == false) {
-            amount = _aroundToCurrency.value.toString()
-        }
+//        val to: Double = _selectedWalletTo.value?.walletBinds ?: return
+//        val from: Double = _selectedWalletFrom.value?.walletBinds
+//            ?: throw NullPointerException("WalletItem is null in Swap screen")
+//        if (_isInCryptoCurrency.value == false) {
+//            amount = _aroundToCurrency.value.toString()
+//        }
 //        val amountOfConvertingToken: BigDecimal =
 //            swapInteractor.getAmountInConvertingToken(amount, from, to).roundToMilCurrencyValue()
 //        val amountOfConvertingTokenStr: String =

@@ -13,11 +13,12 @@ import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentMainBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
+import com.p2p.wallet.main.ui.options.TokenOptionsDialog
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
-import com.p2p.wallet.swap.ui.SwapFragment
 import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.settings.ui.settings.SettingsFragment
+import com.p2p.wallet.swap.ui.SwapFragment
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.ui.TokenDetailsFragment
 import com.p2p.wallet.utils.attachAdapter
@@ -39,7 +40,11 @@ class MainFragment :
     private val binding: FragmentMainBinding by viewBinding()
 
     private val mainAdapter: TokenAdapter by lazy {
-        TokenAdapter { onTokenClicked(it) }
+        TokenAdapter(
+            onItemClicked = { onTokenClicked(it) },
+            onEditClicked = { onEditClicked(it) },
+            onDeleteClicked = { onDeleteClicked(it) }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,10 +91,6 @@ class MainFragment :
         with(binding) {
             balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
             mainAdapter.setItems(tokens)
-
-            val isEmpty = tokens.isEmpty()
-            mainRecyclerView.isVisible = !isEmpty
-            emptyTextView.isVisible = isEmpty
 
             val pieChart = tokens.mapNotNull { (it as? TokenItem.Shown)?.token }
             showPieChart(pieChart)
@@ -140,5 +141,13 @@ class MainFragment :
 
     private fun onTokenClicked(token: Token) {
         replaceFragment(TokenDetailsFragment.create(token))
+    }
+
+    private fun onEditClicked(token: Token) {
+        TokenOptionsDialog.show(childFragmentManager, token)
+    }
+
+    private fun onDeleteClicked(token: Token) {
+        presenter.toggleVisibility(token)
     }
 }

@@ -1,30 +1,29 @@
-package com.p2p.wallet.main.ui.main.adapter
+package com.p2p.wallet.main.ui.select
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.p2p.wallet.databinding.ItemTokenHiddenBinding
+import com.p2p.wallet.databinding.ItemTokenSimpleBinding
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.utils.dip
 
-class TokenHiddenViewHolder(
-    binding: ItemTokenHiddenBinding,
-    private val onItemClicked: (Token) -> Unit,
-    private val onEditClicked: (Token) -> Unit,
-    private val onDeleteClicked: (Token) -> Unit
+class SelectTokenViewHolder(
+    binding: ItemTokenSimpleBinding,
+    private val onItemClicked: (Token) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
+
+    companion object {
+        private const val LIST_TOP_MARGIN_IN_DP = 16
+    }
 
     constructor(
         parent: ViewGroup,
-        onItemClicked: (Token) -> Unit,
-        onEditClicked: (Token) -> Unit,
-        onDeleteClicked: (Token) -> Unit
+        onItemClicked: (Token) -> Unit
     ) : this(
-        binding = ItemTokenHiddenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-        onItemClicked = onItemClicked,
-        onEditClicked = onEditClicked,
-        onDeleteClicked = onDeleteClicked
+        binding = ItemTokenSimpleBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+        onItemClicked = onItemClicked
     )
 
     private val tokenImageView = binding.tokenImageView
@@ -33,19 +32,19 @@ class TokenHiddenViewHolder(
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
     private val colorView = binding.colorView
-    private val deleteImageView = binding.deleteImageView
-    private val editImageView = binding.editImageView
 
     fun onBind(item: Token) {
+        if (adapterPosition == 0) {
+            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
+        }
+
         Glide.with(tokenImageView).load(item.iconUrl).into(tokenImageView)
         nameTextView.text = item.tokenSymbol
         addressTextView.text = item.getFormattedAddress()
         valueTextView.text = item.getFormattedPrice()
         totalTextView.text = item.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, item.color))
-        deleteImageView.setImageResource(item.visibilityIcon)
-        deleteImageView.setOnClickListener { onDeleteClicked(item) }
-        editImageView.setOnClickListener { onEditClicked(item) }
+
         itemView.setOnClickListener { onItemClicked(item) }
     }
 }

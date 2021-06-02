@@ -12,11 +12,21 @@ import com.p2p.wallet.token.model.Token
 
 class TokenGroupViewHolder(
     binding: ItemTokenGroupBinding,
-    private val onItemClicked: (Token) -> Unit
+    private val onItemClicked: (Token) -> Unit,
+    private val onEditClicked: (Token) -> Unit,
+    private val onDeleteClicked: (Token) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    constructor(parent: ViewGroup, onItemClicked: (Token) -> Unit) : this(
-        ItemTokenGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false), onItemClicked
+    constructor(
+        parent: ViewGroup,
+        onItemClicked: (Token) -> Unit,
+        onEditClicked: (Token) -> Unit,
+        onDeleteClicked: (Token) -> Unit
+    ) : this(
+        binding = ItemTokenGroupBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+        onItemClicked = onItemClicked,
+        onEditClicked = onEditClicked,
+        onDeleteClicked = onDeleteClicked
     )
 
     private val shownView = binding.shownView
@@ -25,7 +35,11 @@ class TokenGroupViewHolder(
     private val hiddenRecyclerView = binding.hiddenRecyclerView
 
     private val tokenAdapter: TokenHiddenAdapter by lazy {
-        TokenHiddenAdapter { onItemClicked(it) }
+        TokenHiddenAdapter(
+            onItemClicked = { onItemClicked(it) },
+            onEditClicked = onEditClicked,
+            onDeleteClicked = onDeleteClicked
+        )
     }
 
     private val tokenLayoutManager = LinearLayoutManager(itemView.context)

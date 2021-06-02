@@ -21,6 +21,7 @@ import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
+import com.p2p.wallet.utils.focusAndShowKeyboard
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
@@ -56,12 +57,13 @@ class SendFragment :
             }
 
             addressEditText.doAfterTextChanged {
-                val isEmpty = it.toString().isEmpty()
+                val address = it.toString()
+                val isEmpty = address.isEmpty()
 
                 scanImageView.isVisible = isEmpty
                 clearImageView.isVisible = !isEmpty
 
-                sendButton.isEnabled = !isEmpty && amountEditText.text.toString().isNotEmpty()
+                presenter.setNewTargetAddress(address)
             }
 
             amountEditText.doAfterTextChanged {
@@ -89,6 +91,12 @@ class SendFragment :
             address?.let {
                 addressEditText.text?.clear()
                 addressEditText.setText(it)
+            }
+
+            addressEditText.focusAndShowKeyboard()
+
+            availableTextView.setOnClickListener {
+                presenter.feedAvailableValue()
             }
         }
 
@@ -149,20 +157,13 @@ class SendFragment :
             availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
             feeValueTextView.text = "0,000005 SOL" // todo: get valid fee
             amountEditText.doAfterTextChanged {
-                // fixme: move to presenter
-//                val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
-//                val around = token.exchangeRate.times(amount)
-//
-//                val isMoreThanBalance = amount > token.total
-//                val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
-//                availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
-//
-//                aroundTextView.text = getString(R.string.main_send_around_in_usd, around)
-//
-//                val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance
-//                sendButton.isEnabled = isEnabled && addressEditText.text.toString().isNotEmpty()
+                presenter.setSourceAmount(it.toString())
             }
         }
+    }
+
+    override fun updateInputValue(available: BigDecimal) {
+        binding.amountEditText.setText("$available")
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -174,6 +175,18 @@ class SendFragment :
 
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+    }
+
+    override fun setAvailableTextColor(availableColor: Int) {
+        binding.availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
+    }
+
+    override fun showAroundValue(aroundValue: BigDecimal) {
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, aroundValue)
+    }
+
+    override fun showButtonEnabled(isEnabled: Boolean) {
+        binding.sendButton.isEnabled = isEnabled
     }
 
     override fun showWrongWalletError() {

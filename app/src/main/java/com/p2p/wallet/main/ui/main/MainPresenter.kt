@@ -14,14 +14,32 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlin.properties.Delegates
 
 class MainPresenter(
     private val userInteractor: UserInteractor,
-    private val settingsInteractor: SettingsInteractor
+    settingsInteractor: SettingsInteractor
 ) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
     companion object {
         private const val BALANCE_CURRENCY = "USD"
+    }
+
+    private val isHidden = settingsInteractor.isHidden()
+
+    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
+        if (newValue == oldValue) {
+            view?.showLoading(false)
+            view?.showRefreshing(false)
+            return@observable
+        }
+
+        val balance = mapBalance(newValue)
+        val mappedTokens = mapTokens(newValue, isHidden)
+
+        view?.showData(mappedTokens, balance)
+        view?.showLoading(false)
+        view?.showRefreshing(false)
     }
 
     override fun attach(view: MainContract.View) {
@@ -33,17 +51,7 @@ class MainPresenter(
         view?.showLoading(true)
         launch {
             try {
-                val isHidden = settingsInteractor.isHidden()
-                userInteractor.getTokensFlow().collect { tokens ->
-                    if (tokens.isNotEmpty()) {
-                        val balance = mapBalance(tokens)
-                        val mappedTokens = mapTokens(tokens, isHidden)
-
-                        view?.showData(mappedTokens, balance)
-                        view?.showLoading(false)
-                        view?.showRefreshing(false)
-                    }
-                }
+                userInteractor.getTokensFlow().collect { tokens = it }
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")
             } catch (e: Throwable) {
@@ -70,14 +78,17 @@ class MainPresenter(
         }
     }
 
+    override fun toggleVisibility(token: Token) {
+        launch {
+            userInteractor.setTokenHidden(token.publicKey, !token.isHidden)
+        }
+    }
+
     private fun loadTokensFromRemote() {
+        if (tokens.isNotEmpty()) return
+
         launch {
             try {
-                val tokens = userInteractor.getTokens()
-                if (tokens.isNotEmpty()) {
-                    Timber.d("Tokens are already loaded, skipping refresh")
-                    return@launch
-                }
                 userInteractor.loadTokens()
                 Timber.d("Successfully loaded tokens")
             } catch (e: Throwable) {
@@ -93,20 +104,12 @@ class MainPresenter(
             .setScale(2, RoundingMode.HALF_EVEN)
 
     private fun mapTokens(tokens: List<Token>, isHidden: Boolean): List<TokenItem> =
-        when {
-            tokens.size == 1 ->
-                tokens.map { TokenItem.Shown(it) }
-            isHidden && tokens.size > 1 -> {
-                val hiddenTokens = tokens.filter { it.isZero && !it.isSOL }
-                if (hiddenTokens.isEmpty()) {
-                    tokens.mapNotNull { if (!it.isZero || it.isSOL) TokenItem.Shown(it) else null }
-                } else {
-                    val hiddenGroup = TokenItem.Group(hiddenTokens)
-                    tokens.mapNotNull { if (!it.isZero || it.isSOL) TokenItem.Shown(it) else null } + listOf(hiddenGroup)
-                }
-            }
-            else -> {
-                tokens.map { TokenItem.Shown(it) }
-            }
+        if (isHidden) {
+            val hiddenTokens = tokens.filter { it.isHidden }
+            val hiddenGroup = listOf(TokenItem.Group(hiddenTokens))
+            val result = tokens.filter { !it.isHidden }.map { TokenItem.Shown(it) }
+            if (hiddenTokens.isEmpty()) result else result + hiddenGroup
+        } else {
+            tokens.map { TokenItem.Shown(it) }
         }
 }

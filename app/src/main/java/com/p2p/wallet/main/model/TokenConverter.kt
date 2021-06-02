@@ -30,7 +30,7 @@ object TokenConverter {
             price = account.getFormattedPrice(exchangeRate, decimals),
             total = total,
             decimals = decimals,
-            walletBinds = bid,
+            walletBinds = bid.toBigDecimal(),
             color = wallet.color,
             exchangeRate = exchangeRate,
             isHidden = total.compareTo(BigDecimal.ZERO) == 0

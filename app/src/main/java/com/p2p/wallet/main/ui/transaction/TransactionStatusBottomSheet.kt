@@ -11,13 +11,14 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
+import com.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import com.p2p.wallet.databinding.DialogStatusBottomSheetBinding
 import com.p2p.wallet.utils.showUrlInCustomTabs
 import com.p2p.wallet.utils.viewbinding.viewBinding
 
 class TransactionStatusBottomSheet(
     private val onDismiss: (() -> Unit)?
-) : BottomSheetDialogFragment() {
+) : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
 
