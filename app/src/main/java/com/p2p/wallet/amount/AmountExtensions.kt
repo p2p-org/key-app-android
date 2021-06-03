@@ -14,26 +14,32 @@ private const val SCALE_VALUE_PRICE = 9
 
 private const val DOUBLE_ZERO_VALUE = 0.0
 
-fun String.toBigDecimalOrZero() = this.toBigDecimalOrNull() ?: BigDecimal.ZERO
+fun String.toBigDecimalOrZero(): BigDecimal =
+    this.toBigDecimalOrNull()?.stripTrailingZeros() ?: BigDecimal.ZERO
 
-fun Double?.valueOrZero() = this ?: DOUBLE_ZERO_VALUE
-
-fun Double.validatedValue() = if (this.isInfinite() || this.isNaN()) DOUBLE_ZERO_VALUE else this
+fun Double?.valueOrZero(): BigDecimal = BigDecimal(this ?: DOUBLE_ZERO_VALUE)
 
 fun Int.toPowerValue(): BigDecimal =
     POWER_VALUE.pow(this).toBigDecimal()
 
 fun BigDecimal.scaleShort(): BigDecimal =
-    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
+    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
 fun BigDecimal.scaleAmount(): BigDecimal =
-    this.setScale(SCALE_VALUE, RoundingMode.HALF_UP)
+    if (this.isZero()) this else this.setScale(SCALE_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
 fun BigDecimal.scalePrice(): BigDecimal =
-    this.setScale(SCALE_VALUE_PRICE, RoundingMode.HALF_UP)
+    if (this.isZero()) this else this.setScale(SCALE_VALUE_PRICE, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
-fun Long.fromLamports(decimals: Int = DEFAULT_DECIMAL) = BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals)))
+fun Long.fromLamports(decimals: Int = DEFAULT_DECIMAL) =
+    BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals))).stripTrailingZeros()
 
-fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL) = BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals)))
+fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL) =
+    BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals))).stripTrailingZeros()
 
-fun BigDecimal.toLamports(decimals: Int) = this.multiply(decimals.toPowerValue()).toBigInteger()
+fun BigDecimal.toLamports(decimals: Int) =
+    this.multiply(decimals.toPowerValue()).toBigInteger()
+
+fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
+fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
+fun BigDecimal.isLessThan() = this.compareTo(BigDecimal.ZERO) == -1

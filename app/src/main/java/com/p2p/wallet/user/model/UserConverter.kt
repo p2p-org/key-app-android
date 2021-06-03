@@ -8,6 +8,7 @@ import com.p2p.wallet.main.api.SinglePriceResponse
 import com.p2p.wallet.main.model.TokenPrice
 import org.bitcoinj.core.Utils
 import org.p2p.solanaj.rpc.types.ProgramAccount
+import java.math.BigDecimal
 
 object UserConverter {
 
@@ -90,5 +91,5 @@ object UserConverter {
         else -> throw IllegalStateException("Unknown token symbol: $tokenSymbol")
     }
 
-    private fun usdOrZero(response: SinglePriceResponse?): Double = response?.usdValue.valueOrZero()
+    private fun usdOrZero(response: SinglePriceResponse?): BigDecimal = response?.usdValue.valueOrZero()
 }

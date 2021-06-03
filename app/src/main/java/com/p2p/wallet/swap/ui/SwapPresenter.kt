@@ -2,6 +2,7 @@ package com.p2p.wallet.swap.ui
 
 import com.p2p.wallet.R
 import com.p2p.wallet.amount.fromLamports
+import com.p2p.wallet.amount.isMoreThan
 import com.p2p.wallet.amount.scaleAmount
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.toBigDecimalOrZero
@@ -145,9 +146,9 @@ class SwapPresenter(
         val token = sourceToken ?: return
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = token.exchangeRate.toBigDecimal().times(decimalAmount)
+        aroundValue = token.usdRate.multiply(decimalAmount)
 
-        val isMoreThanBalance = decimalAmount.toBigInteger() > token.total.toBigInteger()
+        val isMoreThanBalance = decimalAmount.isMoreThan(token.total)
         val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
 
         view?.setAvailableTextColor(availableColor)

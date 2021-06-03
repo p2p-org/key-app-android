@@ -1,6 +1,8 @@
 package com.p2p.wallet.main.model
 
 import com.p2p.wallet.amount.fromLamports
+import com.p2p.wallet.amount.isZero
+import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.main.db.TokenEntity
 import com.p2p.wallet.token.model.Status
@@ -16,9 +18,9 @@ object TokenConverter {
     fun fromNetwork(
         wallet: ConstWallet,
         account: TokenProgramAccount,
-        exchangeRate: Double,
+        exchangeRate: BigDecimal,
         decimals: Int,
-        bid: Double
+        bid: BigDecimal
     ): Token {
         val total = account.getTotal(decimals)
         return Token(
@@ -30,10 +32,10 @@ object TokenConverter {
             price = account.getFormattedPrice(exchangeRate, decimals),
             total = total,
             decimals = decimals,
-            walletBinds = bid.toBigDecimal(),
+            walletBinds = bid,
             color = wallet.color,
-            exchangeRate = exchangeRate,
-            isHidden = total.compareTo(BigDecimal.ZERO) == 0
+            usdRate = exchangeRate,
+            isHidden = total.isZero()
         )
     }
 
@@ -79,7 +81,7 @@ object TokenConverter {
             total = token.total,
             walletBinds = token.walletBinds,
             color = token.color,
-            exchangeRate = token.exchangeRate,
+            exchangeRate = token.usdRate.toString(),
             isHidden = token.isHidden
         )
 
@@ -95,7 +97,7 @@ object TokenConverter {
             total = entity.total,
             walletBinds = entity.walletBinds,
             color = entity.color,
-            exchangeRate = entity.exchangeRate,
+            usdRate = entity.exchangeRate.toBigDecimalOrZero(),
             isHidden = entity.isHidden
         )
 }

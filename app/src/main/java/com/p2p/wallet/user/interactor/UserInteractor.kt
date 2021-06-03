@@ -11,6 +11,7 @@ import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import org.p2p.solanaj.core.PublicKey
+import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
 
@@ -72,7 +73,7 @@ class UserInteractor(
     suspend fun setTokenHidden(publicKey: String, isHidden: Boolean) =
         mainLocalRepository.setTokenHidden(publicKey, isHidden)
 
-    suspend fun getPriceByToken(source: String, destination: String): Double =
+    suspend fun getPriceByToken(source: String, destination: String): BigDecimal =
         userRepository.getRate(source, destination)
 
     suspend fun clearMemoryData() {

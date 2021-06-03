@@ -1,5 +1,6 @@
 package com.p2p.wallet.user.repository
 
+import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.AllWallets
@@ -27,7 +28,7 @@ interface UserRepository {
     suspend fun loadTokenBids(tokens: List<String>): List<TokenBid>
     suspend fun loadTokens(): List<Token>
     suspend fun loadDecimals(publicKey: String): Int
-    suspend fun getRate(source: String, destination: String): Double
+    suspend fun getRate(source: String, destination: String): BigDecimal
 }
 
 class UserRepositoryImpl(
@@ -69,7 +70,7 @@ class UserRepositoryImpl(
             .mapNotNull { wallet ->
                 val account = tokenAccounts.find { it.mintAddress == wallet.mint } ?: return@mapNotNull null
                 val decimals = loadDecimals(account.mintAddress)
-                val exchangeRate = userLocalRepository.getPriceByToken(wallet.tokenSymbol).price
+                val exchangeRate = userLocalRepository.getPriceByToken(wallet.tokenSymbol).getFormattedPrice()
                 val bid = userLocalRepository.getBidByToken(wallet.tokenSymbol).bid
 
                 TokenConverter.fromNetwork(wallet, account, exchangeRate, decimals, bid)
@@ -85,11 +86,11 @@ class UserRepositoryImpl(
         val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
         val solPrice = userLocalRepository.getPriceByToken(sol.tokenSymbol)
         val solBid = userLocalRepository.getBidByToken(sol.tokenSymbol)
-        val solExchangeRate = solPrice.price
+        val solExchangeRate = solPrice.getFormattedPrice()
         val element = sol.copy(
-            price = sol.total.times(BigDecimal(solExchangeRate)),
-            exchangeRate = solExchangeRate,
-            walletBinds = solBid.bid.toBigDecimal()
+            price = sol.total.multiply(solExchangeRate),
+            usdRate = solExchangeRate.scalePrice(),
+            walletBinds = solBid.bid
         )
         result.add(0, element)
         return@withContext result
@@ -111,16 +112,16 @@ class UserRepositoryImpl(
                             TokenBid(symbol, bid)
                         } catch (e: Throwable) {
                             e.printStackTrace()
-                            TokenBid(symbol, 0.toDouble())
+                            TokenBid(symbol, BigDecimal.ZERO)
                         }
                     }
                 }
                 .awaitAll()
         }
 
-    override suspend fun getRate(source: String, destination: String): Double {
+    override suspend fun getRate(source: String, destination: String): BigDecimal {
         val data = compareApi.getPrice(source, destination)
-        return UserConverter.fromNetwork(destination, data).price
+        return UserConverter.fromNetwork(destination, data).getFormattedPrice()
     }
 
     private fun String.toOrderBookValue(): String = "${this}USDT"

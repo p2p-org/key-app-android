@@ -15,6 +15,6 @@ data class TokenProgramAccount(
     fun getTotal(decimals: Int): BigDecimal =
         BigDecimal(total).divide(decimals.toPowerValue())
 
-    fun getFormattedPrice(swapRate: Double, decimals: Int): BigDecimal =
-        getTotal(decimals).times(swapRate.toBigDecimal())
+    fun getFormattedPrice(swapRate: BigDecimal, decimals: Int): BigDecimal =
+        getTotal(decimals).times(swapRate)
 }

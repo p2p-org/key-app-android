@@ -15,7 +15,7 @@ interface SwapContract {
         fun showDestinationToken(token: Token)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
-        fun showPrice(amount: Double, exchangeToken: String, perToken: String)
+        fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String)
         fun showCalculations(data: CalculationsData)
         fun setAvailableTextColor(@ColorRes availableColor: Int)
         fun showAroundValue(aroundValue: BigDecimal)
