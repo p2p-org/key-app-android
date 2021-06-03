@@ -181,5 +181,6 @@
     <com.p2p.wallet.common.widget.ProgressView
         android:id="@+id/progressView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

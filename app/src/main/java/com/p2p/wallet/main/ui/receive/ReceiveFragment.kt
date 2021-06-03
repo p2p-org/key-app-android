@@ -28,6 +28,7 @@ class ReceiveFragment :
 
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
         fun create(token: Token?) = ReceiveFragment().withArgs(
             EXTRA_TOKEN to token
         )
@@ -58,6 +59,7 @@ class ReceiveFragment :
             copyImageView.setOnClickListener {
                 requireContext().copyToClipBoard(mintTextView.text.toString())
             }
+
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -66,16 +68,17 @@ class ReceiveFragment :
             FragmentResultListener { _, result ->
                 if (!result.containsKey(SelectTokenFragment.EXTRA_TOKEN)) return@FragmentResultListener
                 val token = result.getParcelable<Token>(SelectTokenFragment.EXTRA_TOKEN)
-                if (token != null) presenter.setReceiveToken(token)
+                if (token != null) presenter.setReceiveToken(requireContext(), token)
             }
         )
 
-        presenter.loadData()
+        presenter.loadData(requireContext())
     }
 
     override fun showReceiveToken(token: Token) {
         with(binding) {
             Glide.with(tokenImageView).load(token.iconUrl).into(tokenImageView)
+
             tokenTextView.text = token.tokenSymbol
             addressTextView.text = token.getFormattedAddress()
 
@@ -91,7 +94,7 @@ class ReceiveFragment :
         }
     }
 
-    override fun renderQr(qrBitmap: Bitmap) {
+    override fun renderQr(qrBitmap: Bitmap?) {
         with(binding) {
             qrImageView.setImageBitmap(qrBitmap)
         }

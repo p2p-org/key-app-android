@@ -68,7 +68,7 @@ class TransactionStatusBottomSheet(
             usdAmountTextView.text = "-${getString(R.string.main_usd_end_format, info.usdAmount.toString())}"
             idTextView.text = info.transactionId
 
-            viewButton.setOnClickListener {
+            viewImageView.setOnClickListener {
                 val url = getString(R.string.solanaExplorer, info.transactionId)
                 showUrlInCustomTabs(url)
             }

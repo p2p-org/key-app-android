@@ -106,7 +106,7 @@
             tools:text="MSRMcoVyrFxnSgo5uXwone5SKcGhT1KEJMFEkMEWf9L" />
 
         <ImageView
-            android:id="@+id/copyImageView"
+            android:id="@+id/viewImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackgroundBorderless"
@@ -121,20 +121,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginTop="20dp"
         android:background="@color/colorGraySecondary" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/viewButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_lightblue_rounded"
-        android:foreground="?selectableItemBackground"
-        android:text="@string/main_send_view_in_explorer"
-        android:textAllCaps="false"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/colorGray"
-        tools:ignore="UnusedAttribute" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/doneButton"
