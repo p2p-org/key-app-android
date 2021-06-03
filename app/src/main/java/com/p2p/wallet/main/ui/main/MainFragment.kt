@@ -118,23 +118,22 @@ class MainFragment :
             val dataSet = PieDataSet(pieData, null)
             dataSet.sliceSpace = 1f
             dataSet.selectionShift = 15f
-
             dataSet.setColors(colors, context)
 
             val data = PieData(dataSet)
             data.setDrawValues(false)
+            this.data = data
 
             setUsePercentValues(true)
             setTouchEnabled(false)
-            description.isEnabled = false
-            isDrawHoleEnabled = true
             setHoleColor(Color.WHITE)
-            holeRadius = 70f
             setDrawCenterText(false)
             animateY(500)
-            legend.isEnabled = false
             setDrawEntryLabels(false)
-            this.data = data
+            description.isEnabled = false
+            isDrawHoleEnabled = true
+            holeRadius = 70f
+            legend.isEnabled = false
             invalidate()
         }
     }

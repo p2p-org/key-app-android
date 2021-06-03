@@ -33,8 +33,7 @@ class MainPresenter(
         balance = mapBalance(newValue)
         val mappedTokens = mapTokens(newValue, settingsInteractor.isHidden())
 
-        if (tokens.size != oldValue.size) view?.showChart(newValue)
-
+        view?.showChart(newValue)
         view?.showTokens(mappedTokens)
         view?.showLoading(false)
         view?.showRefreshing(false)
