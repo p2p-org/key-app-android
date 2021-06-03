@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'com.google.firebase.appdistribution'
+    id 'com.google.gms.google-services'
 }
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
@@ -56,10 +57,11 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD"
+            applicationIdSuffix ".feature"
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
-                groups = "wallet.test"
+                groups = "wallet.test, wallet.feature.test"
             }
         }
 
