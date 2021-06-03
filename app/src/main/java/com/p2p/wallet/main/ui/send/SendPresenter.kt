@@ -1,13 +1,17 @@
 package com.p2p.wallet.main.ui.send
 
 import com.p2p.wallet.R
+import com.p2p.wallet.amount.isMoreThan
+import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
+import com.p2p.wallet.main.model.CurrencyMode
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.model.Token.Companion.USD_SYMBOL
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -21,31 +25,43 @@ class SendPresenter(
 
     companion object {
         private const val DESTINATION_USD = "USD"
+        private const val VALID_ADDRESS_LENGTH = 24
     }
 
     private var token: Token? by Delegates.observable(null) { _, _, newValue ->
         if (newValue != null) view?.showSourceToken(newValue)
     }
 
-    private var sourceAmount: String = "0"
-    private var aroundValue: BigDecimal = BigDecimal.ZERO
+    private var inputAmount: String = "0"
 
-    private var targetAddress: String = ""
+    private var tokenAmount: BigDecimal = BigDecimal.ZERO
+    private var usdAmount: BigDecimal = BigDecimal.ZERO
+
+    private var mode: CurrencyMode by Delegates.observable(CurrencyMode.Token("")) { _, _, newValue ->
+        view?.showCurrencyMode(newValue)
+    }
+
+    private var address: String = ""
 
     override fun setSourceToken(newToken: Token) {
         token = newToken
-
         calculateData(newToken)
     }
 
-    override fun sendToken(targetAddress: String, amount: BigDecimal) {
-        val token = token ?: return
+    override fun send() {
+        val token = token ?: throw IllegalStateException("Token cannot be null!")
+
         launch {
             try {
                 view?.showLoading(true)
-                val usdAmount = token.exchangeRate.toBigDecimal().times(amount)
-                val result =
-                    mainInteractor.sendToken(targetAddress, amount, usdAmount, token.decimals, token.tokenSymbol)
+                val usdAmount = token.usdRate.multiply(tokenAmount)
+                val result = mainInteractor.sendToken(
+                    target = address,
+                    amount = tokenAmount,
+                    usdAmount = usdAmount,
+                    decimals = token.decimals,
+                    tokenSymbol = token.tokenSymbol
+                )
                 handleResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
@@ -62,27 +78,19 @@ class SendPresenter(
             val tokens = userInteractor.getTokens()
             val source = tokens.firstOrNull() ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
-            token = source.copy(exchangeRate = exchangeRate)
+            token = source.copy(usdRate = exchangeRate)
+
+            mode = CurrencyMode.Token(source.tokenSymbol)
+
             view?.showFullScreenLoading(false)
         }
     }
 
-    override fun setSourceAmount(amount: String) {
-        sourceAmount = amount
+    override fun setNewSourceAmount(amount: String) {
+        inputAmount = amount
+
         val token = token ?: return
-
-        val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = token.exchangeRate.toBigDecimal().times(decimalAmount)
-
-        val isMoreThanBalance = decimalAmount.toBigInteger() > token.total.toBigInteger()
-        val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
-
-        view?.setAvailableTextColor(availableColor)
-        view?.showAroundValue(aroundValue)
-
         calculateData(token)
-
-        setButtonEnabled()
     }
 
     override fun loadTokensForSelection() {
@@ -92,18 +100,30 @@ class SendPresenter(
         }
     }
 
-    override fun onAmountChanged(amount: BigDecimal) {
+    override fun loadAvailableValue() {
         val token = token ?: return
-        view?.updateState(token, amount)
-    }
 
-    override fun feedAvailableValue() {
-        val token = token ?: return
-        view?.updateInputValue(token.total.scalePrice())
+        val totalAvailable = when (mode) {
+            is CurrencyMode.Dollar -> token.totalInUsd
+            is CurrencyMode.Token -> token.total.scalePrice()
+        }
+        view?.showInputValue(totalAvailable)
     }
 
     override fun setNewTargetAddress(address: String) {
-        targetAddress = address
+        this.address = address
+
+        calculateData(token!!)
+    }
+
+    override fun switchCurrency() {
+        val token = token ?: return
+        mode = when (mode) {
+            is CurrencyMode.Token -> CurrencyMode.Dollar
+            is CurrencyMode.Dollar -> CurrencyMode.Token(token.tokenSymbol)
+        }
+
+        calculateData(token)
     }
 
     private fun handleResult(result: TransactionResult) {
@@ -128,21 +148,48 @@ class SendPresenter(
     }
 
     private fun calculateData(token: Token) {
-        val isMoreThanBalance = sourceAmount.toBigDecimalOrZero() > token.total
+        when (mode) {
+            is CurrencyMode.Token -> {
+                tokenAmount = inputAmount.toBigDecimalOrZero()
+                usdAmount = tokenAmount.multiply(token.usdRate)
+
+                val usdAround = tokenAmount.times(token.usdRate).scalePrice()
+                view?.showUsdAroundValue(usdAround)
+                view?.showAvailableValue(token.total, token.tokenSymbol)
+
+                val isMoreThanBalance = tokenAmount.isMoreThan(token.total)
+                val isNotZero = !tokenAmount.isZero()
+                val isEnabled = isNotZero && !isMoreThanBalance
+                setButtonEnabled(isEnabled, isMoreThanBalance)
+            }
+            is CurrencyMode.Dollar -> {
+                usdAmount = inputAmount.toBigDecimalOrZero()
+                tokenAmount = usdAmount.div(token.usdRate).scalePrice()
+
+                val tokenAround = if (usdAmount.isZero()) {
+                    BigDecimal.ZERO
+                } else {
+                    usdAmount.div(token.usdRate).scalePrice()
+                }
+                view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
+
+                view?.showAvailableValue(token.totalInUsd, USD_SYMBOL)
+
+                val isMoreThanBalance = usdAmount.isMoreThan(token.totalInUsd)
+                val isNotZero = !usdAmount.isZero()
+                val isEnabled = isNotZero && !isMoreThanBalance
+                setButtonEnabled(isEnabled, isMoreThanBalance)
+            }
+        }
+    }
+
+    private fun setButtonEnabled(isEnabled: Boolean, isMoreThanBalance: Boolean) {
+        val isValidAddress = isAddressValid(address)
         val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
         view?.setAvailableTextColor(availableColor)
-
-        val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = token.exchangeRate.toBigDecimal().times(decimalAmount)
-        view?.showAroundValue(aroundValue)
-
-        setButtonEnabled()
+        view?.showButtonEnabled(isEnabled && isValidAddress)
     }
 
-    private fun setButtonEnabled() {
-        val isMoreThanBalance = sourceAmount.toBigDecimalOrZero().compareTo(token?.total ?: BigDecimal.ZERO) > 1
-        val isEnabled = sourceAmount.toBigDecimalOrZero()
-            .compareTo(BigDecimal.ZERO) != 0 && !isMoreThanBalance && targetAddress.isNotBlank()
-        view?.showButtonEnabled(isEnabled)
-    }
+    private fun isAddressValid(address: String): Boolean =
+        address.length > VALID_ADDRESS_LENGTH
 }

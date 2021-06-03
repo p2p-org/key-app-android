@@ -43,7 +43,7 @@ data class TokenEntity(
     val color: Int,
 
     @ColumnInfo(name = COLUMN_EXCHANGE_RATE)
-    val exchangeRate: Double,
+    val exchangeRate: String,
 
     @ColumnInfo(name = COLUMN_IS_HIDDEN)
     val isHidden: Boolean

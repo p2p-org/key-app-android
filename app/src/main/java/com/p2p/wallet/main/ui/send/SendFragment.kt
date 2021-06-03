@@ -14,6 +14,7 @@ import com.p2p.wallet.common.bottomsheet.ErrorBottomSheet
 import com.p2p.wallet.common.bottomsheet.TextContainer
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSendBinding
+import com.p2p.wallet.main.model.CurrencyMode
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
@@ -50,11 +51,7 @@ class SendFragment :
 
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            sendButton.setOnClickListener {
-                val address = addressEditText.text.toString()
-                val amount = amountEditText.text.toString().toBigDecimalOrNull() ?: return@setOnClickListener
-                presenter.sendToken(address, amount)
-            }
+            sendButton.setOnClickListener { presenter.send() }
 
             addressEditText.doAfterTextChanged {
                 val address = it.toString()
@@ -67,8 +64,7 @@ class SendFragment :
             }
 
             amountEditText.doAfterTextChanged {
-                val amount = it.toString().toBigDecimalOrNull() ?: BigDecimal.ZERO
-                presenter.onAmountChanged(amount)
+                presenter.setNewSourceAmount(it.toString())
             }
 
             clearImageView.setOnClickListener {
@@ -76,12 +72,11 @@ class SendFragment :
             }
 
             scanImageView.setOnClickListener {
-                addFragment(
-                    ScanQrFragment.create {
-                        addressEditText.text?.clear()
-                        addressEditText.setText(it)
-                    }
-                )
+                val target = ScanQrFragment.create {
+                    addressEditText.text?.clear()
+                    addressEditText.setText(it)
+                }
+                addFragment(target)
             }
 
             sourceImageView.setOnClickListener {
@@ -96,7 +91,11 @@ class SendFragment :
             addressEditText.focusAndShowKeyboard()
 
             availableTextView.setOnClickListener {
-                presenter.feedAvailableValue()
+                presenter.loadAvailableValue()
+            }
+
+            tokenTextView.setOnClickListener {
+                presenter.switchCurrency()
             }
         }
 
@@ -131,21 +130,6 @@ class SendFragment :
         )
     }
 
-    override fun updateState(token: Token, amount: BigDecimal) {
-        with(binding) {
-            val around = token.exchangeRate.toBigDecimal().times(amount)
-
-            val isMoreThanBalance = amount > token.total
-            val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
-            availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
-
-            aroundTextView.text = getString(R.string.main_send_around_in_usd, around)
-
-            val isEnabled = amount == BigDecimal.ZERO && !isMoreThanBalance
-            sendButton.isEnabled = isEnabled && addressEditText.text.toString().isNotEmpty()
-        }
-    }
-
     @SuppressLint("SetTextI18n")
     override fun showSourceToken(token: Token) {
         with(binding) {
@@ -156,14 +140,15 @@ class SendFragment :
             usdValueTextView.text = getString(R.string.main_usd_end_format, token.getFormattedExchangeRate())
             availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
             feeValueTextView.text = "0,000005 SOL" // todo: get valid fee
-            amountEditText.doAfterTextChanged {
-                presenter.setSourceAmount(it.toString())
-            }
         }
     }
 
-    override fun updateInputValue(available: BigDecimal) {
-        binding.amountEditText.setText("$available")
+    override fun showInputValue(value: BigDecimal) {
+        binding.amountEditText.setText("$value")
+    }
+
+    override fun showCurrencyMode(mode: CurrencyMode) {
+        binding.tokenTextView.text = mode.getSymbol(requireContext())
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -181,8 +166,18 @@ class SendFragment :
         binding.availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
     }
 
-    override fun showAroundValue(aroundValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, aroundValue)
+    override fun showAvailableValue(available: BigDecimal, symbol: String) {
+        binding.availableTextView.text = getString(R.string.main_send_available, "$available $symbol")
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
+        binding.aroundTextView.text = "≈ $tokenValue $symbol"
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun showUsdAroundValue(usdValue: BigDecimal) {
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue)
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {

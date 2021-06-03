@@ -3,6 +3,7 @@ package com.p2p.wallet.main.ui.send
 import androidx.annotation.ColorRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
+import com.p2p.wallet.main.model.CurrencyMode
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.token.model.Token
 import java.math.BigDecimal
@@ -14,23 +15,25 @@ interface SendContract {
         fun showSuccess(info: TransactionInfo)
         fun showWrongWalletError()
         fun navigateToTokenSelection(tokens: List<Token>)
-        fun showFullScreenLoading(isLoading: Boolean)
-        fun updateState(token: Token, amount: BigDecimal)
-        fun updateInputValue(available: BigDecimal)
+        fun showCurrencyMode(mode: CurrencyMode)
         fun setAvailableTextColor(@ColorRes availableColor: Int)
-        fun showAroundValue(aroundValue: BigDecimal)
+        fun showInputValue(value: BigDecimal)
+        fun showUsdAroundValue(usdValue: BigDecimal)
+        fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String)
+        fun showAvailableValue(available: BigDecimal, symbol: String)
         fun showButtonEnabled(isEnabled: Boolean)
+        fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun sendToken(targetAddress: String, amount: BigDecimal)
+        fun send()
         fun loadInitialData()
         fun loadTokensForSelection()
+        fun loadAvailableValue()
         fun setSourceToken(newToken: Token)
-        fun onAmountChanged(amount: BigDecimal)
-        fun feedAvailableValue()
-        fun setSourceAmount(amount: String)
+        fun setNewSourceAmount(amount: String)
         fun setNewTargetAddress(address: String)
+        fun switchCurrency()
     }
 }

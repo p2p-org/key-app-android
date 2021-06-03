@@ -87,7 +87,7 @@ class SwapFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showPrice(amount: Double, exchangeToken: String, perToken: String) {
+    override fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String) {
         binding.priceGroup.isVisible = true
         binding.exchangeTextView.text = "$amount $exchangeToken per $perToken"
     }

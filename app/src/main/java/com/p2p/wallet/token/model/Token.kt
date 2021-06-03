@@ -3,6 +3,7 @@ package com.p2p.wallet.token.model
 import android.os.Parcelable
 import androidx.annotation.ColorRes
 import com.p2p.wallet.R
+import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.common.network.Constants
 import kotlinx.parcelize.IgnoredOnParcel
@@ -11,7 +12,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Parcelize
-data class Token(
+data class Token constructor(
     val tokenSymbol: String,
     val publicKey: String,
     val decimals: Int,
@@ -22,13 +23,9 @@ data class Token(
     val total: BigDecimal,
     val walletBinds: BigDecimal,
     @ColorRes val color: Int,
-    val exchangeRate: Double,
+    val usdRate: BigDecimal,
     val isHidden: Boolean
 ) : Parcelable {
-
-    @IgnoredOnParcel
-    val isZero: Boolean
-        get() = total.compareTo(BigDecimal.ZERO) == 0
 
     @IgnoredOnParcel
     val isSOL: Boolean
@@ -37,6 +34,10 @@ data class Token(
     @IgnoredOnParcel
     val visibilityIcon: Int
         get() = if (isHidden) R.drawable.ic_show else R.drawable.ic_hide
+
+    @IgnoredOnParcel
+    val totalInUsd: BigDecimal
+        get() = total.multiply(usdRate).scalePrice()
 
     fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
         Constants.WRAPPED_SOL_MINT
@@ -59,9 +60,10 @@ data class Token(
 
     fun getFormattedTotal(): String = "$total $tokenSymbol"
 
-    fun getFormattedExchangeRate(): String = String.format("%.2f", exchangeRate)
+    fun getFormattedExchangeRate(): String = String.format("%.2f", usdRate)
 
     companion object {
+        const val USD_SYMBOL = "USD"
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9
         private const val SOL_MINT = "SOLMINT"
@@ -81,7 +83,7 @@ data class Token(
             price = BigDecimal.ZERO,
             walletBinds = BigDecimal.ZERO,
             color = R.color.chartSOL,
-            exchangeRate = 0.0,
+            usdRate = BigDecimal.ZERO,
             isHidden = false
         )
     }
