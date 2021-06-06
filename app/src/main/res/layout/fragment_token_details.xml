@@ -7,9 +7,15 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/emptyGroup"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="emptyImageView,emptyTextView,emptyMessageTextView"
+            android:layout_height="wrap_content" />
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -142,7 +148,40 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/activityTextView"
-            tools:listitem="@layout/item_transaction" />
+            tools:listitem="@layout/item_transaction"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/emptyImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/ic_empty"
+            app:layout_constraintEnd_toEndOf="@id/historyRecyclerView"
+            app:layout_constraintStart_toStartOf="@id/historyRecyclerView"
+            app:layout_constraintTop_toTopOf="@id/historyRecyclerView"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/emptyTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/details_no_transactions_yet"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold18"
+            app:layout_constraintEnd_toEndOf="@id/emptyImageView"
+            app:layout_constraintStart_toStartOf="@id/emptyImageView"
+            app:layout_constraintTop_toBottomOf="@id/emptyImageView" />
+
+        <TextView
+            android:id="@+id/emptyMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/details_no_transactions_message"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="@color/colorGray"
+            app:layout_constraintEnd_toEndOf="@id/emptyImageView"
+            app:layout_constraintStart_toStartOf="@id/emptyImageView"
+            app:layout_constraintTop_toBottomOf="@id/emptyTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.MarkerView
@@ -85,6 +86,10 @@ class TokenDetailsFragment :
 
     override fun showHistory(transactions: List<Transaction>) {
         historyAdapter.setData(transactions)
+
+        val isEmpty = transactions.isEmpty()
+        binding.historyRecyclerView.isVisible = !isEmpty
+        binding.emptyGroup.isVisible = isEmpty
     }
 
     override fun showChartData(entries: List<Entry>) {

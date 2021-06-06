@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RpcApi {
-    private RpcClient client;
+    private final RpcClient client;
 
     public RpcApi(RpcClient client) {
         this.client = client;
@@ -109,8 +109,11 @@ public class RpcApi {
         List<AbstractMap> rawResult = client.call("getProgramAccounts", params, List.class);
 
         List<ProgramAccount> result = new ArrayList<ProgramAccount>();
-        for (AbstractMap item : rawResult) {
-            result.add(new ProgramAccount(item));
+
+        if (rawResult != null) {
+            for (AbstractMap item : rawResult) {
+                result.add(new ProgramAccount(item));
+            }
         }
 
         return result;

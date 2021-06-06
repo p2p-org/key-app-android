@@ -6,4 +6,5 @@
     <string name="rpcPublicKey">TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA</string>
     <string name="ownerKey">11111111111111111111111111111111</string>
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
+    <string name="datahubApiKey">d600d6ae197bd6951a84f353f25555d0</string>
 </resources>

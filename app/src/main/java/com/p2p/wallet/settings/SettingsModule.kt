@@ -2,6 +2,8 @@ package com.p2p.wallet.settings
 
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.settings.interactor.SettingsInteractor
+import com.p2p.wallet.settings.ui.network.NetworkContract
+import com.p2p.wallet.settings.ui.network.NetworkPresenter
 import com.p2p.wallet.settings.ui.reset.ResetPinContract
 import com.p2p.wallet.settings.ui.reset.ResetPinPresenter
 import com.p2p.wallet.settings.ui.security.SecurityContract
@@ -19,5 +21,6 @@ object SettingsModule : InjectionModule {
         factory { SettingsPresenter(get(), get(), get()) } bind SettingsContract.Presenter::class
         factory { SecurityPresenter(get(), get()) } bind SecurityContract.Presenter::class
         factory { ResetPinPresenter(get()) } bind ResetPinContract.Presenter::class
+        factory { NetworkPresenter(get()) } bind NetworkContract.Presenter::class
     }
 }

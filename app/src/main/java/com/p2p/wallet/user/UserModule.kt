@@ -70,7 +70,7 @@ object UserModule : InjectionModule {
         factory { UserInteractor(get(), get(), get(), get(), get()) }
     }
 
-    private fun Scope.createLoggingInterceptor(tag: String): HttpLoggingInterceptor {
+    fun Scope.createLoggingInterceptor(tag: String): HttpLoggingInterceptor {
         val gson = get<Gson>()
 
         val okHttpLogger = object : HttpLoggingInterceptor.Logger {
