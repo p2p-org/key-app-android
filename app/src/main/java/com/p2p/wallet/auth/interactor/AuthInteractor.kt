@@ -25,6 +25,12 @@ private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
 private const val KEY_PIN_CODE_SALT = "KEY_PIN_CODE_SALT"
 private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON_SIGN_IN"
 
+/**
+ * The secure storage now includes the hash which is encrypted in two ways
+ * If we decide to add pin code validation to the backend, we can remove one type hash
+ * and make validation via pin code without decrypting hash
+ * */
+
 class AuthInteractor(
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorage,

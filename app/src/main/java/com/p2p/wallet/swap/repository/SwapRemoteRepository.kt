@@ -44,7 +44,7 @@ class SwapRemoteRepository(
             request.amount,
             request.balanceA,
             request.balanceB,
-            PublicKey(Constants.WRAPPED_SOL_MINT),
+            Constants.WRAPPED_SOL_MINT.toPublicKey(),
             accountA?.publicKey?.toPublicKey(),
             accountB?.publicKey?.toPublicKey()
         )
