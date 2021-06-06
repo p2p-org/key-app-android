@@ -7,6 +7,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSettingsBinding
+import com.p2p.wallet.settings.ui.network.NetworkFragment
 import com.p2p.wallet.settings.ui.security.SecurityFragment
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
@@ -39,6 +40,10 @@ class SettingsFragment :
 
             zeroBalanceView.setOnClickListener {
                 presenter.setZeroBalanceHidden(!hideZeroSwitch.isChecked)
+            }
+
+            networkTextView.setOnClickListener {
+                replaceFragment(NetworkFragment.create())
             }
 
             logoutTextView.setOnClickListener {

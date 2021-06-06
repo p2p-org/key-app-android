@@ -1,13 +1,13 @@
 package com.p2p.wallet.common.di
 
+import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import com.p2p.wallet.user.UserModule.createLoggingInterceptor
 import org.koin.dsl.module
-import org.p2p.solanaj.rpc.Cluster
-import org.p2p.solanaj.rpc.RpcClient
 
 object CommonModule : InjectionModule {
 
     override fun create() = module {
-        // todo: add switcher in settings
-        single { RpcClient(Cluster.MAINNET) }
+        single { EnvironmentManager(get(), get(), createLoggingInterceptor("RpcClient")) }
+        single { get<EnvironmentManager>().getClient() }
     }
 }

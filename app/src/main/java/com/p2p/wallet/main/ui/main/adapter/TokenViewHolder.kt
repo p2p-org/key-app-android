@@ -9,6 +9,7 @@ import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.utils.dip
 
 class TokenViewHolder(
     binding: ItemTokenBinding,
@@ -45,6 +46,12 @@ class TokenViewHolder(
 
     fun onBind(item: TokenItem.Shown) {
         val token = item.token
+
+        if (token.isSOL) {
+            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
+        } else {
+            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
+        }
 
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 

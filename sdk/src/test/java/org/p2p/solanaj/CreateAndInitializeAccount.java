@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.p2p.solanaj.core.AccountMeta;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
-import org.p2p.solanaj.rpc.Cluster;
+import org.p2p.solanaj.rpc.Environment;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.RpcException;
 
@@ -40,7 +40,7 @@ public class CreateAndInitializeAccount {
 */
 
     public static void main(String[] args) throws RpcException {
-        RpcClient client = new RpcClient(Cluster.MAINNET);
+        RpcClient client = new RpcClient(Environment.MAINNET);
      /*   Account payer = new Account( < secret key >);
         PublicKey mintAddress = new PublicKey( < mint address >);
         Account newAccount = new Account();

@@ -10,7 +10,7 @@ import org.p2p.solanaj.kits.TokenTransaction;
 import org.p2p.solanaj.programs.SystemProgram;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.programs.TokenSwapProgram;
-import org.p2p.solanaj.rpc.Cluster;
+import org.p2p.solanaj.rpc.Environment;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.types.TokenAccountBalance;
 
@@ -18,6 +18,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 public class Swap {
     private static PublicKey WRAPPED_SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
@@ -50,7 +53,7 @@ public class Swap {
         ArrayList<Account> signers = new ArrayList<Account>();
         signers.add(owner);
 
-        RpcClient client = new RpcClient(Cluster.MAINNET);
+        RpcClient client = new RpcClient(Environment.MAINNET.getEndpoint(), getClient());
         TransactionRequest transaction = new TransactionRequest();
 
         Pool.PoolInfo pool = Pool.getPoolInfo(client, poolAddress);
@@ -176,5 +179,12 @@ public class Swap {
         signers.add(userTransferAuthority);
 
         client.getApi().sendTransaction(transaction, signers);
+    }
+
+
+    public static OkHttpClient getClient() {
+        return new OkHttpClient.Builder()
+                .readTimeout(90, TimeUnit.SECONDS)
+                .build();
     }
 }
