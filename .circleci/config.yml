@@ -1,0 +1,52 @@
+version: 2.1
+references:
+  develop_only: &develop_only
+    filters:
+      branches:
+        only: develop
+  workspace: &workspace
+               ~/src
+
+  ## Docker image configurations
+  android_config: &android_config
+    working_directory: *workspace
+    docker:
+      - image: circleci/android:api-29-ndk
+    environment:
+      TERM: dumb
+      MAX_HEAP_SIZE: 8g
+      JVM_OPTS: -Xmx2048m
+      GRADLE_OPTS: -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -Dorg.gradle.caching=true -Dorg.gradle.configureondemand=true -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.incremental=false
+
+jobs:
+  ## Distribute to Firebase
+  distribute_to_firebase:
+    <<: *android_config
+    steps:
+      - checkout
+      - run:
+          name: "Install Firebase CLI"
+          command: curl -sL firebase.tools | bash
+      - run:
+          name: "Deploy test build to Firebase"
+          command: bundle exec fastlane stage flavor:alpha branch:${CIRCLE_BRANCH} app_id:$FIREBASE_APP_ID firebase_token:$FIREBASE_TOKEN
+
+  version_bump:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run:
+          - ./gradlew --no-daemon -g /cache setVersionBuild -Pversion=$CI_BUILD_ID
+          - echo "Set build version to $CI_BUILD_ID"
+
+workflows:
+  version: 2
+  deploy_mobile_workflow:
+    jobs:
+      - version_bump:
+          <<: *develop_only
+      - distribute_to_firebase:
+          <<: *develop_only
+          requires:
+            - version_bump
