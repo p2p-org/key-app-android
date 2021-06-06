@@ -4,13 +4,13 @@ import com.p2p.wallet.common.date.toZonedDateTime
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.token.model.Transaction
+import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
 import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionRequest
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.rpc.RpcClient
@@ -24,8 +24,8 @@ class MainRemoteRepository(
 
     override suspend fun sendToken(targetAddress: String, lamports: Long, tokenSymbol: String): String =
         withContext(Dispatchers.IO) {
-            val sourcePublicKey = PublicKey(tokenProvider.publicKey)
-            val targetPublicKey = PublicKey(targetAddress)
+            val sourcePublicKey = tokenProvider.publicKey.toPublicKey()
+            val targetPublicKey = targetAddress.toPublicKey()
             val signer = Account(tokenProvider.secretKey)
 
             val transaction = TransactionRequest()
@@ -42,7 +42,7 @@ class MainRemoteRepository(
 
     override suspend fun getHistory(publicKey: String, tokenSymbol: String, limit: Int): List<Transaction> =
         withContext(Dispatchers.IO) {
-            val signatures = client.api.getConfirmedSignaturesForAddress2(PublicKey(publicKey), limit)
+            val signatures = client.api.getConfirmedSignaturesForAddress2(publicKey.toPublicKey(), limit)
 
             return@withContext signatures
                 .map {

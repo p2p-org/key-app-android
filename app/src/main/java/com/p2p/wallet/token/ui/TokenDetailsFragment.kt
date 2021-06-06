@@ -53,8 +53,12 @@ class TokenDetailsFragment :
 
     private val historyAdapter: HistoryAdapter by lazy {
         HistoryAdapter(
-            onTransactionClicked = { },
-            onRetryClicked = { }
+            onTransactionClicked = {
+                // todo: Add implementation
+            },
+            onRetryClicked = {
+                // todo: Add implementation
+            }
         )
     }
 

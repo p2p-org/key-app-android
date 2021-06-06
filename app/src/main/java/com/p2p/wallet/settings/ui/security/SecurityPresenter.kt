@@ -21,7 +21,6 @@ class SecurityPresenter(
     }
 
     override fun onBiometricsConfirmed(cipher: Cipher) {
-        // todo: Better to prompt user to enter pin code and then enable biometrics
         authInteractor.enableFingerprintSignIn(EncodeCipher(cipher))
     }
 

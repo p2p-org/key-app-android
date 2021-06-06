@@ -8,6 +8,7 @@ import com.p2p.wallet.swap.model.SwapResult
 import com.p2p.wallet.swap.repository.SwapLocalRepository
 import com.p2p.wallet.swap.repository.SwapRepository
 import com.p2p.wallet.user.interactor.UserInteractor
+import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
@@ -101,7 +102,7 @@ class SwapInteractor(
         tokenBBalance: TokenAccountBalance
     ): BigInteger {
 
-        val tokenSource = PublicKey(tokenKeyProvider.publicKey)
+        val tokenSource = tokenKeyProvider.publicKey.toPublicKey()
         val isReverse = pool.tokenAccountB.equals(tokenSource)
 
         val feeRatio = BigDecimal(pool.tradeFeeNumerator).divide(BigDecimal(pool.tradeFeeDenominator))

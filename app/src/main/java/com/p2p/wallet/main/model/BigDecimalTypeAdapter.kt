@@ -15,7 +15,7 @@ object BigDecimalTypeAdapter : JsonSerializer<BigDecimal>, JsonDeserializer<BigD
         typeOfSrc: Type?,
         context: JsonSerializationContext?
     ): JsonElement? =
-        src?.let { JsonPrimitive(it) }
+        src?.let { JsonPrimitive(it.toDouble()) }
 
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): BigDecimal? =
         json?.let { BigDecimal(it.asJsonPrimitive.asDouble) }

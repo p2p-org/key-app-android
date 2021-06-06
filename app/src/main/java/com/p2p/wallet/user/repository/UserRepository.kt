@@ -11,6 +11,7 @@ import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.model.TokenBid
 import com.p2p.wallet.user.model.UserConverter
+import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -52,7 +53,7 @@ class UserRepositoryImpl(
      * Temporary passing keys here, but we should inject key provider in upper level, for example in [RpcApi]
      **/
     override suspend fun loadSolBalance(): Long = withContext(Dispatchers.IO) {
-        client.api.getBalance(PublicKey(tokenProvider.publicKey))
+        client.api.getBalance(tokenProvider.publicKey.toPublicKey())
     }
 
     override suspend fun loadTokens(): List<Token> = withContext(Dispatchers.IO) {
@@ -97,7 +98,7 @@ class UserRepositoryImpl(
     }
 
     override suspend fun loadDecimals(publicKey: String): Int = withContext(Dispatchers.IO) {
-        val response = client.api.getAccountInfo(PublicKey(publicKey))
+        val response = client.api.getAccountInfo(publicKey.toPublicKey())
         UserConverter.fromNetwork(response.value.data ?: emptyList())
     }
 

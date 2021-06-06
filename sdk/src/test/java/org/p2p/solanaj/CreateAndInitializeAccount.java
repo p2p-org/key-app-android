@@ -1,13 +1,15 @@
 package org.p2p.solanaj;
 
-import java.util.ArrayList;
-
 import org.p2p.solanaj.core.AccountMeta;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
 import org.p2p.solanaj.rpc.Environment;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.RpcException;
+
+import java.util.ArrayList;
+
+import okhttp3.OkHttpClient;
 
 public class CreateAndInitializeAccount {
     public static final PublicKey SPL_TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
@@ -40,7 +42,7 @@ public class CreateAndInitializeAccount {
 */
 
     public static void main(String[] args) throws RpcException {
-        RpcClient client = new RpcClient(Environment.MAINNET);
+//        RpcClient client = new RpcClient(Environment.MAINNET);
      /*   Account payer = new Account( < secret key >);
         PublicKey mintAddress = new PublicKey( < mint address >);
         Account newAccount = new Account();
