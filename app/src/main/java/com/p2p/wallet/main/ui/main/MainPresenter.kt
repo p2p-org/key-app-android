@@ -25,7 +25,7 @@ class MainPresenter(
         private const val BALANCE_CURRENCY = "USD"
     }
 
-    private var balance: BigDecimal by Delegates.observable(BigDecimal.ZERO) { _, oldValue, newValue ->
+    private var balance: BigDecimal by Delegates.observable(BigDecimal.ZERO) { _, _, newValue ->
         view?.showBalance(newValue)
     }
 
@@ -49,7 +49,9 @@ class MainPresenter(
             try {
                 Timber.d("### show loading ")
                 view?.showLoading(true)
-                userInteractor.getTokensFlow().collect { tokens = it }
+                userInteractor.getTokensFlow().collect {
+                    if (it.isNotEmpty()) tokens = it
+                }
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")
             } catch (e: Throwable) {
