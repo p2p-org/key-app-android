@@ -53,7 +53,6 @@ class KeywordEditTextChangeListener(
         val itemPosition = _itemPosition!!
         val recyclerView = _recyclerView!!
 
-
         textLengthAfter = s.toString().length
 
         // Saving the value of edit text for the secret phrase
@@ -115,7 +114,7 @@ class KeywordEditTextChangeListener(
                     // When this case triggered, the word definitely is not empty,
                     // and user clicked the space, so we pass the current text
                     // from editText to textView in rv_item_key_word.xml
-                    val allText = "${txtKeyword.text}${s.toString()}"
+                    val allText = "${txtKeyword.text}$s"
                     txtKeyword.text = allText
                     txtKeyword.setTextColor(Color.BLACK)
                     edtKeyword.visibility = View.GONE
