@@ -13,6 +13,7 @@ import android.widget.RelativeLayout
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.p2p.wallet.R
+import com.p2p.wallet.utils.resFromTheme
 
 private const val ANIMATION_DURATION = 400L
 
@@ -72,7 +73,7 @@ class PinCodeView @JvmOverloads constructor(
             }
 
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(R.color.colorRed)
+                setDotsColor(resFromTheme(R.attr.colorAccentWarning))
             }
         })
         startAnimation(animation)

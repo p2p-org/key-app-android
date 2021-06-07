@@ -44,7 +44,7 @@
         android:id="@+id/contentView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite">
+        android:background="?colorElementPrimary">
 
         <com.p2p.wallet.common.widget.RoundedImageView
             android:id="@+id/tokenImageView"
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
             app:layout_constraintEnd_toStartOf="@id/totalTextView"
             app:layout_constraintStart_toEndOf="@id/tokenImageView"
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintBottom_toBottomOf="@id/addressTextView"
             app:layout_constraintEnd_toStartOf="@id/colorView"
             app:layout_constraintTop_toTopOf="@id/addressTextView"
@@ -122,7 +122,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:alpha="0.2"
-            android:background="@color/colorGraySecondary"
+            android:background="?colorElementTertiary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

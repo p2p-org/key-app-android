@@ -46,7 +46,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="20dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            android:textColor="@color/colorBlue"
+            android:textColor="?colorAccentPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             tools:text="Available: 2140.0000" />
@@ -96,7 +96,7 @@
             android:imeOptions="actionDone"
             android:inputType="numberDecimal"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
-            android:textColorHint="@color/colorGray"
+            android:textColorHint="?colorElementSecondary"
             app:layout_constraintBottom_toBottomOf="@id/downImageView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/downImageView"
@@ -110,7 +110,7 @@
             android:ellipsize="end"
             android:singleLine="true"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintEnd_toEndOf="@id/amountEditText"
             app:layout_constraintStart_toStartOf="@id/amountEditText"
             app:layout_constraintTop_toBottomOf="@id/amountEditText"
@@ -122,7 +122,7 @@
             android:layout_height="1dp"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="32dp"
-            android:background="@color/colorGraySecondary"
+            android:background="?colorElementTertiary"
             app:layout_constraintTop_toBottomOf="@id/aroundTextView" />
 
         <ImageView
@@ -201,7 +201,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/main_select_currency"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintStart_toStartOf="@id/destinationAmountTextView"
             app:layout_constraintTop_toBottomOf="@id/destinationAmountTextView" />
 
@@ -230,7 +230,7 @@
             android:paddingHorizontal="8dp"
             android:text="@string/main_price"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintBottom_toBottomOf="@id/valueBackgroundView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/valueBackgroundView" />
@@ -265,7 +265,7 @@
             android:layout_height="1dp"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="32dp"
-            android:background="@color/colorGraySecondary"
+            android:background="?colorElementTertiary"
             app:layout_constraintTop_toBottomOf="@id/priceTextView" />
 
         <androidx.constraintlayout.widget.Group
@@ -284,7 +284,7 @@
             android:layout_marginTop="20dp"
             android:text="@string/main_min_receive"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dividerFooterView" />
 
@@ -294,7 +294,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/minReceiveTextView"
             tools:text="140003.00 US$" />
@@ -307,7 +307,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/main_swap_fee"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/minReceiveTextView" />
 
@@ -317,7 +317,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/feeTextView"
             tools:text="0.0001 SOL" />
@@ -330,7 +330,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/main_slippage"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/feeTextView" />
 
@@ -340,7 +340,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/slippageTextView"
             tools:text="0.5 %" />
@@ -374,7 +374,7 @@
             android:text="@string/main_swap_now"
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="@color/colorWhite"
+            android:textColor="?colorElementPrimary"
             app:layout_constraintBottom_toTopOf="@id/serumTextView"
             tools:ignore="UnusedAttribute" />
 
@@ -387,7 +387,7 @@
             android:gravity="center"
             android:text="@string/main_powered_by"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/colorGray"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/centerGuideline" />
 

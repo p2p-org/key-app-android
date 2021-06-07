@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorGraySecondary"
+    android:background="?colorElementTertiary"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/settings_title"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         android:drawablePadding="16dp"
         android:foreground="?selectableItemBackground"
         android:padding="16dp"
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         android:drawablePadding="16dp"
         android:foreground="?selectableItemBackground"
         android:padding="16dp"
@@ -52,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         android:drawablePadding="16dp"
         android:foreground="?selectableItemBackground"
         android:padding="16dp"
@@ -67,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         android:drawablePadding="16dp"
         android:foreground="?selectableItemBackground"
         android:padding="16dp"
@@ -82,7 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         android:foreground="?selectableItemBackground"
         android:orientation="horizontal"
         tools:ignore="UnusedAttribute">
@@ -113,7 +113,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         android:drawablePadding="16dp"
         android:foreground="?selectableItemBackground"
         android:padding="16dp"
@@ -130,7 +130,7 @@
         android:gravity="center"
         android:padding="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="@color/colorGray"
+        android:textColor="?colorElementSecondary"
         tools:text="App version: 1.0.0" />
 
 </LinearLayout>

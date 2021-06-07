@@ -28,6 +28,7 @@ import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
+import com.p2p.wallet.utils.resFromTheme
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
@@ -101,10 +102,10 @@ class TokenDetailsFragment :
         lineDataSet.lineWidth = 2f
         lineDataSet.setDrawCircles(false)
         lineDataSet.setDrawValues(false)
-        lineDataSet.color = R.color.colorBlue
+        lineDataSet.color = resFromTheme(R.attr.colorAccentPrimary)
         lineDataSet.setDrawFilled(true)
         lineDataSet.setDrawHorizontalHighlightIndicator(false)
-        lineDataSet.highLightColor = R.color.colorBlue
+        lineDataSet.highLightColor = resFromTheme(R.attr.colorAccentPrimary)
 
         val fillGradient = ContextCompat.getDrawable(requireContext(), R.drawable.bg_line_chart)
         lineDataSet.fillDrawable = fillGradient
@@ -113,7 +114,7 @@ class TokenDetailsFragment :
             setViewPortOffsets(0f, 0f, 0f, 0f)
             description = Description().apply { text = "" }
             setDrawBorders(false)
-            setBorderColor(R.color.colorBlue)
+            setBorderColor(resFromTheme(R.attr.colorAccentPrimary))
             axisRight.setDrawGridLines(false)
             axisLeft.setDrawGridLines(false)
             xAxis.setDrawGridLines(false)

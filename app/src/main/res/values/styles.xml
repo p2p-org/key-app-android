@@ -6,15 +6,15 @@
     </style>
 
     <style name="WalletTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="colorAccent">@color/colorBlue</item>
-        <item name="android:textColorPrimary">@color/colorWhite</item>
+        <item name="colorAccent">?colorAccentPrimary</item>
+        <item name="android:textColorPrimary">?colorElementPrimary</item>
         <item name="android:windowBackground">@drawable/bg_white_rounded</item>
         <item name="android:windowMinWidthMinor">280dp</item>
     </style>
 
     <style name="SwitchStyle" parent="Theme.Design.BottomSheetDialog">
-        <item name="colorControlActivated">@color/colorBlue</item>
-        <item name="colorSwitchThumbNormal">@color/colorGray</item>
-        <item name="android:colorForeground">@color/colorGray</item>
+        <item name="colorControlActivated">?colorAccentPrimary</item>
+        <item name="colorSwitchThumbNormal">?colorElementSecondary</item>
+        <item name="android:colorForeground">?colorElementSecondary</item>
     </style>
 </resources>

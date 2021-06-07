@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <attr name="colorAccentPrimary" format="color|reference" />
+    <attr name="colorAccentSecondary" format="color|reference" />
+    <attr name="colorAccentTertiary" format="color|reference" />
+    <attr name="colorAccentWarning" format="color|reference" />
+
+    <attr name="colorElementPrimary" format="color|reference" />
+    <attr name="colorElementSecondary" format="color|reference" />
+    <attr name="colorElementTertiary" format="color|reference" />
+
+    <attr name="colorMessagePrimary" format="color|reference" />
+    <attr name="colorMessageSecondary" format="color|reference" />
+
     <item name="edgetoedge" type="id" />
 
     <declare-styleable name="NumberKeyboardButtonView">
@@ -13,19 +26,19 @@
 
     <declare-styleable name="SwipeLayout">
         <attr name="swipeDirection" format="integer">
-            <flag name="left" value="1"/>
-            <flag name="right" value="2"/>
+            <flag name="left" value="1" />
+            <flag name="right" value="2" />
         </attr>
-        <attr name="isEnabledSwipe" format="boolean"/>
-        <attr name="isFreeDragAfterOpen" format="boolean"/>
-        <attr name="isFreeHorizontalDrag" format="boolean"/>
-        <attr name="isContinuousSwipe" format="boolean"/>
-        <attr name="isTogether" format="boolean"/>
-        <attr name="rightItem" format="reference"/>
-        <attr name="leftItem" format="reference"/>
-        <attr name="draggedItem" format="reference"/>
-        <attr name="autoMovingSensitivity" format="integer"/>
-        <attr name="rightDragViewPadding" format="dimension"/>
-        <attr name="leftDragViewPadding" format="dimension"/>
+        <attr name="isEnabledSwipe" format="boolean" />
+        <attr name="isFreeDragAfterOpen" format="boolean" />
+        <attr name="isFreeHorizontalDrag" format="boolean" />
+        <attr name="isContinuousSwipe" format="boolean" />
+        <attr name="isTogether" format="boolean" />
+        <attr name="rightItem" format="reference" />
+        <attr name="leftItem" format="reference" />
+        <attr name="draggedItem" format="reference" />
+        <attr name="autoMovingSensitivity" format="integer" />
+        <attr name="rightDragViewPadding" format="dimension" />
+        <attr name="leftDragViewPadding" format="dimension" />
     </declare-styleable>
 </resources>

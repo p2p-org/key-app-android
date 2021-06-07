@@ -1,6 +1,6 @@
 package com.p2p.wallet.main.ui.send
 
-import androidx.annotation.ColorRes
+import androidx.annotation.AttrRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.model.CurrencyMode
@@ -16,7 +16,7 @@ interface SendContract {
         fun showWrongWalletError()
         fun navigateToTokenSelection(tokens: List<Token>)
         fun showCurrencyMode(mode: CurrencyMode)
-        fun setAvailableTextColor(@ColorRes availableColor: Int)
+        fun setAvailableTextColor(@AttrRes availableColor: Int)
         fun showInputValue(value: BigDecimal)
         fun showUsdAroundValue(usdValue: BigDecimal)
         fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String)

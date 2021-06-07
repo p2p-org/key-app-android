@@ -3,7 +3,6 @@ package com.p2p.wallet
 import android.app.Application
 import com.p2p.wallet.auth.AuthModule
 import com.p2p.wallet.common.di.CommonModule
-import com.p2p.wallet.dashboard.DashboardModule
 import com.p2p.wallet.infrastructure.InfrastructureModule
 import com.p2p.wallet.infrastructure.network.NetworkModule
 import com.p2p.wallet.main.MainModule
@@ -43,7 +42,6 @@ class App : Application() {
                     TokenModule.create(),
                     SettingsModule.create(),
                     SwapModule.create(),
-                    DashboardModule.create(),
                     CommonModule.create(),
                     InfrastructureModule.create()
                 )

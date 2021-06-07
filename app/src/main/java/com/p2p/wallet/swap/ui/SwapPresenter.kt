@@ -149,7 +149,7 @@ class SwapPresenter(
         aroundValue = token.usdRate.multiply(decimalAmount)
 
         val isMoreThanBalance = decimalAmount.isMoreThan(token.total)
-        val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
+        val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
 
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)

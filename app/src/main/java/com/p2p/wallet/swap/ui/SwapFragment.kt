@@ -20,6 +20,7 @@ import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.popBackStack
+import com.p2p.wallet.utils.resFromTheme
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import java.math.BigDecimal
@@ -105,7 +106,7 @@ class SwapFragment :
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
+        binding.availableTextView.setTextColor(resFromTheme(availableColor))
     }
 
     override fun showAroundValue(aroundValue: BigDecimal) {

@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="colorBlue">#5887FF</color>
-    <color name="colorBlueDisabled">#96B1F8</color>
-    <color name="colorBlueLight">#EFF3FF</color>
-    <color name="colorRed">#FF5858</color>
-    <color name="colorGray">#A3A5BA</color>
-    <color name="colorGraySecondary">#F6F6F8</color>
-    <color name="colorGrayDark">#202020</color>
-    <color name="colorDark">#CC000000</color>
-    <color name="colorGreen">#2DB533</color>
-    <color name="colorWhite">#FFFFFFFF</color>
     <color name="colorProgressBackground">#33FFFFFF</color>
+    <color name="colorGreen">#2DB533</color>
 
+    <color name="accentPrimary">#5887FF</color>
+    <color name="accentSecondary">#96B1F8</color>
+    <color name="accentTertiary">#EFF3FF</color>
+    <color name="accentWarning">#FF5858</color>
+
+    <color name="elementPrimary">#FFFFFFFF</color>
+    <color name="elementSecondary">#A3A5BA</color>
+    <color name="elementTertiary">#F6F6F8</color>
+
+    <color name="messagePrimary">#CC000000</color>
+    <color name="messageSecondary">#202020</color>
+    
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>
     <color name="chartSRM">#7FD4E3</color>
@@ -37,5 +40,5 @@
     <color name="chartTOMO">#252829</color>
     <color name="chartLUA">#F1BE5C</color>
 
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/colorGray</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">?colorElementSecondary</color>
 </resources>

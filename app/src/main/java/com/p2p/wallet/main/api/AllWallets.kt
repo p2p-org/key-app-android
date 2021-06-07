@@ -1,7 +1,7 @@
 package com.p2p.wallet.main.api
 
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.model.local.ConstWallet
+import com.p2p.wallet.main.model.ConstWallet
 
 object AllWallets {
 

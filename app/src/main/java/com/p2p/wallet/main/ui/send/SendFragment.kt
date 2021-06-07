@@ -3,7 +3,6 @@ package com.p2p.wallet.main.ui.send
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -24,6 +23,7 @@ import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.focusAndShowKeyboard
 import com.p2p.wallet.utils.popBackStack
+import com.p2p.wallet.utils.resFromTheme
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
@@ -163,7 +163,7 @@ class SendFragment :
     }
 
     override fun setAvailableTextColor(availableColor: Int) {
-        binding.availableTextView.setTextColor(ContextCompat.getColor(requireContext(), availableColor))
+        binding.availableTextView.setTextColor(resFromTheme(availableColor))
     }
 
     override fun showAvailableValue(available: BigDecimal, symbol: String) {

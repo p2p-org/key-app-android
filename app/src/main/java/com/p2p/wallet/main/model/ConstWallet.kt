@@ -1,4 +1,4 @@
-package com.p2p.wallet.dashboard.model.local
+package com.p2p.wallet.main.model
 
 import androidx.annotation.ColorRes
 
