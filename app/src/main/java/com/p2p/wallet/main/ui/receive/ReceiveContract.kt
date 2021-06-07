@@ -1,6 +1,5 @@
 package com.p2p.wallet.main.ui.receive
 
-import android.content.Context
 import android.graphics.Bitmap
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
@@ -11,14 +10,11 @@ interface ReceiveContract {
     interface View : MvpView {
         fun renderQr(qrBitmap: Bitmap?)
         fun showReceiveToken(token: Token)
-        fun navigateToTokenSelection(tokens: List<Token>)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showQrLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadData(context: Context)
-        fun setReceiveToken(context: Context, newToken: Token)
-        fun loadTokensForSelection()
+        fun loadData()
     }
 }

@@ -57,11 +57,10 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD"
-            applicationIdSuffix ".feature"
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
-                groups = "wallet.test, wallet.feature.test"
+                groups = "wallet.feature.test"
             }
         }
 
