@@ -7,23 +7,24 @@ on:
       - 'feature/**'
 
 jobs:
-  version_bump:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-      - name: Set build version
-        run: ./gradlew setVersionBuild -Pversion=$BUILD_NUMBER
   ktlint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
-  build:
+  version_bump:
     runs-on: ubuntu-latest
     needs: ktlint
+    steps:
+      - uses: actions/checkout@v2
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+      - name: Set build version
+        run: ./gradlew setVersionBuild -Pversion=$BUILD_NUMBER
+  build:
+    runs-on: ubuntu-latest
+    needs: version_bump
     if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v2
