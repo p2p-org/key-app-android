@@ -7,14 +7,6 @@ on:
       - 'feature/**'
 
 jobs:
-  version_bump:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-      - name: Set build version
-        run: ./gradlew setVersionBuild -Pversion=$BUILD_NUMBER
   ktlint:
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +23,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Set build version
+        run: ./gradlew setVersionBuild -Pversion=$BUILD_NUMBER
       - name: Build with Gradle
         run: ./gradlew assembleFeature
       - name: Upload APK to FirebaseAppDistribution
