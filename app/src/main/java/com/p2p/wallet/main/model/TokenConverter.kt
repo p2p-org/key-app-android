@@ -1,11 +1,11 @@
 package com.p2p.wallet.main.model
 
 import com.p2p.wallet.amount.fromLamports
-import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.main.db.TokenEntity
 import com.p2p.wallet.token.model.Status
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.user.model.TokenProgramAccount
 import org.p2p.solanaj.rpc.types.TransferInfoResponse
@@ -34,7 +34,7 @@ object TokenConverter {
             walletBinds = bid,
             color = wallet.color,
             usdRate = exchangeRate,
-            isHidden = total.isZero()
+            visibility = TokenVisibility.DEFAULT
         )
     }
 
@@ -81,7 +81,7 @@ object TokenConverter {
             walletBinds = token.walletBinds,
             color = token.color,
             exchangeRate = token.usdRate.toString(),
-            isHidden = token.isHidden
+            visibility = token.visibility.stringValue
         )
 
     fun fromDatabase(entity: TokenEntity): Token =
@@ -97,6 +97,6 @@ object TokenConverter {
             walletBinds = entity.walletBinds,
             color = entity.color,
             usdRate = entity.exchangeRate.toBigDecimalOrZero(),
-            isHidden = entity.isHidden
+            visibility = TokenVisibility.parse(entity.visibility)
         )
 }

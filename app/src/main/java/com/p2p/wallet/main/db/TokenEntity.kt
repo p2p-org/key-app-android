@@ -45,8 +45,8 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_EXCHANGE_RATE)
     val exchangeRate: String,
 
-    @ColumnInfo(name = COLUMN_IS_HIDDEN)
-    val isHidden: Boolean
+    @ColumnInfo(name = COLUMN_VISIBILITY)
+    val visibility: String
 ) {
     companion object {
         const val TABLE_NAME = "token_table"
@@ -61,6 +61,6 @@ data class TokenEntity(
         const val COLUMN_WALLET_BINDS = "wallet_binds"
         const val COLUMN_COLOR = "color"
         const val COLUMN_EXCHANGE_RATE = "exchange_rate"
-        const val COLUMN_IS_HIDDEN = "is_hidden"
+        const val COLUMN_VISIBILITY = "visibility"
     }
 }

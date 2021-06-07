@@ -3,6 +3,7 @@ package com.p2p.wallet.token.model
 import android.os.Parcelable
 import androidx.annotation.ColorRes
 import com.p2p.wallet.R
+import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.common.network.Constants
@@ -24,8 +25,16 @@ data class Token constructor(
     val walletBinds: BigDecimal,
     @ColorRes val color: Int,
     val usdRate: BigDecimal,
-    val isHidden: Boolean
+    val visibility: TokenVisibility
 ) : Parcelable {
+
+    @IgnoredOnParcel
+    val isHidden: Boolean
+        get() = visibility == TokenVisibility.HIDDEN
+
+    @IgnoredOnParcel
+    val isZero: Boolean
+        get() = total.isZero()
 
     @IgnoredOnParcel
     val isSOL: Boolean
@@ -33,7 +42,7 @@ data class Token constructor(
 
     @IgnoredOnParcel
     val visibilityIcon: Int
-        get() = if (isHidden) R.drawable.ic_show else R.drawable.ic_hide
+        get() = if (visibility == TokenVisibility.HIDDEN) R.drawable.ic_show else R.drawable.ic_hide
 
     @IgnoredOnParcel
     val totalInUsd: BigDecimal
@@ -84,7 +93,7 @@ data class Token constructor(
             walletBinds = BigDecimal.ZERO,
             color = R.color.chartSOL,
             usdRate = BigDecimal.ZERO,
-            isHidden = false
+            visibility = TokenVisibility.SHOWN
         )
     }
 }

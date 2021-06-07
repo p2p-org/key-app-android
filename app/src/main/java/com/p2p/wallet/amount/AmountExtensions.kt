@@ -31,13 +31,13 @@ fun BigDecimal.scaleAmount(): BigDecimal =
 fun BigDecimal.scalePrice(): BigDecimal =
     if (this.isZero()) this else this.setScale(SCALE_VALUE_PRICE, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
-fun Long.fromLamports(decimals: Int = DEFAULT_DECIMAL) =
+fun Long.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
     BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals))).stripTrailingZeros()
 
-fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL) =
+fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
     BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals))).stripTrailingZeros()
 
-fun BigDecimal.toLamports(decimals: Int) =
+fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
 
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0

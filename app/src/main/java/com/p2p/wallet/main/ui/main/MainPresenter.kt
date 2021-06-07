@@ -5,6 +5,7 @@ import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.settings.interactor.SettingsInteractor
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,7 @@ class MainPresenter(
 
     private var tokens: List<Token> by Delegates.observable(emptyList()) { _, _, newValue ->
         balance = mapBalance(newValue)
-        val mappedTokens = mapTokens(newValue, settingsInteractor.isHidden())
+        val mappedTokens = mapTokens(newValue, settingsInteractor.isZerosHidden())
 
         view?.showChart(newValue)
         view?.showTokens(mappedTokens)
@@ -47,7 +48,6 @@ class MainPresenter(
     override fun loadData() {
         launch {
             try {
-                Timber.d("### show loading ")
                 view?.showLoading(true)
                 userInteractor.getTokensFlow().collect {
                     if (it.isNotEmpty()) tokens = it
@@ -80,7 +80,12 @@ class MainPresenter(
 
     override fun toggleVisibility(token: Token) {
         launch {
-            userInteractor.setTokenHidden(token.publicKey, !token.isHidden)
+            val visibility = when (token.visibility) {
+                TokenVisibility.HIDDEN,
+                TokenVisibility.DEFAULT -> TokenVisibility.SHOWN
+                else -> TokenVisibility.HIDDEN
+            }
+            userInteractor.setTokenHidden(token.publicKey, visibility.stringValue)
         }
     }
 
@@ -103,13 +108,18 @@ class MainPresenter(
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
-    private fun mapTokens(tokens: List<Token>, isHidden: Boolean): List<TokenItem> =
-        if (isHidden) {
+    private fun mapTokens(tokens: List<Token>, isZerosHidden: Boolean): List<TokenItem> = when {
+        isZerosHidden -> {
+            val hiddenTokens = tokens.filter { it.isHidden || (it.isZero && it.visibility == TokenVisibility.DEFAULT) }
+            val hiddenGroup = listOf(TokenItem.Group(hiddenTokens))
+            val result = tokens.filter { !it.isHidden && !it.isZero }.map { TokenItem.Shown(it) }
+            if (hiddenTokens.isEmpty()) result else result + hiddenGroup
+        }
+        else -> {
             val hiddenTokens = tokens.filter { it.isHidden }
             val hiddenGroup = listOf(TokenItem.Group(hiddenTokens))
             val result = tokens.filter { !it.isHidden }.map { TokenItem.Shown(it) }
             if (hiddenTokens.isEmpty()) result else result + hiddenGroup
-        } else {
-            tokens.map { TokenItem.Shown(it) }
         }
+    }
 }

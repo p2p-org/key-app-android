@@ -13,7 +13,7 @@ class SettingsPresenter(
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     override fun loadData() {
-        val isHidden = settingsInteractor.isHidden()
+        val isHidden = settingsInteractor.isZerosHidden()
         view?.showHiddenBalance(isHidden)
     }
 
