@@ -14,7 +14,7 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
       - name: Run ktlint
-        run: ./gradlew ktlint
+        run: ./gradlew --no-daemon -g /cache ktlint -PautoCorrect=0
   build:
     runs-on: ubuntu-latest
     needs: ktlint

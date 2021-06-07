@@ -26,7 +26,9 @@ class SwapInMemoryRepository : SwapLocalRepository {
                 (sourceMint == mintA && destinationMint == mintB) || (sourceMint == mintB && destinationMint == mintA)
             }
 
-            if (pool?.swapData?.mintB?.toBase58() == sourceMint && pool.swapData?.mintA?.toBase58() == destinationMint) {
+            if (pool?.swapData?.mintB?.toBase58() == sourceMint &&
+                pool.swapData?.mintA?.toBase58() == destinationMint
+            ) {
                 pool.swapData?.swapMintData()
                 pool.swapData?.swapTokenAccount()
             }

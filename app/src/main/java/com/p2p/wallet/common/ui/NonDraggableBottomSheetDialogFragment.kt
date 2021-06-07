@@ -25,7 +25,9 @@ open class NonDraggableBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
             behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING || newState == BottomSheetBehavior.STATE_SETTLING) {
+                    if (newState == BottomSheetBehavior.STATE_DRAGGING ||
+                        newState == BottomSheetBehavior.STATE_SETTLING
+                    ) {
                         behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     }
                 }

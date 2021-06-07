@@ -3,6 +3,7 @@ package com.p2p.wallet.main.api
 import com.p2p.wallet.R
 import com.p2p.wallet.main.model.ConstWallet
 
+@Suppress("MaxLines")
 object AllWallets {
 
     @SuppressWarnings("all")

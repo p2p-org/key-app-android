@@ -43,7 +43,10 @@ class KeywordEditTextChangeListener(
     override fun afterTextChanged(s: Editable?) {
 
         //This case is expected to never happen
-        if (_txtKeyword == null || _edtKeyword == null || _root == null || _itemPosition == null || _recyclerView == null) return
+        if (_txtKeyword == null || _edtKeyword == null ||
+            _root == null || _itemPosition == null || _recyclerView == null
+        ) return
+
         val txtKeyword = _txtKeyword!!
         val edtKeyword = _edtKeyword!!
         val root = _root!!
