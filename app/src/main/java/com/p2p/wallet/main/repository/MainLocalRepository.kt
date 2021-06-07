@@ -7,6 +7,6 @@ interface MainLocalRepository {
     suspend fun setTokens(tokens: List<Token>)
     fun getTokensFlow(): Flow<List<Token>>
     suspend fun getTokens(): List<Token>
-    suspend fun setTokenHidden(publicKey: String, isHidden: Boolean)
+    suspend fun setTokenHidden(publicKey: String, visibility: String)
     suspend fun clear()
 }

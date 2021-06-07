@@ -101,7 +101,6 @@ class MainFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        Timber.d("### loading $isLoading")
         binding.progressView.isVisible = isLoading
     }
 

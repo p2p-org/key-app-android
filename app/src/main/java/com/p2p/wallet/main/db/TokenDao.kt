@@ -21,11 +21,11 @@ interface TokenDao {
     @Query(
         """
         UPDATE token_table
-        SET is_hidden = :isHidden
+        SET visibility = :visibility
         WHERE public_key = :publicKey
     """
     )
-    suspend fun updateVisibility(publicKey: String, isHidden: Boolean)
+    suspend fun updateVisibility(publicKey: String, visibility: String)
 
     @Query("DELETE FROM token_table")
     suspend fun clearAll()

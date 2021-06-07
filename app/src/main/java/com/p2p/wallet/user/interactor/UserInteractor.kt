@@ -7,6 +7,7 @@ import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.AllWallets
 import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -57,7 +58,7 @@ class UserInteractor(
         /* Starting check if token was previously hidden */
         val result = newTokens.map { token ->
             val isHidden = hiddenTokens.contains(token.publicKey)
-            if (isHidden) token.copy(isHidden = true) else token
+            if (isHidden) token.copy(visibility = TokenVisibility.HIDDEN) else token
         }
 
         mainLocalRepository.clear()
@@ -70,8 +71,8 @@ class UserInteractor(
     suspend fun getTokens(): List<Token> =
         mainLocalRepository.getTokens()
 
-    suspend fun setTokenHidden(publicKey: String, isHidden: Boolean) =
-        mainLocalRepository.setTokenHidden(publicKey, isHidden)
+    suspend fun setTokenHidden(publicKey: String, visibility: String) =
+        mainLocalRepository.setTokenHidden(publicKey, visibility)
 
     suspend fun getPriceByToken(source: String, destination: String): BigDecimal =
         userRepository.getRate(source, destination)

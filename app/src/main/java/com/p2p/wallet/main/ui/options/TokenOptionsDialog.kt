@@ -10,6 +10,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import com.p2p.wallet.databinding.DialogTokenOptionsBinding
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -47,7 +48,8 @@ class TokenOptionsDialog : NonDraggableBottomSheetDialogFragment() {
             visibilityView.setOnClickListener { hideSwitch.isChecked = !hideSwitch.isChecked }
             hideSwitch.setOnCheckedChangeListener { _, isChecked ->
                 lifecycleScope.launch {
-                    userInteractor.setTokenHidden(token.publicKey, isChecked)
+                    val visibility = if (isChecked) TokenVisibility.SHOWN else TokenVisibility.HIDDEN
+                    userInteractor.setTokenHidden(token.publicKey, visibility.stringValue)
                 }
 
                 visibilityTextView.setText(if (isChecked) R.string.main_invisible else R.string.main_visible)
