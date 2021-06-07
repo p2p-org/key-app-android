@@ -81,9 +81,9 @@ class MainPresenter(
     override fun toggleVisibility(token: Token) {
         launch {
             val visibility = when (token.visibility) {
-                TokenVisibility.HIDDEN,
-                TokenVisibility.DEFAULT -> TokenVisibility.SHOWN
-                else -> TokenVisibility.HIDDEN
+                TokenVisibility.SHOWN,
+                TokenVisibility.DEFAULT -> TokenVisibility.HIDDEN
+                else -> TokenVisibility.SHOWN
             }
             userInteractor.setTokenHidden(token.publicKey, visibility.stringValue)
         }
