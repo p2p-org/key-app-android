@@ -25,7 +25,6 @@ import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 import java.math.BigDecimal
 
 class MainFragment :
