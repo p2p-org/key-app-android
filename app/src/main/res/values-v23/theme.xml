@@ -2,22 +2,14 @@
 <resources>
 
     <style name="WalletBase.v23" parent="WalletBase.v21">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/black</item>
-
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">@bool/isLightTheme</item>
     </style>
 
     <style name="WalletTheme" parent="WalletBase.v23" />
 
     <style name="WalletTheme.BottomSheet.Rounded" parent="Theme.Design.BottomSheetDialog">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/black</item>
-
-        <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-
         <item name="bottomSheetStyle">@style/AppRoundCornersModalStyle</item>
     </style>
 

@@ -13,46 +13,46 @@
         android:layout_height="wrap_content"
         android:background="?colorElementPrimary"
         app:navigationIcon="@drawable/ic_back"
-        app:title="@string/settings_network"
+        app:title="@string/settings_appearance"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
     <RadioGroup
-        android:id="@+id/networksGroup"
+        android:id="@+id/themeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <RadioButton
-            android:id="@+id/solanaButton"
+            android:id="@+id/lightButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="?colorElementPrimary"
             android:button="@drawable/button_radio_inset"
             android:padding="12dp"
-            android:text="@string/settings_solana"
+            android:text="@string/settings_theme_light"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
 
         <RadioButton
-            android:id="@+id/mainnetButton"
+            android:id="@+id/darkButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:background="?colorElementPrimary"
             android:button="@drawable/button_radio_inset"
             android:padding="12dp"
-            android:text="@string/settings_mainnet"
+            android:text="@string/settings_theme_dark"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
 
         <RadioButton
-            android:id="@+id/datahubButton"
+            android:id="@+id/systemButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:background="?colorElementPrimary"
             android:button="@drawable/button_radio_inset"
             android:padding="12dp"
-            android:text="@string/settings_datahub"
+            android:text="@string/settings_theme_system"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
     </RadioGroup>
 </LinearLayout>

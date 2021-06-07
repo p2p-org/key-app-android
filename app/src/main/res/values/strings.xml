@@ -134,7 +134,8 @@
     <string name="details_1m">1M</string>
     <string name="details_activity">Activity</string>
     <string name="details_today">Today</string>
-
+    <string name="details_no_transactions_yet">No transactions yet</string>
+    <string name="details_no_transactions_message">You didn\'t make any transactions yet</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -164,7 +165,7 @@
     <string name="settings_mainnet">Main-net</string>
     <string name="settings_solana">Solana</string>
     <string name="settings_datahub">Datahub</string>
-    <string name="details_no_transactions_yet">No transactions yet</string>
-    <string name="details_no_transactions_message">You didn\'t make any transactions yet</string>
-
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">System</string>
 </resources>

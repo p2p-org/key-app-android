@@ -44,7 +44,7 @@
         android:id="@id/contentView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?colorElementPrimary"
+        android:background="?colorBackgroundPrimary"
         android:clickable="true"
         android:focusable="true">
 

@@ -13,6 +13,9 @@
     <attr name="colorMessagePrimary" format="color|reference" />
     <attr name="colorMessageSecondary" format="color|reference" />
 
+    <attr name="colorBackgroundPrimary" format="color|reference" />
+    <attr name="colorBackgroundSecondary" format="color|reference" />
+
     <item name="edgetoedge" type="id" />
 
     <declare-styleable name="NumberKeyboardButtonView">

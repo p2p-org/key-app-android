@@ -10,6 +10,7 @@ import com.p2p.wallet.qr.QrModule
 import com.p2p.wallet.restore.BackupModule
 import com.p2p.wallet.root.RootModule
 import com.p2p.wallet.settings.SettingsModule
+import com.p2p.wallet.settings.interactor.ThemeInteractor
 import com.p2p.wallet.swap.SwapModule
 import com.p2p.wallet.token.TokenModule
 import com.p2p.wallet.user.UserModule
@@ -24,6 +25,8 @@ class App : Application() {
         super.onCreate()
         setupTimber()
         setupKoin()
+
+        KoinContextHandler.get().get<ThemeInteractor>().applyCurrentNightMode()
     }
 
     private fun setupKoin() {

@@ -7,6 +7,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSettingsBinding
+import com.p2p.wallet.settings.ui.appearance.AppearanceFragment
 import com.p2p.wallet.settings.ui.network.NetworkFragment
 import com.p2p.wallet.settings.ui.security.SecurityFragment
 import com.p2p.wallet.utils.popAndReplaceFragment
@@ -44,6 +45,10 @@ class SettingsFragment :
 
             networkTextView.setOnClickListener {
                 replaceFragment(NetworkFragment.create())
+            }
+
+            appearanceTextView.setOnClickListener {
+                replaceFragment(AppearanceFragment.create())
             }
 
             logoutTextView.setOnClickListener {

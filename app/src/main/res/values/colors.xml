@@ -14,7 +14,9 @@
 
     <color name="messagePrimary">#CC000000</color>
     <color name="messageSecondary">#202020</color>
-    
+    <color name="backgroundPrimary">#FFFFFF</color>
+    <color name="backgroundSecondary">#F6F6F8</color>
+
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>
     <color name="chartSRM">#7FD4E3</color>
