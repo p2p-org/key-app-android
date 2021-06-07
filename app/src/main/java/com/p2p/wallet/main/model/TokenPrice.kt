@@ -11,5 +11,5 @@ data class TokenPrice(
     val price: BigDecimal
 ) : Parcelable {
 
-    fun getFormattedPrice() : BigDecimal = price.scaleShort()
+    fun getFormattedPrice(): BigDecimal = price.scaleShort()
 }
