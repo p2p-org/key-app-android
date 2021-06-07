@@ -47,6 +47,7 @@ class MainPresenter(
     override fun loadData() {
         launch {
             try {
+                Timber.d("### show loading ")
                 view?.showLoading(true)
                 userInteractor.getTokensFlow().collect { tokens = it }
             } catch (e: CancellationException) {
