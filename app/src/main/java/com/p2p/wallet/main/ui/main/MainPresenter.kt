@@ -26,10 +26,10 @@ class MainPresenter(
     }
 
     private var balance: BigDecimal by Delegates.observable(BigDecimal.ZERO) { _, oldValue, newValue ->
-        if (newValue != oldValue) view?.showBalance(newValue)
+        view?.showBalance(newValue)
     }
 
-    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
+    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, _, newValue ->
         balance = mapBalance(newValue)
         val mappedTokens = mapTokens(newValue, settingsInteractor.isHidden())
 

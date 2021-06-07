@@ -24,57 +24,6 @@
         android:rotation="180"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/tokenView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/bg_gray_secondary_rounded_small"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
-
-        <com.p2p.wallet.common.widget.RoundedImageView
-            android:id="@+id/tokenImageView"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription"
-            tools:src="@tools:sample/avatars" />
-
-        <TextView
-            android:id="@+id/tokenTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:layout_constraintStart_toEndOf="@id/tokenImageView"
-            app:layout_constraintTop_toTopOf="@id/tokenImageView"
-            tools:text="SOL" />
-
-        <TextView
-            android:id="@+id/addressTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintStart_toEndOf="@id/tokenImageView"
-            app:layout_constraintTop_toBottomOf="@id/tokenTextView"
-            tools:text="7YVp....4XwL" />
-
-        <ImageView
-            android:id="@+id/downImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_down"
-            app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tokenImageView"
-            tools:ignore="ContentDescription" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <View
         android:id="@+id/qrBackgroundView"
         android:layout_width="match_parent"
@@ -83,7 +32,7 @@
         android:layout_marginVertical="20dp"
         android:background="@drawable/bg_gray_secondary_rounded_small"
         app:layout_constraintBottom_toBottomOf="@id/qrBottomDivider"
-        app:layout_constraintTop_toBottomOf="@id/tokenView" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <TextView
         android:id="@+id/qrTitleTextView"
@@ -93,7 +42,7 @@
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tokenView"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:text="Your public SOL address" />
 
     <ImageView
@@ -139,44 +88,19 @@
         android:background="?colorElementSecondary"
         app:layout_constraintTop_toBottomOf="@id/fullAddressTextView" />
 
-    <TextView
-        android:id="@+id/mintTitleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:maxLines="1"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/viewButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:background="?selectableItemBackground"
+        android:text="@string/main_send_view_in_explorer"
+        android:textAllCaps="false"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/qrBottomDivider"
-        tools:text="SOL Mint Address" />
-
-    <TextView
-        android:id="@+id/mintTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="20dp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="?colorElementSecondary"
-        app:layout_constraintEnd_toStartOf="@id/copyImageView"
-        app:layout_constraintStart_toStartOf="@id/mintTitleTextView"
-        app:layout_constraintTop_toBottomOf="@id/mintTitleTextView"
-        tools:text="MSRMcoVyrFxnSgo5uXwone5SKcGhT1KEJMFEkMEWf9L" />
-
-    <ImageView
-        android:id="@+id/copyImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:src="@drawable/ic_copy_link"
-        app:layout_constraintBottom_toBottomOf="@id/mintTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/mintTextView"
-        app:layout_constraintTop_toTopOf="@id/mintTextView"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toBottomOf="@id/qrBottomDivider"
+        tools:ignore="UnusedAttribute" />
 
     <com.p2p.wallet.common.widget.ProgressView
         android:id="@+id/progressView"

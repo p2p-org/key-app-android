@@ -12,6 +12,6 @@
     <color name="messagePrimary">#FFFFFFFF</color>
     <color name="messageSecondary">#A3A5BA</color>
     <color name="backgroundPrimary">#000000</color>
-    <color name="backgroundSecondary">#CC000000</color>
+    <color name="backgroundSecondary">#1E1E1E</color>
 
 </resources>
