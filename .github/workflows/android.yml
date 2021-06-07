@@ -10,7 +10,7 @@ jobs:
   ktlint:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v1
           - run: brew install ktlint
           - name: run ktlint
             run: |
