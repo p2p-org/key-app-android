@@ -7,12 +7,18 @@ on:
       - 'feature/**'
 
 jobs:
-  ktlint:
+  version_bump:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
+      - name: Set build version
+        run: ./gradlew setVersionBuild -Pversion=$BUILD_NUMBER
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   build:
