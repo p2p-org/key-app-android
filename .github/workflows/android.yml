@@ -14,10 +14,11 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
       - name: Run ktlint
-        run: ./gradlew --no-daemon -g /cache ktlint -PautoCorrect=0
+        run: ./gradlew ktlint -PautoCorrect=0
   build:
     runs-on: ubuntu-latest
     needs: ktlint
+    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v2
       - name: set up JDK 1.8
