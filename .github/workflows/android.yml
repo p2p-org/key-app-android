@@ -1,14 +1,26 @@
 # Simple CI config to upload APK to Firebase App Distribution
-# TODO: Add ktlint check, add version build generation and FAD with google credenials file
 name: Android CI
 on:
   push:
     branches:
       - develop
+      - 'feature/**'
 
 jobs:
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+          - run: brew install ktlint
+          - name: run ktlint
+            run: |
+              ktlint --reporter=checkstyle,output=build/ktlint-report.xml
+          - uses: yutailang0119/action-ktlint@v1.0.0
+            with:
+              xml_path: build/*.xml
   build:
     runs-on: ubuntu-latest
+    needs: ktlint
     steps:
       - uses: actions/checkout@v1
       - name: set up JDK 1.8
