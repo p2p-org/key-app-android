@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="@color/colorGray"
+        android:textColor="?colorElementSecondary"
         tools:text="3. " />
 
     <TextView

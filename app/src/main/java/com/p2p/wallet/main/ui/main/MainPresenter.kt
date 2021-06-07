@@ -45,9 +45,9 @@ class MainPresenter(
     }
 
     override fun loadData() {
-        view?.showLoading(true)
         launch {
             try {
+                view?.showLoading(true)
                 userInteractor.getTokensFlow().collect { tokens = it }
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")

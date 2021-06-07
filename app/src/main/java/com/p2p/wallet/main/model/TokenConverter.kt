@@ -3,7 +3,6 @@ package com.p2p.wallet.main.model
 import com.p2p.wallet.amount.fromLamports
 import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.toBigDecimalOrZero
-import com.p2p.wallet.dashboard.model.local.ConstWallet
 import com.p2p.wallet.main.db.TokenEntity
 import com.p2p.wallet.token.model.Status
 import com.p2p.wallet.token.model.Token

@@ -1,5 +1,6 @@
 package com.p2p.wallet.swap.ui
 
+import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
@@ -17,7 +18,7 @@ interface SwapContract {
         fun showLoading(isLoading: Boolean)
         fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String)
         fun showCalculations(data: CalculationsData)
-        fun setAvailableTextColor(@ColorRes availableColor: Int)
+        fun setAvailableTextColor(@AttrRes availableColor: Int)
         fun showAroundValue(aroundValue: BigDecimal)
         fun showButtonEnabled(isEnabled: Boolean)
         fun showSwapSuccess(info: TransactionInfo)

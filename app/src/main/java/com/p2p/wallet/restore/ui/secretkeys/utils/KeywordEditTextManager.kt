@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
 import androidx.core.util.set
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.model.local.Keyword
+import com.p2p.wallet.main.model.Keyword
 import com.p2p.wallet.restore.ui.secretkeys.adapter.MultipleSpanGridLayoutManager
 import com.p2p.wallet.restore.ui.secretkeys.adapter.SecretPhraseAdapter
 import com.p2p.wallet.restore.ui.secretkeys.viewmodel.SecretKeyViewModel
+import com.p2p.wallet.utils.resFromTheme
 
 @Deprecated("Too complex logic, should be simplified")
 class KeywordEditTextChangeListener(
@@ -125,7 +125,7 @@ class KeywordEditTextChangeListener(
         //To create an illusion for the user, the color of textView
         //is set to the same as the color if hint in editText
         if (s.toString().isEmpty()) {
-            txtKeyword.setTextColor(ContextCompat.getColor(root.context, R.color.colorGray))
+            txtKeyword.setTextColor(txtKeyword.resFromTheme(R.attr.colorElementSecondary))
         }
     }
 

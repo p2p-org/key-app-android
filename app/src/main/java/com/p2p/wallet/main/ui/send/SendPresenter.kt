@@ -185,7 +185,7 @@ class SendPresenter(
 
     private fun setButtonEnabled(isEnabled: Boolean, isMoreThanBalance: Boolean) {
         val isValidAddress = isAddressValid(address)
-        val availableColor = if (isMoreThanBalance) R.color.colorRed else R.color.colorBlue
+        val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
         view?.setAvailableTextColor(availableColor)
         view?.showButtonEnabled(isEnabled && isValidAddress)
     }

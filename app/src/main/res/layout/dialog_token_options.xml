@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        android:background="@color/colorWhite"
+        android:background="?colorElementPrimary"
         android:foreground="?selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_visibility_title"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                android:textColor="@color/colorGray" />
+                android:textColor="?colorElementSecondary" />
 
             <TextView
                 android:id="@+id/visibilityTextView"
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_visible"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-                android:textColor="@color/colorDark" />
+                android:textColor="?colorMessagePrimary" />
 
         </LinearLayout>
 

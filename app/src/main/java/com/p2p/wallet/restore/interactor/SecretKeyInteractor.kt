@@ -3,7 +3,7 @@ package com.p2p.wallet.restore.interactor
 import com.p2p.wallet.common.network.CallException
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.common.network.Result
-import com.p2p.wallet.dashboard.model.local.SecretKeyCombinationSuccess
+import com.p2p.wallet.main.model.SecretKeyCombinationSuccess
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.mnemoticgenerator.English
 

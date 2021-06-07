@@ -1,7 +1,5 @@
 package com.p2p.wallet.root.ui
 
-import android.os.Handler
-import android.os.Looper
 import com.p2p.wallet.auth.interactor.AuthInteractor
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.user.interactor.UserInteractor
@@ -17,9 +15,7 @@ class RootPresenter(
         private const val BALANCE_CURRENCY = "USD"
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-
-    init {
+    override fun loadPricesAndBids() {
         launch {
             try {
                 userInteractor.loadTokenPrices(BALANCE_CURRENCY)

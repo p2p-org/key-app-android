@@ -8,14 +8,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
 import androidx.core.util.set
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
-import com.p2p.wallet.dashboard.model.local.Keyword
 import com.p2p.wallet.databinding.ItemKeyWordBinding
+import com.p2p.wallet.main.model.Keyword
 import com.p2p.wallet.restore.ui.secretkeys.utils.KeywordEditOnKeyListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.KeywordEditTextChangeListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.MeasureHelper
@@ -23,6 +22,7 @@ import com.p2p.wallet.restore.ui.secretkeys.utils.OnFocusChangeListener
 import com.p2p.wallet.restore.ui.secretkeys.utils.hideSoftKeyboard
 import com.p2p.wallet.restore.ui.secretkeys.utils.showSoftKeyboard
 import com.p2p.wallet.restore.ui.secretkeys.viewmodel.SecretKeyViewModel
+import com.p2p.wallet.utils.resFromTheme
 
 /* TODO: should be refactored, make simpler implementation */
 @Deprecated("will be refactored")
@@ -53,7 +53,7 @@ class SecretPhraseAdapter(
                 visibility = View.VISIBLE
                 setText("")
             }
-            textView.setTextColor(ContextCompat.getColor(context, R.color.colorGray))
+            textView.setTextColor(textView.resFromTheme(R.attr.colorElementSecondary))
             layoutManager.spanSizes[count++] = MultipleSpanGridLayoutManager.SPAN_SIZE
         }
         keywordList.clear()

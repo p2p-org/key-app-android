@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?colorBackgroundPrimary">
 
     <com.p2p.wallet.common.widget.RoundedImageView
         android:id="@+id/tokenImageView"
@@ -40,7 +41,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="@color/colorGray"
+        android:textColor="?colorElementSecondary"
         app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
         app:layout_constraintEnd_toStartOf="@id/totalTextView"
         app:layout_constraintStart_toEndOf="@id/tokenImageView"
@@ -70,7 +71,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/colorGray"
+        android:textColor="?colorElementSecondary"
         app:layout_constraintBottom_toBottomOf="@id/addressTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/addressTextView"
