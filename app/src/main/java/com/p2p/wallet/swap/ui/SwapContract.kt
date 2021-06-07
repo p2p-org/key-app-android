@@ -1,7 +1,6 @@
 package com.p2p.wallet.swap.ui
 
 import androidx.annotation.AttrRes
-import androidx.annotation.ColorRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.ui.transaction.TransactionInfo

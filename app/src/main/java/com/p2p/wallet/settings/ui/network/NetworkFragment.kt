@@ -13,7 +13,8 @@ import org.p2p.solanaj.rpc.Environment
 
 class NetworkFragment :
     BaseMvpFragment<NetworkContract.View, NetworkContract.Presenter>(R.layout.fragment_network),
-    NetworkContract.View, RadioGroup.OnCheckedChangeListener {
+    NetworkContract.View,
+    RadioGroup.OnCheckedChangeListener {
 
     companion object {
         fun create() = NetworkFragment()

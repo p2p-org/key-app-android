@@ -48,14 +48,14 @@ object BarcodeEncoder {
         qrColors: QrColors
     ): Bitmap {
         val hintMap = mapOf(EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H)
-        //generating qr code in bitmatrix type
+        // generating qr code in bitmatrix type
         val charsetData = charset("UTF-8")
         val matrix = MultiFormatWriter().encode(
             String(qrCodeData.toByteArray(charsetData), charsetData),
             BarcodeFormat.QR_CODE, width, height, hintMap
         )
 
-        //converting bitmatrix to bitmap
+        // converting bitmatrix to bitmap
         val newWidth = matrix.width
         val newHeight = matrix.height
         val pixels = IntArray(newWidth * newHeight)

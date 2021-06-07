@@ -51,7 +51,6 @@ class ReceiveFragment :
 
                 return@setOnMenuItemClickListener false
             }
-
         }
 
         presenter.loadData()

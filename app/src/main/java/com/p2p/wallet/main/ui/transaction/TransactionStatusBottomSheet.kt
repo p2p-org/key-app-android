@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
 import com.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import com.p2p.wallet.databinding.DialogStatusBottomSheetBinding

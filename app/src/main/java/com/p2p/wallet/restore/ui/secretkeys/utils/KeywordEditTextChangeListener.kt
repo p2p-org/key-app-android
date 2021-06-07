@@ -42,28 +42,30 @@ class KeywordEditTextChangeListener(
 
     override fun afterTextChanged(s: Editable?) {
 
-        //This case is expected to never happen
-        if (_txtKeyword == null || _edtKeyword == null || _root == null || _itemPosition == null || _recyclerView == null) return
+        // This case is expected to never happen
+        if (_txtKeyword == null || _edtKeyword == null ||
+            _root == null || _itemPosition == null || _recyclerView == null
+        ) return
+
         val txtKeyword = _txtKeyword!!
         val edtKeyword = _edtKeyword!!
         val root = _root!!
         val itemPosition = _itemPosition!!
         val recyclerView = _recyclerView!!
 
-
         textLengthAfter = s.toString().length
 
-        //Saving the value of edit text for the secret phrase
+        // Saving the value of edit text for the secret phrase
         keywordList[itemPosition].title = edtKeyword.text.toString()
 
-        //Calculating the span size for the view
+        // Calculating the span size for the view
         val spanSize: Int = MeasureHelper(recyclerView, root).getSpanSize()
         (recyclerView.layoutManager as MultipleSpanGridLayoutManager)
             .spanSizes[itemPosition] =
             if (spanSize < MultipleSpanGridLayoutManager.SPAN_SIZE) spanSize
             else MultipleSpanGridLayoutManager.SPAN_SIZE
 
-        //Saving current word in the secret phrase
+        // Saving current word in the secret phrase
         if (edtKeyword.text.toString().isNotEmpty()) {
             viewModel.phrase.value = getPhrase().trim()
         }
@@ -90,7 +92,7 @@ class KeywordEditTextChangeListener(
         }
 
         if (isPhrasePastedFromClipboard) {
-            //User pasted the phrase from clipboard
+            // User pasted the phrase from clipboard
             adapter.clear()
             splitList?.forEach {
                 adapter.addItem(Keyword(it))
@@ -103,16 +105,16 @@ class KeywordEditTextChangeListener(
             return
         }
         println("debug: $isPastedPhraseBiggerThanAllowed")
-        //Checking the case when the user inputs space
-        //at the end of the word
+        // Checking the case when the user inputs space
+        // at the end of the word
         if (s.toString().isNotEmpty() && !containsNonEnglishChars) {
             if (s.toString().contains(' ')) {
                 if (s.toString().endsWith(" ") && s.toString().length > 1) {
 
-                    //When this case triggered, the word definitely is not empty,
-                    //and user clicked the space, so we pass the current text
-                    //from editText to textView in rv_item_key_word.xml
-                    val allText = "${txtKeyword.text}${s.toString()}"
+                    // When this case triggered, the word definitely is not empty,
+                    // and user clicked the space, so we pass the current text
+                    // from editText to textView in rv_item_key_word.xml
+                    val allText = "${txtKeyword.text}$s"
                     txtKeyword.text = allText
                     txtKeyword.setTextColor(Color.BLACK)
                     edtKeyword.visibility = View.GONE
@@ -122,8 +124,8 @@ class KeywordEditTextChangeListener(
             }
         }
 
-        //To create an illusion for the user, the color of textView
-        //is set to the same as the color if hint in editText
+        // To create an illusion for the user, the color of textView
+        // is set to the same as the color if hint in editText
         if (s.toString().isEmpty()) {
             txtKeyword.setTextColor(txtKeyword.resFromTheme(R.attr.colorElementSecondary))
         }
