@@ -2,7 +2,6 @@ package com.p2p.wallet.user.model
 
 import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.common.crypto.Base58Utils
-import com.p2p.wallet.common.crypto.Base64Utils
 import com.p2p.wallet.main.api.MultiPriceResponse
 import com.p2p.wallet.main.api.SinglePriceResponse
 import com.p2p.wallet.main.model.TokenPrice
@@ -22,12 +21,6 @@ object UserConverter {
         val total = Utils.readInt64(data, 32 + 32)
 
         return TokenProgramAccount(response.pubkey, total, mint)
-    }
-
-    fun fromNetwork(decimalsData: List<String>): Int {
-        val stringToDecode = decimalsData.firstOrNull() ?: return 0
-        val decodedArray = Base64Utils.decode(stringToDecode)
-        return decodedArray[44].toInt()
     }
 
     fun fromNetwork(tokenSymbol: String, response: MultiPriceResponse): TokenPrice = when (tokenSymbol) {

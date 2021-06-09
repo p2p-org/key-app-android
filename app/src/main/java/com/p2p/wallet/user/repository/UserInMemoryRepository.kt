@@ -1,12 +1,18 @@
 package com.p2p.wallet.user.repository
 
+import android.content.Context
+import com.google.gson.Gson
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.TokenBid
+import com.p2p.wallet.user.model.TokenData
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import java.math.BigDecimal
 
-class UserInMemoryRepository : UserLocalRepository {
+class UserInMemoryRepository(
+    private val context: Context,
+    gson: Gson
+) : UserLocalRepository {
 
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
 
@@ -39,4 +45,13 @@ class UserInMemoryRepository : UserLocalRepository {
             TokenBid(token, BigDecimal.ZERO)
         }
     }
+
+    private val decimalsFlow = MutableStateFlow<List<TokenData>>(emptyList())
+
+    override fun setTokenDecimals(decimals: List<TokenData>) {
+        decimalsFlow.value = decimals
+    }
+
+    override fun getDecimalsByToken(mint: String): TokenData? =
+        decimalsFlow.value.firstOrNull { it.mintAddress == mint }
 }

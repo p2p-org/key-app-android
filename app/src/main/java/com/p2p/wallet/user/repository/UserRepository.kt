@@ -3,9 +3,9 @@ package com.p2p.wallet.user.repository
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import com.p2p.wallet.main.api.AllWallets
 import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
+import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.token.model.Token
@@ -28,7 +28,6 @@ interface UserRepository {
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokenBids(tokens: List<String>): List<TokenBid>
     suspend fun loadTokens(): List<Token>
-    suspend fun loadDecimals(publicKey: String): Int
     suspend fun getRate(source: String, destination: String): BigDecimal
 }
 
@@ -65,16 +64,15 @@ class UserRepositoryImpl(
 
         val tokenAccounts = response.map { UserConverter.fromNetwork(it) }
         val solBalance = loadSolBalance()
-        val wallets = AllWallets.getWalletConstList().toMutableList()
 
-        val result = wallets
-            .mapNotNull { wallet ->
-                val account = tokenAccounts.find { it.mintAddress == wallet.mint } ?: return@mapNotNull null
-                val decimals = loadDecimals(account.mintAddress)
-                val exchangeRate = userLocalRepository.getPriceByToken(wallet.tokenSymbol).getFormattedPrice()
-                val bid = userLocalRepository.getBidByToken(wallet.tokenSymbol).bid
+        val result = tokenAccounts
+            .mapNotNull { account ->
+                val token = userLocalRepository.getDecimalsByToken(account.mintAddress) ?: return@mapNotNull null
+                val exchangeRate = userLocalRepository.getPriceByToken(token.symbol).getFormattedPrice()
+                val bid = userLocalRepository.getBidByToken(token.symbol).bid
+                val color = TokenColors.findColorBySymbol(token.symbol)
 
-                TokenConverter.fromNetwork(wallet, account, exchangeRate, decimals, bid)
+                TokenConverter.fromNetwork(token, account, exchangeRate, bid, color)
             }
             .toMutableList()
             .apply {
@@ -95,11 +93,6 @@ class UserRepositoryImpl(
         )
         result.add(0, element)
         return@withContext result
-    }
-
-    override suspend fun loadDecimals(publicKey: String): Int = withContext(Dispatchers.IO) {
-        val response = client.api.getAccountInfo(publicKey.toPublicKey())
-        UserConverter.fromNetwork(response.value.data ?: emptyList())
     }
 
     override suspend fun loadTokenBids(tokens: List<String>): List<TokenBid> =

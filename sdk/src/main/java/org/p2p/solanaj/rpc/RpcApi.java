@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import kotlin.Deprecated;
+
 public class RpcApi {
     private final RpcClient client;
 
@@ -94,6 +96,7 @@ public class RpcApi {
         return result;
     }
 
+    // todo: Will be replaced with [getTokenAccountsByOwner]
     public List<ProgramAccount> getProgramAccounts(PublicKey account, long offset, String bytes) throws RpcException {
         List<Object> params = new ArrayList<Object>();
 

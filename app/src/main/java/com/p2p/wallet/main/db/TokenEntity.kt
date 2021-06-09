@@ -28,7 +28,7 @@ data class TokenEntity(
     val tokenName: String,
 
     @ColumnInfo(name = COLUMN_ICON_URL)
-    val iconUrl: String,
+    val iconUrl: String?,
 
     @ColumnInfo(name = COLUMN_PRICE)
     val price: BigDecimal,

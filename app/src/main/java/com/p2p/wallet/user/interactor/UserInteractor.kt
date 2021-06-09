@@ -1,22 +1,30 @@
 package com.p2p.wallet.user.interactor
 
+import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.google.gson.Gson
 import com.p2p.wallet.common.crypto.Base58Utils
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import com.p2p.wallet.main.api.AllWallets
+import com.p2p.wallet.main.api.TokenColors
+import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.TokenVisibility
+import com.p2p.wallet.user.local.TokenListResponse
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import org.p2p.solanaj.core.PublicKey
+import java.io.IOException
+import java.io.InputStream
 import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
 
 class UserInteractor(
+    private val context: Context,
+    private val gson: Gson,
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: MainLocalRepository,
@@ -35,15 +43,35 @@ class UserInteractor(
     }
 
     suspend fun loadTokenPrices(targetCurrency: String) {
-        val tokens = AllWallets.getWalletConstList().map { it.tokenSymbol }
+        val tokens = TokenColors.getSymbols()
         val prices = userRepository.loadTokensPrices(tokens, targetCurrency)
         userLocalRepository.setTokenPrices(prices)
     }
 
     suspend fun loadTokenBids() {
-        val tokens = AllWallets.getWalletConstList().map { it.tokenSymbol }
+        val tokens = TokenColors.getSymbols()
         val bids = userRepository.loadTokenBids(tokens)
         userLocalRepository.setTokenBids(bids)
+    }
+
+    fun loadTokensInfo() {
+        val data = try {
+            val inputStream: InputStream = context.assets.open("tokenlist.json")
+            val size: Int = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            String(buffer, charset("UTF-8"))
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            null
+        }
+
+        if (!data.isNullOrEmpty()) {
+            val tokenList = gson.fromJson(data, TokenListResponse::class.java)
+            val mappedData = tokenList.tokens.map { TokenConverter.fromLocal(it) }
+            userLocalRepository.setTokenDecimals(mappedData)
+        }
     }
 
     suspend fun loadTokens() {

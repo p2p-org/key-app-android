@@ -7,6 +7,8 @@ import com.p2p.wallet.token.model.Status
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.token.model.Transaction
+import com.p2p.wallet.user.local.TokenResponse
+import com.p2p.wallet.user.model.TokenData
 import com.p2p.wallet.user.model.TokenProgramAccount
 import org.p2p.solanaj.rpc.types.TransferInfoResponse
 import org.threeten.bp.ZonedDateTime
@@ -14,25 +16,34 @@ import java.math.BigDecimal
 
 object TokenConverter {
 
+    fun fromLocal(response: TokenResponse): TokenData =
+        TokenData(
+            mintAddress = response.address,
+            name = response.name,
+            symbol = response.symbol,
+            iconUrl = response.logoUrl,
+            decimals = response.decimals
+        )
+
     fun fromNetwork(
-        wallet: ConstWallet,
+        data: TokenData,
         account: TokenProgramAccount,
         exchangeRate: BigDecimal,
-        decimals: Int,
-        bid: BigDecimal
+        bid: BigDecimal,
+        color: Int
     ): Token {
-        val total = account.getTotal(decimals)
+        val total = account.getTotal(data.decimals)
         return Token(
-            tokenSymbol = wallet.tokenSymbol,
-            tokenName = wallet.tokenName,
-            iconUrl = wallet.icon,
+            tokenSymbol = data.symbol,
+            tokenName = data.name,
+            logoUrl = data.iconUrl,
             publicKey = account.publicKey,
             mintAddress = account.mintAddress,
-            price = account.getFormattedPrice(exchangeRate, decimals),
+            price = account.getFormattedPrice(exchangeRate, data.decimals),
             total = total,
-            decimals = decimals,
+            decimals = data.decimals,
             walletBinds = bid,
-            color = wallet.color,
+            color = color,
             usdRate = exchangeRate,
             visibility = TokenVisibility.DEFAULT
         )
@@ -75,7 +86,7 @@ object TokenConverter {
             decimals = token.decimals,
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,
-            iconUrl = token.iconUrl,
+            iconUrl = token.logoUrl,
             price = token.price,
             total = token.total,
             walletBinds = token.walletBinds,
@@ -91,7 +102,7 @@ object TokenConverter {
             decimals = entity.decimals,
             mintAddress = entity.mintAddress,
             tokenName = entity.tokenName,
-            iconUrl = entity.iconUrl,
+            logoUrl = entity.iconUrl,
             price = entity.price,
             total = entity.total,
             walletBinds = entity.walletBinds,
