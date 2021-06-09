@@ -133,7 +133,7 @@ class SendFragment :
     @SuppressLint("SetTextI18n")
     override fun showSourceToken(token: Token) {
         with(binding) {
-            Glide.with(sourceImageView).load(token.iconUrl).into(sourceImageView)
+            Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             tokenTextView.text = token.tokenSymbol
             singleValueTextView.text = getString(R.string.main_single_value_format, token.tokenSymbol)

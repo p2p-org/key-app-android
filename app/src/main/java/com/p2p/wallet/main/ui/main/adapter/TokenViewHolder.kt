@@ -1,10 +1,14 @@
 package com.p2p.wallet.main.ui.main.adapter
 
+import android.graphics.drawable.PictureDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
 import com.p2p.wallet.main.model.TokenItem
@@ -55,7 +59,10 @@ class TokenViewHolder(
 
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 
-        Glide.with(tokenImageView).load(token.iconUrl).into(tokenImageView)
+        if (!token.logoUrl.isNullOrEmpty()) {
+            Glide.with(tokenImageView).load(token.logoUrl).into(tokenImageView)
+        }
+
         nameTextView.text = token.tokenSymbol
         addressTextView.text = token.getFormattedAddress()
         valueTextView.text = token.getFormattedPrice()
@@ -67,5 +74,19 @@ class TokenViewHolder(
         editImageView.setOnClickListener { onEditClicked(token) }
 
         contentView.setOnClickListener { onItemClicked(token) }
+    }
+
+    private fun loadLogo(logoUrl: String) {
+        if (logoUrl.endsWith(".svg")) {
+            Glide.with(tokenImageView.context)
+                .`as`(PictureDrawable::class.java)
+                .fitCenter()
+                .listener(SvgSoftwareLayerSetter())
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.RESOURCE))
+                .load(logoUrl)
+                .into(tokenImageView)
+        } else {
+            Glide.with(tokenImageView).load(logoUrl).into(tokenImageView)
+        }
     }
 }

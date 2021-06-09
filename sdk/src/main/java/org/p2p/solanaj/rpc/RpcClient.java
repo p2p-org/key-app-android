@@ -18,7 +18,6 @@ import okhttp3.Response;
 
 public class RpcClient {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final int TIMEOUT_INTERVAL = 90;
 
     private String endpoint;
     private final OkHttpClient httpClient;

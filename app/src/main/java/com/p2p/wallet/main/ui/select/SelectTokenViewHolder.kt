@@ -38,7 +38,9 @@ class SelectTokenViewHolder(
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
         }
 
-        Glide.with(tokenImageView).load(item.iconUrl).into(tokenImageView)
+        if (!item.logoUrl.isNullOrEmpty()) {
+            Glide.with(tokenImageView).load(item.logoUrl).into(tokenImageView)
+        }
         nameTextView.text = item.tokenSymbol
         addressTextView.text = item.getFormattedAddress()
         valueTextView.text = item.getFormattedPrice()

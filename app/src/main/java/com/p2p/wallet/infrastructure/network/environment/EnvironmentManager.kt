@@ -24,7 +24,7 @@ class EnvironmentManager(
     private val client: RpcClient
 
     init {
-        client = createClient()
+        client = RpcClient(loadEnvironment(), createOkHttpClient())
     }
 
     fun loadEnvironment(): String = sharedPreferences.getString(KEY_BASE_URL, Environment.MAINNET.endpoint).orEmpty()
@@ -36,17 +36,10 @@ class EnvironmentManager(
 
     fun getClient(): RpcClient = client
 
-    private fun createClient(): RpcClient =
-        when (val environment = loadEnvironment()) {
-            Environment.DATAHUB.endpoint -> RpcClient(environment, createOkHttpClient(true))
-            Environment.SOLANA.endpoint -> RpcClient(environment, createOkHttpClient())
-            else -> RpcClient(environment, createOkHttpClient())
-        }
-
-    private fun createOkHttpClient(isDataHub: Boolean = false): OkHttpClient =
+    private fun createOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
             .readTimeout(TIMEOUT_INTERVAL, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
-            .apply { if (isDataHub) addInterceptor(DataHubInterceptor(context)) }
+            .addInterceptor(DataHubInterceptor(context))
             .build()
 }

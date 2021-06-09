@@ -68,7 +68,7 @@ class SwapFragment :
 
     override fun showSourceToken(token: Token) {
         with(binding) {
-            Glide.with(sourceImageView).load(token.iconUrl).into(sourceImageView)
+            Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
         }
@@ -76,7 +76,7 @@ class SwapFragment :
 
     override fun showDestinationToken(token: Token) {
         with(binding) {
-            Glide.with(destinationImageView).load(token.iconUrl).into(destinationImageView)
+            Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
             destinationTextView.text = token.tokenSymbol
             currencyTextView.isInvisible = true
         }

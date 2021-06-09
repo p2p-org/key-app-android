@@ -16,6 +16,8 @@ import org.p2p.solanaj.rpc.types.TokenAccountBalance;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class TokenTransaction {
 
@@ -132,13 +134,52 @@ public class TokenTransaction {
         return client.call("getTokenAccountBalance", params, TokenAccountBalance.class);
     }
 
-    public static PublicKey getAssociatedTokenAddress(PublicKey mint, PublicKey owner) throws Exception {
+    public static MultipleAccountsInfo getMultipleAccounts(
+            RpcClient client,
+            List<PublicKey> pubkeys
+    ) throws RpcException {
+        ArrayList<Object> params = new ArrayList<>();
+
+        ArrayList<String> keys = new ArrayList<>();
+        for (PublicKey key : pubkeys) {
+            keys.add(key.toBase58());
+        }
+
+        params.add(keys);
+
+        HashMap<String, String> encoding = new HashMap<>();
+        encoding.put("encoding", "jsonParsed");
+
+        params.add(encoding);
+
+        MultipleAccountsInfo result = client.call("getMultipleAccounts", params, MultipleAccountsInfo.class);
+
+        List<MultipleAccountsInfo.AccountInfoParsed> parsedAccounts = new ArrayList<>();
+        for (int i = 0; i < result.getAccountsInfoParsed().size(); i++) {
+            MultipleAccountsInfo.AccountInfoParsed current = result.getAccountsInfoParsed().get(i);
+            current.setAddress(keys.get(i));
+            parsedAccounts.add(current);
+        }
+
+        result.setAccountsInfoParsed(parsedAccounts);
+
+        return result;
+    }
+
+    public static PublicKey getAssociatedTokenAddress(
+            PublicKey mint,
+            PublicKey owner
+    ) throws Exception {
         return getAssociatedTokenAddress(TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID, TokenProgram.PROGRAM_ID, mint,
                 owner);
     }
 
-    public static PublicKey getAssociatedTokenAddress(PublicKey associatedProgramId, PublicKey programId,
-                                                      PublicKey mint, PublicKey owner) throws Exception {
+    public static PublicKey getAssociatedTokenAddress(
+            PublicKey associatedProgramId,
+            PublicKey programId,
+            PublicKey mint,
+            PublicKey owner
+    ) throws Exception {
         return PublicKey
                 .findProgramAddress(
                         Arrays.asList(owner.toByteArray(), programId.toByteArray(), mint.toByteArray()),
