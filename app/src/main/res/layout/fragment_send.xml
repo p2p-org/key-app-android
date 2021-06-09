@@ -1,320 +1,327 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back"
-        app:title="@string/main_send"
-        app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/fromTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/main_from"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="@string/main_send"
+            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-    <TextView
-        android:id="@+id/availableTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="20dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="?colorAccentPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        tools:text="Available: 2140.0000" />
+        <TextView
+            android:id="@+id/fromTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/main_from"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <com.p2p.wallet.common.widget.RoundedImageView
-        android:id="@+id/sourceImageView"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fromTextView"
-        tools:src="@tools:sample/avatars" />
+        <TextView
+            android:id="@+id/availableTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="20dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            android:textColor="?colorAccentPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:text="Available: 2140.0000" />
 
-    <TextView
-        android:id="@+id/sourceTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/main_from"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        app:layout_constraintEnd_toEndOf="@id/sourceImageView"
-        app:layout_constraintStart_toStartOf="@id/sourceImageView"
-        app:layout_constraintTop_toBottomOf="@id/sourceImageView"
-        tools:text="SOL" />
+        <com.p2p.wallet.common.widget.RoundedImageView
+            android:id="@+id/sourceImageView"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fromTextView"
+            tools:src="@tools:sample/avatars" />
 
-    <ImageView
-        android:id="@+id/downImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:src="@drawable/ic_triangle_down"
-        app:layout_constraintBottom_toBottomOf="@id/sourceImageView"
-        app:layout_constraintStart_toEndOf="@id/sourceImageView"
-        app:layout_constraintTop_toTopOf="@id/sourceImageView"
-        tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/sourceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/main_from"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            app:layout_constraintEnd_toEndOf="@id/sourceImageView"
+            app:layout_constraintStart_toStartOf="@id/sourceImageView"
+            app:layout_constraintTop_toBottomOf="@id/sourceImageView"
+            tools:text="SOL" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/amountEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="20dp"
-        android:background="@android:color/transparent"
-        android:hint="@string/main_swap_hint"
-        android:inputType="numberDecimal"
-        android:maxLines="1"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
-        android:textColorHint="?colorElementSecondary"
-        app:layout_constraintBottom_toBottomOf="@id/downImageView"
-        app:layout_constraintEnd_toStartOf="@id/tokenTextView"
-        app:layout_constraintStart_toEndOf="@id/downImageView"
-        app:layout_constraintTop_toTopOf="@id/downImageView" />
+        <ImageView
+            android:id="@+id/downImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_triangle_down"
+            app:layout_constraintBottom_toBottomOf="@id/sourceImageView"
+            app:layout_constraintStart_toEndOf="@id/sourceImageView"
+            app:layout_constraintTop_toTopOf="@id/sourceImageView"
+            tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/tokenTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/bg_gray_secondary_rounded_small"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="?colorElementSecondary"
-        app:layout_constraintBottom_toBottomOf="@id/amountEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/amountEditText"
-        app:layout_constraintTop_toTopOf="@id/amountEditText"
-        tools:text="SOL" />
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/amountEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
+            android:hint="@string/main_swap_hint"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
+            android:textColorHint="?colorElementSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/downImageView"
+            app:layout_constraintEnd_toStartOf="@id/tokenTextView"
+            app:layout_constraintStart_toEndOf="@id/downImageView"
+            app:layout_constraintTop_toTopOf="@id/downImageView" />
 
-    <TextView
-        android:id="@+id/aroundTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary"
-        app:layout_constraintEnd_toEndOf="@id/amountEditText"
-        app:layout_constraintStart_toStartOf="@id/amountEditText"
-        app:layout_constraintTop_toBottomOf="@id/amountEditText"
-        tools:text="≈ 0.00 $" />
+        <TextView
+            android:id="@+id/tokenTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_gray_secondary_rounded_small"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/amountEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/amountEditText"
+            app:layout_constraintTop_toTopOf="@id/amountEditText"
+            tools:text="SOL" />
 
-    <View
-        android:id="@+id/dividerView"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        android:background="?colorElementTertiary"
-        app:layout_constraintTop_toBottomOf="@id/aroundTextView" />
+        <TextView
+            android:id="@+id/aroundTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintEnd_toEndOf="@id/amountEditText"
+            app:layout_constraintStart_toStartOf="@id/amountEditText"
+            app:layout_constraintTop_toBottomOf="@id/amountEditText"
+            tools:text="≈ 0.00 $" />
 
-    <TextView
-        android:id="@+id/singleValueTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dividerView"
-        tools:text="1 SOL" />
+        <View
+            android:id="@+id/dividerView"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:background="?colorElementTertiary"
+            app:layout_constraintTop_toBottomOf="@id/aroundTextView" />
 
-    <TextView
-        android:id="@+id/usdValueTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/singleValueTextView"
-        tools:text="140003.00 US$" />
+        <TextView
+            android:id="@+id/singleValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dividerView"
+            tools:text="1 SOL" />
 
-    <TextView
-        android:id="@+id/feeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:text="@string/main_fee"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/singleValueTextView" />
+        <TextView
+            android:id="@+id/usdValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/singleValueTextView"
+            tools:text="140003.00 US$" />
 
-    <TextView
-        android:id="@+id/feeValueTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/feeTextView"
-        tools:text="0.0001 SOL" />
+        <TextView
+            android:id="@+id/feeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/main_fee"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/singleValueTextView" />
 
-    <View
-        android:id="@+id/middleDividerView"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        android:background="?colorElementTertiary"
-        app:layout_constraintTop_toBottomOf="@id/feeValueTextView" />
+        <TextView
+            android:id="@+id/feeValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/feeTextView"
+            tools:text="0.0001 SOL" />
 
-    <TextView
-        android:id="@+id/toTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/main_send_to"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/middleDividerView" />
+        <View
+            android:id="@+id/middleDividerView"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:background="?colorElementTertiary"
+            app:layout_constraintTop_toBottomOf="@id/feeValueTextView" />
 
-    <View
-        android:id="@+id/addressBackgroundView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="20dp"
-        android:background="@drawable/bg_gray_secondary_rounded_small"
-        app:layout_constraintBottom_toBottomOf="@id/addressEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/addressEditText" />
+        <TextView
+            android:id="@+id/toTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/main_send_to"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/middleDividerView" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/addressEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/transparent"
-        android:hint="@string/main_wallet_address"
-        android:inputType="text"
-        android:padding="16dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        app:layout_constraintEnd_toStartOf="@id/endIconBarrier"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toTextView" />
+        <View
+            android:id="@+id/addressBackgroundView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_gray_secondary_rounded_small"
+            app:layout_constraintBottom_toBottomOf="@id/addressEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/addressEditText" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/endIconBarrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="start"
-        app:constraint_referenced_ids="scanImageView,clearImageView" />
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/addressEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/transparent"
+            android:hint="@string/main_wallet_address"
+            android:inputType="text"
+            android:padding="16dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            app:layout_constraintEnd_toStartOf="@id/endIconBarrier"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toTextView" />
 
-    <ImageView
-        android:id="@+id/scanImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:src="@drawable/ic_qr_scan"
-        app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"
-        app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"
-        app:layout_constraintTop_toTopOf="@id/addressBackgroundView"
-        app:tint="?colorElementSecondary"
-        tools:ignore="ContentDescription" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/endIconBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="scanImageView,clearImageView" />
 
-    <ImageView
-        android:id="@+id/clearImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:src="@drawable/ic_close"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"
-        app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"
-        app:layout_constraintTop_toTopOf="@id/addressBackgroundView"
-        app:tint="?colorElementSecondary"
-        tools:ignore="ContentDescription" />
+        <ImageView
+            android:id="@+id/scanImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:src="@drawable/ic_qr_scan"
+            app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"
+            app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"
+            app:layout_constraintTop_toTopOf="@id/addressBackgroundView"
+            app:tint="?colorElementSecondary"
+            tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/errorTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="8dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="?colorAccentWarning"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addressEditText"
-        tools:text="You have insufficient balance to send token"
-        tools:visibility="visible" />
+        <ImageView
+            android:id="@+id/clearImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_close"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"
+            app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"
+            app:layout_constraintTop_toTopOf="@id/addressBackgroundView"
+            app:tint="?colorElementSecondary"
+            tools:ignore="ContentDescription" />
 
-    <View
-        android:id="@+id/inputDividerView"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        android:background="?colorElementTertiary"
-        app:layout_constraintTop_toBottomOf="@id/errorTextView" />
+        <TextView
+            android:id="@+id/errorTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            android:textColor="?colorAccentWarning"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addressEditText"
+            tools:text="You have insufficient balance to send token"
+            tools:visibility="visible" />
 
-    <ProgressBar
-        android:id="@+id/buttonProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/sendButton"
-        app:layout_constraintEnd_toEndOf="@id/sendButton"
-        app:layout_constraintStart_toStartOf="@id/sendButton"
-        app:layout_constraintTop_toTopOf="@id/sendButton" />
+        <View
+            android:id="@+id/inputDividerView"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:background="?colorElementTertiary"
+            app:layout_constraintTop_toBottomOf="@id/errorTextView" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/sendButton"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_blue_selector"
-        android:enabled="false"
-        android:foreground="?selectableItemBackground"
-        android:text="@string/main_send_now"
-        android:textAllCaps="false"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="?colorElementPrimary"
-        app:layout_constraintBottom_toTopOf="@id/infoTextView"
-        tools:ignore="UnusedAttribute" />
+        <ProgressBar
+            android:id="@+id/buttonProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/sendButton"
+            app:layout_constraintEnd_toEndOf="@id/sendButton"
+            app:layout_constraintStart_toStartOf="@id/sendButton"
+            app:layout_constraintTop_toTopOf="@id/sendButton" />
 
-    <TextView
-        android:id="@+id/infoTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="32dp"
-        android:gravity="center"
-        android:text="@string/main_send_token_info"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/sendButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_blue_selector"
+            android:enabled="false"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/main_send_now"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="?colorElementPrimary"
+            app:layout_constraintBottom_toTopOf="@id/infoTextView"
+            tools:ignore="UnusedAttribute" />
 
-    <com.p2p.wallet.common.widget.ProgressView
-        android:id="@+id/progressView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:visibility="gone" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/infoTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:text="@string/main_send_token_info"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <com.p2p.wallet.common.widget.ProgressView
+            android:id="@+id/progressView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="gone" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

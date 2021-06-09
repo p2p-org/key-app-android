@@ -63,7 +63,7 @@ class ReceiveFragment :
             fullAddressTextView.text = token.publicKey
 
             viewButton.setOnClickListener {
-                val url = getString(R.string.solanaWalletExplorer, token)
+                val url = getString(R.string.solanaWalletExplorer, token.mintAddress)
                 showUrlInCustomTabs(url)
             }
         }
