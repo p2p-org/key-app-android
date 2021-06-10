@@ -75,7 +75,7 @@ data class Token constructor(
         const val USD_SYMBOL = "USD"
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9
-        private const val SOL_MINT = "SOLMINT"
+        private const val SOL_MINT = "So11111111111111111111111111111111111111112"
         private const val SOL_NAME = "SOL"
         private const val SOL_LOGO_URL =
             "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
