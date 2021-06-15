@@ -66,14 +66,14 @@ class SwapInteractor(
 
     fun calculateFee(
         pool: Pool.PoolInfo,
-        sourceAmount: BigInteger,
+        inputAmount: BigInteger,
         tokenABalance: TokenAccountBalance,
         tokenBBalance: TokenAccountBalance
     ): BigInteger {
         val swappedAmountWithFee =
-            calculateAmountInOtherToken(pool, sourceAmount, true, tokenABalance, tokenBBalance)
+            calculateAmountInOtherToken(pool, inputAmount, true, tokenABalance, tokenBBalance)
         val swappedAmountWithoutFee =
-            calculateAmountInOtherToken(pool, sourceAmount, false, tokenABalance, tokenBBalance)
+            calculateAmountInOtherToken(pool, inputAmount, false, tokenABalance, tokenBBalance)
 
         return swappedAmountWithoutFee.subtract(swappedAmountWithFee)
     }

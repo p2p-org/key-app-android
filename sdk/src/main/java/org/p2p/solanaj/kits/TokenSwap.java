@@ -1,7 +1,5 @@
 package org.p2p.solanaj.kits;
 
-import android.util.Log;
-
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.TransactionInstruction;
@@ -40,8 +38,6 @@ public class TokenSwap {
             @Nullable PublicKey accountAddressA,
             @Nullable PublicKey accountAddressB
     ) throws RpcException {
-
-        Log.d("###", "swap amount " + amountIn);
 
         final ArrayList<Account> signers = new ArrayList<>(Collections.singletonList(owner));
 

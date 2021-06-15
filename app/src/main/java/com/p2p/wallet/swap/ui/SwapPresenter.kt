@@ -219,7 +219,7 @@ class SwapPresenter(
 
             val fee = swapInteractor.calculateFee(
                 pool = pool,
-                sourceAmount = calculatedAmount.toLamports(source.decimals),
+                inputAmount = calculatedAmount.toLamports(source.decimals),
                 tokenABalance = sourceBalance,
                 tokenBBalance = destinationBalance
             )
