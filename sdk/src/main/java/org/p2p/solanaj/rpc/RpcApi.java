@@ -1,6 +1,7 @@
 package org.p2p.solanaj.rpc;
 
 import android.util.Base64;
+import android.util.Log;
 
 import org.p2p.solanaj.core.Account;
 import org.p2p.solanaj.core.PublicKey;
@@ -23,8 +24,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import kotlin.Deprecated;
 
 public class RpcApi {
     private final RpcClient client;
@@ -51,7 +50,7 @@ public class RpcApi {
                 .encodeToString(serializedTransaction, Base64.DEFAULT)
                 .replace("\n", "");
 
-        List<Object> params = new ArrayList<Object>();
+        List<Object> params = new ArrayList<>();
 
         params.add(base64Trx);
         params.add(new RpcSendTransactionConfig());

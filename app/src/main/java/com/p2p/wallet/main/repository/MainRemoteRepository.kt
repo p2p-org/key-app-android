@@ -40,6 +40,7 @@ class MainRemoteRepository(
             client.api.sendTransaction(transaction, signer)
         }
 
+    /* TODO: will be refactored */
     override suspend fun getHistory(publicKey: String, tokenSymbol: String, limit: Int): List<Transaction> =
         withContext(Dispatchers.IO) {
             val signatures = client.api.getConfirmedSignaturesForAddress2(publicKey.toPublicKey(), limit)

@@ -20,7 +20,7 @@ fun String.toBigDecimalOrZero(): BigDecimal =
 fun Double?.valueOrZero(): BigDecimal = BigDecimal(this ?: DOUBLE_ZERO_VALUE)
 
 fun Int.toPowerValue(): BigDecimal =
-    POWER_VALUE.pow(this).toBigDecimal()
+    BigDecimal(POWER_VALUE.pow(this))
 
 fun BigDecimal.scaleShort(): BigDecimal =
     this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN).stripTrailingZeros()
