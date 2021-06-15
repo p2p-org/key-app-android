@@ -36,8 +36,7 @@ class ReceivePresenter(
     override fun loadData() {
         launch {
             view?.showFullScreenLoading(true)
-            val tokens = userInteractor.getTokens()
-            val receive = defaultToken ?: tokens.firstOrNull() ?: return@launch
+            val receive = defaultToken ?: userInteractor.getTokens().firstOrNull() ?: return@launch
             token = receive
 
             generateQrCode(receive.publicKey)

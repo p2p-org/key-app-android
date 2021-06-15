@@ -125,6 +125,7 @@
     <string name="main_visible">Visible</string>
     <string name="main_invisible">Invisible</string>
     <string name="main_wallet_settings">Wallet settings</string>
+    <string name="main_receive_show_details">Show address details</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -168,4 +169,9 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
+    <string name="main_receive_scan_or_copy">Scan or Copy QR code</string>
+    <string name="main_receive_address_copied">Address copied to clipboard!</string>
+    <string name="main_receive_hide_details">Hide address details</string>
+    <string name="main_receive_address_format">Direct %s Address</string>
+    <string name="main_receive_mint_format">%s Mint Address</string>
 </resources>

@@ -79,6 +79,7 @@ class UserInteractor(
         val hiddenTokens = mainLocalRepository.getTokens().filter { it.isHidden }.map { it.publicKey }
 
         if (hiddenTokens.isEmpty()) {
+            mainLocalRepository.clear()
             mainLocalRepository.setTokens(newTokens)
             return
         }
