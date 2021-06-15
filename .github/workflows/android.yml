@@ -24,9 +24,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Set build version
-        run:
-          - ./gradlew setVersionBuild -Pversion=$BUILD_NUMBER
-          - echo "Set build version to $BUILD_NUMBER"
+        run: ./gradlew setVersionBuild -Pversion=$BUILD_NUMBER
       - name: Build with Gradle
         run: ./gradlew assembleFeature
       - name: Upload APK to FirebaseAppDistribution
