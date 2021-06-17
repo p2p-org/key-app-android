@@ -1,6 +1,6 @@
 package org.p2p.solanaj.programs;
 
-import org.p2p.solanaj.core.AbstractData;
+import org.p2p.solanaj.core.AbstractData2;
 import org.p2p.solanaj.core.AccountMeta;
 import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.core.Sysvar;
@@ -138,7 +138,7 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, data);
     }
 
-    public static class MintData extends AbstractData {
+    public static class MintData extends AbstractData2 {
         public static final int MINT_DATA_LENGTH = ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH
                 + ByteUtils.UINT_64_LENGTH + 1 + 1 + ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH;
 
@@ -200,7 +200,7 @@ public class TokenProgram {
 
     }
 
-    public static class AccountInfoData extends AbstractData {
+    public static class AccountInfoData extends AbstractData2 {
         public static final int ACCOUNT_INFO_DATA_LENGTH = PublicKey.PUBLIC_KEY_LENGTH + PublicKey.PUBLIC_KEY_LENGTH
                 + ByteUtils.UINT_64_LENGTH + ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH + 1
                 + ByteUtils.UINT_32_LENGTH + ByteUtils.UINT_64_LENGTH + ByteUtils.UINT_64_LENGTH

@@ -154,9 +154,9 @@ public class TokenTransaction {
 
         MultipleAccountsInfo result = client.call("getMultipleAccounts", params, MultipleAccountsInfo.class);
 
-        List<MultipleAccountsInfo.AccountInfoParsed> parsedAccounts = new ArrayList<>();
+        List<AccountInfoParsed> parsedAccounts = new ArrayList<>();
         for (int i = 0; i < result.getAccountsInfoParsed().size(); i++) {
-            MultipleAccountsInfo.AccountInfoParsed current = result.getAccountsInfoParsed().get(i);
+            AccountInfoParsed current = result.getAccountsInfoParsed().get(i);
             current.setAddress(keys.get(i));
             parsedAccounts.add(current);
         }
@@ -164,6 +164,30 @@ public class TokenTransaction {
         result.setAccountsInfoParsed(parsedAccounts);
 
         return result;
+    }
+
+    public static TokenAccounts getTokenAccountsByOwner(RpcClient client, PublicKey owner) throws RpcException {
+        return getTokenAccountsByOwner(client, owner, TokenProgram.PROGRAM_ID);
+    }
+
+    public static TokenAccounts getTokenAccountsByOwner(RpcClient client, PublicKey owner, PublicKey programId)
+            throws RpcException {
+
+        ArrayList<Object> params = new ArrayList<Object>();
+
+        params.add(owner.toBase58());
+
+        HashMap<String, String> programIdParam = new HashMap<String, String>();
+        programIdParam.put("programId", programId.toBase58());
+
+        params.add(programIdParam);
+
+        HashMap<String, String> encoding = new HashMap<String, String>();
+        encoding.put("encoding", "jsonParsed");
+
+        params.add(encoding);
+
+        return client.call("getTokenAccountsByOwner", params, TokenAccounts.class);
     }
 
     public static PublicKey getAssociatedTokenAddress(

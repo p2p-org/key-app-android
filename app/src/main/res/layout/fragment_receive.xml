@@ -1,231 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/detailsGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="addressTitleTextView,addressTextView,shareAddressImageView,mintAddressTextView,mintAddressTitleTextView,shareMintAddressImageView"
-            tools:visibility="visible" />
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/ic_back"
-            app:title="@string/main_receive"
-            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+            android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/shadowHeader"
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@drawable/bg_shadow_vertical"
-            android:rotation="180"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/detailsGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="addressTitleTextView,addressTextView,shareAddressImageView,mintAddressTextView,mintAddressTitleTextView,shareMintAddressImageView"
+                tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/qrTitleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/main_receive_scan_or_copy"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:navigationIcon="@drawable/ic_back"
+                app:title="@string/main_receive"
+                app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-        <ImageView
-            android:id="@+id/qrImageView"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/qrTitleTextView"
-            tools:ignore="ContentDescription"
-            tools:src="@tools:sample/avatars" />
+            <View
+                android:id="@+id/shadowHeader"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/bg_shadow_vertical"
+                android:rotation="180"
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/qrImageView"
-            app:layout_constraintEnd_toEndOf="@id/qrImageView"
-            app:layout_constraintStart_toStartOf="@id/qrImageView"
-            app:layout_constraintTop_toTopOf="@id/qrImageView" />
+            <TextView
+                android:id="@+id/qrTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/main_receive_scan_or_copy"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <TextView
-            android:id="@+id/fullAddressTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/bg_gray_secondary_start_rounded"
-            android:gravity="center"
-            android:padding="20dp"
-            android:singleLine="true"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="@color/colorStaticDark"
-            app:layout_constraintEnd_toStartOf="@id/shareImageView"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/qrImageView"
-            tools:text="7YVptYAqb9...wmoovv4XwL" />
+            <ImageView
+                android:id="@+id/qrImageView"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/qrTitleTextView"
+                tools:ignore="ContentDescription"
+                tools:src="@tools:sample/avatars" />
 
-        <View
-            android:id="@+id/qrBottomDivider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"
-            android:background="?colorElementTertiary"
-            app:layout_constraintTop_toBottomOf="@id/fullAddressTextView" />
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/qrImageView"
+                app:layout_constraintEnd_toEndOf="@id/qrImageView"
+                app:layout_constraintStart_toStartOf="@id/qrImageView"
+                app:layout_constraintTop_toTopOf="@id/qrImageView" />
 
-        <ImageView
-            android:id="@+id/shareImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/bg_gray_secondary_end_rounded"
-            android:paddingHorizontal="16dp"
-            android:src="@drawable/ic_share"
-            app:layout_constraintBottom_toBottomOf="@id/fullAddressTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/fullAddressTextView"
-            app:layout_constraintTop_toTopOf="@id/fullAddressTextView"
-            app:tint="@color/colorStaticDark"
-            tools:ignore="ContentDescription" />
+            <TextView
+                android:id="@+id/fullAddressTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_gray_secondary_start_rounded"
+                android:gravity="center"
+                android:padding="20dp"
+                android:singleLine="true"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                android:textColor="@color/colorStaticDark"
+                app:layout_constraintEnd_toStartOf="@id/shareImageView"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/qrImageView"
+                tools:text="7YVptYAqb9...wmoovv4XwL" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/viewButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="16dp"
-            android:background="?selectableItemBackground"
-            android:text="@string/main_send_view_in_explorer"
-            android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintTop_toBottomOf="@id/qrBottomDivider"
-            tools:ignore="UnusedAttribute"
-            tools:visibility="gone" />
+            <View
+                android:id="@+id/qrBottomDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:background="?colorElementTertiary"
+                app:layout_constraintTop_toBottomOf="@id/fullAddressTextView" />
 
-        <TextView
-            android:id="@+id/addressTitleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="36dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/qrBottomDivider"
-            tools:text="Direct BTC address" />
+            <ImageView
+                android:id="@+id/shareImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/bg_gray_secondary_end_rounded"
+                android:paddingHorizontal="16dp"
+                android:src="@drawable/ic_share"
+                app:layout_constraintBottom_toBottomOf="@id/fullAddressTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/fullAddressTextView"
+                app:layout_constraintTop_toTopOf="@id/fullAddressTextView"
+                app:tint="@color/colorStaticDark"
+                tools:ignore="ContentDescription" />
 
-        <TextView
-            android:id="@+id/addressTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            app:layout_constraintEnd_toStartOf="@id/shareAddressImageView"
-            app:layout_constraintStart_toStartOf="@id/addressTitleTextView"
-            app:layout_constraintTop_toBottomOf="@id/addressTitleTextView"
-            tools:text="7YVp....DkmTQHutnUn9xWmismkm2zSvLQfiEkPQCq6rAXZKJnBw" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/viewButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:background="?selectableItemBackground"
+                android:text="@string/main_send_view_in_explorer"
+                android:textAllCaps="false"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                android:textColor="?colorElementSecondary"
+                app:layout_constraintTop_toBottomOf="@id/qrBottomDivider"
+                tools:ignore="UnusedAttribute"
+                tools:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/shareAddressImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_copy_link"
-            app:layout_constraintBottom_toBottomOf="@id/addressTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/addressTitleTextView"
-            tools:ignore="ContentDescription" />
+            <TextView
+                android:id="@+id/addressTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="36dp"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+                android:textColor="?colorElementSecondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/qrBottomDivider"
+                tools:text="Direct BTC address" />
 
-        <TextView
-            android:id="@+id/mintAddressTitleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/addressTextView"
-            tools:text="BTC Mint address" />
+            <TextView
+                android:id="@+id/addressTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                app:layout_constraintEnd_toStartOf="@id/shareAddressImageView"
+                app:layout_constraintStart_toStartOf="@id/addressTitleTextView"
+                app:layout_constraintTop_toBottomOf="@id/addressTitleTextView"
+                tools:text="7YVp....DkmTQHutnUn9xWmismkm2zSvLQfiEkPQCq6rAXZKJnBw" />
 
-        <TextView
-            android:id="@+id/mintAddressTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            app:layout_constraintEnd_toStartOf="@id/shareMintAddressImageView"
-            app:layout_constraintStart_toStartOf="@id/mintAddressTitleTextView"
-            app:layout_constraintTop_toBottomOf="@id/mintAddressTitleTextView"
-            tools:text="9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E" />
+            <ImageView
+                android:id="@+id/shareAddressImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_copy_link"
+                app:layout_constraintBottom_toBottomOf="@id/addressTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/addressTitleTextView"
+                tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/shareMintAddressImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_copy_link"
-            app:layout_constraintBottom_toBottomOf="@id/mintAddressTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/mintAddressTitleTextView"
-            tools:ignore="ContentDescription" />
+            <TextView
+                android:id="@+id/mintAddressTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+                android:textColor="?colorElementSecondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/addressTextView"
+                tools:text="BTC Mint address" />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/detailsBarrier"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="mintAddressTextView" />
+            <TextView
+                android:id="@+id/mintAddressTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                app:layout_constraintEnd_toStartOf="@id/shareMintAddressImageView"
+                app:layout_constraintStart_toStartOf="@id/mintAddressTitleTextView"
+                app:layout_constraintTop_toBottomOf="@id/mintAddressTitleTextView"
+                tools:text="9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/detailsButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_gray_secondary_rounded"
-            android:text="@string/main_receive_show_details"
-            android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            android:textColor="?colorElementSecondary"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/detailsBarrier"
-            tools:ignore="UnusedAttribute"
-            tools:visibility="visible" />
+            <ImageView
+                android:id="@+id/shareMintAddressImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_copy_link"
+                app:layout_constraintBottom_toBottomOf="@id/mintAddressTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/mintAddressTitleTextView"
+                tools:ignore="ContentDescription" />
 
-        <com.p2p.wallet.common.widget.ProgressView
-            android:id="@+id/progressView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:visibility="gone" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/detailsBarrier"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="mintAddressTextView" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/detailsButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_gray_secondary_rounded"
+                android:text="@string/main_receive_show_details"
+                android:textAllCaps="false"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                android:textColor="?colorElementSecondary"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/detailsBarrier"
+                tools:ignore="UnusedAttribute"
+                tools:visibility="visible" />
+
+            <com.p2p.wallet.common.widget.ProgressView
+                android:id="@+id/progressView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

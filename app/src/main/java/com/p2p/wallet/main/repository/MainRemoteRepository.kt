@@ -30,11 +30,7 @@ class MainRemoteRepository(
 
             val transaction = TransactionRequest()
             transaction.addInstruction(
-                SystemProgram.transfer(
-                    sourcePublicKey,
-                    targetPublicKey,
-                    lamports
-                )
+                SystemProgram.transfer(sourcePublicKey, targetPublicKey, lamports)
             )
 
             client.api.sendTransaction(transaction, signer)
@@ -79,7 +75,7 @@ class MainRemoteRepository(
 
                     return@withContext TransferInfoResponse(
                         message.accountKeys[instruction.accounts[0].toInt()],
-                        message.accountKeys[instruction.accounts[1].toInt()],
+                        message.accountKeys[instruction.accounts[0].toInt()],
                         lamports,
                         slot,
                         signature,
@@ -88,11 +84,12 @@ class MainRemoteRepository(
                 } else {
                     if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.rpcPublicKey) {
                         val data = Base58.decode(instruction.data)
-                        val lamports = Utils.readInt64(data, 1)
+//                        val lamports = Utils.readInt64(data, 1)
+                        val lamports = 100L
 
                         return@withContext TransferInfoResponse(
                             message.accountKeys[instruction.accounts[0].toInt()],
-                            message.accountKeys[instruction.accounts[1].toInt()],
+                            message.accountKeys[instruction.accounts[0].toInt()],
                             lamports,
                             slot,
                             signature,

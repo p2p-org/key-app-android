@@ -1,15 +1,13 @@
 package com.p2p.wallet.main.interactor
 
 import com.p2p.wallet.R
+import com.p2p.wallet.amount.toLamports
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.main.repository.MainRepository
 import com.p2p.wallet.token.model.Transaction
 import org.p2p.solanaj.core.PublicKey
 import java.math.BigDecimal
-import kotlin.math.pow
-
-private const val VALUE_TO_CONVERT = 10.0
 
 class MainInteractor(
     private val mainRepository: MainRepository,
@@ -33,7 +31,7 @@ class MainInteractor(
             return TransactionResult.WrongWallet
         }
 
-        val lamports = amount.toDouble() * VALUE_TO_CONVERT.pow(decimals)
+        val lamports = amount.toLamports(decimals)
         val signature = mainRepository.sendToken(target, lamports.toLong(), tokenSymbol)
         return TransactionResult.Success(signature, amount, usdAmount, tokenSymbol)
     }

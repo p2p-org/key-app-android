@@ -1,5 +1,7 @@
 package org.p2p.solanaj.rpc;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -22,6 +24,7 @@ public class RpcClient {
     private String endpoint;
     private final OkHttpClient httpClient;
     private final RpcApi rpcApi;
+    private final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
     public RpcClient(Environment endpoint, OkHttpClient client) {
         this(endpoint.getEndpoint(), client);
@@ -44,8 +47,9 @@ public class RpcClient {
         JsonAdapter<RpcResponse<T>> resultAdapter = new Moshi.Builder().build()
                 .adapter(Types.newParameterizedType(RpcResponse.class, clazz));
 
-        Request request = new Request.Builder().url(endpoint)
-                .post(RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest))).build();
+        RequestBody body = RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest));
+
+        Request request = new Request.Builder().url(endpoint).post(body).build();
 
         try {
             Response response = httpClient.newCall(request).execute();
