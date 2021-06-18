@@ -18,6 +18,7 @@ interface MainContract {
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
+        fun startPolling()
         fun refresh()
         fun toggleVisibility(token: Token)
     }

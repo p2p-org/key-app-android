@@ -67,7 +67,7 @@ object UserModule : InjectionModule {
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }
         factory { get<Retrofit>(named(BONFIDA_QUALIFIER)).create(BonfidaApi::class.java) }
 
-        single { UserInMemoryRepository(get(), get()) } bind UserLocalRepository::class
+        single { UserInMemoryRepository() } bind UserLocalRepository::class
         factory { UserInteractor(get(), get(), get(), get(), get(), get(), get()) }
     }
 
