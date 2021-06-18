@@ -1,6 +1,5 @@
 package com.p2p.wallet.main.api
 
-import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Query
 

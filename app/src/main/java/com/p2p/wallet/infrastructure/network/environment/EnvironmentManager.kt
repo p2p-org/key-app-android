@@ -27,7 +27,8 @@ class EnvironmentManager(
         client = RpcClient(loadEnvironment(), createOkHttpClient())
     }
 
-    fun loadEnvironment(): String = sharedPreferences.getString(KEY_BASE_URL, Environment.PROJECT_SERUM.endpoint).orEmpty()
+    fun loadEnvironment(): String =
+        sharedPreferences.getString(KEY_BASE_URL, Environment.PROJECT_SERUM.endpoint).orEmpty()
 
     fun saveEnvironment(environment: String) {
         sharedPreferences.edit { putString(KEY_BASE_URL, environment) }
