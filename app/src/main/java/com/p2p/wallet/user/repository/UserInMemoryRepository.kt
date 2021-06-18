@@ -1,7 +1,5 @@
 package com.p2p.wallet.user.repository
 
-import android.content.Context
-import com.google.gson.Gson
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.TokenBid
 import com.p2p.wallet.user.model.TokenData
@@ -9,10 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import java.math.BigDecimal
 
-class UserInMemoryRepository(
-    private val context: Context,
-    gson: Gson
-) : UserLocalRepository {
+class UserInMemoryRepository : UserLocalRepository {
 
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
 

@@ -88,7 +88,7 @@ class ReceiveFragment :
             }
 
             shareImageView.setOnClickListener {
-                requireContext().shareText(fullAddressTextView.text.toString())
+                requireContext().shareText(token.publicKey)
             }
 
             shareAddressImageView.setOnClickListener {

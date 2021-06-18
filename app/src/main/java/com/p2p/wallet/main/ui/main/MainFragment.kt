@@ -85,6 +85,7 @@ class MainFragment :
         }
 
         presenter.loadData()
+        presenter.startPolling()
     }
 
     override fun showTokens(tokens: List<TokenItem>) {

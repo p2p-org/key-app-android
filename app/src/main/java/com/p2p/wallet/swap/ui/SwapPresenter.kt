@@ -146,7 +146,7 @@ class SwapPresenter(
         val token = sourceToken ?: return
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = token.usdRate.multiply(decimalAmount)
+        aroundValue = token.usdRate.multiply(decimalAmount).scaleAmount()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(token.total)
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary

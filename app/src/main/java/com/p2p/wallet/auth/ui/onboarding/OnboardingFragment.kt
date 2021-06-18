@@ -2,13 +2,13 @@ package com.p2p.wallet.auth.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
-import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.ui.terms.TermsFragment
+import com.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentOnboardingBinding
 import com.p2p.wallet.restore.ui.RestoreFragment
 import com.p2p.wallet.utils.edgetoedge.Edge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -29,7 +29,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
             createButton.clipToOutline = true
             createButton.setOnClickListener {
-                replaceFragment(TermsFragment())
+                replaceFragment(SecurityKeyFragment.create())
             }
             loginButton.setOnClickListener {
                 replaceFragment(RestoreFragment.create())

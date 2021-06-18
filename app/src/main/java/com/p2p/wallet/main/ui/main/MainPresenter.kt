@@ -10,12 +10,15 @@ import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.properties.Delegates
+
+private const val DELAY_MS = 10000L
 
 class MainPresenter(
     private val userInteractor: UserInteractor,
@@ -74,6 +77,20 @@ class MainPresenter(
                 view?.showErrorMessage(e)
             } finally {
                 view?.showRefreshing(false)
+            }
+        }
+    }
+
+    override fun startPolling() {
+        launch {
+            try {
+                while (true) {
+                    delay(DELAY_MS)
+                    userInteractor.loadTokens()
+                    Timber.d("Successfully updated loaded tokens")
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading tokens from remote")
             }
         }
     }
