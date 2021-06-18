@@ -1,14 +1,16 @@
 package com.p2p.wallet.user.repository
 
+import com.p2p.wallet.amount.fromLamports
 import com.p2p.wallet.amount.scalePrice
+import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.amount.valueOrZero
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.api.TokenColors
-import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.model.TokenBid
 import com.p2p.wallet.user.model.UserConverter
 import com.p2p.wallet.utils.toPublicKey
@@ -17,9 +19,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.rpc.RpcClient
+import org.p2p.solanaj.data.RpcRepository
+import org.p2p.solanaj.model.core.Account
 import java.math.BigDecimal
 
 interface UserRepository {
@@ -32,11 +33,11 @@ interface UserRepository {
 }
 
 class UserRepositoryImpl(
-    private val client: RpcClient,
     private val compareApi: CompareApi,
     private val bonfidaApi: BonfidaApi,
     private val tokenProvider: TokenKeyProvider,
-    private val userLocalRepository: UserLocalRepository
+    private val userLocalRepository: UserLocalRepository,
+    private val rpcRepository: RpcRepository
 ) : UserRepository {
 
     override suspend fun createAccount(keys: List<String>): Account = withContext(Dispatchers.IO) {
@@ -48,31 +49,32 @@ class UserRepositoryImpl(
         return tokens.map { UserConverter.fromNetwork(it, response) }
     }
 
-    /**
-     * Temporary passing keys here, but we should inject key provider in upper level, for example in [RpcApi]
-     **/
-    override suspend fun loadSolBalance(): Long = withContext(Dispatchers.IO) {
-        client.api.getBalance(tokenProvider.publicKey.toPublicKey())
-    }
+    override suspend fun loadSolBalance(): Long =
+        rpcRepository.getBalance(tokenProvider.publicKey.toPublicKey())
 
     override suspend fun loadTokens(): List<Token> = withContext(Dispatchers.IO) {
-        val response = client.api.getProgramAccounts(
-            PublicKey(tokenProvider.rpcPublicKey),
-            32,
-            tokenProvider.publicKey
-        )
+        val response = rpcRepository.getTokenAccountsByOwner(tokenProvider.publicKey.toPublicKey())
 
-        val tokenAccounts = response.map { UserConverter.fromNetwork(it) }
-        val solBalance = loadSolBalance()
-
-        val result = tokenAccounts
-            .mapNotNull { account ->
-                val token = userLocalRepository.getDecimalsByToken(account.mintAddress) ?: return@mapNotNull null
-                val exchangeRate = userLocalRepository.getPriceByToken(token.symbol).getFormattedPrice()
-                val bid = userLocalRepository.getBidByToken(token.symbol).bid
-                val color = TokenColors.findColorBySymbol(token.symbol)
-
-                TokenConverter.fromNetwork(token, account, exchangeRate, bid, color)
+        val result = response.accounts
+            .mapNotNull {
+                val mintAddress = it.account.data.parsed.info.mint
+                val token = userLocalRepository.getDecimalsByToken(mintAddress) ?: return@mapNotNull null
+                val total = it.account.data.parsed.info.tokenAmount.amount.toBigInteger()
+                val price = userLocalRepository.getPriceByToken(token.symbol)
+                Token(
+                    publicKey = it.pubkey,
+                    mintAddress = mintAddress,
+                    tokenSymbol = token.symbol,
+                    decimals = token.decimals,
+                    tokenName = token.name,
+                    logoUrl = token.iconUrl,
+                    price = total.fromLamports(token.decimals).times(price.price),
+                    total = BigDecimal(total).divide(token.decimals.toPowerValue()),
+                    color = TokenColors.findColorBySymbol(token.symbol),
+                    walletBinds = userLocalRepository.getBidByToken(token.symbol).bid,
+                    usdRate = price.price,
+                    visibility = TokenVisibility.DEFAULT
+                )
             }
             .toMutableList()
             .apply {
@@ -82,6 +84,7 @@ class UserRepositoryImpl(
         /*
          * Assuming that SOL is our default token
          * */
+        val solBalance = loadSolBalance()
         val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
         val solPrice = userLocalRepository.getPriceByToken(sol.tokenSymbol)
         val solBid = userLocalRepository.getBidByToken(sol.tokenSymbol)

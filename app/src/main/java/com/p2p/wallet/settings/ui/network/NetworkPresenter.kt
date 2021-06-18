@@ -14,12 +14,6 @@ class NetworkPresenter(
 
     override fun loadData() {
         val environment = environmentManager.loadEnvironment()
-        view?.showEnvironment(parse(environment))
-    }
-
-    private fun parse(url: String): Environment = when (url) {
-        Environment.DATAHUB.endpoint -> Environment.DATAHUB
-        Environment.SOLANA.endpoint -> Environment.SOLANA
-        else -> Environment.MAINNET
+        view?.showEnvironment(environment)
     }
 }

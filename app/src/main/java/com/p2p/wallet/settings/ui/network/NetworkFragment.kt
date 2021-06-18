@@ -36,7 +36,7 @@ class NetworkFragment :
 
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
         val environment = when (checkedId) {
-            R.id.solanaButton -> Environment.SOLANA
+            R.id.solanaButton -> Environment.PROJECT_SERUM
             R.id.datahubButton -> Environment.DATAHUB
             else -> Environment.MAINNET
         }
@@ -46,7 +46,7 @@ class NetworkFragment :
     override fun showEnvironment(environment: Environment) {
         val checkedId = when (environment) {
             Environment.MAINNET -> R.id.mainnetButton
-            Environment.SOLANA -> R.id.solanaButton
+            Environment.PROJECT_SERUM -> R.id.solanaButton
             Environment.DATAHUB -> R.id.datahubButton
         }
 

@@ -1,8 +1,8 @@
 package org.p2p.solanaj;
 
-import org.p2p.solanaj.core.AccountMeta;
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.model.core.AccountMeta;
+import org.p2p.solanaj.model.core.PublicKey;
+import org.p2p.solanaj.model.core.TransactionInstruction;
 import org.p2p.solanaj.rpc.Environment;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.RpcException;

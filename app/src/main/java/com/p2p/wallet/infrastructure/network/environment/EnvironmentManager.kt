@@ -1,45 +1,39 @@
 package com.p2p.wallet.infrastructure.network.environment
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.solanaj.rpc.RpcClient
-import java.util.concurrent.TimeUnit
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
 
 class EnvironmentManager(
-    private val context: Context,
-    private val sharedPreferences: SharedPreferences,
-    private val loggingInterceptor: HttpLoggingInterceptor
+    private val sharedPreferences: SharedPreferences
 ) {
 
     companion object {
-        private const val TIMEOUT_INTERVAL = 90L
+        const val MAINNET = "mainnet"
+        const val SERUM = "serum"
+        const val DATAHUB = "datahub"
     }
 
-    private val client: RpcClient
-
-    init {
-        client = RpcClient(loadEnvironment(), createOkHttpClient())
+    fun loadEnvironment(): Environment {
+        val url = sharedPreferences.getString(KEY_BASE_URL, Environment.MAINNET.endpoint).orEmpty()
+        return parse(url)
     }
-
-    fun loadEnvironment(): String = sharedPreferences.getString(KEY_BASE_URL, Environment.MAINNET.endpoint).orEmpty()
 
     fun saveEnvironment(environment: String) {
         sharedPreferences.edit { putString(KEY_BASE_URL, environment) }
-        client.updateEndpoint(environment)
     }
 
-    fun getClient(): RpcClient = client
+    fun getCurrentQualifier(): String = when (loadEnvironment()) {
+        Environment.MAINNET -> MAINNET
+        Environment.PROJECT_SERUM -> SERUM
+        Environment.DATAHUB -> DATAHUB
+    }
 
-    private fun createOkHttpClient(): OkHttpClient =
-        OkHttpClient.Builder()
-            .readTimeout(TIMEOUT_INTERVAL, TimeUnit.SECONDS)
-            .addInterceptor(loggingInterceptor)
-            .addInterceptor(DataHubInterceptor(context))
-            .build()
+    private fun parse(url: String): Environment = when (url) {
+        Environment.DATAHUB.endpoint -> Environment.DATAHUB
+        Environment.PROJECT_SERUM.endpoint -> Environment.PROJECT_SERUM
+        else -> Environment.MAINNET
+    }
 }

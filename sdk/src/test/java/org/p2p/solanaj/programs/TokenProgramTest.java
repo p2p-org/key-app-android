@@ -1,8 +1,8 @@
 package org.p2p.solanaj.programs;
 
 import org.junit.Test;
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.model.core.PublicKey;
+import org.p2p.solanaj.model.core.TransactionInstruction;
 import java.math.BigInteger;
 import java.util.Base64;
 
