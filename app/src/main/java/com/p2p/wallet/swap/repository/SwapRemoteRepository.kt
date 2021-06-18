@@ -1,12 +1,12 @@
 package com.p2p.wallet.swap.repository
 
 import com.p2p.wallet.common.network.Constants
+import com.p2p.wallet.rpc.RpcRepository
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.data.RpcRepository
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.TokenSwap
 import org.p2p.solanaj.model.core.Account
@@ -33,18 +33,24 @@ class SwapRemoteRepository(
     ): String = withContext(Dispatchers.IO) {
         val owner = Account.fromMnemonic(keys, "")
 
-        val tokenSwap = TokenSwap(rpcRepository)
+        val tokenSwap = TokenSwap()
 
         return@withContext tokenSwap.swap(
-            owner,
-            request.pool,
-            request.slippage,
-            request.amount,
-            request.balanceA,
-            request.balanceB,
-            Constants.WRAPPED_SOL_MINT.toPublicKey(),
-            accountA?.publicKey?.toPublicKey(),
-            accountB?.publicKey?.toPublicKey()
+            owner = owner,
+            pool = request.pool,
+            slippage = request.slippage,
+            amountIn = request.amount,
+            balanceA = request.balanceA,
+            balanceB = request.balanceB,
+            wrappedSolAccount = Constants.WRAPPED_SOL_MINT.toPublicKey(),
+            accountAddressA = accountA?.publicKey?.toPublicKey(),
+            accountAddressB = accountB?.publicKey?.toPublicKey(),
+            getAccountInfo = { rpcRepository.getAccountInfo(it) },
+            getBalanceNeeded = { rpcRepository.getMinimumBalanceForRentExemption(it) },
+            sendTransaction = { transaction, signers ->
+                val recentBlockhash = rpcRepository.getRecentBlockhash()
+                rpcRepository.sendTransaction(recentBlockhash, transaction, signers)
+            }
         )
     }
 }

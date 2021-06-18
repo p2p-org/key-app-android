@@ -1,4 +1,4 @@
-package org.p2p.solanaj.data.api
+package com.p2p.wallet.rpc
 
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.model.types.AccountInfo

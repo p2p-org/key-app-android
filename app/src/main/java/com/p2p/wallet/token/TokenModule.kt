@@ -14,8 +14,8 @@ object TokenModule : InjectionModule {
 
     override fun create(): Module = module {
 
-        single { TokenRemoteRepository(get()) } bind TokenRepository::class
-        single { TokenInteractor(get()) }
+        factory { TokenRemoteRepository(get()) } bind TokenRepository::class
+        factory { TokenInteractor(get()) }
         factory { TokenDetailsPresenter(get(), get()) } bind TokenDetailsContract.Presenter::class
     }
 }

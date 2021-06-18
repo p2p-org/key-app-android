@@ -60,7 +60,7 @@ class TokenViewHolder(
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 
         if (!token.logoUrl.isNullOrEmpty()) {
-            Glide.with(tokenImageView).load(token.logoUrl).into(tokenImageView)
+            loadLogo(token.logoUrl)
         }
 
         nameTextView.text = token.tokenSymbol

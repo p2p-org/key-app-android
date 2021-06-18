@@ -10,25 +10,21 @@ class EnvironmentManager(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    companion object {
-        const val MAINNET = "mainnet"
-        const val SERUM = "serum"
-        const val DATAHUB = "datahub"
+    private var onChanged: ((Environment) -> Unit)? = null
+
+    fun setOnEnvironmentListener(onChanged: (Environment) -> Unit) {
+        this.onChanged = onChanged
     }
 
     fun loadEnvironment(): Environment {
-        val url = sharedPreferences.getString(KEY_BASE_URL, Environment.MAINNET.endpoint).orEmpty()
+        val url = sharedPreferences.getString(KEY_BASE_URL, Environment.PROJECT_SERUM.endpoint).orEmpty()
         return parse(url)
     }
 
-    fun saveEnvironment(environment: String) {
-        sharedPreferences.edit { putString(KEY_BASE_URL, environment) }
-    }
+    fun saveEnvironment(newEnvironment: String) {
+        sharedPreferences.edit { putString(KEY_BASE_URL, newEnvironment) }
 
-    fun getCurrentQualifier(): String = when (loadEnvironment()) {
-        Environment.MAINNET -> MAINNET
-        Environment.PROJECT_SERUM -> SERUM
-        Environment.DATAHUB -> DATAHUB
+        onChanged?.invoke(parse(newEnvironment))
     }
 
     private fun parse(url: String): Environment = when (url) {

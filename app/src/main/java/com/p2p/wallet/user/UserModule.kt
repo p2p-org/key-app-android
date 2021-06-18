@@ -8,7 +8,6 @@ import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.CompareTokenInterceptor
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEOUT_SECONDS
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
-import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.user.interactor.UserInteractor
@@ -22,7 +21,6 @@ import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.data.RpcRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
@@ -59,9 +57,7 @@ object UserModule : InjectionModule {
         }
 
         factory {
-            val qualifier = get<EnvironmentManager>().getCurrentQualifier()
-            val repository = get<RpcRepository>(named(qualifier))
-            UserRepositoryImpl(get(), get(), get(), get(), repository)
+            UserRepositoryImpl(get(), get(), get(), get(), get())
         } bind UserRepository::class
 
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }

@@ -1,7 +1,6 @@
 package com.p2p.wallet.main
 
 import com.p2p.wallet.common.di.InjectionModule
-import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.repository.MainDatabaseRepository
 import com.p2p.wallet.main.repository.MainLocalRepository
@@ -16,23 +15,17 @@ import com.p2p.wallet.main.ui.send.SendPresenter
 import com.p2p.wallet.swap.ui.SwapContract
 import com.p2p.wallet.swap.ui.SwapPresenter
 import com.p2p.wallet.token.model.Token
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.data.RpcRepository
 
 object MainModule : InjectionModule {
 
     override fun create() = module {
-        factory {
-            val qualifier = get<EnvironmentManager>().getCurrentQualifier()
-            val repository = get<RpcRepository>(named(qualifier))
-            MainRemoteRepository(get(), repository)
-        } bind MainRepository::class
+        factory { MainRemoteRepository(get(), get()) } bind MainRepository::class
         factory { MainDatabaseRepository(get()) } bind MainLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
+        factory { MainPresenter(get(), get()) } bind MainContract.Presenter::class
         factory { MainInteractor(get(), get()) }
 
         factory { SwapPresenter(get(), get()) } bind SwapContract.Presenter::class

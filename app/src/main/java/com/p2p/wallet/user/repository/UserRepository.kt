@@ -19,7 +19,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.data.RpcRepository
+import com.p2p.wallet.rpc.RpcRepository
 import org.p2p.solanaj.model.core.Account
 import java.math.BigDecimal
 

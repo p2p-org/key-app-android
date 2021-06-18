@@ -10,7 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
-import org.p2p.solanaj.data.RpcRepository
+import com.p2p.wallet.rpc.RpcRepository
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.TransactionRequest
 import org.p2p.solanaj.model.types.ConfirmedTransaction

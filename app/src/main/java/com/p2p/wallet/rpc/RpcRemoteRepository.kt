@@ -1,8 +1,7 @@
-package org.p2p.solanaj.data.repository
+package com.p2p.wallet.rpc
 
 import android.util.Base64
-import org.p2p.solanaj.data.RpcRepository
-import org.p2p.solanaj.data.api.RpcApi
+import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.model.core.Account
@@ -18,11 +17,28 @@ import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.rpc.Environment
 import java.util.HashMap
 
 class RpcRemoteRepository(
-    private val rpcApi: RpcApi
+    private val serumApi: RpcApi,
+    private val mainnetApi: RpcApi,
+    private val datahubApi: RpcApi,
+    environmentManager: EnvironmentManager
 ) : RpcRepository {
+
+    private var rpcApi: RpcApi
+
+    init {
+        rpcApi = createRpcApi(environmentManager.loadEnvironment())
+        environmentManager.setOnEnvironmentListener { rpcApi = createRpcApi(it) }
+    }
+
+    private fun createRpcApi(environment: Environment): RpcApi = when (environment) {
+        Environment.PROJECT_SERUM -> serumApi
+        Environment.MAINNET -> mainnetApi
+        Environment.DATAHUB -> datahubApi
+    }
 
     override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
         val params = listOf(account.toString())

@@ -1,10 +1,10 @@
 package org.p2p.solanaj.kits
 
-import org.p2p.solanaj.data.RpcRepository
 import org.p2p.solanaj.kits.Pool.PoolInfo
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
+import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
@@ -15,9 +15,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.ArrayList
 
-class TokenSwap(
-    private val rpcRepository: RpcRepository
-) {
+class TokenSwap {
 
     @Throws(RpcException::class)
     suspend fun swap(
@@ -29,7 +27,10 @@ class TokenSwap(
         balanceB: TokenAccountBalance,
         wrappedSolAccount: PublicKey,
         accountAddressA: PublicKey?,
-        accountAddressB: PublicKey?
+        accountAddressB: PublicKey?,
+        getAccountInfo: suspend (PublicKey) -> AccountInfo,
+        getBalanceNeeded: suspend (Long) -> Long,
+        sendTransaction: suspend (transaction: TransactionRequest, signers: List<Account>) -> String
     ): String {
         val signers = ArrayList(listOf(owner))
         val transaction = TransactionRequest()
@@ -42,10 +43,10 @@ class TokenSwap(
         val mintA = if (isTokenAEqTokenAccountA) pool.mintA else pool.mintB
         val mintB = if (isTokenAEqTokenAccountA) pool.mintB else pool.mintA
 
-        val accountInfo = rpcRepository.getAccountInfo(tokenA)
+        val accountInfo = getAccountInfo.invoke(tokenA)
         val tokenAInfo = TokenTransaction.getAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
         val space = AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
-        val balanceNeeded = rpcRepository.getMinimumBalanceForRentExemption(space.toLong())
+        val balanceNeeded = getBalanceNeeded.invoke(space.toLong())
 
         val fromAccount: PublicKey? = if (tokenAInfo.isNative) {
             val newAccount = Account()
@@ -145,8 +146,7 @@ class TokenSwap(
             transaction.addInstruction(closeAccountInstruction)
         }
         signers.add(userTransferAuthority)
-        val recentBlockhash = rpcRepository.getRecentBlockhash()
-        return rpcRepository.sendTransaction(recentBlockhash, transaction, signers)
+        return sendTransaction.invoke(transaction, signers)
     }
 
     companion object {

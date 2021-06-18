@@ -5,20 +5,16 @@ import com.google.gson.GsonBuilder
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.environment.DataHubInterceptor
-import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager.Companion.DATAHUB
-import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager.Companion.MAINNET
-import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager.Companion.SERUM
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
+import com.p2p.wallet.rpc.RpcApi
+import com.p2p.wallet.rpc.RpcRemoteRepository
+import com.p2p.wallet.rpc.RpcRepository
 import com.p2p.wallet.user.UserModule.createLoggingInterceptor
 import okhttp3.OkHttpClient
-import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.data.RpcRepository
-import org.p2p.solanaj.data.api.RpcApi
-import org.p2p.solanaj.data.repository.RpcRemoteRepository
 import org.p2p.solanaj.rpc.Environment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -41,22 +37,17 @@ object NetworkModule : InjectionModule {
                 .create()
         }
 
-        single(named(MAINNET)) {
-            val retrofit = getRetrofit(Environment.MAINNET.endpoint, "MAIN-NET")
-            val rpcApi = retrofit.create(RpcApi::class.java)
-            RpcRemoteRepository(rpcApi)
-        } bind RpcRepository::class
+        single {
+            val serum = getRetrofit(Environment.PROJECT_SERUM.endpoint, "OkHttpClient")
+            val serumRpcApi = serum.create(RpcApi::class.java)
 
-        single(named(SERUM)) {
-            val retrofit = getRetrofit(Environment.PROJECT_SERUM.endpoint, "PROJECT-SERUM")
-            val rpcApi = retrofit.create(RpcApi::class.java)
-            RpcRemoteRepository(rpcApi)
-        } bind RpcRepository::class
+            val mainnet = getRetrofit(Environment.MAINNET.endpoint, "OkHttpClient")
+            val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-        single(named(DATAHUB)) {
-            val retrofit = getRetrofit(Environment.DATAHUB.endpoint, "DATAHUB")
-            val rpcApi = retrofit.create(RpcApi::class.java)
-            RpcRemoteRepository(rpcApi)
+            val datahub = getRetrofit(Environment.DATAHUB.endpoint, "OkHttpClient")
+            val datahubRpcApi = datahub.create(RpcApi::class.java)
+
+            RpcRemoteRepository(serumRpcApi, mainnetRpcApi, datahubRpcApi, get())
         } bind RpcRepository::class
     }
 
