@@ -19,7 +19,7 @@ import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.rpc.types.TokenAccountBalance
+import org.p2p.solanaj.model.types.TokenAccountBalance
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.properties.Delegates

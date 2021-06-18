@@ -12,8 +12,10 @@ import org.koin.dsl.module
 object SwapModule : InjectionModule {
 
     override fun create() = module {
+        factory { SwapRemoteRepository(get()) } bind SwapRepository::class
+
         single { SwapInMemoryRepository() } bind SwapLocalRepository::class
-        single { SwapRemoteRepository(get()) } bind SwapRepository::class
-        single { SwapInteractor(get(), get(), get(), get()) }
+
+        factory { SwapInteractor(get(), get(), get(), get()) }
     }
 }

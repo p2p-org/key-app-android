@@ -1,7 +1,7 @@
 package org.p2p.solanaj.programs;
 
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.model.core.PublicKey;
+import org.p2p.solanaj.model.core.TransactionInstruction;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

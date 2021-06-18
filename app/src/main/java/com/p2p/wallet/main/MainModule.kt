@@ -21,11 +21,11 @@ import org.koin.dsl.module
 object MainModule : InjectionModule {
 
     override fun create() = module {
-        single { MainRemoteRepository(get(), get()) } bind MainRepository::class
-        single { MainDatabaseRepository(get()) } bind MainLocalRepository::class
+        factory { MainRemoteRepository(get(), get()) } bind MainRepository::class
+        factory { MainDatabaseRepository(get()) } bind MainLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
+        factory { MainPresenter(get(), get()) } bind MainContract.Presenter::class
         factory { MainInteractor(get(), get()) }
 
         factory { SwapPresenter(get(), get()) } bind SwapContract.Presenter::class

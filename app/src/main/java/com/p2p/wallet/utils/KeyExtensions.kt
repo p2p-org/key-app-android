@@ -1,6 +1,6 @@
 package com.p2p.wallet.utils
 
-import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.model.core.PublicKey
 
 fun String.toPublicKey() = PublicKey(this)
 

@@ -11,9 +11,9 @@ import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.rpc.types.TokenAccountBalance
+import org.p2p.solanaj.model.types.TokenAccountBalance
 import java.math.BigDecimal
 import java.math.BigInteger
 

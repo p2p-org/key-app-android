@@ -107,8 +107,6 @@ class MainPresenter(
     }
 
     private fun loadTokensFromRemote() {
-        if (tokens.isNotEmpty()) return
-
         launch {
             try {
                 userInteractor.loadTokens()

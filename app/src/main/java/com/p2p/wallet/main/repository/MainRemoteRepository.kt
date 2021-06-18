@@ -10,36 +10,48 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Utils
-import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.TransactionRequest
+import com.p2p.wallet.rpc.RpcRepository
+import org.p2p.solanaj.model.core.Account
+import org.p2p.solanaj.model.core.TransactionRequest
+import org.p2p.solanaj.model.types.ConfirmedTransaction
+import org.p2p.solanaj.model.types.RecentBlockhash
+import org.p2p.solanaj.model.types.TransferInfoResponse
 import org.p2p.solanaj.programs.SystemProgram
-import org.p2p.solanaj.rpc.RpcClient
-import org.p2p.solanaj.rpc.types.ConfirmedTransaction
-import org.p2p.solanaj.rpc.types.TransferInfoResponse
 
 class MainRemoteRepository(
-    private val client: RpcClient,
     private val tokenProvider: TokenKeyProvider,
+    private val rpcRepository: RpcRepository
 ) : MainRepository {
 
-    override suspend fun sendToken(targetAddress: String, lamports: Long, tokenSymbol: String): String =
-        withContext(Dispatchers.IO) {
-            val sourcePublicKey = tokenProvider.publicKey.toPublicKey()
-            val targetPublicKey = targetAddress.toPublicKey()
-            val signer = Account(tokenProvider.secretKey)
+    override suspend fun sendToken(
+        blockhash: RecentBlockhash,
+        targetAddress: String,
+        lamports: Long,
+        tokenSymbol: String
+    ): String {
 
-            val transaction = TransactionRequest()
-            transaction.addInstruction(
-                SystemProgram.transfer(sourcePublicKey, targetPublicKey, lamports)
-            )
+        val sourcePublicKey = tokenProvider.publicKey.toPublicKey()
+        val targetPublicKey = targetAddress.toPublicKey()
+        val signer = Account(tokenProvider.secretKey)
 
-            client.api.sendTransaction(transaction, signer)
-        }
+        val transaction = TransactionRequest()
+        val instruction = SystemProgram.transfer(
+            sourcePublicKey,
+            targetPublicKey,
+            lamports
+        )
+        transaction.addInstruction(instruction)
+
+        return rpcRepository.sendTransaction(blockhash, transaction, listOf(signer))
+    }
+
+    override suspend fun getRecentBlockhash(): RecentBlockhash =
+        rpcRepository.getRecentBlockhash()
 
     /* TODO: will be refactored */
     override suspend fun getHistory(publicKey: String, tokenSymbol: String, limit: Int): List<Transaction> =
         withContext(Dispatchers.IO) {
-            val signatures = client.api.getConfirmedSignaturesForAddress2(publicKey.toPublicKey(), limit)
+            val signatures = rpcRepository.getConfirmedSignaturesForAddress2(publicKey.toPublicKey(), limit)
 
             return@withContext signatures
                 .map {
@@ -61,47 +73,44 @@ class MainRemoteRepository(
                 .sortedByDescending { it.date.toInstant().toEpochMilli() }
         }
 
-    private suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfoResponse? =
-        withContext(Dispatchers.IO) {
-            val trx = client.api.getConfirmedTransaction(signature)
-            val message: ConfirmedTransaction.Message = trx.transaction.message
-            val meta: ConfirmedTransaction.Meta = trx.meta
-            val instructions = message.instructions
+    private suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfoResponse? {
+        val trx = rpcRepository.getConfirmedTransaction(signature)
+        val message: ConfirmedTransaction.Message = trx.transaction.message
+        val meta: ConfirmedTransaction.Meta = trx.meta
+        val instructions = message.instructions
 
-            for (instruction in instructions) {
-                if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.ownerKey) {
+        for (instruction in instructions) {
+            if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.ownerKey) {
+                val data = Base58.decode(instruction.data)
+                val lamports = Utils.readInt64(data, 4)
+
+                return TransferInfoResponse(
+                    message.accountKeys[instruction.accounts[0].toInt()],
+                    message.accountKeys[instruction.accounts[1].toInt()],
+                    lamports,
+                    slot,
+                    signature,
+                    meta.fee
+                )
+            } else {
+                if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.rpcPublicKey) {
                     val data = Base58.decode(instruction.data)
-                    val lamports = Utils.readInt64(data, 4)
+                    val lamports = Utils.readInt64(data, 1)
 
-                    return@withContext TransferInfoResponse(
+                    return TransferInfoResponse(
                         message.accountKeys[instruction.accounts[0].toInt()],
-                        message.accountKeys[instruction.accounts[0].toInt()],
+                        message.accountKeys[instruction.accounts[1].toInt()],
                         lamports,
                         slot,
                         signature,
                         meta.fee
                     )
-                } else {
-                    if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.rpcPublicKey) {
-                        val data = Base58.decode(instruction.data)
-//                        val lamports = Utils.readInt64(data, 1)
-                        val lamports = 100L
-
-                        return@withContext TransferInfoResponse(
-                            message.accountKeys[instruction.accounts[0].toInt()],
-                            message.accountKeys[instruction.accounts[0].toInt()],
-                            lamports,
-                            slot,
-                            signature,
-                            meta.fee
-                        )
-                    }
                 }
             }
-            return@withContext null
         }
-
-    private suspend fun getBlockTime(slot: Long) = withContext(Dispatchers.IO) {
-        client.api.getBlockTime(slot)
+        return null
     }
+
+    private suspend fun getBlockTime(slot: Long) =
+        rpcRepository.getBlockTime(slot)
 }

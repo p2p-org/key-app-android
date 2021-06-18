@@ -3,10 +3,11 @@ package com.p2p.wallet.user
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.CompareTokenInterceptor
+import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEOUT_SECONDS
+import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
 import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.user.interactor.UserInteractor
@@ -27,9 +28,6 @@ import java.util.concurrent.TimeUnit
 
 object UserModule : InjectionModule {
 
-    private const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 60L
-    private const val DEFAULT_READ_TIMEOUT_SECONDS = 60L
-
     private const val CRYPTO_COMPARE_QUALIFIER = "cryptocompare.com"
     private const val BONFIDA_QUALIFIER = "serum.bonfida"
 
@@ -38,7 +36,6 @@ object UserModule : InjectionModule {
         single(named(CRYPTO_COMPARE_QUALIFIER)) {
             val client = createOkHttpClient()
                 .addInterceptor(CompareTokenInterceptor(get()))
-                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("CompareApi")) }
                 .build()
 
             Retrofit.Builder()
@@ -50,7 +47,6 @@ object UserModule : InjectionModule {
 
         single(named(BONFIDA_QUALIFIER)) {
             val client = createOkHttpClient()
-                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("BonfidaApi")) }
                 .build()
 
             Retrofit.Builder()
@@ -59,6 +55,7 @@ object UserModule : InjectionModule {
                 .client(client)
                 .build()
         }
+
         factory {
             UserRepositoryImpl(get(), get(), get(), get(), get())
         } bind UserRepository::class
