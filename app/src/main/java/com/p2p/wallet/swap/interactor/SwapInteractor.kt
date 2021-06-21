@@ -90,7 +90,7 @@ class SwapInteractor(
     }
 
     fun calculateAmountInConvertingToken(amount: String, from: BigDecimal, to: BigDecimal): BigDecimal {
-        val currencyInFrom = if(!to.isZero()) from.div(to) else BigDecimal.ZERO
+        val currencyInFrom = if (!to.isZero()) from.div(to) else BigDecimal.ZERO
         val amountAsDouble = amount.toBigDecimalOrZero()
         return amountAsDouble.multiply(currencyInFrom)
     }
