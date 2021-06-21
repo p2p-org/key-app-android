@@ -55,7 +55,7 @@ class MainRemoteRepository(
 
             return@withContext signatures
                 .map {
-                    async { getConfirmedTransaction(it.signature, it.slot.toLong()) }
+                    async { getConfirmedTransaction(it.signature, it.slot) }
                 }
                 .mapNotNull {
                     val response = it.await() ?: return@mapNotNull null

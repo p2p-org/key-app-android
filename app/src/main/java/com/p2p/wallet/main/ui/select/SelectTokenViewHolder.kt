@@ -27,8 +27,8 @@ class SelectTokenViewHolder(
     )
 
     private val tokenImageView = binding.tokenImageView
+    private val symbolTextView = binding.symbolTextView
     private val nameTextView = binding.nameTextView
-    private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
     private val colorView = binding.colorView
@@ -41,8 +41,8 @@ class SelectTokenViewHolder(
         if (!item.logoUrl.isNullOrEmpty()) {
             Glide.with(tokenImageView).load(item.logoUrl).into(tokenImageView)
         }
-        nameTextView.text = item.tokenSymbol
-        addressTextView.text = item.getFormattedAddress()
+        symbolTextView.text = item.tokenSymbol
+        nameTextView.text = item.tokenName
         valueTextView.text = item.getFormattedPrice()
         totalTextView.text = item.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, item.color))

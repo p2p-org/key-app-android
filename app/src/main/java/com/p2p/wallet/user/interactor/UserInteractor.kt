@@ -49,12 +49,6 @@ class UserInteractor(
         userLocalRepository.setTokenPrices(prices)
     }
 
-    suspend fun loadTokenBids() {
-        val tokens = TokenColors.getSymbols()
-        val bids = userRepository.loadTokenBids(tokens)
-        userLocalRepository.setTokenBids(bids)
-    }
-
     fun loadTokensInfo() {
         val data = try {
             val inputStream: InputStream = context.assets.open("tokenlist.json")

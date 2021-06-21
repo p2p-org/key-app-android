@@ -111,11 +111,13 @@ class MainPresenter(
 
         launch {
             try {
+                view?.showHorizontalLoading(true)
                 userInteractor.getTokenDataFlow().collect {
                     val isDataLoaded = it.isNotEmpty()
                     if (isDataLoaded) {
                         Timber.tag("MAIN").d("Global token data is loaded. Starting fetching user's data")
                         userInteractor.loadTokens()
+                        view?.showHorizontalLoading(false)
                     }
                 }
                 Timber.d("Successfully loaded tokens")

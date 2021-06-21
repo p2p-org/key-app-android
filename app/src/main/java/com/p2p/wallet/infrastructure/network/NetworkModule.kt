@@ -39,20 +39,20 @@ object NetworkModule : InjectionModule {
         }
 
         single {
-            val serum = getRetrofit(Environment.PROJECT_SERUM.endpoint, "OkHttpClient")
+            val serum = getRetrofit(Environment.PROJECT_SERUM.endpoint)
             val serumRpcApi = serum.create(RpcApi::class.java)
 
-            val mainnet = getRetrofit(Environment.MAINNET.endpoint, "OkHttpClient")
+            val mainnet = getRetrofit(Environment.MAINNET.endpoint)
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-            val datahub = getRetrofit(Environment.DATAHUB.endpoint, "OkHttpClient")
+            val datahub = getRetrofit(Environment.DATAHUB.endpoint)
             val datahubRpcApi = datahub.create(RpcApi::class.java)
 
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, datahubRpcApi, get())
         } bind RpcRepository::class
     }
 
-    private fun Scope.getRetrofit(baseUrl: String, tag: String): Retrofit {
+    private fun Scope.getRetrofit(baseUrl: String, tag: String = "OkHttpClient"): Retrofit {
         val client = OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)

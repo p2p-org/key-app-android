@@ -117,28 +117,6 @@ class RpcRemoteRepository(
         return rpcApi.getTokenAccountsByOwner(rpcRequest)
     }
 
-    override suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation> {
-        val params = listOf(
-            account.toString(),
-            ConfigObjects.ConfirmedSignFAddr2(limit)
-        )
-
-        val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
-        return rpcApi.getConfirmedSignaturesForAddress2(rpcRequest)
-    }
-
-    override suspend fun getConfirmedTransaction(signature: String): ConfirmedTransaction {
-        val params = listOf(signature)
-        val rpcRequest = RpcRequest("getConfirmedTransaction", params)
-        return rpcApi.getConfirmedTransaction(rpcRequest)
-    }
-
-    override suspend fun getBlockTime(block: Long): Long {
-        val params = listOf(block)
-        val rpcRequest = RpcRequest("getBlockTime", params)
-        return rpcApi.getBlockTime(rpcRequest)
-    }
-
     override suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long {
         val params = listOf(dataLength)
         val rpcRequest = RpcRequest("getMinimumBalanceForRentExemption", params)
@@ -159,5 +137,27 @@ class RpcRemoteRepository(
         val rpcRequest = RpcRequest("getMultipleAccounts", params)
 
         return rpcApi.getMultipleAccounts(rpcRequest)
+    }
+
+    override suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation> {
+        val params = listOf(
+            account.toString(),
+            ConfigObjects.ConfirmedSignFAddr2(limit)
+        )
+
+        val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
+        return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest)
+    }
+
+    override suspend fun getConfirmedTransaction(signature: String): ConfirmedTransaction {
+        val params = listOf(signature)
+        val rpcRequest = RpcRequest("getConfirmedTransaction", params)
+        return mainnetApi.getConfirmedTransaction(rpcRequest)
+    }
+
+    override suspend fun getBlockTime(block: Long): Long {
+        val params = listOf(block)
+        val rpcRequest = RpcRequest("getBlockTime", params)
+        return mainnetApi.getBlockTime(rpcRequest)
     }
 }

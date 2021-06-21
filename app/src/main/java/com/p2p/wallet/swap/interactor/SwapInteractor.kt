@@ -1,7 +1,5 @@
 package com.p2p.wallet.swap.interactor
 
-import com.p2p.wallet.amount.isZero
-import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.swap.model.SwapRequest
@@ -12,8 +10,8 @@ import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -85,17 +83,11 @@ class SwapInteractor(
         amount: BigInteger,
         slippage: Double
     ): BigInteger {
-        val estimated = balanceB.amount.multiply(amount).divide(balanceA.amount.add(amount)).toBigDecimal()
-        return estimated.multiply((1 - slippage).toBigDecimal()).toBigInteger()
+        val estimated = balanceB.amount.multiply(amount).divide(balanceA.amount.add(amount))
+        return BigDecimal(estimated).multiply(BigDecimal(1 - slippage)).toBigInteger()
     }
 
-    fun calculateAmountInConvertingToken(amount: String, from: BigDecimal, to: BigDecimal): BigDecimal {
-        val currencyInFrom = if (!to.isZero()) from.div(to) else BigDecimal.ZERO
-        val amountAsDouble = amount.toBigDecimalOrZero()
-        return amountAsDouble.multiply(currencyInFrom)
-    }
-
-    private fun calculateAmountInOtherToken(
+    fun calculateAmountInOtherToken(
         pool: Pool.PoolInfo,
         inputAmount: BigInteger,
         withFee: Boolean,

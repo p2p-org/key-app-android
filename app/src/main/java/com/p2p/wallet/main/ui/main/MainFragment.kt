@@ -104,6 +104,10 @@ class MainFragment :
         binding.progressView.isVisible = isLoading
     }
 
+    override fun showHorizontalLoading(isLoading: Boolean) {
+        binding.horizontalProgressBar.isVisible = isLoading
+    }
+
     override fun showRefreshing(isRefreshing: Boolean) {
         with(binding) {
             refreshLayout.isRefreshing = isRefreshing

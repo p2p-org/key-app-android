@@ -100,8 +100,9 @@ class SwapFragment :
         binding.destinationAmountTextView.text = data.destinationAmount
     }
 
+    @SuppressLint("SetTextI18n")
     override fun showSlippage(slippage: Double) {
-        binding.slippageValueTextView.text = "$slippage"
+        binding.slippageValueTextView.text = "$slippage %"
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {

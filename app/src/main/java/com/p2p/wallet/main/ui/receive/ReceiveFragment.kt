@@ -73,11 +73,10 @@ class ReceiveFragment :
 
     override fun showReceiveToken(token: Token) {
         with(binding) {
-            qrTitleTextView.text = getString(R.string.main_receive_public_address, token.tokenSymbol)
             fullAddressTextView.text = token.publicKey.cutMiddle()
 
             viewButton.setOnClickListener {
-                val url = getString(R.string.solanaWalletExplorer, token.mintAddress)
+                val url = getString(R.string.solanaWalletExplorer, token.publicKey)
                 showUrlInCustomTabs(url)
             }
 
