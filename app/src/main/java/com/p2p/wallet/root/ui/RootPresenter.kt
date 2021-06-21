@@ -21,14 +21,11 @@ class RootPresenter(
         launch {
             try {
                 withContext(Dispatchers.Default) {
-                    userInteractor.loadTokensInfo()
+                    userInteractor.loadTokensData()
                 }
                 withContext(Dispatchers.Default) {
                     userInteractor.loadTokenPrices(BALANCE_CURRENCY)
                 }
-//                withContext(Dispatchers.Default) {
-//                    userInteractor.loadTokenBids()
-//                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading initial data prices and bids")
             }
