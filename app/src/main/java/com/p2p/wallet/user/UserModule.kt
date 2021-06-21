@@ -5,9 +5,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
-import com.p2p.wallet.infrastructure.network.CompareTokenInterceptor
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEOUT_SECONDS
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
+import com.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
 import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.user.interactor.UserInteractor

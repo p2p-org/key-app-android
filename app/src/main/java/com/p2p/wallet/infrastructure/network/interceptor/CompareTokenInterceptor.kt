@@ -1,4 +1,4 @@
-package com.p2p.wallet.infrastructure.network
+package com.p2p.wallet.infrastructure.network.interceptor
 
 import android.content.Context
 import com.p2p.wallet.R

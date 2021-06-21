@@ -1,5 +1,6 @@
 package com.p2p.wallet.swap.interactor
 
+import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -89,7 +90,7 @@ class SwapInteractor(
     }
 
     fun calculateAmountInConvertingToken(amount: String, from: BigDecimal, to: BigDecimal): BigDecimal {
-        val currencyInFrom = from.div(to)
+        val currencyInFrom = if(!to.isZero()) from.div(to) else BigDecimal.ZERO
         val amountAsDouble = amount.toBigDecimalOrZero()
         return amountAsDouble.multiply(currencyInFrom)
     }

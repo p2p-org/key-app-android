@@ -25,7 +25,7 @@ object MainModule : InjectionModule {
         factory { MainDatabaseRepository(get()) } bind MainLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        factory { MainPresenter(get(), get()) } bind MainContract.Presenter::class
+        single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
         factory { MainInteractor(get(), get()) }
 
         factory { SwapPresenter(get(), get()) } bind SwapContract.Presenter::class
