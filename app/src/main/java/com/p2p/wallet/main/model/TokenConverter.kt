@@ -2,6 +2,8 @@ package com.p2p.wallet.main.model
 
 import com.p2p.wallet.amount.fromLamports
 import com.p2p.wallet.amount.toBigDecimalOrZero
+import com.p2p.wallet.amount.toPowerValue
+import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.db.TokenEntity
 import com.p2p.wallet.token.model.Status
 import com.p2p.wallet.token.model.Token
@@ -9,7 +11,7 @@ import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.user.local.TokenResponse
 import com.p2p.wallet.user.model.TokenData
-import com.p2p.wallet.user.model.TokenProgramAccount
+import org.p2p.solanaj.model.types.Account
 import org.p2p.solanaj.model.types.TransferInfoResponse
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
@@ -26,24 +28,24 @@ object TokenConverter {
         )
 
     fun fromNetwork(
-        data: TokenData,
-        account: TokenProgramAccount,
-        exchangeRate: BigDecimal,
-        bid: BigDecimal,
-        color: Int
+        account: Account,
+        tokenData: TokenData,
+        price: TokenPrice
     ): Token {
-        val total = account.getTotal(data.decimals)
+        val data = account.account.data
+        val mintAddress = data.parsed.info.mint
+        val total = data.parsed.info.tokenAmount.amount.toBigInteger()
         return Token(
-            tokenSymbol = data.symbol,
-            tokenName = data.name,
-            logoUrl = data.iconUrl,
-            publicKey = account.publicKey,
-            mintAddress = account.mintAddress,
-            price = account.getFormattedPrice(exchangeRate, data.decimals),
-            total = total,
-            decimals = data.decimals,
-            color = color,
-            usdRate = exchangeRate,
+            publicKey = account.pubkey,
+            mintAddress = mintAddress,
+            tokenSymbol = tokenData.symbol,
+            decimals = tokenData.decimals,
+            tokenName = tokenData.name,
+            logoUrl = tokenData.iconUrl,
+            price = total.fromLamports(tokenData.decimals).times(price.price),
+            total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
+            color = TokenColors.findColorBySymbol(tokenData.symbol),
+            usdRate = price.price,
             visibility = TokenVisibility.DEFAULT
         )
     }

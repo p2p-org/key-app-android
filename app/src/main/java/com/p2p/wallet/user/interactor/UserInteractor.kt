@@ -49,7 +49,7 @@ class UserInteractor(
         userLocalRepository.setTokenPrices(prices)
     }
 
-    fun loadTokensInfo() {
+    fun loadTokensData() {
         val data = try {
             val inputStream: InputStream = context.assets.open("tokenlist.json")
             val size: Int = inputStream.available()

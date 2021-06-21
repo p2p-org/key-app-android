@@ -29,7 +29,7 @@ class EnvironmentManager(
 
     private fun parse(url: String): Environment = when (url) {
         Environment.DATAHUB.endpoint -> Environment.DATAHUB
-        Environment.PROJECT_SERUM.endpoint -> Environment.PROJECT_SERUM
-        else -> Environment.MAINNET
+        Environment.MAINNET.endpoint -> Environment.MAINNET
+        else -> Environment.PROJECT_SERUM
     }
 }

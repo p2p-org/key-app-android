@@ -1,15 +1,12 @@
 package com.p2p.wallet.user.repository
 
-import com.p2p.wallet.amount.fromLamports
 import com.p2p.wallet.amount.scalePrice
-import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
-import com.p2p.wallet.main.api.TokenColors
+import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.rpc.RpcRepository
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.model.UserConverter
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
@@ -66,25 +63,12 @@ class UserRepositoryImpl(
             .mapNotNull {
                 val mintAddress = it.account.data.parsed.info.mint
                 val token = userLocalRepository.getTokenData(mintAddress) ?: return@mapNotNull null
-                val total = it.account.data.parsed.info.tokenAmount.amount.toBigInteger()
                 val price = userLocalRepository.getPriceByToken(token.symbol)
-                Token(
-                    publicKey = it.pubkey,
-                    mintAddress = mintAddress,
-                    tokenSymbol = token.symbol,
-                    decimals = token.decimals,
-                    tokenName = token.name,
-                    logoUrl = token.iconUrl,
-                    price = total.fromLamports(token.decimals).times(price.price),
-                    total = BigDecimal(total).divide(token.decimals.toPowerValue()),
-                    color = TokenColors.findColorBySymbol(token.symbol),
-                    usdRate = price.price,
-                    visibility = TokenVisibility.DEFAULT
-                )
+                TokenConverter.fromNetwork(it, token, price)
             }
             .toMutableList()
-            .apply {
-                sortByDescending { it.total }
+            .also { tokens ->
+                tokens.sortByDescending { it.total }
             }
 
         /*

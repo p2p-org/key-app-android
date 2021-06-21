@@ -66,7 +66,7 @@
         android:layout_marginEnd="8dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
         android:textColor="?colorElementSecondary"
-        app:layout_constraintBottom_toBottomOf="@id/addressTextView"
+        app:layout_constraintBottom_toBottomOf="@id/nameTextView"
         app:layout_constraintEnd_toStartOf="@id/colorView"
         app:layout_constraintTop_toTopOf="@id/nameTextView"
         tools:text="1 500.0000 SOL" />
