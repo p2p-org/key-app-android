@@ -1,14 +1,16 @@
 package com.p2p.wallet.infrastructure.network
 
+import android.content.Context
 import java.io.IOException
 
 class ServerException(
-    errorCode: String,
-    errorDescription: String?,
-    errorMessage: String?
+    private val errorCode: ErrorCode,
+    private val errorMessage: String?
 ) : IOException("statusCode: $errorCode, errorMessage: $errorMessage") {
 
-    private val description: String? = errorDescription ?: errorMessage
-
-    fun getErrorDescription() = description
+    fun getErrorMessage(context: Context) = if (errorCode.hasSpecifiedMessage) {
+        context.getString(errorCode.messageRes)
+    } else {
+        errorMessage
+    }
 }

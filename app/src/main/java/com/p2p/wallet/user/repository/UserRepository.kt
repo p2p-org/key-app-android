@@ -9,6 +9,7 @@ import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.model.TokenPrice
+import com.p2p.wallet.rpc.RpcRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.model.TokenBid
@@ -19,7 +20,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import com.p2p.wallet.rpc.RpcRepository
 import org.p2p.solanaj.model.core.Account
 import java.math.BigDecimal
 
@@ -58,7 +58,7 @@ class UserRepositoryImpl(
         val result = response.accounts
             .mapNotNull {
                 val mintAddress = it.account.data.parsed.info.mint
-                val token = userLocalRepository.getDecimalsByToken(mintAddress) ?: return@mapNotNull null
+                val token = userLocalRepository.getTokenData(mintAddress) ?: return@mapNotNull null
                 val total = it.account.data.parsed.info.tokenAmount.amount.toBigInteger()
                 val price = userLocalRepository.getPriceByToken(token.symbol)
                 Token(

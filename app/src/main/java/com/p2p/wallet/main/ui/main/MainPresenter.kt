@@ -107,9 +107,17 @@ class MainPresenter(
     }
 
     private fun loadTokensFromRemote() {
+        if (tokens.isNotEmpty()) return
+
         launch {
             try {
-                userInteractor.loadTokens()
+                userInteractor.getTokenDataFlow().collect {
+                    val isDataLoaded = it.isNotEmpty()
+                    if (isDataLoaded) {
+                        Timber.tag("MAIN").d("Global token data is loaded. Starting fetching user's data")
+                        userInteractor.loadTokens()
+                    }
+                }
                 Timber.d("Successfully loaded tokens")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading tokens from remote")

@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.environment.DataHubInterceptor
+import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
 import com.p2p.wallet.rpc.RpcApi
@@ -57,6 +58,7 @@ object NetworkModule : InjectionModule {
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag)) }
             .addInterceptor(DataHubInterceptor(get()))
+            .addInterceptor(ServerErrorInterceptor(get()))
             .build()
 
         return Retrofit.Builder()
