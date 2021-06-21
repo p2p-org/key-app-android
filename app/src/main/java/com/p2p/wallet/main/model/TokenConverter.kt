@@ -11,7 +11,6 @@ import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.user.local.TokenResponse
 import com.p2p.wallet.user.model.TokenData
-import com.p2p.wallet.user.model.TokenProgramAccount
 import org.p2p.solanaj.model.types.Account
 import org.p2p.solanaj.model.types.TransferInfoResponse
 import org.threeten.bp.ZonedDateTime
