@@ -42,7 +42,6 @@ object TokenConverter {
             price = account.getFormattedPrice(exchangeRate, data.decimals),
             total = total,
             decimals = data.decimals,
-            walletBinds = bid,
             color = color,
             usdRate = exchangeRate,
             visibility = TokenVisibility.DEFAULT
@@ -89,7 +88,6 @@ object TokenConverter {
             iconUrl = token.logoUrl,
             price = token.price,
             total = token.total,
-            walletBinds = token.walletBinds,
             color = token.color,
             exchangeRate = token.usdRate.toString(),
             visibility = token.visibility.stringValue
@@ -105,7 +103,6 @@ object TokenConverter {
             logoUrl = entity.iconUrl,
             price = entity.price,
             total = entity.total,
-            walletBinds = entity.walletBinds,
             color = entity.color,
             usdRate = entity.exchangeRate.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility)

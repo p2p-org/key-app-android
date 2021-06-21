@@ -9,6 +9,9 @@ enum class ErrorCode(val messageRes: Int = DEFAULT_MESSAGE_RES) {
     @SerializedName("-32602")
     INVALID_TRANSACTION(R.string.error_invalid_transaction),
 
+    @SerializedName("-32002")
+    TRANSACTION_SIMULATION_FAILED(R.string.error_amount_error),
+
     @SerializedName("500")
     SERVER_ERROR;
 

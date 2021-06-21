@@ -22,7 +22,6 @@ data class Token constructor(
     val logoUrl: String?,
     val price: BigDecimal,
     val total: BigDecimal,
-    val walletBinds: BigDecimal,
     @ColorRes val color: Int,
     val usdRate: BigDecimal,
     val visibility: TokenVisibility
@@ -90,7 +89,6 @@ data class Token constructor(
             decimals = SOL_DECIMALS,
             total = BigDecimal(amount).divide(SOL_DECIMALS.toPowerValue()),
             price = BigDecimal.ZERO,
-            walletBinds = BigDecimal.ZERO,
             color = R.color.chartSOL,
             usdRate = BigDecimal.ZERO,
             visibility = TokenVisibility.SHOWN

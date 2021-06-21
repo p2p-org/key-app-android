@@ -6,7 +6,7 @@ fun String.toPublicKey() = PublicKey(this)
 
 @Suppress("MagicNumber")
 fun String.cutMiddle(): String {
-    val firstSix = this.take(10)
-    val lastFour = this.takeLast(10)
+    val firstSix = this.take(6)
+    val lastFour = this.takeLast(6)
     return "$firstSix...$lastFour"
 }

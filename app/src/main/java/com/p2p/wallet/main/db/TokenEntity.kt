@@ -36,9 +36,6 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_TOTAL)
     val total: BigDecimal,
 
-    @ColumnInfo(name = COLUMN_WALLET_BINDS)
-    val walletBinds: BigDecimal,
-
     @ColumnInfo(name = COLUMN_COLOR)
     val color: Int,
 
@@ -58,7 +55,6 @@ data class TokenEntity(
         const val COLUMN_ICON_URL = "icon_url"
         const val COLUMN_PRICE = "price"
         const val COLUMN_TOTAL = "total"
-        const val COLUMN_WALLET_BINDS = "wallet_binds"
         const val COLUMN_COLOR = "color"
         const val COLUMN_EXCHANGE_RATE = "exchange_rate"
         const val COLUMN_VISIBILITY = "visibility"

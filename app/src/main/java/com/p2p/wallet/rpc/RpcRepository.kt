@@ -25,9 +25,13 @@ interface RpcRepository {
     suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
     suspend fun getBalance(account: PublicKey): Long
     suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts
-    suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation>
-    suspend fun getConfirmedTransaction(signature: String): ConfirmedTransaction
-    suspend fun getBlockTime(block: Long): Long
     suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo
+
+    /**
+     * The history is being fetched from main-net despite the network choosed
+     * */
+    suspend fun getConfirmedTransaction(signature: String): ConfirmedTransaction
+    suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation>
+    suspend fun getBlockTime(block: Long): Long
 }

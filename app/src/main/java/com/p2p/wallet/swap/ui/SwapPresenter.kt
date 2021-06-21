@@ -202,31 +202,32 @@ class SwapPresenter(
     private fun calculateData(source: Token, destination: Token) {
         calculationJob?.cancel()
         calculationJob = launch {
-            val sourceBids = source.walletBinds
-            val destinationBids = destination.walletBinds
-            val calculatedAmount = swapInteractor.calculateAmountInConvertingToken(
-                sourceAmount, sourceBids, destinationBids
-            ).scaleAmount()
-
-            destinationAmount =
-                if (calculatedAmount == BigDecimal.ZERO) "0.0000" else calculatedAmount.toString()
-
             val pool = requirePool()
-            val sourceBalance =
+            val balanceA =
                 swapInteractor.loadTokenBalance(pool.tokenAccountA).also { sourceBalance = it }
-            val destinationBalance =
+            val balanceB =
                 swapInteractor.loadTokenBalance(pool.tokenAccountB).also { destinationBalance = it }
+
+            val calculatedAmount = swapInteractor.calculateAmountInOtherToken(
+                pool = pool,
+                inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
+                withFee = false,
+                tokenABalance = balanceA,
+                tokenBBalance = balanceB
+            ).fromLamports(destination.decimals).scaleAmount()
+
+            destinationAmount = calculatedAmount.toString()
 
             val fee = swapInteractor.calculateFee(
                 pool = pool,
-                inputAmount = calculatedAmount.toLamports(source.decimals),
-                tokenABalance = sourceBalance,
-                tokenBBalance = destinationBalance
+                inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
+                tokenABalance = balanceA,
+                tokenBBalance = balanceB
             )
             val minReceive = swapInteractor.calculateMinReceive(
-                balanceA = sourceBalance,
-                balanceB = destinationBalance,
-                amount = calculatedAmount.toLamports(source.decimals),
+                balanceA = balanceA,
+                balanceB = balanceB,
+                amount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
                 slippage = slippage
             )
 
@@ -235,9 +236,10 @@ class SwapPresenter(
                 minReceive = minReceive.fromLamports(destination.decimals).scaleAmount(),
                 minReceiveSymbol = destination.tokenSymbol,
                 fee = fee.fromLamports(destination.decimals).scaleAmount(),
-                feeSymbol = source.tokenSymbol
+                feeSymbol = destination.tokenSymbol
             )
             view?.showCalculations(data)
+            view?.showSlippage(slippage)
         }
     }
 

@@ -3,12 +3,12 @@ package com.p2p.wallet.user
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEOUT_SECONDS
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
 import com.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
-import com.p2p.wallet.main.api.BonfidaApi
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
@@ -29,12 +29,12 @@ import java.util.concurrent.TimeUnit
 object UserModule : InjectionModule {
 
     private const val CRYPTO_COMPARE_QUALIFIER = "cryptocompare.com"
-    private const val BONFIDA_QUALIFIER = "serum.bonfida"
 
     override fun create() = module {
 
         single(named(CRYPTO_COMPARE_QUALIFIER)) {
             val client = createOkHttpClient()
+                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("COMPARE")) }
                 .addInterceptor(CompareTokenInterceptor(get()))
                 .build()
 
@@ -45,23 +45,11 @@ object UserModule : InjectionModule {
                 .build()
         }
 
-        single(named(BONFIDA_QUALIFIER)) {
-            val client = createOkHttpClient()
-                .build()
-
-            Retrofit.Builder()
-                .baseUrl(get<Context>().getString(R.string.bonfidaBaseUrl))
-                .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
-                .client(client)
-                .build()
-        }
-
         factory {
-            UserRepositoryImpl(get(), get(), get(), get(), get())
+            UserRepositoryImpl(get(), get(), get(), get())
         } bind UserRepository::class
 
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }
-        factory { get<Retrofit>(named(BONFIDA_QUALIFIER)).create(BonfidaApi::class.java) }
 
         single { UserInMemoryRepository() } bind UserLocalRepository::class
         factory { UserInteractor(get(), get(), get(), get(), get(), get(), get()) }
