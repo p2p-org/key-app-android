@@ -29,7 +29,6 @@ class TransactionViewHolder(
     private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
-    private val statusImageView = binding.statusImageView
 
     @SuppressLint("SetTextI18n")
     fun onBind(item: TransactionOrDateItem.TransactionItem) {
@@ -52,16 +51,26 @@ class TransactionViewHolder(
             }
             is Transaction.Swap -> {
                 tokenImageView.setImageResource(R.drawable.ic_transaction_swap)
-                typeTextView.setText(R.string.main_receive)
+                typeTextView.setText(R.string.main_swap)
                 valueTextView.text = "+ ${item.transaction.getFormattedAmount()}"
                 totalTextView.text = "+ ${item.transaction.getFormattedTotal()}"
 
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
             }
-        }
-//        statusImageView.isVisible = true
-//        statusImageView.setImageResource(item.transaction.status)
+            is Transaction.CloseAccount -> {
+                tokenImageView.setImageResource(R.drawable.ic_trash)
+                typeTextView.setText(R.string.main_close_account)
+                addressTextView.text = "${item.transaction.tokenSymbol} Closed"
+                totalTextView.text = "+ ${item.transaction.getFormattedTotal()}"
+                valueTextView.text = "+ ${item.transaction.getFormattedAmount()}"
 
+                valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+            }
+            is Transaction.Unknown -> {
+                tokenImageView.setImageResource(R.drawable.ic_no_money)
+                typeTextView.setText(R.string.main_unknown)
+            }
+        }
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
     }
 

@@ -4,12 +4,12 @@ import android.util.Base64
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
-import org.p2p.solanaj.model.types.ConfirmedTransaction
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
@@ -139,6 +139,9 @@ class RpcRemoteRepository(
         return rpcApi.getMultipleAccounts(rpcRequest)
     }
 
+    /**
+     * The history is being fetched from main-net despite the selected network
+     * */
     override suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation> {
         val params = listOf(
             account.toString(),
@@ -149,15 +152,11 @@ class RpcRemoteRepository(
         return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest)
     }
 
-    override suspend fun getConfirmedTransaction(signature: String): ConfirmedTransaction {
-        val params = listOf(signature)
+    override suspend fun getConfirmedTransaction(signature: String): ConfirmedTransactionParsed {
+        val encoding = mapOf("encoding" to "jsonParsed")
+        val params = listOf(signature, encoding)
+
         val rpcRequest = RpcRequest("getConfirmedTransaction", params)
         return mainnetApi.getConfirmedTransaction(rpcRequest)
-    }
-
-    override suspend fun getBlockTime(block: Long): Long {
-        val params = listOf(block)
-        val rpcRequest = RpcRequest("getBlockTime", params)
-        return mainnetApi.getBlockTime(rpcRequest)
     }
 }

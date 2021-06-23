@@ -37,7 +37,6 @@ class TokenDetailsPresenter(
                 view?.showChartData(entries)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading token price history")
-                view?.showErrorMessage(e)
             }
         }
     }
@@ -50,7 +49,6 @@ class TokenDetailsPresenter(
                 view?.showChartData(entries)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading token price history")
-                view?.showErrorMessage(e)
             }
         }
     }

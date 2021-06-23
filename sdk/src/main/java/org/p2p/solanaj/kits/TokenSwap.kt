@@ -73,7 +73,7 @@ class TokenSwap {
         }
         var toAccount = accountAddressB
         val isWrappedSol = mintB.equals(wrappedSolAccount)
-        if (toAccount == null) {
+        if (toAccount == null || isWrappedSol) {
             val newAccount = Account()
             val newAccountPubKey = newAccount.publicKey
             val createAccountInstruction = SystemProgram.createAccount(

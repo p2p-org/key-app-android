@@ -83,6 +83,8 @@
     <string name="main_all_tokens">All tokens</string>
     <string name="main_no_data">You have no wallets yet</string>
     <string name="main_swap">Swap</string>
+    <string name="main_close_account">Close Account</string>
+    <string name="main_unknown">Unknown operation</string>
     <string name="main_from">From</string>
     <string name="main_swap_hint">0,0000</string>
     <string name="main_to">To</string>

@@ -1,8 +1,8 @@
 package com.p2p.wallet.rpc
 
 import org.p2p.solanaj.kits.MultipleAccountsInfo
+import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo
-import org.p2p.solanaj.model.types.ConfirmedTransaction
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RpcRequest
@@ -44,10 +44,7 @@ interface RpcApi {
     ): List<SignatureInformation>
 
     @POST
-    suspend fun getConfirmedTransaction(@Body rpcRequest: RpcRequest, @Url url: String = ""): ConfirmedTransaction
-
-    @POST
-    suspend fun getBlockTime(@Body rpcRequest: RpcRequest, @Url url: String = ""): Long
+    suspend fun getConfirmedTransaction(@Body rpcRequest: RpcRequest, @Url url: String = ""): ConfirmedTransactionParsed
 
     @POST
     suspend fun getMinimumBalanceForRentExemption(@Body rpcRequest: RpcRequest, @Url url: String = ""): Long

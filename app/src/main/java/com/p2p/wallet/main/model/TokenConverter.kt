@@ -5,14 +5,16 @@ import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.db.TokenEntity
-import com.p2p.wallet.token.model.Status
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.user.local.TokenResponse
 import com.p2p.wallet.user.model.TokenData
+import org.p2p.solanaj.kits.transaction.CloseAccountDetails
+import org.p2p.solanaj.kits.transaction.SwapDetails
+import org.p2p.solanaj.kits.transaction.TransactionDetails
+import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.model.types.Account
-import org.p2p.solanaj.model.types.TransferInfoResponse
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 
@@ -50,33 +52,61 @@ object TokenConverter {
         )
     }
 
-    /* todo: validate Swap operation, parse amount and total amount of token, validate status */
     fun fromNetwork(
-        response: TransferInfoResponse,
+        response: TransactionDetails?,
         publicKey: String,
-        tokenSymbol: String,
-        date: ZonedDateTime
+        symbol: String
     ): Transaction =
-        when {
-            response.from == publicKey ->
-                Transaction.Send(
+        when (response) {
+            is SwapDetails ->
+                Transaction.Swap(
+                    "",
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    ZonedDateTime.now(),
+                    symbol,
+                    "",
+                    ""
+                )
+            is TransferDetails ->
+                if (response.source == publicKey) {
+                    Transaction.Send(
+                        transactionId = response.signature,
+                        destination = response.destination,
+                        amount = response.amount.toBigInteger().fromLamports(response.decimals),
+                        total = response.amount.toBigInteger().fromLamports(response.decimals),
+                        date = ZonedDateTime.now(),
+                        tokenSymbol = symbol
+                    )
+                } else {
+                    Transaction.Receive(
+                        transactionId = response.signature,
+                        amount = response.amount.toBigInteger().fromLamports(response.decimals),
+                        total = response.amount.toBigInteger().fromLamports(response.decimals),
+                        date = ZonedDateTime.now(),
+                        senderAddress = response.source,
+                        tokenSymbol = symbol
+                    )
+                }
+
+            is CloseAccountDetails ->
+                Transaction.CloseAccount(
                     transactionId = response.signature,
-                    destination = response.to,
-                    amount = response.lamports.fromLamports(),
-                    total = response.lamports.fromLamports(),
-                    status = Status.SUCCESS,
-                    date = date,
-                    tokenSymbol = tokenSymbol
+                    account = response.account,
+                    destination = response.destination,
+                    owner = response.owner,
+                    amount = BigDecimal.ZERO,
+                    total = BigDecimal.ZERO,
+                    date = ZonedDateTime.now(),
+                    tokenSymbol = symbol
                 )
             else ->
-                Transaction.Receive(
-                    transactionId = response.signature,
-                    amount = response.lamports.fromLamports(),
-                    total = response.lamports.fromLamports(),
-                    status = Status.SUCCESS,
-                    date = date,
-                    senderAddress = response.from,
-                    tokenSymbol = tokenSymbol
+                Transaction.Unknown(
+                    "",
+                    BigDecimal.ZERO,
+                    BigDecimal.ZERO,
+                    ZonedDateTime.now(),
+                    ""
                 )
         }
 

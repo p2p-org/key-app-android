@@ -1,26 +1,27 @@
 package com.p2p.wallet.main.repository
 
-import com.p2p.wallet.common.date.toZonedDateTime
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TokenConverter
+import com.p2p.wallet.rpc.RpcRepository
 import com.p2p.wallet.token.model.Transaction
+import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import org.bitcoinj.core.Base58
-import org.bitcoinj.core.Utils
-import com.p2p.wallet.rpc.RpcRepository
+import org.p2p.solanaj.kits.transaction.CloseAccountDetails
+import org.p2p.solanaj.kits.transaction.TransactionDetails
+import org.p2p.solanaj.kits.transaction.TransactionDetailsType
+import org.p2p.solanaj.kits.transaction.TransactionTypeParser
+import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.TransactionRequest
-import org.p2p.solanaj.model.types.ConfirmedTransaction
 import org.p2p.solanaj.model.types.RecentBlockhash
-import org.p2p.solanaj.model.types.TransferInfoResponse
 import org.p2p.solanaj.programs.SystemProgram
 
 class MainRemoteRepository(
     private val tokenProvider: TokenKeyProvider,
-    private val rpcRepository: RpcRepository
+    private val rpcRepository: RpcRepository,
+    private val userLocalRepository: UserLocalRepository
 ) : MainRepository {
 
     override suspend fun sendToken(
@@ -48,69 +49,35 @@ class MainRemoteRepository(
     override suspend fun getRecentBlockhash(): RecentBlockhash =
         rpcRepository.getRecentBlockhash()
 
-    /* TODO: will be refactored */
-    override suspend fun getHistory(publicKey: String, tokenSymbol: String, limit: Int): List<Transaction> =
-        withContext(Dispatchers.IO) {
-            val signatures = rpcRepository.getConfirmedSignaturesForAddress2(publicKey.toPublicKey(), limit)
+    override suspend fun getHistory(publicKey: String, tokenSymbol: String, limit: Int): List<Transaction> {
+        val signatures = rpcRepository.getConfirmedSignaturesForAddress2(publicKey.toPublicKey(), limit)
 
-            return@withContext signatures
-                .map {
-                    async { getConfirmedTransaction(it.signature, it.slot) }
+        return signatures
+            .map { signature ->
+                val data = getConfirmedTransaction(signature.signature)
+                val swap = data.firstOrNull { it.type == TransactionDetailsType.SWAP }
+                val transfer = data.firstOrNull { it.type == TransactionDetailsType.TRANSFER }
+                val close = data.firstOrNull { it.type == TransactionDetailsType.CLOSE_ACCOUNT }
+                val unknown = data.firstOrNull { it.type == TransactionDetailsType.UNKNOWN }
+
+                val (details, symbol) = when {
+                    swap != null -> swap to ""
+                    transfer != null -> transfer to findSymbol((transfer as TransferDetails).mint)
+                    close != null -> close to ""
+                    else -> unknown to ""
                 }
-                .mapNotNull {
-                    val response = it.await() ?: return@mapNotNull null
-                    val dateRequest = async { getBlockTime(response.slot) }
-                    response to dateRequest
-                }
-                .map { (response, dateRequest) ->
-                    TokenConverter.fromNetwork(
-                        response,
-                        tokenProvider.publicKey,
-                        tokenSymbol,
-                        dateRequest.await().toZonedDateTime()
-                    )
-                }
-                .sortedByDescending { it.date.toInstant().toEpochMilli() }
-        }
 
-    private suspend fun getConfirmedTransaction(signature: String, slot: Long): TransferInfoResponse? {
-        val trx = rpcRepository.getConfirmedTransaction(signature)
-        val message: ConfirmedTransaction.Message = trx.transaction.message
-        val meta: ConfirmedTransaction.Meta = trx.meta
-        val instructions = message.instructions
-
-        for (instruction in instructions) {
-            if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.ownerKey) {
-                val data = Base58.decode(instruction.data)
-                val lamports = Utils.readInt64(data, 4)
-
-                return TransferInfoResponse(
-                    message.accountKeys[instruction.accounts[0].toInt()],
-                    message.accountKeys[instruction.accounts[1].toInt()],
-                    lamports,
-                    slot,
-                    signature,
-                    meta.fee
-                )
-            } else {
-                if (message.accountKeys[instruction.programIdIndex.toInt()] == tokenProvider.rpcPublicKey) {
-                    val data = Base58.decode(instruction.data)
-                    val lamports = Utils.readInt64(data, 1)
-
-                    return TransferInfoResponse(
-                        message.accountKeys[instruction.accounts[0].toInt()],
-                        message.accountKeys[instruction.accounts[1].toInt()],
-                        lamports,
-                        slot,
-                        signature,
-                        meta.fee
-                    )
-                }
+                TokenConverter.fromNetwork(details, publicKey, symbol)
             }
-        }
-        return null
+            .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private suspend fun getBlockTime(slot: Long) =
-        rpcRepository.getBlockTime(slot)
+    private suspend fun getConfirmedTransaction(signature: String): List<TransactionDetails> =
+        withContext(Dispatchers.Default) {
+            val response = rpcRepository.getConfirmedTransaction(signature)
+            return@withContext TransactionTypeParser.parse(response)
+        }
+
+    private fun findSymbol(mint: String): String =
+        userLocalRepository.getTokenData(mint)?.symbol.orEmpty()
 }
