@@ -12,7 +12,12 @@ public class SwapDetails extends TransactionDetails {
     private String amountA;
     private String amountB;
 
-    public SwapDetails(String data) {
+    public SwapDetails(String signature, long blockTime, String amountA, String amountB, String mintA, String mintB) {
+        super(signature, blockTime);
+        this.amountA = amountA;
+        this.amountB = amountB;
+        this.mintA = mintA;
+        this.mintB = mintB;
     }
 
     @Override

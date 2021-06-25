@@ -16,6 +16,7 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
+import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
 import java.util.HashMap
@@ -49,6 +50,41 @@ class RpcRemoteRepository(
     override suspend fun getRecentBlockhash(): RecentBlockhash {
         val rpcRequest = RpcRequest("getRecentBlockhash", null)
         return rpcApi.getRecentBlockhash(rpcRequest)
+    }
+
+    override suspend fun sendTransaction(
+        sourcePublicKey: PublicKey,
+        sourceSecretKey: ByteArray,
+        targetPublicKey: PublicKey,
+        lamports: Long,
+        recentBlockhash: RecentBlockhash
+    ): String {
+
+        val signers = listOf(Account(sourceSecretKey))
+
+        val transaction = TransactionRequest()
+        val instruction = SystemProgram.transfer(
+            sourcePublicKey,
+            targetPublicKey,
+            lamports
+        )
+        transaction.addInstruction(instruction)
+
+        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+        transaction.sign(signers)
+        val serializedTransaction = transaction.serialize()
+
+        val base64Trx = Base64
+            .encodeToString(serializedTransaction, Base64.DEFAULT)
+            .replace("\n", "")
+
+        val params = mutableListOf<Any>()
+
+        params.add(base64Trx)
+        params.add(RpcSendTransactionConfig())
+
+        val rpcRequest = RpcRequest("sendTransaction", params)
+        return rpcApi.sendTransaction(rpcRequest)
     }
 
     override suspend fun sendTransaction(

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserLocalRepository {
     fun setTokenPrices(prices: List<TokenPrice>)
-    fun getPriceByToken(token: String): TokenPrice
+    fun getPriceByToken(symbol: String): TokenPrice
 
     fun setTokenData(decimals: List<TokenData>)
     fun getTokenData(mintAddress: String): TokenData?

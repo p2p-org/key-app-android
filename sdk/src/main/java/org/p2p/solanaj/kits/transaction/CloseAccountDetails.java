@@ -6,13 +6,12 @@ public class CloseAccountDetails extends TransactionDetails {
     private String account;
     private String destination;
     private String owner;
-    private String signature;
 
-    public CloseAccountDetails(Map<String, Object> rawData) {
+    public CloseAccountDetails(String signature, long blockTime, Map<String, Object> rawData) {
+        super(signature, blockTime);
         this.account = (String) rawData.get("account");
         this.destination = (String) rawData.get("destination");
         this.owner = (String) rawData.get("owner");
-        this.signature = "123"; // fixme: add valid signature
     }
 
     @Override
@@ -23,10 +22,6 @@ public class CloseAccountDetails extends TransactionDetails {
     @Override
     public Object getInfo() {
         return this;
-    }
-
-    public String getSignature() {
-        return signature;
     }
 
     public String getAccount() {

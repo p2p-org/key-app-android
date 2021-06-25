@@ -15,13 +15,13 @@ class UserInMemoryRepository : UserLocalRepository {
         pricesFlow.value = prices
     }
 
-    override fun getPriceByToken(token: String): TokenPrice {
-        val price = pricesFlow.value.firstOrNull { it.tokenSymbol == token }
+    override fun getPriceByToken(symbol: String): TokenPrice {
+        val price = pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
         return if (price != null) {
             price
         } else {
-            Timber.w("No price found for token $token, continuing with 0")
-            TokenPrice(token, BigDecimal.ZERO)
+            Timber.w("No price found for token $symbol, continuing with 0")
+            TokenPrice(symbol, BigDecimal.ZERO)
         }
     }
 

@@ -23,13 +23,14 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:constraint_referenced_ids="addressTitleTextView,addressTextView,shareAddressImageView,mintAddressTextView,mintAddressTitleTextView,shareMintAddressImageView"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
+                app:menu="@menu/menu_receive"
                 app:navigationIcon="@drawable/ic_back"
                 app:title="@string/main_receive"
                 app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
@@ -44,10 +45,12 @@
 
             <TextView
                 android:id="@+id/qrTitleTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
-                android:text="@string/main_receive_scan_or_copy"
+                android:gravity="center"
+                android:text="@string/main_receive_unified_address"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -228,11 +231,34 @@
                 tools:ignore="UnusedAttribute"
                 tools:visibility="visible" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="16dp"
+                android:background="?colorElementTertiary"
+                app:layout_constraintBottom_toTopOf="@id/bottomInfoTextView" />
+
+            <TextView
+                android:id="@+id/bottomInfoTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="32dp"
+                android:drawablePadding="16dp"
+                android:text="@string/main_receive_bottom_info"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                android:textColor="?colorElementSecondary"
+                app:drawableStartCompat="@drawable/ic_lock"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
             <com.p2p.wallet.common.widget.ProgressView
                 android:id="@+id/progressView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:visibility="gone" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

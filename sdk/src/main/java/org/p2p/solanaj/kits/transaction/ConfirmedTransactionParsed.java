@@ -111,11 +111,69 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
 
     }
 
+    public static class InnerInstruction {
+        @Json(name = "index")
+        private int index;
+
+        @Json(name = "instructions")
+        private List<InstructionParsed> instructions;
+
+        public List<InstructionParsed> getInstructions() {
+            return instructions;
+        }
+
+    }
+
+    public static class PostTokenBalance {
+        @Json(name = "accountIndex")
+        private int accountIndex;
+        @Json(name = "mint")
+        private String mint;
+
+        public int getAccountIndex() {
+            return accountIndex;
+        }
+
+        public String getMint() {
+            return mint;
+        }
+
+    }
+
+    public static class Meta {
+        @Json(name = "innerInstructions")
+        private List<InnerInstruction> innerInstructions;
+        @Json(name = "postTokenBalances")
+        private List<PostTokenBalance> postTokenBalances;
+
+        public List<InnerInstruction> getInnerInstructions() {
+            return innerInstructions;
+        }
+
+        public List<PostTokenBalance> getPostTokenBalances() {
+            return postTokenBalances;
+        }
+    }
+
+    @Json(name = "blockTime")
+    private long blockTime;
+
     @Json(name = "transaction")
     private TransactionParsed transaction;
 
+    @Json(name = "meta")
+    private Meta meta;
+
     public TransactionParsed getTransaction() {
         return transaction;
+    }
+
+    public long getBlockTime() {
+        return blockTime;
+    }
+
+    public Meta getMeta() {
+        return meta;
     }
 
 }

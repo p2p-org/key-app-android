@@ -7,14 +7,12 @@ public class TransferDetails extends TransactionDetails {
     private String source;
     private String mint;
     private String amount;
-    private String signature;
     private int decimals;
 
-    public TransferDetails(String type, Map<String, Object> rawData) {
+    public TransferDetails(String signature, long blockTime, String type, Map<String, Object> rawData) {
+        super(signature, blockTime);
         this.destination = (String) rawData.get("destination");
         this.source = (String) rawData.get("source");
-        // fixme: add valid signature
-        this.signature = "123";
 
         if (type.equals("transferChecked")) {
             this.mint = (String) rawData.get("mint");
@@ -41,10 +39,6 @@ public class TransferDetails extends TransactionDetails {
 
     public String getSource() {
         return source;
-    }
-
-    public String getSignature() {
-        return signature;
     }
 
     public String getMint() {

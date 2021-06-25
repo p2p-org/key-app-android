@@ -14,7 +14,10 @@ import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.TransferDetails
+import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.model.types.Account
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 
@@ -55,35 +58,42 @@ object TokenConverter {
     fun fromNetwork(
         response: TransactionDetails?,
         publicKey: String,
-        symbol: String
-    ): Transaction =
+        symbol: String,
+        rate: TokenPrice
+    ): Transaction? =
         when (response) {
             is SwapDetails ->
                 Transaction.Swap(
-                    "",
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    ZonedDateTime.now(),
+                    response.signature,
+                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault()),
                     symbol,
-                    "",
-                    ""
+                    response.amountA.toBigInteger().fromLamports(),
+                    response.amountB.toBigInteger().fromLamports(),
+                    response.mintA,
+                    response.mintB
                 )
             is TransferDetails ->
                 if (response.source == publicKey) {
                     Transaction.Send(
                         transactionId = response.signature,
                         destination = response.destination,
-                        amount = response.amount.toBigInteger().fromLamports(response.decimals),
-                        total = response.amount.toBigInteger().fromLamports(response.decimals),
-                        date = ZonedDateTime.now(),
+                        amount = response.amount.toBigInteger().fromLamports(response.decimals).times(rate.price),
+                        total = BigDecimal(response.amount).divide(response.decimals.toPowerValue()),
+                        date = ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(response.blockTime),
+                            ZoneId.systemDefault()
+                        ),
                         tokenSymbol = symbol
                     )
                 } else {
                     Transaction.Receive(
                         transactionId = response.signature,
-                        amount = response.amount.toBigInteger().fromLamports(response.decimals),
-                        total = response.amount.toBigInteger().fromLamports(response.decimals),
-                        date = ZonedDateTime.now(),
+                        amount = response.amount.toBigInteger().fromLamports(response.decimals).times(rate.price),
+                        total = BigDecimal(response.amount).divide(response.decimals.toPowerValue()),
+                        date = ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(response.blockTime),
+                            ZoneId.systemDefault()
+                        ),
                         senderAddress = response.source,
                         tokenSymbol = symbol
                     )
@@ -95,19 +105,19 @@ object TokenConverter {
                     account = response.account,
                     destination = response.destination,
                     owner = response.owner,
-                    amount = BigDecimal.ZERO,
-                    total = BigDecimal.ZERO,
-                    date = ZonedDateTime.now(),
+                    date = ZonedDateTime.ofInstant(
+                        Instant.ofEpochMilli(response.blockTime),
+                        ZoneId.systemDefault()
+                    ),
                     tokenSymbol = symbol
                 )
-            else ->
+            is UnknownDetails ->
                 Transaction.Unknown(
-                    "",
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    ZonedDateTime.now(),
-                    ""
+                    response.signature,
+                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault()),
+                    symbol
                 )
+            else -> null
         }
 
     fun toDatabase(token: Token): TokenEntity =

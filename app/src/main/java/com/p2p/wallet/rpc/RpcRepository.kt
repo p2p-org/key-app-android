@@ -16,6 +16,14 @@ interface RpcRepository {
     suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance
     suspend fun getRecentBlockhash(): RecentBlockhash
     suspend fun sendTransaction(
+        sourcePublicKey: PublicKey,
+        sourceSecretKey: ByteArray,
+        targetPublicKey: PublicKey,
+        lamports: Long,
+        recentBlockhash: RecentBlockhash
+    ): String
+
+    suspend fun sendTransaction(
         recentBlockhash: RecentBlockhash,
         transaction: TransactionRequest,
         signers: List<Account>
