@@ -10,6 +10,7 @@ interface TokenDetailsContract {
     interface View : MvpView {
         fun showHistory(transactions: List<Transaction>)
         fun showChartData(entries: List<Entry>)
+        fun showLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

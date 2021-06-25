@@ -75,6 +75,12 @@ class ErrorBottomSheet(
     private val title: TextContainer by args(EXTRA_TITLE)
     private val message: TextContainer by args(EXTRA_MESSAGE)
 
+    override fun show(manager: FragmentManager, tag: String?) {
+        val ft = manager.beginTransaction()
+        ft.add(this, tag)
+        ft.commitAllowingStateLoss()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_error_bottom_sheet, container, false)
 

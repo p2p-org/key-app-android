@@ -48,6 +48,14 @@ class ReceiveFragment :
 
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setOnMenuItemClickListener {
+                if (it.itemId == R.id.infoItem) {
+                    ReceiveInfoBottomSheetDialog.show(childFragmentManager)
+                    return@setOnMenuItemClickListener true
+                }
+
+                return@setOnMenuItemClickListener false
+            }
 
             detailsButton.setOnClickListener {
                 detailsGroup.isVisible = !detailsGroup.isVisible

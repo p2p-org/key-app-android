@@ -5,51 +5,67 @@ import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 
 sealed class Transaction(
-    open val status: Status,
     open val date: ZonedDateTime
 ) {
 
     abstract val transactionId: String
     abstract val tokenSymbol: String
-    abstract val amount: BigDecimal
-    abstract val total: BigDecimal
-
-    fun getFormattedAmount(): String = "${amount.scaleAmount()} $"
-
-    fun getFormattedTotal(): String = "${total.scaleAmount()} $tokenSymbol"
 
     data class Swap(
         override val transactionId: String,
-        override val amount: BigDecimal,
-        override val total: BigDecimal,
-        override val status: Status,
         override val date: ZonedDateTime,
         override val tokenSymbol: String,
-        val sourceTokenUrl: String,
-        val destinationTokenUrl: String
-    ) : Transaction(status, date)
+        val amountA: BigDecimal,
+        val amountB: BigDecimal,
+        val mintA: String,
+        val mintB: String
+    ) : Transaction(date) {
+
+        fun getFormattedAmount(): String = "${amountA.scaleAmount()} $"
+
+        fun getFormattedTotal(): String = "${amountA.scaleAmount()} $tokenSymbol"
+    }
 
     data class Send(
         override val transactionId: String,
-        override val amount: BigDecimal,
-        override val total: BigDecimal,
-        override val status: Status,
         override val date: ZonedDateTime,
         override val tokenSymbol: String,
+        val amount: BigDecimal,
+        val total: BigDecimal,
         val destination: String
-    ) : Transaction(status, date)
+    ) : Transaction(date) {
+
+        fun getFormattedAmount(): String = "${amount.scaleAmount()} $"
+
+        fun getFormattedTotal(): String = "${total.scaleAmount()} $tokenSymbol"
+    }
 
     data class Receive(
         override val transactionId: String,
-        override val amount: BigDecimal,
-        override val total: BigDecimal,
-        override val status: Status,
         override val date: ZonedDateTime,
         override val tokenSymbol: String,
+        val amount: BigDecimal,
+        val total: BigDecimal,
         val senderAddress: String
-    ) : Transaction(status, date)
-}
+    ) : Transaction(date) {
 
-enum class Status {
-    SUCCESS, PENDING, ERROR;
+        fun getFormattedAmount(): String = "${amount.scaleAmount()} $"
+
+        fun getFormattedTotal(): String = "${total.scaleAmount()} $tokenSymbol"
+    }
+
+    data class CloseAccount(
+        val account: String,
+        val destination: String,
+        val owner: String,
+        override val transactionId: String,
+        override val date: ZonedDateTime,
+        override val tokenSymbol: String
+    ) : Transaction(date)
+
+    data class Unknown(
+        override val transactionId: String,
+        override val date: ZonedDateTime,
+        override val tokenSymbol: String
+    ) : Transaction(date)
 }

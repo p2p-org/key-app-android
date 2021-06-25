@@ -4,18 +4,19 @@ import android.util.Base64
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
-import org.p2p.solanaj.model.types.ConfirmedTransaction
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
+import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
 import java.util.HashMap
@@ -49,6 +50,41 @@ class RpcRemoteRepository(
     override suspend fun getRecentBlockhash(): RecentBlockhash {
         val rpcRequest = RpcRequest("getRecentBlockhash", null)
         return rpcApi.getRecentBlockhash(rpcRequest)
+    }
+
+    override suspend fun sendTransaction(
+        sourcePublicKey: PublicKey,
+        sourceSecretKey: ByteArray,
+        targetPublicKey: PublicKey,
+        lamports: Long,
+        recentBlockhash: RecentBlockhash
+    ): String {
+
+        val signers = listOf(Account(sourceSecretKey))
+
+        val transaction = TransactionRequest()
+        val instruction = SystemProgram.transfer(
+            sourcePublicKey,
+            targetPublicKey,
+            lamports
+        )
+        transaction.addInstruction(instruction)
+
+        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+        transaction.sign(signers)
+        val serializedTransaction = transaction.serialize()
+
+        val base64Trx = Base64
+            .encodeToString(serializedTransaction, Base64.DEFAULT)
+            .replace("\n", "")
+
+        val params = mutableListOf<Any>()
+
+        params.add(base64Trx)
+        params.add(RpcSendTransactionConfig())
+
+        val rpcRequest = RpcRequest("sendTransaction", params)
+        return rpcApi.sendTransaction(rpcRequest)
     }
 
     override suspend fun sendTransaction(
@@ -139,6 +175,9 @@ class RpcRemoteRepository(
         return rpcApi.getMultipleAccounts(rpcRequest)
     }
 
+    /**
+     * The history is being fetched from main-net despite the selected network
+     * */
     override suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation> {
         val params = listOf(
             account.toString(),
@@ -149,15 +188,11 @@ class RpcRemoteRepository(
         return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest)
     }
 
-    override suspend fun getConfirmedTransaction(signature: String): ConfirmedTransaction {
-        val params = listOf(signature)
+    override suspend fun getConfirmedTransaction(signature: String): ConfirmedTransactionParsed {
+        val encoding = mapOf("encoding" to "jsonParsed")
+        val params = listOf(signature, encoding)
+
         val rpcRequest = RpcRequest("getConfirmedTransaction", params)
         return mainnetApi.getConfirmedTransaction(rpcRequest)
-    }
-
-    override suspend fun getBlockTime(block: Long): Long {
-        val params = listOf(block)
-        val rpcRequest = RpcRequest("getBlockTime", params)
-        return mainnetApi.getBlockTime(rpcRequest)
     }
 }

@@ -54,11 +54,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="20dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:layout_constraintEnd_toStartOf="@id/statusImageView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/typeTextView"
         app:layout_goneMarginEnd="20dp"
         tools:text="- 10.00 $" />
@@ -76,17 +76,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/addressTextView"
         tools:text="0.0140 SOL" />
-
-    <ImageView
-        android:id="@+id/statusImageView"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginVertical="16dp"
-        android:layout_marginEnd="20dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/valueTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/valueTextView"
-        tools:ignore="ContentDescription"
-        tools:src="@drawable/ic_pending" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,7 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     companion object {
-        private const val CHUNKED_COUNT = 25
+        private const val CHUNKED_COUNT = 30
     }
 
     override suspend fun createAccount(keys: List<String>): Account = withContext(Dispatchers.IO) {

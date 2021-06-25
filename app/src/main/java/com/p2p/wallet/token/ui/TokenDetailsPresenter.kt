@@ -20,11 +20,14 @@ class TokenDetailsPresenter(
     override fun loadHistory(publicKey: String, tokenSymbol: String) {
         launch {
             try {
+                view?.showLoading(true)
                 val history = mainInteractor.getHistory(publicKey, tokenSymbol, HISTORY_LIMIT)
                 view?.showHistory(history)
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")
                 view?.showErrorMessage(e)
+            } finally {
+                view?.showLoading(false)
             }
         }
     }
@@ -37,7 +40,6 @@ class TokenDetailsPresenter(
                 view?.showChartData(entries)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading token price history")
-                view?.showErrorMessage(e)
             }
         }
     }
@@ -50,7 +52,6 @@ class TokenDetailsPresenter(
                 view?.showChartData(entries)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading token price history")
-                view?.showErrorMessage(e)
             }
         }
     }

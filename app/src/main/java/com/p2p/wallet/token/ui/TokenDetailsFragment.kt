@@ -135,6 +135,10 @@ class TokenDetailsFragment :
         }
     }
 
+    override fun showLoading(isLoading: Boolean) {
+        binding.horizontalProgressBar.isVisible = isLoading
+    }
+
     private fun setupTabsView() {
         with(binding) {
             val tabs = listOf(

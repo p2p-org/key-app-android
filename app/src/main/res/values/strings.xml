@@ -83,6 +83,8 @@
     <string name="main_all_tokens">All tokens</string>
     <string name="main_no_data">You have no wallets yet</string>
     <string name="main_swap">Swap</string>
+    <string name="main_close_account">Close Account</string>
+    <string name="main_unknown">Unknown operation</string>
     <string name="main_from">From</string>
     <string name="main_swap_hint">0,0000</string>
     <string name="main_to">To</string>
@@ -91,7 +93,7 @@
     <string name="main_send_now">Send now</string>
     <string name="main_send_to">Send to</string>
     <string name="main_wallet_address">Wallet address</string>
-    <string name="main_send_token_info">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
+    <string name="main_send_token_info">Send SOL or any SPL Tokens on one address</string>
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">≈ %s USD</string>
     <string name="main_send_available">Available: %s</string>
@@ -128,6 +130,14 @@
     <string name="main_invisible">Invisible</string>
     <string name="main_wallet_settings">Wallet settings</string>
     <string name="main_receive_show_details">Show address details</string>
+    <string name="main_receive_unified_address">One unified address to receive \nSOL or SPL Tokens</string>
+    <string name="main_receive_scan_or_copy">Scan or Copy QR code</string>
+    <string name="main_receive_address_copied">Address copied to clipboard!</string>
+    <string name="main_receive_hide_details">Hide address details</string>
+    <string name="main_receive_address_format">Direct %s Address</string>
+    <string name="main_receive_mint_format">%s Mint Address</string>
+    <string name="main_receive_bottom_info">All deposits are stored 100% non-custodiallity with keys held on this device</string>
+    <string name="main_receive_help">Help</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -171,9 +181,7 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
-    <string name="main_receive_scan_or_copy">Scan or Copy QR code</string>
-    <string name="main_receive_address_copied">Address copied to clipboard!</string>
-    <string name="main_receive_hide_details">Hide address details</string>
-    <string name="main_receive_address_format">Direct %s Address</string>
-    <string name="main_receive_mint_format">%s Mint Address</string>
+    <string name="main_receive_spl_title">SOL and SPL Tokens</string>
+    <string name="main_receive_spl_info">The Solana Program Library  (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain. \n\nSimilar to ERC20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications. SPL Tokens can be traded on Serum, a Solana based decentralized exchange and FTX.</string>
+
 </resources>
