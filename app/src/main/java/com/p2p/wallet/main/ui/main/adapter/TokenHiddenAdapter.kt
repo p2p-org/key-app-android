@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.token.model.Token
 
 class TokenHiddenAdapter(
+    private val isZerosHidden: Boolean,
     private val onItemClicked: (Token) -> Unit,
     private val onDeleteClicked: (Token) -> Unit,
     private val onEditClicked: (Token) -> Unit
@@ -24,6 +25,6 @@ class TokenHiddenAdapter(
         TokenHiddenViewHolder(parent, onItemClicked, onEditClicked, onDeleteClicked)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as TokenHiddenViewHolder).onBind(data[position])
+        (holder as TokenHiddenViewHolder).onBind(data[position], isZerosHidden)
     }
 }

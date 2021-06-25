@@ -23,8 +23,8 @@ class MainDatabaseRepository(
     override suspend fun getTokens(): List<Token> =
         tokenDao.getTokens().map { TokenConverter.fromDatabase(it) }
 
-    override suspend fun setTokenHidden(publicKey: String, visibility: String) {
-        tokenDao.updateVisibility(publicKey, visibility)
+    override suspend fun setTokenHidden(mintAddress: String, visibility: String) {
+        tokenDao.updateVisibility(mintAddress, visibility)
     }
 
     override suspend fun clear() {

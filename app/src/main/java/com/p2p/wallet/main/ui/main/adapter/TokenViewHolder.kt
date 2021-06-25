@@ -11,15 +11,15 @@ import com.bumptech.glide.request.RequestOptions
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
-import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.dip
 
 class TokenViewHolder(
     binding: ItemTokenBinding,
+    private val isZerosHidden: Boolean,
     private val onItemClicked: (Token) -> Unit,
     private val onEditClicked: (Token) -> Unit,
-    private val onDeleteClicked: (Token) -> Unit
+    private val onHideClicked: (Token) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
@@ -28,14 +28,16 @@ class TokenViewHolder(
 
     constructor(
         parent: ViewGroup,
+        isZerosHidden: Boolean,
         onItemClicked: (Token) -> Unit,
         onEditClicked: (Token) -> Unit,
         onDeleteClicked: (Token) -> Unit
     ) : this(
         binding = ItemTokenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+        isZerosHidden = isZerosHidden,
         onItemClicked = onItemClicked,
         onEditClicked = onEditClicked,
-        onDeleteClicked = onDeleteClicked
+        onHideClicked = onDeleteClicked
     )
 
     private val tokenImageView = binding.tokenImageView
@@ -48,7 +50,7 @@ class TokenViewHolder(
     private val editImageView = binding.editImageView
     private val contentView = binding.contentView
 
-    fun onBind(item: TokenItem.Shown) {
+    fun onBind(item: TokenAdapter.Companion.TokenAdapterItem.Shown) {
         val token = item.token
 
         if (token.isSOL) {
@@ -69,8 +71,8 @@ class TokenViewHolder(
         totalTextView.text = token.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, token.color))
 
-        deleteImageView.setImageResource(item.token.visibilityIcon)
-        deleteImageView.setOnClickListener { onDeleteClicked(token) }
+        deleteImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
+        deleteImageView.setOnClickListener { onHideClicked(token) }
         editImageView.setOnClickListener { onEditClicked(token) }
 
         contentView.setOnClickListener { onItemClicked(token) }

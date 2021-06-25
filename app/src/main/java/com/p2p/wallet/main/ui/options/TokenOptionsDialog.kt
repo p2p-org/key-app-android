@@ -49,7 +49,7 @@ class TokenOptionsDialog : NonDraggableBottomSheetDialogFragment() {
             hideSwitch.setOnCheckedChangeListener { _, isChecked ->
                 lifecycleScope.launch {
                     val visibility = if (isChecked) TokenVisibility.SHOWN else TokenVisibility.HIDDEN
-                    userInteractor.setTokenHidden(token.publicKey, visibility.stringValue)
+                    userInteractor.setTokenHidden(token.mintAddress, visibility.stringValue)
                 }
 
                 visibilityTextView.setText(if (isChecked) R.string.main_invisible else R.string.main_visible)

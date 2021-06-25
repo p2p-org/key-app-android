@@ -22,10 +22,10 @@ interface TokenDao {
         """
         UPDATE token_table
         SET visibility = :visibility
-        WHERE public_key = :publicKey
+        WHERE mint_address = :mintAddress
     """
     )
-    suspend fun updateVisibility(publicKey: String, visibility: String)
+    suspend fun updateVisibility(mintAddress: String, visibility: String)
 
     @Query("DELETE FROM token_table")
     suspend fun clearAll()
