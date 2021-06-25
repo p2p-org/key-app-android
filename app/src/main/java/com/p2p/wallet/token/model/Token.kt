@@ -41,11 +41,24 @@ data class Token constructor(
 
     @IgnoredOnParcel
     val visibilityIcon: Int
-        get() = if (visibility == TokenVisibility.HIDDEN) R.drawable.ic_show else R.drawable.ic_hide
+        get() = if (visibility == TokenVisibility.HIDDEN || visibility == TokenVisibility.DEFAULT && isZero) {
+            R.drawable.ic_show
+        } else {
+            R.drawable.ic_hide
+        }
 
     @IgnoredOnParcel
     val totalInUsd: BigDecimal
         get() = total.multiply(usdRate).scalePrice()
+
+    fun getVisibilityIcon(isZerosHidden: Boolean): Int {
+        val shouldBeHidden = isZerosHidden && visibility == TokenVisibility.DEFAULT && isZero
+        return if (visibility == TokenVisibility.HIDDEN || shouldBeHidden) {
+            R.drawable.ic_show
+        } else {
+            R.drawable.ic_hide
+        }
+    }
 
     fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
         Constants.WRAPPED_SOL_MINT

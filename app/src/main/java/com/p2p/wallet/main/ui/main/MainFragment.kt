@@ -43,7 +43,7 @@ class MainFragment :
         TokenAdapter(
             onItemClicked = { onTokenClicked(it) },
             onEditClicked = { onEditClicked(it) },
-            onDeleteClicked = { onDeleteClicked(it) }
+            onHideClicked = { onHideClicked(it) }
         )
     }
 
@@ -88,8 +88,8 @@ class MainFragment :
         presenter.startPolling()
     }
 
-    override fun showTokens(tokens: List<TokenItem>) {
-        mainAdapter.setItems(tokens)
+    override fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean) {
+        mainAdapter.setItems(tokens, isZerosHidden)
     }
 
     override fun showBalance(balance: BigDecimal) {
@@ -151,7 +151,7 @@ class MainFragment :
         TokenOptionsDialog.show(childFragmentManager, token)
     }
 
-    private fun onDeleteClicked(token: Token) {
+    private fun onHideClicked(token: Token) {
         presenter.toggleVisibility(token)
     }
 }

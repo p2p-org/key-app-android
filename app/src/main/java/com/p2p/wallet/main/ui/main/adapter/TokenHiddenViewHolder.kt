@@ -33,11 +33,11 @@ class TokenHiddenViewHolder(
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
     private val colorView = binding.colorView
-    private val deleteImageView = binding.deleteImageView
+    private val hideImageView = binding.hideImageView
     private val editImageView = binding.editImageView
     private val contentView = binding.contentView
 
-    fun onBind(item: Token) {
+    fun onBind(item: Token, isZerosHidden: Boolean) {
         if (!item.logoUrl.isNullOrEmpty()) {
             Glide.with(tokenImageView).load(item.logoUrl).into(tokenImageView)
         }
@@ -46,8 +46,8 @@ class TokenHiddenViewHolder(
         valueTextView.text = item.getFormattedPrice()
         totalTextView.text = item.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, item.color))
-        deleteImageView.setImageResource(item.visibilityIcon)
-        deleteImageView.setOnClickListener { onDeleteClicked(item) }
+        hideImageView.setImageResource(item.getVisibilityIcon(isZerosHidden))
+        hideImageView.setOnClickListener { onDeleteClicked(item) }
         editImageView.setOnClickListener { onEditClicked(item) }
         contentView.setOnClickListener { onItemClicked(item) }
     }

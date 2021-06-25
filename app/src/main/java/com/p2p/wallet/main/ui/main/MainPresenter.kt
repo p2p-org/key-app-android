@@ -35,10 +35,11 @@ class MainPresenter(
 
     private var tokens: List<Token> by Delegates.observable(emptyList()) { _, _, newValue ->
         balance = mapBalance(newValue)
-        val mappedTokens = mapTokens(newValue, settingsInteractor.isZerosHidden())
+        val isZerosHidden = settingsInteractor.isZerosHidden()
+        val mappedTokens = mapTokens(newValue, isZerosHidden)
 
         view?.showChart(newValue)
-        view?.showTokens(mappedTokens)
+        view?.showTokens(mappedTokens, isZerosHidden)
         view?.showLoading(false)
         view?.showRefreshing(false)
     }
@@ -102,7 +103,8 @@ class MainPresenter(
                 TokenVisibility.DEFAULT -> TokenVisibility.HIDDEN
                 else -> TokenVisibility.SHOWN
             }
-            userInteractor.setTokenHidden(token.publicKey, visibility.stringValue)
+
+            userInteractor.setTokenHidden(token.mintAddress, visibility.stringValue)
         }
     }
 
@@ -133,18 +135,14 @@ class MainPresenter(
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
-    private fun mapTokens(tokens: List<Token>, isZerosHidden: Boolean): List<TokenItem> = when {
-        isZerosHidden -> {
-            val hiddenTokens = tokens.filter { it.isHidden || (it.isZero && it.visibility == TokenVisibility.DEFAULT) }
-            val hiddenGroup = listOf(TokenItem.Group(hiddenTokens))
-            val result = tokens.filter { it.isSOL || !it.isHidden && !it.isZero }.map { TokenItem.Shown(it) }
-            if (hiddenTokens.isEmpty()) result else result + hiddenGroup
+    private fun mapTokens(tokens: List<Token>, isZerosHidden: Boolean): List<TokenItem> =
+        tokens.map {
+            if (it.isSOL) return@map TokenItem.Shown(it)
+
+            when (it.visibility) {
+                TokenVisibility.SHOWN -> TokenItem.Shown(it)
+                TokenVisibility.HIDDEN -> TokenItem.Hidden(it)
+                TokenVisibility.DEFAULT -> if (isZerosHidden && it.isZero) TokenItem.Hidden(it) else TokenItem.Shown(it)
+            }
         }
-        else -> {
-            val hiddenTokens = tokens.filter { it.isHidden }
-            val hiddenGroup = listOf(TokenItem.Group(hiddenTokens))
-            val result = tokens.filter { it.isSOL || !it.isHidden }.map { TokenItem.Shown(it) }
-            if (hiddenTokens.isEmpty()) result else result + hiddenGroup
-        }
-    }
 }
