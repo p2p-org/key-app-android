@@ -5,38 +5,33 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
 import com.p2p.wallet.main.model.TokenItem
+import com.p2p.wallet.main.model.VisibilityState
 import com.p2p.wallet.token.model.Token
 
 class TokenAdapter(
     private val onItemClicked: (Token) -> Unit,
     private val onHideClicked: (Token) -> Unit,
-    private val onEditClicked: (Token) -> Unit
+    private val onEditClicked: (Token) -> Unit,
+    private val onToggleClicked: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    companion object {
-
-        sealed class TokenAdapterItem {
-            data class Shown(val token: Token) : TokenAdapterItem()
-            data class HiddenGroup(val tokens: List<Token>) : TokenAdapterItem()
-        }
-    }
-
-    private val data = mutableListOf<TokenAdapterItem>()
+    private val data = mutableListOf<TokenItem>()
 
     private var isZerosHidden: Boolean = true
 
-    fun setItems(new: List<TokenItem>, isZerosHidden: Boolean) {
+    fun setItems(new: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState) {
         this.isZerosHidden = isZerosHidden
 
         val old = ArrayList(data)
         data.clear()
-        data.addAll(mapGroups(new))
+        data.addAll(mapGroups(new, state))
         DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)
     }
 
     override fun getItemViewType(position: Int): Int = when (data[position]) {
-        is TokenAdapterItem.Shown -> R.layout.item_token
-        is TokenAdapterItem.HiddenGroup -> R.layout.item_token_group
+        is TokenItem.Shown -> R.layout.item_token
+        is TokenItem.Hidden -> R.layout.item_token_hidden
+        is TokenItem.Action -> R.layout.item_token_hidden_group_button
     }
 
     override fun getItemCount(): Int = data.size
@@ -45,60 +40,73 @@ class TokenAdapter(
         R.layout.item_token ->
             TokenViewHolder(
                 parent,
-                isZerosHidden,
                 onItemClicked,
                 onEditClicked,
                 onHideClicked
             )
-        R.layout.item_token_group ->
-            TokenGroupViewHolder(
+        R.layout.item_token_hidden ->
+            TokenHiddenViewHolder(
                 parent,
-                isZerosHidden,
                 onItemClicked,
                 onEditClicked,
                 onHideClicked
+            )
+        R.layout.item_token_hidden_group_button ->
+            TokenButtonViewHolder(
+                parent,
+                onToggleClicked
             )
         else -> throw IllegalStateException("Unknown viewType: $viewType")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is TokenViewHolder -> holder.onBind(data[position] as TokenAdapterItem.Shown)
-            is TokenGroupViewHolder -> holder.onBind(data[position] as TokenAdapterItem.HiddenGroup)
+            is TokenViewHolder -> holder.onBind(data[position] as TokenItem.Shown, isZerosHidden)
+            is TokenHiddenViewHolder -> holder.onBind(data[position] as TokenItem.Hidden, isZerosHidden)
+            is TokenButtonViewHolder -> holder.onBind(data[position] as TokenItem.Action)
         }
     }
 
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        super.onViewRecycled(holder)
-        when (holder) {
-            is TokenGroupViewHolder -> holder.onViewRecycled()
-            else -> { /* do nothing */
+    private fun mapGroups(tokens: List<TokenItem>, state: VisibilityState): List<TokenItem> =
+        tokens
+            .groupBy { it is TokenItem.Hidden }
+            .map { (isHidden, list) -> mapHiddenGroup(isHidden, list, state) }
+            .flatten()
+
+    private fun mapHiddenGroup(
+        isHidden: Boolean,
+        list: List<TokenItem>,
+        state: VisibilityState
+    ) =
+        if (isHidden) {
+            list.toMutableList().apply {
+                add(0, TokenItem.Action(state))
             }
+        } else {
+            list
         }
-    }
-
-    private fun mapGroups(tokens: List<TokenItem>): List<TokenAdapterItem> {
-        val hidden = tokens.filterIsInstance<TokenItem.Hidden>().map { it.token }
-        val shown = tokens.filterIsInstance<TokenItem.Shown>().map { TokenAdapterItem.Shown(it.token) }
-        return if (hidden.isEmpty()) shown else shown + listOf(TokenAdapterItem.HiddenGroup(hidden))
-    }
 
     private fun getDiffCallback(
-        oldList: List<TokenAdapterItem>,
-        newList: List<TokenAdapterItem>
+        oldList: List<TokenItem>,
+        newList: List<TokenItem>
     ) = object : DiffUtil.Callback() {
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
             return when {
-                old is TokenAdapterItem.Shown && new is TokenAdapterItem.Shown ->
+                old is TokenItem.Shown && new is TokenItem.Shown ->
                     old.token.publicKey == new.token.publicKey &&
                         old.token.visibility == new.token.visibility &&
                         old.token.total == new.token.total &&
                         old.token.price == new.token.price
-                old is TokenAdapterItem.HiddenGroup && new is TokenAdapterItem.HiddenGroup ->
-                    compareInnerList(old.tokens, new.tokens)
+                old is TokenItem.Hidden && new is TokenItem.Hidden ->
+                    old.token.publicKey == new.token.publicKey &&
+                        old.token.visibility == new.token.visibility &&
+                        old.token.total == new.token.total &&
+                        old.token.price == new.token.price
+                old is TokenItem.Action && new is TokenItem.Action ->
+                    old.state == new.state
                 else -> false
             }
         }
@@ -106,28 +114,11 @@ class TokenAdapter(
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
-            return when {
-                old is TokenAdapterItem.Shown && new is TokenAdapterItem.Shown ->
-                    old.token == new.token
-                old is TokenAdapterItem.HiddenGroup && new is TokenAdapterItem.HiddenGroup ->
-                    compareInnerList(old.tokens, new.tokens)
-                else -> false
-            }
+            return old == new
         }
 
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
-
-        private fun compareInnerList(old: List<Token>, new: List<Token>): Boolean {
-            if (old.size != new.size) return false
-
-            return old.zip(new).all { (old, new) ->
-                old.publicKey == new.publicKey &&
-                    old.visibility == new.visibility &&
-                    old.total == new.total &&
-                    old.price == new.price
-            }
-        }
     }
 }

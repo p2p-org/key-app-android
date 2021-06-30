@@ -3,6 +3,7 @@ package com.p2p.wallet.main.ui.main
 import com.p2p.wallet.amount.scaleShort
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.TokenItem
+import com.p2p.wallet.main.model.VisibilityState
 import com.p2p.wallet.settings.interactor.SettingsInteractor
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.TokenVisibility
@@ -22,12 +23,14 @@ private const val DELAY_MS = 10000L
 
 class MainPresenter(
     private val userInteractor: UserInteractor,
-    settingsInteractor: SettingsInteractor
+    private val settingsInteractor: SettingsInteractor
 ) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
     companion object {
         private const val BALANCE_CURRENCY = "USD"
     }
+
+    private var state: VisibilityState = VisibilityState.Visible
 
     private var balance: BigDecimal by Delegates.observable(BigDecimal.ZERO) { _, _, newValue ->
         view?.showBalance(newValue)
@@ -36,10 +39,10 @@ class MainPresenter(
     private var tokens: List<Token> by Delegates.observable(emptyList()) { _, _, newValue ->
         balance = mapBalance(newValue)
         val isZerosHidden = settingsInteractor.isZerosHidden()
-        val mappedTokens = mapTokens(newValue, isZerosHidden)
+        val mappedTokens = mapTokens(newValue, isZerosHidden, state)
 
         view?.showChart(newValue)
-        view?.showTokens(mappedTokens, isZerosHidden)
+        view?.showTokens(mappedTokens, isZerosHidden, state)
         view?.showLoading(false)
         view?.showRefreshing(false)
     }
@@ -99,13 +102,32 @@ class MainPresenter(
     override fun toggleVisibility(token: Token) {
         launch {
             val visibility = when (token.visibility) {
-                TokenVisibility.SHOWN,
-                TokenVisibility.DEFAULT -> TokenVisibility.HIDDEN
-                else -> TokenVisibility.SHOWN
+                TokenVisibility.SHOWN -> TokenVisibility.HIDDEN
+                TokenVisibility.HIDDEN -> TokenVisibility.SHOWN
+                TokenVisibility.DEFAULT -> if (settingsInteractor.isZerosHidden() && token.isZero) {
+                    TokenVisibility.SHOWN
+                } else {
+                    TokenVisibility.HIDDEN
+                }
             }
 
             userInteractor.setTokenHidden(token.mintAddress, visibility.stringValue)
         }
+    }
+
+    override fun toggleVisibilityState() {
+        state = when (state) {
+            is VisibilityState.Visible -> {
+                val isZerosHidden = settingsInteractor.isZerosHidden()
+                val count = tokens.count { it.isDefinitelyHidden(isZerosHidden) }
+                VisibilityState.Hidden(count)
+            }
+            is VisibilityState.Hidden ->
+                VisibilityState.Visible
+        }
+
+        val old = ArrayList(tokens)
+        tokens = old
     }
 
     private fun loadTokensFromRemote() {
@@ -135,14 +157,18 @@ class MainPresenter(
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
-    private fun mapTokens(tokens: List<Token>, isZerosHidden: Boolean): List<TokenItem> =
+    private fun mapTokens(tokens: List<Token>, isZerosHidden: Boolean, state: VisibilityState): List<TokenItem> =
         tokens.map {
             if (it.isSOL) return@map TokenItem.Shown(it)
 
             when (it.visibility) {
                 TokenVisibility.SHOWN -> TokenItem.Shown(it)
-                TokenVisibility.HIDDEN -> TokenItem.Hidden(it)
-                TokenVisibility.DEFAULT -> if (isZerosHidden && it.isZero) TokenItem.Hidden(it) else TokenItem.Shown(it)
+                TokenVisibility.HIDDEN -> TokenItem.Hidden(it, state)
+                TokenVisibility.DEFAULT -> if (isZerosHidden && it.isZero) {
+                    TokenItem.Hidden(it, state)
+                } else {
+                    TokenItem.Shown(it)
+                }
             }
         }
 }
