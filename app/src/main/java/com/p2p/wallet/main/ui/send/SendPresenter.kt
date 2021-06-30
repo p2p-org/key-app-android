@@ -5,6 +5,7 @@ import com.p2p.wallet.amount.isMoreThan
 import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.toBigDecimalOrZero
+import com.p2p.wallet.amount.toLamports
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.CurrencyMode
@@ -13,6 +14,7 @@ import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.Token.Companion.USD_SYMBOL
 import com.p2p.wallet.user.interactor.UserInteractor
+import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.math.BigDecimal
@@ -54,13 +56,10 @@ class SendPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val usdAmount = token.usdRate.multiply(tokenAmount)
-                val result = mainInteractor.sendToken(
-                    target = address,
-                    amount = tokenAmount,
-                    usdAmount = usdAmount,
-                    decimals = token.decimals,
-                    tokenSymbol = token.tokenSymbol
+                val result = mainInteractor.sendTransaction(
+                    ownerAddress = address.toPublicKey(),
+                    token = token,
+                    lamports = tokenAmount.toLamports(token.decimals)
                 )
                 handleResult(result)
             } catch (e: Throwable) {
@@ -134,9 +133,9 @@ class SendPresenter(
                     status = R.string.main_send_success,
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,
-                    amount = result.amount,
-                    usdAmount = result.usdAmount,
-                    tokenSymbol = result.tokenSymbol
+                    amount = tokenAmount,
+                    usdAmount = token!!.usdRate.multiply(tokenAmount),
+                    tokenSymbol = token!!.tokenSymbol
                 )
                 view?.showSuccess(info)
             }

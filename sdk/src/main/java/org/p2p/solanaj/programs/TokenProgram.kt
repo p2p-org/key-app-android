@@ -21,6 +21,26 @@ object TokenProgram {
     const val INSTRUCTION_INDEX_MINT_TO = 7
     const val INSTRUCTION_INDEX_CLOSE_ACCOUNT = 9
 
+    fun createAssociatedTokenAccountInstruction(
+        associatedProgramId: PublicKey,
+        tokenProgramId: PublicKey,
+        mint: PublicKey,
+        associatedAccount: PublicKey,
+        owner: PublicKey,
+        payer: PublicKey
+    ): TransactionInstruction {
+        val keys = ArrayList<AccountMeta>()
+        keys.add(AccountMeta(payer, isSigner = true, isWritable = true))
+        keys.add(AccountMeta(associatedAccount, isSigner = false, isWritable = true))
+        keys.add(AccountMeta(owner, isSigner = false, isWritable = false))
+        keys.add(AccountMeta(mint, isSigner = false, isWritable = false))
+        keys.add(AccountMeta(SystemProgram.PROGRAM_ID, isSigner = false, isWritable = false))
+        keys.add(AccountMeta(tokenProgramId, isSigner = false, isWritable = false))
+        keys.add(AccountMeta(SYSVAR_RENT_ADDRESS, isSigner = false, isWritable = false))
+        val data = ByteArray(0)
+        return TransactionInstruction(associatedProgramId, keys, data)
+    }
+
     fun initializeMintInstruction(
         tokenProgramId: PublicKey,
         mint: PublicKey,
@@ -186,6 +206,20 @@ object TokenProgram {
         val amount: BigInteger = readUint64()
         private val delegateOption: Long = readUint32()
 
+        companion object {
+
+            const val ACCOUNT_INFO_DATA_LENGTH = (
+                PublicKey.PUBLIC_KEY_LENGTH + PublicKey.PUBLIC_KEY_LENGTH +
+                    ByteUtils.UINT_64_LENGTH + ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH + 1 +
+                    ByteUtils.UINT_32_LENGTH + ByteUtils.UINT_64_LENGTH + ByteUtils.UINT_64_LENGTH +
+                    ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH
+                )
+
+            fun decode(data: ByteArray): AccountInfoData {
+                return AccountInfoData(data)
+            }
+        }
+
         var delegate: PublicKey?
         val isInitialized: Boolean
         val isFrozen: Boolean
@@ -221,19 +255,6 @@ object TokenProgram {
             }
             if (closeAuthorityOption == 0L) {
                 closeAuthority = null
-            }
-        }
-
-        companion object {
-
-            const val ACCOUNT_INFO_DATA_LENGTH = (
-                PublicKey.PUBLIC_KEY_LENGTH + PublicKey.PUBLIC_KEY_LENGTH +
-                    ByteUtils.UINT_64_LENGTH + ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH + 1 +
-                    ByteUtils.UINT_32_LENGTH + ByteUtils.UINT_64_LENGTH + ByteUtils.UINT_64_LENGTH +
-                    ByteUtils.UINT_32_LENGTH + PublicKey.PUBLIC_KEY_LENGTH
-                )
-            fun decode(data: ByteArray): AccountInfoData {
-                return AccountInfoData(data)
             }
         }
     }

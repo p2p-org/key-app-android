@@ -5,7 +5,6 @@ import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
-import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
 import org.p2p.solanaj.model.types.AccountInfo
@@ -16,7 +15,6 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
-import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
 import java.util.HashMap
@@ -52,49 +50,7 @@ class RpcRemoteRepository(
         return rpcApi.getRecentBlockhash(rpcRequest)
     }
 
-    override suspend fun sendTransaction(
-        sourcePublicKey: PublicKey,
-        sourceSecretKey: ByteArray,
-        targetPublicKey: PublicKey,
-        lamports: Long,
-        recentBlockhash: RecentBlockhash
-    ): String {
-
-        val signers = listOf(Account(sourceSecretKey))
-
-        val transaction = TransactionRequest()
-        val instruction = SystemProgram.transfer(
-            sourcePublicKey,
-            targetPublicKey,
-            lamports
-        )
-        transaction.addInstruction(instruction)
-
-        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
-        transaction.sign(signers)
-        val serializedTransaction = transaction.serialize()
-
-        val base64Trx = Base64
-            .encodeToString(serializedTransaction, Base64.DEFAULT)
-            .replace("\n", "")
-
-        val params = mutableListOf<Any>()
-
-        params.add(base64Trx)
-        params.add(RpcSendTransactionConfig())
-
-        val rpcRequest = RpcRequest("sendTransaction", params)
-        return rpcApi.sendTransaction(rpcRequest)
-    }
-
-    override suspend fun sendTransaction(
-        recentBlockhash: RecentBlockhash,
-        transaction: TransactionRequest,
-        signers: List<Account>
-    ): String {
-
-        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
-        transaction.sign(signers)
+    override suspend fun sendTransaction(transaction: TransactionRequest): String {
         val serializedTransaction = transaction.serialize()
 
         val base64Trx = Base64

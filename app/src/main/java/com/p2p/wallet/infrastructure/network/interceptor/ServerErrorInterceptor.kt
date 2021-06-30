@@ -45,6 +45,7 @@ class ServerErrorInterceptor(
 
         ServerException(
             errorCode = serverError.error.code,
+            fullMessage = JSONObject(bodyString).toString(1),
             errorMessage = serverError.error.message
         )
     } catch (e: Throwable) {
