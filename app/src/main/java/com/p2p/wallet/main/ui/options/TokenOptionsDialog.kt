@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.p2p.wallet.R
 import com.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import com.p2p.wallet.databinding.DialogTokenOptionsBinding
+import com.p2p.wallet.settings.interactor.SettingsInteractor
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.interactor.UserInteractor
@@ -31,6 +32,7 @@ class TokenOptionsDialog : NonDraggableBottomSheetDialogFragment() {
     }
 
     private val userInteractor: UserInteractor by inject()
+    private val settingsInteractor: SettingsInteractor by inject()
 
     private val binding: DialogTokenOptionsBinding by viewBinding()
 
@@ -43,7 +45,7 @@ class TokenOptionsDialog : NonDraggableBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { dismissAllowingStateLoss() }
-            hideSwitch.isChecked = token.isHidden
+            hideSwitch.isChecked = token.isDefinitelyHidden(settingsInteractor.isZerosHidden())
 
             visibilityView.setOnClickListener { hideSwitch.isChecked = !hideSwitch.isChecked }
             hideSwitch.setOnCheckedChangeListener { _, isChecked ->

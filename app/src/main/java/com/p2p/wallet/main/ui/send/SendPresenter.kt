@@ -103,7 +103,7 @@ class SendPresenter(
         val token = token ?: return
 
         val totalAvailable = when (mode) {
-            is CurrencyMode.Dollar -> token.totalInUsd
+            is CurrencyMode.Usd -> token.totalInUsd
             is CurrencyMode.Token -> token.total.scalePrice()
         }
         view?.showInputValue(totalAvailable)
@@ -118,8 +118,8 @@ class SendPresenter(
     override fun switchCurrency() {
         val token = token ?: return
         mode = when (mode) {
-            is CurrencyMode.Token -> CurrencyMode.Dollar
-            is CurrencyMode.Dollar -> CurrencyMode.Token(token.tokenSymbol)
+            is CurrencyMode.Token -> CurrencyMode.Usd
+            is CurrencyMode.Usd -> CurrencyMode.Token(token.tokenSymbol)
         }
 
         calculateData(token)
@@ -161,7 +161,7 @@ class SendPresenter(
                 val isEnabled = isNotZero && !isMoreThanBalance
                 setButtonEnabled(isEnabled, isMoreThanBalance)
             }
-            is CurrencyMode.Dollar -> {
+            is CurrencyMode.Usd -> {
                 usdAmount = inputAmount.toBigDecimalOrZero()
                 tokenAmount = usdAmount.div(token.usdRate).scalePrice()
 

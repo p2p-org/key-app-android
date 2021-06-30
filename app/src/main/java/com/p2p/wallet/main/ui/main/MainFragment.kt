@@ -12,6 +12,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentMainBinding
 import com.p2p.wallet.main.model.TokenItem
+import com.p2p.wallet.main.model.VisibilityState
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.options.TokenOptionsDialog
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
@@ -43,7 +44,8 @@ class MainFragment :
         TokenAdapter(
             onItemClicked = { onTokenClicked(it) },
             onEditClicked = { onEditClicked(it) },
-            onHideClicked = { onHideClicked(it) }
+            onHideClicked = { onHideClicked(it) },
+            onToggleClicked = { presenter.toggleVisibilityState() }
         )
     }
 
@@ -85,11 +87,11 @@ class MainFragment :
         }
 
         presenter.loadData()
-        presenter.startPolling()
+//        presenter.startPolling()
     }
 
-    override fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean) {
-        mainAdapter.setItems(tokens, isZerosHidden)
+    override fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState) {
+        mainAdapter.setItems(tokens, isZerosHidden, state)
     }
 
     override fun showBalance(balance: BigDecimal) {

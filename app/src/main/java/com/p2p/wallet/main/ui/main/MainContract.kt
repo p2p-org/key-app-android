@@ -3,13 +3,14 @@ package com.p2p.wallet.main.ui.main
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.model.TokenItem
+import com.p2p.wallet.main.model.VisibilityState
 import com.p2p.wallet.token.model.Token
 import java.math.BigDecimal
 
 interface MainContract {
 
     interface View : MvpView {
-        fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean)
+        fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState)
         fun showBalance(balance: BigDecimal)
         fun showChart(tokens: List<Token>)
         fun showLoading(isLoading: Boolean)
@@ -22,5 +23,6 @@ interface MainContract {
         fun startPolling()
         fun refresh()
         fun toggleVisibility(token: Token)
+        fun toggleVisibilityState()
     }
 }

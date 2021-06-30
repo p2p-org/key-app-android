@@ -44,13 +44,15 @@ data class Token constructor(
         get() = total.multiply(usdRate).scalePrice()
 
     fun getVisibilityIcon(isZerosHidden: Boolean): Int {
-        val shouldBeHidden = isZerosHidden && visibility == TokenVisibility.DEFAULT && isZero
-        return if (visibility == TokenVisibility.HIDDEN || shouldBeHidden) {
+        return if (isDefinitelyHidden(isZerosHidden)) {
             R.drawable.ic_show
         } else {
             R.drawable.ic_hide
         }
     }
+
+    fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
+        visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
     fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
         Constants.WRAPPED_SOL_MINT
