@@ -8,16 +8,15 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData
 import org.p2p.solanaj.rpc.RpcException
 import java.util.ArrayList
-import java.util.Arrays
 
 object TokenTransaction {
 
     @Throws(RpcException::class)
     fun getAccountInfoData(
-        accountInfo: AccountInfo,
+        accountInfo: AccountInfo?,
         programId: PublicKey
     ): AccountInfoData {
-        if (accountInfo.value == null) {
+        if (accountInfo?.value == null) {
             throw RpcException("Failed to find account")
         }
         require(accountInfo.value.owner == programId.toString()) { "Invalid account owner" }
@@ -59,7 +58,7 @@ object TokenTransaction {
         owner: PublicKey
     ): PublicKey {
         return findProgramAddress(
-            Arrays.asList(owner.toByteArray(), programId.toByteArray(), mint.toByteArray()),
+            listOf(owner.toByteArray(), programId.toByteArray(), mint.toByteArray()),
             associatedProgramId!!
         )
             .address

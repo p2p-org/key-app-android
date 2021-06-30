@@ -28,7 +28,7 @@ class TokenSwap {
         wrappedSolAccount: PublicKey,
         accountAddressA: PublicKey?,
         accountAddressB: PublicKey?,
-        getAccountInfo: suspend (PublicKey) -> AccountInfo,
+        getAccountInfo: suspend (PublicKey) -> AccountInfo?,
         getBalanceNeeded: suspend (Long) -> Long,
         sendTransaction: suspend (transaction: TransactionRequest, signers: List<Account>) -> String
     ): String {

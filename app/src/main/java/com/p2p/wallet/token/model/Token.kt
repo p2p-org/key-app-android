@@ -40,14 +40,6 @@ data class Token constructor(
         get() = tokenName == SOL_NAME
 
     @IgnoredOnParcel
-    val visibilityIcon: Int
-        get() = if (visibility == TokenVisibility.HIDDEN || visibility == TokenVisibility.DEFAULT && isZero) {
-            R.drawable.ic_show
-        } else {
-            R.drawable.ic_hide
-        }
-
-    @IgnoredOnParcel
     val totalInUsd: BigDecimal
         get() = total.multiply(usdRate).scalePrice()
 

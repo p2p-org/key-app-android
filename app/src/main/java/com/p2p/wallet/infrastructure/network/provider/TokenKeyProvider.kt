@@ -43,9 +43,6 @@ class TokenKeyProvider(
                 }
             }
 
-    val rpcPublicKey: String =
-        context.getString(R.string.rpcPublicKey)
-
     val ownerKey: String =
         context.getString(R.string.ownerKey)
 

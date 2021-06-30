@@ -45,19 +45,25 @@ object NetworkModule : InjectionModule {
             val mainnet = getRetrofit(Environment.MAINNET.endpoint)
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-            val datahub = getRetrofit(Environment.DATAHUB.endpoint)
+            val datahub = getRetrofit(Environment.DATAHUB.endpoint, withDataHub = true)
             val datahubRpcApi = datahub.create(RpcApi::class.java)
 
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, datahubRpcApi, get())
         } bind RpcRepository::class
     }
 
-    private fun Scope.getRetrofit(baseUrl: String, tag: String = "OkHttpClient"): Retrofit {
+    private fun Scope.getRetrofit(
+        baseUrl: String,
+        tag: String = "OkHttpClient",
+        withDataHub: Boolean = false
+    ): Retrofit {
         val client = OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag)) }
-            .addInterceptor(DataHubInterceptor(get()))
+            .apply {
+                if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
+                if (withDataHub) DataHubInterceptor(get())
+            }
             .addInterceptor(ServerErrorInterceptor(get()))
             .build()
 

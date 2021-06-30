@@ -2,7 +2,6 @@
 <resources>
     <string name="compareBaseUrl">https://min-api.cryptocompare.com/</string>
     <string name="comparePublicKey">ad6104e4e9d655c1faab7ef1743c16651a1628f01d384bc5fea09661c0eb18db</string>
-    <string name="rpcPublicKey">TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA</string>
     <string name="ownerKey">11111111111111111111111111111111</string>
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
     <string name="solanaWalletExplorer">https://explorer.solana.com/address/%s</string>

@@ -3,7 +3,6 @@ package com.p2p.wallet.rpc
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
-import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
 import org.p2p.solanaj.model.types.AccountInfo
@@ -15,21 +14,9 @@ import org.p2p.solanaj.model.types.TokenAccounts
 interface RpcRepository {
     suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance
     suspend fun getRecentBlockhash(): RecentBlockhash
-    suspend fun sendTransaction(
-        sourcePublicKey: PublicKey,
-        sourceSecretKey: ByteArray,
-        targetPublicKey: PublicKey,
-        lamports: Long,
-        recentBlockhash: RecentBlockhash
-    ): String
+    suspend fun sendTransaction(transaction: TransactionRequest): String
 
-    suspend fun sendTransaction(
-        recentBlockhash: RecentBlockhash,
-        transaction: TransactionRequest,
-        signers: List<Account>
-    ): String
-
-    suspend fun getAccountInfo(account: PublicKey): AccountInfo
+    suspend fun getAccountInfo(account: PublicKey): AccountInfo?
     suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
     suspend fun getBalance(account: PublicKey): Long
     suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts
