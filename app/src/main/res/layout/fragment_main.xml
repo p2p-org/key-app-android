@@ -213,6 +213,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:translationZ="12dp"
+            android:visibility="gone"
             tools:visibility="gone" />
 
         <ProgressBar

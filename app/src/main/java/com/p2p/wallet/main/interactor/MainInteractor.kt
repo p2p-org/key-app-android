@@ -86,8 +86,8 @@ class MainInteractor(
             transaction.addInstruction(instruction)
         }
 
-        val recentBlockhash = rpcRepository.getRecentBlockhash()
-        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+        val recentBlockHash = rpcRepository.getRecentBlockhash()
+        transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
         transaction.sign(signers)
 
         val signature = rpcRepository.sendTransaction(transaction)

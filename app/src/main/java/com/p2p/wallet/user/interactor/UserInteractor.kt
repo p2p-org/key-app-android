@@ -104,7 +104,6 @@ class UserInteractor(
         userRepository.getRate(source, destination)
 
     suspend fun clearMemoryData() {
-        userLocalRepository.setTokenPrices(emptyList())
         mainLocalRepository.setTokens(emptyList())
     }
 
