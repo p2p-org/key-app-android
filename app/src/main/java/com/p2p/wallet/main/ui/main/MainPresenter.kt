@@ -11,6 +11,7 @@ import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -43,27 +44,20 @@ class MainPresenter(
 
         view?.showChart(newValue)
         view?.showTokens(mappedTokens, isZerosHidden, state)
-        view?.showLoading(false)
-        view?.showRefreshing(false)
     }
+
+    private var collectJob: Job? = null
 
     override fun attach(view: MainContract.View) {
         super.attach(view)
-        loadTokensFromRemote()
+        loadData()
     }
 
-    override fun loadData() {
-        launch {
-            try {
-                view?.showLoading(true)
-                userInteractor.getTokensFlow().collect {
-                    if (it.isNotEmpty()) tokens = it
-                }
-            } catch (e: CancellationException) {
-                Timber.d("Loading tokens job cancelled")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading user data")
-                view?.showErrorMessage(e)
+    override fun collectData() {
+        collectJob?.cancel()
+        collectJob = launch {
+            userInteractor.getTokensFlow().collect { updatedTokens ->
+                if (updatedTokens.isNotEmpty()) tokens = updatedTokens
             }
         }
     }
@@ -81,20 +75,6 @@ class MainPresenter(
                 view?.showErrorMessage(e)
             } finally {
                 view?.showRefreshing(false)
-            }
-        }
-    }
-
-    override fun startPolling() {
-        launch {
-            try {
-                while (true) {
-                    delay(DELAY_MS)
-                    userInteractor.loadTokens()
-                    Timber.d("Successfully updated loaded tokens")
-                }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading tokens from remote")
             }
         }
     }
@@ -130,21 +110,37 @@ class MainPresenter(
         tokens = old
     }
 
-    private fun loadTokensFromRemote() {
+    override fun clearCache() {
+        tokens = emptyList()
+    }
+
+    private fun loadData() {
         if (tokens.isNotEmpty()) return
 
         launch {
             try {
-                view?.showHorizontalLoading(true)
-                userInteractor.getTokenDataFlow().collect {
-                    val isDataLoaded = it.isNotEmpty()
-                    if (isDataLoaded) {
-                        Timber.tag("MAIN").d("Global token data is loaded. Starting fetching user's data")
-                        userInteractor.loadTokens()
-                        view?.showHorizontalLoading(false)
-                    }
-                }
+                view?.showLoading(true)
+                /* We are waiting when tokenlist.json is being parsed and saved into the memory */
+                delay(1000L)
+                userInteractor.loadTokens()
                 Timber.d("Successfully loaded tokens")
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading tokens from remote")
+            } finally {
+                view?.showLoading(false)
+                startPolling()
+            }
+        }
+    }
+
+    private fun startPolling() {
+        launch {
+            try {
+                while (true) {
+                    delay(DELAY_MS)
+                    userInteractor.loadTokens()
+                    Timber.d("Successfully updated loaded tokens")
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading tokens from remote")
             }

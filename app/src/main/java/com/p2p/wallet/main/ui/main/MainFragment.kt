@@ -86,8 +86,7 @@ class MainFragment :
             }
         }
 
-        presenter.loadData()
-        presenter.startPolling()
+        presenter.collectData()
     }
 
     override fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState) {
@@ -114,6 +113,12 @@ class MainFragment :
         with(binding) {
             refreshLayout.isRefreshing = isRefreshing
         }
+    }
+
+    override fun onDestroy() {
+        /* We are clearing cache only if activity is destroyed */
+        presenter.clearCache()
+        super.onDestroy()
     }
 
     @Suppress("MagicNumber")
