@@ -18,6 +18,7 @@ import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.properties.Delegates
 
 class SendPresenter(
@@ -28,6 +29,7 @@ class SendPresenter(
     companion object {
         private const val DESTINATION_USD = "USD"
         private const val VALID_ADDRESS_LENGTH = 24
+        private const val ROUNDING_VALUE = 6
     }
 
     private var token: Token? by Delegates.observable(null) { _, _, newValue ->
@@ -163,12 +165,13 @@ class SendPresenter(
             }
             is CurrencyMode.Usd -> {
                 usdAmount = inputAmount.toBigDecimalOrZero()
-                tokenAmount = usdAmount.div(token.usdRate).scalePrice()
+                tokenAmount =
+                    usdAmount.divide(token.usdRate, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
                 val tokenAround = if (usdAmount.isZero()) {
                     BigDecimal.ZERO
                 } else {
-                    usdAmount.div(token.usdRate).scalePrice()
+                    usdAmount.divide(token.usdRate, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
                 }
                 view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
 

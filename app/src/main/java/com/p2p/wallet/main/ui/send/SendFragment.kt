@@ -144,7 +144,9 @@ class SendFragment :
     }
 
     override fun showInputValue(value: BigDecimal) {
-        binding.amountEditText.setText("$value")
+        val textValue = "$value"
+        binding.amountEditText.setText(textValue)
+        binding.amountEditText.setSelection(textValue.length)
     }
 
     override fun showCurrencyMode(mode: CurrencyMode) {
