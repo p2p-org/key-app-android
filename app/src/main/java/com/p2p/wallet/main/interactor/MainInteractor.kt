@@ -46,30 +46,13 @@ class MainInteractor(
         val transaction = TransactionRequest()
         val accountInfo = rpcRepository.getAccountInfo(ownerAddress)
 
-        val address = if (accountInfo?.value != null) {
-            try {
-                val info = TokenTransaction.getAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
-                val data = userLocalRepository.getTokenData(info.mint.toBase58())
-                if (data == null) {
-                    Timber.d("### no token found by mint, getting associated ")
-                    TokenTransaction.getAssociatedTokenAddress(
-                        token.mintAddress.toPublicKey(), ownerAddress
-                    )
-                } else {
-                    Timber.d("### token found, continuing with owner address")
-                    ownerAddress
-                }
-            } catch (e: Throwable) {
-                Timber.d("### data parse failed, generating associated")
-                TokenTransaction.getAssociatedTokenAddress(
-                    token.mintAddress.toPublicKey(), ownerAddress
-                )
-            }
+        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        val address = if (info != null && userLocalRepository.getTokenData(info.mint.toBase58()) != null) {
+            Timber.d("Token by mint was found. Continuing with direct address")
+            ownerAddress
         } else {
-            Timber.d("### account info found, generating associated")
-            TokenTransaction.getAssociatedTokenAddress(
-                token.mintAddress.toPublicKey(), ownerAddress
-            )
+            Timber.d("No token data found, getting associated token address")
+            TokenTransaction.getAssociatedTokenAddress(token.mintAddress.toPublicKey(), ownerAddress)
         }
 
         val payer = tokenKeyProvider.publicKey.toPublicKey()
@@ -141,6 +124,5 @@ class MainInteractor(
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private fun findSymbol(mint: String): String =
-        userLocalRepository.getTokenData(mint)?.symbol.orEmpty()
+    private fun findSymbol(mint: String): String = if (mint.isNotEmpty()) userLocalRepository.getTokenData(mint)?.symbol.orEmpty() else ""
 }

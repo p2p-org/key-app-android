@@ -25,6 +25,20 @@ object TokenTransaction {
         return AccountInfoData.decode(data)
     }
 
+    fun parseAccountInfoData(
+        accountInfo: AccountInfo?,
+        programId: PublicKey
+    ): AccountInfoData? {
+        if (accountInfo?.value == null) return null
+
+        val isValid = accountInfo.value.owner == programId.toString()
+        if (!isValid) return null
+
+        val base64Data = accountInfo.value.data!![0]
+        val data = Base64.decode(base64Data, Base64.DEFAULT)
+        return AccountInfoData.decode(data)
+    }
+
     fun getMultipleAccounts(
         accounts: MultipleAccountsInfo,
         keys: List<String>
