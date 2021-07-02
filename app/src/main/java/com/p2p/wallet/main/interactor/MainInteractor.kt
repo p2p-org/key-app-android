@@ -45,13 +45,18 @@ class MainInteractor(
         val transaction = TransactionRequest()
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
-        val address = TokenTransaction.getAssociatedTokenAddress(
-            token.mintAddress.toPublicKey(), ownerAddress
-        )
-
-        val payer = tokenKeyProvider.publicKey.toPublicKey()
 
         val accountAddress = rpcRepository.getAccountInfo(ownerAddress)
+
+        val address = if (accountAddress?.value == null) {
+            TokenTransaction.getAssociatedTokenAddress(
+                token.mintAddress.toPublicKey(), ownerAddress
+            )
+        } else {
+            token.publicKey.toPublicKey()
+        }
+
+        val payer = tokenKeyProvider.publicKey.toPublicKey()
 
         /* If account is not found, create one */
         if (!token.isSOL && accountAddress?.value == null) {
