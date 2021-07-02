@@ -3,7 +3,9 @@ package com.p2p.wallet.main.ui.send
 import com.p2p.wallet.R
 import com.p2p.wallet.amount.isMoreThan
 import com.p2p.wallet.amount.isZero
+import com.p2p.wallet.amount.scaleAmount
 import com.p2p.wallet.amount.scalePrice
+import com.p2p.wallet.amount.scaleShort
 import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.amount.toLamports
 import com.p2p.wallet.common.mvp.BasePresenter
@@ -136,7 +138,7 @@ class SendPresenter(
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,
                     amount = tokenAmount,
-                    usdAmount = token!!.usdRate.multiply(tokenAmount),
+                    usdAmount = token!!.usdRate.multiply(tokenAmount).scaleAmount(),
                     tokenSymbol = token!!.tokenSymbol
                 )
                 view?.showSuccess(info)
@@ -154,7 +156,7 @@ class SendPresenter(
                 tokenAmount = inputAmount.toBigDecimalOrZero()
                 usdAmount = tokenAmount.multiply(token.usdRate)
 
-                val usdAround = tokenAmount.times(token.usdRate).scalePrice()
+                val usdAround = tokenAmount.times(token.usdRate.scaleShort())
                 view?.showUsdAroundValue(usdAround)
                 view?.showAvailableValue(token.total, token.tokenSymbol)
 

@@ -19,6 +19,7 @@ import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import timber.log.Timber
 import java.math.BigInteger
 
 class MainInteractor(
@@ -43,18 +44,21 @@ class MainInteractor(
         }
 
         val transaction = TransactionRequest()
+        val accountInfo = rpcRepository.getAccountInfo(ownerAddress)
 
-        val signers = listOf(Account(tokenKeyProvider.secretKey))
-        val address = TokenTransaction.getAssociatedTokenAddress(
-            token.mintAddress.toPublicKey(), ownerAddress
-        )
+        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        val address = if (info != null && userLocalRepository.getTokenData(info.mint.toBase58()) != null) {
+            Timber.d("Token by mint was found. Continuing with direct address")
+            ownerAddress
+        } else {
+            Timber.d("No token data found, getting associated token address")
+            TokenTransaction.getAssociatedTokenAddress(token.mintAddress.toPublicKey(), ownerAddress)
+        }
 
         val payer = tokenKeyProvider.publicKey.toPublicKey()
 
-        val accountAddress = rpcRepository.getAccountInfo(ownerAddress)
-
         /* If account is not found, create one */
-        if (!token.isSOL && accountAddress?.value == null) {
+        if (!token.isSOL && accountInfo?.value == null) {
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
                 associatedProgramId = TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                 tokenProgramId = TokenProgram.PROGRAM_ID,
@@ -88,6 +92,8 @@ class MainInteractor(
 
         val recentBlockHash = rpcRepository.getRecentBlockhash()
         transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
+
+        val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
         val signature = rpcRepository.sendTransaction(transaction)
@@ -119,5 +125,5 @@ class MainInteractor(
     }
 
     private fun findSymbol(mint: String): String =
-        userLocalRepository.getTokenData(mint)?.symbol.orEmpty()
+        if (mint.isNotEmpty()) userLocalRepository.getTokenData(mint)?.symbol.orEmpty() else ""
 }

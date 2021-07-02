@@ -115,7 +115,10 @@ class MainPresenter(
     }
 
     private fun loadData() {
-        if (tokens.isNotEmpty()) return
+        if (tokens.isNotEmpty()) {
+            startPolling()
+            return
+        }
 
         launch {
             try {
