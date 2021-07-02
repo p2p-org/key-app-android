@@ -124,5 +124,6 @@ class MainInteractor(
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private fun findSymbol(mint: String): String = if (mint.isNotEmpty()) userLocalRepository.getTokenData(mint)?.symbol.orEmpty() else ""
+    private fun findSymbol(mint: String): String =
+        if (mint.isNotEmpty()) userLocalRepository.getTokenData(mint)?.symbol.orEmpty() else ""
 }
