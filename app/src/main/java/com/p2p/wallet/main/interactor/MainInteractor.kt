@@ -19,6 +19,7 @@ import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import timber.log.Timber
 import java.math.BigInteger
 
 class MainInteractor(
@@ -43,23 +44,38 @@ class MainInteractor(
         }
 
         val transaction = TransactionRequest()
+        val accountInfo = rpcRepository.getAccountInfo(ownerAddress)
 
-        val signers = listOf(Account(tokenKeyProvider.secretKey))
-
-        val accountAddress = rpcRepository.getAccountInfo(ownerAddress)
-
-        val address = if (accountAddress?.value == null) {
+        val address = if (accountInfo?.value != null) {
+            try {
+                val info = TokenTransaction.getAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+                val data = userLocalRepository.getTokenData(info.mint.toBase58())
+                if (data == null) {
+                    Timber.d("### no token found by mint, getting associated ")
+                    TokenTransaction.getAssociatedTokenAddress(
+                        token.mintAddress.toPublicKey(), ownerAddress
+                    )
+                } else {
+                    Timber.d("### token found, continuing with owner address")
+                    ownerAddress
+                }
+            } catch (e: Throwable) {
+                Timber.d("### data parse failed, generating associated")
+                TokenTransaction.getAssociatedTokenAddress(
+                    token.mintAddress.toPublicKey(), ownerAddress
+                )
+            }
+        } else {
+            Timber.d("### account info found, generating associated")
             TokenTransaction.getAssociatedTokenAddress(
                 token.mintAddress.toPublicKey(), ownerAddress
             )
-        } else {
-            token.publicKey.toPublicKey()
         }
 
         val payer = tokenKeyProvider.publicKey.toPublicKey()
 
         /* If account is not found, create one */
-        if (!token.isSOL && accountAddress?.value == null) {
+        if (!token.isSOL && accountInfo?.value == null) {
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
                 associatedProgramId = TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                 tokenProgramId = TokenProgram.PROGRAM_ID,
@@ -93,6 +109,8 @@ class MainInteractor(
 
         val recentBlockHash = rpcRepository.getRecentBlockhash()
         transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
+
+        val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
         val signature = rpcRepository.sendTransaction(transaction)
