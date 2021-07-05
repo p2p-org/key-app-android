@@ -22,6 +22,14 @@ class TokenAdapter(
     fun setItems(new: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState) {
         this.isZerosHidden = isZerosHidden
 
+//        new.forEach {
+//            when (it) {
+//                is TokenItem.Shown -> Timber.d("### shown ${it.token.tokenSymbol} vb: ${it.token.visibility}")
+//                is TokenItem.Hidden -> Timber.d("### hidden ${it.token.tokenSymbol} vb: ${it.token.visibility}")
+//                is TokenItem.Action -> Timber.d("### action ${it.state}")
+//            }
+//        }
+
         val old = ArrayList(data)
         data.clear()
         data.addAll(mapGroups(new, state))

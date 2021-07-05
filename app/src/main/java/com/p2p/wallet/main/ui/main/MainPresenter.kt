@@ -31,19 +31,20 @@ class MainPresenter(
         private const val BALANCE_CURRENCY = "USD"
     }
 
-    private var state: VisibilityState = VisibilityState.Visible
+    private var state: VisibilityState? = null
 
     private var balance: BigDecimal by Delegates.observable(BigDecimal.ZERO) { _, _, newValue ->
         view?.showBalance(newValue)
     }
 
-    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, _, newValue ->
+    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
         balance = mapBalance(newValue)
         val isZerosHidden = settingsInteractor.isZerosHidden()
-        val mappedTokens = mapTokens(newValue, isZerosHidden, state)
+        val actualState = if (state == null) VisibilityState.Hidden(newValue.count { it.isZero }) else state!!
+        val mappedTokens = mapTokens(newValue, isZerosHidden, actualState)
 
-        view?.showChart(newValue)
-        view?.showTokens(mappedTokens, isZerosHidden, state)
+        view?.showTokens(mappedTokens, isZerosHidden, actualState)
+        if (oldValue != newValue) view?.showChart(newValue)
     }
 
     private var collectJob: Job? = null
@@ -102,8 +103,7 @@ class MainPresenter(
                 val count = tokens.count { it.isDefinitelyHidden(isZerosHidden) }
                 VisibilityState.Hidden(count)
             }
-            is VisibilityState.Hidden ->
-                VisibilityState.Visible
+            else -> VisibilityState.Visible
         }
 
         val old = ArrayList(tokens)
@@ -116,7 +116,7 @@ class MainPresenter(
 
     private fun loadData() {
         if (tokens.isNotEmpty()) {
-            startPolling()
+//            startPolling()
             return
         }
 
@@ -131,7 +131,7 @@ class MainPresenter(
                 Timber.e(e, "Error loading tokens from remote")
             } finally {
                 view?.showLoading(false)
-                startPolling()
+//                startPolling()
             }
         }
     }
