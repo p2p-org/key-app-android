@@ -10,7 +10,6 @@ import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.local.TokenListResponse
 import com.p2p.wallet.user.model.TokenData
 import com.p2p.wallet.user.repository.UserLocalRepository
@@ -73,22 +72,7 @@ class UserInteractor(
 
     suspend fun loadTokens() {
         val newTokens = userRepository.loadTokens()
-        val hiddenTokens = mainLocalRepository.getTokens().filter { it.isHidden }.map { it.publicKey }
-
-        if (hiddenTokens.isEmpty()) {
-            mainLocalRepository.clear()
-            mainLocalRepository.setTokens(newTokens)
-            return
-        }
-
-        /* Starting check if token was previously hidden */
-        val result = newTokens.map { token ->
-            val isHidden = hiddenTokens.contains(token.publicKey)
-            if (isHidden) token.copy(visibility = TokenVisibility.HIDDEN) else token
-        }
-
-        mainLocalRepository.clear()
-        mainLocalRepository.setTokens(result)
+        mainLocalRepository.updateTokens(newTokens)
     }
 
     fun getTokensFlow(): Flow<List<Token>> =

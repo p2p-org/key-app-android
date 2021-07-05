@@ -15,6 +15,11 @@ class MainDatabaseRepository(
         tokenDao.insertOrReplace(entities)
     }
 
+    override suspend fun updateTokens(tokens: List<Token>) {
+        val entities = tokens.map { TokenConverter.toDatabase(it) }
+        tokenDao.insertOrUpdate(entities)
+    }
+
     override fun getTokensFlow(): Flow<List<Token>> =
         tokenDao.getTokensFlow().map { entities ->
             entities.map { TokenConverter.fromDatabase(it) }

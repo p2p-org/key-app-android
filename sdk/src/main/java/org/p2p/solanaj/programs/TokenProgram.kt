@@ -14,12 +14,12 @@ import java.util.ArrayList
 object TokenProgram {
     val PROGRAM_ID = PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
     val ASSOCIATED_TOKEN_PROGRAM_ID = PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL")
-    const val INSTRUCTION_INDEX_INITIALIZE_MINT = 0
-    const val INSTRUCTION_INDEX_INITIALIZE_ACCOUNT = 1
-    const val INSTRUCTION_INDEX_TRANSFER = 3
-    const val INSTRUCTION_INDEX_APPROVE = 4
-    const val INSTRUCTION_INDEX_MINT_TO = 7
-    const val INSTRUCTION_INDEX_CLOSE_ACCOUNT = 9
+    private const val INSTRUCTION_INDEX_INITIALIZE_MINT = 0
+    private const val INSTRUCTION_INDEX_INITIALIZE_ACCOUNT = 1
+    private const val INSTRUCTION_INDEX_TRANSFER = 3
+    private const val INSTRUCTION_INDEX_APPROVE = 4
+    private const val INSTRUCTION_INDEX_MINT_TO = 7
+    private const val INSTRUCTION_INDEX_CLOSE_ACCOUNT = 9
 
     fun createAssociatedTokenAccountInstruction(
         associatedProgramId: PublicKey,
