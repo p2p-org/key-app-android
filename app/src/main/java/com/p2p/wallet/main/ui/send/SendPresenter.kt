@@ -167,10 +167,13 @@ class SendPresenter(
             }
             is CurrencyMode.Usd -> {
                 usdAmount = inputAmount.toBigDecimalOrZero()
-                tokenAmount =
+                tokenAmount = if (token.usdRate.isZero()) {
+                    BigDecimal.ZERO
+                } else {
                     usdAmount.divide(token.usdRate, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
+                }
 
-                val tokenAround = if (usdAmount.isZero()) {
+                val tokenAround = if (usdAmount.isZero() || token.usdRate.isZero()) {
                     BigDecimal.ZERO
                 } else {
                     usdAmount.divide(token.usdRate, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()

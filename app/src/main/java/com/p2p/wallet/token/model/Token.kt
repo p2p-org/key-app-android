@@ -7,7 +7,6 @@ import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.amount.scaleShort
 import com.p2p.wallet.amount.toPowerValue
-import com.p2p.wallet.common.network.Constants
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -26,10 +25,6 @@ data class Token constructor(
     val usdRate: BigDecimal,
     val visibility: TokenVisibility
 ) : Parcelable {
-
-    @IgnoredOnParcel
-    val isHidden: Boolean
-        get() = visibility == TokenVisibility.HIDDEN
 
     @IgnoredOnParcel
     val isZero: Boolean
@@ -53,12 +48,6 @@ data class Token constructor(
 
     fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
         visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
-
-    fun getFormattedMintAddress(): String = if (mintAddress == SOL_MINT) {
-        Constants.WRAPPED_SOL_MINT
-    } else {
-        mintAddress
-    }
 
     @Suppress("MagicNumber")
     fun getFormattedAddress(): String {

@@ -112,7 +112,7 @@ class ReceiveFragment :
             addressTextView.text = token.publicKey
 
             mintAddressTitleTextView.text = getString(R.string.main_receive_mint_format, token.tokenSymbol)
-            mintAddressTextView.text = token.getFormattedMintAddress()
+            mintAddressTextView.text = token.mintAddress
         }
     }
 
