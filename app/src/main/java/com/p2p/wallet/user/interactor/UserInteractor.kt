@@ -91,9 +91,9 @@ class UserInteractor(
         mainLocalRepository.setTokens(emptyList())
     }
 
-    suspend fun findAccountAddress(mintAddress: PublicKey) =
+    suspend fun findAccountAddress(mintAddress: PublicKey): Token? =
         mainLocalRepository.getTokens().firstOrNull {
-            it.getFormattedMintAddress() == mintAddress.toString()
+            it.mintAddress == mintAddress.toString()
         }
 
     fun getSecretKeys(): List<String> =

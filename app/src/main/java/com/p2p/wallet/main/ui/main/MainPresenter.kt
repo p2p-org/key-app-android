@@ -40,7 +40,12 @@ class MainPresenter(
     private var tokens: List<Token> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
         balance = mapBalance(newValue)
         val isZerosHidden = settingsInteractor.isZerosHidden()
-        val actualState = if (state == null) VisibilityState.Hidden(newValue.count { it.isZero }) else state!!
+        val actualState = when (state) {
+            is VisibilityState.Hidden, null ->
+                VisibilityState.Hidden(newValue.count { it.isDefinitelyHidden(isZerosHidden) })
+            is VisibilityState.Visible ->
+                VisibilityState.Visible
+        }
         val mappedTokens = mapTokens(newValue, isZerosHidden, actualState)
 
         view?.showTokens(mappedTokens, isZerosHidden, actualState)
@@ -116,7 +121,7 @@ class MainPresenter(
 
     private fun loadData() {
         if (tokens.isNotEmpty()) {
-//            startPolling()
+            startPolling()
             return
         }
 

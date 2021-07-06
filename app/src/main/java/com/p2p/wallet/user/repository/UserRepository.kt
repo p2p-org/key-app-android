@@ -87,7 +87,7 @@ class UserRepositoryImpl(
 
     override suspend fun getRate(source: String, destination: String): BigDecimal {
         val json = compareApi.getPrice(source, destination)
-        val price = json.getAsJsonPrimitive(source).asBigDecimal
+        val price = json.getAsJsonPrimitive(destination)?.asBigDecimal ?: BigDecimal.ZERO
         return TokenPrice(source, price.scaleAmount()).price
     }
 }

@@ -29,14 +29,6 @@ class SwapPresenter(
     private val swapInteractor: SwapInteractor
 ) : BasePresenter<SwapContract.View>(), SwapContract.Presenter {
 
-    /**
-     * 1. Load all pools, cache it
-     * 2. find pool by mint a and mint b
-     * 3. Get balance of tokenA and tokenB
-     * 4. Calculate amount, fee, min receive
-     * 5. Swap
-     * */
-
     private var sourceToken: Token? by Delegates.observable(null) { _, _, newValue ->
         if (newValue != null) view?.showSourceToken(newValue)
     }
@@ -79,7 +71,16 @@ class SwapPresenter(
             val tokens = userInteractor.getTokens()
             val pools = swapInteractor.getAllPools()
             val result = tokens.filter { token ->
-                val pool = pools.firstOrNull { it.swapData.mintA.toBase58() == token.getFormattedMintAddress() }
+
+                if (destinationToken == null) return@filter true
+
+                val pool = pools.firstOrNull {
+                    it.swapData.mintA.toBase58() == token.mintAddress &&
+                        destinationToken!!.mintAddress == it.swapData.mintB.toBase58() ||
+
+                        it.swapData.mintB.toBase58() == token.mintAddress &&
+                        destinationToken!!.mintAddress == it.swapData.mintA.toBase58()
+                }
                 pool != null
             }
             view?.openSourceSelection(result)
@@ -90,9 +91,19 @@ class SwapPresenter(
         launch {
             val tokens = userInteractor.getTokens()
             val pools = swapInteractor.getAllPools()
+
             val result = tokens.filter { token ->
-                val pool = pools.firstOrNull { it.swapData.mintB.toBase58() == token.getFormattedMintAddress() }
-                pool != null && token.publicKey != sourceToken?.publicKey
+                val pool = pools.firstOrNull {
+                    val pool = pools.firstOrNull {
+                        it.swapData.mintB.toBase58() == token.mintAddress &&
+                            sourceToken!!.mintAddress == it.swapData.mintA.toBase58() ||
+
+                            it.swapData.mintA.toBase58() == token.mintAddress &&
+                            it.swapData.mintB.toBase58() == sourceToken!!.mintAddress
+                    }
+                    pool != null && token.publicKey != sourceToken?.publicKey
+                }
+                pool != null
             }
             view?.openDestinationSelection(result)
         }
@@ -251,8 +262,8 @@ class SwapPresenter(
 
         searchPoolJob?.cancel()
         searchPoolJob = launch {
-            val sourceMint = source.getFormattedMintAddress()
-            val destinationMint = destination.getFormattedMintAddress()
+            val sourceMint = source.mintAddress
+            val destinationMint = destination.mintAddress
             val pool = swapInteractor.findPool(sourceMint, destinationMint)
 
             if (pool != null) {
