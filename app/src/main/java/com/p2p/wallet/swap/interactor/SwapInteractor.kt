@@ -56,8 +56,8 @@ class SwapInteractor(
         usdReceivedAmount: BigDecimal,
         tokenSymbol: String
     ): SwapResult {
-        val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA)
-        val accountAddressB = userInteractor.findAccountAddress(request.pool.mintB)
+        val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA.toBase58())
+        val accountAddressB = userInteractor.findAccountAddress(request.pool.mintB.toBase58())
         val keys = userInteractor.getSecretKeys()
         val signature = swapRepository.swap(keys, request, accountAddressA, accountAddressB)
         return SwapResult.Success(signature, receivedAmount, usdReceivedAmount, tokenSymbol)

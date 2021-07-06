@@ -16,6 +16,6 @@ object TokenModule : InjectionModule {
 
         factory { TokenRemoteRepository(get()) } bind TokenRepository::class
         factory { TokenInteractor(get()) }
-        factory { TokenDetailsPresenter(get(), get()) } bind TokenDetailsContract.Presenter::class
+        factory { TokenDetailsPresenter(get(), get(), get()) } bind TokenDetailsContract.Presenter::class
     }
 }

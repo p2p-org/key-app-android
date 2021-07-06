@@ -4,14 +4,17 @@ import com.github.mikephil.charting.data.Entry
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.token.interactor.TokenInteractor
+import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.Transaction
+import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.properties.Delegates
 
 class TokenDetailsPresenter(
     private val tokenInteractor: TokenInteractor,
-    private val mainInteractor: MainInteractor
+    private val mainInteractor: MainInteractor,
+    private val userInteractor: UserInteractor
 ) : BasePresenter<TokenDetailsContract.View>(), TokenDetailsContract.Presenter {
 
     companion object {
@@ -21,6 +24,13 @@ class TokenDetailsPresenter(
 
     private var transactions: List<Transaction> by Delegates.observable(emptyList()) { _, _, newValue ->
         view?.showHistory(newValue)
+    }
+
+    override fun loadSolAddress() {
+        launch {
+            val sol = userInteractor.findAccountAddress(Token.SOL_MINT) ?: return@launch
+            view?.showSolAddress(sol)
+        }
     }
 
     override fun loadHistory(publicKey: String, totalItemsCount: Int?, tokenSymbol: String) {
