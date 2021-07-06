@@ -1,6 +1,7 @@
 package com.p2p.wallet.main.model
 
 import com.p2p.wallet.amount.fromLamports
+import com.p2p.wallet.amount.scaleAmount
 import com.p2p.wallet.amount.toBigDecimalOrZero
 import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.main.api.TokenColors
@@ -12,7 +13,6 @@ import com.p2p.wallet.user.local.TokenResponse
 import com.p2p.wallet.user.model.TokenData
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
-import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.model.types.Account
@@ -56,69 +56,96 @@ object TokenConverter {
     }
 
     fun fromNetwork(
-        response: TransactionDetails?,
-        publicKey: String,
-        symbol: String,
-        rate: TokenPrice
-    ): Transaction? =
-        when (response) {
-            is SwapDetails ->
-                Transaction.Swap(
-                    response.signature,
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault()),
-                    symbol,
-                    response.amountA.toBigInteger().fromLamports(),
-                    response.amountB.toBigInteger().fromLamports(),
-                    response.mintA,
-                    response.mintB
-                )
-            is TransferDetails ->
-                if (response.source == publicKey) {
-                    Transaction.Send(
-                        transactionId = response.signature,
-                        destination = response.destination,
-                        amount = response.amount.toBigInteger().fromLamports(response.decimals).times(rate.price),
-                        total = BigDecimal(response.amount).divide(response.decimals.toPowerValue()),
-                        date = ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(response.blockTime),
-                            ZoneId.systemDefault()
-                        ),
-                        tokenSymbol = symbol
-                    )
-                } else {
-                    Transaction.Receive(
-                        transactionId = response.signature,
-                        amount = response.amount.toBigInteger().fromLamports(response.decimals).times(rate.price),
-                        total = BigDecimal(response.amount).divide(response.decimals.toPowerValue()),
-                        date = ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(response.blockTime),
-                            ZoneId.systemDefault()
-                        ),
-                        senderAddress = response.source,
-                        tokenSymbol = symbol
-                    )
-                }
+        response: SwapDetails,
+        sourceData: TokenData,
+        destinationData: TokenData,
+        destinationRate: TokenPrice
+    ): Transaction =
+        Transaction.Swap(
+            signature = response.signature,
+            date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault()),
+            amountA = response.amountA
+                .toBigInteger()
+                .fromLamports(sourceData.decimals)
+                .scaleAmount(),
+            amountB = response.amountB
+                .toBigInteger()
+                .fromLamports(destinationData.decimals)
+                .scaleAmount(),
+            amountReceivedInUsd = response.amountB
+                .toBigInteger()
+                .fromLamports(destinationData.decimals)
+                .times(destinationRate.price)
+                .scaleAmount(),
+            sourceSymbol = sourceData.symbol,
+            sourceTokenUrl = sourceData.iconUrl.orEmpty(),
+            destinationSymbol = destinationData.symbol,
+            destinationTokenUrl = destinationData.iconUrl.orEmpty()
+        )
 
-            is CloseAccountDetails ->
-                Transaction.CloseAccount(
-                    transactionId = response.signature,
-                    account = response.account,
-                    destination = response.destination,
-                    owner = response.owner,
-                    date = ZonedDateTime.ofInstant(
-                        Instant.ofEpochMilli(response.blockTime),
-                        ZoneId.systemDefault()
-                    ),
-                    tokenSymbol = symbol
-                )
-            is UnknownDetails ->
-                Transaction.Unknown(
-                    response.signature,
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault()),
-                    symbol
-                )
-            else -> null
+    fun fromNetwork(
+        response: TransferDetails,
+        publicKey: String,
+        rate: TokenPrice,
+        symbol: String
+    ): Transaction {
+        val isSend = if (response.isSimpleTransfer) {
+            response.source == publicKey
+        } else {
+            response.authority == publicKey
         }
+
+        return if (isSend) {
+            Transaction.Send(
+                signature = response.signature,
+                destination = response.destination,
+                amount = BigDecimal(response.amount).toBigInteger()
+                    .fromLamports(response.decimals)
+                    .scaleAmount()
+                    .times(rate.price),
+                total = BigDecimal(response.amount).divide(response.decimals.toPowerValue()),
+                date = ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(response.blockTime),
+                    ZoneId.systemDefault()
+                ),
+                tokenSymbol = symbol
+            )
+        } else {
+            Transaction.Receive(
+                signature = response.signature,
+                amount = BigDecimal(response.amount).toBigInteger().fromLamports(response.decimals)
+                    .times(rate.price),
+                total = BigDecimal(response.amount).divide(response.decimals.toPowerValue()),
+                date = ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(response.blockTime),
+                    ZoneId.systemDefault()
+                ),
+                senderAddress = response.source,
+                tokenSymbol = symbol
+            )
+        }
+    }
+
+    fun fromNetwork(response: CloseAccountDetails, symbol: String): Transaction =
+        Transaction.CloseAccount(
+            signature = response.signature,
+            account = response.account,
+            destination = response.destination,
+            owner = response.owner,
+            date = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(response.blockTime),
+                ZoneId.systemDefault()
+            ),
+            tokenSymbol = symbol
+        )
+
+    fun fromNetwork(
+        response: UnknownDetails
+    ): Transaction =
+        Transaction.Unknown(
+            signature = response.signature,
+            date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault())
+        )
 
     fun toDatabase(token: Token): TokenEntity =
         TokenEntity(

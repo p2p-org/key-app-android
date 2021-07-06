@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.components.Description
@@ -13,6 +15,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
+import com.p2p.wallet.common.recycler.EndlessScrollListener
 import com.p2p.wallet.common.widget.TabItem
 import com.p2p.wallet.databinding.FragmentTokenDetailsBinding
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
@@ -81,12 +84,24 @@ class TokenDetailsFragment :
             }
 
             with(historyRecyclerView) {
-                layoutManager = LinearLayoutManager(requireContext())
+                val linearLayoutManager = LinearLayoutManager(requireContext())
+                layoutManager = linearLayoutManager
                 adapter = historyAdapter
+
+                val scrollListener = EndlessScrollListener(linearLayoutManager) { total ->
+                    presenter.loadHistory(token.publicKey, total, token.tokenSymbol)
+                }
+
+                doOnAttach {
+                    addOnScrollListener(scrollListener)
+                }
+                doOnDetach {
+                    removeOnScrollListener(scrollListener)
+                }
             }
         }
 
-        presenter.loadHistory(token.publicKey, token.tokenSymbol)
+        presenter.loadHistory(token.publicKey, null, token.tokenSymbol)
     }
 
     override fun showHistory(transactions: List<Transaction>) {

@@ -5,12 +5,12 @@ import androidx.annotation.ColorRes
 import com.p2p.wallet.R
 import com.p2p.wallet.amount.isZero
 import com.p2p.wallet.amount.scalePrice
+import com.p2p.wallet.amount.scaleShort
 import com.p2p.wallet.amount.toPowerValue
 import com.p2p.wallet.common.network.Constants
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Parcelize
 data class Token constructor(
@@ -71,7 +71,7 @@ data class Token constructor(
         return "$firstSix...$lastFour"
     }
 
-    fun getFormattedPrice(): String = "${price.setScale(2, RoundingMode.HALF_EVEN)} $"
+    fun getFormattedPrice(): String = "${price.scaleShort()} $"
 
     fun getFormattedTotal(): String = "$total $tokenSymbol"
 
@@ -79,14 +79,14 @@ data class Token constructor(
 
     companion object {
         const val USD_SYMBOL = "USD"
+        const val SOL_NAME = "SOL"
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9
         private const val SOL_MINT = "So11111111111111111111111111111111111111112"
-        private const val SOL_NAME = "SOL"
         private const val SOL_LOGO_URL =
             "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png"
 
-        /* fixme: workaround about adding hardcode wallet, looks strange */
+        /* fixme: workaround about adding hardcode wallet */
         fun getSOL(publicKey: String, amount: Long) = Token(
             tokenSymbol = SOL_NAME,
             tokenName = SOL_NAME,

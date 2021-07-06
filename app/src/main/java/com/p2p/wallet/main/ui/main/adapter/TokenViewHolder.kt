@@ -1,13 +1,14 @@
 package com.p2p.wallet.main.ui.main.adapter
 
 import android.graphics.drawable.PictureDrawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.RequestBuilder
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
@@ -21,6 +22,10 @@ class TokenViewHolder(
     private val onEditClicked: (Token) -> Unit,
     private val onHideClicked: (Token) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
+
+    private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
+        .`as`(PictureDrawable::class.java)
+        .listener(SvgSoftwareLayerSetter())
 
     companion object {
         private const val LIST_TOP_MARGIN_IN_DP = 16
@@ -60,7 +65,7 @@ class TokenViewHolder(
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 
         if (!token.logoUrl.isNullOrEmpty()) {
-            loadLogo(token.logoUrl)
+            loadImage(tokenImageView, token.logoUrl)
         }
 
         nameTextView.text = token.tokenSymbol
@@ -76,17 +81,11 @@ class TokenViewHolder(
         contentView.setOnClickListener { onItemClicked(token) }
     }
 
-    private fun loadLogo(logoUrl: String) {
-        if (logoUrl.endsWith(".svg")) {
-            Glide.with(tokenImageView.context)
-                .`as`(PictureDrawable::class.java)
-                .fitCenter()
-                .listener(SvgSoftwareLayerSetter())
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.RESOURCE))
-                .load(logoUrl)
-                .into(tokenImageView)
+    private fun loadImage(imageView: ImageView, url: String) {
+        if (url.contains(".svg")) {
+            requestBuilder.load(Uri.parse(url)).into(imageView)
         } else {
-            Glide.with(tokenImageView).load(logoUrl).into(tokenImageView)
+            Glide.with(imageView).load(url).into(imageView)
         }
     }
 }

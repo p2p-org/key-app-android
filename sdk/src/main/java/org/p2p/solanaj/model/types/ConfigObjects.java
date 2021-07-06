@@ -16,8 +16,9 @@ public class ConfigObjects {
         @Json(name = "until")
         private String until;
 
-        public ConfirmedSignFAddr2(int limit) {
+        public ConfirmedSignFAddr2(String before, int limit) {
             this.limit = limit;
+            this.before = before;
         }
     }
 

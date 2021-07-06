@@ -1,5 +1,6 @@
 package com.p2p.wallet.main.api
 
+import com.google.gson.JsonObject
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -9,13 +10,13 @@ interface CompareApi {
     suspend fun getMultiPrice(
         @Query("fsyms") tokensFrom: String,
         @Query("tsyms") tokenTo: String
-    ): MultiPriceResponse
+    ): JsonObject
 
     @GET("data/price")
     suspend fun getPrice(
         @Query("fsym") tokenFrom: String,
         @Query("tsyms") tokenTo: String,
-    ): SinglePriceResponse
+    ): JsonObject
 
     @GET("data/v2/histoday")
     suspend fun getDailyPriceHistory(

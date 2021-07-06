@@ -1,5 +1,6 @@
 package com.p2p.wallet.user.repository
 
+import com.p2p.wallet.amount.scaleAmount
 import com.p2p.wallet.amount.scalePrice
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
@@ -7,11 +8,8 @@ import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.rpc.RpcRepository
 import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.user.model.UserConverter
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.core.Account
 import java.math.BigDecimal
@@ -44,12 +42,13 @@ class UserRepositoryImpl(
             tokens
                 .chunked(CHUNKED_COUNT)
                 .map { list ->
-                    async {
-                        val response = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
-                        tokens.map { UserConverter.fromNetwork(it, response) }
+                    val json = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
+                    list.mapNotNull { symbol ->
+                        val tokenObject = json.getAsJsonObject(symbol) ?: return@mapNotNull null
+                        val price = tokenObject.getAsJsonPrimitive(Token.USD_SYMBOL).asBigDecimal
+                        TokenPrice(symbol, price.scaleAmount())
                     }
                 }
-                .awaitAll()
                 .flatten()
         }
 
@@ -87,7 +86,8 @@ class UserRepositoryImpl(
     }
 
     override suspend fun getRate(source: String, destination: String): BigDecimal {
-        val data = compareApi.getPrice(source, destination)
-        return UserConverter.fromNetwork(destination, data).getFormattedPrice()
+        val json = compareApi.getPrice(source, destination)
+        val price = json.getAsJsonPrimitive(source).asBigDecimal
+        return TokenPrice(source, price.scaleAmount()).price
     }
 }
