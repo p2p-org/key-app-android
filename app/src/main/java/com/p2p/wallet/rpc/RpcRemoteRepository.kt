@@ -134,10 +134,14 @@ class RpcRemoteRepository(
     /**
      * The history is being fetched from main-net despite the selected network
      * */
-    override suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation> {
+    override suspend fun getConfirmedSignaturesForAddress(
+        account: PublicKey,
+        before: String?,
+        limit: Int
+    ): List<SignatureInformation> {
         val params = listOf(
             account.toString(),
-            ConfigObjects.ConfirmedSignFAddr2(limit)
+            ConfigObjects.ConfirmedSignFAddr2(before, limit)
         )
 
         val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)

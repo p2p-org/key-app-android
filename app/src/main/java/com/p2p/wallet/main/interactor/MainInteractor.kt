@@ -11,9 +11,10 @@ import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
-import org.p2p.solanaj.kits.transaction.TransactionDetailsType
+import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionTypeParser
 import org.p2p.solanaj.kits.transaction.TransferDetails
+import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionRequest
@@ -100,28 +101,46 @@ class MainInteractor(
         return TransactionResult.Success(signature)
     }
 
-    suspend fun getHistory(publicKey: String, tokenSymbol: String, limit: Int): List<Transaction> {
-        val signatures = rpcRepository.getConfirmedSignaturesForAddress2(publicKey.toPublicKey(), limit)
-        val rate = userLocalRepository.getPriceByToken(tokenSymbol)
+    suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<Transaction> {
+        val signatures = rpcRepository.getConfirmedSignaturesForAddress(publicKey.toPublicKey(), before, limit)
         return signatures
             .mapNotNull { signature ->
                 val response = rpcRepository.getConfirmedTransaction(signature.signature)
                 val data = TransactionTypeParser.parse(signature.signature, response)
-                val swap = data.firstOrNull { it.type == TransactionDetailsType.SWAP }
-                val transfer = data.firstOrNull { it.type == TransactionDetailsType.TRANSFER }
-                val close = data.firstOrNull { it.type == TransactionDetailsType.CLOSE_ACCOUNT }
-                val unknown = data.firstOrNull { it.type == TransactionDetailsType.UNKNOWN }
 
-                val (details, symbol) = when {
-                    swap != null -> swap to ""
-                    transfer != null -> transfer as TransferDetails to findSymbol(transfer.mint)
-                    close != null -> close as CloseAccountDetails to findSymbol(close.signature)
-                    else -> unknown to ""
+                val swap = data.firstOrNull { it is SwapDetails }
+                val transfer = data.firstOrNull { it is TransferDetails }
+                val close = data.firstOrNull { it is CloseAccountDetails }
+                val unknown = data.firstOrNull { it is UnknownDetails }
+
+                return@mapNotNull when {
+                    swap != null -> parseSwapDetails(swap as SwapDetails)
+                    transfer != null -> parseTransferDetails(transfer as TransferDetails, publicKey)
+                    close != null -> parseCloseDetails(close as CloseAccountDetails)
+                    else -> TokenConverter.fromNetwork(unknown as UnknownDetails)
                 }
-
-                TokenConverter.fromNetwork(details, publicKey, symbol, rate)
             }
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
+    }
+
+    private fun parseSwapDetails(details: SwapDetails): Transaction? {
+        val sourceData = userLocalRepository.getTokenData(details.mintA) ?: return null
+        val destinationData = userLocalRepository.getTokenData(details.mintB) ?: return null
+
+        val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
+        return TokenConverter.fromNetwork(details, sourceData, destinationData, destinationRate)
+    }
+
+    private fun parseTransferDetails(transfer: TransferDetails, publicKey: String): Transaction {
+        val symbol = if (transfer.isSimpleTransfer) Token.SOL_NAME else findSymbol(transfer.mint)
+        val rate = userLocalRepository.getPriceByToken(symbol)
+
+        return TokenConverter.fromNetwork(transfer, publicKey, rate, symbol)
+    }
+
+    private fun parseCloseDetails(details: CloseAccountDetails): Transaction {
+        val symbol = findSymbol(details.signature)
+        return TokenConverter.fromNetwork(details, symbol)
     }
 
     private fun findSymbol(mint: String): String =

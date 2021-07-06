@@ -4,8 +4,10 @@ import com.github.mikephil.charting.data.Entry
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.token.interactor.TokenInteractor
+import com.p2p.wallet.token.model.Transaction
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.properties.Delegates
 
 class TokenDetailsPresenter(
     private val tokenInteractor: TokenInteractor,
@@ -14,15 +16,20 @@ class TokenDetailsPresenter(
 
     companion object {
         private const val DESTINATION_TOKEN = "USD"
-        private const val HISTORY_LIMIT = 10
+        private const val PAGE_SIZE = 20
     }
 
-    override fun loadHistory(publicKey: String, tokenSymbol: String) {
+    private var transactions: List<Transaction> by Delegates.observable(emptyList()) { _, _, newValue ->
+        view?.showHistory(newValue)
+    }
+
+    override fun loadHistory(publicKey: String, totalItemsCount: Int?, tokenSymbol: String) {
         launch {
             try {
                 view?.showLoading(true)
-                val history = mainInteractor.getHistory(publicKey, tokenSymbol, HISTORY_LIMIT)
-                view?.showHistory(history)
+                val lastSignature = totalItemsCount?.let { transactions[it - 1].signature }
+                val history = mainInteractor.getHistory(publicKey, lastSignature, PAGE_SIZE)
+                transactions = history
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")
                 view?.showErrorMessage(e)

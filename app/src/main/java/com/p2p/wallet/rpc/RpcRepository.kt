@@ -27,5 +27,9 @@ interface RpcRepository {
      * The history is being fetched from main-net despite the selected network
      * */
     suspend fun getConfirmedTransaction(signature: String): ConfirmedTransactionParsed
-    suspend fun getConfirmedSignaturesForAddress2(account: PublicKey, limit: Int): List<SignatureInformation>
+    suspend fun getConfirmedSignaturesForAddress(
+        account: PublicKey,
+        before: String?,
+        limit: Int
+    ): List<SignatureInformation>
 }

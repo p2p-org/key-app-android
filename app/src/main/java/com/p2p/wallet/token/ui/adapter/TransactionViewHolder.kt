@@ -1,11 +1,17 @@
 package com.p2p.wallet.token.ui.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.PictureDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
 import com.p2p.wallet.R
+import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.databinding.ItemTransactionBinding
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.token.model.TransactionOrDateItem
@@ -24,11 +30,18 @@ class TransactionViewHolder(
         onTransactionClicked
     )
 
+    private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
+        .`as`(PictureDrawable::class.java)
+        .listener(SvgSoftwareLayerSetter())
+
     private val tokenImageView = binding.tokenImageView
     private val typeTextView = binding.typeTextView
     private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
+    private val swapView = binding.swapView
+    private val sourceImageView = binding.sourceImageView
+    private val destinationImageView = binding.destinationImageView
 
     @SuppressLint("SetTextI18n")
     fun onBind(item: TransactionOrDateItem.TransactionItem) {
@@ -50,11 +63,15 @@ class TransactionViewHolder(
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
             }
             is Transaction.Swap -> {
-                tokenImageView.setImageResource(R.drawable.ic_transaction_swap)
-                typeTextView.setText(R.string.main_swap)
-                valueTextView.text = "+ ${item.transaction.getFormattedAmount()}"
-                totalTextView.text = "+ ${item.transaction.getFormattedTotal()}"
+                tokenImageView.isVisible = false
+                swapView.isVisible = true
 
+                loadImage(sourceImageView, item.transaction.sourceTokenUrl)
+                loadImage(destinationImageView, item.transaction.destinationTokenUrl)
+                typeTextView.setText(R.string.main_swap)
+                valueTextView.text = "+ ${item.transaction.amountReceivedInUsd}"
+                totalTextView.text = "+ ${item.transaction.amountB} ${item.transaction.destinationSymbol}"
+                addressTextView.text = "${item.transaction.sourceSymbol} to ${item.transaction.destinationSymbol}"
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
             }
             is Transaction.CloseAccount -> {
@@ -81,5 +98,13 @@ class TransactionViewHolder(
         val firstSix = address.take(4)
         val lastFour = address.takeLast(4)
         return "$firstSix...$lastFour"
+    }
+
+    private fun loadImage(imageView: ImageView, url: String) {
+        if (url.contains(".svg")) {
+            requestBuilder.load(url).into(imageView)
+        } else {
+            Glide.with(imageView).load(url).into(imageView)
+        }
     }
 }

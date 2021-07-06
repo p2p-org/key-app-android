@@ -8,28 +8,24 @@ sealed class Transaction(
     open val date: ZonedDateTime
 ) {
 
-    abstract val transactionId: String
-    abstract val tokenSymbol: String
+    abstract val signature: String
 
     data class Swap(
-        override val transactionId: String,
+        override val signature: String,
         override val date: ZonedDateTime,
-        override val tokenSymbol: String,
         val amountA: BigDecimal,
         val amountB: BigDecimal,
-        val mintA: String,
-        val mintB: String
-    ) : Transaction(date) {
-
-        fun getFormattedAmount(): String = "${amountA.scaleAmount()} $"
-
-        fun getFormattedTotal(): String = "${amountA.scaleAmount()} $tokenSymbol"
-    }
+        val amountReceivedInUsd: BigDecimal,
+        val sourceSymbol: String,
+        val sourceTokenUrl: String,
+        val destinationSymbol: String,
+        val destinationTokenUrl: String
+    ) : Transaction(date)
 
     data class Send(
-        override val transactionId: String,
+        override val signature: String,
         override val date: ZonedDateTime,
-        override val tokenSymbol: String,
+        val tokenSymbol: String,
         val amount: BigDecimal,
         val total: BigDecimal,
         val destination: String
@@ -41,9 +37,9 @@ sealed class Transaction(
     }
 
     data class Receive(
-        override val transactionId: String,
+        override val signature: String,
         override val date: ZonedDateTime,
-        override val tokenSymbol: String,
+        val tokenSymbol: String,
         val amount: BigDecimal,
         val total: BigDecimal,
         val senderAddress: String
@@ -58,14 +54,13 @@ sealed class Transaction(
         val account: String,
         val destination: String,
         val owner: String,
-        override val transactionId: String,
-        override val date: ZonedDateTime,
-        override val tokenSymbol: String
+        val tokenSymbol: String,
+        override val signature: String,
+        override val date: ZonedDateTime
     ) : Transaction(date)
 
     data class Unknown(
-        override val transactionId: String,
-        override val date: ZonedDateTime,
-        override val tokenSymbol: String
+        override val signature: String,
+        override val date: ZonedDateTime
     ) : Transaction(date)
 }

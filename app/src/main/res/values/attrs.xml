@@ -27,6 +27,12 @@
         <attr name="cornerRadius" />
     </declare-styleable>
 
+    <declare-styleable name="EndlessScrollRecyclerView">
+        <attr name="emptyLayout" format="reference"/>
+        <attr name="errorLayout" format="reference"/>
+        <attr name="progressLayout" format="reference"/>
+    </declare-styleable>
+
     <declare-styleable name="SwipeLayout">
         <attr name="swipeDirection" format="integer">
             <flag name="left" value="1" />
