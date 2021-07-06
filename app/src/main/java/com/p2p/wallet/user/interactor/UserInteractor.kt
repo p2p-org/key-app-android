@@ -15,7 +15,6 @@ import com.p2p.wallet.user.model.TokenData
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import org.p2p.solanaj.model.core.PublicKey
 import java.io.IOException
 import java.io.InputStream
 import java.math.BigDecimal
@@ -91,9 +90,9 @@ class UserInteractor(
         mainLocalRepository.setTokens(emptyList())
     }
 
-    suspend fun findAccountAddress(mintAddress: PublicKey): Token? =
+    suspend fun findAccountAddress(mintAddress: String): Token? =
         mainLocalRepository.getTokens().firstOrNull {
-            it.mintAddress == mintAddress.toString()
+            it.mintAddress == mintAddress
         }
 
     fun getSecretKeys(): List<String> =

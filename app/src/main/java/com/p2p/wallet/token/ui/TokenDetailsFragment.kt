@@ -74,7 +74,6 @@ class TokenDetailsFragment :
             toolbar.title = token.tokenSymbol
             balanceTextView.text = token.getFormattedPrice()
             totalTextView.text = token.getFormattedTotal()
-            addressTextView.text = token.publicKey
 
             toolbar.setNavigationOnClickListener { popBackStack() }
             qrImageView.setOnClickListener { replaceFragment(ReceiveFragment.create(token)) }
@@ -102,6 +101,11 @@ class TokenDetailsFragment :
         }
 
         presenter.loadHistory(token.publicKey, null, token.tokenSymbol)
+        presenter.loadSolAddress()
+    }
+
+    override fun showSolAddress(sol: Token) {
+        binding.addressTextView.text = sol.publicKey
     }
 
     override fun showHistory(transactions: List<Transaction>) {
