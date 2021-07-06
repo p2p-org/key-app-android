@@ -36,10 +36,13 @@ class ReceivePresenter(
     override fun loadData() {
         launch {
             view?.showFullScreenLoading(true)
-            val receive = defaultToken ?: userInteractor.getTokens().firstOrNull() ?: return@launch
+            val tokens = userInteractor.getTokens()
+            val receive = defaultToken ?: tokens.firstOrNull() ?: return@launch
             token = receive
 
-            generateQrCode(receive.publicKey)
+            val sol = tokens.first { it.isSOL }
+            view?.showSolAddress(sol)
+            generateQrCode(sol.publicKey)
 
             view?.showFullScreenLoading(false)
         }

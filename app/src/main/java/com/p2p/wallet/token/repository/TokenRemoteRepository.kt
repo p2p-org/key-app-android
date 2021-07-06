@@ -13,7 +13,10 @@ class TokenRemoteRepository(
 
     override suspend fun getDailyPriceHistory(sourceToken: String, destination: String, days: Int): List<PriceHistory> {
         val response = compareApi.getDailyPriceHistory(sourceToken, destination, days)
-        return response.data.list.map { PriceHistory(it.close) }
+
+        return if (response.message.isNullOrEmpty()) {
+            response.data.list.map { PriceHistory(it.close) }
+        } else emptyList()
     }
 
     override suspend fun getHourlyPriceHistory(
@@ -22,6 +25,8 @@ class TokenRemoteRepository(
         hours: Int
     ): List<PriceHistory> {
         val response = compareApi.getHourlyPriceHistory(sourceToken, destination, hours, CHART_ENTRY_LIMIT)
-        return response.data.list.map { PriceHistory(it.close) }
+        return if (response.message.isNullOrEmpty()) {
+            response.data.list.map { PriceHistory(it.close) }
+        } else emptyList()
     }
 }

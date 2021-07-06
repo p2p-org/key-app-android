@@ -79,27 +79,29 @@ class ReceiveFragment :
         presenter.loadData()
     }
 
-    override fun showReceiveToken(token: Token) {
+    override fun showSolAddress(token: Token) {
         with(binding) {
             fullAddressTextView.text = token.publicKey.cutMiddle()
-
-            viewButton.setOnClickListener {
-                val url = getString(R.string.solanaWalletExplorer, token.publicKey)
-                showUrlInCustomTabs(url)
-            }
-
             fullAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(token.publicKey)
                 fullAddressTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
                 Toast.makeText(requireContext(), R.string.main_receive_address_copied, Toast.LENGTH_SHORT).show()
             }
-
             shareImageView.setOnClickListener {
                 requireContext().shareText(token.publicKey)
             }
+        }
+    }
+
+    override fun showReceiveToken(token: Token) {
+        with(binding) {
+            viewButton.setOnClickListener {
+                val url = getString(R.string.solanaWalletExplorer, token.publicKey)
+                showUrlInCustomTabs(url)
+            }
 
             shareAddressImageView.setOnClickListener {
-                val url = getString(R.string.solanaExplorer, token.publicKey)
+                val url = getString(R.string.solanaWalletExplorer, token.publicKey)
                 showUrlInCustomTabs(url)
             }
 

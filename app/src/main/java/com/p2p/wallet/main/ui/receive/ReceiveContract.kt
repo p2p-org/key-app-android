@@ -10,6 +10,7 @@ interface ReceiveContract {
     interface View : MvpView {
         fun renderQr(qrBitmap: Bitmap?)
         fun showReceiveToken(token: Token)
+        fun showSolAddress(token: Token)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showQrLoading(isLoading: Boolean)
     }
