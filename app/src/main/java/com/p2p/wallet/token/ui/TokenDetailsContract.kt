@@ -1,5 +1,6 @@
 package com.p2p.wallet.token.ui
 
+import androidx.annotation.StringRes
 import com.github.mikephil.charting.data.Entry
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
@@ -13,6 +14,7 @@ interface TokenDetailsContract {
         fun showChartData(entries: List<Entry>)
         fun showLoading(isLoading: Boolean)
         fun showSolAddress(sol: Token)
+        fun showError(@StringRes resId: Int, argument: String)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -1,6 +1,7 @@
 package com.p2p.wallet.token.ui
 
 import com.github.mikephil.charting.data.Entry
+import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.token.interactor.TokenInteractor
@@ -56,6 +57,7 @@ class TokenDetailsPresenter(
                 val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
                 view?.showChartData(entries)
             } catch (e: Throwable) {
+                view?.showError(R.string.error_fetching_data_about_token, tokenSymbol)
                 Timber.e(e, "Error loading token price history")
             }
         }
@@ -68,6 +70,7 @@ class TokenDetailsPresenter(
                 val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
                 view?.showChartData(entries)
             } catch (e: Throwable) {
+                view?.showError(R.string.error_fetching_data_about_token, tokenSymbol)
                 Timber.e(e, "Error loading token price history")
             }
         }

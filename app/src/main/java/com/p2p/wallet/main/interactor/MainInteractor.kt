@@ -127,6 +127,8 @@ class MainInteractor(
         val sourceData = userLocalRepository.getTokenData(details.mintA) ?: return null
         val destinationData = userLocalRepository.getTokenData(details.mintB) ?: return null
 
+        if (sourceData.mintAddress == destinationData.mintAddress) return null
+
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
         return TokenConverter.fromNetwork(details, sourceData, destinationData, destinationRate)
     }

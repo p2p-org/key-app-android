@@ -25,8 +25,8 @@ object MainModule : InjectionModule {
         single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
         factory { MainInteractor(get(), get(), get()) }
 
-        factory { SwapPresenter(get(), get()) } bind SwapContract.Presenter::class
+        factory { (token: Token?) -> SwapPresenter(token, get(), get()) } bind SwapContract.Presenter::class
         factory { (token: Token?) -> ReceivePresenter(token, get(), get()) } bind ReceiveContract.Presenter::class
-        factory { SendPresenter(get(), get()) } bind SendContract.Presenter::class
+        factory { (token: Token) -> SendPresenter(token, get(), get()) } bind SendContract.Presenter::class
     }
 }

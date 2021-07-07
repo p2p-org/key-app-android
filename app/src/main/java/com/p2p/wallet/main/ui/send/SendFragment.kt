@@ -27,6 +27,7 @@ import com.p2p.wallet.utils.resFromTheme
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
 
 class SendFragment :
@@ -35,16 +36,25 @@ class SendFragment :
 
     companion object {
         private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
+        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
         fun create(address: String? = null) = SendFragment().withArgs(
             EXTRA_ADDRESS to address
         )
+
+        fun create(initialToken: Token) = SendFragment().withArgs(
+            EXTRA_TOKEN to initialToken
+        )
     }
 
-    override val presenter: SendContract.Presenter by inject()
+    override val presenter: SendContract.Presenter by inject {
+        parametersOf(token)
+    }
 
     private val binding: FragmentSendBinding by viewBinding()
 
     private val address: String? by args(EXTRA_ADDRESS)
+
+    private val token: Token? by args(EXTRA_TOKEN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
