@@ -49,7 +49,7 @@ class MainPresenter(
         val mappedTokens = mapTokens(newValue, isZerosHidden, actualState)
 
         view?.showTokens(mappedTokens, isZerosHidden, actualState)
-        if (oldValue != newValue) view?.showChart(newValue)
+        view?.showChart(newValue)
     }
 
     private var collectJob: Job? = null

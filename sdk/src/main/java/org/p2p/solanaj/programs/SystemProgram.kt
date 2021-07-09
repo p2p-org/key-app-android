@@ -8,7 +8,7 @@ import java.util.ArrayList
 
 object SystemProgram {
     val PROGRAM_ID = PublicKey("11111111111111111111111111111111")
-    private val SPL_TOKEN_PROGRAM_ID = PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    val SPL_TOKEN_PROGRAM_ID = PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
     private val SYSVAR_RENT_ADDRESS = PublicKey("SysvarRent111111111111111111111111111111111")
     private const val PROGRAM_INDEX_CREATE_ACCOUNT = 0
     private const val PROGRAM_INDEX_TRANSFER = 2

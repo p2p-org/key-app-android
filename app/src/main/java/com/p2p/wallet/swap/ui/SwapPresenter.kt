@@ -25,6 +25,7 @@ import java.math.BigDecimal
 import kotlin.properties.Delegates
 
 class SwapPresenter(
+    private val initialToken: Token?,
     private val userInteractor: UserInteractor,
     private val swapInteractor: SwapInteractor
 ) : BasePresenter<SwapContract.View>(), SwapContract.Presenter {
@@ -56,8 +57,7 @@ class SwapPresenter(
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
-            val tokens = userInteractor.getTokens()
-            val source = tokens.firstOrNull() ?: return@launch
+            val source = initialToken ?: userInteractor.getTokens().firstOrNull() ?: return@launch
             sourceToken = source
 
             swapInteractor.loadAllPools()

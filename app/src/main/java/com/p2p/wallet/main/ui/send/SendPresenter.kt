@@ -24,6 +24,7 @@ import java.math.RoundingMode
 import kotlin.properties.Delegates
 
 class SendPresenter(
+    private val initialToken: Token?,
     private val mainInteractor: MainInteractor,
     private val userInteractor: UserInteractor
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
@@ -49,6 +50,19 @@ class SendPresenter(
 
     private var address: String = ""
 
+    override fun loadInitialData() {
+        launch {
+            view?.showFullScreenLoading(true)
+            val source = initialToken ?: userInteractor.getTokens().firstOrNull() ?: return@launch
+            val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
+            token = source.copy(usdRate = exchangeRate)
+
+            mode = CurrencyMode.Token(source.tokenSymbol)
+
+            view?.showFullScreenLoading(false)
+        }
+    }
+
     override fun setSourceToken(newToken: Token) {
         token = newToken
         calculateData(newToken)
@@ -72,20 +86,6 @@ class SendPresenter(
             } finally {
                 view?.showLoading(false)
             }
-        }
-    }
-
-    override fun loadInitialData() {
-        launch {
-            view?.showFullScreenLoading(true)
-            val tokens = userInteractor.getTokens()
-            val source = tokens.firstOrNull() ?: return@launch
-            val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
-            token = source.copy(usdRate = exchangeRate)
-
-            mode = CurrencyMode.Token(source.tokenSymbol)
-
-            view?.showFullScreenLoading(false)
         }
     }
 

@@ -48,7 +48,7 @@ class TransactionViewHolder(
         when (item.transaction) {
             is Transaction.Send -> {
                 tokenImageView.setImageResource(R.drawable.ic_transaction_send)
-                typeTextView.setText(R.string.main_send)
+                typeTextView.setText(R.string.main_transfer)
                 addressTextView.text = "to ${cutAddress(item.transaction.destination)}"
                 valueTextView.text = "- ${item.transaction.getFormattedAmount()}"
                 totalTextView.text = "- ${item.transaction.getFormattedTotal()}"
@@ -77,7 +77,7 @@ class TransactionViewHolder(
             is Transaction.CloseAccount -> {
                 tokenImageView.setImageResource(R.drawable.ic_trash)
                 typeTextView.setText(R.string.main_close_account)
-                addressTextView.text = "Closed"
+                addressTextView.text = "${item.transaction.tokenSymbol} Closed"
 
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
             }

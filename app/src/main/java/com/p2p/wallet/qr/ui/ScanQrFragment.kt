@@ -86,9 +86,7 @@ class ScanQrFragment :
 
     private fun onCameraPermissionResult(state: PermissionState?) {
         when (state) {
-            PermissionState.GRANTED -> {
-                triggerQrScanner()
-            }
+            PermissionState.GRANTED -> triggerQrScanner()
             PermissionState.DENIED -> showCameraNotAvailablePlaceholder {
                 PermissionsDialog.requestPermissions(this, listOf(Manifest.permission.CAMERA))
             }

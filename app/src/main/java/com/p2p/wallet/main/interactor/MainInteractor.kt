@@ -127,6 +127,8 @@ class MainInteractor(
         val sourceData = userLocalRepository.getTokenData(details.mintA) ?: return null
         val destinationData = userLocalRepository.getTokenData(details.mintB) ?: return null
 
+        if (sourceData.mintAddress == destinationData.mintAddress) return null
+
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
         return TokenConverter.fromNetwork(details, sourceData, destinationData, destinationRate)
     }
@@ -138,8 +140,10 @@ class MainInteractor(
         return TokenConverter.fromNetwork(transfer, publicKey, rate, symbol)
     }
 
-    private fun parseCloseDetails(details: CloseAccountDetails): Transaction {
-        val symbol = findSymbol(details.signature)
+    private suspend fun parseCloseDetails(details: CloseAccountDetails): Transaction {
+        val accountInfo = rpcRepository.getAccountInfo(details.account.toPublicKey())
+        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        val symbol = findSymbol(info?.mint?.toBase58().orEmpty())
         return TokenConverter.fromNetwork(details, symbol)
     }
 

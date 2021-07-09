@@ -3,6 +3,7 @@ package com.p2p.wallet.token.ui
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
@@ -13,12 +14,16 @@ import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.common.recycler.EndlessScrollListener
 import com.p2p.wallet.common.widget.TabItem
 import com.p2p.wallet.databinding.FragmentTokenDetailsBinding
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
+import com.p2p.wallet.main.ui.send.SendFragment
+import com.p2p.wallet.swap.ui.SwapFragment
 import com.p2p.wallet.token.model.PeriodHistory.FOUR_HOURS
 import com.p2p.wallet.token.model.PeriodHistory.ONE_DAY
 import com.p2p.wallet.token.model.PeriodHistory.ONE_HOUR
@@ -32,6 +37,7 @@ import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.resFromTheme
+import com.p2p.wallet.utils.showInfoDialog
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
@@ -82,6 +88,18 @@ class TokenDetailsFragment :
                 Toast.makeText(requireContext(), R.string.common_copied, Toast.LENGTH_SHORT).show()
             }
 
+            receiveImageView.setOnClickListener {
+                replaceFragment(ReceiveFragment.create(token))
+            }
+
+            sendImageView.setOnClickListener {
+                replaceFragment(SendFragment.create(token))
+            }
+
+            swapImageView.setOnClickListener {
+                replaceFragment(SwapFragment.create(token))
+            }
+
             with(historyRecyclerView) {
                 val linearLayoutManager = LinearLayoutManager(requireContext())
                 layoutManager = linearLayoutManager
@@ -108,6 +126,10 @@ class TokenDetailsFragment :
         binding.addressTextView.text = sol.publicKey
     }
 
+    override fun showError(@StringRes resId: Int, argument: String) {
+        showInfoDialog(getString(resId, argument))
+    }
+
     override fun showHistory(transactions: List<Transaction>) {
         historyAdapter.setData(transactions)
 
@@ -125,6 +147,7 @@ class TokenDetailsFragment :
         lineDataSet.setDrawFilled(true)
         lineDataSet.setDrawHorizontalHighlightIndicator(false)
         lineDataSet.highLightColor = resFromTheme(R.attr.colorAccentPrimary)
+        lineDataSet.isHighlightEnabled = true
 
         val fillGradient = ContextCompat.getDrawable(requireContext(), R.drawable.bg_line_chart)
         lineDataSet.fillDrawable = fillGradient
@@ -149,6 +172,12 @@ class TokenDetailsFragment :
             )
             marker = mv
             data = LineData(lineDataSet)
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onNothingSelected() {}
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    highlightValue(h)
+                }
+            })
             invalidate()
             animateX(500)
         }
