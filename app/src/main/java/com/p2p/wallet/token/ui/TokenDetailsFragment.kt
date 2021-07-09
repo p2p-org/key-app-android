@@ -14,6 +14,8 @@ import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.common.recycler.EndlessScrollListener
@@ -145,6 +147,7 @@ class TokenDetailsFragment :
         lineDataSet.setDrawFilled(true)
         lineDataSet.setDrawHorizontalHighlightIndicator(false)
         lineDataSet.highLightColor = resFromTheme(R.attr.colorAccentPrimary)
+        lineDataSet.isHighlightEnabled = true
 
         val fillGradient = ContextCompat.getDrawable(requireContext(), R.drawable.bg_line_chart)
         lineDataSet.fillDrawable = fillGradient
@@ -169,6 +172,12 @@ class TokenDetailsFragment :
             )
             marker = mv
             data = LineData(lineDataSet)
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onNothingSelected() {}
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    highlightValue(h)
+                }
+            })
             invalidate()
             animateX(500)
         }

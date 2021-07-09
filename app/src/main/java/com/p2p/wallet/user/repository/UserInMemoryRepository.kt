@@ -2,7 +2,6 @@ package com.p2p.wallet.user.repository
 
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.TokenData
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import java.math.BigDecimal
@@ -33,6 +32,4 @@ class UserInMemoryRepository : UserLocalRepository {
 
     override fun getTokenData(mintAddress: String): TokenData? =
         decimalsFlow.value.firstOrNull { it.mintAddress == mintAddress }
-
-    override fun getTokenDataFlow(): Flow<List<TokenData>> = decimalsFlow
 }

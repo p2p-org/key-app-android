@@ -77,7 +77,7 @@ class TransactionViewHolder(
             is Transaction.CloseAccount -> {
                 tokenImageView.setImageResource(R.drawable.ic_trash)
                 typeTextView.setText(R.string.main_close_account)
-                addressTextView.text = "Closed"
+                addressTextView.text = "${item.transaction.tokenSymbol} Closed"
 
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
             }

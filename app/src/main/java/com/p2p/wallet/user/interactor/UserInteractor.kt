@@ -11,7 +11,6 @@ import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.repository.MainLocalRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.local.TokenListResponse
-import com.p2p.wallet.user.model.TokenData
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
@@ -66,8 +65,6 @@ class UserInteractor(
             userLocalRepository.setTokenData(mappedData)
         }
     }
-
-    fun getTokenDataFlow(): Flow<List<TokenData>> = userLocalRepository.getTokenDataFlow()
 
     suspend fun loadTokens() {
         val newTokens = userRepository.loadTokens()
