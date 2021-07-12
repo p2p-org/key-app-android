@@ -1,4 +1,4 @@
-package com.p2p.wallet.amount
+package com.p2p.wallet.utils
 
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -14,8 +14,7 @@ private const val SCALE_VALUE_LONG = 9
 
 fun String.toBigDecimalOrZero(): BigDecimal {
     val removedZeros = this.replace("(?<=\\d)\\.?0+(?![\\d\\.])", "")
-    val decimal = removedZeros.toBigDecimalOrNull() ?: BigDecimal.ZERO
-    return decimal
+    return removedZeros.toBigDecimalOrNull() ?: BigDecimal.ZERO
 }
 
 fun Double?.valueOrZero(): BigDecimal = BigDecimal(this ?: 0.0)

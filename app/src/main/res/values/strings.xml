@@ -151,6 +151,7 @@
     <string name="details_today">Today</string>
     <string name="details_no_transactions_yet">No transactions yet</string>
     <string name="details_no_transactions_message">You didn\'t make any transactions yet</string>
+    <string name="details_settings">Wallet settings</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>

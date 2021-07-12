@@ -8,6 +8,7 @@ import com.p2p.wallet.token.interactor.TokenInteractor
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.user.interactor.UserInteractor
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.properties.Delegates
@@ -41,6 +42,8 @@ class TokenDetailsPresenter(
                 val lastSignature = totalItemsCount?.let { transactions[it - 1].signature }
                 val history = mainInteractor.getHistory(publicKey, lastSignature, PAGE_SIZE)
                 transactions = history
+            } catch (e: CancellationException) {
+                Timber.w(e, "Cancelled history load")
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")
                 view?.showErrorMessage(e)
@@ -56,6 +59,8 @@ class TokenDetailsPresenter(
                 val data = tokenInteractor.getDailyPriceHistory(tokenSymbol, DESTINATION_TOKEN, days)
                 val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
                 view?.showChartData(entries)
+            } catch (e: CancellationException) {
+                Timber.w(e, "Cancelled daily chart data loading")
             } catch (e: Throwable) {
                 view?.showError(R.string.error_fetching_data_about_token, tokenSymbol)
                 Timber.e(e, "Error loading token price history")
@@ -69,6 +74,8 @@ class TokenDetailsPresenter(
                 val data = tokenInteractor.getHourlyPriceHistory(tokenSymbol, DESTINATION_TOKEN, hours)
                 val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
                 view?.showChartData(entries)
+            } catch (e: CancellationException) {
+                Timber.w(e, "Cancelled hourly chart data loading")
             } catch (e: Throwable) {
                 view?.showError(R.string.error_fetching_data_about_token, tokenSymbol)
                 Timber.e(e, "Error loading token price history")

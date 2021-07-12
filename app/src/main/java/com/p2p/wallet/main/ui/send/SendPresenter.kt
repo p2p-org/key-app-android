@@ -1,13 +1,13 @@
 package com.p2p.wallet.main.ui.send
 
 import com.p2p.wallet.R
-import com.p2p.wallet.amount.isMoreThan
-import com.p2p.wallet.amount.isZero
-import com.p2p.wallet.amount.scaleAmount
-import com.p2p.wallet.amount.scalePrice
-import com.p2p.wallet.amount.scaleShort
-import com.p2p.wallet.amount.toBigDecimalOrZero
-import com.p2p.wallet.amount.toLamports
+import com.p2p.wallet.utils.isMoreThan
+import com.p2p.wallet.utils.isZero
+import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.scalePrice
+import com.p2p.wallet.utils.scaleShort
+import com.p2p.wallet.utils.toBigDecimalOrZero
+import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.CurrencyMode
