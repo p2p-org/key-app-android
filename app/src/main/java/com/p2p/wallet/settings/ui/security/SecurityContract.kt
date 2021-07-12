@@ -10,6 +10,7 @@ interface SecurityContract {
     interface View : MvpView {
         fun showBiometricData(type: BiometricType)
         fun showBiometricActive(isActive: Boolean)
+        fun showBiometricEnabled(isEnabled: Boolean)
         fun confirmBiometrics(cipher: Cipher)
     }
 

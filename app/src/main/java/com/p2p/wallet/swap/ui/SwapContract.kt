@@ -12,11 +12,13 @@ interface SwapContract {
 
     interface View : MvpView {
         fun showSourceToken(token: Token)
-        fun showDestinationToken(token: Token)
+        fun showDestinationToken(token: Token?)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String)
+        fun hidePrice()
         fun showCalculations(data: CalculationsData)
+        fun hideCalculations()
         fun setAvailableTextColor(@AttrRes availableColor: Int)
         fun showAroundValue(aroundValue: BigDecimal)
         fun showButtonEnabled(isEnabled: Boolean)

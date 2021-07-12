@@ -114,10 +114,14 @@ class MainInteractor(
                 val unknown = data.firstOrNull { it is UnknownDetails }
 
                 return@mapNotNull when {
-                    swap != null -> parseSwapDetails(swap as SwapDetails)
-                    transfer != null -> parseTransferDetails(transfer as TransferDetails, publicKey)
-                    close != null -> parseCloseDetails(close as CloseAccountDetails)
-                    else -> TokenConverter.fromNetwork(unknown as UnknownDetails)
+                    swap != null ->
+                        parseSwapDetails(swap as SwapDetails)
+                    transfer != null ->
+                        parseTransferDetails(transfer as TransferDetails, publicKey, tokenKeyProvider.publicKey)
+                    close != null ->
+                        parseCloseDetails(close as CloseAccountDetails)
+                    else ->
+                        TokenConverter.fromNetwork(unknown as UnknownDetails)
                 }
             }
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
@@ -133,11 +137,15 @@ class MainInteractor(
         return TokenConverter.fromNetwork(details, sourceData, destinationData, destinationRate)
     }
 
-    private fun parseTransferDetails(transfer: TransferDetails, publicKey: String): Transaction {
+    private fun parseTransferDetails(
+        transfer: TransferDetails,
+        directPublicKey: String,
+        publicKey: String
+    ): Transaction {
         val symbol = if (transfer.isSimpleTransfer) Token.SOL_NAME else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
-        return TokenConverter.fromNetwork(transfer, publicKey, rate, symbol)
+        return TokenConverter.fromNetwork(transfer, directPublicKey, publicKey, rate, symbol)
     }
 
     private suspend fun parseCloseDetails(details: CloseAccountDetails): Transaction {

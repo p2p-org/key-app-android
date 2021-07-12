@@ -69,7 +69,7 @@ class TransactionViewHolder(
                 loadImage(sourceImageView, item.transaction.sourceTokenUrl)
                 loadImage(destinationImageView, item.transaction.destinationTokenUrl)
                 typeTextView.setText(R.string.main_swap)
-                valueTextView.text = "+ ${item.transaction.amountReceivedInUsd}"
+                valueTextView.text = "+ ${item.transaction.amountReceivedInUsd} $"
                 totalTextView.text = "+ ${item.transaction.amountB} ${item.transaction.destinationSymbol}"
                 addressTextView.text = "${item.transaction.sourceSymbol} to ${item.transaction.destinationSymbol}"
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
