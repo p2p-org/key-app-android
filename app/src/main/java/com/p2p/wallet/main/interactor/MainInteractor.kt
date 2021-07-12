@@ -142,7 +142,7 @@ class MainInteractor(
         directPublicKey: String,
         publicKey: String
     ): Transaction {
-        val symbol = if (transfer.isSimpleTransfer) Token.SOL_NAME else findSymbol(transfer.mint)
+        val symbol = if (transfer.isSimpleTransfer) Token.SOL_SYMBOL else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
         return TokenConverter.fromNetwork(transfer, directPublicKey, publicKey, rate, symbol)

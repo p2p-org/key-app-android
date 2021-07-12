@@ -32,7 +32,7 @@ data class Token constructor(
 
     @IgnoredOnParcel
     val isSOL: Boolean
-        get() = tokenName == SOL_NAME
+        get() = tokenSymbol == SOL_SYMBOL
 
     @IgnoredOnParcel
     val totalInUsd: BigDecimal
@@ -68,8 +68,9 @@ data class Token constructor(
 
     companion object {
         const val USD_SYMBOL = "USD"
-        const val SOL_NAME = "Solana"
+        const val SOL_SYMBOL = "SOL"
         const val SOL_MINT = "So11111111111111111111111111111111111111112"
+        private const val SOL_NAME = "Solana"
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9
         private const val SOL_LOGO_URL =
@@ -77,7 +78,7 @@ data class Token constructor(
 
         /* fixme: workaround about adding hardcode wallet */
         fun getSOL(publicKey: String, amount: Long) = Token(
-            tokenSymbol = SOL_NAME,
+            tokenSymbol = SOL_SYMBOL,
             tokenName = SOL_NAME,
             mintAddress = SOL_MINT,
             logoUrl = SOL_LOGO_URL,
