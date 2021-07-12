@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
@@ -29,6 +30,7 @@ class TokenViewHolder(
 
     companion object {
         private const val LIST_TOP_MARGIN_IN_DP = 16
+        private const val IMAGE_SIZE = 56
     }
 
     constructor(
@@ -83,7 +85,11 @@ class TokenViewHolder(
 
     private fun loadImage(imageView: ImageView, url: String) {
         if (url.contains(".svg")) {
-            requestBuilder.load(Uri.parse(url)).into(imageView)
+            requestBuilder
+                .load(Uri.parse(url))
+                .apply(RequestOptions().override(IMAGE_SIZE, IMAGE_SIZE))
+                .centerCrop()
+                .into(imageView)
         } else {
             Glide.with(imageView).load(url).into(imageView)
         }
