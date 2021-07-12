@@ -1,6 +1,6 @@
 package com.p2p.wallet.user.model
 
-import com.p2p.wallet.amount.valueOrZero
+import com.p2p.wallet.utils.valueOrZero
 import com.p2p.wallet.main.api.SinglePriceResponse
 import com.p2p.wallet.main.model.TokenPrice
 import java.math.BigDecimal

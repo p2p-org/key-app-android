@@ -1,7 +1,7 @@
 package com.p2p.wallet.user.repository
 
-import com.p2p.wallet.amount.scaleAmount
-import com.p2p.wallet.amount.scalePrice
+import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.scalePrice
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.model.TokenConverter

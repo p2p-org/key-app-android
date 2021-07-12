@@ -45,16 +45,27 @@ class TokenOptionsDialog : NonDraggableBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { dismissAllowingStateLoss() }
-            hideSwitch.isChecked = token.isDefinitelyHidden(settingsInteractor.isZerosHidden())
+            val definitelyHidden = token.isDefinitelyHidden(settingsInteractor.isZerosHidden())
+            hideSwitch.isChecked = !definitelyHidden
+            visibilityTextView.setText(if (definitelyHidden) R.string.main_invisible else R.string.main_visible)
 
             visibilityView.setOnClickListener { hideSwitch.isChecked = !hideSwitch.isChecked }
             hideSwitch.setOnCheckedChangeListener { _, isChecked ->
                 lifecycleScope.launch {
-                    val visibility = if (isChecked) TokenVisibility.SHOWN else TokenVisibility.HIDDEN
+                    val visibility = when (token.visibility) {
+                        TokenVisibility.SHOWN -> TokenVisibility.HIDDEN
+                        TokenVisibility.HIDDEN -> TokenVisibility.SHOWN
+                        TokenVisibility.DEFAULT -> if (settingsInteractor.isZerosHidden() && token.isZero) {
+                            TokenVisibility.SHOWN
+                        } else {
+                            TokenVisibility.HIDDEN
+                        }
+                    }
+
                     userInteractor.setTokenHidden(token.mintAddress, visibility.stringValue)
                 }
 
-                visibilityTextView.setText(if (isChecked) R.string.main_invisible else R.string.main_visible)
+                visibilityTextView.setText(if (isChecked) R.string.main_visible else R.string.main_invisible)
             }
         }
     }

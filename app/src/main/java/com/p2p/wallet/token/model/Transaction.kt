@@ -1,6 +1,6 @@
 package com.p2p.wallet.token.model
 
-import com.p2p.wallet.amount.scaleAmount
+import com.p2p.wallet.utils.scaleAmount
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 

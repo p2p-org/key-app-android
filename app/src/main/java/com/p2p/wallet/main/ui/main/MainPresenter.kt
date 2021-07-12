@@ -1,6 +1,6 @@
 package com.p2p.wallet.main.ui.main
 
-import com.p2p.wallet.amount.scaleShort
+import com.p2p.wallet.utils.scaleShort
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState

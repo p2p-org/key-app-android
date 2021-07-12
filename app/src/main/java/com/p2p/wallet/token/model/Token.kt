@@ -3,10 +3,10 @@ package com.p2p.wallet.token.model
 import android.os.Parcelable
 import androidx.annotation.ColorRes
 import com.p2p.wallet.R
-import com.p2p.wallet.amount.isZero
-import com.p2p.wallet.amount.scalePrice
-import com.p2p.wallet.amount.scaleShort
-import com.p2p.wallet.amount.toPowerValue
+import com.p2p.wallet.utils.isZero
+import com.p2p.wallet.utils.scalePrice
+import com.p2p.wallet.utils.scaleShort
+import com.p2p.wallet.utils.toPowerValue
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal

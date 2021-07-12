@@ -21,6 +21,7 @@ import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.common.recycler.EndlessScrollListener
 import com.p2p.wallet.common.widget.TabItem
 import com.p2p.wallet.databinding.FragmentTokenDetailsBinding
+import com.p2p.wallet.main.ui.options.TokenOptionsDialog
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.swap.ui.SwapFragment
@@ -32,6 +33,7 @@ import com.p2p.wallet.token.model.PeriodHistory.ONE_WEEK
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.token.ui.adapter.HistoryAdapter
+import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.popBackStack
@@ -77,7 +79,19 @@ class TokenDetailsFragment :
 
         with(binding) {
             setupTabsView()
+            if (!token.isSOL) {
+                toolbar.inflateMenu(R.menu.menu_token_details)
+                toolbar.setOnMenuItemClickListener {
+                    if (it.itemId == R.id.settingsItem) {
+                        TokenOptionsDialog.show(childFragmentManager, token)
+                        return@setOnMenuItemClickListener true
+                    }
+
+                    return@setOnMenuItemClickListener false
+                }
+            }
             toolbar.title = token.tokenSymbol
+            toolbar.subtitle = token.tokenName
             balanceTextView.text = token.getFormattedPrice()
             totalTextView.text = token.getFormattedTotal()
 
@@ -89,15 +103,15 @@ class TokenDetailsFragment :
             }
 
             receiveImageView.setOnClickListener {
-                replaceFragment(ReceiveFragment.create(token))
+                addFragment(ReceiveFragment.create(token))
             }
 
             sendImageView.setOnClickListener {
-                replaceFragment(SendFragment.create(token))
+                addFragment(SendFragment.create(token))
             }
 
             swapImageView.setOnClickListener {
-                replaceFragment(SwapFragment.create(token))
+                addFragment(SwapFragment.create(token))
             }
 
             with(historyRecyclerView) {
@@ -184,7 +198,7 @@ class TokenDetailsFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.horizontalProgressBar.isVisible = isLoading
+        binding.progressView.isVisible = isLoading
     }
 
     private fun setupTabsView() {

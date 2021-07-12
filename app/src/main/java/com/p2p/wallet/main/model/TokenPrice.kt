@@ -1,7 +1,7 @@
 package com.p2p.wallet.main.model
 
 import android.os.Parcelable
-import com.p2p.wallet.amount.scaleShort
+import com.p2p.wallet.utils.scaleShort
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 

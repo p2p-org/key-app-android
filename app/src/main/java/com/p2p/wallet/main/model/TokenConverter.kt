@@ -1,9 +1,9 @@
 package com.p2p.wallet.main.model
 
-import com.p2p.wallet.amount.fromLamports
-import com.p2p.wallet.amount.scaleAmount
-import com.p2p.wallet.amount.toBigDecimalOrZero
-import com.p2p.wallet.amount.toPowerValue
+import com.p2p.wallet.utils.fromLamports
+import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.toBigDecimalOrZero
+import com.p2p.wallet.utils.toPowerValue
 import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.db.TokenEntity
 import com.p2p.wallet.token.model.Token

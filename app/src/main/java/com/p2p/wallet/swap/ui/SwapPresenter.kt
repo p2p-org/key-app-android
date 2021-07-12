@@ -1,13 +1,13 @@
 package com.p2p.wallet.swap.ui
 
 import com.p2p.wallet.R
-import com.p2p.wallet.amount.fromLamports
-import com.p2p.wallet.amount.isMoreThan
-import com.p2p.wallet.amount.scaleAmount
-import com.p2p.wallet.amount.scalePrice
-import com.p2p.wallet.amount.toBigDecimalOrZero
-import com.p2p.wallet.amount.toLamports
-import com.p2p.wallet.amount.toPowerValue
+import com.p2p.wallet.utils.fromLamports
+import com.p2p.wallet.utils.isMoreThan
+import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.scalePrice
+import com.p2p.wallet.utils.toBigDecimalOrZero
+import com.p2p.wallet.utils.toLamports
+import com.p2p.wallet.utils.toPowerValue
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.interactor.SwapInteractor

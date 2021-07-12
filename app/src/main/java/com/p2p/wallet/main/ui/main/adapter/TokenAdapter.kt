@@ -96,11 +96,13 @@ class TokenAdapter(
             return when {
                 old is TokenItem.Shown && new is TokenItem.Shown ->
                     old.token.publicKey == new.token.publicKey &&
+                        old.token.mintAddress == new.token.mintAddress &&
                         old.token.visibility == new.token.visibility &&
                         old.token.total == new.token.total &&
                         old.token.price == new.token.price
                 old is TokenItem.Hidden && new is TokenItem.Hidden ->
                     old.token.publicKey == new.token.publicKey &&
+                        old.token.mintAddress == new.token.mintAddress &&
                         old.token.visibility == new.token.visibility &&
                         old.token.total == new.token.total &&
                         old.token.price == new.token.price
