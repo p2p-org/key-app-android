@@ -68,7 +68,7 @@ data class Token constructor(
 
     companion object {
         const val USD_SYMBOL = "USD"
-        const val SOL_NAME = "SOL"
+        const val SOL_NAME = "Solana"
         const val SOL_MINT = "So11111111111111111111111111111111111111112"
         private const val ADDRESS_SYMBOL_COUNT = 10
         private const val SOL_DECIMALS = 9

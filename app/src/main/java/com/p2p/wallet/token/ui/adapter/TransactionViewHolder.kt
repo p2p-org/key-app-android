@@ -10,11 +10,13 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
 import com.p2p.wallet.R
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.databinding.ItemTransactionBinding
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.token.model.TransactionOrDateItem
+import com.p2p.wallet.utils.dip
 
 class TransactionViewHolder(
     binding: ItemTransactionBinding,
@@ -23,6 +25,7 @@ class TransactionViewHolder(
 
     companion object {
         private const val ADDRESS_SYMBOL_COUNT = 10
+        private const val IMAGE_SIZE = 24
     }
 
     constructor(parent: ViewGroup, onTransactionClicked: (Transaction) -> Unit) : this(
@@ -102,7 +105,11 @@ class TransactionViewHolder(
 
     private fun loadImage(imageView: ImageView, url: String) {
         if (url.contains(".svg")) {
-            requestBuilder.load(url).into(imageView)
+            val size = imageView.context.dip(IMAGE_SIZE)
+            requestBuilder.load(url)
+                .apply(RequestOptions().override(size, size))
+                .centerCrop()
+                .into(imageView)
         } else {
             Glide.with(imageView).load(url).into(imageView)
         }
