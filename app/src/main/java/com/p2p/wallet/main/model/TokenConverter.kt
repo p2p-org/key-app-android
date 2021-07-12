@@ -85,12 +85,13 @@ object TokenConverter {
 
     fun fromNetwork(
         response: TransferDetails,
+        directPublicKey: String,
         publicKey: String,
         rate: TokenPrice,
         symbol: String
     ): Transaction {
         val isSend = if (response.isSimpleTransfer) {
-            response.source == publicKey
+            response.source == directPublicKey
         } else {
             response.authority == publicKey
         }

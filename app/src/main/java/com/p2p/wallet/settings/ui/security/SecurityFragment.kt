@@ -85,6 +85,11 @@ class SecurityFragment :
         }
     }
 
+    override fun showBiometricEnabled(isEnabled: Boolean) {
+        binding.biometricSwitch.setOnCheckedChangeListener(null)
+        binding.biometricSwitch.isEnabled = isEnabled
+    }
+
     override fun confirmBiometrics(cipher: Cipher) {
         biometricWrapper.authenticate(cipher)
     }

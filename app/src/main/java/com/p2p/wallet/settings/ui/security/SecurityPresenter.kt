@@ -18,6 +18,12 @@ class SecurityPresenter(
 
         val status = authInteractor.getBiometricStatus()
         view?.showBiometricActive(status == BiometricStatus.ENABLED)
+
+        val notAvailableStates = listOf(
+            BiometricStatus.NO_HARDWARE,
+            BiometricStatus.NO_REGISTERED_BIOMETRIC
+        )
+        view?.showBiometricEnabled(status !in notAvailableStates)
     }
 
     override fun onBiometricsConfirmed(cipher: Cipher) {

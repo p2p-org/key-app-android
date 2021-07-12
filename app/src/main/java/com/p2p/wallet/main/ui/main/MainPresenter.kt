@@ -136,7 +136,7 @@ class MainPresenter(
                 Timber.e(e, "Error loading tokens from remote")
             } finally {
                 view?.showLoading(false)
-//                startPolling()
+                startPolling()
             }
         }
     }

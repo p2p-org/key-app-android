@@ -1,13 +1,6 @@
 package com.p2p.wallet.swap.ui
 
 import com.p2p.wallet.R
-import com.p2p.wallet.utils.fromLamports
-import com.p2p.wallet.utils.isMoreThan
-import com.p2p.wallet.utils.scaleAmount
-import com.p2p.wallet.utils.scalePrice
-import com.p2p.wallet.utils.toBigDecimalOrZero
-import com.p2p.wallet.utils.toLamports
-import com.p2p.wallet.utils.toPowerValue
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.interactor.SwapInteractor
@@ -16,6 +9,13 @@ import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.swap.model.SwapResult
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
+import com.p2p.wallet.utils.fromLamports
+import com.p2p.wallet.utils.isMoreThan
+import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.scalePrice
+import com.p2p.wallet.utils.toBigDecimalOrZero
+import com.p2p.wallet.utils.toLamports
+import com.p2p.wallet.utils.toPowerValue
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.Pool
@@ -35,7 +35,7 @@ class SwapPresenter(
     }
 
     private var destinationToken: Token? by Delegates.observable(null) { _, _, newValue ->
-        if (newValue != null) view?.showDestinationToken(newValue)
+        view?.showDestinationToken(newValue)
     }
 
     private var currentPool: Pool.PoolInfo? = null
@@ -75,11 +75,8 @@ class SwapPresenter(
                 if (destinationToken == null) return@filter true
 
                 val pool = pools.firstOrNull {
-                    it.swapData.mintA.toBase58() == token.mintAddress &&
-                        destinationToken!!.mintAddress == it.swapData.mintB.toBase58() ||
-
-                        it.swapData.mintB.toBase58() == token.mintAddress &&
-                        destinationToken!!.mintAddress == it.swapData.mintA.toBase58()
+                    it.swapData.mintA.toBase58() == token.mintAddress ||
+                        it.swapData.mintB.toBase58() == token.mintAddress
                 }
                 pool != null
             }
@@ -110,8 +107,14 @@ class SwapPresenter(
     }
 
     override fun setNewSourceToken(newToken: Token) {
+        if (sourceToken == newToken) return
         sourceToken = newToken
-        searchPool()
+        destinationToken = null
+        view?.hidePrice()
+        destinationAmount = "0"
+
+        view?.hideCalculations()
+
         setButtonEnabled()
     }
 
@@ -277,8 +280,8 @@ class SwapPresenter(
 
     private fun setButtonEnabled() {
         val isMoreThanBalance = sourceAmount.toBigDecimalOrZero() > sourceToken?.total ?: BigDecimal.ZERO
-        val isEnabled = sourceAmount.toBigDecimalOrZero()
-            .compareTo(BigDecimal.ZERO) != 0 && !isMoreThanBalance && destinationToken != null
+        val isEnabled = sourceAmount.toBigDecimalOrZero().compareTo(BigDecimal.ZERO) != 0 &&
+            !isMoreThanBalance && destinationToken != null
         view?.showButtonEnabled(isEnabled)
     }
 

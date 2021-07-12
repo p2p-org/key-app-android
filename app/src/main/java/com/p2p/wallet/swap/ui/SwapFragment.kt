@@ -87,11 +87,17 @@ class SwapFragment :
         }
     }
 
-    override fun showDestinationToken(token: Token) {
+    override fun showDestinationToken(token: Token?) {
         with(binding) {
-            Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
-            destinationTextView.text = token.tokenSymbol
-            currencyTextView.isInvisible = true
+            if (token != null) {
+                Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
+                destinationTextView.text = token.tokenSymbol
+                currencyTextView.isInvisible = true
+            } else {
+                destinationImageView.setImageResource(R.drawable.ic_wallet)
+                destinationTextView.text = ""
+                currencyTextView.isVisible = true
+            }
         }
     }
 
@@ -105,12 +111,24 @@ class SwapFragment :
         binding.exchangeTextView.text = "$amount $exchangeToken per $perToken"
     }
 
+    override fun hidePrice() {
+        binding.priceGroup.isVisible = false
+        binding.exchangeTextView.text = ""
+    }
+
     @SuppressLint("SetTextI18n")
     override fun showCalculations(data: CalculationsData) {
         binding.calculationsGroup.isVisible = true
         binding.receiveValueTextView.text = "${data.minReceive} ${data.minReceiveSymbol}"
         binding.feeValueTextView.text = "${data.fee} ${data.feeSymbol}"
         binding.destinationAmountTextView.text = data.destinationAmount
+    }
+
+    override fun hideCalculations() {
+        binding.calculationsGroup.isVisible = false
+        binding.receiveValueTextView.text = ""
+        binding.feeValueTextView.text = ""
+        binding.destinationAmountTextView.text = ""
     }
 
     @SuppressLint("SetTextI18n")
