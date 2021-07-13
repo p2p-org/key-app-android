@@ -1,7 +1,8 @@
-package com.p2p.wallet.rpc
+package com.p2p.wallet.rpc.repository
 
 import android.util.Base64
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import com.p2p.wallet.rpc.api.RpcApi
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
@@ -42,12 +43,12 @@ class RpcRemoteRepository(
     override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
         val params = listOf(account.toString())
         val rpcRequest = RpcRequest("getTokenAccountBalance", params)
-        return rpcApi.getTokenAccountBalance(rpcRequest)
+        return rpcApi.getTokenAccountBalance(rpcRequest).result
     }
 
     override suspend fun getRecentBlockhash(): RecentBlockhash {
         val rpcRequest = RpcRequest("getRecentBlockhash", null)
-        return rpcApi.getRecentBlockhash(rpcRequest)
+        return rpcApi.getRecentBlockhash(rpcRequest).result
     }
 
     override suspend fun sendTransaction(transaction: TransactionRequest): String {
@@ -63,7 +64,7 @@ class RpcRemoteRepository(
         params.add(RpcSendTransactionConfig())
 
         val rpcRequest = RpcRequest("sendTransaction", params)
-        return rpcApi.sendTransaction(rpcRequest)
+        return rpcApi.sendTransaction(rpcRequest).result
     }
 
     override suspend fun getAccountInfo(account: PublicKey): AccountInfo {
@@ -72,7 +73,7 @@ class RpcRemoteRepository(
             RpcSendTransactionConfig()
         )
         val rpcRequest = RpcRequest("getAccountInfo", params)
-        return rpcApi.getAccountInfo(rpcRequest)
+        return rpcApi.getAccountInfo(rpcRequest).result
     }
 
     override suspend fun getPools(account: PublicKey): List<Pool.PoolInfo> {
@@ -81,14 +82,14 @@ class RpcRemoteRepository(
             ConfigObjects.ProgramAccountConfig(RpcSendTransactionConfig.Encoding.base64)
         )
         val rpcRequest = RpcRequest("getProgramAccounts", params)
-        val response = rpcApi.getProgramAccounts(rpcRequest)
+        val response = rpcApi.getProgramAccounts(rpcRequest).result
         return response.map { Pool.PoolInfo.fromProgramAccount(it) }
     }
 
     override suspend fun getBalance(account: PublicKey): Long {
         val params = listOf(account.toString())
         val rpcRequest = RpcRequest("getBalance", params)
-        return rpcApi.getBalance(rpcRequest).value
+        return rpcApi.getBalance(rpcRequest).result.value
     }
 
     override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts {
@@ -106,13 +107,13 @@ class RpcRemoteRepository(
         )
 
         val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
-        return rpcApi.getTokenAccountsByOwner(rpcRequest)
+        return rpcApi.getTokenAccountsByOwner(rpcRequest).result
     }
 
     override suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long {
         val params = listOf(dataLength)
         val rpcRequest = RpcRequest("getMinimumBalanceForRentExemption", params)
-        return rpcApi.getMinimumBalanceForRentExemption(rpcRequest)
+        return rpcApi.getMinimumBalanceForRentExemption(rpcRequest).result
     }
 
     override suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo {
@@ -128,7 +129,7 @@ class RpcRemoteRepository(
 
         val rpcRequest = RpcRequest("getMultipleAccounts", params)
 
-        return rpcApi.getMultipleAccounts(rpcRequest)
+        return rpcApi.getMultipleAccounts(rpcRequest).result
     }
 
     /**
@@ -145,14 +146,19 @@ class RpcRemoteRepository(
         )
 
         val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
-        return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest)
+        return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest).result
     }
 
-    override suspend fun getConfirmedTransaction(signature: String): ConfirmedTransactionParsed {
-        val encoding = mapOf("encoding" to "jsonParsed")
-        val params = listOf(signature, encoding)
+    override suspend fun getConfirmedTransactions(
+        signatures: List<String>
+    ): List<ConfirmedTransactionParsed> {
+        val requestsBatch = signatures.map {
+            val encoding = mapOf("encoding" to "jsonParsed")
+            val params = listOf(it, encoding)
 
-        val rpcRequest = RpcRequest("getConfirmedTransaction", params)
-        return mainnetApi.getConfirmedTransaction(rpcRequest)
+            RpcRequest("getConfirmedTransaction", params)
+        }
+
+        return mainnetApi.getConfirmedTransactions(requestsBatch).map { it.result }
     }
 }

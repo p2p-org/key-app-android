@@ -8,9 +8,9 @@ import com.p2p.wallet.infrastructure.network.environment.DataHubInterceptor
 import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
-import com.p2p.wallet.rpc.RpcApi
-import com.p2p.wallet.rpc.RpcRemoteRepository
-import com.p2p.wallet.rpc.RpcRepository
+import com.p2p.wallet.rpc.api.RpcApi
+import com.p2p.wallet.rpc.repository.RpcRemoteRepository
+import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.user.UserModule.createLoggingInterceptor
 import okhttp3.OkHttpClient
 import org.koin.core.scope.Scope
@@ -69,7 +69,6 @@ object NetworkModule : InjectionModule {
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addConverterFactory(ResponseConverterFactory(get()))
             .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
             .client(client)
             .build()
