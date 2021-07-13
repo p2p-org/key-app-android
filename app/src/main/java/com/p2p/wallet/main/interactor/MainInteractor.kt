@@ -4,7 +4,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TransactionResult
-import com.p2p.wallet.rpc.RpcRepository
+import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.user.repository.UserLocalRepository
@@ -102,11 +102,15 @@ class MainInteractor(
     }
 
     suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<Transaction> {
-        val signatures = rpcRepository.getConfirmedSignaturesForAddress(publicKey.toPublicKey(), before, limit)
-        return signatures
-            .mapNotNull { signature ->
-                val response = rpcRepository.getConfirmedTransaction(signature.signature)
-                val data = TransactionTypeParser.parse(signature.signature, response)
+        val signatures = rpcRepository.getConfirmedSignaturesForAddress(
+            publicKey.toPublicKey(), before, limit
+        ).map { it.signature }
+
+        val transactions = rpcRepository.getConfirmedTransactions(signatures)
+        return transactions
+            .mapNotNull { response ->
+                val signature = response.transaction.signatures.firstOrNull()
+                val data = TransactionTypeParser.parse(signature, response)
 
                 val swap = data.firstOrNull { it is SwapDetails }
                 val transfer = data.firstOrNull { it is TransferDetails }
@@ -114,14 +118,14 @@ class MainInteractor(
                 val unknown = data.firstOrNull { it is UnknownDetails }
 
                 return@mapNotNull when {
-                    swap != null ->
-                        parseSwapDetails(swap as SwapDetails)
-                    transfer != null ->
-                        parseTransferDetails(transfer as TransferDetails, publicKey, tokenKeyProvider.publicKey)
-                    close != null ->
-                        parseCloseDetails(close as CloseAccountDetails)
-                    else ->
-                        TokenConverter.fromNetwork(unknown as UnknownDetails)
+                    swap != null -> parseSwapDetails(swap as SwapDetails)
+                    transfer != null -> parseTransferDetails(
+                        transfer as TransferDetails,
+                        publicKey,
+                        tokenKeyProvider.publicKey
+                    )
+                    close != null -> parseCloseDetails(close as CloseAccountDetails)
+                    else -> TokenConverter.fromNetwork(unknown as UnknownDetails)
                 }
             }
             .sortedByDescending { it.date.toInstant().toEpochMilli() }

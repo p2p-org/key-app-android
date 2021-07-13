@@ -6,7 +6,7 @@ import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
-import com.p2p.wallet.rpc.RpcRepository
+import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers

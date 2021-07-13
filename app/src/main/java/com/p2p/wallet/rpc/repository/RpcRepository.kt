@@ -1,4 +1,4 @@
-package com.p2p.wallet.rpc
+package com.p2p.wallet.rpc.repository
 
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
@@ -26,7 +26,7 @@ interface RpcRepository {
     /**
      * The history is being fetched from main-net despite the selected network
      * */
-    suspend fun getConfirmedTransaction(signature: String): ConfirmedTransactionParsed
+    suspend fun getConfirmedTransactions(signatures: List<String>): List<ConfirmedTransactionParsed>
     suspend fun getConfirmedSignaturesForAddress(
         account: PublicKey,
         before: String?,

@@ -1,7 +1,7 @@
 package com.p2p.wallet.swap.repository
 
 import com.p2p.wallet.common.network.Constants
-import com.p2p.wallet.rpc.RpcRepository
+import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.utils.toPublicKey

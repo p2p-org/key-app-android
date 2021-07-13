@@ -31,7 +31,7 @@ class ResponseConverterFactory(private val gson: Gson) : Converter.Factory() {
         type: Type,
         annotations: Array<Annotation>,
         retrofit: Retrofit
-    ): Converter<ResponseBody, *>? {
+    ): Converter<ResponseBody, *> {
         val wrappedType = object : ParameterizedType {
             override fun getActualTypeArguments(): Array<Type> = arrayOf(type)
             override fun getOwnerType(): Type? = null

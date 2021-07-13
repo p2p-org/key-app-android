@@ -6,7 +6,9 @@ import com.p2p.wallet.infrastructure.network.ServerException
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import org.json.JSONArray
 import org.json.JSONObject
+import org.json.JSONTokener
 import java.io.IOException
 
 class ServerErrorInterceptor(
@@ -19,26 +21,37 @@ class ServerErrorInterceptor(
         return handleResponse(response)
     }
 
-    private fun handleResponse(response: Response): Response {
+    private fun handleResponse(response: Response): Response =
         try {
-            val bodyString = response.body!!.string()
-            val bodyData = JSONObject(bodyString)
-            val error = bodyData.optString("error")
-
-            return if (error.isNullOrEmpty()) {
-                response
-                    .newBuilder()
-                    .body(bodyString.toResponseBody())
-                    .build()
-            } else {
-                throw extractException(bodyString)
+            val responseBody = response.body!!.string()
+            when (val data = JSONTokener(responseBody).nextValue()) {
+                is JSONObject -> {
+                    val error = data.optString("error")
+                    if (error.isNullOrEmpty()) {
+                        createResponse(response, responseBody)
+                    } else {
+                        throw extractException(responseBody)
+                    }
+                }
+                is JSONArray -> {
+                    val firstItem = data.get(0) as JSONObject
+                    val result = firstItem.optJSONObject("result")
+                    if (result != null) {
+                        createResponse(response, responseBody)
+                    } else {
+                        throw extractException(responseBody)
+                    }
+                }
+                else -> {
+                    createResponse(response, responseBody)
+                }
             }
-        } catch (e: ServerException) {
-            throw e
         } catch (e: Exception) {
             throw IOException("Error reading response error body", e)
         }
-    }
+
+    private fun createResponse(response: Response, responseBody: String): Response =
+        response.newBuilder().body(responseBody.toResponseBody()).build()
 
     private fun extractException(bodyString: String): Throwable = try {
         val serverError = gson.fromJson(bodyString, ServerError::class.java)
