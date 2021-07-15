@@ -27,10 +27,10 @@ class SwapInMemoryRepository : SwapLocalRepository {
             }
 
             if (pool?.swapData?.mintB?.toBase58() == sourceMint &&
-                pool.swapData?.mintA?.toBase58() == destinationMint
+                pool.swapData.mintA.toBase58() == destinationMint
             ) {
-                pool.swapData?.swapMintData()
-                pool.swapData?.swapTokenAccount()
+                pool.swapData.swapMintData()
+                pool.swapData.swapTokenAccount()
             }
 
             return@withContext pool
