@@ -6,4 +6,5 @@
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
     <string name="solanaWalletExplorer">https://explorer.solana.com/address/%s</string>
     <string name="datahubApiKey">d600d6ae197bd6951a84f353f25555d0</string>
+    <string name="feeRelayerBaseUrl">"https://fee-relayer.solana.p2p.org/"</string>
 </resources>

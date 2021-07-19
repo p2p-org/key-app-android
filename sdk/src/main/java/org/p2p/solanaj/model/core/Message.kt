@@ -34,7 +34,11 @@ class Message {
     private var recentBlockhash: String? = null
     private val accountKeys: AccountKeysList = AccountKeysList()
     private val instructions: MutableList<TransactionInstruction>
-    private var feePayer: Account? = null
+    private var feePayer: PublicKey? = null
+    init {
+        instructions = ArrayList()
+    }
+
     fun addInstruction(instruction: TransactionInstruction): Message {
         accountKeys.addAll(instruction.keys)
         accountKeys.add(AccountMeta(instruction.programId, isSigner = false, isWritable = false))
@@ -111,16 +115,21 @@ class Message {
         return out.array()
     }
 
-    fun setFeePayer(feePayer: Account?) {
+    fun setFeePayer(feePayer: PublicKey) {
         this.feePayer = feePayer
     }
 
     private fun getAccountKeys(): List<AccountMeta> {
         val keysList: MutableList<AccountMeta> = accountKeys.list
-        val feePayerIndex = findAccountIndex(keysList, feePayer!!.publicKey)
-        val newList: MutableList<AccountMeta> = ArrayList()
-        newList.add(keysList[feePayerIndex])
-        keysList.removeAt(feePayerIndex)
+        val feePayerIndex = findAccountIndex(keysList, feePayer!!)
+        val newList = mutableListOf<AccountMeta>()
+        if (feePayerIndex != -1) {
+            val feePayerMeta = keysList[feePayerIndex]
+            newList.add(AccountMeta(feePayerMeta.publicKey, isSigner = true, isWritable = true))
+            keysList.removeAt(feePayerIndex)
+        } else {
+            newList.add(AccountMeta(feePayer!!, isSigner = true, isWritable = true))
+        }
         newList.addAll(keysList)
         return newList
     }
@@ -131,14 +140,11 @@ class Message {
                 return i
             }
         }
-        throw RuntimeException("unable to find account index")
+
+        return -1
     }
 
     companion object {
         private const val RECENT_BLOCK_HASH_LENGT = 32
-    }
-
-    init {
-        instructions = ArrayList()
     }
 }

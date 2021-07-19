@@ -133,7 +133,7 @@ class SendPresenter(
         when (result) {
             is TransactionResult.Success -> {
                 val info = TransactionInfo(
-                    transactionId = result.transactionId,
+                    transactionId = result.signature,
                     status = R.string.main_send_success,
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,

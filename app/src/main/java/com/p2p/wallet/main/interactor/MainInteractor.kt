@@ -1,9 +1,11 @@
 package com.p2p.wallet.main.interactor
 
 import com.p2p.wallet.R
+import com.p2p.wallet.common.crypto.Base64Utils
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TransactionResult
+import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.Transaction
@@ -25,6 +27,7 @@ import java.math.BigInteger
 
 class MainInteractor(
     private val rpcRepository: RpcRepository,
+    private val feeRelayerRepository: FeeRelayerRepository,
     private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -80,12 +83,14 @@ class MainInteractor(
             )
             transaction.addInstruction(instruction)
         } else {
-            val instruction = TokenProgram.transferInstruction(
+            val instruction = TokenProgram.createTransferCheckedInstruction(
                 tokenProgramId = TokenProgram.PROGRAM_ID,
                 source = token.publicKey.toPublicKey(),
                 destination = address,
                 owner = payer,
-                amount = lamports
+                amount = lamports,
+                mint = token.mintAddress.toPublicKey(),
+                decimals = token.decimals
             )
 
             transaction.addInstruction(instruction)
@@ -94,11 +99,39 @@ class MainInteractor(
         val recentBlockHash = rpcRepository.getRecentBlockhash()
         transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
 
+        val feePayerPubkey = feeRelayerRepository.getPublicKey()
         val signers = listOf(Account(tokenKeyProvider.secretKey))
+        transaction.setFeePayer(feePayerPubkey.toPublicKey())
         transaction.sign(signers)
+        val signature = transaction.getSignature().orEmpty()
 
-        val signature = rpcRepository.sendTransaction(transaction)
-        return TransactionResult.Success(signature)
+        val serializedTransaction = transaction.serialize()
+
+        val base64Trx: String = Base64Utils.encode(serializedTransaction)
+        Timber.d("### data $base64Trx")
+
+        val result = if (token.isSOL) {
+            feeRelayerRepository.sendSolToken(
+                tokenKeyProvider.publicKey,
+                address.toBase58(),
+                lamports,
+                signature,
+                recentBlockHash.recentBlockhash
+            )
+        } else {
+            feeRelayerRepository.sendSplToken(
+                token.publicKey,
+                address.toBase58(),
+                token.mintAddress,
+                tokenKeyProvider.publicKey,
+                lamports,
+                token.decimals,
+                signature,
+                recentBlockHash.recentBlockhash
+            )
+        }
+
+        return TransactionResult.Success(result)
     }
 
     suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<Transaction> {
@@ -106,8 +139,7 @@ class MainInteractor(
             publicKey.toPublicKey(), before, limit
         ).map { it.signature }
 
-        val transactions = rpcRepository.getConfirmedTransactions(signatures)
-        return transactions
+        return rpcRepository.getConfirmedTransactions(signatures)
             .mapNotNull { response ->
                 val signature = response.transaction.signatures.firstOrNull()
                 val data = TransactionTypeParser.parse(signature, response)
