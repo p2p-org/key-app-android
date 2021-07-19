@@ -66,7 +66,7 @@ class SeedPhraseWatcher(
             else -> {
                 Timber
                     .tag("SEED_PHRASE")
-                    .d("User is entering the word and not finished yet, doing nothing $text")
+                    .d("User is typing the word and not finished yet, doing nothing $text")
             }
         }
     }
