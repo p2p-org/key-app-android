@@ -1,6 +1,7 @@
 package com.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
+import com.p2p.wallet.infrastructure.network.CommonResponse
 import com.p2p.wallet.infrastructure.network.ServerError
 import com.p2p.wallet.infrastructure.network.ServerException
 import okhttp3.Interceptor
@@ -24,7 +25,11 @@ class ServerErrorInterceptor(
     private fun handleResponse(response: Response): Response =
         try {
             val responseBody = response.body!!.string()
-            when (val data = JSONTokener(responseBody).nextValue()) {
+            if (responseBody.isEmpty()) {
+                /* Sometimes we receive empty result. This is temporary hack to avoid error */
+                val emptyData = CommonResponse("")
+                createResponse(response, gson.toJson(emptyData))
+            } else when (val data = JSONTokener(responseBody).nextValue()) {
                 is JSONObject -> {
                     val error = data.optString("error")
                     if (error.isNullOrEmpty()) {

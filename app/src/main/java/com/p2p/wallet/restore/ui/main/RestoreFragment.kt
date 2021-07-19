@@ -1,11 +1,11 @@
-package com.p2p.wallet.restore.ui
+package com.p2p.wallet.restore.ui.main
 
 import android.os.Bundle
 import android.view.View
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentRestoreBinding
-import com.p2p.wallet.restore.ui.secretkeys.view.SecretKeyFragment
+import com.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.edgetoedge.Edge
 import com.p2p.wallet.utils.edgetoedge.edgeToEdge

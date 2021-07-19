@@ -32,7 +32,7 @@ class Account {
             val seed = MnemonicCode.toSeed(words, passphrase)
             val masterPrivateKey = HDKeyDerivation.createMasterPrivateKey(seed)
             val deterministicHierarchy = DeterministicHierarchy(masterPrivateKey)
-            val child = deterministicHierarchy[HDUtils.parsePath("M/501H/0H/0/0"), true, true]
+            val child = deterministicHierarchy[HDUtils.parsePath("M/44/501/0"), true, true]
             val keyPair = TweetNaclFast.Signature.keyPair_fromSeed(child.privKeyBytes)
             return Account(keyPair)
         }
