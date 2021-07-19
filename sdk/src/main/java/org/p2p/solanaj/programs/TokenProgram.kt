@@ -20,6 +20,7 @@ object TokenProgram {
     private const val INSTRUCTION_INDEX_APPROVE = 4
     private const val INSTRUCTION_INDEX_MINT_TO = 7
     private const val INSTRUCTION_INDEX_CLOSE_ACCOUNT = 9
+    private const val INSTRUCTION_INDEX_TRANSFER_CHECKED = 12
 
     fun createAssociatedTokenAccountInstruction(
         associatedProgramId: PublicKey,
@@ -64,6 +65,31 @@ object TokenProgram {
             val publicKeyArray = ByteArray(PublicKey.PUBLIC_KEY_LENGTH)
             bos.write(publicKeyArray, 0, publicKeyArray.size)
         }
+        return TransactionInstruction(tokenProgramId, keys, bos.toByteArray())
+    }
+
+    fun createTransferCheckedInstruction(
+        tokenProgramId: PublicKey,
+        source: PublicKey,
+        mint: PublicKey,
+        destination: PublicKey,
+        owner: PublicKey,
+        amount: BigInteger,
+        decimals: Int
+    ): TransactionInstruction {
+        val keys = ArrayList<AccountMeta>()
+        keys.add(AccountMeta(source, isSigner = false, isWritable = true))
+        keys.add(AccountMeta(mint, isSigner = false, isWritable = false))
+        keys.add(AccountMeta(destination, isSigner = false, isWritable = true))
+        keys.add(AccountMeta(owner, isSigner = true, isWritable = false))
+        val bos = ByteArrayOutputStream()
+        bos.write(INSTRUCTION_INDEX_TRANSFER_CHECKED)
+        try {
+            ByteUtils.uint64ToByteStreamLE(amount, bos)
+        } catch (e: IOException) {
+            throw java.lang.RuntimeException(e)
+        }
+        bos.write(decimals)
         return TransactionInstruction(tokenProgramId, keys, bos.toByteArray())
     }
 

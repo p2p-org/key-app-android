@@ -1,14 +1,19 @@
 package com.p2p.wallet.infrastructure.network
 
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.p2p.wallet.BuildConfig
+import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.environment.DataHubInterceptor
 import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
+import com.p2p.wallet.rpc.api.FeeRelayerApi
 import com.p2p.wallet.rpc.api.RpcApi
+import com.p2p.wallet.rpc.repository.FeeRelayerRemoteRepository
+import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRemoteRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.user.UserModule.createLoggingInterceptor
@@ -34,6 +39,7 @@ object NetworkModule : InjectionModule {
             GsonBuilder()
                 .apply { if (BuildConfig.DEBUG) setPrettyPrinting() }
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
+                .setLenient()
                 .disableHtmlEscaping()
                 .create()
         }
@@ -50,6 +56,13 @@ object NetworkModule : InjectionModule {
 
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, datahubRpcApi, get())
         } bind RpcRepository::class
+
+        single {
+            val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
+            val retrofit = getRetrofit(baseUrl, "FeeRelayer")
+            val api = retrofit.create(FeeRelayerApi::class.java)
+            FeeRelayerRemoteRepository(api)
+        } bind FeeRelayerRepository::class
     }
 
     private fun Scope.getRetrofit(
@@ -62,7 +75,7 @@ object NetworkModule : InjectionModule {
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
                 if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
-                if (withDataHub) DataHubInterceptor(get())
+                if (withDataHub) addInterceptor(DataHubInterceptor(get()))
             }
             .addInterceptor(ServerErrorInterceptor(get()))
             .build()

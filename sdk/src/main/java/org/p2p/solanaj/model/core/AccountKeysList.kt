@@ -43,7 +43,9 @@ class AccountKeysList {
                 val cmpkWritable = if (am1.isWritable == am2.isWritable) 0 else if (am1.isWritable) -1 else 1
                 return if (cmpkWritable != 0) {
                     cmpkWritable
-                } else cmpSigner.compareTo(cmpkWritable)
+                } else {
+                    -1
+                }
             }
         }
     }

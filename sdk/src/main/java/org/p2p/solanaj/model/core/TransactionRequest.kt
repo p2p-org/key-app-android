@@ -14,9 +14,14 @@ class TransactionRequest {
     private val signatures: MutableList<String>
 
     private var serializedMessage: ByteArray = ByteArray(0)
+    private var feePayer: PublicKey? = null
 
     init {
         signatures = ArrayList()
+    }
+
+    fun setFeePayer(feePayer: PublicKey) {
+        this.feePayer = feePayer
     }
 
     fun addInstruction(instruction: TransactionInstruction?): TransactionRequest {
@@ -34,8 +39,11 @@ class TransactionRequest {
 
     fun sign(signers: List<Account>) {
         require(signers.isNotEmpty()) { "No signers" }
-        val feePayer = signers[0]
-        message.setFeePayer(feePayer)
+
+        if (feePayer == null) {
+            feePayer = signers[0].publicKey
+        }
+        message.setFeePayer(feePayer!!)
         serializedMessage = message.serialize()
         for (signer in signers) {
             val signatureProvider = TweetNaclFast.Signature(ByteArray(0), signer.secretKey)
@@ -43,6 +51,8 @@ class TransactionRequest {
             signatures.add(Base58.encode(signature))
         }
     }
+
+    fun getSignature(): String? = signatures.firstOrNull()
 
     fun serialize(): ByteArray {
         val signaturesSize = signatures.size
