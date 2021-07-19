@@ -11,7 +11,7 @@ class AuthRemoteRepository : AuthRepository {
 
     override suspend fun generatePhrase(): List<String> = withContext(Dispatchers.IO) {
         val sb = StringBuilder()
-        val entropy = ByteArray(Words.TWELVE.byteLength())
+        val entropy = ByteArray(Words.TWENTY_FOUR.byteLength())
         SecureRandom().nextBytes(entropy)
         MnemonicGenerator(English.INSTANCE).createMnemonic(entropy, sb::append)
         sb.toString().split(" ")

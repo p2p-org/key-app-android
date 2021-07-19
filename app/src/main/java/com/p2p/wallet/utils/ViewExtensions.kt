@@ -68,6 +68,19 @@ fun View.hideKeyboard() {
     }
 }
 
+fun Context.showSoftKeyboard() {
+    val windowToken = (this as Activity).findViewById<View>(android.R.id.content).rootView.windowToken
+    val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputManager.toggleSoftInputFromWindow(windowToken, 0, 1)
+}
+
+fun View.showSoftKeyboard() {
+    post {
+        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .toggleSoftInputFromWindow(windowToken, 0, 1)
+    }
+}
+
 fun Context.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, text, duration).show()
 }

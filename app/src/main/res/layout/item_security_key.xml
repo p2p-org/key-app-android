@@ -8,15 +8,14 @@
     android:layout_marginTop="12dp"
     android:background="@drawable/bg_security_key"
     android:orientation="horizontal"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="12dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/indexTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
         android:textColor="?colorElementSecondary"
         tools:text="3. " />
 
@@ -25,6 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
         tools:text="Austin" />
 </LinearLayout>
