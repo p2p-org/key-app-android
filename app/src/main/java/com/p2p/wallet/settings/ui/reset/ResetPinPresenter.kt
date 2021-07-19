@@ -43,10 +43,6 @@ class ResetPinPresenter(
         resetPinActually(cipher)
     }
 
-    override fun logout() {
-        authInteractor.logout()
-    }
-
     private fun verifyPin(pinCode: String) {
         view?.showLoading(true)
         launch {

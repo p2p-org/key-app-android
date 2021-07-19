@@ -24,6 +24,5 @@ interface ResetPinContract {
         fun setPinCode(pinCode: String)
         fun resetPinWithoutBiometrics()
         fun resetPinWithBiometrics(cipher: Cipher)
-        fun logout()
     }
 }

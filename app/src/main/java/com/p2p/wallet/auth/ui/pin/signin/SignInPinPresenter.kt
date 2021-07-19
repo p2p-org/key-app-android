@@ -67,8 +67,10 @@ class SignInPinPresenter(
 
     override fun logout() {
         timer?.cancel()
-        authInteractor.logout()
-        view?.onLogout()
+        launch {
+            authInteractor.logout()
+            view?.onLogout()
+        }
     }
 
     private inline fun signInActual(

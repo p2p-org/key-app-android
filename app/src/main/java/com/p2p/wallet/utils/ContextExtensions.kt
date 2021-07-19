@@ -21,6 +21,7 @@ fun Context.vibrate(duration: Long = 500) {
         )
         vibrator?.vibrate(effect)
     } else {
+        @Suppress("DEPRECATION")
         vibrator?.vibrate(duration)
     }
 }

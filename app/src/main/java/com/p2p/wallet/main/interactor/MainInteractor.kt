@@ -1,7 +1,6 @@
 package com.p2p.wallet.main.interactor
 
 import com.p2p.wallet.R
-import com.p2p.wallet.common.crypto.Base64Utils
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TransactionResult
@@ -104,11 +103,6 @@ class MainInteractor(
         transaction.setFeePayer(feePayerPubkey.toPublicKey())
         transaction.sign(signers)
         val signature = transaction.getSignature().orEmpty()
-
-        val serializedTransaction = transaction.serialize()
-
-        val base64Trx: String = Base64Utils.encode(serializedTransaction)
-        Timber.d("### data $base64Trx")
 
         val result = if (token.isSOL) {
             feeRelayerRepository.sendSolToken(

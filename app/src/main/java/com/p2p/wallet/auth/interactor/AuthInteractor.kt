@@ -16,8 +16,6 @@ import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import com.p2p.wallet.infrastructure.security.SecureStorage
 import com.p2p.wallet.main.repository.MainLocalRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
@@ -156,12 +154,10 @@ class AuthInteractor(
         secureStorage.remove(KEY_PIN_CODE_BIOMETRIC_HASH)
     }
 
-    fun logout() {
+    suspend fun logout() {
         sharedPreferences.edit { clear() }
         secureStorage.clear()
-        GlobalScope.launch {
-            mainLocalRepository.clear()
-        }
+        mainLocalRepository.clear()
     }
 
     private fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
