@@ -1,6 +1,5 @@
 package com.p2p.wallet.main.ui.main
 
-import com.p2p.wallet.utils.scaleShort
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState
@@ -8,9 +7,9 @@ import com.p2p.wallet.settings.interactor.SettingsInteractor
 import com.p2p.wallet.token.model.Token
 import com.p2p.wallet.token.model.TokenVisibility
 import com.p2p.wallet.user.interactor.UserInteractor
+import com.p2p.wallet.utils.scaleShort
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -37,7 +36,7 @@ class MainPresenter(
         view?.showBalance(newValue)
     }
 
-    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
+    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, _, newValue ->
         balance = mapBalance(newValue)
         val isZerosHidden = settingsInteractor.isZerosHidden()
         val actualState = when (state) {
@@ -70,7 +69,7 @@ class MainPresenter(
 
     override fun refresh() {
         view?.showRefreshing(true)
-        GlobalScope.launch {
+        launch {
             try {
                 withContext(Dispatchers.Default) { userInteractor.loadTokenPrices(BALANCE_CURRENCY) }
                 userInteractor.loadTokens()
