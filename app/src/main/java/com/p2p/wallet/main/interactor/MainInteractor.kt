@@ -1,13 +1,13 @@
 package com.p2p.wallet.main.interactor
 
 import com.p2p.wallet.R
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.history.model.Transaction
+import com.p2p.wallet.history.model.TransactionConverter
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
-import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.token.model.Transaction
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.kits.TokenTransaction
@@ -139,20 +139,26 @@ class MainInteractor(
                 val data = TransactionTypeParser.parse(signature, response)
 
                 val swap = data.firstOrNull { it is SwapDetails }
-                val transfer = data.firstOrNull { it is TransferDetails }
-                val close = data.firstOrNull { it is CloseAccountDetails }
-                val unknown = data.firstOrNull { it is UnknownDetails }
+                if (swap != null) {
+                    return@mapNotNull parseSwapDetails(swap as SwapDetails)
+                }
 
-                return@mapNotNull when {
-                    swap != null -> parseSwapDetails(swap as SwapDetails)
-                    transfer != null -> parseTransferDetails(
+                val transfer = data.firstOrNull { it is TransferDetails }
+                if (transfer != null) {
+                    return@mapNotNull parseTransferDetails(
                         transfer as TransferDetails,
                         publicKey,
                         tokenKeyProvider.publicKey
                     )
-                    close != null -> parseCloseDetails(close as CloseAccountDetails)
-                    else -> TokenConverter.fromNetwork(unknown as UnknownDetails)
                 }
+
+                val close = data.firstOrNull { it is CloseAccountDetails }
+                if (close != null) {
+                    return@mapNotNull parseCloseDetails(close as CloseAccountDetails)
+                }
+
+                val unknown = data.firstOrNull { it is UnknownDetails }
+                TransactionConverter.fromNetwork(unknown as UnknownDetails)
             }
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
@@ -164,7 +170,8 @@ class MainInteractor(
         if (sourceData.mintAddress == destinationData.mintAddress) return null
 
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
-        return TokenConverter.fromNetwork(details, sourceData, destinationData, destinationRate)
+        val source = tokenKeyProvider.publicKey
+        return TransactionConverter.fromNetwork(details, sourceData, destinationData, destinationRate, source)
     }
 
     private fun parseTransferDetails(
@@ -175,14 +182,17 @@ class MainInteractor(
         val symbol = if (transfer.isSimpleTransfer) Token.SOL_SYMBOL else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
-        return TokenConverter.fromNetwork(transfer, directPublicKey, publicKey, rate, symbol)
+        val mint = if (transfer.isSimpleTransfer) Token.SOL_MINT else transfer.mint
+        val source = userLocalRepository.getTokenData(mint)!!
+
+        return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
     }
 
     private suspend fun parseCloseDetails(details: CloseAccountDetails): Transaction {
         val accountInfo = rpcRepository.getAccountInfo(details.account.toPublicKey())
         val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
         val symbol = findSymbol(info?.mint?.toBase58().orEmpty())
-        return TokenConverter.fromNetwork(details, symbol)
+        return TransactionConverter.fromNetwork(details, symbol)
     }
 
     private fun findSymbol(mint: String): String =

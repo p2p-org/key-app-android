@@ -4,7 +4,7 @@ import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import java.math.BigDecimal
 
 interface MainContract {

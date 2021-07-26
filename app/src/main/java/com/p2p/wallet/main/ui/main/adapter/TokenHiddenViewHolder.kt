@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.p2p.wallet.databinding.ItemTokenHiddenBinding
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 
 class TokenHiddenViewHolder(
     binding: ItemTokenHiddenBinding,
@@ -31,6 +31,7 @@ class TokenHiddenViewHolder(
     )
 
     private val tokenImageView = binding.tokenImageView
+    private val wrappedImageView = binding.wrappedImageView
     private val nameTextView = binding.nameTextView
     private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
@@ -51,6 +52,7 @@ class TokenHiddenViewHolder(
         if (!data.logoUrl.isNullOrEmpty()) {
             Glide.with(tokenImageView).load(data.logoUrl).into(tokenImageView)
         }
+        wrappedImageView.isVisible = data.isWrapped
         nameTextView.text = data.tokenSymbol
         addressTextView.text = data.getFormattedAddress()
         valueTextView.text = data.getFormattedPrice()

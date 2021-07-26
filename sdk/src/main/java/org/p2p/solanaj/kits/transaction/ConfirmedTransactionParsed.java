@@ -1,11 +1,11 @@
 package org.p2p.solanaj.kits.transaction;
 
-import java.util.List;
-import java.util.Map;
-
 import com.squareup.moshi.Json;
 
 import org.p2p.solanaj.model.types.RpcResultObject;
+
+import java.util.List;
+import java.util.Map;
 
 public class ConfirmedTransactionParsed extends RpcResultObject {
 
@@ -141,6 +141,8 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class Meta {
+        @Json(name = "fee")
+        private long fee;
         @Json(name = "innerInstructions")
         private List<InnerInstruction> innerInstructions;
         @Json(name = "postTokenBalances")
@@ -153,10 +155,17 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
         public List<PostTokenBalance> getPostTokenBalances() {
             return postTokenBalances;
         }
+
+        public long getFee() {
+            return fee;
+        }
     }
 
     @Json(name = "blockTime")
     private long blockTime;
+
+    @Json(name = "slot")
+    private int slot;
 
     @Json(name = "transaction")
     private TransactionParsed transaction;
@@ -166,6 +175,10 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
 
     public TransactionParsed getTransaction() {
         return transaction;
+    }
+
+    public int getSlot() {
+        return slot;
     }
 
     public long getBlockTime() {

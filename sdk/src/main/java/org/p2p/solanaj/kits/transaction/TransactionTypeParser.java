@@ -18,18 +18,28 @@ public class TransactionTypeParser {
                 switch (parsedInfo.getType()) {
                     case "transfer":
                     case "transferChecked":
-                        details.add(new TransferDetails(signature, transaction.getBlockTime(), parsedInfo.getType(),
-                                parsedInfo.getInfo()));
+                        TransferDetails transferDetails = new TransferDetails(
+                                signature,
+                                transaction.getBlockTime(),
+                                transaction.getSlot(),
+                                transaction.getMeta().getFee(),
+                                parsedInfo.getType(),
+                                parsedInfo.getInfo()
+                        );
+                        details.add(transferDetails);
                         break;
                     case "closeAccount":
                         if (parsedInstruction.gerProgramId().equals(SystemProgram.INSTANCE.getSPL_TOKEN_PROGRAM_ID().toBase58())) {
-                            details.add(new CloseAccountDetails(signature, transaction.getBlockTime(), parsedInfo.getInfo()));
+                            CloseAccountDetails closeDetails = new CloseAccountDetails(
+                                    signature, transaction.getBlockTime(), transaction.getSlot(), parsedInfo.getInfo()
+                            );
+                            details.add(closeDetails);
                         } else {
                             parseSwapDetails(signature, transaction, details, parsedInstruction);
                         }
                         break;
                     default:
-                        details.add(new UnknownDetails(signature, transaction.getBlockTime(), parsedInfo.getInfo()));
+                        details.add(new UnknownDetails(signature, transaction.getBlockTime(), transaction.getSlot(), parsedInfo.getInfo()));
                 }
             } else {
                 parseSwapDetails(signature, transaction, details, parsedInstruction);
@@ -72,6 +82,7 @@ public class TransactionTypeParser {
                 String userSource = (String) instructionParsed.get(firstIndex).getParsed().getInfo().get("source");
                 String amountB = (String) instructionParsed.get(secondIndex).getParsed().getInfo().get("amount");
                 String poolDestination = (String) instructionParsed.get(secondIndex).getParsed().getInfo().get("source");
+                String destination = (String) instructionParsed.get(secondIndex).getParsed().getInfo().get("destination");
 
                 int userSourceKeyIndex = parsedInstruction.getAccounts().indexOf(userSource);
                 int poolDestinationKeyIndex = parsedInstruction.getAccounts().indexOf(poolDestination);
@@ -89,12 +100,22 @@ public class TransactionTypeParser {
                     }
                 }
 
-                details.add(new SwapDetails(signature, transaction.getBlockTime(), amountA, amountB, mintA,
-                        mintB));
+                SwapDetails swapDetails = new SwapDetails(
+                        signature,
+                        transaction.getBlockTime(),
+                        transaction.getSlot(),
+                        transaction.getMeta().getFee(),
+                        destination,
+                        amountA,
+                        amountB,
+                        mintA,
+                        mintB
+                );
+                details.add(swapDetails);
             }
 
         } else {
-            details.add(new UnknownDetails(signature, transaction.getBlockTime(), parsedInstruction.getData()));
+            details.add(new UnknownDetails(signature, transaction.getBlockTime(), transaction.getSlot(), parsedInstruction.getData()));
         }
     }
 }

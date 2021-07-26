@@ -2,7 +2,7 @@ package com.p2p.wallet.main.ui.select
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 
 class SelectTokenAdapter(
     private val onItemClicked: (Token) -> Unit

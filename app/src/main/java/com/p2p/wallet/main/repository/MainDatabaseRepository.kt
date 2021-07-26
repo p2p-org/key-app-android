@@ -2,7 +2,7 @@ package com.p2p.wallet.main.repository
 
 import com.p2p.wallet.main.db.TokenDao
 import com.p2p.wallet.main.model.TokenConverter
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

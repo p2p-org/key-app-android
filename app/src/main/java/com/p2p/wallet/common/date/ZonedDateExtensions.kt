@@ -14,7 +14,7 @@ import kotlin.math.ceil
 
 private val dayMonthFormatter = DateTimeFormatter.ofPattern("dd MMMM")
 private val dayMonthYearFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")
+private val dateTimeFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy HH:mm")
 
 fun ZonedDateTime.toDateString(context: Context): String {
     val day = withZoneSameInstant(ZoneId.systemDefault()).toLocalDate()

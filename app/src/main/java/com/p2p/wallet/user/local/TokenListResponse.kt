@@ -18,5 +18,14 @@ data class TokenResponse(
     @SerializedName("decimals")
     val decimals: Int,
     @SerializedName("logoURI")
-    val logoUrl: String?
-)
+    val logoUrl: String?,
+    @SerializedName("tags")
+    val tags: List<String>
+) {
+
+    companion object {
+        private const val WRAPPED_TAG = "wrapped-sollet"
+    }
+
+    fun isWrapped() = tags.any { it == WRAPPED_TAG }
+}

@@ -1,6 +1,6 @@
 package com.p2p.wallet.main.repository
 
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import kotlinx.coroutines.flow.Flow
 
 interface MainLocalRepository {

@@ -6,13 +6,13 @@ public class UnknownDetails extends TransactionDetails {
     private Object rawData;
     private String data;
 
-    public UnknownDetails(String signature, long blockTime, Map<String, Object> rawData) {
-        super(signature, blockTime);
+    public UnknownDetails(String signature, long blockTime, int slot, Map<String, Object> rawData) {
+        super(signature, blockTime, slot);
         this.rawData = rawData;
     }
 
-    public UnknownDetails(String signature, long blockTime, String data) {
-        super(signature, blockTime);
+    public UnknownDetails(String signature, long blockTime, int slot, String data) {
+        super(signature, blockTime, slot);
         this.data = data;
     }
 

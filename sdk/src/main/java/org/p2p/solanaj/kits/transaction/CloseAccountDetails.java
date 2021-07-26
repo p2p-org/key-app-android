@@ -6,9 +6,10 @@ public class CloseAccountDetails extends TransactionDetails {
     private String account;
     private String destination;
     private String owner;
+    private int slot;
 
-    public CloseAccountDetails(String signature, long blockTime, Map<String, Object> rawData) {
-        super(signature, blockTime);
+    public CloseAccountDetails(String signature, long blockTime, int slot, Map<String, Object> rawData) {
+        super(signature, blockTime, slot);
         this.account = (String) rawData.get("account");
         this.destination = (String) rawData.get("destination");
         this.owner = (String) rawData.get("owner");
@@ -36,4 +37,8 @@ public class CloseAccountDetails extends TransactionDetails {
         return owner;
     }
 
-} 
+    @Override
+    public int getSlot() {
+        return slot;
+    }
+}

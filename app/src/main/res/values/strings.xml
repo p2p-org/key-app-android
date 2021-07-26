@@ -8,6 +8,7 @@
     <string name="common_yes">Yes</string>
     <string name="common_no">No</string>
     <string name="common_done">Done</string>
+    <string name="common_great">Great!</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
     <string name="common_usd">USD</string>
@@ -91,7 +92,7 @@
     <string name="main_close_account">Close Account</string>
     <string name="main_unknown">Unknown operation</string>
     <string name="main_from">From</string>
-    <string name="main_swap_hint">0,0000</string>
+    <string name="main_swap_hint">0</string>
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
     <string name="main_swap_now">Swap now</string>
@@ -118,6 +119,7 @@
     <string name="main_hidden_wallets">%d hidden wallets</string>
     <string name="main_hide">Hide</string>
     <string name="main_price">Price:</string>
+    <string name="main_zero_fee_info">Will be paid by p2p.org \nWe take care of all transfers costs.</string>
     <string name="main_slippage_settings">Slippage settings</string>
     <string name="main_slippage_description">Slippage refers to the difference between the expected price of a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.</string>
     <string name="main_min_receive">Minimum receive:</string>
@@ -145,6 +147,7 @@
     <string name="main_receive_help">Help</string>
     <string name="main_receive_spl_title">SOL and SPL Tokens</string>
     <string name="main_receive_spl_info">The Solana Program Library  (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain. \n\nSimilar to ERC20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications. SPL Tokens can be traded on Serum, a Solana based decentralized exchange and FTX.</string>
+    <string name="main_tokens_available_count">+30</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -157,6 +160,13 @@
     <string name="details_no_transactions_yet">No transactions yet</string>
     <string name="details_no_transactions_message">You didn\'t make any transactions yet</string>
     <string name="details_settings">Wallet settings</string>
+    <string name="details_amount">Amount</string>
+    <string name="details_transaction_fee">Transaction fee</string>
+    <string name="details_creation_fee">Wallet creation fee</string>
+    <string name="details_block_number">Block number</string>
+    <string name="details_completed">Completed</string>
+    <string name="details_value">Value</string>
+    <string name="details_paid_by_p2p">Paid by p2p.org</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -183,9 +193,6 @@
     <string name="settings_security_change_pin_info">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
     <string name="settings_security_go_back">Go back to profile</string>
     <string name="settings_security_pin_codes_matching">PIN-codes do not match</string>
-    <string name="settings_mainnet">Main-net</string>
-    <string name="settings_solana">Solana</string>
-    <string name="settings_datahub">Datahub</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>

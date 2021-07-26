@@ -7,17 +7,31 @@ public class SwapDetails extends TransactionDetails {
 
     public static List<String> KNOWN_SWAP_PROGRAM_IDS = Arrays.asList("DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1");
 
-    private String mintA;
-    private String mintB;
-    private String amountA;
-    private String amountB;
+    private final String mintA;
+    private final String mintB;
+    private final String amountA;
+    private final String amountB;
+    private final String destination;
+    private final Long fee;
 
-    public SwapDetails(String signature, long blockTime, String amountA, String amountB, String mintA, String mintB) {
-        super(signature, blockTime);
+    public SwapDetails(
+            String signature,
+            long blockTime,
+            int slot,
+            long fee,
+            String destination,
+            String amountA,
+            String amountB,
+            String mintA,
+            String mintB
+    ) {
+        super(signature, blockTime, slot);
         this.amountA = amountA;
         this.amountB = amountB;
         this.mintA = mintA;
         this.mintB = mintB;
+        this.fee = fee;
+        this.destination = destination;
     }
 
     @Override
@@ -46,4 +60,11 @@ public class SwapDetails extends TransactionDetails {
         return amountB;
     }
 
+    public String getDestination() {
+        return destination;
+    }
+
+    public Long getFee() {
+        return fee;
+    }
 }

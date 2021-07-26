@@ -174,11 +174,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
+            android:drawablePadding="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
             android:textColor="?colorElementSecondary"
+            app:drawableEndCompat="@drawable/ic_info"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/feeTextView"
-            tools:text="0.0001 SOL" />
+            tools:text="0.0000 SOL" />
 
         <View
             android:id="@+id/middleDividerView"

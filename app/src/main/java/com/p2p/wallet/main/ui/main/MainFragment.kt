@@ -20,9 +20,8 @@ import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.settings.ui.settings.SettingsFragment
 import com.p2p.wallet.swap.ui.SwapFragment
-import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.token.ui.TokenDetailsFragment
-import com.p2p.wallet.utils.attachAdapter
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.history.ui.main.TokenDetailsFragment
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
@@ -54,7 +53,7 @@ class MainFragment :
 
         with(binding) {
             mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            mainRecyclerView.attachAdapter(mainAdapter)
+            mainRecyclerView.adapter = mainAdapter
 
             showPieChart(emptyList())
 

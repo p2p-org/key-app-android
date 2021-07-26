@@ -17,7 +17,7 @@ class EnvironmentManager(
     }
 
     fun loadEnvironment(): Environment {
-        val url = sharedPreferences.getString(KEY_BASE_URL, Environment.PROJECT_SERUM.endpoint).orEmpty()
+        val url = sharedPreferences.getString(KEY_BASE_URL, Environment.SOLANA.endpoint).orEmpty()
         return parse(url)
     }
 
@@ -28,8 +28,9 @@ class EnvironmentManager(
     }
 
     private fun parse(url: String): Environment = when (url) {
-        Environment.DATAHUB.endpoint -> Environment.DATAHUB
+        Environment.TESTNET.endpoint -> Environment.TESTNET
+        Environment.DEVNET.endpoint -> Environment.DEVNET
         Environment.MAINNET.endpoint -> Environment.MAINNET
-        else -> Environment.PROJECT_SERUM
+        else -> Environment.SOLANA
     }
 }

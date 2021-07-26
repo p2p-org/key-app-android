@@ -30,9 +30,10 @@ class NetworkFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             networksGroup.setOnCheckedChangeListener(this@NetworkFragment)
 
-            serumButton.text = Environment.PROJECT_SERUM.endpoint
-            mainnetButton.text = Environment.MAINNET.endpoint
-            datahubButton.text = Environment.DATAHUB.endpoint
+            mainnetButton.text = getString(R.string.node_mainnet)
+            solanaButton.text = getString(R.string.node_solana)
+            devnetButton.text = getString(R.string.node_devnet)
+            testnetButton.text = getString(R.string.node_testnet)
         }
 
         presenter.loadData()
@@ -41,17 +42,19 @@ class NetworkFragment :
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
         val environment = when (checkedId) {
             R.id.mainnetButton -> Environment.MAINNET
-            R.id.datahubButton -> Environment.DATAHUB
-            else -> Environment.PROJECT_SERUM
+            R.id.solanaButton -> Environment.SOLANA
+            R.id.devnetButton -> Environment.DEVNET
+            else -> Environment.TESTNET
         }
         presenter.setNewEnvironment(environment)
     }
 
     override fun showEnvironment(environment: Environment) {
         val checkedId = when (environment) {
-            Environment.PROJECT_SERUM -> R.id.serumButton
+            Environment.SOLANA -> R.id.solanaButton
             Environment.MAINNET -> R.id.mainnetButton
-            Environment.DATAHUB -> R.id.datahubButton
+            Environment.DEVNET -> R.id.devnetButton
+            Environment.TESTNET -> R.id.testnetButton
         }
 
         binding.networksGroup.setOnCheckedChangeListener(null)
