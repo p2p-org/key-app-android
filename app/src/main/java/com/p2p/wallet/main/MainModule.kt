@@ -12,7 +12,7 @@ import com.p2p.wallet.main.ui.send.SendContract
 import com.p2p.wallet.main.ui.send.SendPresenter
 import com.p2p.wallet.swap.ui.SwapContract
 import com.p2p.wallet.swap.ui.SwapPresenter
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

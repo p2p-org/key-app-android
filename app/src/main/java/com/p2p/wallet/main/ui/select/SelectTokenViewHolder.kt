@@ -3,10 +3,11 @@ package com.p2p.wallet.main.ui.select
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.p2p.wallet.databinding.ItemTokenSimpleBinding
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.dip
 
 class SelectTokenViewHolder(
@@ -27,6 +28,7 @@ class SelectTokenViewHolder(
     )
 
     private val tokenImageView = binding.tokenImageView
+    private val wrappedImageView = binding.wrappedImageView
     private val symbolTextView = binding.symbolTextView
     private val nameTextView = binding.nameTextView
     private val valueTextView = binding.valueTextView
@@ -41,6 +43,7 @@ class SelectTokenViewHolder(
         if (!item.logoUrl.isNullOrEmpty()) {
             Glide.with(tokenImageView).load(item.logoUrl).into(tokenImageView)
         }
+        wrappedImageView.isVisible = item.isWrapped
         symbolTextView.text = item.tokenSymbol
         nameTextView.text = item.tokenName
         valueTextView.text = item.getFormattedPrice()

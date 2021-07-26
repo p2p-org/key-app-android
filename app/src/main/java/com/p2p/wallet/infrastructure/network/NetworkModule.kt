@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
-import com.p2p.wallet.infrastructure.network.environment.DataHubInterceptor
 import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
@@ -45,16 +44,19 @@ object NetworkModule : InjectionModule {
         }
 
         single {
-            val serum = getRetrofit(Environment.PROJECT_SERUM.endpoint)
+            val serum = getRetrofit(Environment.SOLANA.endpoint)
             val serumRpcApi = serum.create(RpcApi::class.java)
 
             val mainnet = getRetrofit(Environment.MAINNET.endpoint)
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-            val datahub = getRetrofit(Environment.DATAHUB.endpoint, withDataHub = true)
-            val datahubRpcApi = datahub.create(RpcApi::class.java)
+            val devnet = getRetrofit(Environment.DEVNET.endpoint)
+            val devnetApi = devnet.create(RpcApi::class.java)
 
-            RpcRemoteRepository(serumRpcApi, mainnetRpcApi, datahubRpcApi, get())
+            val testnet = getRetrofit(Environment.TESTNET.endpoint)
+            val testnetApi = testnet.create(RpcApi::class.java)
+
+            RpcRemoteRepository(serumRpcApi, mainnetRpcApi, devnetApi, testnetApi, get())
         } bind RpcRepository::class
 
         single {
@@ -67,15 +69,13 @@ object NetworkModule : InjectionModule {
 
     private fun Scope.getRetrofit(
         baseUrl: String,
-        tag: String = "OkHttpClient",
-        withDataHub: Boolean = false
+        tag: String = "OkHttpClient"
     ): Retrofit {
         val client = OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
                 if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
-                if (withDataHub) addInterceptor(DataHubInterceptor(get()))
             }
             .addInterceptor(ServerErrorInterceptor(get()))
             .build()

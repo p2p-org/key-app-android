@@ -13,8 +13,8 @@ import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.CurrencyMode
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
-import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.token.model.Token.Companion.USD_SYMBOL
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.launch

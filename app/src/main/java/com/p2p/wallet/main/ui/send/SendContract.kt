@@ -5,7 +5,7 @@ import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.model.CurrencyMode
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import java.math.BigDecimal
 
 interface SendContract {

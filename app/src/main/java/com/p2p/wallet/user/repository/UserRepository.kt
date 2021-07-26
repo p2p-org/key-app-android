@@ -1,13 +1,12 @@
 package com.p2p.wallet.user.repository
 
-import com.p2p.wallet.utils.scaleAmount
-import com.p2p.wallet.utils.scalePrice
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.rpc.repository.RpcRepository
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.utils.scaleAmount
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,7 +15,6 @@ import java.math.BigDecimal
 
 interface UserRepository {
     suspend fun createAccount(keys: List<String>): Account
-    suspend fun loadSolBalance(): Long
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokens(): List<Token>
     suspend fun getRate(source: String, destination: String): BigDecimal
@@ -52,9 +50,6 @@ class UserRepositoryImpl(
                 .flatten()
         }
 
-    override suspend fun loadSolBalance(): Long =
-        rpcRepository.getBalance(tokenProvider.publicKey.toPublicKey())
-
     override suspend fun loadTokens(): List<Token> = withContext(Dispatchers.IO) {
         val response = rpcRepository.getTokenAccountsByOwner(tokenProvider.publicKey.toPublicKey())
 
@@ -71,17 +66,13 @@ class UserRepositoryImpl(
             }
 
         /*
-         * Assuming that SOL is our default token
+         * Assuming that SOL is our default token, creating it manually
          * */
-        val solBalance = loadSolBalance()
-        val sol = Token.getSOL(tokenProvider.publicKey, solBalance)
-        val solPrice = userLocalRepository.getPriceByToken(sol.tokenSymbol)
-        val solExchangeRate = solPrice.getFormattedPrice()
-        val element = sol.copy(
-            price = sol.total.multiply(solExchangeRate),
-            usdRate = solExchangeRate.scalePrice()
-        )
-        result.add(0, element)
+        val solBalance = rpcRepository.getBalance(tokenProvider.publicKey.toPublicKey())
+        val tokenData = userLocalRepository.getTokenData(Token.SOL_MINT) ?: return@withContext result
+        val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
+        val token = Token.createSOL(tokenProvider.publicKey, tokenData, solBalance, solPrice.getScaledValue())
+        result.add(0, token)
         return@withContext result
     }
 

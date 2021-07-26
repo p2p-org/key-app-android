@@ -7,7 +7,7 @@ import com.p2p.wallet.swap.interactor.SwapInteractor
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.swap.model.SwapResult
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.isMoreThan

@@ -5,6 +5,10 @@
     <string name="ownerKey">11111111111111111111111111111111</string>
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
     <string name="solanaWalletExplorer">https://explorer.solana.com/address/%s</string>
-    <string name="datahubApiKey">d600d6ae197bd6951a84f353f25555d0</string>
     <string name="feeRelayerBaseUrl">"https://fee-relayer.solana.p2p.org/"</string>
+
+    <string name="node_solana">https://solana-api.projectserum.com</string>
+    <string name="node_mainnet">https://api.mainnet-beta.solana.com</string>
+    <string name="node_devnet">https://api.devnet.solana.com</string>
+    <string name="node_testnet">https://api.testnet.solana.com</string>
 </resources>

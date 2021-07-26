@@ -43,7 +43,10 @@ data class TokenEntity(
     val exchangeRate: String,
 
     @ColumnInfo(name = COLUMN_VISIBILITY)
-    val visibility: String
+    val visibility: String,
+
+    @ColumnInfo(name = COLUMN_WRAPPED)
+    val isWrapped: Boolean
 ) {
     companion object {
         const val TABLE_NAME = "token_table"
@@ -58,5 +61,6 @@ data class TokenEntity(
         const val COLUMN_COLOR = "color"
         const val COLUMN_EXCHANGE_RATE = "exchange_rate"
         const val COLUMN_VISIBILITY = "visibility"
+        const val COLUMN_WRAPPED = "wrapped"
     }
 }

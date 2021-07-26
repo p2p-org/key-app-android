@@ -18,7 +18,7 @@ import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import com.p2p.wallet.qr.ui.ScanQrFragment
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.focusAndShowKeyboard
@@ -89,6 +89,10 @@ class SendFragment :
                 addFragment(target)
             }
 
+            feeValueTextView.setOnClickListener {
+                FeeInfoBottomSheet.show(childFragmentManager)
+            }
+
             sourceImageView.setOnClickListener {
                 presenter.loadTokensForSelection()
             }
@@ -98,7 +102,7 @@ class SendFragment :
                 addressEditText.setText(it)
             }
 
-            addressEditText.focusAndShowKeyboard()
+            amountEditText.focusAndShowKeyboard()
 
             availableTextView.setOnClickListener {
                 presenter.loadAvailableValue()
@@ -149,7 +153,8 @@ class SendFragment :
             singleValueTextView.text = getString(R.string.main_single_value_format, token.tokenSymbol)
             usdValueTextView.text = getString(R.string.main_usd_end_format, token.getFormattedExchangeRate())
             availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
-            feeValueTextView.text = "0,000005 SOL" // todo: get valid fee
+            /* P2P pays for send transactions, hardcoding here temporary */
+            feeValueTextView.text = "0.0000 SOL"
         }
     }
 

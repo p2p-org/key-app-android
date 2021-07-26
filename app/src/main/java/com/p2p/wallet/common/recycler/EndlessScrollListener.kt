@@ -3,7 +3,7 @@ package com.p2p.wallet.common.recycler
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-private const val VISIBLE_THRESHOLD = 10
+private const val VISIBLE_THRESHOLD = 11
 
 class EndlessScrollListener(
     private val layoutManager: LinearLayoutManager,

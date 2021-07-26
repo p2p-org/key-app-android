@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
@@ -14,7 +15,7 @@ import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.common.recycler.SwipeLayout
 import com.p2p.wallet.databinding.ItemTokenBinding
 import com.p2p.wallet.main.model.TokenItem
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.dip
 
 class TokenViewHolder(
@@ -46,6 +47,7 @@ class TokenViewHolder(
     )
 
     private val tokenImageView = binding.tokenImageView
+    private val wrappedImageView = binding.wrappedImageView
     private val nameTextView = binding.nameTextView
     private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
@@ -69,7 +71,7 @@ class TokenViewHolder(
         if (!token.logoUrl.isNullOrEmpty()) {
             loadImage(tokenImageView, token.logoUrl)
         }
-
+        wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenSymbol
         addressTextView.text = token.getFormattedAddress()
         valueTextView.text = token.getFormattedPrice()

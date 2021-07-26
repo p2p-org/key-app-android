@@ -9,7 +9,7 @@ import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.repository.MainLocalRepository
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.user.local.TokenListResponse
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
@@ -61,7 +61,7 @@ class UserInteractor(
 
         if (!data.isNullOrEmpty()) {
             val tokenList = gson.fromJson(data, TokenListResponse::class.java)
-            val mappedData = tokenList.tokens.map { TokenConverter.fromLocal(it) }
+            val mappedData = tokenList.tokens.map { TokenConverter.fromNetwork(it) }
             userLocalRepository.setTokenData(mappedData)
         }
     }

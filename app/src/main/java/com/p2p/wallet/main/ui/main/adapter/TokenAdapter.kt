@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 
 class TokenAdapter(
     private val onItemClicked: (Token) -> Unit,

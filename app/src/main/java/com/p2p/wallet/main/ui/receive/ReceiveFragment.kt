@@ -10,7 +10,7 @@ import androidx.transition.TransitionManager
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentReceiveBinding
-import com.p2p.wallet.token.model.Token
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.copyToClipBoard
@@ -48,13 +48,21 @@ class ReceiveFragment :
 
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            toolbar.setOnMenuItemClickListener {
-                if (it.itemId == R.id.infoItem) {
-                    ReceiveInfoBottomSheetDialog.show(childFragmentManager)
-                    return@setOnMenuItemClickListener true
-                }
 
-                return@setOnMenuItemClickListener false
+            solImageView.setOnClickListener {
+                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
+            }
+            ethImageView.setOnClickListener {
+                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
+            }
+            btcImageView.setOnClickListener {
+                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
+            }
+            ftxImageView.setOnClickListener {
+                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
+            }
+            tokenCountTextView.setOnClickListener {
+                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
             }
 
             detailsButton.setOnClickListener {

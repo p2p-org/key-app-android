@@ -5,14 +5,15 @@ import android.view.View
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSecurityKeyBinding
+import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.edgetoedge.Edge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -60,7 +61,7 @@ class SecurityKeyFragment :
             }
 
             with(keysRecyclerView) {
-                adapter = keysAdapter
+                attachAdapter(keysAdapter)
                 layoutManager = FlexboxLayoutManager(requireContext()).also {
                     it.flexDirection = FlexDirection.ROW
                     it.justifyContent = JustifyContent.FLEX_START

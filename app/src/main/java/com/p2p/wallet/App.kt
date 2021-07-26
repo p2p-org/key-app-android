@@ -13,7 +13,7 @@ import com.p2p.wallet.root.RootModule
 import com.p2p.wallet.settings.SettingsModule
 import com.p2p.wallet.settings.interactor.ThemeInteractor
 import com.p2p.wallet.swap.SwapModule
-import com.p2p.wallet.token.TokenModule
+import com.p2p.wallet.history.TokenModule
 import com.p2p.wallet.user.UserModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.KoinContextHandler

@@ -3,20 +3,22 @@ package org.p2p.solanaj.kits.transaction;
 import java.util.Map;
 
 public class TransferDetails extends TransactionDetails {
-    private String destination;
-    private String source;
-    private String authority;
+    private final String destination;
+    private final String source;
+    private final String authority;
     private String mint;
-    private String amount;
+    private final String amount;
     private int decimals;
-    private String transferType;
+    private final String transferType;
+    private final long fee;
 
-    public TransferDetails(String signature, long blockTime, String type, Map<String, Object> rawData) {
-        super(signature, blockTime);
+    public TransferDetails(String signature, long blockTime, int slot, long fee, String type, Map<String, Object> rawData) {
+        super(signature, blockTime, slot);
         this.destination = (String) rawData.get("destination");
         this.source = (String) rawData.get("source");
         this.authority = (String) rawData.get("authority");
         this.transferType = type;
+        this.fee = fee;
 
         if (type.equals("transferChecked")) {
             this.mint = (String) rawData.get("mint");
@@ -74,6 +76,10 @@ public class TransferDetails extends TransactionDetails {
 
     public String getAmount() {
         return amount;
+    }
+
+    public long getFee() {
+        return fee;
     }
 
     public int getDecimals() {

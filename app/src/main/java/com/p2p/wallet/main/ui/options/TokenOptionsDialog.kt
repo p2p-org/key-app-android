@@ -10,8 +10,8 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import com.p2p.wallet.databinding.DialogTokenOptionsBinding
 import com.p2p.wallet.settings.interactor.SettingsInteractor
-import com.p2p.wallet.token.model.Token
-import com.p2p.wallet.token.model.TokenVisibility
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.main.model.TokenVisibility
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.viewbinding.viewBinding
