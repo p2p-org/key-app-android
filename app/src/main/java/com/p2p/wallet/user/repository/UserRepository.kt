@@ -2,19 +2,17 @@ package com.p2p.wallet.user.repository
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.CompareApi
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.rpc.repository.RpcRepository
-import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.scaleAmount
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.model.core.Account
 import java.math.BigDecimal
 
 interface UserRepository {
-    suspend fun createAccount(keys: List<String>): Account
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokens(): List<Token>
     suspend fun getRate(source: String, destination: String): BigDecimal
@@ -29,10 +27,6 @@ class UserRepositoryImpl(
 
     companion object {
         private const val CHUNKED_COUNT = 30
-    }
-
-    override suspend fun createAccount(keys: List<String>): Account = withContext(Dispatchers.IO) {
-        Account.fromMnemonic(keys, "")
     }
 
     override suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice> =

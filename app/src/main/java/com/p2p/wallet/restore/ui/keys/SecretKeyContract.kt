@@ -8,7 +8,7 @@ import com.p2p.wallet.restore.model.SecretKey
 interface SecretKeyContract {
 
     interface View : MvpView {
-        fun showSuccess()
+        fun showSuccess(secretKeys: List<SecretKey>)
         fun showError(@StringRes messageRes: Int)
         fun showActionButtons(isVisible: Boolean)
     }

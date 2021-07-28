@@ -16,6 +16,6 @@ object SwapModule : InjectionModule {
 
         single { SwapInMemoryRepository() } bind SwapLocalRepository::class
 
-        factory { SwapInteractor(get(), get(), get(), get()) }
+        factory { SwapInteractor(get(), get(), get(), get(), get()) }
     }
 }

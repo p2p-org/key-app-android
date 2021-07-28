@@ -4,5 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class CommonResponse<Result>(
     @SerializedName("result")
-    val result: Result
+    val result: Result,
+
+    @SerializedName("id")
+    val id: String
 )

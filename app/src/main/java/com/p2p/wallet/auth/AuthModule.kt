@@ -2,7 +2,6 @@ package com.p2p.wallet.auth
 
 import androidx.biometric.BiometricManager
 import com.p2p.wallet.auth.interactor.AuthInteractor
-import com.p2p.wallet.auth.interactor.SecurityKeyInteractor
 import com.p2p.wallet.auth.repository.AuthRemoteRepository
 import com.p2p.wallet.auth.repository.AuthRepository
 import com.p2p.wallet.auth.ui.biometric.BiometricContract
@@ -23,11 +22,10 @@ object AuthModule {
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
-        factory { SecurityKeyPresenter(get(), get()) } bind SecurityKeyContract.Presenter::class
+        factory { SecurityKeyPresenter(get()) } bind SecurityKeyContract.Presenter::class
 
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
-        factory { SecurityKeyInteractor(get()) }
     }
 }

@@ -32,7 +32,7 @@ class SecretKeyPresenter(
     override fun verifySeedPhrase() {
         launch {
             when (val data = secretKeyInteractor.verifySeedPhrase(keys)) {
-                is SeedPhraseResult.Success -> view?.showSuccess()
+                is SeedPhraseResult.Success -> view?.showSuccess(data.secretKeys)
                 is SeedPhraseResult.Error -> view?.showError(data.message)
             }
         }
