@@ -7,16 +7,15 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
-import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSecretKeyBinding
 import com.p2p.wallet.restore.model.SecretKey
+import com.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import com.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.hideKeyboard
-import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
+import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
@@ -32,9 +31,7 @@ class SecretKeyFragment :
     private val binding: FragmentSecretKeyBinding by viewBinding()
 
     private val phraseAdapter: SecretPhraseAdapter by lazy {
-        SecretPhraseAdapter {
-            presenter.setNewKeys(it)
-        }
+        SecretPhraseAdapter { presenter.setNewKeys(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,8 +70,8 @@ class SecretKeyFragment :
         }
     }
 
-    override fun showSuccess() {
-        popAndReplaceFragment(CreatePinFragment.create(PinLaunchMode.RECOVER), inclusive = true)
+    override fun showSuccess(secretKeys: List<SecretKey>) {
+        replaceFragment(DerivableAccountsFragment.create(secretKeys))
     }
 
     override fun showActionButtons(isVisible: Boolean) {

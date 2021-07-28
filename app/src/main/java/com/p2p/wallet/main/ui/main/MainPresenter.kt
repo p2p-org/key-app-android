@@ -141,7 +141,6 @@ class MainPresenter(
     }
 
     private fun startPolling() {
-        return
         launch {
             try {
                 while (true) {

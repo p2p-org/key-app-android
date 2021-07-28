@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_alert_elevation_rounded_top"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="16dp"
+        android:text="@string/auth_select_derivation_path"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/messageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="4dp"
+        android:gravity="center"
+        android:paddingHorizontal="20dp"
+        android:text="@string/auth_derivation_path_info"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textColor="?colorElementSecondary" />
+
+    <View
+        android:id="@+id/dividerView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:background="?colorElementTertiary" />
+
+    <RadioGroup
+        android:id="@+id/pathGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/bip44Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="?colorElementPrimary"
+            android:button="@drawable/button_radio_inset"
+            android:buttonTint="?colorAccentPrimary"
+            android:padding="12dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textColor="?colorMessagePrimary"
+            tools:text="m/44’/501’/0’" />
+
+        <RadioButton
+            android:id="@+id/bip44ChangeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="?colorElementPrimary"
+            android:button="@drawable/button_radio_inset"
+            android:buttonTint="?colorAccentPrimary"
+            android:padding="12dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textColor="?colorMessagePrimary"
+            tools:text="m/44’/501’/0’/0’ (Default)" />
+
+        <RadioButton
+            android:id="@+id/bip32Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="?colorElementPrimary"
+            android:button="@drawable/button_radio_inset"
+            android:buttonTint="?colorAccentPrimary"
+            android:padding="12dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textColor="?colorMessagePrimary"
+            tools:text="m/44’/501’/0’/0/0 (deprecated)" />
+    </RadioGroup>
+</LinearLayout>

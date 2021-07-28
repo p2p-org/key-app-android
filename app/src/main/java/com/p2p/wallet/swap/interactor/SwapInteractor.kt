@@ -2,6 +2,7 @@ package com.p2p.wallet.swap.interactor
 
 import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.swap.model.SwapResult
 import com.p2p.wallet.swap.repository.SwapLocalRepository
@@ -20,7 +21,8 @@ class SwapInteractor(
     private val swapRepository: SwapRepository,
     private val swapLocalRepository: SwapLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val secretKeyInteractor: SecretKeyInteractor
 ) {
 
     suspend fun loadAllPools() {
@@ -58,8 +60,9 @@ class SwapInteractor(
     ): SwapResult {
         val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA.toBase58())
         val accountAddressB = userInteractor.findAccountAddress(request.pool.mintB.toBase58())
-        val keys = userInteractor.getSecretKeys()
-        val signature = swapRepository.swap(keys, request, accountAddressA, accountAddressB)
+        val keys = secretKeyInteractor.getSecretKeys()
+        val path = secretKeyInteractor.getCurrentDerivationPath()
+        val signature = swapRepository.swap(path, keys, request, accountAddressA, accountAddressB)
         return SwapResult.Success(signature, receivedAmount, usdReceivedAmount, tokenSymbol)
     }
 

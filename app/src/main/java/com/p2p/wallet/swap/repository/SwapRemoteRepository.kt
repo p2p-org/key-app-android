@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.TokenSwap
 import org.p2p.solanaj.model.core.Account
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.types.TokenAccountBalance
 
@@ -26,12 +27,17 @@ class SwapRemoteRepository(
         rpcRepository.getTokenAccountBalance(publicKey)
 
     override suspend fun swap(
+        path: DerivationPath,
         keys: List<String>,
         request: SwapRequest,
         accountA: Token?,
         accountB: Token?
     ): String = withContext(Dispatchers.IO) {
-        val owner = Account.fromMnemonic(keys, "")
+        val owner = when (path) {
+            DerivationPath.BIP44 -> Account.fromBip44Mnemonic(keys, 0)
+            DerivationPath.BIP44CHANGE -> Account.fromBip44MnemonicWithChange(keys, 0)
+            DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(keys, 0)
+        }
 
         val tokenSwap = TokenSwap()
 

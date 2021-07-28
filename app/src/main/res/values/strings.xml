@@ -12,6 +12,7 @@
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
     <string name="common_usd">USD</string>
+    <string name="common_continue">Continue</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -43,6 +44,7 @@
     <string name="auth_next">Next</string>
     <string name="auth_have_wallet">I already have a wallet</string>
     <string name="auth_restore_manually">Restore manually</string>
+    <string name="auth_restore">Restore</string>
     <string name="auth_reset_and_try_again">Reset and try again</string>
     <string name="auth_create_new_wallet">Create new wallet</string>
     <string name="auth_reset_pin">Reset PIN with a seed phrase</string>
@@ -73,7 +75,11 @@
     <string name="auth_done">Done</string>
     <string name="auth_wrong_seed_phrase">Wrong order or seed phrase, please check it and try again</string>
     <string name="auth_wrong_seed_phrase_empty">Seed phrase is empty</string>
-
+    <string name="auth_derivable_accounts">Derivable accounts</string>
+    <string name="auth_derivable_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
+    <string name="auth_select_derivation_path">Select Derivation Path</string>
+    <string name="auth_derivation_path_info">By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet. To use an alternative path, try restoring an existing wallet.</string>
+    
     <!-- Main -->
     <plurals name="hidden_wallets">
         <item quantity="one">%d hidden wallet</item>

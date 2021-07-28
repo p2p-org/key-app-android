@@ -1,11 +1,7 @@
 package com.p2p.wallet.user.interactor
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.core.content.edit
 import com.google.gson.Gson
-import com.p2p.wallet.common.crypto.Base58Utils
-import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.repository.MainLocalRepository
@@ -18,27 +14,13 @@ import java.io.IOException
 import java.io.InputStream
 import java.math.BigDecimal
 
-private const val KEY_PHRASES = "KEY_PHRASES"
-
 class UserInteractor(
     private val context: Context,
     private val gson: Gson,
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
-    private val mainLocalRepository: MainLocalRepository,
-    private val tokenProvider: TokenKeyProvider,
-    private val sharedPreferences: SharedPreferences
+    private val mainLocalRepository: MainLocalRepository
 ) {
-
-    suspend fun createAndSaveAccount(keys: List<String>) {
-        val account = userRepository.createAccount(keys)
-        tokenProvider.secretKey = account.secretKey
-        tokenProvider.publicKey = Base58Utils.encode(account.publicKey.toByteArray())
-
-        sharedPreferences.edit {
-            putString(KEY_PHRASES, keys.joinToString(","))
-        }
-    }
 
     suspend fun loadTokenPrices(targetCurrency: String) {
         val tokens = TokenColors.getSymbols()
@@ -91,7 +73,4 @@ class UserInteractor(
         mainLocalRepository.getTokens().firstOrNull {
             it.mintAddress == mintAddress
         }
-
-    fun getSecretKeys(): List<String> =
-        sharedPreferences.getString(KEY_PHRASES, "").orEmpty().split(",")
 }
