@@ -1,4 +1,4 @@
-package com.p2p.wallet.main.model
+package com.p2p.wallet.restore.model
 
 data class SecretKey constructor(
     val text: String = ""

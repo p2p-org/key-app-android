@@ -14,7 +14,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.p2p.wallet.R
 import com.p2p.wallet.databinding.ItemSecretKeyBinding
-import com.p2p.wallet.main.model.SecretKey
+import com.p2p.wallet.restore.model.SecretKey
 import com.p2p.wallet.utils.showSoftKeyboard
 
 class SecretKeyViewHolder(

@@ -1,7 +1,7 @@
 package com.p2p.wallet.restore.ui.keys
 
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.main.model.SecretKey
+import com.p2p.wallet.restore.model.SecretKey
 import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.restore.model.SeedPhraseResult
 import kotlinx.coroutines.launch

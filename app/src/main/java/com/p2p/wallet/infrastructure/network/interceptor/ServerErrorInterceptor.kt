@@ -29,9 +29,7 @@ class ServerErrorInterceptor(
             throw IOException("Error reading response error body", e)
         }
 
-        return when (
-            val data = JSONTokener(responseBody).nextValue()
-        ) {
+        return when (val data = JSONTokener(responseBody).nextValue()) {
             is JSONObject -> parseObject(data, response, responseBody)
             is JSONArray -> parseArray(data, response, responseBody)
             else -> createResponse(response, responseBody)

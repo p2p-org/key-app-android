@@ -1,7 +1,7 @@
 package com.p2p.wallet.restore.interactor
 
 import com.p2p.wallet.R
-import com.p2p.wallet.main.model.SecretKey
+import com.p2p.wallet.restore.model.SecretKey
 import com.p2p.wallet.restore.model.SeedPhraseResult
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.mnemoticgenerator.English

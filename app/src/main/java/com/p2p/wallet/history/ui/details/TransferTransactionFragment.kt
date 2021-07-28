@@ -53,7 +53,7 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
 
             val isSend = transaction.type == TransferType.SEND
 
-            toolbar.setTitle(if (isSend) R.string.main_send else R.string.main_receive)
+            toolbar.setTitle(if (isSend) R.string.main_transfer else R.string.main_receive)
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.subtitle = transaction.date.toDateTimeString()
             toolbar.setTitle(R.string.main_send)

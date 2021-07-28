@@ -11,7 +11,7 @@ import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSecretKeyBinding
-import com.p2p.wallet.main.model.SecretKey
+import com.p2p.wallet.restore.model.SecretKey
 import com.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.hideKeyboard

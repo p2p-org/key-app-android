@@ -21,10 +21,10 @@ class EnvironmentManager(
         return parse(url)
     }
 
-    fun saveEnvironment(newEnvironment: String) {
-        sharedPreferences.edit { putString(KEY_BASE_URL, newEnvironment) }
+    fun saveEnvironment(newEnvironment: Environment) {
+        sharedPreferences.edit { putString(KEY_BASE_URL, newEnvironment.endpoint) }
 
-        onChanged?.invoke(parse(newEnvironment))
+        onChanged?.invoke(newEnvironment)
     }
 
     private fun parse(url: String): Environment = when (url) {

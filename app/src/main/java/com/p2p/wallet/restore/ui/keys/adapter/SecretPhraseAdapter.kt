@@ -2,7 +2,7 @@ package com.p2p.wallet.restore.ui.keys.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.p2p.wallet.main.model.SecretKey
+import com.p2p.wallet.restore.model.SecretKey
 
 class SecretPhraseAdapter(
     private val onSeedPhraseChanged: (List<SecretKey>) -> Unit

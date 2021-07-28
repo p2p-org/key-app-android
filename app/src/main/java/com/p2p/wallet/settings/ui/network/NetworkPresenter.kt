@@ -9,7 +9,7 @@ class NetworkPresenter(
 ) : BasePresenter<NetworkContract.View>(), NetworkContract.Presenter {
 
     override fun setNewEnvironment(environment: Environment) {
-        environmentManager.saveEnvironment(environment.endpoint)
+        environmentManager.saveEnvironment(environment)
     }
 
     override fun loadData() {

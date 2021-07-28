@@ -3,7 +3,7 @@ package com.p2p.wallet.restore.ui.keys
 import androidx.annotation.StringRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
-import com.p2p.wallet.main.model.SecretKey
+import com.p2p.wallet.restore.model.SecretKey
 
 interface SecretKeyContract {
 
