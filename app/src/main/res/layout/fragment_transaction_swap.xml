@@ -11,7 +11,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -79,6 +80,18 @@
                 app:layout_constraintTop_toBottomOf="@id/sourceImageView"
                 tools:text="- 440.00" />
 
+            <TextView
+                android:id="@+id/sourceSymbolTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                android:textColor="?colorElementSecondary"
+                app:layout_constraintEnd_toEndOf="@id/sourceTextView"
+                app:layout_constraintStart_toStartOf="@id/sourceTextView"
+                app:layout_constraintTop_toBottomOf="@id/sourceTextView"
+                tools:text="SUSHI" />
+
             <ImageView
                 android:id="@+id/operationImageView"
                 android:layout_width="32dp"
@@ -117,12 +130,24 @@
                 app:layout_constraintTop_toBottomOf="@id/destinationImageView"
                 tools:text="+ 1.0000" />
 
+            <TextView
+                android:id="@+id/destinationSymbolTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                android:textColor="?colorElementSecondary"
+                app:layout_constraintEnd_toEndOf="@id/destinationTextView"
+                app:layout_constraintStart_toStartOf="@id/destinationTextView"
+                app:layout_constraintTop_toBottomOf="@id/destinationTextView"
+                tools:text="BTC" />
+
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/tokensBarrier"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="sourceTextView,destinationTextView" />
+                app:constraint_referenced_ids="sourceSymbolTextView,destinationSymbolTextView" />
 
             <LinearLayout
                 android:id="@+id/statusView"
@@ -390,7 +415,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/bg_gray_secondary_rounded"
-                    android:text="@string/main_receive_show_details"
+                    android:text="@string/details_show_transaction_details"
                     android:textAllCaps="false"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorElementSecondary"

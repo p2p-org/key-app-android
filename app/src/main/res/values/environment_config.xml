@@ -9,6 +9,4 @@
 
     <string name="node_solana">https://solana-api.projectserum.com</string>
     <string name="node_mainnet">https://api.mainnet-beta.solana.com</string>
-    <string name="node_devnet">https://api.devnet.solana.com</string>
-    <string name="node_testnet">https://api.testnet.solana.com</string>
 </resources>

@@ -28,8 +28,6 @@ class EnvironmentManager(
     }
 
     private fun parse(url: String): Environment = when (url) {
-        Environment.TESTNET.endpoint -> Environment.TESTNET
-        Environment.DEVNET.endpoint -> Environment.DEVNET
         Environment.MAINNET.endpoint -> Environment.MAINNET
         else -> Environment.SOLANA
     }

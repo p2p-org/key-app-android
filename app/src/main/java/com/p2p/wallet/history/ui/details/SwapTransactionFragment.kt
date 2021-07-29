@@ -18,6 +18,8 @@ import com.p2p.wallet.databinding.FragmentTransactionSwapBinding
 import com.p2p.wallet.history.model.Transaction
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.dip
+import com.p2p.wallet.utils.edgetoedge.Edge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.showUrlInCustomTabs
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -49,12 +51,19 @@ class SwapTransactionFragment : BaseFragment(R.layout.fragment_transaction_swap)
             .listener(SvgSoftwareLayerSetter())
 
         with(binding) {
+            edgeToEdge {
+                toolbar.fit { Edge.TopArc }
+                detailsButton.fitMargin { Edge.BottomArc }
+            }
+
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.subtitle = transaction.date.toDateTimeString()
             loadImage(sourceImageView, transaction.sourceTokenUrl)
             loadImage(destinationImageView, transaction.destinationTokenUrl)
-            sourceTextView.text = "- ${transaction.amountA} ${transaction.sourceSymbol}"
-            destinationTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
+            sourceTextView.text = "- ${transaction.amountA}"
+            sourceSymbolTextView.text = transaction.sourceSymbol
+            destinationTextView.text = "+ ${transaction.amountB}"
+            destinationSymbolTextView.text = transaction.destinationSymbol
 
             fromTextView.text = transaction.sourceAddress
             toTextView.text = transaction.destinationAddress
@@ -91,9 +100,9 @@ class SwapTransactionFragment : BaseFragment(R.layout.fragment_transaction_swap)
                 blockNumberTextView.isVisible = !isVisible
 
                 val resId = if (isVisible) {
-                    R.string.main_receive_show_details
+                    R.string.details_show_transaction_details
                 } else {
-                    R.string.main_receive_hide_details
+                    R.string.details_hide_transaction_details
                 }
                 detailsButton.setText(resId)
 

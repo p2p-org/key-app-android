@@ -32,8 +32,6 @@ class NetworkFragment :
 
             mainnetButton.text = getString(R.string.node_mainnet)
             solanaButton.text = getString(R.string.node_solana)
-            devnetButton.text = getString(R.string.node_devnet)
-            testnetButton.text = getString(R.string.node_testnet)
         }
 
         presenter.loadData()
@@ -42,9 +40,7 @@ class NetworkFragment :
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
         val environment = when (checkedId) {
             R.id.mainnetButton -> Environment.MAINNET
-            R.id.solanaButton -> Environment.SOLANA
-            R.id.devnetButton -> Environment.DEVNET
-            else -> Environment.TESTNET
+            else -> Environment.SOLANA
         }
         presenter.setNewEnvironment(environment)
     }
@@ -53,8 +49,6 @@ class NetworkFragment :
         val checkedId = when (environment) {
             Environment.SOLANA -> R.id.solanaButton
             Environment.MAINNET -> R.id.mainnetButton
-            Environment.DEVNET -> R.id.devnetButton
-            Environment.TESTNET -> R.id.testnetButton
         }
 
         binding.networksGroup.setOnCheckedChangeListener(null)
