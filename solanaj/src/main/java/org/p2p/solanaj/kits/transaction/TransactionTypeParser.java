@@ -71,6 +71,8 @@ public class TransactionTypeParser {
                     }
                 }
 
+                if (instructionParsed.isEmpty()) return;
+
                 int firstIndex = 0;
                 int secondIndex = 1;
                 if (instructionParsed.size() > 2) {

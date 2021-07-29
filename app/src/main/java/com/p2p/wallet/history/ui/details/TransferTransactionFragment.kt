@@ -21,6 +21,8 @@ import com.p2p.wallet.history.model.TransferType
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.dip
+import com.p2p.wallet.utils.edgetoedge.Edge
+import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.showUrlInCustomTabs
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -47,6 +49,11 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            edgeToEdge {
+                toolbar.fit { Edge.TopArc }
+                detailsButton.fitMargin { Edge.BottomArc }
+            }
+
             requestBuilder = Glide.with(requireContext())
                 .`as`(PictureDrawable::class.java)
                 .listener(SvgSoftwareLayerSetter())
@@ -56,10 +63,12 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
             toolbar.setTitle(if (isSend) R.string.main_transfer else R.string.main_receive)
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.subtitle = transaction.date.toDateTimeString()
-            toolbar.setTitle(R.string.main_send)
 
-            loadImage(sourceImageView, transaction.tokenData.iconUrl.orEmpty())
-            loadImage(destinationImageView, transaction.tokenData.iconUrl.orEmpty())
+            if (isSend) {
+                loadImage(sourceImageView, transaction.tokenData.iconUrl.orEmpty())
+            } else {
+                loadImage(destinationImageView, transaction.tokenData.iconUrl.orEmpty())
+            }
 
             val total = if (isSend) {
                 "- ${transaction.getFormattedTotal()}"
@@ -78,8 +87,8 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
             sourceSymbolTextView.text = transaction.tokenData.symbol
             destinationSymbolTextView.text = transaction.tokenData.symbol
 
-            sourceAddressTextView.text = cutAddress(transaction.senderAddress)
-            destinationAddressTextView.text = cutAddress(transaction.destination)
+            sourceAddressTextView.text = transaction.senderAddress
+            destinationAddressTextView.text = transaction.destination
 
             sourceViewImageView.setOnClickListener {
                 requireContext().copyToClipBoard(transaction.senderAddress)
@@ -123,9 +132,9 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
                 blockNumberTextView.isVisible = !isVisible
 
                 val resId = if (isVisible) {
-                    R.string.main_receive_show_details
+                    R.string.details_show_transaction_details
                 } else {
-                    R.string.main_receive_hide_details
+                    R.string.details_hide_transaction_details
                 }
                 detailsButton.setText(resId)
 
@@ -144,12 +153,5 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
         } else {
             Glide.with(imageView).load(url).into(imageView)
         }
-    }
-
-    @Suppress("MagicNumber")
-    private fun cutAddress(address: String): String {
-        val firstSix = address.take(4)
-        val lastFour = address.takeLast(4)
-        return "$firstSix...$lastFour"
     }
 }

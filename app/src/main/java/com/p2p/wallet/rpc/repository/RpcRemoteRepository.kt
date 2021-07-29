@@ -23,8 +23,6 @@ import java.util.HashMap
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
     private val mainnetApi: RpcApi,
-    private val devnetApi: RpcApi,
-    private val testnetApi: RpcApi,
     environmentManager: EnvironmentManager
 ) : RpcRepository {
 
@@ -38,8 +36,6 @@ class RpcRemoteRepository(
     private fun createRpcApi(environment: Environment): RpcApi = when (environment) {
         Environment.SOLANA -> serumApi
         Environment.MAINNET -> mainnetApi
-        Environment.DEVNET -> devnetApi
-        Environment.TESTNET -> testnetApi
     }
 
     override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {

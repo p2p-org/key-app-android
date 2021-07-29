@@ -17,6 +17,7 @@ import com.p2p.wallet.databinding.ItemTransactionBinding
 import com.p2p.wallet.history.model.Transaction
 import com.p2p.wallet.history.model.HistoryItem
 import com.p2p.wallet.history.model.TransferType
+import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.dip
 
 class TransactionViewHolder(
@@ -51,6 +52,9 @@ class TransactionViewHolder(
     fun onBind(item: HistoryItem.TransactionItem) {
         when (item.transaction) {
             is Transaction.Transfer -> {
+                tokenImageView.isVisible = true
+                swapView.isVisible = false
+
                 val isSend = item.transaction.type == TransferType.SEND
                 val iconResId = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
                 tokenImageView.setImageResource(iconResId)
@@ -81,6 +85,8 @@ class TransactionViewHolder(
 
                 if (!isSend) {
                     valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+                } else {
+                    valueTextView.setTextColor(valueTextView.colorFromTheme(R.attr.colorMessagePrimary))
                 }
             }
             is Transaction.Swap -> {
@@ -96,6 +102,8 @@ class TransactionViewHolder(
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
             }
             is Transaction.CloseAccount -> {
+                tokenImageView.isVisible = true
+                swapView.isVisible = false
                 tokenImageView.setImageResource(R.drawable.ic_trash)
                 typeTextView.setText(R.string.main_close_account)
                 addressTextView.text = "${item.transaction.tokenSymbol} Closed"
@@ -103,6 +111,8 @@ class TransactionViewHolder(
                 valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
             }
             is Transaction.Unknown -> {
+                tokenImageView.isVisible = true
+                swapView.isVisible = false
                 tokenImageView.setImageResource(R.drawable.ic_no_money)
                 typeTextView.setText(R.string.main_unknown)
             }

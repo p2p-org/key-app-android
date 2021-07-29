@@ -35,7 +35,6 @@
                 android:layout_marginTop="8dp"
                 android:background="?colorElementPrimary"
                 android:button="@drawable/button_radio_inset"
-                android:checked="true"
                 android:padding="12dp"
                 android:text="@string/node_solana"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
@@ -49,28 +48,6 @@
                 android:button="@drawable/button_radio_inset"
                 android:padding="12dp"
                 android:text="@string/node_mainnet"
-                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
-
-            <RadioButton
-                android:id="@+id/devnetButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:background="?colorElementPrimary"
-                android:button="@drawable/button_radio_inset"
-                android:padding="12dp"
-                android:text="@string/node_devnet"
-                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
-
-            <RadioButton
-                android:id="@+id/testnetButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:background="?colorElementPrimary"
-                android:button="@drawable/button_radio_inset"
-                android:padding="12dp"
-                android:text="@string/node_testnet"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
         </RadioGroup>
     </LinearLayout>

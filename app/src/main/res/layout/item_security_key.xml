@@ -4,18 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="12dp"
-    android:layout_marginTop="12dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="4dp"
     android:background="@drawable/bg_security_key"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="2dp">
 
     <TextView
         android:id="@+id/indexTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
         android:gravity="center"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="?colorElementSecondary"
         tools:text="3. " />
 
@@ -23,7 +25,9 @@
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
         android:gravity="center"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+        android:paddingVertical="4dp"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         tools:text="Austin" />
 </LinearLayout>

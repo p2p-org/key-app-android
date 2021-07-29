@@ -1,15 +1,21 @@
 package com.p2p.wallet.main.ui.main.adapter
 
+import android.graphics.drawable.PictureDrawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
+import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.databinding.ItemTokenHiddenBinding
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState
-import com.p2p.wallet.main.model.Token
 
 class TokenHiddenViewHolder(
     binding: ItemTokenHiddenBinding,
@@ -29,6 +35,14 @@ class TokenHiddenViewHolder(
         onEditClicked = onEditClicked,
         onDeleteClicked = onDeleteClicked
     )
+
+    companion object {
+        private const val IMAGE_SIZE = 56
+    }
+
+    private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
+        .`as`(PictureDrawable::class.java)
+        .listener(SvgSoftwareLayerSetter())
 
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView
@@ -50,7 +64,7 @@ class TokenHiddenViewHolder(
         itemView.isVisible = true
         val data = item.token
         if (!data.logoUrl.isNullOrEmpty()) {
-            Glide.with(tokenImageView).load(data.logoUrl).into(tokenImageView)
+            loadImage(tokenImageView, data.logoUrl)
         }
         wrappedImageView.isVisible = data.isWrapped
         nameTextView.text = data.tokenSymbol
@@ -62,5 +76,17 @@ class TokenHiddenViewHolder(
         hideImageView.setOnClickListener { onDeleteClicked(data) }
         editImageView.setOnClickListener { onEditClicked(data) }
         contentView.setOnClickListener { onItemClicked(data) }
+    }
+
+    private fun loadImage(imageView: ImageView, url: String) {
+        if (url.contains(".svg")) {
+            requestBuilder
+                .load(Uri.parse(url))
+                .apply(RequestOptions().override(IMAGE_SIZE, IMAGE_SIZE))
+                .centerCrop()
+                .into(imageView)
+        } else {
+            Glide.with(imageView).load(url).into(imageView)
+        }
     }
 }

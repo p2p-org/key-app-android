@@ -153,7 +153,7 @@
     <string name="main_receive_help">Help</string>
     <string name="main_receive_spl_title">SOL and SPL Tokens</string>
     <string name="main_receive_spl_info">The Solana Program Library  (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain. \n\nSimilar to ERC20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications. SPL Tokens can be traded on Serum, a Solana based decentralized exchange and FTX.</string>
-    <string name="main_tokens_available_count">+30</string>
+    <string name="main_tokens_available_count">30+</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -173,6 +173,8 @@
     <string name="details_completed">Completed</string>
     <string name="details_value">Value</string>
     <string name="details_paid_by_p2p">Paid by p2p.org</string>
+    <string name="details_show_transaction_details">Show transaction details</string>
+    <string name="details_hide_transaction_details">Hide transaction details</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
