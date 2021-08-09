@@ -54,7 +54,7 @@ class DerivableAccountsFragment :
             accountsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             accountsRecyclerView.adapter = accountsAdapter
 
-            /* By default, we should create Bip44 account */
+            /* By default, we should create Bip44Change account */
             derivationPathTextView.text = DerivationPath.BIP44CHANGE.stringValue
             derivationPathTextView.setOnClickListener { presenter.loadCurrentPath() }
             restoreButton.setOnClickListener { presenter.createAndSaveAccount() }
@@ -81,5 +81,6 @@ class DerivableAccountsFragment :
     override fun showLoading(isLoading: Boolean) {
         binding.progressBar.isVisible = isLoading
         binding.accountsRecyclerView.isInvisible = isLoading
+        binding.restoreButton.isEnabled = !isLoading
     }
 }

@@ -1,16 +1,15 @@
 package com.p2p.wallet.swap.repository
 
-import com.p2p.wallet.common.network.Constants
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.model.SwapRequest
-import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.TokenSwap
 import org.p2p.solanaj.model.core.Account
-import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.types.TokenAccountBalance
 
@@ -48,7 +47,7 @@ class SwapRemoteRepository(
             amountIn = request.amount,
             balanceA = request.balanceA,
             balanceB = request.balanceB,
-            wrappedSolAccount = Constants.WRAPPED_SOL_MINT.toPublicKey(),
+            wrappedSolAccount = Token.SOL_MINT.toPublicKey(),
             accountAddressA = accountA?.publicKey?.toPublicKey(),
             accountAddressB = accountB?.publicKey?.toPublicKey(),
             getAccountInfo = { rpcRepository.getAccountInfo(it) },
