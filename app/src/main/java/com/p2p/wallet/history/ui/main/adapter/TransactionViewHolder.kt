@@ -14,8 +14,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.p2p.wallet.R
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.databinding.ItemTransactionBinding
-import com.p2p.wallet.history.model.Transaction
 import com.p2p.wallet.history.model.HistoryItem
+import com.p2p.wallet.history.model.Transaction
 import com.p2p.wallet.history.model.TransferType
 import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.dip
@@ -48,76 +48,85 @@ class TransactionViewHolder(
     private val sourceImageView = binding.sourceImageView
     private val destinationImageView = binding.destinationImageView
 
-    @SuppressLint("SetTextI18n")
     fun onBind(item: HistoryItem.TransactionItem) {
         when (item.transaction) {
-            is Transaction.Transfer -> {
-                tokenImageView.isVisible = true
-                swapView.isVisible = false
-
-                val isSend = item.transaction.type == TransferType.SEND
-                val iconResId = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
-                tokenImageView.setImageResource(iconResId)
-
-                typeTextView.setText(if (isSend) R.string.main_transfer else R.string.main_receive)
-
-                val address = if (isSend) {
-                    "to ${cutAddress(item.transaction.destination)}"
-                } else {
-                    "from ${cutAddress(item.transaction.senderAddress)}"
-                }
-                addressTextView.text = address
-
-                val value = if (isSend) {
-                    "- ${item.transaction.getFormattedAmount()}"
-                } else {
-                    "+ ${item.transaction.getFormattedAmount()}"
-                }
-                valueTextView.text = value
-
-                val total = if (isSend) {
-                    "- ${item.transaction.getFormattedTotal()}"
-                } else {
-                    "+ ${item.transaction.getFormattedTotal()}"
-                }
-
-                totalTextView.text = total
-
-                if (!isSend) {
-                    valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
-                } else {
-                    valueTextView.setTextColor(valueTextView.colorFromTheme(R.attr.colorMessagePrimary))
-                }
-            }
-            is Transaction.Swap -> {
-                tokenImageView.isVisible = false
-                swapView.isVisible = true
-
-                loadImage(sourceImageView, item.transaction.sourceTokenUrl)
-                loadImage(destinationImageView, item.transaction.destinationTokenUrl)
-                typeTextView.setText(R.string.main_swap)
-                valueTextView.text = "+ ${item.transaction.amountReceivedInUsd} $"
-                totalTextView.text = "+ ${item.transaction.amountB} ${item.transaction.destinationSymbol}"
-                addressTextView.text = "${item.transaction.sourceSymbol} to ${item.transaction.destinationSymbol}"
-                valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
-            }
-            is Transaction.CloseAccount -> {
-                tokenImageView.isVisible = true
-                swapView.isVisible = false
-                tokenImageView.setImageResource(R.drawable.ic_trash)
-                typeTextView.setText(R.string.main_close_account)
-                addressTextView.text = "${item.transaction.tokenSymbol} Closed"
-
-                valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
-            }
-            is Transaction.Unknown -> {
-                tokenImageView.isVisible = true
-                swapView.isVisible = false
-                tokenImageView.setImageResource(R.drawable.ic_no_money)
-                typeTextView.setText(R.string.main_unknown)
-            }
+            is Transaction.Transfer -> showTransferTransaction(item.transaction)
+            is Transaction.Swap -> showSwapTransaction(item.transaction)
+            is Transaction.CloseAccount -> showCloseTransaction(item.transaction)
+            is Transaction.Unknown -> showUnknownTransaction()
         }
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
+    }
+
+    private fun showUnknownTransaction() {
+        tokenImageView.isVisible = true
+        swapView.isVisible = false
+        tokenImageView.setImageResource(R.drawable.ic_no_money)
+        typeTextView.setText(R.string.main_unknown)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showCloseTransaction(transaction: Transaction.CloseAccount) {
+        tokenImageView.isVisible = true
+        swapView.isVisible = false
+        tokenImageView.setImageResource(R.drawable.ic_trash)
+        typeTextView.setText(R.string.main_close_account)
+        addressTextView.text = "${transaction.tokenSymbol} Closed"
+
+        valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showSwapTransaction(transaction: Transaction.Swap) {
+        tokenImageView.isVisible = false
+        swapView.isVisible = true
+
+        loadImage(sourceImageView, transaction.sourceTokenUrl)
+        loadImage(destinationImageView, transaction.destinationTokenUrl)
+        typeTextView.setText(R.string.main_swap)
+        valueTextView.text = "+ ${transaction.amountReceivedInUsd} $"
+        totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
+        addressTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
+        valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+    }
+
+    private fun showTransferTransaction(transaction: Transaction.Transfer) {
+        tokenImageView.isVisible = true
+        swapView.isVisible = false
+
+        val isSend = transaction.type == TransferType.SEND
+        val iconResId = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
+        tokenImageView.setImageResource(iconResId)
+
+        typeTextView.setText(if (isSend) R.string.main_transfer else R.string.main_receive)
+
+        val address = if (isSend) {
+            "to ${cutAddress(transaction.destination)}"
+        } else {
+            "from ${cutAddress(transaction.senderAddress)}"
+        }
+        addressTextView.text = address
+
+        val value = if (isSend) {
+            "- ${transaction.getFormattedAmount()}"
+        } else {
+            "+ ${transaction.getFormattedAmount()}"
+        }
+        valueTextView.text = value
+
+        val total = if (isSend) {
+            "- ${transaction.getFormattedTotal()}"
+        } else {
+            "+ ${transaction.getFormattedTotal()}"
+        }
+
+        totalTextView.text = total
+
+        if (!isSend) {
+            valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+        } else {
+            valueTextView.setTextColor(valueTextView.colorFromTheme(R.attr.colorMessagePrimary))
+        }
     }
 
     @Suppress("MagicNumber")

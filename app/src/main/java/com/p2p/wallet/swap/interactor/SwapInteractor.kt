@@ -1,6 +1,5 @@
 package com.p2p.wallet.swap.interactor
 
-import com.p2p.wallet.common.network.Constants
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.swap.model.SwapRequest
@@ -26,7 +25,7 @@ class SwapInteractor(
 ) {
 
     suspend fun loadAllPools() {
-        val pools = swapRepository.loadPoolInfoList(Constants.SWAP_PROGRAM_ID)
+        val pools = swapRepository.loadPoolInfoList(tokenKeyProvider.swapProgramId)
         swapLocalRepository.setPools(pools)
     }
 
