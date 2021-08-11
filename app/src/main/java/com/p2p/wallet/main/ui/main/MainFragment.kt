@@ -11,8 +11,11 @@ import com.github.mikephil.charting.data.PieEntry
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentMainBinding
+import com.p2p.wallet.history.ui.main.TokenDetailsFragment
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState
+import com.p2p.wallet.main.ui.buy.BuyFragment
 import com.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import com.p2p.wallet.main.ui.options.TokenOptionsDialog
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
@@ -20,8 +23,6 @@ import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.settings.ui.settings.SettingsFragment
 import com.p2p.wallet.swap.ui.SwapFragment
-import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.history.ui.main.TokenDetailsFragment
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
@@ -65,6 +66,10 @@ class MainFragment :
                 presenter.refresh()
             }
 
+            buyImageView.setOnClickListener {
+                replaceFragment(BuyFragment.create())
+            }
+
             receiveImageView.setOnClickListener {
                 replaceFragment(ReceiveFragment.create(null))
             }
@@ -102,10 +107,6 @@ class MainFragment :
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
-    }
-
-    override fun showHorizontalLoading(isLoading: Boolean) {
-        binding.horizontalProgressBar.isVisible = isLoading
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

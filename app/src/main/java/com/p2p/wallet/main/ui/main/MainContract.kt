@@ -15,7 +15,6 @@ interface MainContract {
         fun showChart(tokens: List<Token>)
         fun showLoading(isLoading: Boolean)
         fun showRefreshing(isRefreshing: Boolean)
-        fun showHorizontalLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
