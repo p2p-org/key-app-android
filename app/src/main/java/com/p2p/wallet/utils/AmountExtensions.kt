@@ -17,18 +17,16 @@ fun String.toBigDecimalOrZero(): BigDecimal {
     return removedZeros.toBigDecimalOrNull() ?: BigDecimal.ZERO
 }
 
-fun Double?.valueOrZero(): BigDecimal = BigDecimal(this ?: 0.0)
-
 fun Int.toPowerValue(): BigDecimal =
     BigDecimal(POWER_VALUE.pow(this))
 
 fun BigDecimal.scaleShort(): BigDecimal =
     this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
-fun BigDecimal.scaleAmount(): BigDecimal =
+fun BigDecimal.scaleMedium(): BigDecimal =
     if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
-fun BigDecimal.scalePrice(): BigDecimal =
+fun BigDecimal.scaleLong(): BigDecimal =
     if (this.isZero()) this else this.setScale(SCALE_VALUE_LONG, RoundingMode.HALF_EVEN).stripTrailingZeros()
 
 fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =

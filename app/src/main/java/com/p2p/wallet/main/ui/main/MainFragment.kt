@@ -67,7 +67,7 @@ class MainFragment :
             }
 
             buyImageView.setOnClickListener {
-                replaceFragment(BuyFragment.create())
+                replaceFragment(BuyFragment.create(null))
             }
 
             receiveImageView.setOnClickListener {

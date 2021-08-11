@@ -54,6 +54,20 @@
             android:padding="4dp">
 
             <ImageView
+                android:id="@+id/buyImageView"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="20dp"
+                android:padding="16dp"
+                android:src="@drawable/ic_plus"
+                tools:ignore="ContentDescription" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
                 android:id="@+id/receiveImageView"
                 android:layout_width="56dp"
                 android:layout_height="56dp"

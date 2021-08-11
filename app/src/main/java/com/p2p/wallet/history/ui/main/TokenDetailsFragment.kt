@@ -19,6 +19,7 @@ import com.p2p.wallet.history.ui.details.SwapTransactionFragment
 import com.p2p.wallet.history.ui.details.TransferTransactionFragment
 import com.p2p.wallet.history.ui.main.adapter.HistoryAdapter
 import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.main.ui.buy.BuyFragment
 import com.p2p.wallet.main.ui.options.TokenOptionsDialog
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
@@ -78,6 +79,10 @@ class TokenDetailsFragment :
             toolbar.title = token.tokenSymbol
             toolbar.subtitle = token.tokenName
             toolbar.setNavigationOnClickListener { popBackStack() }
+
+            buyImageView.setOnClickListener {
+                addFragment(BuyFragment.create(token))
+            }
 
             receiveImageView.setOnClickListener {
                 addFragment(ReceiveFragment.create(token))

@@ -2,9 +2,11 @@ package com.p2p.wallet.infrastructure.network.environment
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.core.content.edit
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
+import com.p2p.wallet.main.model.Token
 import org.p2p.solanaj.rpc.Environment
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
@@ -14,17 +16,25 @@ class EnvironmentManager(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    companion object {
-        private const val TRANSAK_URL = "https://global.transak.com"
-    }
-
     private var onChanged: ((Environment) -> Unit)? = null
 
-    fun getTransakUrl(): String {
+    fun getTransakUrl(token: Token): String {
         val apiKey = context.getString(R.string.transakApiKey)
-        val environment = if (BuildConfig.DEBUG) "STAGING" else "PRODUCTION"
-        val domainName = "https://p2p.org"
-        return "$TRANSAK_URL?apiKey=$apiKey&environment=$environment&hostURL=$domainName"
+        val baseUrl = context.getString(R.string.transakBaseUrl)
+        val symbol = if (token.isUSDC) Token.USDC_SYMBOL else Token.SOL_SYMBOL
+        val environment = if (BuildConfig.DEBUG) "staging" else "production"
+        return Uri.Builder()
+            .scheme("https")
+            .authority(baseUrl)
+            .appendQueryParameter("networks", "mainnet")
+            .appendQueryParameter("environment", environment)
+            .appendQueryParameter("apiKey", apiKey)
+            .appendQueryParameter("defaultCryptoCurrency", symbol)
+            .appendQueryParameter("walletAddress", token.publicKey)
+            .appendQueryParameter("disableWalletAddressForm", "true")
+            .appendQueryParameter("hideMenu", "true")
+            .build()
+            .toString()
     }
 
     fun setOnEnvironmentListener(onChanged: (Environment) -> Unit) {

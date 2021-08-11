@@ -32,9 +32,9 @@ object TokenConverter {
         val total = data.parsed.info.tokenAmount.amount.toBigInteger()
         return Token(
             publicKey = account.pubkey,
-            mintAddress = mintAddress,
             tokenSymbol = tokenData.symbol,
             decimals = tokenData.decimals,
+            mintAddress = mintAddress,
             tokenName = tokenData.name,
             logoUrl = tokenData.iconUrl,
             price = total.fromLamports(tokenData.decimals).times(price.price),
@@ -64,8 +64,8 @@ object TokenConverter {
 
     fun fromDatabase(entity: TokenEntity): Token =
         Token(
-            tokenSymbol = entity.tokenSymbol,
             publicKey = entity.publicKey,
+            tokenSymbol = entity.tokenSymbol,
             decimals = entity.decimals,
             mintAddress = entity.mintAddress,
             tokenName = entity.tokenName,

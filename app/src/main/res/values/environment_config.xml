@@ -9,7 +9,8 @@
 
     <string name="node_solana">https://solana-api.projectserum.com</string>
     <string name="node_mainnet">https://api.mainnet-beta.solana.com</string>
-    
+
+    <string name="transakBaseUrl">staging-global.transak.com</string>
     <string name="transakApiKey" tools:ignore="TypographyDashes">bef19a55-6870-452a-b997-3d63eb59205d</string>
     <string name="transakApiSecret" tools:ignore="TypographyDashes,Typos">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBUElfS0VZIjoiYmVmMTlhNTUtNjg3MC00NTJhLWI5OTctM2Q2M2ViNTkyMDVkIiwiaWF0IjoxNjI2MzYzMzg0fQ.iSj4iY1i5Erem1MI33nM87a8TjibF08Qs6M_54X_rXo</string>
 </resources>

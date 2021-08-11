@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <string name="transakBaseUrl">global.transak.com</string>
     <string name="transakApiKey" tools:ignore="TypographyDashes">8c244c47-122b-4158-8a2b-9c0551e31b89</string>
     <string name="transakApiSecret" tools:ignore="TypographyDashes,Typos">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBUElfS0VZIjoiOGMyNDRjNDctMTIyYi00MTU4LThhMmItOWMwNTUxZTMxYjg5IiwiaWF0IjoxNjI2MzYzMzg0fQ.DRBE7GXEa_fEWtcfZxAdYcf5ixOWcxUoGhDz0AOBxhA</string>
 </resources>

@@ -6,7 +6,7 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenConverter
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.rpc.repository.RpcRepository
-import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,7 +38,7 @@ class UserRepositoryImpl(
                     list.mapNotNull { symbol ->
                         val tokenObject = json.getAsJsonObject(symbol) ?: return@mapNotNull null
                         val price = tokenObject.getAsJsonPrimitive(Token.USD_SYMBOL).asBigDecimal
-                        TokenPrice(symbol, price.scaleAmount())
+                        TokenPrice(symbol, price.scaleMedium())
                     }
                 }
                 .flatten()
@@ -73,6 +73,6 @@ class UserRepositoryImpl(
     override suspend fun getRate(source: String, destination: String): BigDecimal {
         val json = compareApi.getPrice(source, destination)
         val price = json.getAsJsonPrimitive(destination)?.asBigDecimal ?: BigDecimal.ZERO
-        return TokenPrice(source, price.scaleAmount()).price
+        return TokenPrice(source, price.scaleMedium()).price
     }
 }

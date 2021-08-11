@@ -2,7 +2,7 @@ package com.p2p.wallet.history.model
 
 import android.os.Parcelable
 import com.p2p.wallet.user.model.TokenData
-import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.scaleMedium
 import kotlinx.parcelize.Parcelize
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
@@ -51,9 +51,9 @@ sealed class Transaction(
         val fee: BigInteger
     ) : Transaction(date) {
 
-        fun getFormattedAmount(): String = "${amount.scaleAmount()} $"
+        fun getFormattedAmount(): String = "${amount.scaleMedium()} $"
 
-        fun getFormattedTotal(): String = "${total.scaleAmount()} ${tokenData.symbol}"
+        fun getFormattedTotal(): String = "${total.scaleMedium()} ${tokenData.symbol}"
     }
 
     @Parcelize

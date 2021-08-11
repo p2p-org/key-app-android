@@ -5,24 +5,36 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.core.view.isInvisible
 import com.p2p.wallet.R
-import com.p2p.wallet.common.mvp.BaseFragment
+import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentBuyBinding
-import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
+import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
-class BuyFragment : BaseFragment(R.layout.fragment_buy) {
+class BuyFragment :
+    BaseMvpFragment<BuyContract.View, BuyContract.Presenter>(R.layout.fragment_buy),
+    BuyContract.View {
 
     companion object {
-
-        fun create() = BuyFragment()
+        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+        fun create(token: Token?) = BuyFragment().withArgs(
+            EXTRA_TOKEN to token
+        )
     }
 
-    private val environmentManager: EnvironmentManager by inject()
+    private val token: Token? by args(EXTRA_TOKEN)
+
+    override val presenter: BuyContract.Presenter by inject {
+        parametersOf(token)
+    }
 
     private val binding: FragmentBuyBinding by viewBinding()
 
@@ -40,9 +52,14 @@ class BuyFragment : BaseFragment(R.layout.fragment_buy) {
                 }
             }
 
-            val transakUrl = environmentManager.getTransakUrl()
-            Timber.d("### url $transakUrl")
-            webView.loadUrl(transakUrl)
+            binding.webView.webViewClient = WebViewClient()
         }
+
+        presenter.loadData()
+    }
+
+    override fun openWebView(url: String) {
+        Timber.d("### url $url")
+        binding.webView.loadUrl(url)
     }
 }
