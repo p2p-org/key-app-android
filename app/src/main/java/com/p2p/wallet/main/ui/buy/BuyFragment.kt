@@ -17,7 +17,6 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 
 class BuyFragment :
     BaseMvpFragment<BuyContract.View, BuyContract.Presenter>(R.layout.fragment_buy),
