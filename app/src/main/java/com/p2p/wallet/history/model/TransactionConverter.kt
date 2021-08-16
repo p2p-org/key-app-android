@@ -3,7 +3,7 @@ package com.p2p.wallet.history.model
 import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.TokenData
 import com.p2p.wallet.utils.fromLamports
-import com.p2p.wallet.utils.scaleAmount
+import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toPowerValue
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
@@ -33,16 +33,16 @@ object TransactionConverter {
             amountA = response.amountA
                 .toBigInteger()
                 .fromLamports(sourceData.decimals)
-                .scaleAmount(),
+                .scaleMedium(),
             amountB = response.amountB
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
-                .scaleAmount(),
+                .scaleMedium(),
             amountReceivedInUsd = response.amountB
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
                 .times(destinationRate.price)
-                .scaleAmount(),
+                .scaleMedium(),
             sourceSymbol = sourceData.symbol,
             sourceTokenUrl = sourceData.iconUrl.orEmpty(),
             destinationSymbol = destinationData.symbol,
@@ -69,7 +69,7 @@ object TransactionConverter {
         }
         val amount = BigDecimal(response.amount).toBigInteger()
             .fromLamports(response.decimals)
-            .scaleAmount()
+            .scaleMedium()
             .times(rate.price)
 
         val date = ZonedDateTime.ofInstant(

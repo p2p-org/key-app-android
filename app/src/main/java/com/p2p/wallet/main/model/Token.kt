@@ -5,7 +5,7 @@ import androidx.annotation.ColorRes
 import com.p2p.wallet.R
 import com.p2p.wallet.user.model.TokenData
 import com.p2p.wallet.utils.isZero
-import com.p2p.wallet.utils.scalePrice
+import com.p2p.wallet.utils.scaleLong
 import com.p2p.wallet.utils.scaleShort
 import com.p2p.wallet.utils.toPowerValue
 import kotlinx.parcelize.IgnoredOnParcel
@@ -14,8 +14,8 @@ import java.math.BigDecimal
 
 @Parcelize
 data class Token constructor(
-    val tokenSymbol: String,
     val publicKey: String,
+    val tokenSymbol: String,
     val decimals: Int,
     val mintAddress: String,
     val tokenName: String,
@@ -37,8 +37,12 @@ data class Token constructor(
         get() = tokenSymbol == SOL_SYMBOL
 
     @IgnoredOnParcel
+    val isUSDC: Boolean
+        get() = tokenSymbol == USDC_SYMBOL
+
+    @IgnoredOnParcel
     val totalInUsd: BigDecimal
-        get() = total.multiply(usdRate).scalePrice()
+        get() = total.multiply(usdRate).scaleLong()
 
     fun getVisibilityIcon(isZerosHidden: Boolean): Int {
         return if (isDefinitelyHidden(isZerosHidden)) {
@@ -69,6 +73,7 @@ data class Token constructor(
     companion object {
         const val USD_SYMBOL = "USD"
         const val SOL_SYMBOL = "SOL"
+        const val USDC_SYMBOL = "USDC"
         const val SOL_MINT = "So11111111111111111111111111111111111111112"
 
         fun createSOL(
@@ -79,14 +84,14 @@ data class Token constructor(
         ): Token {
             val total: BigDecimal = BigDecimal(amount).divide(tokenData.decimals.toPowerValue())
             return Token(
-                tokenSymbol = tokenData.symbol,
-                tokenName = tokenData.name,
-                mintAddress = tokenData.mintAddress,
-                logoUrl = tokenData.iconUrl,
                 publicKey = publicKey,
+                tokenSymbol = tokenData.symbol,
                 decimals = tokenData.decimals,
-                total = total,
+                mintAddress = tokenData.mintAddress,
+                tokenName = tokenData.name,
+                logoUrl = tokenData.iconUrl,
                 price = total.multiply(exchangeRate),
+                total = total,
                 color = R.color.chartSOL,
                 usdRate = exchangeRate,
                 visibility = TokenVisibility.SHOWN,

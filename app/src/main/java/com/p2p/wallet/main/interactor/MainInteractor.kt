@@ -1,10 +1,10 @@
 package com.p2p.wallet.main.interactor
 
 import com.p2p.wallet.R
-import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.history.model.Transaction
 import com.p2p.wallet.history.model.TransactionConverter
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
@@ -106,22 +106,22 @@ class MainInteractor(
 
         val result = if (token.isSOL) {
             feeRelayerRepository.sendSolToken(
-                tokenKeyProvider.publicKey,
-                address.toBase58(),
-                lamports,
-                signature,
-                recentBlockHash.recentBlockhash
+                senderPubkey = tokenKeyProvider.publicKey,
+                recipientPubkey = address.toBase58(),
+                lamports = lamports,
+                signature = signature,
+                blockhash = recentBlockHash.recentBlockhash
             )
         } else {
             feeRelayerRepository.sendSplToken(
-                token.publicKey,
-                address.toBase58(),
-                token.mintAddress,
-                tokenKeyProvider.publicKey,
-                lamports,
-                token.decimals,
-                signature,
-                recentBlockHash.recentBlockhash
+                senderTokenAccountPubkey = token.publicKey,
+                recipientPubkey = address.toBase58(),
+                tokenMintPubkey = token.mintAddress,
+                authorityPubkey = tokenKeyProvider.publicKey,
+                lamports = lamports,
+                decimals = token.decimals,
+                signature = signature,
+                blockhash = recentBlockHash.recentBlockhash
             )
         }
 

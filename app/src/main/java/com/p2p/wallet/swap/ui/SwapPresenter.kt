@@ -11,8 +11,8 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.isMoreThan
-import com.p2p.wallet.utils.scaleAmount
-import com.p2p.wallet.utils.scalePrice
+import com.p2p.wallet.utils.scaleMedium
+import com.p2p.wallet.utils.scaleLong
 import com.p2p.wallet.utils.toBigDecimalOrZero
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPowerValue
@@ -134,7 +134,7 @@ class SwapPresenter(
     }
 
     override fun feedAvailableValue() {
-        view?.updateInputValue(requireSourceToken().total.scalePrice())
+        view?.updateInputValue(requireSourceToken().total.scaleLong())
     }
 
     override fun loadPrice(toggle: Boolean) {
@@ -160,7 +160,7 @@ class SwapPresenter(
         val token = sourceToken ?: return
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = token.usdRate.multiply(decimalAmount).scaleAmount()
+        aroundValue = token.usdRate.multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(token.total)
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
@@ -228,7 +228,7 @@ class SwapPresenter(
                 withFee = false,
                 tokenABalance = balanceA,
                 tokenBBalance = balanceB
-            ).fromLamports(destination.decimals).scaleAmount()
+            ).fromLamports(destination.decimals).scaleMedium()
 
             destinationAmount = calculatedAmount.toString()
 
@@ -247,9 +247,9 @@ class SwapPresenter(
 
             val data = CalculationsData(
                 destinationAmount = destinationAmount,
-                minReceive = minReceive.fromLamports(destination.decimals).scaleAmount(),
+                minReceive = minReceive.fromLamports(destination.decimals).scaleMedium(),
                 minReceiveSymbol = destination.tokenSymbol,
-                fee = fee.fromLamports(destination.decimals).scaleAmount(),
+                fee = fee.fromLamports(destination.decimals).scaleMedium(),
                 feeSymbol = destination.tokenSymbol
             )
             view?.showCalculations(data)

@@ -51,9 +51,9 @@
             android:layout_height="44dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="24dp"
+            android:src="@drawable/ic_wallet"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fromTextView"
-            tools:src="@tools:sample/avatars" />
+            app:layout_constraintTop_toBottomOf="@id/fromTextView" />
 
         <TextView
             android:id="@+id/sourceTextView"

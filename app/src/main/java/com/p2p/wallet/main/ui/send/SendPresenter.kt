@@ -3,9 +3,6 @@ package com.p2p.wallet.main.ui.send
 import com.p2p.wallet.R
 import com.p2p.wallet.utils.isMoreThan
 import com.p2p.wallet.utils.isZero
-import com.p2p.wallet.utils.scaleAmount
-import com.p2p.wallet.utils.scalePrice
-import com.p2p.wallet.utils.scaleShort
 import com.p2p.wallet.utils.toBigDecimalOrZero
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.common.mvp.BasePresenter
@@ -16,6 +13,9 @@ import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
 import com.p2p.wallet.user.interactor.UserInteractor
+import com.p2p.wallet.utils.scaleMedium
+import com.p2p.wallet.utils.scaleLong
+import com.p2p.wallet.utils.scaleShort
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -108,7 +108,7 @@ class SendPresenter(
 
         val totalAvailable = when (mode) {
             is CurrencyMode.Usd -> token.totalInUsd
-            is CurrencyMode.Token -> token.total.scalePrice()
+            is CurrencyMode.Token -> token.total.scaleLong()
         }
         view?.showInputValue(totalAvailable)
     }
@@ -138,7 +138,7 @@ class SendPresenter(
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,
                     amount = tokenAmount,
-                    usdAmount = token!!.usdRate.multiply(tokenAmount).scaleAmount(),
+                    usdAmount = token!!.usdRate.multiply(tokenAmount).scaleMedium(),
                     tokenSymbol = token!!.tokenSymbol
                 )
                 view?.showSuccess(info)

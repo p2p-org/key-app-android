@@ -6,6 +6,6 @@ import org.koin.dsl.module
 object CommonModule : InjectionModule {
 
     override fun create() = module {
-        single { EnvironmentManager(get()) }
+        single { EnvironmentManager(get(), get()) }
     }
 }
