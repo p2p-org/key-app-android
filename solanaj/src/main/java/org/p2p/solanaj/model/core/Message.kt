@@ -35,13 +35,16 @@ class Message {
     private val accountKeys: AccountKeysList = AccountKeysList()
     private val instructions: MutableList<TransactionInstruction>
     private var feePayer: PublicKey? = null
+
     init {
         instructions = ArrayList()
     }
 
     fun addInstruction(instruction: TransactionInstruction): Message {
-        accountKeys.addAll(instruction.keys)
-        accountKeys.add(AccountMeta(instruction.programId, isSigner = false, isWritable = false))
+        val metas = instruction.keys.toMutableList()
+        val account = AccountMeta(instruction.programId, isSigner = false, isWritable = false)
+        metas.add(account)
+        accountKeys.addMetas(metas)
         instructions.add(instruction)
         return this
     }
@@ -65,10 +68,12 @@ class Message {
             val keysSize = instruction.keys.size
             val keyIndices = ByteArray(keysSize)
             for (i in 0 until keysSize) {
-                keyIndices[i] = findAccountIndex(keysList, instruction.keys[i].publicKey).toByte()
+                keyIndices[i] = keysList.indexOfFirst { it.publicKey.equals(instruction.keys[i].publicKey) }.toByte()
             }
             val compiledInstruction = CompiledInstruction()
-            compiledInstruction.programIdIndex = findAccountIndex(keysList, instruction.programId).toByte()
+            compiledInstruction.programIdIndex = keysList.indexOfFirst {
+                it.publicKey.equals(instruction.programId)
+            }.toByte()
             compiledInstruction.keyIndicesCount = ShortvecEncoding.encodeLength(keysSize)
             compiledInstruction.keyIndices = keyIndices
             compiledInstruction.dataLength = ShortvecEncoding.encodeLength(instruction.data.size)
@@ -78,7 +83,7 @@ class Message {
         }
         val instructionsLength = ShortvecEncoding.encodeLength(compiledInstructions.size)
         val bufferSize = (
-            HEADER_LENGTH + RECENT_BLOCK_HASH_LENGT + accountAddressesLength.size +
+            HEADER_LENGTH + RECENT_BLOCK_HASH_LENGTH + accountAddressesLength.size +
                 accountKeysSize * PublicKey.PUBLIC_KEY_LENGTH + instructionsLength.size +
                 compiledInstructionsLength
             )
@@ -120,31 +125,18 @@ class Message {
     }
 
     private fun getAccountKeys(): List<AccountMeta> {
-        val keysList: MutableList<AccountMeta> = accountKeys.list
-        val feePayerIndex = findAccountIndex(keysList, feePayer!!)
-        val newList = mutableListOf<AccountMeta>()
+        val keysList: MutableList<AccountMeta> = accountKeys.getSortedAccounts()
+
+        val feePayerIndex = keysList.indexOfFirst { it.publicKey.equals(feePayer!!) }
         if (feePayerIndex != -1) {
-            val feePayerMeta = keysList[feePayerIndex]
-            newList.add(AccountMeta(feePayerMeta.publicKey, isSigner = true, isWritable = true))
             keysList.removeAt(feePayerIndex)
         } else {
-            newList.add(AccountMeta(feePayer!!, isSigner = true, isWritable = true))
+            keysList.add(0, AccountMeta(feePayer!!, isSigner = true, isWritable = true))
         }
-        newList.addAll(keysList)
-        return newList
-    }
-
-    private fun findAccountIndex(accountMetaList: List<AccountMeta>, key: PublicKey): Int {
-        for (i in accountMetaList.indices) {
-            if (accountMetaList[i].publicKey.equals(key)) {
-                return i
-            }
-        }
-
-        return -1
+        return keysList
     }
 
     companion object {
-        private const val RECENT_BLOCK_HASH_LENGT = 32
+        private const val RECENT_BLOCK_HASH_LENGTH = 32
     }
 }
