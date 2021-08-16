@@ -59,7 +59,6 @@ class BuyFragment :
     }
 
     override fun openWebView(url: String) {
-        Timber.d("### url $url")
         binding.webView.loadUrl(url)
     }
 }
