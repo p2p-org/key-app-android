@@ -53,6 +53,10 @@ class Message {
         this.recentBlockhash = recentBlockhash
     }
 
+    fun setFeePayer(feePayer: PublicKey) {
+        this.feePayer = feePayer
+    }
+
     fun serialize(): ByteArray {
         requireNotNull(recentBlockhash) { "recentBlockhash required" }
         require(instructions.size != 0) { "No instructions provided" }
@@ -120,19 +124,16 @@ class Message {
         return out.array()
     }
 
-    fun setFeePayer(feePayer: PublicKey) {
-        this.feePayer = feePayer
-    }
-
     private fun getAccountKeys(): List<AccountMeta> {
         val keysList: MutableList<AccountMeta> = accountKeys.getSortedAccounts()
 
         val feePayerIndex = keysList.indexOfFirst { it.publicKey.equals(feePayer!!) }
         if (feePayerIndex != -1) {
             keysList.removeAt(feePayerIndex)
-        } else {
-            keysList.add(0, AccountMeta(feePayer!!, isSigner = true, isWritable = true))
         }
+
+        keysList.add(0, AccountMeta(feePayer!!, isSigner = true, isWritable = true))
+
         return keysList
     }
 
