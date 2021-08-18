@@ -1,21 +1,21 @@
 package com.p2p.wallet.main.ui.send
 
 import com.p2p.wallet.R
-import com.p2p.wallet.utils.isMoreThan
-import com.p2p.wallet.utils.isZero
-import com.p2p.wallet.utils.toBigDecimalOrZero
-import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.CurrencyMode
-import com.p2p.wallet.main.model.TransactionResult
-import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
+import com.p2p.wallet.main.model.TransactionResult
+import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.user.interactor.UserInteractor
-import com.p2p.wallet.utils.scaleMedium
+import com.p2p.wallet.utils.isMoreThan
+import com.p2p.wallet.utils.isZero
 import com.p2p.wallet.utils.scaleLong
+import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.scaleShort
+import com.p2p.wallet.utils.toBigDecimalOrZero
+import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -74,11 +74,20 @@ class SendPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val result = mainInteractor.sendTransaction(
-                    ownerAddress = address.toPublicKey(),
-                    token = token,
-                    lamports = tokenAmount.toLamports(token.decimals)
-                )
+
+                val result = if (token.isSOL) {
+                    mainInteractor.sendNativeSolToken(
+                        destinationAddress = address.toPublicKey(),
+                        lamports = tokenAmount.toLamports(token.decimals)
+                    )
+                } else {
+                    mainInteractor.sendSplToken(
+                        destinationAddress = address.toPublicKey(),
+                        token = token,
+                        lamports = tokenAmount.toLamports(token.decimals)
+                    )
+                }
+
                 handleResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
@@ -133,7 +142,7 @@ class SendPresenter(
         when (result) {
             is TransactionResult.Success -> {
                 val info = TransactionInfo(
-                    transactionId = result.signature,
+                    transactionId = result.transactionId,
                     status = R.string.main_send_success,
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,

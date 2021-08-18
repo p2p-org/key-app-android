@@ -5,7 +5,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.common.ui.PagingState
 import com.p2p.wallet.history.interactor.TokenInteractor
-import com.p2p.wallet.history.model.Transaction
+import com.p2p.wallet.history.model.TransactionType
 import com.p2p.wallet.infrastructure.network.EmptyDataException
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.Token
@@ -26,7 +26,7 @@ class TokenDetailsPresenter(
         private const val PAGE_SIZE = 20
     }
 
-    private val transactions = mutableListOf<Transaction>()
+    private val transactions = mutableListOf<TransactionType>()
 
     private var pagingJob: Job? = null
 

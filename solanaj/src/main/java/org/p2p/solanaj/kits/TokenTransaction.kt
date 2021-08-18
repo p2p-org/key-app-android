@@ -39,6 +39,12 @@ object TokenTransaction {
         return AccountInfoData.decode(data)
     }
 
+    fun decodeAccountInfo(value: AccountInfo.Value): AccountInfoData {
+        val base64Data = value.data!![0]
+        val data = Base64.decode(base64Data, Base64.DEFAULT)
+        return AccountInfoData.decode(data)
+    }
+
     fun getMultipleAccounts(
         accounts: MultipleAccountsInfo,
         keys: List<String>
@@ -59,7 +65,9 @@ object TokenTransaction {
         owner: PublicKey
     ): PublicKey {
         return getAssociatedTokenAddress(
-            TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID, TokenProgram.PROGRAM_ID, mint,
+            TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+            TokenProgram.PROGRAM_ID,
+            mint,
             owner
         )
     }

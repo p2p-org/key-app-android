@@ -15,14 +15,14 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.databinding.ItemTransactionBinding
 import com.p2p.wallet.history.model.HistoryItem
-import com.p2p.wallet.history.model.Transaction
+import com.p2p.wallet.history.model.TransactionType
 import com.p2p.wallet.history.model.TransferType
 import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.dip
 
 class TransactionViewHolder(
     binding: ItemTransactionBinding,
-    private val onTransactionClicked: (Transaction) -> Unit
+    private val onTransactionClicked: (TransactionType) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
@@ -30,7 +30,7 @@ class TransactionViewHolder(
         private const val IMAGE_SIZE = 24
     }
 
-    constructor(parent: ViewGroup, onTransactionClicked: (Transaction) -> Unit) : this(
+    constructor(parent: ViewGroup, onTransactionClicked: (TransactionType) -> Unit) : this(
         ItemTransactionBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onTransactionClicked
     )
@@ -50,10 +50,10 @@ class TransactionViewHolder(
 
     fun onBind(item: HistoryItem.TransactionItem) {
         when (item.transaction) {
-            is Transaction.Transfer -> showTransferTransaction(item.transaction)
-            is Transaction.Swap -> showSwapTransaction(item.transaction)
-            is Transaction.CloseAccount -> showCloseTransaction(item.transaction)
-            is Transaction.Unknown -> showUnknownTransaction()
+            is TransactionType.Transfer -> showTransferTransaction(item.transaction)
+            is TransactionType.Swap -> showSwapTransaction(item.transaction)
+            is TransactionType.CloseAccount -> showCloseTransaction(item.transaction)
+            is TransactionType.Unknown -> showUnknownTransaction()
         }
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
     }
@@ -66,7 +66,7 @@ class TransactionViewHolder(
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showCloseTransaction(transaction: Transaction.CloseAccount) {
+    private fun showCloseTransaction(transaction: TransactionType.CloseAccount) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
         tokenImageView.setImageResource(R.drawable.ic_trash)
@@ -77,7 +77,7 @@ class TransactionViewHolder(
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showSwapTransaction(transaction: Transaction.Swap) {
+    private fun showSwapTransaction(transaction: TransactionType.Swap) {
         tokenImageView.isVisible = false
         swapView.isVisible = true
 
@@ -90,7 +90,7 @@ class TransactionViewHolder(
         valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
     }
 
-    private fun showTransferTransaction(transaction: Transaction.Transfer) {
+    private fun showTransferTransaction(transaction: TransactionType.Transfer) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
 

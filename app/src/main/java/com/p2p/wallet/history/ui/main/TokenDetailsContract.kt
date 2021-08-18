@@ -6,12 +6,12 @@ import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.common.ui.PagingState
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.history.model.Transaction
+import com.p2p.wallet.history.model.TransactionType
 
 interface TokenDetailsContract {
 
     interface View : MvpView {
-        fun showHistory(transactions: List<Transaction>)
+        fun showHistory(transactions: List<TransactionType>)
         fun showChartData(entries: List<Entry>)
         fun showPagingState(newState: PagingState)
         fun showLoading(isLoading: Boolean)

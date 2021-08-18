@@ -7,12 +7,12 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.date.isSameDayAs
 import com.p2p.wallet.common.ui.PagingState
 import com.p2p.wallet.history.model.HistoryItem
-import com.p2p.wallet.history.model.Transaction
+import com.p2p.wallet.history.model.TransactionType
 import com.p2p.wallet.history.ui.main.OnHeaderClickListener
 import com.p2p.wallet.main.model.Token
 
 class HistoryAdapter(
-    private val onTransactionClicked: (Transaction) -> Unit,
+    private val onTransactionClicked: (TransactionType) -> Unit,
     private val onRetryClicked: () -> Unit,
     private val listener: OnHeaderClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -37,7 +37,7 @@ class HistoryAdapter(
         notifyItemChanged(0, entries)
     }
 
-    fun setTransactions(new: List<Transaction>) {
+    fun setTransactions(new: List<TransactionType>) {
         if (new.isEmpty()) {
             data.add(HistoryItem.Empty)
         } else {
@@ -140,7 +140,7 @@ class HistoryAdapter(
         is HistoryItem.Empty -> R.layout.item_history_empty
     }
 
-    private fun mapTransactions(new: List<Transaction>): List<HistoryItem> =
+    private fun mapTransactions(new: List<TransactionType>): List<HistoryItem> =
         new.withIndex().flatMap { (i, transaction) ->
             when {
                 i > 0 && new[i - 1].date.isSameDayAs(transaction.date) ->

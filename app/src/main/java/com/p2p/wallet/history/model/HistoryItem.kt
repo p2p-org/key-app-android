@@ -5,7 +5,7 @@ import org.threeten.bp.ZonedDateTime
 
 sealed class HistoryItem {
     data class Header(val token: Token, val sol: Token) : HistoryItem()
-    data class TransactionItem(val transaction: Transaction) : HistoryItem()
+    data class TransactionItem(val transaction: TransactionType) : HistoryItem()
     object Empty : HistoryItem()
     data class DateItem(val date: ZonedDateTime) : HistoryItem()
 }

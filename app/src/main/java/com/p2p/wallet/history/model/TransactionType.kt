@@ -8,7 +8,7 @@ import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 import java.math.BigInteger
 
-sealed class Transaction(
+sealed class TransactionType(
     open val date: ZonedDateTime
 ) : Parcelable {
 
@@ -30,7 +30,7 @@ sealed class Transaction(
         val sourceTokenUrl: String,
         val destinationSymbol: String,
         val destinationTokenUrl: String
-    ) : Transaction(date) {
+    ) : TransactionType(date) {
 
         fun getFormattedAmount() = "$amountA $sourceSymbol to $amountB $destinationSymbol"
 
@@ -49,7 +49,7 @@ sealed class Transaction(
         val total: BigDecimal,
         val destination: String,
         val fee: BigInteger
-    ) : Transaction(date) {
+    ) : TransactionType(date) {
 
         fun getFormattedAmount(): String = "${amount.scaleMedium()} $"
 
@@ -65,12 +65,12 @@ sealed class Transaction(
         val destination: String,
         val owner: String,
         val tokenSymbol: String,
-    ) : Transaction(date)
+    ) : TransactionType(date)
 
     @Parcelize
     data class Unknown(
         override val signature: String,
         override val date: ZonedDateTime,
         override val blockNumber: Int
-    ) : Transaction(date)
+    ) : TransactionType(date)
 }

@@ -52,10 +52,8 @@ class SwapRemoteRepository(
             accountAddressB = accountB?.publicKey?.toPublicKey(),
             getAccountInfo = { rpcRepository.getAccountInfo(it) },
             getBalanceNeeded = { rpcRepository.getMinimumBalanceForRentExemption(it) },
-            sendTransaction = { transaction, signers ->
-                val recentBlockhash = rpcRepository.getRecentBlockhash()
-                transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
-                transaction.sign(signers)
+            getRecentBlockhash = { rpcRepository.getRecentBlockhash().recentBlockhash },
+            sendTransaction = { transaction ->
                 rpcRepository.sendTransaction(transaction)
             }
         )
