@@ -155,6 +155,9 @@ class SendFragment :
             availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
             /* P2P pays for send transactions, hardcoding here temporary */
             feeValueTextView.text = "0.0000 SOL"
+
+//            addressEditText.setText("9MeTrR3fYGHeBpoQ4FxM8u3YVe8Qwo4256CajF8TWNW2")
+//            amountEditText.setText("0.00001")
         }
     }
 

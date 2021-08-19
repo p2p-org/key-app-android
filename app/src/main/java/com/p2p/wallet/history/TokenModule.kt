@@ -1,7 +1,7 @@
 package com.p2p.wallet.history
 
 import com.p2p.wallet.common.di.InjectionModule
-import com.p2p.wallet.history.interactor.TokenInteractor
+import com.p2p.wallet.history.interactor.HistoryInteractor
 import com.p2p.wallet.history.repository.TokenRemoteRepository
 import com.p2p.wallet.history.repository.TokenRepository
 import com.p2p.wallet.history.ui.main.TokenDetailsContract
@@ -15,7 +15,7 @@ object TokenModule : InjectionModule {
     override fun create(): Module = module {
 
         factory { TokenRemoteRepository(get()) } bind TokenRepository::class
-        factory { TokenInteractor(get()) }
-        factory { TokenDetailsPresenter(get(), get(), get()) } bind TokenDetailsContract.Presenter::class
+        factory { HistoryInteractor(get(), get(), get(), get()) }
+        factory { TokenDetailsPresenter(get(), get()) } bind TokenDetailsContract.Presenter::class
     }
 }
