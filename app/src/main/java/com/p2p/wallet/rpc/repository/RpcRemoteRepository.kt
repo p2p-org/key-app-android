@@ -7,7 +7,7 @@ import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.TransactionRequest
+import org.p2p.solanaj.model.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.RecentBlockhash
@@ -49,7 +49,7 @@ class RpcRemoteRepository(
         return rpcApi.getRecentBlockhash(rpcRequest).result
     }
 
-    override suspend fun sendTransaction(transaction: TransactionRequest): String {
+    override suspend fun sendTransaction(transaction: Transaction): String {
         val serializedTransaction = transaction.serialize()
 
         val base64Trx = Base64

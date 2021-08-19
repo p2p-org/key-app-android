@@ -23,8 +23,6 @@ object TokenProgram {
     private const val INSTRUCTION_INDEX_TRANSFER_CHECKED = 12
 
     fun createAssociatedTokenAccountInstruction(
-        associatedProgramId: PublicKey,
-        tokenProgramId: PublicKey,
         mint: PublicKey,
         associatedAccount: PublicKey,
         owner: PublicKey,
@@ -36,10 +34,10 @@ object TokenProgram {
         keys.add(AccountMeta(owner, isSigner = false, isWritable = false))
         keys.add(AccountMeta(mint, isSigner = false, isWritable = false))
         keys.add(AccountMeta(SystemProgram.PROGRAM_ID, isSigner = false, isWritable = false))
-        keys.add(AccountMeta(tokenProgramId, isSigner = false, isWritable = false))
+        keys.add(AccountMeta(PROGRAM_ID, isSigner = false, isWritable = false))
         keys.add(AccountMeta(SYSVAR_RENT_ADDRESS, isSigner = false, isWritable = false))
         val data = ByteArray(0)
-        return TransactionInstruction(associatedProgramId, keys, data)
+        return TransactionInstruction(ASSOCIATED_TOKEN_PROGRAM_ID, keys, data)
     }
 
     fun initializeMintInstruction(

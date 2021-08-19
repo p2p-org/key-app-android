@@ -107,7 +107,11 @@ class SwapInteractor(
 
         val invariant = firstAmountInPool.multiply(secondAmountInPool)
         val newFromAmountInPool = firstAmountInPool.add(inputAmount)
-        val newToAmountInPool = invariant.divide(newFromAmountInPool)
+        val newToAmountInPool = if (newFromAmountInPool.compareTo(BigInteger.ZERO) != 0) {
+            invariant.divide(newFromAmountInPool)
+        } else {
+            BigInteger.ZERO
+        }
         val grossToAmount = secondAmountInPool.subtract(newToAmountInPool)
         val fees = if (withFee) {
             BigDecimal(grossToAmount).multiply(feeRatio)

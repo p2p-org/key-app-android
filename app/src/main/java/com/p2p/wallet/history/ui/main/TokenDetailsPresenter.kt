@@ -4,10 +4,9 @@ import com.github.mikephil.charting.data.Entry
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.common.ui.PagingState
-import com.p2p.wallet.history.interactor.TokenInteractor
-import com.p2p.wallet.history.model.Transaction
+import com.p2p.wallet.history.interactor.HistoryInteractor
+import com.p2p.wallet.history.model.TransactionType
 import com.p2p.wallet.infrastructure.network.EmptyDataException
-import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.CancellationException
@@ -16,8 +15,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class TokenDetailsPresenter(
-    private val tokenInteractor: TokenInteractor,
-    private val mainInteractor: MainInteractor,
+    private val historyInteractor: HistoryInteractor,
     private val userInteractor: UserInteractor
 ) : BasePresenter<TokenDetailsContract.View>(), TokenDetailsContract.Presenter {
 
@@ -26,7 +24,7 @@ class TokenDetailsPresenter(
         private const val PAGE_SIZE = 20
     }
 
-    private val transactions = mutableListOf<Transaction>()
+    private val transactions = mutableListOf<TransactionType>()
 
     private var pagingJob: Job? = null
 
@@ -48,7 +46,7 @@ class TokenDetailsPresenter(
                     val size = transactions.size
                     transactions[size - 1].signature
                 } else null
-                val history = mainInteractor.getHistory(publicKey, lastSignature, PAGE_SIZE)
+                val history = historyInteractor.getHistory(publicKey, lastSignature, PAGE_SIZE)
 
                 transactions.addAll(history)
                 view?.showHistory(history)
@@ -71,7 +69,7 @@ class TokenDetailsPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val data = tokenInteractor.getDailyPriceHistory(tokenSymbol, DESTINATION_TOKEN, days)
+                val data = historyInteractor.getDailyPriceHistory(tokenSymbol, DESTINATION_TOKEN, days)
                 val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
                 view?.showChartData(entries)
             } catch (e: CancellationException) {
@@ -89,7 +87,7 @@ class TokenDetailsPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val data = tokenInteractor.getHourlyPriceHistory(tokenSymbol, DESTINATION_TOKEN, hours)
+                val data = historyInteractor.getHourlyPriceHistory(tokenSymbol, DESTINATION_TOKEN, hours)
                 val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
                 view?.showChartData(entries)
             } catch (e: CancellationException) {

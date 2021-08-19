@@ -45,7 +45,7 @@ class HeaderViewHolder(
 
             qrImageView.setOnClickListener { listener.navigateToFragment(ReceiveFragment.create(token)) }
             addressView.setOnClickListener {
-                it.context.copyToClipBoard(token.publicKey)
+                it.context.copyToClipBoard(item.sol.publicKey)
                 Toast.makeText(it.context, R.string.common_copied, Toast.LENGTH_SHORT).show()
             }
         }

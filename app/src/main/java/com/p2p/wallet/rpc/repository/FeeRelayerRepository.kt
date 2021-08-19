@@ -1,9 +1,10 @@
 package com.p2p.wallet.rpc.repository
 
+import org.p2p.solanaj.model.core.PublicKey
 import java.math.BigInteger
 
 interface FeeRelayerRepository {
-    suspend fun getPublicKey(): String
+    suspend fun getPublicKey(): PublicKey
 
     suspend fun sendSolToken(
         senderPubkey: String,

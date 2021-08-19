@@ -22,8 +22,8 @@ object TransactionConverter {
         destinationData: TokenData,
         destinationRate: TokenPrice,
         sourcePublicKey: String
-    ): Transaction =
-        Transaction.Swap(
+    ): TransactionType =
+        TransactionType.Swap(
             signature = response.signature,
             sourceAddress = sourcePublicKey,
             destinationAddress = response.destination,
@@ -55,7 +55,7 @@ object TransactionConverter {
         directPublicKey: String,
         publicKey: String,
         rate: TokenPrice
-    ): Transaction {
+    ): TransactionType {
         val isSend = if (response.isSimpleTransfer) {
             response.source == directPublicKey && response.destination != publicKey
         } else {
@@ -76,7 +76,7 @@ object TransactionConverter {
             Instant.ofEpochMilli(response.blockTime),
             ZoneId.systemDefault()
         )
-        return Transaction.Transfer(
+        return TransactionType.Transfer(
             signature = response.signature,
             blockNumber = response.slot,
             destination = if (isSend) response.destination else publicKey,
@@ -90,8 +90,8 @@ object TransactionConverter {
         )
     }
 
-    fun fromNetwork(response: CloseAccountDetails, symbol: String): Transaction =
-        Transaction.CloseAccount(
+    fun fromNetwork(response: CloseAccountDetails, symbol: String): TransactionType =
+        TransactionType.CloseAccount(
             signature = response.signature,
             blockNumber = response.slot,
             account = response.account,
@@ -106,8 +106,8 @@ object TransactionConverter {
 
     fun fromNetwork(
         response: UnknownDetails
-    ): Transaction =
-        Transaction.Unknown(
+    ): TransactionType =
+        TransactionType.Unknown(
             signature = response.signature,
             date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault()),
             blockNumber = response.slot,

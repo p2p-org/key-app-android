@@ -1,18 +1,24 @@
 package org.p2p.solanaj.model.core
 
+import org.p2p.solanaj.programs.TokenProgram
 import java.util.Comparator
 
 class AccountKeysList {
 
     private val accounts = mutableListOf<AccountMeta>()
 
-    fun addMetas(metas: List<AccountMeta>) {
-        metas
-            .sortedWith(metaComparator)
-            .forEach { updateOrAddMeta(it) }
+    fun addAccounts(metas: List<AccountMeta>) {
+        metas.forEach { updateOrAddMeta(it) }
     }
 
-    fun getSortedAccounts(): MutableList<AccountMeta> = accounts
+    fun addAccount(meta: AccountMeta) {
+        accounts.removeAll { it.publicKey.toBase58() == meta.publicKey.toBase58() }
+        accounts.add(meta)
+    }
+
+    fun getSortedAccounts(): List<AccountMeta> {
+        return accounts.sortedWith(metaComparator) as MutableList<AccountMeta>
+    }
 
     /*
     * Checking for duplicates, keeping signer and writable
@@ -22,8 +28,9 @@ class AccountKeysList {
         if (metaIndex != -1) {
             val account = accounts[metaIndex]
             if (!account.isWritable && accountMeta.isWritable || !account.isSigner && accountMeta.isSigner) {
+                val isWritable = account.isWritable || accountMeta.isWritable
                 accounts.removeAt(metaIndex)
-                accounts.add(metaIndex, accountMeta)
+                accounts.add(metaIndex, accountMeta.copy(isWritable = isWritable))
             }
         } else {
             accounts.add(accountMeta)
@@ -32,12 +39,27 @@ class AccountKeysList {
 
     /* Sorting accountMetas, first by isSigner, then by isWritable */
     private val metaComparator: Comparator<AccountMeta> = object : Comparator<AccountMeta> {
-        override fun compare(am1: AccountMeta, am2: AccountMeta): Int {
-            val cmpSigner = if (am1.isSigner == am2.isSigner) 0 else if (am1.isSigner) -1 else 1
+        override fun compare(x: AccountMeta, y: AccountMeta): Int {
+            val cmpSigner = if (x.isSigner == y.isSigner) 0 else if (x.isSigner) -1 else 1
             if (cmpSigner != 0) return cmpSigner
 
-            val cmpkWritable = if (am1.isWritable == am2.isWritable) 0 else if (am1.isWritable) -1 else 1
-            return if (cmpkWritable != 0) cmpkWritable else 1
+            val cmpkWritable = if (x.isWritable == y.isWritable) 0 else if (x.isWritable) -1 else 1
+            return compareTokenProgramIds(cmpkWritable, x, y)
         }
+    }
+
+    private fun compareTokenProgramIds(cmpkWritable: Int, x: AccountMeta, y: AccountMeta): Int {
+        if (cmpkWritable == 0) {
+            val sysvar = Sysvar.SYSVAR_RENT_ADDRESS.toBase58()
+            if (x.publicKey.toBase58().startsWith(sysvar) &&
+                y.publicKey.toBase58().startsWith(TokenProgram.PROGRAM_ID.toBase58()) ||
+                y.publicKey.toBase58().startsWith(sysvar) &&
+                x.publicKey.toBase58().startsWith(TokenProgram.PROGRAM_ID.toBase58())
+            ) {
+                return -1
+            }
+        }
+
+        return if (cmpkWritable != 0) cmpkWritable else 1
     }
 }

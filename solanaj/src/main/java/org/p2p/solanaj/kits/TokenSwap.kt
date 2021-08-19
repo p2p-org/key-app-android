@@ -3,7 +3,8 @@ package org.p2p.solanaj.kits
 import org.p2p.solanaj.kits.Pool.PoolInfo
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.TransactionRequest
+import org.p2p.solanaj.model.core.Transaction
+import org.p2p.solanaj.model.core.TransactionInstruction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.programs.SystemProgram
@@ -30,10 +31,13 @@ class TokenSwap {
         accountAddressB: PublicKey?,
         getAccountInfo: suspend (PublicKey) -> AccountInfo?,
         getBalanceNeeded: suspend (Long) -> Long,
-        sendTransaction: suspend (transaction: TransactionRequest, signers: List<Account>) -> String
+        getRecentBlockhash: suspend () -> String,
+        sendTransaction: suspend (transaction: Transaction) -> String
     ): String {
         val signers = ArrayList(listOf(owner))
-        val transaction = TransactionRequest()
+
+        // fixme: transaction class is being refactored, make sure swap is working after it
+        val instructions = mutableListOf<TransactionInstruction>()
 
         // swap type
         val source = pool.tokenAccountA
@@ -64,8 +68,8 @@ class TokenSwap {
                 wrappedSolAccount,
                 owner.publicKey
             )
-            transaction.addInstruction(createAccountInstruction)
-            transaction.addInstruction(initializeAccountInstruction)
+            instructions.add(createAccountInstruction)
+            instructions.add(initializeAccountInstruction)
             signers.add(newAccount)
             newAccountPubKey
         } else {
@@ -89,8 +93,8 @@ class TokenSwap {
                 mintB,
                 owner.publicKey
             )
-            transaction.addInstruction(createAccountInstruction)
-            transaction.addInstruction(initializeAccountInstruction)
+            instructions.add(createAccountInstruction)
+            instructions.add(initializeAccountInstruction)
             signers.add(newAccount)
             toAccount = newAccountPubKey
         }
@@ -127,8 +131,8 @@ class TokenSwap {
             amountIn,
             minimumAmountOut
         )
-        transaction.addInstruction(approve)
-        transaction.addInstruction(swap)
+        instructions.add(approve)
+        instructions.add(swap)
         val isNeedCloseAccount = tokenAInfo.isNative || isWrappedSol
         var closeAccountPublicKey: PublicKey? = null
         if (tokenAInfo.isNative) {
@@ -143,10 +147,14 @@ class TokenSwap {
                 owner.publicKey,
                 owner.publicKey
             )
-            transaction.addInstruction(closeAccountInstruction)
+            instructions.add(closeAccountInstruction)
         }
         signers.add(userTransferAuthority)
-        return sendTransaction.invoke(transaction, signers)
+
+        val recentBlockhash = getRecentBlockhash()
+        val transaction = Transaction(null, recentBlockhash, instructions)
+        transaction.sign(signers)
+        return sendTransaction.invoke(transaction)
     }
 
     companion object {

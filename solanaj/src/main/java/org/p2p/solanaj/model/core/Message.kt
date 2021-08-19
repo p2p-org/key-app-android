@@ -3,79 +3,67 @@ package org.p2p.solanaj.model.core
 import org.bitcoinj.core.Base58
 import org.p2p.solanaj.utils.ShortvecEncoding
 import java.nio.ByteBuffer
-import java.util.ArrayList
 
-const val HEADER_LENGTH = 3
+class Message(
+    private val feePayer: PublicKey?,
+    private val recentBlockhash: String
+) {
 
-class Message {
-    private inner class MessageHeader {
-        var numRequiredSignatures: Byte = 0
-        var numReadonlySignedAccounts: Byte = 0
-        var numReadonlyUnsignedAccounts: Byte = 0
-        fun toByteArray(): ByteArray {
-            return byteArrayOf(numRequiredSignatures, numReadonlySignedAccounts, numReadonlyUnsignedAccounts)
+    companion object {
+        private const val RECENT_BLOCK_HASH_LENGTH = 32
+        private const val HEADER_LENGTH = 3
+    }
+
+    private val accountKeys: AccountKeysList = AccountKeysList()
+    private val programIds = mutableListOf<PublicKey>()
+    private val instructions = mutableListOf<TransactionInstruction>()
+
+    fun addInstructions(newInstructions: List<TransactionInstruction>) {
+        newInstructions.forEach { instruction ->
+            accountKeys.addAccounts(instruction.keys)
+
+            val programId = instruction.programId
+            if (programIds.none { it.toBase58() == programId.toBase58() }) {
+                programIds.add(0, programId)
+            }
+        }
+
+        instructions.addAll(newInstructions)
+
+        programIds.forEach {
+            accountKeys.addAccount(AccountMeta(it, isSigner = false, isWritable = false))
         }
     }
 
-    private inner class CompiledInstruction {
-        var programIdIndex: Byte = 0
-        var keyIndicesCount: ByteArray = ByteArray(0)
-        var keyIndices: ByteArray = ByteArray(0)
-        var dataLength: ByteArray = ByteArray(0)
-        var data: ByteArray = ByteArray(0)
-
-        // 1 = programIdIndex length
-        val length: Int
-            get() = // 1 = programIdIndex length
-                1 + keyIndicesCount.size + keyIndices.size + dataLength.size + data.size
-    }
-
-    private var messageHeader: MessageHeader? = null
-    private var recentBlockhash: String? = null
-    private val accountKeys: AccountKeysList = AccountKeysList()
-    private val instructions: MutableList<TransactionInstruction>
-    private var feePayer: PublicKey? = null
-
-    init {
-        instructions = ArrayList()
-    }
-
-    fun addInstruction(instruction: TransactionInstruction): Message {
-        val metas = instruction.keys.toMutableList()
-        val account = AccountMeta(instruction.programId, isSigner = false, isWritable = false)
-        metas.add(account)
-        accountKeys.addMetas(metas)
-        instructions.add(instruction)
-        return this
-    }
-
-    fun setRecentBlockHash(recentBlockhash: String?) {
-        this.recentBlockhash = recentBlockhash
-    }
-
-    fun setFeePayer(feePayer: PublicKey) {
-        this.feePayer = feePayer
-    }
-
     fun serialize(): ByteArray {
-        requireNotNull(recentBlockhash) { "recentBlockhash required" }
         require(instructions.size != 0) { "No instructions provided" }
 
-        messageHeader = MessageHeader()
+        val messageHeader = MessageHeader()
 
-        val keysList = getAccountKeys()
-        val accountKeysSize = keysList.size
+        val accountMetas = mutableListOf<AccountMeta>()
+        accountMetas.addAll(accountKeys.getSortedAccounts())
+
+        feePayer?.let {
+            val index = accountMetas.indexOfFirst { it.publicKey.equals(feePayer) }
+            if (index != -1) accountMetas.removeAt(index)
+            accountMetas.add(0, AccountMeta(feePayer, isSigner = true, isWritable = true))
+        }
+
+        val accountKeysSize = accountMetas.size
         val accountAddressesLength = ShortvecEncoding.encodeLength(accountKeysSize)
         var compiledInstructionsLength = 0
-        val compiledInstructions: MutableList<CompiledInstruction> = ArrayList()
+        val compiledInstructions = mutableListOf<CompiledInstruction>()
+
         for (instruction in instructions) {
             val keysSize = instruction.keys.size
             val keyIndices = ByteArray(keysSize)
             for (i in 0 until keysSize) {
-                keyIndices[i] = keysList.indexOfFirst { it.publicKey.equals(instruction.keys[i].publicKey) }.toByte()
+                keyIndices[i] = accountMetas.indexOfFirst {
+                    it.publicKey.equals(instruction.keys[i].publicKey)
+                }.toByte()
             }
             val compiledInstruction = CompiledInstruction()
-            compiledInstruction.programIdIndex = keysList.indexOfFirst {
+            compiledInstruction.programIdIndex = accountMetas.indexOfFirst {
                 it.publicKey.equals(instruction.programId)
             }.toByte()
             compiledInstruction.keyIndicesCount = ShortvecEncoding.encodeLength(keysSize)
@@ -93,23 +81,23 @@ class Message {
             )
         val out = ByteBuffer.allocate(bufferSize)
         val accountKeysBuff = ByteBuffer.allocate(accountKeysSize * PublicKey.PUBLIC_KEY_LENGTH)
-        for (accountMeta in keysList) {
+        for (accountMeta in accountMetas) {
             accountKeysBuff.put(accountMeta.publicKey.toByteArray())
             if (accountMeta.isSigner) {
-                val requiredSignatures = messageHeader!!.numRequiredSignatures
-                messageHeader!!.numRequiredSignatures = requiredSignatures.plus(1).toByte()
+                val requiredSignatures = messageHeader.numRequiredSignatures
+                messageHeader.numRequiredSignatures = requiredSignatures.plus(1).toByte()
                 if (!accountMeta.isWritable) {
-                    val signedAccounts = messageHeader!!.numReadonlySignedAccounts
-                    messageHeader!!.numReadonlySignedAccounts = signedAccounts.plus(1).toByte()
+                    val signedAccounts = messageHeader.numReadonlySignedAccounts
+                    messageHeader.numReadonlySignedAccounts = signedAccounts.plus(1).toByte()
                 }
             } else {
                 if (!accountMeta.isWritable) {
-                    val unsignedAccounts = messageHeader!!.numReadonlyUnsignedAccounts
-                    messageHeader!!.numReadonlyUnsignedAccounts = unsignedAccounts.plus(1).toByte()
+                    val unsignedAccounts = messageHeader.numReadonlyUnsignedAccounts
+                    messageHeader.numReadonlyUnsignedAccounts = unsignedAccounts.plus(1).toByte()
                 }
             }
         }
-        out.put(messageHeader!!.toByteArray())
+        out.put(messageHeader.toByteArray())
         out.put(accountAddressesLength)
         out.put(accountKeysBuff.array())
         out.put(Base58.decode(recentBlockhash))
@@ -124,20 +112,25 @@ class Message {
         return out.array()
     }
 
-    private fun getAccountKeys(): List<AccountMeta> {
-        val keysList: MutableList<AccountMeta> = accountKeys.getSortedAccounts()
-
-        val feePayerIndex = keysList.indexOfFirst { it.publicKey.equals(feePayer!!) }
-        if (feePayerIndex != -1) {
-            keysList.removeAt(feePayerIndex)
+    private class MessageHeader {
+        var numRequiredSignatures: Byte = 0
+        var numReadonlySignedAccounts: Byte = 0
+        var numReadonlyUnsignedAccounts: Byte = 0
+        fun toByteArray(): ByteArray {
+            return byteArrayOf(numRequiredSignatures, numReadonlySignedAccounts, numReadonlyUnsignedAccounts)
         }
-
-        keysList.add(0, AccountMeta(feePayer!!, isSigner = true, isWritable = true))
-
-        return keysList
     }
 
-    companion object {
-        private const val RECENT_BLOCK_HASH_LENGTH = 32
+    private class CompiledInstruction {
+        var programIdIndex: Byte = 0
+        var keyIndicesCount: ByteArray = ByteArray(0)
+        var keyIndices: ByteArray = ByteArray(0)
+        var dataLength: ByteArray = ByteArray(0)
+        var data: ByteArray = ByteArray(0)
+
+        // 1 = programIdIndex length
+        val length: Int
+            get() = // 1 = programIdIndex length
+                1 + keyIndicesCount.size + keyIndices.size + dataLength.size + data.size
     }
 }
