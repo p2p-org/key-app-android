@@ -54,7 +54,6 @@ class SendPresenter(
         launch {
             view?.showFullScreenLoading(true)
             val source = initialToken ?: userInteractor.getTokens().firstOrNull() ?: return@launch
-//            val source = userInteractor.getTokens().first { it.tokenSymbol == "ETH" }
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate)
 
