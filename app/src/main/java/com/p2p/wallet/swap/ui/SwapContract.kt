@@ -1,6 +1,7 @@
 package com.p2p.wallet.swap.ui
 
 import androidx.annotation.AttrRes
+import androidx.annotation.StringRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
@@ -24,10 +25,12 @@ interface SwapContract {
         fun showButtonEnabled(isEnabled: Boolean)
         fun showSwapSuccess(info: TransactionInfo)
         fun showSlippage(slippage: Double)
+        fun showButtonText(@StringRes textRes: Int)
         fun updateInputValue(available: BigDecimal)
         fun openSourceSelection(tokens: List<Token>)
         fun openDestinationSelection(tokens: List<Token>)
-        fun openSlippageSelection(currentSlippage: Slippage)
+        fun openSwapSettings(currentSlippage: Slippage)
+        fun openSlippageDialog(currentSlippage: Slippage)
         fun showNoPoolFound()
     }
 
@@ -35,7 +38,8 @@ interface SwapContract {
         fun loadInitialData()
         fun loadTokensForSourceSelection()
         fun loadTokensForDestinationSelection()
-        fun loadSlippageForSelection()
+        fun loadDataForSwapSettings()
+        fun loadSlippage()
         fun setNewSourceToken(newToken: Token)
         fun setNewDestinationToken(newToken: Token)
         fun setSourceAmount(amount: String)

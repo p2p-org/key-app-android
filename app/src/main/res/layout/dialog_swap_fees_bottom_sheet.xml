@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_alert_elevation_rounded_top"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="16dp"
+        android:text="@string/swap_fees"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+
+    <View
+        android:id="@+id/dividerView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?colorElementTertiary" />
+
+    <com.p2p.wallet.common.widget.DoubleTextView
+        android:id="@+id/liquidityFeeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginVertical="20dp"
+        app:topText="@string/swap_liquidity_provider_fees" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?colorElementTertiary" />
+
+    <com.p2p.wallet.common.widget.DoubleTextView
+        android:id="@+id/networkFeeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginVertical="20dp"
+        app:topText="@string/swap_network_fee" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?colorElementTertiary" />
+
+    <com.p2p.wallet.common.widget.DoubleTextView
+        android:id="@+id/payView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginVertical="20dp"
+        app:bottomText="SOL"
+        app:drawableEnd="@drawable/ic_arrow_right"
+        app:topText="@string/swap_pay_network_fee" />
+
+</LinearLayout>

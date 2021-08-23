@@ -29,9 +29,9 @@
     </declare-styleable>
 
     <declare-styleable name="EndlessScrollRecyclerView">
-        <attr name="emptyLayout" format="reference"/>
-        <attr name="errorLayout" format="reference"/>
-        <attr name="progressLayout" format="reference"/>
+        <attr name="emptyLayout" format="reference" />
+        <attr name="errorLayout" format="reference" />
+        <attr name="progressLayout" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="SwipeLayout">
@@ -50,5 +50,12 @@
         <attr name="autoMovingSensitivity" format="integer" />
         <attr name="rightDragViewPadding" format="dimension" />
         <attr name="leftDragViewPadding" format="dimension" />
+    </declare-styleable>
+
+
+    <declare-styleable name="DoubleTextView">
+        <attr name="topText" format="string" />
+        <attr name="bottomText" format="string" />
+        <attr name="drawableEnd" format="reference" />
     </declare-styleable>
 </resources>

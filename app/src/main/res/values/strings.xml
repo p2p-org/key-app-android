@@ -79,7 +79,7 @@
     <string name="auth_derivable_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
     <string name="auth_select_derivation_path">Select Derivation Path</string>
     <string name="auth_derivation_path_info">By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet. To use an alternative path, try restoring an existing wallet.</string>
-    
+
     <!-- Main -->
     <plurals name="hidden_wallets">
         <item quantity="one">%d hidden wallet</item>
@@ -98,7 +98,7 @@
     <string name="main_close_account">Close Account</string>
     <string name="main_unknown">Unknown operation</string>
     <string name="main_from">From</string>
-    <string name="main_swap_hint">0</string>
+    <string name="main_swap_hint">0.0000</string>
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
     <string name="main_swap_now">Swap now</string>
@@ -110,6 +110,7 @@
     <string name="main_send_around_in_usd">≈ %s USD</string>
     <string name="main_send_available">Available: %s</string>
     <string name="main_select_token">Select token</string>
+    <string name="main_select">Select</string>
     <string name="main_single_value_format">1 %s:</string>
     <string name="main_fee">Fee:</string>
     <string name="main_share">Share</string>
@@ -124,12 +125,13 @@
     <string name="main_receive_mint_address">%s mint address</string>
     <string name="main_hidden_wallets">%d hidden wallets</string>
     <string name="main_hide">Hide</string>
-    <string name="main_price">Price:</string>
+    <string name="main_price">Current price</string>
+    <string name="main_max_price_slippage">Max price slippage</string>
     <string name="main_zero_fee_info">Will be paid by p2p.org \nWe take care of all transfers costs.</string>
     <string name="main_slippage_settings">Slippage settings</string>
     <string name="main_slippage_description">Slippage refers to the difference between the expected price of a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.</string>
     <string name="main_min_receive">Minimum receive:</string>
-    <string name="main_swap_fee">Fee (Transaction, New wallet):</string>
+    <string name="main_swap_fee">Swap fees</string>
     <string name="main_slippage">Slippage</string>
     <string name="main_powered_by">Powered by</string>
     <string name="main_swap_slippage">Slippage</string>
@@ -205,4 +207,11 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="main_buy">Buy</string>
+    <string name="main_swap_min_receive">Receive at least: %s</string>
+    <string name="main_enter_the_amount">Enter the amount</string>
+    <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
+    <string name="swap_network_fee">Network fee</string>
+    <string name="swap_pay_network_fee">Pay network fee with</string>
+    <string name="swap_fees">Swap fees</string>
+    <string name="swap_settings">Swap settings</string>
 </resources>

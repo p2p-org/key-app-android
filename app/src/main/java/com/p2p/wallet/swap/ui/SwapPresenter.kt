@@ -2,17 +2,18 @@ package com.p2p.wallet.swap.ui
 
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.interactor.SwapInteractor
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.model.SwapRequest
 import com.p2p.wallet.swap.model.SwapResult
-import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.isMoreThan
-import com.p2p.wallet.utils.scaleMedium
+import com.p2p.wallet.utils.isZero
 import com.p2p.wallet.utils.scaleLong
+import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toBigDecimalOrZero
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPowerValue
@@ -62,6 +63,7 @@ class SwapPresenter(
 
             swapInteractor.loadAllPools()
 
+            view?.showSlippage(slippage)
             view?.showFullScreenLoading(false)
         }
     }
@@ -114,6 +116,7 @@ class SwapPresenter(
         destinationAmount = "0"
 
         view?.hideCalculations()
+        view?.showButtonText(R.string.main_select_token)
 
         setButtonEnabled()
     }
@@ -129,8 +132,12 @@ class SwapPresenter(
         view?.showSlippage(slippage)
     }
 
-    override fun loadSlippageForSelection() {
-        view?.openSlippageSelection(Slippage.parse(slippage))
+    override fun loadDataForSwapSettings() {
+        view?.openSwapSettings(Slippage.parse(slippage))
+    }
+
+    override fun loadSlippage() {
+        view?.openSlippageDialog(Slippage.parse(slippage))
     }
 
     override fun feedAvailableValue() {
@@ -250,8 +257,15 @@ class SwapPresenter(
                 minReceive = minReceive.fromLamports(destination.decimals).scaleMedium(),
                 minReceiveSymbol = destination.tokenSymbol,
                 fee = fee.fromLamports(destination.decimals).scaleMedium(),
+                liquidityProviderFee = "0.0000075 BTC",
                 feeSymbol = destination.tokenSymbol
             )
+
+            if (calculatedAmount.isZero()) {
+                view?.showButtonText(R.string.main_enter_the_amount)
+            } else {
+                view?.showButtonText(R.string.main_swap_now)
+            }
             view?.showCalculations(data)
             view?.showSlippage(slippage)
         }
@@ -320,5 +334,6 @@ data class CalculationsData(
     val minReceive: BigDecimal,
     val minReceiveSymbol: String,
     val fee: BigDecimal,
+    val liquidityProviderFee: String,
     val feeSymbol: String
 )

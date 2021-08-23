@@ -1,26 +1,27 @@
 package com.p2p.wallet.swap.ui
 
 import android.annotation.SuppressLint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.ColorRes
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSwapBinding
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import com.p2p.wallet.swap.model.Slippage
-import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
+import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.popBackStack
-import com.p2p.wallet.utils.resFromTheme
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
@@ -55,13 +56,14 @@ class SwapFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.setOnMenuItemClickListener { menu ->
                 if (menu.itemId == R.id.slippageMenuItem) {
-                    presenter.loadSlippageForSelection()
+                    presenter.loadDataForSwapSettings()
                     return@setOnMenuItemClickListener true
                 }
                 return@setOnMenuItemClickListener false
             }
             sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
             destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+            destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
             availableTextView.setOnClickListener { presenter.feedAvailableValue() }
             amountEditText.doAfterTextChanged {
                 presenter.setSourceAmount(it.toString())
@@ -71,6 +73,10 @@ class SwapFragment :
 
             reverseImageView.setOnClickListener {
                 presenter.loadPrice(true)
+            }
+
+            slippageView.setOnClickListener {
+                presenter.loadSlippage()
             }
 
             swapButton.setOnClickListener { presenter.swap() }
@@ -83,7 +89,7 @@ class SwapFragment :
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
-            availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
+            availableTextView.text = token.getFormattedTotal()
         }
     }
 
@@ -92,13 +98,19 @@ class SwapFragment :
             if (token != null) {
                 Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
                 destinationTextView.text = token.tokenSymbol
-                currencyTextView.isInvisible = true
+                destinationAvailableTextView.isVisible = true
+                destinationAvailableTextView.text = token.getFormattedTotal()
             } else {
                 destinationImageView.setImageResource(R.drawable.ic_wallet)
-                destinationTextView.text = ""
-                currencyTextView.isVisible = true
+                destinationTextView.setText(R.string.main_select)
+                destinationAvailableTextView.isVisible = false
+                destinationAvailableTextView.text = ""
             }
         }
+    }
+
+    override fun showButtonText(textRes: Int) {
+        binding.swapButton.setText(textRes)
     }
 
     override fun updateInputValue(available: BigDecimal) {
@@ -118,26 +130,36 @@ class SwapFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showCalculations(data: CalculationsData) {
-        binding.calculationsGroup.isVisible = true
-        binding.receiveValueTextView.text = "${data.minReceive} ${data.minReceiveSymbol}"
-        binding.feeValueTextView.text = "${data.fee} ${data.feeSymbol}"
+        binding.feesGroup.isVisible = true
+        binding.receiveTextView.text = getString(R.string.main_swap_min_receive, data.minReceive)
         binding.destinationAmountTextView.text = data.destinationAmount
+
+        binding.feesTextView.setOnClickListener {
+            FeesBottomSheet.show(childFragmentManager, data.liquidityProviderFee, data.fee)
+        }
+
+        binding.feesImageView.setOnClickListener {
+            FeesBottomSheet.show(childFragmentManager, data.liquidityProviderFee, data.fee)
+        }
     }
 
     override fun hideCalculations() {
-        binding.calculationsGroup.isVisible = false
-        binding.receiveValueTextView.text = ""
-        binding.feeValueTextView.text = ""
+        binding.feesGroup.isVisible = false
+        binding.receiveTextView.text = ""
         binding.destinationAmountTextView.text = ""
     }
 
     @SuppressLint("SetTextI18n")
     override fun showSlippage(slippage: Double) {
-        binding.slippageValueTextView.text = "$slippage %"
+        binding.slippageView.setBottomText("$slippage %")
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(resFromTheme(availableColor))
+        val colorFromTheme = colorFromTheme(availableColor)
+        binding.availableTextView.setTextColor(colorFromTheme)
+        binding.availableTextView.compoundDrawables.filterNotNull().forEach {
+            it.colorFilter = PorterDuffColorFilter(colorFromTheme, PorterDuff.Mode.SRC_IN)
+        }
     }
 
     override fun showAroundValue(aroundValue: BigDecimal) {
@@ -180,8 +202,16 @@ class SwapFragment :
         )
     }
 
-    override fun openSlippageSelection(currentSlippage: Slippage) {
-        SlippageBottomSheet.show(childFragmentManager, currentSlippage) { presenter.setSlippage(it) }
+    override fun openSwapSettings(currentSlippage: Slippage) {
+        SwapSettingsBottomSheet.show(childFragmentManager, currentSlippage) {
+            presenter.setSlippage(it)
+        }
+    }
+
+    override fun openSlippageDialog(currentSlippage: Slippage) {
+        SlippageBottomSheet.show(childFragmentManager, currentSlippage) {
+            presenter.setSlippage(it)
+        }
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {

@@ -85,7 +85,9 @@ class SwapInteractor(
         amount: BigInteger,
         slippage: Double
     ): BigInteger {
-        val estimated = balanceB.amount.multiply(amount).divide(balanceA.amount.add(amount))
+        val add = balanceA.amount.add(amount)
+        val estimated =
+            if (add.compareTo(BigInteger.ZERO) != 0) balanceB.amount.multiply(amount).divide(add) else BigInteger.ZERO
         return BigDecimal(estimated).multiply(BigDecimal(1 - slippage)).toBigInteger()
     }
 
