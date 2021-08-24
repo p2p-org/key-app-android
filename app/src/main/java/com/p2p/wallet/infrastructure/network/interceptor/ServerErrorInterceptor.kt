@@ -2,6 +2,7 @@ package com.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
 import com.p2p.wallet.infrastructure.network.EmptyDataException
+import com.p2p.wallet.infrastructure.network.ErrorCode
 import com.p2p.wallet.infrastructure.network.ServerError
 import com.p2p.wallet.infrastructure.network.ServerException
 import okhttp3.Interceptor
@@ -19,7 +20,11 @@ class ServerErrorInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val response = chain.proceed(request)
-        return handleResponse(response)
+        return if (response.isSuccessful) {
+            handleResponse(response)
+        } else {
+            throw extractGeneralException(response.body!!.string())
+        }
     }
 
     private fun handleResponse(response: Response): Response {
@@ -83,6 +88,16 @@ class ServerErrorInterceptor(
             errorCode = serverError.error.code,
             fullMessage = JSONObject(bodyString).toString(1),
             errorMessage = serverError.error.message
+        )
+    } catch (e: Throwable) {
+        IOException("Error reading response error body", e)
+    }
+
+    private fun extractGeneralException(bodyString: String): Throwable = try {
+        ServerException(
+            errorCode = ErrorCode.SERVER_ERROR,
+            fullMessage = bodyString,
+            errorMessage = null
         )
     } catch (e: Throwable) {
         IOException("Error reading response error body", e)

@@ -12,14 +12,13 @@ import com.p2p.wallet.databinding.DialogSwapFeesBottomSheetBinding
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
-import java.math.BigDecimal
 
 class FeesBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_LIQUIDITY_FEE = "EXTRA_LIQUIDITY_FEE"
         private const val EXTRA_NETWORK_FEE = "EXTRA_NETWORK_FEE"
-        fun show(fm: FragmentManager, liquidityFee: String, networkFee: BigDecimal) {
+        fun show(fm: FragmentManager, liquidityFee: String, networkFee: String) {
             FeesBottomSheet()
                 .withArgs(
                     EXTRA_LIQUIDITY_FEE to liquidityFee,
@@ -32,7 +31,7 @@ class FeesBottomSheet : BottomSheetDialogFragment() {
     private val binding: DialogSwapFeesBottomSheetBinding by viewBinding()
 
     private val liquidityFee: String by args(EXTRA_LIQUIDITY_FEE)
-    private val networkFee: BigDecimal by args(EXTRA_NETWORK_FEE)
+    private val networkFee: String by args(EXTRA_NETWORK_FEE)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_swap_fees_bottom_sheet, container, false)
@@ -41,7 +40,7 @@ class FeesBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             liquidityFeeView.setBottomText(liquidityFee)
-            networkFeeView.setBottomText(networkFee.toString())
+            networkFeeView.setBottomText(networkFee)
             payView.setOnClickListener {
                 Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show()
             }

@@ -5,7 +5,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -176,10 +175,6 @@ class SwapFragment :
             info = info,
             onDismiss = { popBackStack() }
         )
-    }
-
-    override fun showNoPoolFound() {
-        Toast.makeText(requireContext(), "Pool not found", Toast.LENGTH_SHORT).show()
     }
 
     override fun openSourceSelection(tokens: List<Token>) {

@@ -214,4 +214,5 @@
     <string name="swap_pay_network_fee">Pay network fee with</string>
     <string name="swap_fees">Swap fees</string>
     <string name="swap_settings">Swap settings</string>
+    <string name="swap_funds_not_enough">Don\'t go over the available funds</string>
 </resources>
