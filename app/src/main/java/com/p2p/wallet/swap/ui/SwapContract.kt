@@ -31,7 +31,6 @@ interface SwapContract {
         fun openDestinationSelection(tokens: List<Token>)
         fun openSwapSettings(currentSlippage: Slippage)
         fun openSlippageDialog(currentSlippage: Slippage)
-        fun showNoPoolFound()
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -118,12 +118,14 @@ class SwapPresenter(
         view?.hideCalculations()
         view?.showButtonText(R.string.main_select_token)
 
+        updateButtonText(newToken)
         setButtonEnabled()
     }
 
     override fun setNewDestinationToken(newToken: Token) {
         destinationToken = newToken
         searchPool()
+        updateButtonText(sourceToken!!)
         setButtonEnabled()
     }
 
@@ -175,7 +177,7 @@ class SwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
-        if (destinationToken != null) calculateData(requireSourceToken(), requireDestinationToken())
+        calculateData(requireSourceToken(), destinationToken)
 
         setButtonEnabled()
     }
@@ -220,7 +222,8 @@ class SwapPresenter(
         }
     }
 
-    private fun calculateData(source: Token, destination: Token) {
+    private fun calculateData(source: Token, destination: Token?) {
+        if (destination == null) return
         calculationJob?.cancel()
         calculationJob = launch {
             val pool = requirePool()
@@ -256,16 +259,12 @@ class SwapPresenter(
                 destinationAmount = destinationAmount,
                 minReceive = minReceive.fromLamports(destination.decimals).scaleMedium(),
                 minReceiveSymbol = destination.tokenSymbol,
-                fee = fee.fromLamports(destination.decimals).scaleMedium(),
+                fee = "${fee.fromLamports(destination.decimals).scaleMedium()} ${destination.tokenSymbol}",
                 liquidityProviderFee = "0.0000075 BTC",
                 feeSymbol = destination.tokenSymbol
             )
 
-            if (calculatedAmount.isZero()) {
-                view?.showButtonText(R.string.main_enter_the_amount)
-            } else {
-                view?.showButtonText(R.string.main_swap_now)
-            }
+            updateButtonText(source)
             view?.showCalculations(data)
             view?.showSlippage(slippage)
         }
@@ -286,8 +285,6 @@ class SwapPresenter(
             if (pool != null) {
                 currentPool = pool
                 calculateData(source, destination)
-            } else {
-                view?.showNoPoolFound()
             }
         }
     }
@@ -319,6 +316,20 @@ class SwapPresenter(
         }
     }
 
+    private fun updateButtonText(source: Token) {
+        val decimalAmount = sourceAmount.toBigDecimalOrZero()
+        aroundValue = source.usdRate.multiply(decimalAmount).scaleMedium()
+
+        val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
+
+        when {
+            isMoreThanBalance -> view?.showButtonText(R.string.swap_funds_not_enough)
+            decimalAmount.isZero() -> view?.showButtonText(R.string.main_enter_the_amount)
+            destinationToken == null -> view?.showButtonText(R.string.main_select_token)
+            else -> view?.showButtonText(R.string.main_swap_now)
+        }
+    }
+
     private fun requirePool(): Pool.PoolInfo =
         currentPool ?: throw IllegalStateException("Pool is null")
 
@@ -333,7 +344,7 @@ data class CalculationsData(
     val destinationAmount: String,
     val minReceive: BigDecimal,
     val minReceiveSymbol: String,
-    val fee: BigDecimal,
+    val fee: String,
     val liquidityProviderFee: String,
     val feeSymbol: String
 )
