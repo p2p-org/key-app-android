@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
+import com.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
@@ -72,6 +73,7 @@ object NetworkModule : InjectionModule {
                 if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
             }
             .addInterceptor(ServerErrorInterceptor(get()))
+            .addNetworkInterceptor(ContentTypeInterceptor())
             .build()
 
         return Retrofit.Builder()

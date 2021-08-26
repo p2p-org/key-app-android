@@ -68,7 +68,7 @@ data class Token constructor(
 
     fun getFormattedTotal(): String = "$total $tokenSymbol"
 
-    fun getFormattedExchangeRate(): String = String.format("%.2f", usdRate)
+    fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
 
     companion object {
         const val USD_SYMBOL = "USD"

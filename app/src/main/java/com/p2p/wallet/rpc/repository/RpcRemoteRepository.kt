@@ -105,7 +105,7 @@ class RpcRemoteRepository(
         )
 
         val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
-        return rpcApi.getTokenAccountsByOwner(rpcRequest).result
+        return rpcApi.getTokenAccountsByOwner(rpcRequest = rpcRequest).result
     }
 
     override suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long {

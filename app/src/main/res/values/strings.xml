@@ -102,16 +102,13 @@
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
     <string name="main_swap_now">Swap now</string>
-    <string name="main_send_now">Send now</string>
     <string name="main_send_to">Send to</string>
     <string name="main_wallet_address">Wallet address</string>
     <string name="main_send_token_info">Send SOL or any SPL Tokens on one address</string>
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">≈ %s USD</string>
-    <string name="main_send_available">Available: %s</string>
     <string name="main_select_token">Select token</string>
     <string name="main_select">Select</string>
-    <string name="main_single_value_format">1 %s:</string>
     <string name="main_fee">Fee:</string>
     <string name="main_share">Share</string>
     <string name="main_send_to_yourself_error">You can not send tokens to yourself</string>
@@ -156,6 +153,24 @@
     <string name="main_receive_spl_title">SOL and SPL Tokens</string>
     <string name="main_receive_spl_info">The Solana Program Library  (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain. \n\nSimilar to ERC20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications. SPL Tokens can be traded on Serum, a Solana based decentralized exchange and FTX.</string>
     <string name="main_tokens_available_count">30+</string>
+    <string name="main_transfer_fee">Transfer fee</string>
+    <string name="main_correct_address_question">Is this address correct? It doesn\’t have funds.</string>
+    <string name="main_correct_address">I’m sure, It’s correct</string>
+    <string name="main_buy">Buy</string>
+    <string name="main_swap_min_receive">Receive at least: %s</string>
+    <string name="main_enter_the_amount">Enter the amount</string>
+
+    <string name="send_make_sure_correct_address">Make sure the address is correct</string>
+    <string name="send_enter_address">Enter the recipient\'s address</string>
+    <string name="send_now">Send now</string>
+
+    <!-- swap -->
+    <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
+    <string name="swap_network_fee">Network fee</string>
+    <string name="swap_pay_network_fee">Pay network fee with</string>
+    <string name="swap_fees">Swap fees</string>
+    <string name="swap_settings">Swap settings</string>
+    <string name="swap_funds_not_enough">Don\'t go over the available funds</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -206,13 +221,5 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
-    <string name="main_buy">Buy</string>
-    <string name="main_swap_min_receive">Receive at least: %s</string>
-    <string name="main_enter_the_amount">Enter the amount</string>
-    <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
-    <string name="swap_network_fee">Network fee</string>
-    <string name="swap_pay_network_fee">Pay network fee with</string>
-    <string name="swap_fees">Swap fees</string>
-    <string name="swap_settings">Swap settings</string>
-    <string name="swap_funds_not_enough">Don\'t go over the available funds</string>
+    <string name="send_free_transaction">Free</string>
 </resources>
