@@ -220,7 +220,7 @@ class SendPresenter(
     }
 
     private fun checkDestinationBalance(address: String) {
-        if (!isAddressValid(address)) {
+        if (!isAddressValid(address.trim())) {
             view?.hideAddressConfirmation()
             return
         }
@@ -229,7 +229,7 @@ class SendPresenter(
             return
 
         checkBalanceJob = launch {
-            val balance = userInteractor.getBalance(address.toPublicKey())
+            val balance = userInteractor.getBalance(address.trim().toPublicKey())
             shouldAskConfirmation = if (balance == 0L) {
                 view?.showAddressConfirmation()
                 true

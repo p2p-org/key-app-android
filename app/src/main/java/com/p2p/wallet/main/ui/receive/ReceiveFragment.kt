@@ -2,6 +2,7 @@ package com.p2p.wallet.main.ui.receive
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.transition.TransitionManager.beginDelayedTransition
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isInvisible
@@ -49,19 +50,8 @@ class ReceiveFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            solImageView.setOnClickListener {
-                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
-            }
-            ethImageView.setOnClickListener {
-                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
-            }
-            btcImageView.setOnClickListener {
-                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
-            }
-            ftxImageView.setOnClickListener {
-                ReceiveInfoBottomSheetDialog.show(childFragmentManager)
-            }
-            tokenCountTextView.setOnClickListener {
+            currenciesInfoTextView.clipToOutline = true
+            currenciesInfoTextView.setOnClickListener {
                 ReceiveInfoBottomSheetDialog.show(childFragmentManager)
             }
 
@@ -76,12 +66,14 @@ class ReceiveFragment :
                 }
 
                 detailsButton.setText(resId)
+                beginDelayedTransition(root)
             }
 
             val isDetailed = token != null
             viewButton.isVisible = !isDetailed
             detailsButton.isVisible = isDetailed
-            TransitionManager.beginDelayedTransition(root)
+
+            tabsRadioGroup.check(R.id.solanaButton)
         }
 
         presenter.loadData()

@@ -113,7 +113,7 @@
     <string name="main_share">Share</string>
     <string name="main_send_to_yourself_error">You can not send tokens to yourself</string>
     <string name="main_send_transaction_id">Transaction ID</string>
-    <string name="main_send_view_in_explorer">View in blockchain explorer</string>
+    <string name="main_send_view_in_explorer">View in Solana explorer</string>
     <string name="main_send_success">Success</string>
     <string name="main_send_transaction_confirmed">Transaction has been confirmed</string>
     <string name="main_send_wrong_wallet">Wrong wallet address</string>
@@ -222,4 +222,7 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="send_free_transaction">Free</string>
+    <string name="receive_solana">Solana</string>
+    <string name="receive_bitcoin">Bitcoin</string>
+    <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
 </resources>
