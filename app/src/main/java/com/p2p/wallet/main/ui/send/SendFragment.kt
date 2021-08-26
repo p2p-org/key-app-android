@@ -21,9 +21,9 @@ import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
+import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.focusAndShowKeyboard
 import com.p2p.wallet.utils.popBackStack
-import com.p2p.wallet.utils.resFromTheme
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
@@ -89,7 +89,7 @@ class SendFragment :
                 addFragment(target)
             }
 
-            feeValueTextView.setOnClickListener {
+            feeView.setOnClickListener {
                 FeeInfoBottomSheet.show(childFragmentManager)
             }
 
@@ -110,6 +110,12 @@ class SendFragment :
 
             tokenTextView.setOnClickListener {
                 presenter.switchCurrency()
+            }
+
+            correctAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
+                val color = if (isChecked) R.attr.colorAccentPrimary else R.attr.colorAccentWarning
+                errorTextView.setTextColor(colorFromTheme(color))
+                presenter.setShouldAskConfirmation(!isChecked)
             }
         }
 
@@ -144,17 +150,22 @@ class SendFragment :
         )
     }
 
+    override fun showAddressConfirmation() {
+        binding.correctAddressGroup.isVisible = true
+    }
+
+    override fun hideAddressConfirmation() {
+        binding.correctAddressGroup.isVisible = false
+    }
+
     @SuppressLint("SetTextI18n")
     override fun showSourceToken(token: Token) {
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             tokenTextView.text = token.tokenSymbol
-            singleValueTextView.text = getString(R.string.main_single_value_format, token.tokenSymbol)
-            usdValueTextView.text = getString(R.string.main_usd_end_format, token.getFormattedExchangeRate())
-            availableTextView.text = getString(R.string.main_send_available, token.getFormattedTotal())
-            /* P2P pays for send transactions, hardcoding here temporary */
-            feeValueTextView.text = "0.0000 SOL"
+            availableTextView.text = "${token.getFormattedTotal()} ${token.tokenSymbol}"
+            currentPriceView.setBottomText(token.getCurrentPrice())
         }
     }
 
@@ -180,11 +191,16 @@ class SendFragment :
     }
 
     override fun setAvailableTextColor(availableColor: Int) {
-        binding.availableTextView.setTextColor(resFromTheme(availableColor))
+        binding.availableTextView.setTextColor(colorFromTheme(availableColor))
     }
 
+    @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = getString(R.string.main_send_available, "$available $symbol")
+        binding.availableTextView.text = "$available $symbol"
+    }
+
+    override fun showButtonText(textRes: Int) {
+        binding.sendButton.setText(textRes)
     }
 
     @SuppressLint("SetTextI18n")

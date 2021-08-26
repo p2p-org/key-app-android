@@ -8,12 +8,15 @@
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_back.xml" value="0.35555555555555557" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_plus.xml" value="0.36512820512820515" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_receive.xml" value="0.34444444444444444" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/dialog_fee_info.xml" value="0.29259259259259257" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/dialog_slippage_bottom_sheet.xml" value="0.31296296296296294" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/dialog_swap_fees_bottom_sheet.xml" value="0.33" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/dialog_swap_settings.xml" value="0.3546875" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_buy.xml" value="0.3546875" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_main.xml" value="0.30185185185185187" />
-        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_send.xml" value="0.30185185185185187" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_receive.xml" value="0.3" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_security.xml" value="0.29259259259259257" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_send.xml" value="0.33" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_swap.xml" value="0.22" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_token_details.xml" value="0.3490740740740741" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_transaction_transfer.xml" value="0.31296296296296294" />

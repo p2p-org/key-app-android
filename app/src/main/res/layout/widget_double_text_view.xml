@@ -36,6 +36,5 @@
         app:layout_constraintBottom_toBottomOf="@id/bottomTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/topTextView"
-        tools:ignore="ContentDescription"
-        tools:visibility="visible" />
+        tools:ignore="ContentDescription" />
 </merge>
