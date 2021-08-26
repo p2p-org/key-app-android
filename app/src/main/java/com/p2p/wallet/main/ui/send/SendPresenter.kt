@@ -51,7 +51,7 @@ class SendPresenter(
 
     private var destinationAddress: String = ""
 
-    private var shouldAskConfirmation: Boolean = true
+    private var shouldAskConfirmation: Boolean = false
 
     private var calculationJob: Job? = null
     private var checkBalanceJob: Job? = null

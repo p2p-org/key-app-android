@@ -140,10 +140,14 @@ class MainInteractor(
 
         val signature = transaction.getSignature().orEmpty()
 
-        val recipientPubkey = if (associatedNotNeeded && address.equals(destinationAddress)) {
+        val recipientPubkey = if (associatedNotNeeded) {
             address.toBase58()
         } else {
-            destinationAddress.toBase58()
+            if (address.equals(destinationAddress)) {
+                address.toBase58()
+            } else {
+                destinationAddress.toBase58()
+            }
         }
 
         val transactionId = feeRelayerRepository.sendSplToken(
