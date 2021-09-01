@@ -34,6 +34,9 @@ fun ZonedDateTime.toDateTimeString(): String {
 fun ZonedDateTime.isSameDayAs(other: ZonedDateTime) =
     toLocalDate() == other.toLocalDate()
 
+fun ZonedDateTime.isSameAs(other: ZonedDateTime) =
+    toLocalDateTime() == other.toLocalDateTime()
+
 fun Duration.ceilToMinutes() =
     ceil(seconds.toFloat() / ChronoUnit.MINUTES.duration.seconds).toInt()
 

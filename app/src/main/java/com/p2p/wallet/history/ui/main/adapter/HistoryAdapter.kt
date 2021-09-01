@@ -1,9 +1,11 @@
 package com.p2p.wallet.history.ui.main.adapter
 
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.data.Entry
 import com.p2p.wallet.R
+import com.p2p.wallet.common.date.isSameAs
 import com.p2p.wallet.common.date.isSameDayAs
 import com.p2p.wallet.common.ui.PagingState
 import com.p2p.wallet.history.model.HistoryItem
@@ -19,6 +21,10 @@ class HistoryAdapter(
 
     companion object {
         private val noAdditionalItemRequiredState = listOf(PagingState.Idle)
+
+        private enum class Field {
+            CHART
+        }
     }
 
     private var data: MutableList<HistoryItem> = mutableListOf()
@@ -26,24 +32,29 @@ class HistoryAdapter(
 
     fun setHeaderData(currentToken: Token, sol: Token) {
         if (data.isEmpty() || data.firstOrNull() !is HistoryItem.Header) {
-            val header = HistoryItem.Header(currentToken, sol)
+            val header = HistoryItem.Header(currentToken, sol, emptyList())
             data.add(0, header)
             notifyItemInserted(0)
         }
     }
 
     fun setChartData(entries: List<Entry>) {
-        /* We don't need to cache value in data list, therefore just updating chart directly */
-        notifyItemChanged(0, entries)
+        val old = ArrayList(data)
+
+        val header = data.firstOrNull() as? HistoryItem.Header ?: return
+        data[0] = header.copy(entries = entries)
+        DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)
     }
 
     fun setTransactions(new: List<TransactionType>) {
+        val old = ArrayList(data)
+
         if (new.isEmpty()) {
             data.add(HistoryItem.Empty)
         } else {
             data.addAll(mapTransactions(new))
         }
-        notifyItemInserted(data.size)
+        DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)
     }
 
     fun setPagingState(newState: PagingState) {
@@ -100,14 +111,11 @@ class HistoryAdapter(
             return
         }
 
-        payloads.forEach { data ->
-            when (holder) {
-                is HeaderViewHolder -> {
-                    if (data is List<*>) {
-                        @Suppress("UNCHECKED_CAST")
-                        holder.setChartData(data as List<Entry>)
-                    }
-                }
+        val header = this.data[position] as HistoryItem.Header
+        val fields = payloads.first() as List<*>
+        fields.forEach { field ->
+            when (field) {
+                Field.CHART -> (holder as? HeaderViewHolder)?.setChartData(header.entries)
             }
         }
     }
@@ -152,4 +160,47 @@ class HistoryAdapter(
                     )
             }
         }
+
+    private fun getDiffCallback(
+        oldList: List<HistoryItem>,
+        newList: List<HistoryItem>
+    ) = object : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            return when {
+                oldItem is HistoryItem.Header && newItem is HistoryItem.Header ->
+                    oldItem.token.mintAddress == newItem.token.mintAddress
+                oldItem is HistoryItem.DateItem && newItem is HistoryItem.DateItem ->
+                    oldItem.date.isSameAs(newItem.date)
+                oldItem is HistoryItem.TransactionItem && newItem is HistoryItem.TransactionItem ->
+                    oldItem.transaction.signature == newItem.transaction.signature
+                else -> oldItem == newItem
+            }
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val old = oldList[oldItemPosition]
+            val new = newList[newItemPosition]
+            return old == new
+        }
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            val fields = mutableListOf<Field>()
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            if (oldItem is HistoryItem.Header && newItem is HistoryItem.Header) {
+                if (oldItem.entries.size == newItem.entries.size) {
+                    fields.add(Field.CHART)
+                }
+            }
+
+            return if (fields.isEmpty()) super.getChangePayload(oldItemPosition, newItemPosition) else fields
+        }
+    }
 }

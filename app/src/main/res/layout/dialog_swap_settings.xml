@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_alert_elevation_rounded_top"
@@ -29,7 +30,8 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="20dp"
         app:drawableEnd="@drawable/ic_arrow_right"
-        app:topText="@string/main_slippage_settings" />
+        app:topText="@string/main_slippage_settings"
+        tools:bottomText="0.1%" />
 
     <View
         android:layout_width="match_parent"
@@ -43,6 +45,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="20dp"
         app:bottomText="SOL"
+        app:drawableEnd="@drawable/ic_arrow_right"
         app:topText="@string/swap_pay_network_fee" />
 
 </LinearLayout>

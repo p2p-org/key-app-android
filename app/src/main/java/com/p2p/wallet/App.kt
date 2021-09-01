@@ -19,6 +19,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.KoinContextHandler
 import org.koin.core.context.startKoin
 import timber.log.Timber
+import java.util.LinkedList
 
 class App : Application() {
 
