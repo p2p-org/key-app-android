@@ -11,6 +11,11 @@ abstract class AbstractData protected constructor(data: ByteArray, dataLength: I
     @Transient
     private var cursor = 0
 
+    init {
+        require(data.size >= dataLength) { "Wrong data" }
+        this.data = data
+    }
+
     protected fun readByte(): Byte {
         return data[cursor++]
     }
@@ -31,10 +36,5 @@ abstract class AbstractData protected constructor(data: ByteArray, dataLength: I
         val uint64 = ByteUtils.readUint64(data, cursor)
         cursor += ByteUtils.UINT_64_LENGTH
         return uint64
-    }
-
-    init {
-        require(data.size >= dataLength) { "Wrong data" }
-        this.data = data
     }
 }

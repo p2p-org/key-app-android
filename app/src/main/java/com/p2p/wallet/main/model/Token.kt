@@ -25,6 +25,8 @@ data class Token constructor(
     @ColorRes val color: Int,
     val usdRate: BigDecimal,
     val visibility: TokenVisibility,
+    val serumV3Usdc: String?,
+    val serumV3Usdt: String?,
     val isWrapped: Boolean
 ) : Parcelable {
 
@@ -74,7 +76,8 @@ data class Token constructor(
         const val USD_SYMBOL = "USD"
         const val SOL_SYMBOL = "SOL"
         const val USDC_SYMBOL = "USDC"
-        const val SOL_MINT = "So11111111111111111111111111111111111111112"
+        const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
+        const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ" // Arbitrary mint to represent SOL (not wrapped SOL).
 
         fun createSOL(
             publicKey: String,
@@ -95,6 +98,8 @@ data class Token constructor(
                 color = R.color.chartSOL,
                 usdRate = exchangeRate,
                 visibility = TokenVisibility.SHOWN,
+                serumV3Usdc = tokenData.serumV3Usdc,
+                serumV3Usdt = tokenData.serumV3Usdt,
                 isWrapped = tokenData.isWrapped
             )
         }

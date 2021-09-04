@@ -1,0 +1,35 @@
+package org.p2p.solanaj.serumswap
+
+import org.p2p.solanaj.model.core.PublicKey
+
+class OpenOrders(
+    val address: PublicKey,
+    val data: OpenOrdersLayout,
+    val programId: PublicKey
+) {
+
+    init {
+        if (!data.accountFlags.initialized || !data.accountFlags.openOrders) {
+            throw IllegalStateException("Invalid OpenOrders account")
+        }
+    }
+
+    val version: Int?
+        get() = Version.getVersion(programId.toBase58())
+
+    val publicKey
+        get() = address
+
+
+    companion object {
+        fun getLayoutType(programId: String): MarketStatLayout.Type {
+            val version = Version.getVersion(programId)
+            return if (version == 1) MarketStatLayout.Type.LAYOUT_V1
+            else MarketStatLayout.Type.LAYOUT_V2
+        }
+
+        fun getLayoutSpan(programId: String): Long =
+            getLayoutType(programId).span
+    }
+
+}

@@ -1,6 +1,6 @@
 package org.p2p.solanaj.kits.transaction;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 import org.p2p.solanaj.model.types.RpcResultObject;
 
@@ -10,11 +10,11 @@ import java.util.Map;
 public class ConfirmedTransactionParsed extends RpcResultObject {
 
     public static class AccountKeysParsed {
-        @Json(name = "pubkey")
+        @SerializedName("pubkey")
         private String pubkey;
-        @Json(name = "signer")
+        @SerializedName("signer")
         private boolean signer;
-        @Json(name = "writable")
+        @SerializedName("writable")
         private boolean writable;
 
         public String getPubkey() {
@@ -24,9 +24,9 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class Parsed {
-        @Json(name = "info")
+        @SerializedName("info")
         private Map<String, Object> info;
-        @Json(name = "type")
+        @SerializedName("type")
         private String type;
 
         public Map<String, Object> getInfo() {
@@ -40,15 +40,15 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class InstructionParsed {
-        @Json(name = "parsed")
+        @SerializedName("parsed")
         private Parsed parsed;
-        @Json(name = "program")
+        @SerializedName("program")
         private String program;
-        @Json(name = "programId")
+        @SerializedName("programId")
         private String programId;
-        @Json(name = "accounts")
+        @SerializedName("accounts")
         private List<String> accounts;
-        @Json(name = "data")
+        @SerializedName("data")
         private String data;
 
         public Parsed getParsed() {
@@ -74,11 +74,11 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class MessageParsed {
-        @Json(name = "accountKeys")
+        @SerializedName("accountKeys")
         private List<AccountKeysParsed> accountKeys;
-        @Json(name = "instructions")
+        @SerializedName("instructions")
         private List<InstructionParsed> instructions;
-        @Json(name = "recentBlockhash")
+        @SerializedName("recentBlockhash")
         private String recentBlockhash;
 
         public List<AccountKeysParsed> getAccountKeys() {
@@ -96,9 +96,9 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class TransactionParsed {
-        @Json(name = "message")
+        @SerializedName("message")
         private MessageParsed message;
-        @Json(name = "signatures")
+        @SerializedName("signatures")
         private List<String> signatures;
 
         public MessageParsed getMessage() {
@@ -112,10 +112,10 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class InnerInstruction {
-        @Json(name = "index")
+        @SerializedName("index")
         private int index;
 
-        @Json(name = "instructions")
+        @SerializedName("instructions")
         private List<InstructionParsed> instructions;
 
         public List<InstructionParsed> getInstructions() {
@@ -125,9 +125,9 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class PostTokenBalance {
-        @Json(name = "accountIndex")
+        @SerializedName("accountIndex")
         private int accountIndex;
-        @Json(name = "mint")
+        @SerializedName("mint")
         private String mint;
 
         public int getAccountIndex() {
@@ -141,11 +141,11 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
     }
 
     public static class Meta {
-        @Json(name = "fee")
+        @SerializedName("fee")
         private long fee;
-        @Json(name = "innerInstructions")
+        @SerializedName("innerInstructions")
         private List<InnerInstruction> innerInstructions;
-        @Json(name = "postTokenBalances")
+        @SerializedName("postTokenBalances")
         private List<PostTokenBalance> postTokenBalances;
 
         public List<InnerInstruction> getInnerInstructions() {
@@ -161,16 +161,16 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
         }
     }
 
-    @Json(name = "blockTime")
+    @SerializedName("blockTime")
     private long blockTime;
 
-    @Json(name = "slot")
+    @SerializedName("slot")
     private int slot;
 
-    @Json(name = "transaction")
+    @SerializedName("transaction")
     private TransactionParsed transaction;
 
-    @Json(name = "meta")
+    @SerializedName("meta")
     private Meta meta;
 
     public TransactionParsed getTransaction() {

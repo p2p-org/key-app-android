@@ -16,6 +16,7 @@ import org.p2p.solanaj.model.types.TokenAccountBalance
 import java.math.BigDecimal
 import java.math.BigInteger
 
+@Deprecated("this swap is deprecated, we are moving to SerumSwap")
 class SwapInteractor(
     private val swapRepository: SwapRepository,
     private val swapLocalRepository: SwapLocalRepository,

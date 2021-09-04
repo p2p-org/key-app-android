@@ -4,7 +4,6 @@ import org.bitcoinj.core.Utils
 import org.p2p.solanaj.model.core.AccountMeta
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionInstruction
-import java.util.ArrayList
 
 object SystemProgram {
     val PROGRAM_ID = PublicKey("11111111111111111111111111111111")
@@ -33,8 +32,8 @@ object SystemProgram {
         fromPublicKey: PublicKey,
         newAccountPublikkey: PublicKey,
         lamports: Long,
-        space: Long,
-        programId: PublicKey
+        space: Long = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong(),
+        programId: PublicKey = TokenProgram.PROGRAM_ID
     ): TransactionInstruction {
         val keys = ArrayList<AccountMeta>()
         keys.add(AccountMeta(fromPublicKey, isSigner = true, isWritable = true))

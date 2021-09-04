@@ -1,19 +1,19 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 public class QRAccountInfo extends RpcResultObject {
 
     public static class Value {
-        @Json(name = "data")
+        @SerializedName("data")
         private Object data;
-        @Json(name = "executable")
+        @SerializedName("executable")
         private boolean executable;
-        @Json(name = "lamports")
+        @SerializedName("lamports")
         private long lamports;
-        @Json(name = "owner")
+        @SerializedName("owner")
         private String owner;
-        @Json(name = "rentEpoch")
+        @SerializedName("rentEpoch")
         private long rentEpoch;
 
         public Object getData() {
@@ -39,7 +39,7 @@ public class QRAccountInfo extends RpcResultObject {
     }
 
     public static class Data {
-        @Json(name = "parsed")
+        @SerializedName("parsed")
         private Parsed parsed;
 
         public Parsed getParsed() {
@@ -48,7 +48,7 @@ public class QRAccountInfo extends RpcResultObject {
     }
 
     public static class Parsed {
-        @Json(name = "info")
+        @SerializedName("info")
         private Info info;
 
         public Info getInfo() {
@@ -57,13 +57,13 @@ public class QRAccountInfo extends RpcResultObject {
     }
 
     public static class Info {
-        @Json(name = "isNative")
+        @SerializedName("isNative")
         boolean isNative;
-        @Json(name = "mint")
+        @SerializedName("mint")
         String mint;
-        @Json(name = "owner")
+        @SerializedName("owner")
         String owner;
-        @Json(name = "state")
+        @SerializedName("state")
         String state;
 
         public boolean isNative() {
@@ -83,7 +83,7 @@ public class QRAccountInfo extends RpcResultObject {
         }
     }
 
-    @Json(name = "value")
+    @SerializedName("value")
     private Value value;
 
     public Value getValue() {

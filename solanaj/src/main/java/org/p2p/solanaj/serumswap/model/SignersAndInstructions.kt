@@ -1,4 +1,4 @@
-package org.p2p.solanaj.model.serumswap.model
+package org.p2p.solanaj.serumswap.model
 
 import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.TransactionInstruction

@@ -30,7 +30,7 @@ class TokenDetailsPresenter(
 
     override fun loadSolAddress() {
         launch {
-            val sol = userInteractor.findAccountAddress(Token.SOL_MINT) ?: return@launch
+            val sol = userInteractor.findAccountAddress(Token.WRAPPED_SOL_MINT) ?: return@launch
             view?.showSolAddress(sol)
         }
     }

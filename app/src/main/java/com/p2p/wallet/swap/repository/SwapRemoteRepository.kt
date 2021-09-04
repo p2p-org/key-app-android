@@ -47,7 +47,7 @@ class SwapRemoteRepository(
             amountIn = request.amount,
             balanceA = request.balanceA,
             balanceB = request.balanceB,
-            wrappedSolAccount = Token.SOL_MINT.toPublicKey(),
+            wrappedSolAccount = Token.WRAPPED_SOL_MINT.toPublicKey(),
             accountAddressA = accountA?.publicKey?.toPublicKey(),
             accountAddressB = accountB?.publicKey?.toPublicKey(),
             getAccountInfo = { rpcRepository.getAccountInfo(it) },

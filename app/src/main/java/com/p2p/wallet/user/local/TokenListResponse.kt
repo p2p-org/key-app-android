@@ -20,7 +20,9 @@ data class TokenResponse(
     @SerializedName("logoURI")
     val logoUrl: String?,
     @SerializedName("tags")
-    val tags: List<String>
+    val tags: List<String>,
+    @SerializedName("extensions")
+    val extensions: TokenExtensions
 ) {
 
     companion object {
@@ -29,3 +31,10 @@ data class TokenResponse(
 
     fun isWrapped() = tags.any { it == WRAPPED_TAG }
 }
+
+data class TokenExtensions(
+    @SerializedName("serumV3Usdc")
+    val serumV3Usdc: String?,
+    @SerializedName("serumV3Usdt")
+    val serumV3Usdt: String?
+)

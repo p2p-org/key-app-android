@@ -1,4 +1,4 @@
-package org.p2p.solanaj.model.serumswap
+package org.p2p.solanaj.serumswap
 
 object Version {
 

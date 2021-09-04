@@ -19,7 +19,9 @@ object TokenConverter {
             symbol = response.symbol,
             iconUrl = response.logoUrl,
             decimals = response.decimals,
-            isWrapped = response.isWrapped()
+            isWrapped = response.isWrapped(),
+            serumV3Usdc = response.extensions.serumV3Usdc,
+            serumV3Usdt = response.extensions.serumV3Usdt
         )
 
     fun fromNetwork(
@@ -42,6 +44,8 @@ object TokenConverter {
             color = TokenColors.findColorBySymbol(tokenData.symbol),
             usdRate = price.price,
             visibility = TokenVisibility.DEFAULT,
+            serumV3Usdc = tokenData.serumV3Usdc,
+            serumV3Usdt = tokenData.serumV3Usdt,
             isWrapped = tokenData.isWrapped
         )
     }
@@ -59,6 +63,8 @@ object TokenConverter {
             color = token.color,
             exchangeRate = token.usdRate.toString(),
             visibility = token.visibility.stringValue,
+            serumV3Usdc = token.serumV3Usdc,
+            serumV3Usdt = token.serumV3Usdt,
             isWrapped = token.isWrapped
         )
 
@@ -75,6 +81,8 @@ object TokenConverter {
             color = entity.color,
             usdRate = entity.exchangeRate.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
+            serumV3Usdc = entity.serumV3Usdc,
+            serumV3Usdt = entity.serumV3Usdt,
             isWrapped = entity.isWrapped
         )
 }

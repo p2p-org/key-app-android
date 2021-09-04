@@ -2,18 +2,18 @@ package org.p2p.solanaj.model.types;
 
 import java.util.List;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig.Encoding;
 
 public class ConfigObjects {
 
     public static class ConfirmedSignFAddr2 {
-        @Json(name = "limit")
+        @SerializedName("limit")
         private long limit;
-        @Json(name = "before")
+        @SerializedName("before")
         private String before;
-        @Json(name = "until")
+        @SerializedName("until")
         private String until;
 
         public ConfirmedSignFAddr2(String before, int limit) {
@@ -23,9 +23,9 @@ public class ConfigObjects {
     }
 
     public static class Memcmp {
-        @Json(name = "offset")
+        @SerializedName("offset")
         private long offset;
-        @Json(name = "bytes")
+        @SerializedName("bytes")
         private String bytes;
 
         public Memcmp() {
@@ -40,7 +40,7 @@ public class ConfigObjects {
 
     public static class DataSize {
         public static final int SPAN = 165;
-        @Json(name = "dataSize")
+        @SerializedName("dataSize")
         private int dataSize;
 
         public DataSize(int dataSize) {
@@ -49,7 +49,7 @@ public class ConfigObjects {
     }
 
     public static class Filter {
-        @Json(name = "memcmp")
+        @SerializedName("memcmp")
         private Memcmp memcmp;
 
         public Filter() {
@@ -62,9 +62,9 @@ public class ConfigObjects {
     }
 
     public static class ProgramAccountConfig {
-        @Json(name = "encoding")
+        @SerializedName("encoding")
         private Encoding encoding = null;
-        @Json(name = "filters")
+        @SerializedName("filters")
         private List<Object> filters = null;
 
         public ProgramAccountConfig() {

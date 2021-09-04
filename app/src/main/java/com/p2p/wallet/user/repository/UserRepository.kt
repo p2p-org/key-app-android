@@ -63,7 +63,7 @@ class UserRepositoryImpl(
          * Assuming that SOL is our default token, creating it manually
          * */
         val solBalance = rpcRepository.getBalance(tokenProvider.publicKey.toPublicKey())
-        val tokenData = userLocalRepository.getTokenData(Token.SOL_MINT) ?: return@withContext result
+        val tokenData = userLocalRepository.getTokenData(Token.WRAPPED_SOL_MINT) ?: return@withContext result
         val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
         val token = Token.createSOL(tokenProvider.publicKey, tokenData, solBalance, solPrice.getScaledValue())
         result.add(0, token)

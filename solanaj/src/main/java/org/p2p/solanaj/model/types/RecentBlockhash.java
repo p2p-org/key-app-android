@@ -1,11 +1,11 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 public class RecentBlockhash extends RpcResultObject {
     public static class FeeCalculator {
 
-        @Json(name = "lamportsPerSignature")
+        @SerializedName("lamportsPerSignature")
         private long lamportsPerSignature;
 
         public long getLamportsPerSignature() {
@@ -15,9 +15,9 @@ public class RecentBlockhash extends RpcResultObject {
     }
 
     public static class Value {
-        @Json(name = "blockhash")
+        @SerializedName("blockhash")
         private String blockhash;
-        @Json(name = "feeCalculator")
+        @SerializedName("feeCalculator")
         private FeeCalculator feeCalculator;
 
         public String getBlockhash() {
@@ -30,7 +30,7 @@ public class RecentBlockhash extends RpcResultObject {
 
     }
 
-    @Json(name = "value")
+    @SerializedName("value")
     private Value value;
 
     public Value getValue() {
