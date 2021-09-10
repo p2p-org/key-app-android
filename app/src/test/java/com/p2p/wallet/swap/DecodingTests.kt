@@ -65,7 +65,6 @@ class DecodingTests {
         assertEquals(decoded4.asks, true)
     }
 
-    @Suppress("MaxLineLength")
     @Test
     fun `test decoding slab headerLayout`() {
         val base64Data =
