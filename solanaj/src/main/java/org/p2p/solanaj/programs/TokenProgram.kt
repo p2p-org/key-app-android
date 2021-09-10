@@ -92,7 +92,7 @@ object TokenProgram {
     }
 
     fun initializeAccountInstruction(
-        tokenProgramId: PublicKey,
+        tokenProgramId: PublicKey = PROGRAM_ID,
         account: PublicKey,
         mint: PublicKey,
         owner: PublicKey
@@ -170,7 +170,7 @@ object TokenProgram {
     }
 
     fun closeAccountInstruction(
-        tokenProgramId: PublicKey,
+        tokenProgramId: PublicKey = PROGRAM_ID,
         account: PublicKey,
         destination: PublicKey,
         owner: PublicKey

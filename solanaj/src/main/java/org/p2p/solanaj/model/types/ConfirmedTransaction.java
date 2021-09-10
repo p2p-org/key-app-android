@@ -1,18 +1,18 @@
 package org.p2p.solanaj.model.types;
 
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
-import com.squareup.moshi.Json;
+import java.util.List;
 
 public class ConfirmedTransaction {
 
     public static class Header {
 
-        @Json(name = "numReadonlySignedAccounts")
+        @SerializedName("numReadonlySignedAccounts")
         private long numReadonlySignedAccounts;
-        @Json(name = "numReadonlyUnsignedAccounts")
+        @SerializedName("numReadonlyUnsignedAccounts")
         private long numReadonlyUnsignedAccounts;
-        @Json(name = "numRequiredSignatures")
+        @SerializedName("numRequiredSignatures")
         private long numRequiredSignatures;
 
         public long getNumReadonlySignedAccounts() {
@@ -31,11 +31,11 @@ public class ConfirmedTransaction {
 
     public static class Instruction {
 
-        @Json(name = "accounts")
+        @SerializedName("accounts")
         private List<Long> accounts = null;
-        @Json(name = "data")
+        @SerializedName("data")
         private String data;
-        @Json(name = "programIdIndex")
+        @SerializedName("programIdIndex")
         private long programIdIndex;
 
         public List<Long> getAccounts() {
@@ -54,13 +54,13 @@ public class ConfirmedTransaction {
 
     public static class Message {
 
-        @Json(name = "accountKeys")
+        @SerializedName("accountKeys")
         private List<String> accountKeys = null;
-        @Json(name = "header")
+        @SerializedName("header")
         private Header header;
-        @Json(name = "instructions")
+        @SerializedName("instructions")
         private List<Instruction> instructions = null;
-        @Json(name = "recentBlockhash")
+        @SerializedName("recentBlockhash")
         private String recentBlockhash;
 
         public List<String> getAccountKeys() {
@@ -83,7 +83,7 @@ public class ConfirmedTransaction {
 
     public static class Status {
 
-        @Json(name = "Ok")
+        @SerializedName("Ok")
         private Object ok;
 
         public Object getOk() {
@@ -94,17 +94,17 @@ public class ConfirmedTransaction {
 
     public static class Meta {
 
-        @Json(name = "err")
+        @SerializedName("err")
         private Object err;
-        @Json(name = "fee")
+        @SerializedName("fee")
         private long fee;
-        @Json(name = "innerInstructions")
+        @SerializedName("innerInstructions")
         private List<Object> innerInstructions = null;
-        @Json(name = "postBalances")
+        @SerializedName("postBalances")
         private List<Long> postBalances = null;
-        @Json(name = "preBalances")
+        @SerializedName("preBalances")
         private List<Long> preBalances = null;
-        @Json(name = "status")
+        @SerializedName("status")
         private Status status;
 
         public Object getErr() {
@@ -135,9 +135,9 @@ public class ConfirmedTransaction {
 
     public static class Transaction {
 
-        @Json(name = "message")
+        @SerializedName("message")
         private Message message;
-        @Json(name = "signatures")
+        @SerializedName("signatures")
         private List<String> signatures = null;
 
         public Message getMessage() {
@@ -150,11 +150,11 @@ public class ConfirmedTransaction {
 
     }
 
-    @Json(name = "meta")
+    @SerializedName("meta")
     private Meta meta;
-    @Json(name = "slot")
+    @SerializedName("slot")
     private long slot;
-    @Json(name = "transaction")
+    @SerializedName("transaction")
     private Transaction transaction;
 
     public Meta getMeta() {

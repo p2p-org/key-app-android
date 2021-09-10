@@ -1,6 +1,6 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
@@ -9,15 +9,15 @@ import androidx.annotation.Nullable;
 public class AccountInfo extends RpcResultObject {
 
     public static class Value {
-        @Json(name = "data")
+        @SerializedName("data")
         private List<String> data = null;
-        @Json(name = "executable")
+        @SerializedName("executable")
         private boolean executable;
-        @Json(name = "lamports")
+        @SerializedName("lamports")
         private long lamports;
-        @Json(name = "owner")
+        @SerializedName("owner")
         private String owner;
-        @Json(name = "rentEpoch")
+        @SerializedName("rentEpoch")
         private long rentEpoch;
 
         @Nullable
@@ -43,7 +43,7 @@ public class AccountInfo extends RpcResultObject {
 
     }
 
-    @Json(name = "value")
+    @SerializedName("value")
     private Value value;
 
     public Value getValue() {

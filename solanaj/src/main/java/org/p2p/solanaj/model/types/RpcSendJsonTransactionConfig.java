@@ -1,6 +1,6 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 public class RpcSendJsonTransactionConfig {
 
@@ -19,7 +19,7 @@ public class RpcSendJsonTransactionConfig {
 
     }
 
-    @Json(name = "encoding")
+    @SerializedName("encoding")
     private Encoding encoding = Encoding.jsonParsed;
 
 }

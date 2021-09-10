@@ -164,7 +164,7 @@ class SendFragment :
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             tokenTextView.text = token.tokenSymbol
-            availableTextView.text = "${token.getFormattedTotal()} ${token.tokenSymbol}"
+            availableTextView.text = token.getFormattedTotal()
             currentPriceView.setBottomText(token.getCurrentPrice())
         }
     }

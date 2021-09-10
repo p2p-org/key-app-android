@@ -15,6 +15,7 @@ import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.mnemoticgenerator.English
 import com.p2p.wallet.utils.toPowerValue
 import org.p2p.solanaj.crypto.DerivationPath
+import timber.log.Timber
 import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
@@ -31,7 +32,12 @@ class SecretKeyInteractor(
     suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<DerivableAccount> =
         authRepository.getDerivableAccounts(path, keys).mapNotNull { account ->
             val balance = rpcRepository.getBalance(account.publicKey)
-            val tokenData = userLocalRepository.getTokenData(Token.SOL_MINT) ?: return@mapNotNull null
+            val tokenData = userLocalRepository.getTokenData(Token.WRAPPED_SOL_MINT)
+
+            if (tokenData == null) {
+                Timber.w("### No token data found for ${Token.WRAPPED_SOL_MINT}")
+                return@mapNotNull null
+            }
             val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol).price
             val total = BigDecimal(balance).divide(tokenData.decimals.toPowerValue())
             DerivableAccount(path, account, total, total.multiply(exchangeRate))

@@ -59,7 +59,7 @@ class SendPresenter(
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
-            val source = initialToken ?: userInteractor.getTokens().firstOrNull() ?: return@launch
+            val source = initialToken ?: userInteractor.getUserTokens().firstOrNull() ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate)
 
@@ -114,7 +114,7 @@ class SendPresenter(
 
     override fun loadTokensForSelection() {
         launch {
-            val tokens = userInteractor.getTokens()
+            val tokens = userInteractor.getUserTokens()
             view?.navigateToTokenSelection(tokens)
         }
     }
@@ -220,7 +220,7 @@ class SendPresenter(
     }
 
     private fun checkDestinationBalance(address: String) {
-        if (!isAddressValid(address)) {
+        if (!isAddressValid(address.trim())) {
             view?.hideAddressConfirmation()
             return
         }
@@ -229,7 +229,7 @@ class SendPresenter(
             return
 
         checkBalanceJob = launch {
-            val balance = userInteractor.getBalance(address.toPublicKey())
+            val balance = userInteractor.getBalance(address.trim().toPublicKey())
             shouldAskConfirmation = if (balance == 0L) {
                 view?.showAddressConfirmation()
                 true

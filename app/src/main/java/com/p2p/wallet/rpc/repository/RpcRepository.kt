@@ -6,7 +6,9 @@ import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
+import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
+import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
@@ -15,9 +17,16 @@ interface RpcRepository {
     suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance
     suspend fun getRecentBlockhash(): RecentBlockhash
     suspend fun sendTransaction(transaction: Transaction): String
+    suspend fun sendTransaction(serializedTransaction: String): String
+    suspend fun simulateTransaction(serializedTransaction: String): String
 
     suspend fun getAccountInfo(account: PublicKey): AccountInfo?
     suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
+    suspend fun getProgramAccounts(
+        publicKey: PublicKey,
+        config: RequestConfiguration
+    ): List<ProgramAccount>
+
     suspend fun getBalance(account: PublicKey): Long
     suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts
     suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long

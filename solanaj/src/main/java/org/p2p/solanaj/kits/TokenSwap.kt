@@ -142,10 +142,10 @@ class TokenSwap {
         }
         if (isNeedCloseAccount && closeAccountPublicKey != null) {
             val closeAccountInstruction = TokenProgram.closeAccountInstruction(
-                TokenProgram.PROGRAM_ID,
-                closeAccountPublicKey,
-                owner.publicKey,
-                owner.publicKey
+                tokenProgramId = TokenProgram.PROGRAM_ID,
+                account = closeAccountPublicKey,
+                destination = owner.publicKey,
+                owner = owner.publicKey
             )
             instructions.add(closeAccountInstruction)
         }

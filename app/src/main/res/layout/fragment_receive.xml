@@ -55,18 +55,56 @@
                     android:orientation="vertical"
                     app:layout_constraintGuide_percent="0.5" />
 
+                <RadioGroup
+                    android:id="@+id/tabsRadioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <RadioButton
+                        android:id="@+id/solanaButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_primary_selector"
+                        android:button="@null"
+                        android:paddingHorizontal="12dp"
+                        android:text="@string/receive_solana"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                        android:textColor="@color/color_primary_selector"
+                        tools:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/bitcoinButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_primary_selector"
+                        android:button="@null"
+                        android:paddingHorizontal="12dp"
+                        android:text="@string/receive_bitcoin"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                        android:textColor="@color/color_primary_selector" />
+                </RadioGroup>
+
                 <TextView
-                    android:id="@+id/qrTitleTextView"
+                    android:id="@+id/currenciesInfoTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:text="@string/main_receive_unified_address"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:background="@drawable/bg_secondary_stroked"
+                    android:foreground="?selectableItemBackground"
+                    android:padding="20dp"
+                    android:text="@string/receive_currencies_info"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    app:drawableEndCompat="@drawable/ic_help"
+                    app:layout_constraintTop_toBottomOf="@id/tabsRadioGroup"
+                    tools:ignore="UnusedAttribute" />
 
                 <ImageView
                     android:id="@+id/qrImageView"
@@ -75,7 +113,7 @@
                     android:layout_marginTop="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/qrTitleTextView"
+                    app:layout_constraintTop_toBottomOf="@id/currenciesInfoTextView"
                     tools:ignore="ContentDescription"
                     tools:src="@tools:sample/avatars" />
 
@@ -88,61 +126,6 @@
                     app:layout_constraintEnd_toEndOf="@id/qrImageView"
                     app:layout_constraintStart_toStartOf="@id/qrImageView"
                     app:layout_constraintTop_toTopOf="@id/qrImageView" />
-
-                <com.p2p.wallet.common.widget.RoundedImageView
-                    android:id="@+id/solImageView"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/ic_sol"
-                    app:layout_constraintEnd_toStartOf="@id/ethImageView"
-                    app:layout_constraintStart_toStartOf="@id/ethImageView"
-                    app:layout_constraintTop_toBottomOf="@id/qrImageView" />
-
-                <com.p2p.wallet.common.widget.RoundedImageView
-                    android:id="@+id/ethImageView"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/ic_eth"
-                    app:layout_constraintEnd_toStartOf="@id/btcImageView"
-                    app:layout_constraintStart_toStartOf="@id/btcImageView"
-                    app:layout_constraintTop_toBottomOf="@id/qrImageView" />
-
-                <com.p2p.wallet.common.widget.RoundedImageView
-                    android:id="@+id/btcImageView"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/ic_btc"
-                    app:layout_constraintEnd_toEndOf="@id/centerGuideline"
-                    app:layout_constraintStart_toStartOf="@id/centerGuideline"
-                    app:layout_constraintTop_toBottomOf="@id/qrImageView" />
-
-                <com.p2p.wallet.common.widget.RoundedImageView
-                    android:id="@+id/ftxImageView"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/ic_ftx"
-                    app:layout_constraintEnd_toEndOf="@id/btcImageView"
-                    app:layout_constraintStart_toEndOf="@id/btcImageView"
-                    app:layout_constraintTop_toBottomOf="@id/qrImageView" />
-
-                <TextView
-                    android:id="@+id/tokenCountTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_dark_rounded"
-                    android:paddingVertical="2dp"
-                    android:paddingHorizontal="4dp"
-                    android:text="@string/main_tokens_available_count"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="@id/ftxImageView"
-                    app:layout_constraintEnd_toEndOf="@id/ftxImageView"
-                    app:layout_constraintStart_toEndOf="@id/ftxImageView"
-                    app:layout_constraintTop_toTopOf="@id/ftxImageView" />
 
                 <TextView
                     android:id="@+id/fullAddressTextView"
@@ -160,7 +143,7 @@
                     app:layout_constraintEnd_toStartOf="@id/shareImageView"
                     app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/btcImageView"
+                    app:layout_constraintTop_toBottomOf="@id/qrImageView"
                     tools:text="7YVptYAqb9...wmoovv4XwL" />
 
                 <View
@@ -297,31 +280,6 @@
                     app:layout_constraintTop_toBottomOf="@id/detailsBarrier"
                     tools:ignore="UnusedAttribute"
                     tools:visibility="visible" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="?colorElementTertiary"
-                    app:layout_constraintBottom_toTopOf="@id/bottomInfoTextView" />
-
-                <TextView
-                    android:id="@+id/bottomInfoTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="32dp"
-                    android:drawablePadding="16dp"
-                    android:text="@string/main_receive_bottom_info"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    android:textColor="?colorElementSecondary"
-                    app:drawableStartCompat="@drawable/ic_lock"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/detailsButton"
-                    app:layout_constraintVertical_bias="1" />
 
                 <com.p2p.wallet.common.widget.ProgressView
                     android:id="@+id/progressView"

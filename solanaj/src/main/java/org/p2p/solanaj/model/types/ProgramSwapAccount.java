@@ -1,6 +1,6 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.AbstractMap;
 import java.util.List;
@@ -8,15 +8,15 @@ import java.util.List;
 public class ProgramSwapAccount {
 
     public final class Account {
-        @Json(name = "data")
+        @SerializedName("data")
         private List<String> data;
-        @Json(name = "executable")
+        @SerializedName("executable")
         private boolean executable;
-        @Json(name = "lamports")
+        @SerializedName("lamports")
         private double lamports;
-        @Json(name = "owner")
+        @SerializedName("owner")
         private String owner;
-        @Json(name = "rentEpoch")
+        @SerializedName("rentEpoch")
         private double rentEpoch;
 
         @SuppressWarnings({"rawtypes"})
@@ -52,9 +52,9 @@ public class ProgramSwapAccount {
 
     }
 
-    @Json(name = "account")
+    @SerializedName("account")
     private Account account;
-    @Json(name = "pubkey")
+    @SerializedName("pubkey")
     private String pubkey;
 
     public Account getAccount() {

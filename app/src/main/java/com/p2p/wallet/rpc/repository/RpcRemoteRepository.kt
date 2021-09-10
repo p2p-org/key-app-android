@@ -10,7 +10,10 @@ import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
+import org.p2p.solanaj.model.types.Encoding
+import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
+import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
@@ -18,19 +21,23 @@ import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
-import java.util.HashMap
 
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
     private val mainnetApi: RpcApi,
-    environmentManager: EnvironmentManager
+    environmentManager: EnvironmentManager,
+    onlyMainnet: Boolean = false
 ) : RpcRepository {
 
     private var rpcApi: RpcApi
 
     init {
-        rpcApi = createRpcApi(environmentManager.loadEnvironment())
-        environmentManager.setOnEnvironmentListener { rpcApi = createRpcApi(it) }
+        if (onlyMainnet) {
+            rpcApi = mainnetApi
+        } else {
+            rpcApi = createRpcApi(environmentManager.loadEnvironment())
+            environmentManager.setOnEnvironmentListener { rpcApi = createRpcApi(it) }
+        }
     }
 
     private fun createRpcApi(environment: Environment): RpcApi = when (environment) {
@@ -59,16 +66,38 @@ class RpcRemoteRepository(
         val params = mutableListOf<Any>()
 
         params.add(base64Trx)
-        params.add(RpcSendTransactionConfig())
+        params.add(RequestConfiguration(encoding = Encoding.BASE64))
 
         val rpcRequest = RpcRequest("sendTransaction", params)
         return rpcApi.sendTransaction(rpcRequest).result
     }
 
+    override suspend fun sendTransaction(serializedTransaction: String): String {
+        val base64Trx = serializedTransaction.replace("\n", "")
+
+        val params = mutableListOf<Any>()
+        params.add(base64Trx)
+        params.add(RequestConfiguration(encoding = Encoding.BASE64))
+
+        val rpcRequest = RpcRequest("sendTransaction", params)
+        return rpcApi.sendTransaction(rpcRequest).result
+    }
+
+    override suspend fun simulateTransaction(serializedTransaction: String): String {
+        val base64Trx = serializedTransaction.replace("\n", "")
+
+        val params = mutableListOf<Any>()
+        params.add(base64Trx)
+        params.add(RequestConfiguration(encoding = Encoding.BASE64))
+
+        val rpcRequest = RpcRequest("simulateTransaction", params)
+        return rpcApi.simulateTransaction(rpcRequest).result.logs?.firstOrNull().orEmpty()
+    }
+
     override suspend fun getAccountInfo(account: PublicKey): AccountInfo {
         val params = listOf(
             account.toString(),
-            RpcSendTransactionConfig()
+            RequestConfiguration(encoding = Encoding.BASE64)
         )
         val rpcRequest = RpcRequest("getAccountInfo", params)
         return rpcApi.getAccountInfo(rpcRequest).result
@@ -82,6 +111,18 @@ class RpcRemoteRepository(
         val rpcRequest = RpcRequest("getProgramAccounts", params)
         val response = rpcApi.getProgramAccounts(rpcRequest).result
         return response.map { Pool.PoolInfo.fromProgramAccount(it) }
+    }
+
+    override suspend fun getProgramAccounts(
+        publicKey: PublicKey,
+        config: RequestConfiguration
+    ): List<ProgramAccount> {
+        val params = listOf(publicKey.toString(), config)
+        val rpcRequest = RpcRequest("getProgramAccounts", params)
+        val response = rpcApi.getProgramAccounts(rpcRequest)
+
+        // sometimes result can be null
+        return response.result ?: emptyList()
     }
 
     override suspend fun getBalance(account: PublicKey): Long {

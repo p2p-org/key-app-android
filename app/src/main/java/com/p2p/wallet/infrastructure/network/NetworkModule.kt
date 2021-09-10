@@ -7,7 +7,6 @@ import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
-import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
 import com.p2p.wallet.rpc.api.FeeRelayerApi
@@ -72,7 +71,7 @@ object NetworkModule : InjectionModule {
             .apply {
                 if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
             }
-            .addInterceptor(ServerErrorInterceptor(get()))
+//            .addInterceptor(ServerErrorInterceptor(get()))
             .addNetworkInterceptor(ContentTypeInterceptor())
             .build()
 

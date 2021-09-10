@@ -3,9 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.3880208333333333" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/background_secondary_stroked.xml" value="0.3351851851851852" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/bg_blue_disabled_rounded.xml" value="0.3351851851851852" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/bg_blue_rounded.xml" value="0.3351851851851852" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/bg_blue_selector.xml" value="0.3351851851851852" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/bg_gray_secondary_rounded.xml" value="0.3351851851851852" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/bg_gray_secondary_stroked.xml" value="0.3351851851851852" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/bg_primary_selector.xml" value="0.3351851851851852" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/bg_stroke_rounded.xml" value="0.35555555555555557" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_arrow_right.xml" value="0.3527777777777778" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_back.xml" value="0.35555555555555557" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_help.xml" value="0.3351851851851852" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_plus.xml" value="0.36512820512820515" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/drawable/ic_receive.xml" value="0.34444444444444444" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/dialog_fee_info.xml" value="0.29259259259259257" />
@@ -14,17 +23,22 @@
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/dialog_swap_settings.xml" value="0.3546875" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_buy.xml" value="0.3546875" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_main.xml" value="0.30185185185185187" />
-        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_receive.xml" value="0.3" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_receive.xml" value="0.25" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_security.xml" value="0.29259259259259257" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_send.xml" value="0.33" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_swap.xml" value="0.22" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_token_details.xml" value="0.3490740740740741" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/fragment_transaction_transfer.xml" value="0.31296296296296294" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/item_transaction.xml" value="0.28888888888888886" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/widget_double_text_view.xml" value="0.3546875" />
+        <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/widget_tab_radiogroup.xml" value="0.29259259259259257" />
+        <entry key="app/src/main/res/layout/fragment_derivable_accounts.xml" value="0.2776268115942029" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_swap.xml" value="0.3485641479492188" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_12" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

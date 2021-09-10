@@ -36,7 +36,7 @@ class ReceivePresenter(
     override fun loadData() {
         launch {
             view?.showFullScreenLoading(true)
-            val tokens = userInteractor.getTokens()
+            val tokens = userInteractor.getUserTokens()
             val receive = defaultToken ?: tokens.firstOrNull() ?: return@launch
             token = receive
 

@@ -2,10 +2,11 @@ package org.p2p.solanaj.model.core
 
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Sha256Hash
+import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions
 import org.p2p.solanaj.utils.ByteUtils
 import org.p2p.solanaj.utils.TweetNaclFast
 import java.io.ByteArrayOutputStream
-import java.util.ArrayList
+import java.math.BigInteger
 
 class PublicKey {
     private var pubkey: ByteArray
@@ -79,6 +80,31 @@ class PublicKey {
                 return ProgramDerivedAddress(address, nonce)
             }
             throw Exception("Unable to find a viable program address nonce")
+        }
+
+        @Throws(Exception::class)
+        fun getVaultOwnerAndNonce(
+            marketPublicKey: PublicKey,
+            dexProgramId: PublicKey = SerumSwapInstructions.dexPID
+        ): PublicKey {
+
+            var nonce = BigInteger.ZERO
+
+            while (nonce < BigInteger.valueOf(255L)) {
+                try {
+                    return createProgramAddress(
+                        seeds = listOf(
+                            marketPublicKey.toByteArray(),
+                            nonce.toByteArray()
+                        ),
+                        programId = dexProgramId
+                    )
+                } catch (e: Exception) {
+                    nonce += BigInteger.ONE
+                }
+            }
+
+            throw IllegalStateException("Could not find vault owner")
         }
     }
 }

@@ -45,6 +45,12 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_VISIBILITY)
     val visibility: String,
 
+    @ColumnInfo(name = COLUMN_SERUM_V3_USDC)
+    val serumV3Usdc: String?,
+
+    @ColumnInfo(name = COLUMN_SERUM_V3_USDT)
+    val serumV3Usdt: String?,
+
     @ColumnInfo(name = COLUMN_WRAPPED)
     val isWrapped: Boolean
 ) {
@@ -61,6 +67,8 @@ data class TokenEntity(
         const val COLUMN_COLOR = "color"
         const val COLUMN_EXCHANGE_RATE = "exchange_rate"
         const val COLUMN_VISIBILITY = "visibility"
+        const val COLUMN_SERUM_V3_USDC = "serumV3Usdc"
+        const val COLUMN_SERUM_V3_USDT = "serumV3Usdt"
         const val COLUMN_WRAPPED = "wrapped"
     }
 }

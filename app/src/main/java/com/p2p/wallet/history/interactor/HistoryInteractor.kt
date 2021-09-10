@@ -84,7 +84,7 @@ class HistoryInteractor(
         val symbol = if (transfer.isSimpleTransfer) Token.SOL_SYMBOL else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
-        val mint = if (transfer.isSimpleTransfer) Token.SOL_MINT else transfer.mint
+        val mint = if (transfer.isSimpleTransfer) Token.WRAPPED_SOL_MINT else transfer.mint
         val source = userLocalRepository.getTokenData(mint)!!
 
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)

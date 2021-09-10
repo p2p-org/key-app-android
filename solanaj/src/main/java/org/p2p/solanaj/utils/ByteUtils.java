@@ -1,14 +1,15 @@
 package org.p2p.solanaj.utils;
 
-import static org.bitcoinj.core.Utils.*;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 
+import static org.bitcoinj.core.Utils.reverseBytes;
+
 public class ByteUtils {
     public static final int UINT_32_LENGTH = 4;
     public static final int UINT_64_LENGTH = 8;
+    public static final int UINT_128_LENGTH = 16;
 
     public static byte[] readBytes(byte[] buf, int offset, int length) {
         byte[] b = new byte[length];
@@ -18,6 +19,10 @@ public class ByteUtils {
 
     public static BigInteger readUint64(byte[] buf, int offset) {
         return new BigInteger(reverseBytes(readBytes(buf, offset, UINT_64_LENGTH)));
+    }
+
+    public static BigInteger readUint128(byte[] buf, int offset) {
+        return new BigInteger(reverseBytes(readBytes(buf, offset, UINT_128_LENGTH)));
     }
 
     public static void uint64ToByteStreamLE(BigInteger val, OutputStream stream) throws IOException {

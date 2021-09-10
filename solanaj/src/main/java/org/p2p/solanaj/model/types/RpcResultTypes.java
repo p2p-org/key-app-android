@@ -1,11 +1,11 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 public class RpcResultTypes {
 
     public static class ValueLong extends RpcResultObject {
-        @Json(name = "value")
+        @SerializedName("value")
         private long value;
     
         public long getValue() {
