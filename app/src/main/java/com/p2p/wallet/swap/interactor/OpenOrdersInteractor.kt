@@ -6,12 +6,13 @@ import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionInstruction
 import org.p2p.solanaj.model.types.ConfigObjects
+import org.p2p.solanaj.model.types.Encoding
+import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.serumswap.OpenOrders
 import org.p2p.solanaj.serumswap.OpenOrdersLayout
 import org.p2p.solanaj.serumswap.Version
 import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.dexPID
 import java.math.BigInteger
 
 class OpenOrdersInteractor(
@@ -75,19 +76,15 @@ class OpenOrdersInteractor(
         )
     }
 
-    suspend fun findForMarketAndOwner(
-        marketAddress: PublicKey,
+    suspend fun findForOwner(
         ownerAddress: PublicKey,
-        programId: PublicKey = dexPID
+        programId: PublicKey
     ): List<OpenOrders> {
-        val memcmp1 = ConfigObjects.Memcmp(PublicKey.PUBLIC_KEY_LENGTH.toLong(), marketAddress.toBase58())
-        val memcmp2 = ConfigObjects.Memcmp(PublicKey.PUBLIC_KEY_LENGTH.toLong(), ownerAddress.toBase58())
-
-        val filters = listOf(
-            ConfigObjects.Filter(memcmp1),
-            ConfigObjects.Filter(memcmp2)
+        val memcmp = ConfigObjects.Memcmp(45L, ownerAddress.toBase58())
+        return getFilteredProgramAccounts(
+            filters = listOf(memcmp),
+            programId = programId
         )
-        return getFilteredProgramAccounts(ownerAddress, filters, programId)
     }
 
     suspend fun getMinimumBalanceForRentExemption(programId: PublicKey): Long {
@@ -96,21 +93,20 @@ class OpenOrdersInteractor(
     }
 
     private suspend fun getFilteredProgramAccounts(
-        ownerAddress: PublicKey,
         filters: List<Any>,
         programId: PublicKey
     ): List<OpenOrders> {
-        val updatedFilters = filters.toMutableList()
-        updatedFilters.add(
-            ConfigObjects.DataSize(OpenOrders.getLayoutSpan(programId.toBase58()).toInt())
-        )
+        val dataSize = ConfigObjects.DataSize(OpenOrders.getLayoutSpan(programId.toBase58()).toInt())
 
         val version = Version.getVersion(programId.toBase58())
 
-        val programAccounts = rpcRepository.getProgramAccounts(
-            publicKey = programId,
+        val updatedFilters = filters.toMutableList()
+        updatedFilters.add(dataSize)
+        val config = RequestConfiguration(
+            encoding = Encoding.BASE64,
             filters = updatedFilters
         )
+        val programAccounts = rpcRepository.getProgramAccounts(programId, config)
 
         return programAccounts.map {
             if (it.account.owner != programId.toBase58()) {
@@ -118,7 +114,7 @@ class OpenOrdersInteractor(
             }
 
             OpenOrders(
-                address = ownerAddress,
+                address = it.pubkey,
                 data = if (version == 1) {
                     OpenOrdersLayout.LayoutV1(it.account.getDecodedData())
                 } else {

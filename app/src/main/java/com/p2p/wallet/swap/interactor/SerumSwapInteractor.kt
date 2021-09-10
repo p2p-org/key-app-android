@@ -2,7 +2,6 @@ package com.p2p.wallet.swap.interactor
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.swap.repository.SerumSwapRepository
 import com.p2p.wallet.utils.isUsdx
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPublicKey
@@ -21,13 +20,16 @@ import org.p2p.solanaj.serumswap.model.OrderbookPair
 import org.p2p.solanaj.serumswap.model.Side
 import org.p2p.solanaj.serumswap.model.SignersAndInstructions
 import org.p2p.solanaj.serumswap.model.SwapParams
+import timber.log.Timber
+import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class SerumSwapInteractor(
     private val swapInteractor2: SwapInteractor2,
-    private val serumSwapRepository: SerumSwapRepository,
     private val openOrdersInteractor: OpenOrdersInteractor,
+    private val marketInteractor: MarketInteractor,
     private val swapMarketInteractor: SwapMarketInteractor,
     private val serializationInteractor: SerializationInteractor,
     private val tokenKeyProvider: TokenKeyProvider
@@ -44,12 +46,82 @@ class SerumSwapInteractor(
         // TODO: enable once the DEX supports initializing open orders accounts.
         private const val OPEN_ENABLED = false
 
-        const val BASE_TAKER_FEE_BPS = 0.0022
+        private const val BASE_TAKER_FEE_BPS = 0.0022
         const val FEE_MULTIPLIER = 1.0 - BASE_TAKER_FEE_BPS
     }
 
     private val orderBooksCache = mutableMapOf<PublicKey, OrderbookPair>()
     private val marketsCache = mutableMapOf<PublicKey, Market>()
+
+    suspend fun calculateNetworkFee(
+        fromWallet: Token,
+        toWallet: Token,
+        lamportsPerSignature: BigInteger,
+        minRentExemption: BigInteger? = null
+    ): BigInteger {
+        val owner = tokenKeyProvider.publicKey
+
+        val minRentExemptionResult =
+            minRentExemption ?: openOrdersInteractor.getMinimumBalanceForRentExemption(dexPID).toBigInteger()
+
+        // default fee for creating serum dex account
+        val creatingSerumDexFee = BigInteger.valueOf(23357760L)
+
+        // get fee for opening orders
+        val markets = loadMarkets(fromWallet.mintAddress, toWallet.mintAddress)
+        val openOrders = openOrdersInteractor.findForOwner(owner.toPublicKey(), dexPID)
+
+        // calculate number of created orders
+        var numberOfCreatedOrders = 0
+
+        val fromMarket = markets.getOrNull(0)
+        if (fromMarket != null) {
+            openOrders.any { it.address == fromMarket.address.toBase58() }
+        } else {
+            numberOfCreatedOrders += 1
+        }
+
+        val toMarket = markets.getOrNull(1)
+        if (toMarket != null) {
+            openOrders.any { it.address == toMarket.address.toBase58() }
+        } else {
+            numberOfCreatedOrders += 1
+        }
+
+        // calculate number of orders that have to be created
+        val numberOfOrdersToCreate = markets.size - numberOfCreatedOrders
+
+        // fee for creating orders
+        var feeForCreatingNewOrders = BigInteger.valueOf(numberOfOrdersToCreate.toLong()).multiply(
+            (creatingSerumDexFee + lamportsPerSignature)
+        )
+
+        // for transitive swap: there is an lps needed for creating a separated open orders transaction
+        // for direct swap: the creating orders transaction is embeded to swap instruction, so this lps is NOT needed
+        if (markets.size == 2 && numberOfOrdersToCreate > 0) {
+            feeForCreatingNewOrders += lamportsPerSignature
+        }
+
+        var fee = BigInteger.ZERO
+
+        // fee for opening
+        fee += feeForCreatingNewOrders
+
+        // fee for owner's signature
+        fee += lamportsPerSignature
+
+        // if source token is native, a fee for creating wrapped SOL is needed, thus a fee for new account's signature (not associated token address) is also needed
+        if (fromWallet.isSOL) {
+            fee += minRentExemptionResult + lamportsPerSignature
+        }
+
+        // if destination wallet is a wrapped sol or not yet created, a fee for creating it is needed, as new address is an associated token address, the signature fee is NOT needed
+        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet.publicKey == null) {
+            fee += minRentExemptionResult
+        }
+
+        return fee
+    }
 
     suspend fun loadFair(
         fromMint: PublicKey,
@@ -73,8 +145,10 @@ class SerumSwapInteractor(
             val market = pair.asks.market // the same market as bids
 
             if (market.baseMintAddress == fromMint ||
-                (market.baseMintAddress.toBase58() == Token.WRAPPED_SOL_MINT &&
-                    fromMint.toBase58() == Token.SOL_MINT)
+                (
+                    market.baseMintAddress.toBase58() == Token.WRAPPED_SOL_MINT &&
+                        fromMint.toBase58() == Token.SOL_MINT
+                    )
             ) {
                 val bestBids = bbo.bestBids
                 if (bestBids != null && bestBids != 0.0) {
@@ -91,66 +165,21 @@ class SerumSwapInteractor(
         val fromBbo = loadBbo(pairs[0])
         val toBbo = loadBbo(pairs[1])
 
-        if (fromBbo?.bestBids == null || toBbo?.bestOffer == null) throw IllegalStateException("Could not retrieve exchange rate")
+        if (fromBbo?.bestBids == null || toBbo?.bestOffer == null) {
+            throw IllegalStateException("Could not retrieve exchange rate")
+        }
 
         if (fromBbo.bestBids == 0.0) throw IllegalStateException("Could not retrieve exchange rate")
 
         return toBbo.bestOffer!!.div(fromBbo.bestBids!!)
     }
 
-    /// Load price of current markets
-    suspend fun loadFair(
-        fromMint: String,
-        toMint: String,
-        markets: List<Market>? = null
-    ): Double {
-
-        val fromMintPublicKey = try {
-            PublicKey(fromMint)
-        } catch (e: Throwable) {
-            throw IllegalStateException("Some public keys are not valid", e)
-        }
-        val toMintPublicKey = try {
-            PublicKey(toMint)
-        } catch (e: Throwable) {
-            throw IllegalStateException("Some public keys are not valid", e)
-        }
-
-        return loadFair(fromMintPublicKey, toMintPublicKey, markets)
-    }
-
-    /// Calculate minExchangeRate needed for swap
-    /// - Parameters:
-    ///   - fair: fair which is gotten from loadFair(fromMint:toMint)
-    ///   - slippage: user input slippage
-    ///   - fromDecimals: from token decimal
-    ///   - toDecimal: to token decimal
-    ///   - strict: strict
-    /// - Returns: ExchangeRate
-    fun calculateExchangeRate(
-        fair: Double,
-        slippage: Double,
-        fromDecimals: Int,
-        toDecimal: Int,
-        strict: Boolean
-    ): ExchangeRate {
-        var number = (10.0.pow(toDecimal.toDouble()) * FEE_MULTIPLIER) / fair
-        number *= (100 - slippage)
-        number /= 100
-        return ExchangeRate(
-            rate = BigInteger.valueOf(number.toLong()),
-            fromDecimals = fromDecimals,
-            quoteDecimals = toDecimal,
-            strict = strict
-        )
-    }
-
-    /// Executes a swap against the Serum DEX.
-    /// - Returns: transaction id
+    // / Executes a swap against the Serum DEX.
+    // / - Returns: transaction id
     suspend fun swap(
         fromWallet: Token,
         toWallet: Token,
-        amount: Double,
+        amount: BigDecimal,
         slippage: Double,
         isSimulation: Boolean = false
     ): String {
@@ -161,28 +190,12 @@ class SerumSwapInteractor(
             toMint = toWallet.mintAddress
         )
 
-        var toDecimal = toWallet.decimals
-        // For a direct swap, toDecimal should be zero.
-        // https://github.com/project-serum/swap/blob/master/programs/swap/src/lib.rs#L696
-        if (markets.size == 1) {
-            toDecimal = 0
-        }
-
         val fair = loadFair(fromWallet.mintAddress, toWallet.mintAddress, markets)
-        val exchangeRate = calculateExchangeRate(
-            fair = fair,
-            slippage = slippage,
-            fromDecimals = fromWallet.decimals,
-            toDecimal = toDecimal,
-            strict = false
-        )
 
-        val openOrders = markets.mapNotNull {
-            openOrdersInteractor.findForMarketAndOwner(
-                marketAddress = it.address,
-                ownerAddress = owner
-            ).firstOrNull()
-        }
+        val openOrders = openOrdersInteractor.findForOwner(
+            ownerAddress = owner,
+            programId = dexPID
+        )
 
         val fromMint: PublicKey
         val toMint: PublicKey
@@ -201,29 +214,42 @@ class SerumSwapInteractor(
         val toWalletPubkey = PublicKey(toWallet.publicKey)
         val toMarket = markets.getOrNull(1)
 
+        val fromOpenOrder = openOrders.firstOrNull { it.data.market.toBase58() == fromMarket.address.toBase58() }
+        val toOpenOrder = openOrders.firstOrNull { it.data.market.toBase58() == toMarket?.address?.toBase58() }
+
+        // calculation
+        var toDecimal = toWallet.decimals
+        // For a direct swap, toDecimal should be zero.
+        // https://github.com/project-serum/swap/blob/master/programs/swap/src/lib.rs#L696
+        if (markets.size == 1) {
+            toDecimal = 0
+        }
+
+        val rate = calculateExchangeRate(fair, slippage, toDecimal)
+
         val params = SwapParams(
             fromMint = fromMint,
             toMint = toMint,
-            amount = amount.toBigDecimal().toLamports(fromWallet.decimals),
-            minExchangeRate = exchangeRate,
+            amount = amount.toLamports(fromWallet.decimals),
+            minExchangeRate = ExchangeRate(rate, fromWallet.decimals, toDecimal, false),
             referral = null,
             fromWallet = fromWalletPubkey,
             toWallet = toWalletPubkey,
             quoteWallet = null,
             fromMarket = fromMarket,
             toMarket = toMarket,
-            fromOpenOrders = openOrders.firstOrNull()?.address,
-            toOpenOrders = openOrders.getOrNull(1)?.address,
+            fromOpenOrders = fromOpenOrder?.address?.toPublicKey(),
+            toOpenOrders = toOpenOrder?.address?.toPublicKey(),
             close = true
         )
 
-        val signersAndInstructions = swap(params)
+        val signersAndInstructions = swap(params, isSimulation)
 
         val instructions = signersAndInstructions.map { it.instructions }.flatten()
-        var signers = signersAndInstructions.map { it.signers }.flatten().toMutableList()
+        val signers = signersAndInstructions.map { it.signers }.flatten().toMutableList()
 
         // TODO: If fee relayer is available, remove account as signer
-        signers.add(0, Account(owner.toByteArray()))
+        signers.add(0, Account(tokenKeyProvider.secretKey))
 
         // serialize transaction
         val serializedTransaction = serializationInteractor.serializeTransaction(
@@ -233,19 +259,19 @@ class SerumSwapInteractor(
             feePayer = null // TODO: modify for fee relayer
         )
 
-        // todo: add simulation possibility
-//        if (isSimulation) {
-//            swapInteractor2.sendTransaction(serializedTransaction)
-//        }
-
-        return swapInteractor2.sendTransaction(serializedTransaction)
+        return try {
+            swapInteractor2.sendTransaction(serializedTransaction, isSimulation)
+        } catch (e: Throwable) {
+            // todo: parse error
+            throw e
+        }
     }
 
-    /// Executes a swap against the Serum DEX.
-    /// - Parameter params: SwapParams
-    /// - Returns: Signers and instructions for creating multiple transactions
-    suspend fun swap(params: SwapParams): List<SignersAndInstructions> {
-        val data = swapTxs(params)
+    // / Executes a swap against the Serum DEX.
+    // / - Parameter params: SwapParams
+    // / - Returns: Signers and instructions for creating multiple transactions
+    suspend fun swap(params: SwapParams, isSimulation: Boolean): List<SignersAndInstructions> {
+        val data = swapTxs(params, isSimulation)
         if (!params.additionalTransactions.isNullOrEmpty()) {
             return listOf(data) + params.additionalTransactions!!
         }
@@ -253,7 +279,7 @@ class SerumSwapInteractor(
         return listOf(data)
     }
 
-    suspend fun swapTxs(params: SwapParams): SignersAndInstructions {
+    private suspend fun swapTxs(params: SwapParams, isSimulation: Boolean): SignersAndInstructions {
         // check if fromMint and toMint are equal
         if (params.fromMint.toBase58() == params.toMint.toBase58()) {
             throw IllegalStateException("Can not swap ${params.fromMint} to itself")
@@ -344,7 +370,6 @@ class SerumSwapInteractor(
         }
 
         // Neither wallet is a USD stable coin. So perform a transitive swap.
-
         val quoteMint = params.fromMarket.quoteMintAddress
         val toMarket = if (params.toMarket != null) params.toMarket!! else {
             throw IllegalStateException("toMarket must be provided for transitive swaps")
@@ -365,11 +390,12 @@ class SerumSwapInteractor(
             toMarket = toMarket,
             fromOpenOrders = params.fromOpenOrders,
             toOpenOrders = params.toOpenOrders,
-            feePayer = params.feePayer
+            feePayer = params.feePayer,
+            isSimulation = isSimulation
         )
     }
 
-    suspend fun swapDirectTxs(
+    private suspend fun swapDirectTxs(
         coinWallet: PublicKey?,
         pcWallet: PublicKey?,
         baseMint: PublicKey,
@@ -387,7 +413,7 @@ class SerumSwapInteractor(
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
         // get vaultSigner
-        val vaultSigner = PublicKey.getVaultOwnerAndNonce(fromMarket.address).first
+        val vaultSigner = PublicKey.getVaultOwnerAndNonce(fromMarket.address)
 
         // prepare source account, create associated token address if source wallet is native
         val sourceAccountInstructions = swapInteractor2.prepareValidAccountAndInstructions(
@@ -452,7 +478,7 @@ class SerumSwapInteractor(
         return SignersAndInstructions(signers, instructions)
     }
 
-    suspend fun swapTransitiveTxs(
+    private suspend fun swapTransitiveTxs(
         fromMint: PublicKey,
         toMint: PublicKey,
         pcMint: PublicKey,
@@ -467,14 +493,29 @@ class SerumSwapInteractor(
         toMarket: Market,
         fromOpenOrders: PublicKey?,
         toOpenOrders: PublicKey?,
-        feePayer: PublicKey?
+        feePayer: PublicKey?,
+        isSimulation: Boolean = false
     ): SignersAndInstructions {
 
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
+        // Request open orders
+        val (fromOpenOrdersResult, toOpenOrdersResult, openOrdersCleanupInstructions) =
+            if (fromOpenOrders != null && toOpenOrders != null) {
+                Triple(fromOpenOrders, toOpenOrders, emptyList())
+            } else {
+                createFromAndToOpenOrdersForSwapTransitive(
+                    fromMarket = fromMarket,
+                    toMarket = toMarket,
+                    feePayer = feePayer,
+                    close = close,
+                    isSimulation = isSimulation
+                )
+            }
+
         // Calculate the vault signers for each market.
-        val fromVaultSigner = PublicKey.getVaultOwnerAndNonce(fromMarket.address).first
-        val toVaultSigner = PublicKey.getVaultOwnerAndNonce(toMarket.address).first
+        val fromVaultSigner = PublicKey.getVaultOwnerAndNonce(fromMarket.address)
+        val toVaultSigner = PublicKey.getVaultOwnerAndNonce(toMarket.address)
 
         // Prepare source, destination and pc wallets
         val sourceAccountInstructions = swapInteractor2.prepareValidAccountAndInstructions(
@@ -503,35 +544,16 @@ class SerumSwapInteractor(
             closeAfterward = pcMint.toBase58() == Token.WRAPPED_SOL_MINT
         )
 
-        // Prepare open orders
-        val minBalanceForRentExemption = openOrdersInteractor.getMinimumBalanceForRentExemption(dexPID)
-        val fromOpenOrdersAccountInstructions = prepareOpenOrder(
-            orders = fromOpenOrders,
-            market = fromMarket,
-            mintRentExemption = minBalanceForRentExemption.toBigInteger(),
-            closeAfterward = CLOSE_ENABLED && close == true && fromOpenOrders == null
-        )
-        val toOpenOrdersAccountInstructions = prepareOpenOrder(
-            orders = toOpenOrders,
-            market = toMarket,
-            mintRentExemption = minBalanceForRentExemption.toBigInteger(),
-            closeAfterward = CLOSE_ENABLED && close == true && fromOpenOrders == null
-        )
-
         val signers = mutableListOf<Account>()
         val instructions = mutableListOf<TransactionInstruction>()
 
         signers += sourceAccountInstructions.signers
         signers += destinationAccountInstructions.signers
         signers += pcAccountInstructions.signers
-        signers += fromOpenOrdersAccountInstructions.signers
-        signers += toOpenOrdersAccountInstructions.signers
 
         instructions += sourceAccountInstructions.instructions
         instructions += destinationAccountInstructions.instructions
         instructions += pcAccountInstructions.instructions
-        instructions += fromOpenOrdersAccountInstructions.instructions
-        instructions += toOpenOrdersAccountInstructions.instructions
 
         instructions.add(
             SerumSwapInstructions.transitiveSwapInstruction(
@@ -540,8 +562,8 @@ class SerumSwapInteractor(
                 toMarket = toMarket,
                 fromVaultSigner = fromVaultSigner,
                 toVaultSigner = toVaultSigner,
-                fromOpenOrder = fromOpenOrdersAccountInstructions.account,
-                toOpenOrder = toOpenOrdersAccountInstructions.account,
+                fromOpenOrder = fromOpenOrdersResult,
+                toOpenOrder = toOpenOrdersResult,
                 fromWallet = sourceAccountInstructions.account,
                 toWallet = destinationAccountInstructions.account,
                 amount = amount,
@@ -556,17 +578,63 @@ class SerumSwapInteractor(
         instructions += pcAccountInstructions.cleanupInstructions
 
         if (CLOSE_ENABLED && close == true) {
-            instructions += fromOpenOrdersAccountInstructions.cleanupInstructions
-            instructions += toOpenOrdersAccountInstructions.cleanupInstructions
+            instructions += openOrdersCleanupInstructions
         }
 
         return SignersAndInstructions(signers, instructions)
     }
 
-    suspend fun prepareOpenOrder(
+    suspend fun loadMarket(address: PublicKey): Market {
+        val market = marketsCache[address]
+        if (market != null) return market
+
+        val result = marketInteractor.loadMarket(address = address, programId = dexPID)
+        marketsCache[address] = result
+        return result
+    }
+
+    // / Load price of current markets
+    suspend fun loadFair(
+        fromMint: String,
+        toMint: String,
+        markets: List<Market>? = null
+    ): Double {
+
+        val fromMintPublicKey = try {
+            PublicKey(fromMint)
+        } catch (e: Throwable) {
+            throw IllegalStateException("Some public keys are not valid", e)
+        }
+        val toMintPublicKey = try {
+            PublicKey(toMint)
+        } catch (e: Throwable) {
+            throw IllegalStateException("Some public keys are not valid", e)
+        }
+
+        return loadFair(fromMintPublicKey, toMintPublicKey, markets)
+    }
+
+    // / Calculate minExchangeRate needed for swap
+    // / - Parameters:
+    // /   - fair: fair which is gotten from loadFair(fromMint:toMint)
+    // /   - slippage: user input slippage
+    // /   - toDecimal: to token decimal
+    // / - Returns: ExchangeRate
+    fun calculateExchangeRate(
+        fair: Double,
+        slippage: Double,
+        toDecimal: Int
+    ): BigInteger {
+        val number = (10.0.pow(toDecimal.toDouble()) * FEE_MULTIPLIER) / fair
+        var roundedValue = number.roundToInt().toDouble()
+        roundedValue *= (1 - slippage)
+        return BigInteger.valueOf(roundedValue.toLong())
+    }
+
+    private suspend fun prepareOpenOrder(
         orders: PublicKey?,
         market: Market,
-        mintRentExemption: BigInteger? = null,
+        minRentExemption: BigInteger? = null,
         closeAfterward: Boolean
     ): AccountInstructions {
 
@@ -591,18 +659,64 @@ class SerumSwapInteractor(
                 marketAddress = market.address,
                 ownerAddress = owner,
                 programId = dexPID,
-                minRentExemption = mintRentExemption,
+                minRentExemption = minRentExemption,
                 shouldInitAccount = OPEN_ENABLED,
                 closeAfterward = closeAfterward
             )
         }
     }
 
-    suspend fun route(fromMint: PublicKey, toMint: PublicKey): List<PublicKey>? =
-        swapMarketInteractor.route(fromMint, toMint)
+    // Create from and to open orders and wait for confirmation before transitive swaping
+    private suspend fun createFromAndToOpenOrdersForSwapTransitive(
+        fromMarket: Market,
+        toMarket: Market,
+        feePayer: PublicKey?,
+        close: Boolean?,
+        isSimulation: Boolean
+    ): Triple<PublicKey, PublicKey, List<TransactionInstruction>> {
+        val minRentExemption = openOrdersInteractor.getMinimumBalanceForRentExemption(dexPID)
 
-    /// Load market with current mint pair
-    suspend fun loadMarkets(fromMint: String, toMint: String): List<Market> {
+        val from = prepareOpenOrder(
+            orders = null,
+            market = fromMarket,
+            minRentExemption = BigInteger.valueOf(minRentExemption),
+            closeAfterward = CLOSE_ENABLED && close == true
+        )
+
+        val to = prepareOpenOrder(
+            orders = null,
+            market = toMarket,
+            minRentExemption = BigInteger.valueOf(minRentExemption),
+            closeAfterward = CLOSE_ENABLED && close == true
+        )
+
+        val signers = mutableListOf<Account>()
+        val instructions = mutableListOf<TransactionInstruction>()
+
+        signers += from.signers
+        signers += to.signers
+
+        instructions += from.instructions
+        instructions += to.instructions
+
+        if (feePayer == null) {
+            signers.add(1, Account(tokenKeyProvider.secretKey))
+        }
+
+        val serializedTransaction = serializationInteractor.serializeTransaction(
+            instructions = instructions,
+            recentBlockhash = null,
+            signers = signers,
+            feePayer = feePayer
+        )
+
+        val transactionId = swapInteractor2.sendTransaction(serializedTransaction, isSimulation)
+        Timber.d("### transaction id $transactionId")
+        return Triple(from.account, to.account, from.cleanupInstructions + to.cleanupInstructions)
+    }
+
+    // / Load market with current mint pair
+    private suspend fun loadMarkets(fromMint: String, toMint: String): List<Market> {
         val fromMintKey = try {
             PublicKey(fromMint)
         } catch (e: Throwable) {
@@ -618,21 +732,12 @@ class SerumSwapInteractor(
         return loadMarkets(fromMintKey, toMintKey)
     }
 
-    /// Load market with current mint pair
+    // / Load market with current mint pair
     suspend fun loadMarkets(fromMint: PublicKey, toMint: PublicKey): List<Market> {
         val route = swapMarketInteractor.route(fromMint, toMint)
-            ?: throw IllegalStateException("Could not retrive exchange rate")
+            ?: throw IllegalStateException("Could not retrieve exchange rate")
 
         return route.map { loadMarket(it) }
-    }
-
-    suspend fun loadMarket(address: PublicKey): Market {
-        val market = marketsCache[address]
-        if (market != null) return market
-
-        val result = swapMarketInteractor.loadMarket(address = address, programId = SerumSwapInstructions.dexPID)
-        marketsCache[address] = result
-        return result
     }
 
     /**
@@ -640,12 +745,12 @@ class SerumSwapInteractor(
      * @param market market instance
      * @return OrderbookPair
      * */
-    suspend fun loadOrderbook(market: Market): OrderbookPair {
+    private suspend fun loadOrderbook(market: Market): OrderbookPair {
         val orderbookPair = orderBooksCache[market.address]
         if (orderbookPair != null) return orderbookPair
 
-        val bids = swapMarketInteractor.loadBids(market)
-        val asks = swapMarketInteractor.loadAsks(market)
+        val bids = marketInteractor.loadBids(market)
+        val asks = marketInteractor.loadAsks(market)
 
         val pair = OrderbookPair(bids, asks)
         orderBooksCache[market.address] = pair
@@ -657,7 +762,7 @@ class SerumSwapInteractor(
      * @param orderbookPair asks and bids
      * @return best bids price, best asks price and middle
      * */
-    fun loadBbo(orderbookPair: OrderbookPair): Bbo? {
+    private fun loadBbo(orderbookPair: OrderbookPair): Bbo? {
         val bestBid = orderbookPair.bids.getList(true).firstOrNull()
         val bestOffer = orderbookPair.asks.getList().firstOrNull()
 

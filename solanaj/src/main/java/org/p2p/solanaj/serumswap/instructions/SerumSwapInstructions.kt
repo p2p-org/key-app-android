@@ -8,6 +8,7 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.model.ExchangeRate
 import org.p2p.solanaj.serumswap.model.Side
+import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
 import java.math.BigInteger
 
 object SerumSwapInstructions {
@@ -16,9 +17,6 @@ object SerumSwapInstructions {
     val usdtMint = PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB")
     val dexPID = PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin")
     val serumSwapPID = PublicKey("22Y43yTVxuUkoRKdm9thyRhQ3SdgQS7c7kB6UNCiaczD")
-
-    //    private const val STATIC_BYTES: Long = 14449647541112719096L
-    private const val STATIC_BYTES: Long = 1L
 
     fun closeOrderInstruction(
         order: PublicKey,
@@ -87,12 +85,13 @@ object SerumSwapInstructions {
 
         // 4 byte instruction index + 8 bytes lamports
         val data = byteArrayOf(
-            STATIC_BYTES.toByte(),
             side.getBytes(),
             amount.toByte(),
             minExchangeRate.bytes
         )
-        return TransactionInstruction(serumSwapPID, keys, data)
+
+        val sighashByteArray = SerumSwapUtils.sighash(ixName = "swap")
+        return TransactionInstruction(serumSwapPID, keys, sighashByteArray + data)
     }
 
     fun transitiveSwapInstruction(
@@ -138,15 +137,16 @@ object SerumSwapInstructions {
         keys.add(AccountMeta(pcWallet, isSigner = false, isWritable = true))
         keys.add(AccountMeta(dexPID, isSigner = false, isWritable = false))
         keys.add(AccountMeta(TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false))
-        keys.add(AccountMeta(SYSVAR_RENT_ADDRESS, isSigner = false, isWritable = false))
+        keys.add(AccountMeta(TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false))
 
         // 4 byte instruction index + 8 bytes lamports
         val data = byteArrayOf(
-            STATIC_BYTES.toByte(),
             amount.toByte(),
             minExchangeRate.bytes
         )
 
-        return TransactionInstruction(serumSwapPID, keys, data)
+        val sighashByteArray = SerumSwapUtils.sighash(ixName = "swapTransitive")
+
+        return TransactionInstruction(serumSwapPID, keys, sighashByteArray + data)
     }
 }

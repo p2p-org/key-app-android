@@ -4,10 +4,9 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
+import com.p2p.wallet.swap.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.interactor.SwapInteractor
 import com.p2p.wallet.swap.model.Slippage
-import com.p2p.wallet.swap.model.SwapRequest
-import com.p2p.wallet.swap.model.SwapResult
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.isMoreThan
@@ -16,19 +15,19 @@ import com.p2p.wallet.utils.scaleLong
 import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toBigDecimalOrZero
 import com.p2p.wallet.utils.toLamports
-import com.p2p.wallet.utils.toPowerValue
+import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.properties.Delegates
 
-class SwapPresenter(
+class SerumSwapPresenter(
     private val initialToken: Token?,
     private val userInteractor: UserInteractor,
-    private val swapInteractor: SwapInteractor
+    private val swapInteractor: SwapInteractor,
+    private val serumSwapInteractor: SerumSwapInteractor
 ) : BasePresenter<SwapContract.View>(), SwapContract.Presenter {
 
     private var sourceToken: Token? by Delegates.observable(null) { _, _, newValue ->
@@ -39,7 +38,6 @@ class SwapPresenter(
         view?.showDestinationToken(newValue)
     }
 
-    private var currentPool: Pool.PoolInfo? = null
     private var sourceBalance: TokenAccountBalance? = null
     private var destinationBalance: TokenAccountBalance? = null
 
@@ -52,17 +50,13 @@ class SwapPresenter(
     private var aroundValue: BigDecimal = BigDecimal.ZERO
     private var slippage: Double = 0.1
 
-    private var searchPoolJob: Job? = null
     private var calculationJob: Job? = null
 
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
-            val source = initialToken ?: userInteractor.getTokens().firstOrNull() ?: return@launch
+            val source = initialToken ?: userInteractor.getUserTokens().firstOrNull { it.isSRM } ?: return@launch
             sourceToken = source
-
-            swapInteractor.loadAllPools()
-
             view?.showSlippage(slippage)
             view?.showFullScreenLoading(false)
         }
@@ -70,39 +64,16 @@ class SwapPresenter(
 
     override fun loadTokensForSourceSelection() {
         launch {
-            val tokens = userInteractor.getTokens()
-            val pools = swapInteractor.getAllPools()
-            val result = tokens.filter { token ->
-
-                if (destinationToken == null) return@filter true
-
-                val pool = pools.firstOrNull {
-                    it.swapData.mintA.toBase58() == token.mintAddress ||
-                        it.swapData.mintB.toBase58() == token.mintAddress
-                }
-                pool != null
-            }
-            view?.openSourceSelection(result)
+            val tokens = userInteractor.getUserTokens()
+            view?.openSourceSelection(tokens)
         }
     }
 
     override fun loadTokensForDestinationSelection() {
         launch {
-            val tokens = userInteractor.getTokens()
-            val pools = swapInteractor.getAllPools()
-
+            val tokens = userInteractor.getUserTokens()
             val result = tokens.filter { token ->
-                val pool = pools.firstOrNull {
-                    val pool = pools.firstOrNull {
-                        it.swapData.mintB.toBase58() == token.mintAddress &&
-                            sourceToken!!.mintAddress == it.swapData.mintA.toBase58() ||
-
-                            it.swapData.mintA.toBase58() == token.mintAddress &&
-                            it.swapData.mintB.toBase58() == sourceToken!!.mintAddress
-                    }
-                    pool != null && token.publicKey != sourceToken?.publicKey
-                }
-                pool != null
+                token.mintAddress != sourceToken?.mintAddress
             }
             view?.openDestinationSelection(result)
         }
@@ -124,7 +95,6 @@ class SwapPresenter(
 
     override fun setNewDestinationToken(newToken: Token) {
         destinationToken = newToken
-        searchPool()
         updateButtonText(sourceToken!!)
         setButtonEnabled()
     }
@@ -187,7 +157,6 @@ class SwapPresenter(
         sourceToken = destinationToken
         destinationToken = source
 
-        searchPool()
         setButtonEnabled()
     }
 
@@ -196,23 +165,24 @@ class SwapPresenter(
             try {
                 view?.showLoading(true)
                 val finalAmount = sourceAmount.toBigDecimalOrZero()
-                    .multiply(requireSourceToken().decimals.toPowerValue())
-                    .toBigInteger()
 
-                val request = SwapRequest(
-                    pool = requirePool(),
-                    slippage = slippage,
+                val transactionId = serumSwapInteractor.swap(
+                    fromWallet = requireSourceToken(),
+                    toWallet = requireDestinationToken(),
                     amount = finalAmount,
-                    balanceA = sourceBalance!!,
-                    balanceB = destinationBalance!!
+                    slippage = slippage
                 )
-                val data = swapInteractor.swap(
-                    request = request,
-                    receivedAmount = destinationAmount.toBigDecimalOrZero(),
-                    usdReceivedAmount = aroundValue,
+
+                val info = TransactionInfo(
+                    transactionId = transactionId,
+                    status = R.string.main_send_success,
+                    message = R.string.main_send_transaction_confirmed,
+                    iconRes = R.drawable.ic_success,
+                    amount = destinationAmount.toBigDecimalOrZero(),
+                    usdAmount = aroundValue,
                     tokenSymbol = requireDestinationToken().tokenSymbol
                 )
-                handleResult(data)
+                view?.showSwapSuccess(info)
             } catch (e: Throwable) {
                 Timber.e(e, "Error swapping tokens")
                 view?.showErrorMessage(e)
@@ -226,28 +196,26 @@ class SwapPresenter(
         if (destination == null) return
         calculationJob?.cancel()
         calculationJob = launch {
-            val pool = requirePool()
-            val balanceA =
-                swapInteractor.loadTokenBalance(pool.tokenAccountA).also { sourceBalance = it }
-            val balanceB =
-                swapInteractor.loadTokenBalance(pool.tokenAccountB).also { destinationBalance = it }
 
-            val calculatedAmount = swapInteractor.calculateAmountInOtherToken(
-                pool = pool,
-                inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
-                withFee = false,
-                tokenABalance = balanceA,
-                tokenBBalance = balanceB
-            ).fromLamports(destination.decimals).scaleMedium()
+            val calculatedAmount = serumSwapInteractor.loadFair(
+                fromMint = source.mintAddress,
+                toMint = destination.mintAddress
+            )
 
             destinationAmount = calculatedAmount.toString()
 
-            val fee = swapInteractor.calculateFee(
-                pool = pool,
-                inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
-                tokenABalance = balanceA,
-                tokenBBalance = balanceB
+            val fee = serumSwapInteractor.calculateNetworkFee(
+                fromWallet = source,
+                toWallet = destination,
+                lamportsPerSignature = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
             )
+
+            val balanceA = swapInteractor.loadTokenBalance(source.publicKey.toPublicKey())
+                .also { sourceBalance = it }
+
+            val balanceB = swapInteractor.loadTokenBalance(destination.publicKey.toPublicKey())
+                .also { destinationBalance = it }
+
             val minReceive = swapInteractor.calculateMinReceive(
                 balanceA = balanceA,
                 balanceB = balanceB,
@@ -270,50 +238,11 @@ class SwapPresenter(
         }
     }
 
-    private fun searchPool() {
-        val source = sourceToken ?: return
-        val destination = destinationToken ?: return
-
-        loadPrice(false)
-
-        searchPoolJob?.cancel()
-        searchPoolJob = launch {
-            val sourceMint = source.mintAddress
-            val destinationMint = destination.mintAddress
-            val pool = swapInteractor.findPool(sourceMint, destinationMint)
-
-            if (pool != null) {
-                currentPool = pool
-                calculateData(source, destination)
-            }
-        }
-    }
-
     private fun setButtonEnabled() {
         val isMoreThanBalance = sourceAmount.toBigDecimalOrZero() > sourceToken?.total ?: BigDecimal.ZERO
         val isEnabled = sourceAmount.toBigDecimalOrZero().compareTo(BigDecimal.ZERO) != 0 &&
             !isMoreThanBalance && destinationToken != null
         view?.showButtonEnabled(isEnabled)
-    }
-
-    private fun handleResult(result: SwapResult) {
-        when (result) {
-            is SwapResult.Success -> {
-                val info = TransactionInfo(
-                    transactionId = result.transactionId,
-                    status = R.string.main_send_success,
-                    message = R.string.main_send_transaction_confirmed,
-                    iconRes = R.drawable.ic_success,
-                    amount = result.receivedAmount,
-                    usdAmount = result.usdReceivedAmount,
-                    tokenSymbol = result.tokenSymbol
-                )
-                view?.showSwapSuccess(info)
-            }
-            is SwapResult.Error -> {
-                view?.showErrorMessage(result.messageRes)
-            }
-        }
     }
 
     private fun updateButtonText(source: Token) {
@@ -329,9 +258,6 @@ class SwapPresenter(
             else -> view?.showButtonText(R.string.main_swap_now)
         }
     }
-
-    private fun requirePool(): Pool.PoolInfo =
-        currentPool ?: throw IllegalStateException("Pool is null")
 
     private fun requireSourceToken(): Token =
         sourceToken ?: throw IllegalStateException("Source token is null")

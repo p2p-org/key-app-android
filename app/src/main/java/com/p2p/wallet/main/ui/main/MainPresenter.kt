@@ -61,7 +61,7 @@ class MainPresenter(
     override fun collectData() {
         collectJob?.cancel()
         collectJob = launch {
-            userInteractor.getTokensFlow().collect { updatedTokens ->
+            userInteractor.getUserTokensFlow().collect { updatedTokens ->
                 if (updatedTokens.isNotEmpty()) tokens = updatedTokens
             }
         }
@@ -72,7 +72,7 @@ class MainPresenter(
         launch {
             try {
                 withContext(Dispatchers.Default) { userInteractor.loadTokenPrices(BALANCE_CURRENCY) }
-                userInteractor.loadTokens()
+                userInteractor.loadUserTokensAndUpdateData()
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")
             } catch (e: Throwable) {
@@ -129,7 +129,7 @@ class MainPresenter(
                 view?.showLoading(true)
                 /* We are waiting when tokenlist.json is being parsed and saved into the memory */
                 delay(1000L)
-                userInteractor.loadTokens()
+                userInteractor.loadUserTokensAndUpdateData()
                 Timber.d("Successfully loaded tokens")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading tokens from remote")
@@ -145,7 +145,7 @@ class MainPresenter(
             try {
                 while (true) {
                     delay(DELAY_MS)
-                    userInteractor.loadTokens()
+                    userInteractor.loadUserTokensAndUpdateData()
                     Timber.d("Successfully updated loaded tokens")
                 }
             } catch (e: Throwable) {

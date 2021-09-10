@@ -31,7 +31,7 @@ data class ProgramAccount(
     ) {
 
         fun getDecodedData(): ByteArray =
-            if (data[1] == RpcSendTransactionConfig.Encoding.base64.toString()) {
+            if (data[1] == Encoding.BASE64.encoding) {
                 Base64.decode(data[0], Base64.DEFAULT)
             } else {
                 Base58.decode(data[0])

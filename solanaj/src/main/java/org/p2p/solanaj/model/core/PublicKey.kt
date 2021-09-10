@@ -7,7 +7,6 @@ import org.p2p.solanaj.utils.ByteUtils
 import org.p2p.solanaj.utils.TweetNaclFast
 import java.io.ByteArrayOutputStream
 import java.math.BigInteger
-import java.util.ArrayList
 
 class PublicKey {
     private var pubkey: ByteArray
@@ -87,23 +86,23 @@ class PublicKey {
         fun getVaultOwnerAndNonce(
             marketPublicKey: PublicKey,
             dexProgramId: PublicKey = SerumSwapInstructions.dexPID
-        ): Pair<PublicKey, BigInteger> {
+        ): PublicKey {
 
             var nonce = BigInteger.ZERO
-            val maxValue = BigInteger.valueOf(255L)
 
-            do {
+            while (nonce < BigInteger.valueOf(255L)) {
                 try {
-                    val vaultOwner = PublicKey.createProgramAddress(
-                        seeds = listOf(marketPublicKey.toByteArray(), nonce.toByteArray()),
+                    return createProgramAddress(
+                        seeds = listOf(
+                            marketPublicKey.toByteArray(),
+                            nonce.toByteArray()
+                        ),
                         programId = dexProgramId
                     )
-
-                    return vaultOwner to nonce
                 } catch (e: Exception) {
                     nonce += BigInteger.ONE
                 }
-            } while (nonce < maxValue)
+            }
 
             throw IllegalStateException("Could not find vault owner")
         }

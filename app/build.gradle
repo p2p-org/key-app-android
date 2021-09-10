@@ -83,6 +83,12 @@ android {
     buildFeatures {
         viewBinding true
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
+        animationsDisabled = true
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
 }
 
 dependencies {
@@ -114,7 +120,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
-    def okHttpVersion = '4.9.1' //  TODO: migrate to stable version when released
+    def okHttpVersion = '4.9.1'
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
 
@@ -129,12 +135,26 @@ dependencies {
     kapt "androidx.room:room-compiler:2.3.0"
 
     // seed value
-    implementation 'com.github.bitcoinj:bitcoinj:0.15.8'
+    implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
 
     def koinVersion = '2.1.6' // TODO: migrate to 2.2.3 or 3.0.X when released
+    //noinspection GradleDependency
     implementation "org.koin:koin-android:$koinVersion"
+    //noinspection GradleDependency
     implementation "org.koin:koin-androidx-scope:$koinVersion"
 
-    // MPAndroidChart fixme: remove unnecessary library
+    // MPAndroidChart
     implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
+
+    // core
+    testImplementation 'androidx.test:core-ktx:1.4.0'
+    testImplementation 'androidx.test.ext:junit-ktx:1.1.3'
+    // https://github.com/mockk/mockk
+    testImplementation 'io.mockk:mockk:1.12.0'
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation 'junit:junit:4.13.2'
+    // https://github.com/robolectric/robolectric
+    testImplementation "org.robolectric:robolectric:4.5.1"
+    // Coroutines support
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 }

@@ -1,41 +1,25 @@
 package org.p2p.solanaj.serumswap.orderbook
 
-import org.p2p.solanaj.model.core.AbstractData
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.PublicKey.Companion.PUBLIC_KEY_LENGTH
+import org.p2p.solanaj.serumswap.model.Integer128
+import org.p2p.solanaj.utils.ByteUtils.UINT_128_LENGTH
 import org.p2p.solanaj.utils.ByteUtils.UINT_32_LENGTH
 import org.p2p.solanaj.utils.ByteUtils.UINT_64_LENGTH
 import java.math.BigInteger
 import java.util.LinkedList
 
-class Slab(data: ByteArray) {
-
-    val header: HeaderLayout = HeaderLayout(data)
+data class Slab(
+    val headerLayout: HeaderLayout,
     val nodes: List<NodeLayout>
-
-    val dataLength: Int
-
-    init {
-
-        val nodesList = mutableListOf<NodeLayout>()
-        for (i in 0..header.bumpIndex) {
-            nodesList.add(NodeLayout(data))
-        }
-
-        nodes = nodesList
-
-        val nodesLength = nodes.size * NodeLayout.NODE_LAYOUT_LENGTH
-        dataLength = HeaderLayout.HEADER_LENGTH + nodesLength
-
-        require(data.size >= dataLength) { "Wrong data" }
-    }
+) {
 
     fun getNodeList(descending: Boolean = false): LinkedList<LeafNodeLayout> {
         val list = LinkedList<LeafNodeLayout>()
 
-        if (header.leafCount == 0L) return list
+        if (headerLayout.leafCount == 0L) return list
 
-        val stack = mutableListOf(header.root)
+        val stack = mutableListOf(headerLayout.root)
         while (stack.size > 0) {
             val index = stack.removeLast()
             val node = nodes.getOrNull(index.toInt())?.value ?: continue
@@ -59,34 +43,26 @@ class Slab(data: ByteArray) {
     }
 }
 
-class HeaderLayout constructor(data: ByteArray) : AbstractData(data, HEADER_LENGTH) {
+class HeaderLayout(
+    val bumpIndex: Long,
+    val zeros: Long,
+    val freeListLen: Long,
+    val zeros2: Long,
+    val freeListHead: Long,
+    val root: Long,
+    val leafCount: Long,
+    val zeros3: Long
+) {
 
     companion object {
         const val HEADER_LENGTH = UINT_32_LENGTH + UINT_32_LENGTH + UINT_32_LENGTH + UINT_32_LENGTH +
             UINT_32_LENGTH + UINT_32_LENGTH + UINT_32_LENGTH + UINT_32_LENGTH
     }
-
-    val bumpIndex: Long = readUint32()
-    val zeros: Long = readUint32()
-    val freeListLen: Long = readUint32()
-    val zeros2: Long = readUint32()
-    val freeListHead: Long = readUint32()
-    val root: Long = readUint32()
-    val leafCount: Long = readUint32()
-    val zeros3: Long = readUint32()
 }
 
-class NodeLayout constructor(data: ByteArray) : AbstractData(data, NODE_LAYOUT_LENGTH) {
+class NodeLayout constructor(layoutType: SlabNodeLayoutType) {
 
-    val tag: Long = readUint32()
-    val value: SlabNodeLayoutType = when (tag) {
-        0L -> UninitializedNodeLayout
-        1L -> InnerNodeLayout(data)
-        2L -> LeafNodeLayout(data)
-        3L -> FreeNodeLayout(data.size)
-        4L -> LastFreeNodeLayout()
-        else -> throw IllegalStateException("Unsupported node $tag")
-    }
+    val value: SlabNodeLayoutType = layoutType
 
     companion object {
         const val NODE_LAYOUT_LENGTH = 4 + 68 // tag + node
@@ -95,39 +71,34 @@ class NodeLayout constructor(data: ByteArray) : AbstractData(data, NODE_LAYOUT_L
 
 object UninitializedNodeLayout : SlabNodeLayoutType
 
-class InnerNodeLayout constructor(data: ByteArray) : AbstractData(data, INNER_NODE_LENGTH), SlabNodeLayoutType {
+class InnerNodeLayout(
+    val prefixLen: Long,
+    val key: BigInteger,
+    val children: List<Long>
+) : SlabNodeLayoutType {
 
     companion object {
         const val INNER_NODE_LENGTH =
-            UINT_32_LENGTH + UINT_64_LENGTH + UINT_64_LENGTH + UINT_32_LENGTH + UINT_32_LENGTH
+            UINT_32_LENGTH + UINT_128_LENGTH + UINT_32_LENGTH + UINT_32_LENGTH
     }
-
-    val prefixLen: Long = readUint32()
-    val key: PublicKey = readPublicKey()
-    val children: List<Long> = listOf(
-        readUint32(),
-        readUint32()
-    )
 }
 
-class LeafNodeLayout constructor(data: ByteArray) : AbstractData(data, LEAF_NODE_LENGTH), SlabNodeLayoutType {
+class LeafNodeLayout constructor(
+    val ownerSlot: Byte,
+    val feeTier: Byte,
+    val key: Integer128,
+    val owner: PublicKey,
+    val quantity: BigInteger,
+    val clientOrderId: BigInteger,
+) : SlabNodeLayoutType {
 
     companion object {
         const val LEAF_NODE_LENGTH = 1 + 1 + 2 + UINT_64_LENGTH + UINT_64_LENGTH +
             PUBLIC_KEY_LENGTH + UINT_64_LENGTH + UINT_64_LENGTH
     }
-
-    val ownerSlot: Byte = readByte()
-    val feeTier: Byte = readByte()
-    val emptyByte = readByte() // just skipping two bytes
-    val emptyByte2 = readByte() // just skipping two bytes
-    val key: PublicKey = readPublicKey()
-    val owner: PublicKey = readPublicKey()
-    val quantity: BigInteger = readUint64()
-    val clientOrderId: BigInteger = readUint64()
 }
 
-class FreeNodeLayout(val next: Int) : SlabNodeLayoutType
+class FreeNodeLayout(val next: Long) : SlabNodeLayoutType
 
 class LastFreeNodeLayout : SlabNodeLayoutType
 

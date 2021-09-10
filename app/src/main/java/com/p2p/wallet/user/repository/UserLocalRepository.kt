@@ -7,6 +7,8 @@ interface UserLocalRepository {
     fun setTokenPrices(prices: List<TokenPrice>)
     fun getPriceByToken(symbol: String): TokenPrice
 
-    fun setTokenData(decimals: List<TokenData>)
+    fun setTokenData(data: List<TokenData>)
     fun getTokenData(mintAddress: String): TokenData?
+
+    fun getAllData(): List<TokenData>
 }

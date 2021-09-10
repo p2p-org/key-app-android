@@ -26,10 +26,12 @@ class UserInMemoryRepository : UserLocalRepository {
 
     private val decimalsFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
-    override fun setTokenData(decimals: List<TokenData>) {
-        decimalsFlow.value = decimals
+    override fun setTokenData(data: List<TokenData>) {
+        decimalsFlow.value = data
     }
 
     override fun getTokenData(mintAddress: String): TokenData? =
         decimalsFlow.value.firstOrNull { it.mintAddress == mintAddress }
+
+    override fun getAllData(): List<TokenData> = decimalsFlow.value
 }

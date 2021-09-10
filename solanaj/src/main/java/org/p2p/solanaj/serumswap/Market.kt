@@ -5,10 +5,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.math.pow
 
-// MARK: - Nested type
-private typealias OpenOrdersAccountsCache = HashMap<String, Pair<List<OpenOrders>, Long>> // cache by PublicKey (String)
-private typealias FeeDiscountKeysCache = HashMap<String, Pair<List<FeeDiscountAccount>, Long>>
-
 class Market(
     val programId: PublicKey,
     private val decoded: MarketStatLayout,
@@ -29,9 +25,6 @@ class Market(
         fun getLayoutSpan(programId: String): Int =
             getLayoutType(programId).span.toInt()
     }
-
-    private val openOrdersAccountsCache: OpenOrdersAccountsCache = OpenOrdersAccountsCache()
-    private val feeDiscountKeysCache: FeeDiscountKeysCache = FeeDiscountKeysCache()
 
     val address: PublicKey = decoded.ownAddress
     val publicKey: PublicKey = address

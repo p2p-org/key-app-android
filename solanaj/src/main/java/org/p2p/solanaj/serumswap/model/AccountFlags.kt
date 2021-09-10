@@ -1,9 +1,8 @@
 package org.p2p.solanaj.serumswap.model
 
-import org.p2p.solanaj.model.core.AbstractData
-import org.p2p.solanaj.utils.ByteUtils
+import java.math.BigInteger
 
-class AccountFlags constructor(data: ByteArray) : AbstractData(data, ACCOUNT_FLAGS_LENGTH) {
+data class AccountFlags(val parsedValue: BigInteger) {
 
     val initialized: Boolean
     val market: Boolean
@@ -14,11 +13,10 @@ class AccountFlags constructor(data: ByteArray) : AbstractData(data, ACCOUNT_FLA
     val asks: Boolean
 
     init {
-        var number = ByteUtils.readUint64(data, 0).toLong()
-
+        var number = parsedValue.toLong()
         val variablesCount = 7
         val bits = mutableListOf<Boolean>()
-        for (i in 0..variablesCount) {
+        for (i in 0 until variablesCount) {
             bits.add(number % 2L != 0L)
             number /= 2L
         }
@@ -30,6 +28,18 @@ class AccountFlags constructor(data: ByteArray) : AbstractData(data, ACCOUNT_FLA
         eventQueue = bits[4]
         bids = bits[5]
         asks = bits[6]
+    }
+
+    fun serialize(): ByteArray {
+        var number: BigInteger = BigInteger.ZERO
+        if (initialized) number += BigInteger.ONE or BigInteger.valueOf(0L)
+        if (market) number += BigInteger.ONE or BigInteger.ONE
+        if (openOrders) number += BigInteger.ONE or BigInteger.valueOf(2L)
+        if (requestQueue) number += BigInteger.ONE or BigInteger.valueOf(3L)
+        if (eventQueue) number += BigInteger.ONE or BigInteger.valueOf(4L)
+        if (bids) number += BigInteger.ONE or BigInteger.valueOf(5L)
+        if (asks) number += BigInteger.ONE or BigInteger.valueOf(6L)
+        return number.toByteArray()
     }
 
     companion object {

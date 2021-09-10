@@ -43,6 +43,10 @@ data class Token constructor(
         get() = tokenSymbol == USDC_SYMBOL
 
     @IgnoredOnParcel
+    val isSRM: Boolean
+        get() = tokenSymbol == "SRM"
+
+    @IgnoredOnParcel
     val totalInUsd: BigDecimal
         get() = total.multiply(usdRate).scaleLong()
 
@@ -77,7 +81,8 @@ data class Token constructor(
         const val SOL_SYMBOL = "SOL"
         const val USDC_SYMBOL = "USDC"
         const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
-        const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ" // Arbitrary mint to represent SOL (not wrapped SOL).
+        const val SOL_MINT =
+            "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ" // Arbitrary mint to represent SOL (not wrapped SOL).
 
         fun createSOL(
             publicKey: String,

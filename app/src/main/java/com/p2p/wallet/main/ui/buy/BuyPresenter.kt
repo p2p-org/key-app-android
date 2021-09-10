@@ -14,7 +14,7 @@ class BuyPresenter(
 
     override fun loadData() {
         launch {
-            val token = token ?: userInteractor.getTokens().firstOrNull { it.isSOL } ?: return@launch
+            val token = token ?: userInteractor.getUserTokens().firstOrNull { it.isSOL } ?: return@launch
             val url = environmentManager.getTransakUrl(token)
             view?.openWebView(url)
         }

@@ -2,6 +2,7 @@ package com.p2p.wallet.user.interactor
 
 import android.content.Context
 import com.google.gson.Gson
+import com.p2p.wallet.R
 import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenConverter
@@ -12,9 +13,9 @@ import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import org.p2p.solanaj.model.core.PublicKey
-import java.io.IOException
-import java.io.InputStream
 import java.math.BigDecimal
+
+private const val CHUNKED_SIZE = 50
 
 class UserInteractor(
     private val context: Context,
@@ -31,37 +32,35 @@ class UserInteractor(
         userLocalRepository.setTokenPrices(prices)
     }
 
-    fun loadTokensData() {
-        val data = try {
-            val inputStream: InputStream = context.assets.open("tokenlist.json")
-            val size: Int = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            String(buffer, charset("UTF-8"))
-        } catch (ex: IOException) {
-            ex.printStackTrace()
-            null
-        }
+    fun loadAllTokensData() {
+        val data = context.resources.openRawResource(R.raw.tokenlist)
+            .bufferedReader()
+            .use { it.readText() }
 
-        if (!data.isNullOrEmpty()) {
+        if (data.isNotBlank()) {
+
             val tokenList = gson.fromJson(data, TokenListResponse::class.java)
-            val mappedData = tokenList.tokens.map { TokenConverter.fromNetwork(it) }
+            val mappedData = tokenList.tokens
+                .chunked(CHUNKED_SIZE)
+                .flatMap { chunkedList ->
+                    chunkedList.map { TokenConverter.fromNetwork(it) }
+                }
+
             userLocalRepository.setTokenData(mappedData)
         }
     }
 
-    suspend fun loadTokens() {
+    suspend fun loadUserTokensAndUpdateData() {
         val newTokens = userRepository.loadTokens()
         mainLocalRepository.updateTokens(newTokens)
     }
 
     suspend fun getBalance(address: PublicKey) = rpcRepository.getBalance(address)
 
-    fun getTokensFlow(): Flow<List<Token>> =
+    fun getUserTokensFlow(): Flow<List<Token>> =
         mainLocalRepository.getTokensFlow()
 
-    suspend fun getTokens(): List<Token> =
+    suspend fun getUserTokens(): List<Token> =
         mainLocalRepository.getTokens()
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =

@@ -17,8 +17,12 @@ class SwapInteractor2(
     private val rpcRepository: RpcRepository
 ) {
 
-    suspend fun sendTransaction(serializedTransaction: String) : String =
-        rpcRepository.sendTransaction(serializedTransaction)
+    suspend fun sendTransaction(serializedTransaction: String, isSimulation: Boolean): String =
+        if (isSimulation) {
+            rpcRepository.simulateTransaction(serializedTransaction)
+        } else {
+            rpcRepository.sendTransaction(serializedTransaction)
+        }
 
     suspend fun prepareValidAccountAndInstructions(
         myAccount: PublicKey,

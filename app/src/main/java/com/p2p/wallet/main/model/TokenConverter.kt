@@ -20,8 +20,8 @@ object TokenConverter {
             iconUrl = response.logoUrl,
             decimals = response.decimals,
             isWrapped = response.isWrapped(),
-            serumV3Usdc = response.extensions.serumV3Usdc,
-            serumV3Usdt = response.extensions.serumV3Usdt
+            serumV3Usdc = response.extensions?.serumV3Usdc,
+            serumV3Usdt = response.extensions?.serumV3Usdt
         )
 
     fun fromNetwork(
