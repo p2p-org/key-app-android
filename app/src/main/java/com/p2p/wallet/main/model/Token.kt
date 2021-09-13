@@ -43,10 +43,6 @@ data class Token constructor(
         get() = tokenSymbol == USDC_SYMBOL
 
     @IgnoredOnParcel
-    val isSRM: Boolean
-        get() = tokenSymbol == "SRM"
-
-    @IgnoredOnParcel
     val totalInUsd: BigDecimal
         get() = total.multiply(usdRate).scaleLong()
 

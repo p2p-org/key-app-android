@@ -18,11 +18,18 @@ class FeesBottomSheet : BottomSheetDialogFragment() {
     companion object {
         private const val EXTRA_LIQUIDITY_FEE = "EXTRA_LIQUIDITY_FEE"
         private const val EXTRA_NETWORK_FEE = "EXTRA_NETWORK_FEE"
-        fun show(fm: FragmentManager, liquidityFee: String, networkFee: String) {
+        private const val EXTRA_FEE_OPTION = "EXTRA_FEE_OPTION"
+        fun show(
+            fm: FragmentManager,
+            liquidityFee: String,
+            networkFee: String,
+            alternativeFeeOptions: String
+        ) {
             FeesBottomSheet()
                 .withArgs(
                     EXTRA_LIQUIDITY_FEE to liquidityFee,
-                    EXTRA_NETWORK_FEE to networkFee
+                    EXTRA_NETWORK_FEE to networkFee,
+                    EXTRA_FEE_OPTION to alternativeFeeOptions
                 )
                 .show(fm, SlippageBottomSheet::javaClass.name)
         }
@@ -32,6 +39,7 @@ class FeesBottomSheet : BottomSheetDialogFragment() {
 
     private val liquidityFee: String by args(EXTRA_LIQUIDITY_FEE)
     private val networkFee: String by args(EXTRA_NETWORK_FEE)
+    private val alternativeFeeOptions: String by args(EXTRA_FEE_OPTION)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_swap_fees_bottom_sheet, container, false)
@@ -41,6 +49,7 @@ class FeesBottomSheet : BottomSheetDialogFragment() {
         with(binding) {
             liquidityFeeView.setBottomText(liquidityFee)
             networkFeeView.setBottomText(networkFee)
+            payView.setBottomText(alternativeFeeOptions)
             payView.setOnClickListener {
                 Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show()
             }

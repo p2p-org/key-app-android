@@ -82,7 +82,7 @@ class OpenOrdersInteractor(
     ): List<OpenOrders> {
         val memcmp = ConfigObjects.Memcmp(45L, ownerAddress.toBase58())
         return getFilteredProgramAccounts(
-            filters = listOf(memcmp),
+            filters = listOf(ConfigObjects.Filter(memcmp)),
             programId = programId
         )
     }
@@ -101,7 +101,7 @@ class OpenOrdersInteractor(
         val version = Version.getVersion(programId.toBase58())
 
         val updatedFilters = filters.toMutableList()
-        updatedFilters.add(dataSize)
+        updatedFilters.add(0, dataSize)
         val config = RequestConfiguration(
             encoding = Encoding.BASE64,
             filters = updatedFilters
@@ -113,13 +113,14 @@ class OpenOrdersInteractor(
                 throw IllegalStateException("The address is not owned by the program")
             }
 
+            val data = if (version == 1) {
+                OpenOrdersLayout.LayoutV1(it.account.getDecodedData())
+            } else {
+                OpenOrdersLayout.LayoutV2(it.account.getDecodedData())
+            }
             OpenOrders(
                 address = it.pubkey,
-                data = if (version == 1) {
-                    OpenOrdersLayout.LayoutV1(it.account.getDecodedData())
-                } else {
-                    OpenOrdersLayout.LayoutV2(it.account.getDecodedData())
-                },
+                data = data,
                 programId = programId
             )
         }

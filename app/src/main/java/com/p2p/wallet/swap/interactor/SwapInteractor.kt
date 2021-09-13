@@ -1,126 +1,151 @@
 package com.p2p.wallet.swap.interactor
 
-import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import com.p2p.wallet.restore.interactor.SecretKeyInteractor
-import com.p2p.wallet.swap.model.SwapRequest
-import com.p2p.wallet.swap.model.SwapResult
-import com.p2p.wallet.swap.repository.SwapLocalRepository
-import com.p2p.wallet.swap.repository.SwapRepository
-import com.p2p.wallet.user.interactor.UserInteractor
-import com.p2p.wallet.utils.toPublicKey
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.types.TokenAccountBalance
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.rpc.repository.RpcRepository
+import com.p2p.wallet.swap.interactor.SerumSwapInteractor.Companion.BASE_TAKER_FEE_BPS
+import com.p2p.wallet.swap.interactor.SerumSwapInteractor.Companion.FEE_MULTIPLIER
+import com.p2p.wallet.swap.model.FeeType
+import com.p2p.wallet.swap.model.SwapFee
+import com.p2p.wallet.utils.fromLamports
+import com.p2p.wallet.utils.isZero
+import com.p2p.wallet.utils.toLamports
+import org.p2p.solanaj.programs.TokenProgram
 import java.math.BigDecimal
 import java.math.BigInteger
 
-@Deprecated("this swap is deprecated, we are moving to SerumSwap")
 class SwapInteractor(
-    private val swapRepository: SwapRepository,
-    private val swapLocalRepository: SwapLocalRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
-    private val userInteractor: UserInteractor,
-    private val secretKeyInteractor: SecretKeyInteractor
+    private val rpcRepository: RpcRepository,
+    private val serumSwapInteractor: SerumSwapInteractor
 ) {
 
-    suspend fun loadAllPools() {
-        val pools = swapRepository.loadPoolInfoList(tokenKeyProvider.swapProgramId)
-        swapLocalRepository.setPools(pools)
+    fun isFeeRelayerEnabled(
+        source: Token?,
+        destination: Token?
+    ): Boolean {
+        // TODO: - Later
+        return false
     }
 
-    fun getAllPools() =
-        swapLocalRepository.getPools()
+    suspend fun calculateFees(
+        sourceToken: Token?,
+        destinationToken: Token?,
+        lamportsPerSignature: BigInteger?,
+        creatingAccountFee: BigInteger?
+    ): Map<FeeType, SwapFee> {
+        val fees = mutableMapOf<FeeType, SwapFee>()
+        val liquidityFee = "${calculateLiquidityProviderFee()} %"
+        fees[FeeType.LIQUIDITY_PROVIDER] = SwapFee(stringValue = liquidityFee)
 
-    suspend fun findPool(sourceMint: String, destinationMint: String): Pool.PoolInfo? = withContext(Dispatchers.IO) {
-        val allPools = swapLocalRepository.getPools()
-        val pool = allPools.find {
-            val mintA = it.swapData.mintA.toBase58()
-            val mintB = it.swapData.mintB.toBase58()
-            (sourceMint == mintA && destinationMint == mintB) || (sourceMint == mintB && destinationMint == mintA)
-        } ?: return@withContext null
+        if (sourceToken == null ||
+            destinationToken == null ||
+            lamportsPerSignature == null ||
+            creatingAccountFee == null
+        ) return fees
 
-        if (pool.swapData.mintB.toBase58() == sourceMint && pool.swapData.mintA.toBase58() == destinationMint) {
-            pool.swapData.swapMintData()
-            pool.swapData.swapTokenAccount()
+        val isFeeRelayerEnabled = isFeeRelayerEnabled(sourceToken, destinationToken)
+
+        val networkFee = serumSwapInteractor.calculateNetworkFee(
+            fromWallet = sourceToken,
+            toWallet = destinationToken,
+            lamportsPerSignature = lamportsPerSignature,
+            minRentExemption = creatingAccountFee
+        )
+
+        if (!isFeeRelayerEnabled) {
+            fees[FeeType.DEFAULT] = SwapFee("SOL", networkFee, "")
+            return fees
         }
 
-        return@withContext pool
-    }
+        // if paying directly with SOL
+//        if (isFeeRelayerEnabled) {
+//            fees[FeeType.DEFAULT] = SwapFee("SOL", networkFee)
+//            return fees
+//        }
 
-    suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance =
-        swapRepository.loadTokenBalance(publicKey)
+        // convert fee from SOL to amount in source token
+        // TODO: - Check: look for sourceToken/SOL price and send to fee-relayer
+        val fair = serumSwapInteractor.loadFair(sourceToken.mintAddress, Token.WRAPPED_SOL_MINT)
+        val neededAmount = calculateNeededInputAmount(
+            forReceivingEstimatedAmount = networkFee.fromLamports(),
+            rate = fair.toBigDecimal()
+        )
 
-    suspend fun swap(
-        request: SwapRequest,
-        receivedAmount: BigDecimal,
-        usdReceivedAmount: BigDecimal,
-        tokenSymbol: String
-    ): SwapResult {
-        val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA.toBase58())
-        val accountAddressB = userInteractor.findAccountAddress(request.pool.mintB.toBase58())
-        val keys = secretKeyInteractor.getSecretKeys()
-        val path = secretKeyInteractor.getCurrentDerivationPath()
-        val signature = swapRepository.swap(path, keys, request, accountAddressA, accountAddressB)
-        return SwapResult.Success(signature, receivedAmount, usdReceivedAmount, tokenSymbol)
-    }
+        val lamports = neededAmount?.toLamports(sourceToken.decimals)
 
-    fun calculateFee(
-        pool: Pool.PoolInfo,
-        inputAmount: BigInteger,
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance
-    ): BigInteger {
-        val swappedAmountWithFee =
-            calculateAmountInOtherToken(pool, inputAmount, true, tokenABalance, tokenBBalance)
-        val swappedAmountWithoutFee =
-            calculateAmountInOtherToken(pool, inputAmount, false, tokenABalance, tokenBBalance)
-
-        return swappedAmountWithoutFee.subtract(swappedAmountWithFee)
-    }
-
-    fun calculateMinReceive(
-        balanceA: TokenAccountBalance,
-        balanceB: TokenAccountBalance,
-        amount: BigInteger,
-        slippage: Double
-    ): BigInteger {
-        val add = balanceA.amount.add(amount)
-        val estimated =
-            if (add.compareTo(BigInteger.ZERO) != 0) balanceB.amount.multiply(amount).divide(add) else BigInteger.ZERO
-        return BigDecimal(estimated).multiply(BigDecimal(1 - slippage)).toBigInteger()
-    }
-
-    fun calculateAmountInOtherToken(
-        pool: Pool.PoolInfo,
-        inputAmount: BigInteger,
-        withFee: Boolean,
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance
-    ): BigInteger {
-
-        val tokenSource = tokenKeyProvider.publicKey.toPublicKey()
-        val isReverse = pool.tokenAccountB.equals(tokenSource)
-
-        val feeRatio = BigDecimal(pool.tradeFeeNumerator).divide(BigDecimal(pool.tradeFeeDenominator))
-
-        val firstAmountInPool = if (isReverse) tokenBBalance.amount else tokenABalance.amount
-        val secondAmountInPool = if (isReverse) tokenABalance.amount else tokenBBalance.amount
-
-        val invariant = firstAmountInPool.multiply(secondAmountInPool)
-        val newFromAmountInPool = firstAmountInPool.add(inputAmount)
-        val newToAmountInPool = if (newFromAmountInPool.compareTo(BigInteger.ZERO) != 0) {
-            invariant.divide(newFromAmountInPool)
+        return if (lamports == null) {
+            emptyMap()
         } else {
-            BigInteger.ZERO
+            fees[FeeType.DEFAULT] = SwapFee(sourceToken.tokenSymbol, lamports, "")
+            fees
         }
-        val grossToAmount = secondAmountInPool.subtract(newToAmountInPool)
-        val fees = if (withFee) {
-            BigDecimal(grossToAmount).multiply(feeRatio)
-        } else {
-            BigDecimal.valueOf(0)
-        }
-        return BigDecimal(grossToAmount).subtract(fees).toBigInteger()
     }
+
+    // / Estimated amount that user can get after swapping
+    fun calculateEstimatedAmount(
+        inputAmount: BigDecimal?,
+        rate: BigDecimal?,
+        slippage: Double?
+    ): BigDecimal? {
+        return if (inputAmount != null && rate != null && !rate.isZero()) {
+            FEE_MULTIPLIER.toBigDecimal() * (inputAmount / rate)
+        } else {
+            null
+        }
+    }
+
+    // / Input amount needed for receiving an estimated amount
+    fun calculateNeededInputAmount(
+        forReceivingEstimatedAmount: BigDecimal?,
+        rate: BigDecimal?
+    ): BigDecimal? {
+        return if (forReceivingEstimatedAmount != null && rate != null && !rate.isZero()) {
+            forReceivingEstimatedAmount * rate / FEE_MULTIPLIER.toBigDecimal()
+        } else {
+            null
+        }
+    }
+
+    // / Maximum amount that user can use for swapping
+    fun calculateAvailableAmount(
+        sourceToken: Token?,
+        fee: SwapFee?
+    ): BigDecimal? {
+        if (sourceToken == null || sourceToken.total.isZero()) {
+            return null
+        }
+
+        if (fee == null) return sourceToken.total
+
+        var amount = sourceToken.total.toLamports(sourceToken.decimals)
+
+        if (fee.tokenSymbol == "SOL") {
+            if (sourceToken.isSOL) {
+                if (amount > fee.lamports) {
+                    amount -= fee.lamports
+                } else {
+                    amount = BigInteger.ZERO
+                }
+            }
+        } else if (fee.tokenSymbol == sourceToken.tokenSymbol) {
+            if (amount > fee.lamports) {
+                amount -= fee.lamports
+            } else {
+                amount = BigInteger.ZERO
+            }
+        }
+
+        return amount.fromLamports(sourceToken.decimals)
+    }
+
+    fun calculateLiquidityProviderFee(): BigDecimal = (BASE_TAKER_FEE_BPS * 100).toBigDecimal()
+
+    suspend fun loadPrice(fromMint: String, toMint: String): BigDecimal =
+        serumSwapInteractor.loadFair(fromMint, toMint).toBigDecimal()
+
+    suspend fun getLamportsPerSignature(): BigInteger = rpcRepository.getFees(null)
+
+    suspend fun getCreatingTokenAccountFee(): BigInteger =
+        rpcRepository
+            .getMinimumBalanceForRentExemption(TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong())
+            .toBigInteger()
 }

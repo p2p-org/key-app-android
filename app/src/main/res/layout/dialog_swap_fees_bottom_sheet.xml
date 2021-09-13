@@ -28,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
         android:layout_marginStart="20dp"
-        android:visibility="gone"
         app:topText="@string/swap_liquidity_provider_fees" />
 
     <View
@@ -55,7 +54,6 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
         android:layout_marginStart="20dp"
-        app:bottomText="SOL"
         app:drawableEnd="@drawable/ic_arrow_right"
         app:topText="@string/swap_pay_network_fee" />
 

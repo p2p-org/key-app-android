@@ -225,4 +225,6 @@
     <string name="receive_solana">Solana</string>
     <string name="receive_bitcoin">Bitcoin</string>
     <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
+    <string name="swap_calculating_fees">Calculating fees</string>
+    <string name="swap_max_available">Max</string>
 </resources>

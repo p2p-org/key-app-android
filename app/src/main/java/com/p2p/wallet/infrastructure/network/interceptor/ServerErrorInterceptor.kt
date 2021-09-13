@@ -13,6 +13,7 @@ import org.json.JSONObject
 import org.json.JSONTokener
 import java.io.IOException
 
+// todo: Update validation
 class ServerErrorInterceptor(
     private val gson: Gson
 ) : Interceptor {

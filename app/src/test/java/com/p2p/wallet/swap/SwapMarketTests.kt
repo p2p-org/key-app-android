@@ -37,15 +37,6 @@ class SwapMarketTests {
     }
 
     @Test
-    fun `test create vault owner`() {
-        val vaultOwner = PublicKey.getVaultOwnerAndNonce(
-            PublicKey("ByRys5tuUWDgL73G8JBAEfkdFf8JWBzPBDHsBVQ5vbQA")
-        )
-
-        assertEquals("GVV4ZT9pccwy9d17STafFDuiSqFbXuRTdvKQ1zJX6ttX", vaultOwner.toBase58())
-    }
-
-    @Test
     fun `test calculate exchange rate`() {
         val fair = 0.11853959222380275
         val expectedRate = BigInteger.valueOf(8375353L)

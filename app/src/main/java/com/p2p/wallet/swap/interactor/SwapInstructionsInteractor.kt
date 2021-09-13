@@ -1,6 +1,5 @@
 package com.p2p.wallet.swap.interactor
 
-import android.util.Base64
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.utils.toPublicKey
@@ -13,16 +12,9 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import java.math.BigInteger
 
-class SwapInteractor2(
+class SwapInstructionsInteractor(
     private val rpcRepository: RpcRepository
 ) {
-
-    suspend fun sendTransaction(serializedTransaction: String, isSimulation: Boolean): String =
-        if (isSimulation) {
-            rpcRepository.simulateTransaction(serializedTransaction)
-        } else {
-            rpcRepository.sendTransaction(serializedTransaction)
-        }
 
     suspend fun prepareValidAccountAndInstructions(
         myAccount: PublicKey,
@@ -157,18 +149,13 @@ class SwapInteractor2(
 
         val info = rpcRepository.getAccountInfo(associatedAddress)
         // check if associated address is registered
-        val isRegistered = if (info?.value != null && info.value.owner == TokenProgram.PROGRAM_ID.toBase58()) {
-            val base64Data = info.value.data!![0]
-            val data = Base64.decode(base64Data, Base64.DEFAULT)
-            val account = TokenProgram.AccountInfoData.decode(data)
-            if (account.owner.toBase58() == TokenProgram.PROGRAM_ID.toBase58()) {
-                true
-            } else {
-                throw IllegalStateException("Associated token account belongs to another user")
-            }
-        } else throw IllegalStateException("Associated token account belongs to another user")
+        val accountInfo = TokenTransaction.parseAccountInfoData(info, TokenProgram.PROGRAM_ID)
 
-        // cleanup intructions
+        val isRegistered = if (accountInfo != null) true else {
+            throw IllegalStateException("Associated token account belongs to another user")
+        }
+
+        // cleanup instructions
         val cleanupInstructions = mutableListOf<TransactionInstruction>()
         if (closeAfterward) {
             cleanupInstructions.add(

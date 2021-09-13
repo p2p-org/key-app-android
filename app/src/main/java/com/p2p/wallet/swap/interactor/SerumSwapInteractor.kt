@@ -20,14 +20,13 @@ import org.p2p.solanaj.serumswap.model.OrderbookPair
 import org.p2p.solanaj.serumswap.model.Side
 import org.p2p.solanaj.serumswap.model.SignersAndInstructions
 import org.p2p.solanaj.serumswap.model.SwapParams
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class SerumSwapInteractor(
-    private val swapInteractor2: SwapInteractor2,
+    private val instructionsInteractor: SwapInstructionsInteractor,
     private val openOrdersInteractor: OpenOrdersInteractor,
     private val marketInteractor: MarketInteractor,
     private val swapMarketInteractor: SwapMarketInteractor,
@@ -46,7 +45,7 @@ class SerumSwapInteractor(
         // TODO: enable once the DEX supports initializing open orders accounts.
         private const val OPEN_ENABLED = false
 
-        private const val BASE_TAKER_FEE_BPS = 0.0022
+        const val BASE_TAKER_FEE_BPS = 0.0022
         const val FEE_MULTIPLIER = 1.0 - BASE_TAKER_FEE_BPS
     }
 
@@ -57,34 +56,27 @@ class SerumSwapInteractor(
         fromWallet: Token,
         toWallet: Token,
         lamportsPerSignature: BigInteger,
-        minRentExemption: BigInteger? = null
+        minRentExemption: BigInteger
     ): BigInteger {
-        val owner = tokenKeyProvider.publicKey
-
-        val minRentExemptionResult =
-            minRentExemption ?: openOrdersInteractor.getMinimumBalanceForRentExemption(dexPID).toBigInteger()
+        val owner = tokenKeyProvider.publicKey.toPublicKey()
 
         // default fee for creating serum dex account
         val creatingSerumDexFee = BigInteger.valueOf(23357760L)
 
         // get fee for opening orders
         val markets = loadMarkets(fromWallet.mintAddress, toWallet.mintAddress)
-        val openOrders = openOrdersInteractor.findForOwner(owner.toPublicKey(), dexPID)
+        val openOrders = openOrdersInteractor.findForOwner(owner, dexPID)
 
         // calculate number of created orders
         var numberOfCreatedOrders = 0
 
         val fromMarket = markets.getOrNull(0)
-        if (fromMarket != null) {
-            openOrders.any { it.address == fromMarket.address.toBase58() }
-        } else {
+        if (fromMarket != null && openOrders.any { it.address == fromMarket.address.toBase58() }) {
             numberOfCreatedOrders += 1
         }
 
         val toMarket = markets.getOrNull(1)
-        if (toMarket != null) {
-            openOrders.any { it.address == toMarket.address.toBase58() }
-        } else {
+        if (toMarket != null && openOrders.any { it.address == toMarket.address.toBase58() }) {
             numberOfCreatedOrders += 1
         }
 
@@ -97,7 +89,7 @@ class SerumSwapInteractor(
         )
 
         // for transitive swap: there is an lps needed for creating a separated open orders transaction
-        // for direct swap: the creating orders transaction is embeded to swap instruction, so this lps is NOT needed
+        // for direct swap: the creating orders transaction is embedded to swap instruction, so this lps is NOT needed
         if (markets.size == 2 && numberOfOrdersToCreate > 0) {
             feeForCreatingNewOrders += lamportsPerSignature
         }
@@ -110,19 +102,23 @@ class SerumSwapInteractor(
         // fee for owner's signature
         fee += lamportsPerSignature
 
-        // if source token is native, a fee for creating wrapped SOL is needed, thus a fee for new account's signature (not associated token address) is also needed
+        // if source token is native, a fee for creating wrapped SOL is needed,
+        // thus a fee for new account's signature (not associated token address) is also needed
         if (fromWallet.isSOL) {
-            fee += minRentExemptionResult + lamportsPerSignature
+            fee += minRentExemption + lamportsPerSignature
         }
 
-        // if destination wallet is a wrapped sol or not yet created, a fee for creating it is needed, as new address is an associated token address, the signature fee is NOT needed
-        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet.publicKey == null) {
-            fee += minRentExemptionResult
+        // if destination wallet is a wrapped sol or not yet created,
+        // a fee for creating it is needed, as new address is an associated token address,
+        // the signature fee is NOT needed
+        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet.publicKey.isEmpty()) {
+            fee += minRentExemption
         }
 
         return fee
     }
 
+    // todo: change double to BigDecimal
     suspend fun loadFair(
         fromMint: PublicKey,
         toMint: PublicKey,
@@ -260,7 +256,7 @@ class SerumSwapInteractor(
         )
 
         return try {
-            swapInteractor2.sendTransaction(serializedTransaction, isSimulation)
+            serializationInteractor.sendTransaction(serializedTransaction, isSimulation)
         } catch (e: Throwable) {
             // todo: parse error
             throw e
@@ -416,7 +412,7 @@ class SerumSwapInteractor(
         val vaultSigner = PublicKey.getVaultOwnerAndNonce(fromMarket.address)
 
         // prepare source account, create associated token address if source wallet is native
-        val sourceAccountInstructions = swapInteractor2.prepareValidAccountAndInstructions(
+        val sourceAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
             myAccount = owner,
             address = coinWallet,
             mint = baseMint,
@@ -426,7 +422,7 @@ class SerumSwapInteractor(
         )
 
         // prepare destination account, create associated token if destination wallet is native or nil.
-        val destinationAccountInstructions = swapInteractor2.prepareValidAccountAndInstructions(
+        val destinationAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
             myAccount = owner,
             address = pcWallet,
             mint = quoteMint,
@@ -518,7 +514,7 @@ class SerumSwapInteractor(
         val toVaultSigner = PublicKey.getVaultOwnerAndNonce(toMarket.address)
 
         // Prepare source, destination and pc wallets
-        val sourceAccountInstructions = swapInteractor2.prepareValidAccountAndInstructions(
+        val sourceAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
             myAccount = owner,
             address = fromWallet,
             mint = fromMint,
@@ -527,7 +523,7 @@ class SerumSwapInteractor(
             closeAfterward = fromMint.toBase58() == Token.WRAPPED_SOL_MINT
         )
 
-        val destinationAccountInstructions = swapInteractor2.prepareValidAccountAndInstructions(
+        val destinationAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
             myAccount = owner,
             address = toWallet,
             mint = toMint,
@@ -535,7 +531,7 @@ class SerumSwapInteractor(
             feePayer = feePayer ?: owner,
             closeAfterward = toMint.toBase58() == Token.WRAPPED_SOL_MINT
         )
-        val pcAccountInstructions = swapInteractor2.prepareValidAccountAndInstructions(
+        val pcAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
             myAccount = owner,
             address = pcWallet,
             mint = pcMint,
@@ -667,7 +663,7 @@ class SerumSwapInteractor(
     }
 
     // Create from and to open orders and wait for confirmation before transitive swaping
-    private suspend fun createFromAndToOpenOrdersForSwapTransitive(
+    suspend fun createFromAndToOpenOrdersForSwapTransitive(
         fromMarket: Market,
         toMarket: Market,
         feePayer: PublicKey?,
@@ -710,8 +706,7 @@ class SerumSwapInteractor(
             feePayer = feePayer
         )
 
-        val transactionId = swapInteractor2.sendTransaction(serializedTransaction, isSimulation)
-        Timber.d("### transaction id $transactionId")
+        val transactionId = serializationInteractor.sendTransaction(serializedTransaction, isSimulation)
         return Triple(from.account, to.account, from.cleanupInstructions + to.cleanupInstructions)
     }
 

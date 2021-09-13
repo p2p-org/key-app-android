@@ -64,6 +64,7 @@ class SwapFragment :
             destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
             destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
             availableTextView.setOnClickListener { presenter.feedAvailableValue() }
+            maxTextView.setOnClickListener { presenter.feedAvailableValue() }
             amountEditText.doAfterTextChanged {
                 presenter.setSourceAmount(it.toString())
             }
@@ -88,7 +89,7 @@ class SwapFragment :
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
-            availableTextView.text = token.getFormattedTotal()
+            maxTextView.isVisible = true
         }
     }
 
@@ -106,6 +107,11 @@ class SwapFragment :
                 destinationAvailableTextView.text = ""
             }
         }
+    }
+
+    override fun showSourceAvailable(available: String) {
+        binding.availableTextView.isVisible = true
+        binding.availableTextView.text = available
     }
 
     override fun showButtonText(textRes: Int) {
@@ -129,16 +135,18 @@ class SwapFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showCalculations(data: CalculationsData) {
-        binding.feesGroup.isVisible = true
-        binding.receiveTextView.text = getString(R.string.main_swap_min_receive, data.minReceive)
+        binding.receiveTextView.text = getString(R.string.main_swap_min_receive, data.estimatedReceiveAmount)
         binding.destinationAmountTextView.text = data.destinationAmount
+    }
 
+    override fun showFees(networkFee: String, liquidityFee: String, feeOption: String) {
+        binding.feesGroup.isVisible = true
         binding.feesTextView.setOnClickListener {
-            FeesBottomSheet.show(childFragmentManager, data.liquidityProviderFee, data.fee)
+            FeesBottomSheet.show(childFragmentManager, liquidityFee, networkFee, feeOption)
         }
 
         binding.feesImageView.setOnClickListener {
-            FeesBottomSheet.show(childFragmentManager, data.liquidityProviderFee, data.fee)
+            FeesBottomSheet.show(childFragmentManager, liquidityFee, networkFee, feeOption)
         }
     }
 

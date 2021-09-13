@@ -33,18 +33,18 @@ class RestoreFragment : BaseFragment(R.layout.fragment_restore) {
             restoreButton.setOnClickListener {
                 requireContext().copyToClipBoard(
                     listOf(
-                        "miracle",
-                        "pizza",
-                        "supply",
-                        "useful",
-                        "steak",
-                        "border",
-                        "same",
-                        "again",
-                        "youth",
-                        "silver",
-                        "access",
-                        "hundred"
+                        "oval",
+                        "you",
+                        "token",
+                        "plug",
+                        "copper",
+                        "visa",
+                        "employ",
+                        "link",
+                        "sell",
+                        "asset",
+                        "kick",
+                        "sausage"
                     ).joinToString(" ")
                 )
                 replaceFragment(SecretKeyFragment.create())
