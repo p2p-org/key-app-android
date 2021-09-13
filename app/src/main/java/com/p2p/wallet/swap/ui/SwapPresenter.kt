@@ -61,7 +61,7 @@ class SwapPresenter(
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
-            sourceToken = initialToken
+            sourceToken = initialToken ?: userInteractor.getUserTokens().find { it.isSOL }
 
             lamportsPerSignature = swapInteractor.getLamportsPerSignature()
             liquidityProviderFee = swapInteractor.calculateLiquidityProviderFee()
