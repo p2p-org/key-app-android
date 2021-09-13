@@ -10,9 +10,9 @@ class Market(
     private val decoded: MarketStatLayout,
     private val baseSplTokenDecimals: Int,
     private val quoteSplTokenDecimals: Int,
-    private val skipPreflight: Boolean,
-    private val commitment: String,
-    private val layoutOverride: MarketStatLayout.Type?
+    private val skipPreflight: Boolean = false,
+    private val commitment: String = "recent",
+    private val layoutOverride: MarketStatLayout.Type? = null
 ) {
 
     companion object {
@@ -21,9 +21,6 @@ class Market(
             return if (version == 1) MarketStatLayout.Type.LAYOUT_V1
             else MarketStatLayout.Type.LAYOUT_V2
         }
-
-        fun getLayoutSpan(programId: String): Int =
-            getLayoutType(programId).span.toInt()
     }
 
     val address: PublicKey = decoded.ownAddress
@@ -44,8 +41,8 @@ class Market(
         get() = BigDecimal(10.0.pow(quoteSplTokenDecimals))
 
     fun priceLotsToNumber(price: BigInteger): BigDecimal =
-        (BigDecimal(price).multiply(BigDecimal(decoded.quoteLotSize)).multiply(baseSplTokenMultiplier)) /
-            BigDecimal(decoded.baseLotSize).multiply(quoteSplTokenMultiplier)
+        (BigDecimal(price) * (BigDecimal(decoded.quoteLotSize)) * baseSplTokenMultiplier) /
+            (BigDecimal(decoded.baseLotSize) * quoteSplTokenMultiplier)
 
     fun baseSizeLotsToNumber(quantity: BigInteger): BigDecimal =
         (BigDecimal(quantity).multiply(BigDecimal(decoded.baseLotSize))) / baseSplTokenMultiplier

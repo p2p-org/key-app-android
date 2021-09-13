@@ -6,6 +6,7 @@ import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.MarketStatLayout
+import org.p2p.solanaj.serumswap.MarketStatLayoutParser
 import org.p2p.solanaj.serumswap.orderbook.Orderbook
 
 class MarketInteractor(
@@ -77,9 +78,9 @@ class MarketInteractor(
         val base64Data = info.value.data!![0]
         val data = Base64.decode(base64Data, Base64.DEFAULT)
         return if (type == MarketStatLayout.Type.LAYOUT_V1) {
-            MarketStatLayout.LayoutV1(data)
+            MarketStatLayoutParser.parseV1(data)
         } else {
-            MarketStatLayout.LayoutV2(data)
+            MarketStatLayoutParser.parseV2(data)
         }
     }
 

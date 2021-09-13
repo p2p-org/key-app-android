@@ -4,9 +4,9 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.model.Slippage
-import com.p2p.wallet.main.model.Token
 import java.math.BigDecimal
 
 interface SwapContract {
@@ -14,8 +14,10 @@ interface SwapContract {
     interface View : MvpView {
         fun showSourceToken(token: Token)
         fun showDestinationToken(token: Token?)
+        fun showSourceAvailable(available: String)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
+        fun showFees(networkFee: String, liquidityFee: String, feeOption: String)
         fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String)
         fun hidePrice()
         fun showCalculations(data: CalculationsData)

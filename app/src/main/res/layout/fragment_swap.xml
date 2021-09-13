@@ -72,6 +72,7 @@
                     android:drawablePadding="4dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorAccentPrimary"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/fromTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/fromTextView"
@@ -84,16 +85,17 @@
                     android:layout_height="32dp"
                     android:layout_marginStart="36dp"
                     android:layout_marginTop="16dp"
+                    android:src="@drawable/ic_wallet"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/fromTextView"
-                    tools:src="@tools:sample/avatars" />
+                    app:layout_constraintTop_toBottomOf="@id/fromTextView" />
 
                 <TextView
                     android:id="@+id/sourceTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/main_from"
+                    android:text="@string/main_select"
+                    android:textAllCaps="true"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     app:layout_constraintBottom_toBottomOf="@id/sourceImageView"
                     app:layout_constraintStart_toEndOf="@id/sourceImageView"
@@ -111,6 +113,24 @@
                     app:layout_constraintTop_toTopOf="@id/sourceTextView"
                     tools:ignore="ContentDescription" />
 
+                <TextView
+                    android:id="@+id/maxTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_gray_secondary_rounded"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="8dp"
+                    android:text="@string/swap_max_available"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    android:textColor="?colorElementSecondary"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/downImageView"
+                    app:layout_constraintStart_toEndOf="@id/downImageView"
+                    app:layout_constraintTop_toTopOf="@id/downImageView"
+                    tools:visibility="visible" />
+
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/amountEditText"
                     android:layout_width="0dp"
@@ -124,7 +144,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal"
                     android:singleLine="true"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
                     android:textColorHint="?colorElementSecondary"
                     app:layout_constraintBottom_toBottomOf="@id/downImageView"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -249,7 +269,8 @@
                     android:gravity="end"
                     android:hint="@string/main_swap_hint"
                     android:maxLines="1"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
+                    android:textSize="26sp"
                     app:layout_constraintBottom_toBottomOf="@id/destinationImageView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/centerGuideline"
@@ -372,9 +393,11 @@
                     android:paddingVertical="8dp"
                     android:text="@string/main_swap_fee"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toStartOf="@id/feesImageView"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/dividerSlippageView" />
+                    app:layout_constraintTop_toBottomOf="@id/dividerSlippageView"
+                    tools:visibility="visible" />
 
                 <ImageView
                     android:id="@+id/feesImageView"

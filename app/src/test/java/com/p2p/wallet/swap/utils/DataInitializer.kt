@@ -22,7 +22,7 @@ import com.p2p.wallet.swap.interactor.MarketInteractor
 import com.p2p.wallet.swap.interactor.OpenOrdersInteractor
 import com.p2p.wallet.swap.interactor.SerializationInteractor
 import com.p2p.wallet.swap.interactor.SerumSwapInteractor
-import com.p2p.wallet.swap.interactor.SwapInteractor2
+import com.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import com.p2p.wallet.swap.interactor.SwapMarketInteractor
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
@@ -40,13 +40,9 @@ class DataInitializer {
 
     private val keys =
         listOf(
-            "miracle", "pizza", "supply", "useful", "steak", "border",
-            "same", "again", "youth", "silver", "access", "hundred"
+            "oval", "you", "token", "plug", "copper", "visa",
+            "employ", "link", "sell", "asset", "kick", "sausage"
         )
-//        listOf(
-//            "oval", "you", "token", "plug", "copper", "visa",
-//            "employ", "link", "sell", "asset", "kick", "sausage"
-//        )
 
     private lateinit var context: Context
 
@@ -63,7 +59,7 @@ class DataInitializer {
 
     private lateinit var mainLocalRepository: MainLocalRepository
 
-    private lateinit var swapInteractor2: SwapInteractor2
+    private lateinit var instructionsInteractor: SwapInstructionsInteractor
     private lateinit var openOrdersInteractor: OpenOrdersInteractor
     private lateinit var marketInteractor: MarketInteractor
 
@@ -128,7 +124,7 @@ class DataInitializer {
             sharedPreferences = sharedPreferences
         )
 
-        swapInteractor2 = SwapInteractor2(rpcRepository)
+        instructionsInteractor = SwapInstructionsInteractor(rpcRepository)
         openOrdersInteractor = OpenOrdersInteractor(rpcRepository)
         marketInteractor = MarketInteractor(rpcRepository)
 
@@ -136,7 +132,7 @@ class DataInitializer {
         serializationInteractor = SerializationInteractor(rpcRepository, tokenKeyProvider)
 
         interactor = SerumSwapInteractor(
-            swapInteractor2 = swapInteractor2,
+            instructionsInteractor = instructionsInteractor,
             openOrdersInteractor = openOrdersInteractor,
             marketInteractor = marketInteractor,
             swapMarketInteractor = swapMarketInteractor,

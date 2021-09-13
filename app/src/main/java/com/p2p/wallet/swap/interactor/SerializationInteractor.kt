@@ -15,6 +15,13 @@ class SerializationInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
+    suspend fun sendTransaction(serializedTransaction: String, isSimulation: Boolean): String =
+        if (isSimulation) {
+            rpcRepository.simulateTransaction(serializedTransaction)
+        } else {
+            rpcRepository.sendTransaction(serializedTransaction)
+        }
+
     suspend fun serializeTransaction(
         instructions: List<TransactionInstruction>,
         recentBlockhash: String? = null,

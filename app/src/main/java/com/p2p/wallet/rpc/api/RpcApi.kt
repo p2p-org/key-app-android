@@ -4,6 +4,7 @@ import com.p2p.wallet.infrastructure.network.CommonResponse
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo
+import org.p2p.solanaj.model.types.FeesResponse
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RpcRequest
@@ -41,6 +42,12 @@ interface RpcApi {
         @Body rpcRequest: RpcRequest,
         @Url url: String = ""
     ): CommonResponse<SimulateTransactionResponse>
+
+    @POST
+    suspend fun getFees(
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = ""
+    ): CommonResponse<FeesResponse>
 
     @POST
     suspend fun getAccountInfo(

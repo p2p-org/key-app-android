@@ -6,7 +6,9 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.interactor.SwapInteractor
+import com.p2p.wallet.swap.model.FeeType
 import com.p2p.wallet.swap.model.Slippage
+import com.p2p.wallet.swap.model.SwapFee
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.isMoreThan
@@ -14,16 +16,15 @@ import com.p2p.wallet.utils.isZero
 import com.p2p.wallet.utils.scaleLong
 import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toBigDecimalOrZero
-import com.p2p.wallet.utils.toLamports
-import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.p2p.solanaj.model.types.TokenAccountBalance
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.properties.Delegates
 
-class SerumSwapPresenter(
+// TODO: Refactor this class, too complicated logic, it can be optimized
+class SwapPresenter(
     private val initialToken: Token?,
     private val userInteractor: UserInteractor,
     private val swapInteractor: SwapInteractor,
@@ -38,9 +39,6 @@ class SerumSwapPresenter(
         view?.showDestinationToken(newValue)
     }
 
-    private var sourceBalance: TokenAccountBalance? = null
-    private var destinationBalance: TokenAccountBalance? = null
-
     private var isReverse: Boolean = false
     private var reverseJob: Job? = null
 
@@ -50,13 +48,25 @@ class SerumSwapPresenter(
     private var aroundValue: BigDecimal = BigDecimal.ZERO
     private var slippage: Double = 0.1
 
+    private var currentRate: BigDecimal = BigDecimal.ZERO
+
+    private var lamportsPerSignature: BigInteger = BigInteger.ZERO
+    private var creatingAccountFee: BigInteger = BigInteger.ZERO
+    private var liquidityProviderFee: BigDecimal = BigDecimal.ZERO
+
+    private var currentFees = mutableMapOf<FeeType, SwapFee>()
+
     private var calculationJob: Job? = null
 
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
-            val source = initialToken ?: userInteractor.getUserTokens().firstOrNull { it.isSRM } ?: return@launch
-            sourceToken = source
+            sourceToken = initialToken
+
+            lamportsPerSignature = swapInteractor.getLamportsPerSignature()
+            liquidityProviderFee = swapInteractor.calculateLiquidityProviderFee()
+            creatingAccountFee = swapInteractor.getCreatingTokenAccountFee()
+
             view?.showSlippage(slippage)
             view?.showFullScreenLoading(false)
         }
@@ -81,7 +91,13 @@ class SerumSwapPresenter(
 
     override fun setNewSourceToken(newToken: Token) {
         if (sourceToken == newToken) return
+
         sourceToken = newToken
+
+        val availableAmount = swapInteractor.calculateAvailableAmount(newToken, currentFees[FeeType.DEFAULT])
+        val available = "$availableAmount ${newToken.tokenSymbol}"
+        view?.showSourceAvailable(available)
+
         destinationToken = null
         view?.hidePrice()
         destinationAmount = "0"
@@ -95,7 +111,8 @@ class SerumSwapPresenter(
 
     override fun setNewDestinationToken(newToken: Token) {
         destinationToken = newToken
-        updateButtonText(sourceToken!!)
+        sourceToken?.let { calculateRateAndFees(it, newToken) }
+
         setButtonEnabled()
     }
 
@@ -124,10 +141,14 @@ class SerumSwapPresenter(
             try {
                 val source = requireSourceToken()
                 val destination = requireDestinationToken()
-                val sourceSymbol = if (isReverse) destination.tokenSymbol else source.tokenSymbol
-                val destinationSymbol = if (isReverse) source.tokenSymbol else destination.tokenSymbol
-                val priceInSingleValue = userInteractor.getPriceByToken(sourceSymbol, destinationSymbol)
-                view?.showPrice(priceInSingleValue, destinationSymbol, sourceSymbol)
+
+                if (isReverse) {
+                    currentRate = swapInteractor.loadPrice(destination.mintAddress, source.mintAddress)
+                    view?.showPrice(currentRate, destination.tokenSymbol, source.tokenSymbol)
+                } else {
+                    currentRate = swapInteractor.loadPrice(source.mintAddress, destination.mintAddress)
+                    view?.showPrice(currentRate, source.tokenSymbol, destination.tokenSymbol)
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading price")
             }
@@ -147,7 +168,7 @@ class SerumSwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
-        calculateData(requireSourceToken(), destinationToken)
+        calculateAmount(requireSourceToken(), destinationToken)
 
         setButtonEnabled()
     }
@@ -192,44 +213,62 @@ class SerumSwapPresenter(
         }
     }
 
-    private fun calculateData(source: Token, destination: Token?) {
+    private fun calculateRateAndFees(source: Token, destination: Token) {
+        launch {
+            try {
+                view?.showButtonText(R.string.swap_calculating_fees)
+
+                currentRate = swapInteractor.loadPrice(source.mintAddress, destination.mintAddress)
+                view?.showPrice(currentRate, source.tokenSymbol, destination.tokenSymbol)
+
+                val fees = swapInteractor.calculateFees(
+                    sourceToken = source,
+                    destinationToken = destination,
+                    lamportsPerSignature = lamportsPerSignature,
+                    creatingAccountFee = creatingAccountFee
+                )
+
+                currentFees.putAll(fees)
+
+                val liquidityFee = currentFees[FeeType.LIQUIDITY_PROVIDER]?.stringValue.orEmpty()
+                val defaultFee = currentFees[FeeType.DEFAULT]
+
+                val networkFee = if (defaultFee != null) {
+                    val formattedFee = defaultFee.lamports
+                        .fromLamports(source.decimals)
+                        .toFee()
+                        .scaleMedium()
+
+                    "$formattedFee ${defaultFee.tokenSymbol}"
+                } else null
+
+                val feeOption = "${source.tokenSymbol}+${destination.tokenSymbol}"
+                view?.showFees(networkFee = networkFee.orEmpty(), liquidityFee = liquidityFee, feeOption)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error calculating network fees")
+            } finally {
+                updateButtonText(source)
+            }
+        }
+    }
+
+    private fun calculateAmount(source: Token, destination: Token?) {
         if (destination == null) return
         calculationJob?.cancel()
         calculationJob = launch {
-
-            val calculatedAmount = serumSwapInteractor.loadFair(
-                fromMint = source.mintAddress,
-                toMint = destination.mintAddress
-            )
-
-            destinationAmount = calculatedAmount.toString()
-
-            val fee = serumSwapInteractor.calculateNetworkFee(
-                fromWallet = source,
-                toWallet = destination,
-                lamportsPerSignature = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
-            )
-
-            val balanceA = swapInteractor.loadTokenBalance(source.publicKey.toPublicKey())
-                .also { sourceBalance = it }
-
-            val balanceB = swapInteractor.loadTokenBalance(destination.publicKey.toPublicKey())
-                .also { destinationBalance = it }
-
-            val minReceive = swapInteractor.calculateMinReceive(
-                balanceA = balanceA,
-                balanceB = balanceB,
-                amount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
+            val inputAmount = sourceAmount.toBigDecimalOrZero()
+            val estimatedAmount = swapInteractor.calculateEstimatedAmount(
+                inputAmount = inputAmount,
+                rate = currentRate,
                 slippage = slippage
             )
 
+            destinationAmount = (estimatedAmount ?: BigDecimal.ZERO).toString()
+
             val data = CalculationsData(
                 destinationAmount = destinationAmount,
-                minReceive = minReceive.fromLamports(destination.decimals).scaleMedium(),
-                minReceiveSymbol = destination.tokenSymbol,
-                fee = "${fee.fromLamports(destination.decimals).scaleMedium()} ${destination.tokenSymbol}",
-                liquidityProviderFee = "0.0000075 BTC",
-                feeSymbol = destination.tokenSymbol
+                estimatedReceiveAmount = estimatedAmount ?: BigDecimal.ZERO,
+                receiveSymbol = destination.tokenSymbol
             )
 
             updateButtonText(source)
@@ -268,9 +307,8 @@ class SerumSwapPresenter(
 
 data class CalculationsData(
     val destinationAmount: String,
-    val minReceive: BigDecimal,
-    val minReceiveSymbol: String,
-    val fee: String,
-    val liquidityProviderFee: String,
-    val feeSymbol: String
+    val estimatedReceiveAmount: BigDecimal,
+    val receiveSymbol: String,
 )
+
+private fun BigDecimal.toFee() = this / BigDecimal(1000)

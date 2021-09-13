@@ -32,13 +32,15 @@
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/item_transaction.xml" value="0.28888888888888886" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/widget_double_text_view.xml" value="0.3546875" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/widget_tab_radiogroup.xml" value="0.29259259259259257" />
+        <entry key="app/src/main/res/layout/dialog_swap_fees_bottom_sheet.xml" value="0.37604166666666666" />
+        <entry key="app/src/main/res/layout/fragment_buy.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_derivable_accounts.xml" value="0.2776268115942029" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_swap.xml" value="0.3485641479492188" />
+        <entry key="app/src/main/res/layout/fragment_swap.xml" value="0.39178690344062156" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_12" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

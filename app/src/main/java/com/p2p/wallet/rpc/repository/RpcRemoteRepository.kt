@@ -4,7 +4,6 @@ import android.util.Base64
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.rpc.api.RpcApi
 import org.p2p.solanaj.kits.MultipleAccountsInfo
-import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.Transaction
@@ -15,12 +14,11 @@ import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
-import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
+import java.math.BigInteger
 
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
@@ -43,12 +41,6 @@ class RpcRemoteRepository(
     private fun createRpcApi(environment: Environment): RpcApi = when (environment) {
         Environment.SOLANA -> serumApi
         Environment.MAINNET -> mainnetApi
-    }
-
-    override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
-        val params = listOf(account.toString())
-        val rpcRequest = RpcRequest("getTokenAccountBalance", params)
-        return rpcApi.getTokenAccountBalance(rpcRequest).result
     }
 
     override suspend fun getRecentBlockhash(): RecentBlockhash {
@@ -94,6 +86,18 @@ class RpcRemoteRepository(
         return rpcApi.simulateTransaction(rpcRequest).result.logs?.firstOrNull().orEmpty()
     }
 
+    override suspend fun getFees(commitment: String?): BigInteger {
+        val params = commitment?.let {
+            val config = RequestConfiguration(commitment = it)
+            listOf<Any>(config)
+        }
+
+        val rpcRequest = RpcRequest("getFees", params)
+
+        val response = rpcApi.getFees(rpcRequest).result
+        return BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
+    }
+
     override suspend fun getAccountInfo(account: PublicKey): AccountInfo {
         val params = listOf(
             account.toString(),
@@ -101,16 +105,6 @@ class RpcRemoteRepository(
         )
         val rpcRequest = RpcRequest("getAccountInfo", params)
         return rpcApi.getAccountInfo(rpcRequest).result
-    }
-
-    override suspend fun getPools(account: PublicKey): List<Pool.PoolInfo> {
-        val params = listOf(
-            account.toString(),
-            ConfigObjects.ProgramAccountConfig(RpcSendTransactionConfig.Encoding.base64)
-        )
-        val rpcRequest = RpcRequest("getProgramAccounts", params)
-        val response = rpcApi.getProgramAccounts(rpcRequest).result
-        return response.map { Pool.PoolInfo.fromProgramAccount(it) }
     }
 
     override suspend fun getProgramAccounts(
