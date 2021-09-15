@@ -10,8 +10,8 @@ interface FeeRelayerApi {
     suspend fun getPublicKey(): String
 
     @POST("transfer_sol")
-    suspend fun sendSolToken(@Body request: FeeSolTransferRequest): String
+    suspend fun sendSolToken(@Body request: FeeSolTransferRequest): List<String>
 
     @POST("transfer_spl_token")
-    suspend fun sendSplToken(@Body request: FeeSplTransferRequest): String
+    suspend fun sendSplToken(@Body request: FeeSplTransferRequest): List<String>
 }
