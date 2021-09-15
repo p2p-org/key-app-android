@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.repository.AuthRepository
-import com.p2p.wallet.common.crypto.Base58Utils
+import org.p2p.solanaj.utils.crypto.Base58Utils
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.restore.model.DerivableAccount

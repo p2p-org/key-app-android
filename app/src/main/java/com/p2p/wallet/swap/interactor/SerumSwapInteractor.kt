@@ -6,9 +6,9 @@ import com.p2p.wallet.utils.isUsdx
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.kits.AccountInstructions
-import org.p2p.solanaj.model.core.Account
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.TransactionInstruction
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions
 import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.dexPID

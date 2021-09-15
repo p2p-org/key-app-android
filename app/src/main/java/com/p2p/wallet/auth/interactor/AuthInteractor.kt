@@ -9,7 +9,7 @@ import androidx.core.content.edit
 import com.p2p.wallet.auth.model.BiometricStatus
 import com.p2p.wallet.auth.model.BiometricType
 import com.p2p.wallet.auth.model.SignInResult
-import com.p2p.wallet.common.crypto.HashingUtils
+import org.p2p.solanaj.utils.crypto.HashingUtils
 import com.p2p.wallet.common.crypto.keystore.DecodeCipher
 import com.p2p.wallet.common.crypto.keystore.EncodeCipher
 import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper

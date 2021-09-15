@@ -227,4 +227,17 @@
     <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
     <string name="swap_calculating_fees">Calculating fees</string>
     <string name="swap_max_available">Max</string>
+    <string name="receive_want_to_receive">I want to receive</string>
+    <string name="receive_ren_attention_message">Bitcoin deposit address is only open for 36 hours, but you can send to it multiple times within this session.</string>
+    <string name="receive_ren_open_hours">is only open for 36 hours</string>
+    <string name="receive_ren_info">• Each transaction to this deposit address takes about 60 minutes to complete. For security reasons, you will need to wait for 6 block confirmations before you can mint renBTC on Solana. \n• If you cannot complete this transaction within the required time, please return at a later date. \n• If you do not finish your transaction within this period/session/time frame, you risk losing the deposits.</string>
+    <string name="receive_ren_risk_losing_deposits">you risk losing the deposits</string>
+    <string name="receive_complete_transaction">I can complete this transaction within time</string>
+    <string name="receive_show_address">Show address</string>
+    <string name="receive_renbtc">renBTC</string>
+    <string name="receive_view_bitcoin_explorer">View in Bitcoin explorer</string>
+    <string name="receive_session_timer_info">• This address accepts only Bitcoin. You may lose assets by sending another coin. \n• Minimum transaction amount of 0.000112 BTC. \n• %s is the remaining time to safely send the assets.</string>
+    <string name="receive_only_bitcoin">only Bitcoin</string>
+    <string name="receive_btc_min_transaction">0.000112 BTC</string>
+    <string name="receive_statuses">Receiving statuses</string>
 </resources>

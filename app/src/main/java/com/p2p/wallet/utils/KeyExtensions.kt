@@ -1,6 +1,6 @@
 package com.p2p.wallet.utils
 
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.usdcMint
 import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.usdtMint
 

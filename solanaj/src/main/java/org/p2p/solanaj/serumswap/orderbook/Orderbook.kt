@@ -1,7 +1,7 @@
 package org.p2p.solanaj.serumswap.orderbook
 
-import org.p2p.solanaj.model.core.AbstractData
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.AbstractData
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.model.AccountFlags
 import org.p2p.solanaj.serumswap.model.Integer128
@@ -56,14 +56,14 @@ data class Orderbook(
 
         init {
             // just skipping 5 bytes
-            skipBytes(5)
+            readBytes(5)
             accountFlags = AccountFlags(readUint64())
 
             val headerLayout = parseHeaderLayout()
             val nodes = parseNodes(headerLayout)
             slab = Slab(headerLayout, nodes)
 
-            skipBytes(7)
+            readBytes(7)
 
             val dataLength = nodes.size + NodeLayout.NODE_LAYOUT_LENGTH + AccountFlags.ACCOUNT_FLAGS_LENGTH
             require(data.size >= dataLength) { "Wrong data" }
@@ -121,7 +121,7 @@ data class Orderbook(
             val feeTier: Byte = readByte()
 
             // just skipping two bytes
-            skipBytes(2)
+            readBytes(2)
 
             val key: Integer128 = readUint128().toInt128()
             val owner: PublicKey = readPublicKey()

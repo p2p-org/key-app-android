@@ -1,6 +1,6 @@
 package com.p2p.wallet.swap
 
-import com.p2p.wallet.common.crypto.Hex
+import org.p2p.solanaj.utils.crypto.Hex
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.swap.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.interactor.SwapMarketInteractor
@@ -12,7 +12,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.MarketStatLayout
 import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.dexPID

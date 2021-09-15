@@ -1,7 +1,7 @@
 package com.p2p.wallet.swap
 
 import android.util.Base64
-import com.p2p.wallet.common.crypto.Hex
+import org.p2p.solanaj.utils.crypto.Hex
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,12 +78,12 @@ class DecodingTests {
 
     @Test
     fun `test sighash`() {
-        val swapTransitive = SerumSwapUtils.sighash(ixName = "swapTransitive")
-        val expectedTransitive = listOf(129, 109, 254, 207, 31, 192, 47, 51)
-        assertEquals(expectedTransitive, swapTransitive.toList())
-
         val swapByteArray = SerumSwapUtils.sighash(ixName = "swap")
         val expected = listOf(248, 198, 158, 145, 225, 117, 135, 200)
         assertEquals(expected, swapByteArray.toList())
+
+        val swapTransitive = SerumSwapUtils.sighash(ixName = "swapTransitive")
+        val expectedTransitive = listOf(129, 109, 254, 207, 31, 192, 47, 51)
+        assertEquals(expectedTransitive, swapTransitive.toList())
     }
 }

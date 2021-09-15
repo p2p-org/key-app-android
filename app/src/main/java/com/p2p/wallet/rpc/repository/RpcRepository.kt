@@ -2,8 +2,8 @@ package com.p2p.wallet.rpc.repository
 
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.Transaction
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash

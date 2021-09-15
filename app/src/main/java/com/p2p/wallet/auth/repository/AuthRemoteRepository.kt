@@ -6,7 +6,7 @@ import com.p2p.wallet.utils.mnemoticgenerator.Words
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.solanaj.model.core.Account
+import org.p2p.solanaj.core.Account
 import java.security.SecureRandom
 
 class AuthRemoteRepository : AuthRepository {

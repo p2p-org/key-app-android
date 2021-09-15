@@ -4,12 +4,15 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_VERSION
+import com.p2p.wallet.main.db.SessionDao
+import com.p2p.wallet.main.db.SessionEntity
 import com.p2p.wallet.main.db.TokenDao
 import com.p2p.wallet.main.db.TokenEntity
 
 @Database(
     entities = [
-        TokenEntity::class
+        TokenEntity::class,
+        SessionEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
@@ -23,4 +26,5 @@ abstract class WalletDatabase : RoomDatabase() {
     }
 
     abstract fun tokenDao(): TokenDao
+    abstract fun sessionDao(): SessionDao
 }
