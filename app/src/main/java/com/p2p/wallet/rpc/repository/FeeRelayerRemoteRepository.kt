@@ -28,7 +28,7 @@ class FeeRelayerRemoteRepository(
             blockhash = blockhash
         )
 
-        return api.sendSolToken(request)
+        return api.sendSolToken(request).first()
     }
 
     override suspend fun sendSplToken(
@@ -53,6 +53,6 @@ class FeeRelayerRemoteRepository(
             blockhash = blockhash
         )
 
-        return api.sendSplToken(request)
+        return api.sendSplToken(request).first()
     }
 }
