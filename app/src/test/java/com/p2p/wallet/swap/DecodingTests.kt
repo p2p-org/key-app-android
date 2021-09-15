@@ -1,7 +1,7 @@
 package com.p2p.wallet.swap
 
 import android.util.Base64
-import com.p2p.wallet.common.crypto.Hex
+import org.p2p.solanaj.utils.crypto.Hex
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -19,6 +19,11 @@ public class ConfigObjects {
         public ConfirmedSignFAddr2(String before, int limit) {
             this.limit = limit;
             this.before = before;
+
+        }
+        public ConfirmedSignFAddr2(int limit) {
+            this.limit = limit;
+            this.before = before;
         }
     }
 

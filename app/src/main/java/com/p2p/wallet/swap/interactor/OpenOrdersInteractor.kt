@@ -2,9 +2,9 @@ package com.p2p.wallet.swap.interactor
 
 import com.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.solanaj.kits.AccountInstructions
-import org.p2p.solanaj.model.core.Account
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.TransactionInstruction
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration

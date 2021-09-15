@@ -1,7 +1,7 @@
 package org.p2p.solanaj.kits
 
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.PublicKey.Companion.findProgramAddress
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.PublicKey.Companion.findProgramAddress
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.programs.TokenSwapProgram.TokenSwapData
 import java.math.BigInteger

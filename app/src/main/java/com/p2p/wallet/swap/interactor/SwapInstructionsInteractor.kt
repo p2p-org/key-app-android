@@ -3,11 +3,11 @@ package com.p2p.wallet.swap.interactor
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.utils.toPublicKey
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.kits.TokenTransaction
-import org.p2p.solanaj.model.core.Account
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import java.math.BigInteger
@@ -101,16 +101,18 @@ class SwapInstructionsInteractor(
                     lamports = amount.toLong() + minBalanceForRentExemption
                 ),
                 TokenProgram.initializeAccountInstruction(
-                    account = newAccount.publicKey,
-                    mint = Token.WRAPPED_SOL_MINT.toPublicKey(),
-                    owner = payer
+                    TokenProgram.PROGRAM_ID,
+                    newAccount.publicKey,
+                    Token.WRAPPED_SOL_MINT.toPublicKey(),
+                    payer
                 )
             ),
             cleanupInstructions = listOf(
                 TokenProgram.closeAccountInstruction(
-                    account = newAccount.publicKey,
-                    destination = payer,
-                    owner = payer
+                    TokenProgram.PROGRAM_ID,
+                    newAccount.publicKey,
+                    payer,
+                    payer
                 )
             ),
             signers = listOf(newAccount),
@@ -160,9 +162,10 @@ class SwapInstructionsInteractor(
         if (closeAfterward) {
             cleanupInstructions.add(
                 TokenProgram.closeAccountInstruction(
-                    account = associatedAddress,
-                    destination = owner,
-                    owner = owner
+                    TokenProgram.PROGRAM_ID,
+                    associatedAddress,
+                    owner,
+                    owner
                 )
             )
         }
@@ -180,10 +183,12 @@ class SwapInstructionsInteractor(
             account = associatedAddress,
             instructions = mutableListOf(
                 TokenProgram.createAssociatedTokenAccountInstruction(
-                    mint = mint,
-                    associatedAccount = associatedAddress,
-                    owner = owner,
-                    payer = feePayer
+                    TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                    TokenProgram.PROGRAM_ID,
+                    mint,
+                    associatedAddress,
+                    owner,
+                    feePayer
                 )
             ),
             cleanupInstructions = cleanupInstructions,

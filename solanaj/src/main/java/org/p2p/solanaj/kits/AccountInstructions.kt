@@ -1,8 +1,8 @@
 package org.p2p.solanaj.kits
 
-import org.p2p.solanaj.model.core.Account
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.TransactionInstruction
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.TransactionInstruction
 
 class AccountInstructions(
     val account: PublicKey,

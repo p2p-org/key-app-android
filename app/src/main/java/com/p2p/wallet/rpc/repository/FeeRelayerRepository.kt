@@ -1,6 +1,6 @@
 package com.p2p.wallet.rpc.repository
 
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import java.math.BigInteger
 
 interface FeeRelayerRepository {

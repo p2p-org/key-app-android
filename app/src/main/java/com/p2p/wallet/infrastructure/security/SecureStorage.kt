@@ -2,7 +2,7 @@ package com.p2p.wallet.infrastructure.security
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.p2p.wallet.common.crypto.Hex
+import org.p2p.solanaj.utils.crypto.Hex
 import com.p2p.wallet.common.crypto.keystore.DecodeCipher
 import com.p2p.wallet.common.crypto.keystore.EncodeCipher
 import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper

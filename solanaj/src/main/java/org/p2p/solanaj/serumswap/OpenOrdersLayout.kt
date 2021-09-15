@@ -1,7 +1,7 @@
 package org.p2p.solanaj.serumswap
 
-import org.p2p.solanaj.model.core.AbstractData
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.AbstractData
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.serumswap.model.AccountFlags
 import org.p2p.solanaj.serumswap.model.Integer128
 import org.p2p.solanaj.serumswap.model.MemoryLayout

@@ -1,6 +1,6 @@
 package org.p2p.solanaj.serumswap.model
 
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.serumswap.Market
 import java.math.BigInteger

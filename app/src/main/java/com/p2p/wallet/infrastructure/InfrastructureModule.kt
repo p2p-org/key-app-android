@@ -26,6 +26,7 @@ object InfrastructureModule : InjectionModule {
         }
 
         single { get<WalletDatabase>().tokenDao() }
+        single { get<WalletDatabase>().sessionDao() }
 
         single {
             val context = get<Context>()

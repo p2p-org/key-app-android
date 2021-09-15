@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.p2p.wallet.R
-import com.p2p.wallet.common.crypto.Base58Utils
+import org.p2p.solanaj.utils.crypto.Base58Utils
 import com.p2p.wallet.infrastructure.security.SecureStorage
 import kotlinx.coroutines.runBlocking
 

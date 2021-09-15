@@ -1,6 +1,6 @@
 package org.p2p.solanaj.serumswap
 
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import java.math.BigInteger
 
 data class FeeDiscountAccount(

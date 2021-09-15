@@ -51,7 +51,10 @@ object NetworkModule : InjectionModule {
             val mainnet = getRetrofit(Environment.MAINNET.endpoint)
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-            RpcRemoteRepository(serumRpcApi, mainnetRpcApi, get())
+            val testnet = getRetrofit(Environment.TESTNET.endpoint)
+            val testnetRpcApi = testnet.create(RpcApi::class.java)
+
+            RpcRemoteRepository(serumRpcApi, mainnetRpcApi, testnetRpcApi, get())
         } bind RpcRepository::class
 
         single {

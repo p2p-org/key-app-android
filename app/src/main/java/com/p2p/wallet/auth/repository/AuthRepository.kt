@@ -1,6 +1,6 @@
 package com.p2p.wallet.auth.repository
 
-import org.p2p.solanaj.model.core.Account
+import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 
 interface AuthRepository {

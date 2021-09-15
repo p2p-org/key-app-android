@@ -1,6 +1,6 @@
 package org.p2p.solanaj.serumswap.utils
 
-import org.bitcoinj.core.Sha256Hash
+import org.p2p.solanaj.crypto.Hash
 
 const val SIGHASH_GLOBAL_NAMESPACE = "global"
 
@@ -12,7 +12,7 @@ object SerumSwapUtils {
     ): ByteArray {
         val name = ixName.snakeCased()
         val preimage = "$namespace:$name"
-        return Sha256Hash.hash(preimage.toByteArray()).copyOfRange(0, 8)
+        return Hash.sha256(preimage.toByteArray()).copyOfRange(0, 8)
     }
 }
 

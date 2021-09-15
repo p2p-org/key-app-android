@@ -5,8 +5,8 @@ import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.rpc.api.RpcApi
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.Transaction
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
@@ -23,6 +23,7 @@ import java.math.BigInteger
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
     private val mainnetApi: RpcApi,
+    private val testnetApi: RpcApi,
     environmentManager: EnvironmentManager,
     onlyMainnet: Boolean = false
 ) : RpcRepository {
@@ -41,6 +42,7 @@ class RpcRemoteRepository(
     private fun createRpcApi(environment: Environment): RpcApi = when (environment) {
         Environment.SOLANA -> serumApi
         Environment.MAINNET -> mainnetApi
+        Environment.TESTNET -> testnetApi
     }
 
     override suspend fun getRecentBlockhash(): RecentBlockhash {

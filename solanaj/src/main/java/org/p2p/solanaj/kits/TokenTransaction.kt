@@ -1,13 +1,14 @@
 package org.p2p.solanaj.kits
 
 import android.util.Base64
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.PublicKey.Companion.findProgramAddress
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.PublicKey.Companion.findProgramAddress
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData
+import org.p2p.solanaj.programs.TokenProgram.MintData
 import org.p2p.solanaj.rpc.RpcException
-import java.util.ArrayList
+import org.p2p.solanaj.utils.crypto.Base64Utils
 
 object TokenTransaction {
 
@@ -23,6 +24,18 @@ object TokenTransaction {
         val base64Data = accountInfo.value.data!![0]
         val data = Base64.decode(base64Data, Base64.DEFAULT)
         return AccountInfoData.decode(data)
+    }
+
+    @JvmStatic
+    @Throws(RpcException::class)
+    fun getMintData(accountInfo: AccountInfo?, programId: PublicKey): MintData? {
+        if (accountInfo?.value == null) {
+            throw RpcException("Failed to find mint account")
+        }
+        require(accountInfo.value.owner == programId.toString()) { "Invalid mint owner" }
+        val base64Data = accountInfo.value.data!![0]
+        val data: ByteArray = Base64Utils.decode(base64Data)
+        return MintData.decode(data)
     }
 
     fun parseAccountInfoData(

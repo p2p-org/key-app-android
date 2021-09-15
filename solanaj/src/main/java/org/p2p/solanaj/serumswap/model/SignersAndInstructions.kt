@@ -1,7 +1,7 @@
 package org.p2p.solanaj.serumswap.model
 
-import org.p2p.solanaj.model.core.Account
-import org.p2p.solanaj.model.core.TransactionInstruction
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.TransactionInstruction
 
 data class SignersAndInstructions(
     val signers: List<Account>,
