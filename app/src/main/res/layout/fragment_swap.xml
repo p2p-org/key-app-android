@@ -430,16 +430,6 @@
                     app:layout_constraintVertical_bias="1"
                     tools:ignore="UnusedAttribute" />
 
-                <ProgressBar
-                    android:id="@+id/buttonProgressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@id/swapButton"
-                    app:layout_constraintEnd_toEndOf="@id/swapButton"
-                    app:layout_constraintStart_toStartOf="@id/swapButton"
-                    app:layout_constraintTop_toTopOf="@id/swapButton" />
-
                 <ImageView
                     android:id="@+id/poweredImageView"
                     android:layout_width="wrap_content"
@@ -463,6 +453,16 @@
                     android:textColor="?colorElementSecondary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/centerGuideline" />
+
+                <ProgressBar
+                    android:id="@+id/buttonProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/swapButton"
+                    app:layout_constraintEnd_toEndOf="@id/swapButton"
+                    app:layout_constraintStart_toStartOf="@id/swapButton"
+                    app:layout_constraintTop_toTopOf="@id/swapButton" />
 
                 <com.p2p.wallet.common.widget.ProgressView
                     android:id="@+id/progressView"

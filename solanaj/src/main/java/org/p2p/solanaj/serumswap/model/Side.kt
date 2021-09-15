@@ -10,7 +10,7 @@ enum class Side {
             ASK -> "ask" to Pair("", "")
         }
 
-    fun getBytes(): Byte = when (this) {
+    fun getBytes(): Int = when (this) {
         BID -> 0
         ASK -> 1
     }

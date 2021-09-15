@@ -1,17 +1,19 @@
-package org.p2p.solanaj.serumswap.instructions
+package org.p2p.solanaj.programs
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Sysvar.SYSVAR_RENT_ADDRESS
 import org.p2p.solanaj.core.TransactionInstruction
-import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.model.ExchangeRate
 import org.p2p.solanaj.serumswap.model.Side
 import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
+import org.p2p.solanaj.utils.ByteUtils
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.math.BigInteger
 
-object SerumSwapInstructions {
+object SerumSwapProgram {
 
     val usdcMint = PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
     val usdtMint = PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB")
@@ -83,25 +85,23 @@ object SerumSwapInstructions {
         keys.add(AccountMeta(TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false))
         keys.add(AccountMeta(TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false))
 
-        // 4 byte instruction index + 8 bytes lamports
-        val data = byteArrayOf(
-            side.getBytes(),
-            amount.toByte(),
-            minExchangeRate.bytes
-        )
+        val sighashByteArray = SerumSwapUtils.sighash(ixName = "swap")
 
-//        val sighashByteArray = SerumSwapUtils.sighash(ixName = "swap")
-        val sighashByteArray = byteArrayOf(
-            248.toByte(),
-            198.toByte(),
-            158.toByte(),
-            145.toByte(),
-            225.toByte(),
-            117.toByte(),
-            135.toByte(),
-            200.toByte()
-        )
-        return TransactionInstruction(serumSwapPID, keys, sighashByteArray + data)
+        // 4 byte instruction index + 8 bytes lamports
+        val bos = ByteArrayOutputStream()
+        bos.write(sighashByteArray)
+        bos.write(side.getBytes())
+        try {
+            ByteUtils.uint64ToByteStreamLE(amount, bos)
+            ByteUtils.uint64ToByteStreamLE(minExchangeRate.rate, bos)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+        bos.write(minExchangeRate.fromDecimals)
+        bos.write(minExchangeRate.quoteDecimals)
+        bos.write(minExchangeRate.strictBytes)
+
+        return TransactionInstruction(serumSwapPID, keys, bos.toByteArray())
     }
 
     fun transitiveSwapInstruction(
@@ -149,14 +149,21 @@ object SerumSwapInstructions {
         keys.add(AccountMeta(TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false))
         keys.add(AccountMeta(TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false))
 
-        // 4 byte instruction index + 8 bytes lamports
-        val data = byteArrayOf(
-            amount.toByte(),
-            minExchangeRate.bytes
-        )
-
         val sighashByteArray = SerumSwapUtils.sighash(ixName = "swapTransitive")
 
-        return TransactionInstruction(serumSwapPID, keys, sighashByteArray + data)
+        // 4 byte instruction index + 8 bytes lamports
+        val bos = ByteArrayOutputStream()
+        bos.write(sighashByteArray)
+        try {
+            ByteUtils.uint64ToByteStreamLE(amount, bos)
+            ByteUtils.uint64ToByteStreamLE(minExchangeRate.rate, bos)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+        bos.write(minExchangeRate.fromDecimals)
+        bos.write(minExchangeRate.quoteDecimals)
+        bos.write(minExchangeRate.strictBytes)
+
+        return TransactionInstruction(serumSwapPID, keys, bos.toByteArray())
     }
 }

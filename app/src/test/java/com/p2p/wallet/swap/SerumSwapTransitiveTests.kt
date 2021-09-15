@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.MarketStatLayout
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.dexPID
+import org.p2p.solanaj.programs.SerumSwapProgram.dexPID
 import org.p2p.solanaj.serumswap.model.AccountFlags
 import org.p2p.solanaj.utils.ByteUtils
 import org.robolectric.RobolectricTestRunner

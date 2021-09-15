@@ -2,7 +2,7 @@ package org.p2p.solanaj.core
 
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Sha256Hash
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions
+import org.p2p.solanaj.programs.SerumSwapProgram
 import org.p2p.solanaj.utils.ByteUtils
 import org.p2p.solanaj.utils.TweetNaclFast
 import java.io.ByteArrayOutputStream
@@ -85,7 +85,7 @@ class PublicKey {
         @Throws(Exception::class)
         fun getVaultOwnerAndNonce(
             marketPublicKey: PublicKey,
-            dexProgramId: PublicKey = SerumSwapInstructions.dexPID
+            dexProgramId: PublicKey = SerumSwapProgram.dexPID
         ): PublicKey {
 
             var nonce = BigInteger.ZERO
