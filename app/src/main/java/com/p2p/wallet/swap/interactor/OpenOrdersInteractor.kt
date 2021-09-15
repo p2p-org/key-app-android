@@ -12,7 +12,7 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.serumswap.OpenOrders
 import org.p2p.solanaj.serumswap.OpenOrdersLayout
 import org.p2p.solanaj.serumswap.Version
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions
+import org.p2p.solanaj.programs.SerumSwapProgram
 import java.math.BigInteger
 
 class OpenOrdersInteractor(
@@ -47,7 +47,7 @@ class OpenOrdersInteractor(
         )
 
         if (shouldInitAccount) {
-            val initInstruction = SerumSwapInstructions.initOrderInstruction(
+            val initInstruction = SerumSwapProgram.initOrderInstruction(
                 order = order.publicKey,
                 marketAddress = marketAddress,
                 owner = ownerAddress
@@ -58,7 +58,7 @@ class OpenOrdersInteractor(
 
         val cleanupInstructions = mutableListOf<TransactionInstruction>()
         if (closeAfterward) {
-            val closeOrderInstruction = SerumSwapInstructions.closeOrderInstruction(
+            val closeOrderInstruction = SerumSwapProgram.closeOrderInstruction(
                 order = order.publicKey,
                 marketAddress = marketAddress,
                 owner = ownerAddress,

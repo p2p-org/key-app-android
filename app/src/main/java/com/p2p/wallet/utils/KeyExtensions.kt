@@ -1,8 +1,8 @@
 package com.p2p.wallet.utils
 
 import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.usdcMint
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.usdtMint
+import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
+import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 
 fun String.toPublicKey() = PublicKey(this)
 

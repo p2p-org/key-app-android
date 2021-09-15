@@ -10,10 +10,10 @@ import org.p2p.solanaj.model.core.Account
 import org.p2p.solanaj.model.core.PublicKey
 import org.p2p.solanaj.model.core.TransactionInstruction
 import org.p2p.solanaj.serumswap.Market
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.dexPID
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.usdcMint
-import org.p2p.solanaj.serumswap.instructions.SerumSwapInstructions.usdtMint
+import org.p2p.solanaj.programs.SerumSwapProgram
+import org.p2p.solanaj.programs.SerumSwapProgram.dexPID
+import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
+import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 import org.p2p.solanaj.serumswap.model.Bbo
 import org.p2p.solanaj.serumswap.model.ExchangeRate
 import org.p2p.solanaj.serumswap.model.OrderbookPair
@@ -453,7 +453,7 @@ class SerumSwapInteractor(
         val openOrders = openOrdersAccountInstructions.account
 
         instructions.add(
-            SerumSwapInstructions.directSwapInstruction(
+            SerumSwapProgram.directSwapInstruction(
                 authority = owner,
                 side = side,
                 amount = amount,
@@ -552,7 +552,7 @@ class SerumSwapInteractor(
         instructions += pcAccountInstructions.instructions
 
         instructions.add(
-            SerumSwapInstructions.transitiveSwapInstruction(
+            SerumSwapProgram.transitiveSwapInstruction(
                 authority = owner,
                 fromMarket = fromMarket,
                 toMarket = toMarket,
@@ -639,7 +639,7 @@ class SerumSwapInteractor(
         return if (orders != null) {
             val cleanupInstructions = mutableListOf<TransactionInstruction>()
             if (closeAfterward) {
-                val instruction = SerumSwapInstructions.closeOrderInstruction(
+                val instruction = SerumSwapProgram.closeOrderInstruction(
                     order = orders,
                     marketAddress = market.address,
                     owner = owner,

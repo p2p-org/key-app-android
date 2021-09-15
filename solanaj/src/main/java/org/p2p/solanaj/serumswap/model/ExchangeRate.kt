@@ -9,6 +9,5 @@ data class ExchangeRate(
     val strict: Boolean
 ) {
 
-    private val strictBytes: Byte = if (strict) 1 else 0
-    val bytes: Byte = (rate.toByte() + fromDecimals.toByte() + quoteDecimals.toByte() + strictBytes).toByte()
+    val strictBytes: Int = if (strict) 1 else 0
 }

@@ -79,11 +79,29 @@ class DecodingTests {
     @Test
     fun `test sighash`() {
         val swapTransitive = SerumSwapUtils.sighash(ixName = "swapTransitive")
-        val expectedTransitive = listOf(129, 109, 254, 207, 31, 192, 47, 51)
-        assertEquals(expectedTransitive, swapTransitive.toList())
+        val expectedTransitive = byteArrayOf(
+            129.toByte(),
+            109.toByte(),
+            254.toByte(),
+            207.toByte(),
+            31.toByte(),
+            192.toByte(),
+            47.toByte(),
+            51.toByte()
+        )
+        assertEquals(expectedTransitive.toList(), swapTransitive.toList())
 
         val swapByteArray = SerumSwapUtils.sighash(ixName = "swap")
-        val expected = listOf(248, 198, 158, 145, 225, 117, 135, 200)
-        assertEquals(expected, swapByteArray.toList())
+        val expected = byteArrayOf(
+            248.toByte(),
+            198.toByte(),
+            158.toByte(),
+            145.toByte(),
+            225.toByte(),
+            117.toByte(),
+            135.toByte(),
+            200.toByte()
+        )
+        assertEquals(expected.toList(), swapByteArray.toList())
     }
 }
