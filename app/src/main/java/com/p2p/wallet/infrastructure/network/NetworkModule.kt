@@ -57,7 +57,7 @@ object NetworkModule : InjectionModule {
         single {
 //            val errorInterceptor
             val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
-            val retrofit =  Retrofit.Builder()
+            val retrofit = Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
                 .client(getClient("FeeRelayer"))
