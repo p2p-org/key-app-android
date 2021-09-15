@@ -15,7 +15,6 @@ import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.cutMiddle
-import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.shareText
 import com.p2p.wallet.utils.showUrlInCustomTabs
 import com.p2p.wallet.utils.viewbinding.viewBinding
@@ -69,7 +68,6 @@ class ReceiveSolanaFragment :
             val isDetailed = token != null
             viewButton.isVisible = !isDetailed
             detailsButton.isVisible = isDetailed
-
         }
 
         presenter.loadData()

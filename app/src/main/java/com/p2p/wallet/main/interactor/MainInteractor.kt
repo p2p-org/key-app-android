@@ -128,7 +128,6 @@ class MainInteractor(
 
         val recentBlockHash = rpcRepository.getRecentBlockhash()
 
-
         transaction.setFeePayer(feePayerPubkey)
         transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
 

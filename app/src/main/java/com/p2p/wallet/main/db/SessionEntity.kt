@@ -25,7 +25,7 @@ data class SessionEntity(
     @ColumnInfo(name = COLUMN_GATEWAY_ADDRESS)
     val gatewayAddress: String,
 
-    ) {
+) {
 
     companion object {
         const val TABLE_NAME = "session_table"
