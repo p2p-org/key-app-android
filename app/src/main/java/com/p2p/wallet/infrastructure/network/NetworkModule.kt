@@ -16,6 +16,7 @@ import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRemoteRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.user.UserModule.createLoggingInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
@@ -54,8 +55,14 @@ object NetworkModule : InjectionModule {
         } bind RpcRepository::class
 
         single {
+//            val errorInterceptor
             val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
-            val retrofit = getRetrofit(baseUrl, "FeeRelayer")
+            val retrofit =  Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
+                .client(getClient("FeeRelayer"))
+                .build()
+
             val api = retrofit.create(FeeRelayerApi::class.java)
             FeeRelayerRemoteRepository(api)
         } bind FeeRelayerRepository::class
@@ -65,20 +72,23 @@ object NetworkModule : InjectionModule {
         baseUrl: String,
         tag: String = "OkHttpClient"
     ): Retrofit {
-        val client = OkHttpClient.Builder()
-            .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .apply {
-                if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
-            }
-//            .addInterceptor(ServerErrorInterceptor(get()))
-            .addNetworkInterceptor(ContentTypeInterceptor())
-            .build()
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
-            .client(client)
+            .client(getClient(tag))
+            .build()
+    }
+
+    private fun Scope.getClient(tag: String, interceptor: Interceptor? = null): OkHttpClient {
+        return OkHttpClient.Builder()
+            .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .apply {
+                if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
+                if (interceptor != null) addInterceptor(interceptor)
+            }
+            .addNetworkInterceptor(ContentTypeInterceptor())
             .build()
     }
 }
