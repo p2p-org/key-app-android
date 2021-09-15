@@ -1,6 +1,6 @@
 package com.p2p.wallet.common.crypto.keystore
 
-import com.p2p.wallet.common.crypto.Hex
+import org.p2p.solanaj.utils.crypto.Hex
 import java.security.KeyStore
 import javax.crypto.Cipher
 

@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import static org.bitcoinj.core.Utils.reverseBytes;
 
 public class ByteUtils {
+    public static final int UINT_16_LENGTH = 2;
     public static final int UINT_32_LENGTH = 4;
     public static final int UINT_64_LENGTH = 8;
     public static final int UINT_128_LENGTH = 16;
@@ -42,4 +43,23 @@ public class ByteUtils {
         }
     }
 
+    public static byte[] uint16ToByteArrayLE(int val) {
+        byte[] out = new byte[UINT_16_LENGTH];
+        out[0] = (byte) (0xFF & val);
+        out[1] = (byte) (0xFF & (val >> 8));
+        return out;
+    }
+
+    public static byte[] uint32ToByteArrayBE(long val) {
+        byte[] out = new byte[UINT_32_LENGTH];
+        out[0] = (byte) (0xFF & (val >> 24));
+        out[1] = (byte) (0xFF & (val >> 16));
+        out[2] = (byte) (0xFF & (val >> 8));
+        out[3] = (byte) (0xFF & val);
+        return out;
+    }
+
+    public static int readUint16(byte[] bytes, int offset) {
+        return (bytes[offset] & 0xff) | ((bytes[offset + 1] & 0xff) << 8);
+    }
 }

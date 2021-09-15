@@ -12,7 +12,7 @@ import com.p2p.wallet.user.local.TokenListResponse
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import java.math.BigDecimal
 
 private const val CHUNKED_SIZE = 50

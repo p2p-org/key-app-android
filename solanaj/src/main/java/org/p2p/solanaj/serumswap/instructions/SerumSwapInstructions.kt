@@ -1,9 +1,9 @@
 package org.p2p.solanaj.serumswap.instructions
 
-import org.p2p.solanaj.model.core.AccountMeta
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.Sysvar.SYSVAR_RENT_ADDRESS
-import org.p2p.solanaj.model.core.TransactionInstruction
+import org.p2p.solanaj.core.AccountMeta
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.Sysvar.SYSVAR_RENT_ADDRESS
+import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.model.ExchangeRate
@@ -90,7 +90,17 @@ object SerumSwapInstructions {
             minExchangeRate.bytes
         )
 
-        val sighashByteArray = SerumSwapUtils.sighash(ixName = "swap")
+//        val sighashByteArray = SerumSwapUtils.sighash(ixName = "swap")
+        val sighashByteArray = byteArrayOf(
+            248.toByte(),
+            198.toByte(),
+            158.toByte(),
+            145.toByte(),
+            225.toByte(),
+            117.toByte(),
+            135.toByte(),
+            200.toByte()
+        )
         return TransactionInstruction(serumSwapPID, keys, sighashByteArray + data)
     }
 

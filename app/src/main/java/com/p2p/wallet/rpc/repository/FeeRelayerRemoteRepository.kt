@@ -4,7 +4,7 @@ import com.p2p.wallet.rpc.api.FeeRelayerApi
 import com.p2p.wallet.rpc.api.FeeSolTransferRequest
 import com.p2p.wallet.rpc.api.FeeSplTransferRequest
 import com.p2p.wallet.utils.toPublicKey
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import java.math.BigInteger
 
 class FeeRelayerRemoteRepository(

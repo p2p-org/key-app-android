@@ -1,17 +1,26 @@
 package org.p2p.solanaj.model.types
 
 import com.google.gson.annotations.SerializedName
+import java.util.AbstractMap
 
-data class SignatureInformation(
-    @SerializedName("blockTime")
-    val blockTime: Long,
+data class SignatureInformation constructor(
+    @SerializedName("memo")
+    val memo: Any?,
 
-    @SerializedName("confirmationStatus")
-    val confirmationStatus: String,
+    @SerializedName("err")
+    val err: Any?,
 
     @SerializedName("signature")
     val signature: String,
 
     @SerializedName("slot")
-    val slot: Long
-)
+    val slot: Long?
+) {
+
+    constructor(info: AbstractMap<String, Any?>) : this(
+        info["err"],
+        info["memo"],
+        info["signature"] as String,
+        info["slot"] as Long
+    )
+}

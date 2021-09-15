@@ -11,7 +11,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
 

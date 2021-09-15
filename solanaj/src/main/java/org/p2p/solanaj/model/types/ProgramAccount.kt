@@ -3,6 +3,7 @@ package org.p2p.solanaj.model.types
 import android.util.Base64
 import com.google.gson.annotations.SerializedName
 import org.bitcoinj.core.Base58
+import java.util.AbstractMap
 
 data class ProgramAccount(
     @SerializedName("account")
@@ -10,6 +11,11 @@ data class ProgramAccount(
     @SerializedName("pubkey")
     val pubkey: String
 ) {
+
+    constructor(item: AbstractMap<String, Any?>) : this(
+        account = item["account"] as Account,
+        pubkey = item["pubkey"] as String
+    )
 
     data class Account(
 

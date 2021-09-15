@@ -2,7 +2,7 @@ package com.p2p.wallet.swap.interactor
 
 import android.util.Base64
 import com.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.MarketStatLayout

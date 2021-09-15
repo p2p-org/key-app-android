@@ -49,6 +49,8 @@ class NetworkFragment :
         val checkedId = when (environment) {
             Environment.SOLANA -> R.id.solanaButton
             Environment.MAINNET -> R.id.mainnetButton
+            // fixme: add testnet button
+            else -> R.id.mainnetButton
         }
 
         binding.networksGroup.setOnCheckedChangeListener(null)

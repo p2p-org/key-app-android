@@ -1,9 +1,9 @@
 package org.p2p.solanaj.programs
 
 import org.bitcoinj.core.Utils
-import org.p2p.solanaj.model.core.AccountMeta
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.TransactionInstruction
+import org.p2p.solanaj.core.AccountMeta
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.TransactionInstruction
 
 object SystemProgram {
     val PROGRAM_ID = PublicKey("11111111111111111111111111111111")

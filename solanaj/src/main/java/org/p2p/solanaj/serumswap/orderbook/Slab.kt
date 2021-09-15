@@ -1,7 +1,7 @@
 package org.p2p.solanaj.serumswap.orderbook
 
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.PublicKey.Companion.PUBLIC_KEY_LENGTH
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.PublicKey.Companion.PUBLIC_KEY_LENGTH
 import org.p2p.solanaj.serumswap.model.Integer128
 import org.p2p.solanaj.utils.ByteUtils.UINT_128_LENGTH
 import org.p2p.solanaj.utils.ByteUtils.UINT_32_LENGTH

@@ -1,7 +1,7 @@
 package com.p2p.wallet.restore.model
 
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.solanaj.model.core.Account
+import org.p2p.solanaj.core.Account
 import java.math.BigDecimal
 
 data class DerivableAccount(

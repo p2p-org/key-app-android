@@ -7,11 +7,10 @@ import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.utils.toPublicKey
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.TokenTransaction
-import org.p2p.solanaj.model.core.Account
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.Transaction
-import org.p2p.solanaj.model.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import java.math.BigInteger
@@ -41,27 +40,25 @@ class MainInteractor(
 
         val payer = tokenKeyProvider.publicKey.toPublicKey()
 
-        val instructions = mutableListOf<TransactionInstruction>()
+        val transaction = Transaction()
+
         val instruction = SystemProgram.transfer(
             fromPublicKey = payer,
             toPublickKey = destinationAddress,
             lamports = lamports.toLong()
         )
-        instructions.add(instruction)
+        transaction.addInstruction(instruction)
 
         val feePayerPublicKey = feeRelayerRepository.getPublicKey()
         val recentBlockHash = rpcRepository.getRecentBlockhash()
 
-        val transaction = Transaction(
-            feePayer = feePayerPublicKey,
-            recentBlockhash = recentBlockHash.recentBlockhash,
-            instructions = instructions
-        )
+        transaction.setFeePayer(feePayerPublicKey)
+        transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val signature = transaction.getSignature().orEmpty()
+        val signature = transaction.signature.orEmpty()
 
         val result = feeRelayerRepository.sendSolToken(
             senderPubkey = tokenKeyProvider.publicKey,
@@ -98,7 +95,7 @@ class MainInteractor(
         val payer = tokenKeyProvider.publicKey.toPublicKey()
         val feePayerPubkey = feeRelayerRepository.getPublicKey()
 
-        val instructions = mutableListOf<TransactionInstruction>()
+        val transaction = Transaction()
 
         /* If account is not found, create one */
         val accountInfo = rpcRepository.getAccountInfo(address)
@@ -106,39 +103,39 @@ class MainInteractor(
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         if (!associatedNotNeeded) {
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
-                mint = token.mintAddress.toPublicKey(),
-                associatedAccount = address,
-                owner = destinationAddress,
-                payer = feePayerPubkey
+                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                TokenProgram.PROGRAM_ID,
+                token.mintAddress.toPublicKey(),
+                address,
+                destinationAddress,
+                feePayerPubkey
             )
 
-            instructions.add(createAccount)
+            transaction.addInstruction(createAccount)
         }
 
         val instruction = TokenProgram.createTransferCheckedInstruction(
-            tokenProgramId = TokenProgram.PROGRAM_ID,
-            source = token.publicKey.toPublicKey(),
-            mint = token.mintAddress.toPublicKey(),
-            destination = address,
-            owner = payer,
-            amount = lamports,
-            decimals = token.decimals
+            TokenProgram.PROGRAM_ID,
+            token.publicKey.toPublicKey(),
+            token.mintAddress.toPublicKey(),
+            address,
+            payer,
+            lamports,
+            token.decimals
         )
 
-        instructions.add(instruction)
+        transaction.addInstruction(instruction)
 
         val recentBlockHash = rpcRepository.getRecentBlockhash()
 
-        val transaction = Transaction(
-            feePayer = feePayerPubkey,
-            recentBlockhash = recentBlockHash.recentBlockhash,
-            instructions = instructions
-        )
+
+        transaction.setFeePayer(feePayerPubkey)
+        transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val signature = transaction.getSignature().orEmpty()
+        val signature = transaction.signature.orEmpty()
 
         val recipientPubkey = if (associatedNotNeeded || address.equals(destinationAddress)) {
             address.toBase58()
