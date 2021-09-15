@@ -1,9 +1,9 @@
 package org.p2p.solanaj.programs
 
-import org.p2p.solanaj.model.core.AccountMeta
-import org.p2p.solanaj.model.core.PublicKey
-import org.p2p.solanaj.model.core.Sysvar.SYSVAR_RENT_ADDRESS
-import org.p2p.solanaj.model.core.TransactionInstruction
+import org.p2p.solanaj.core.AccountMeta
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.Sysvar.SYSVAR_RENT_ADDRESS
+import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.model.ExchangeRate
 import org.p2p.solanaj.serumswap.model.Side

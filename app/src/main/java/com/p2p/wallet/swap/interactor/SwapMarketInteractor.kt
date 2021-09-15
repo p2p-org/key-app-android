@@ -2,7 +2,7 @@ package com.p2p.wallet.swap.interactor
 
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.toPublicKey
-import org.p2p.solanaj.model.core.PublicKey
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
 import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 
