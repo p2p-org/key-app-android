@@ -20,6 +20,7 @@ import org.p2p.solanaj.serumswap.model.OrderbookPair
 import org.p2p.solanaj.serumswap.model.Side
 import org.p2p.solanaj.serumswap.model.SignersAndInstructions
 import org.p2p.solanaj.serumswap.model.SwapParams
+import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.math.pow
@@ -409,7 +410,7 @@ class SerumSwapInteractor(
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
         // get vaultSigner
-        val vaultSigner = PublicKey.getVaultOwnerAndNonce(fromMarket.address)
+        val vaultSigner = SerumSwapUtils.getVaultOwnerAndNonce(fromMarket.address)
 
         // prepare source account, create associated token address if source wallet is native
         val sourceAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
@@ -510,8 +511,8 @@ class SerumSwapInteractor(
             }
 
         // Calculate the vault signers for each market.
-        val fromVaultSigner = PublicKey.getVaultOwnerAndNonce(fromMarket.address)
-        val toVaultSigner = PublicKey.getVaultOwnerAndNonce(toMarket.address)
+        val fromVaultSigner = SerumSwapUtils.getVaultOwnerAndNonce(fromMarket.address)
+        val toVaultSigner = SerumSwapUtils.getVaultOwnerAndNonce(toMarket.address)
 
         // Prepare source, destination and pc wallets
         val sourceAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(

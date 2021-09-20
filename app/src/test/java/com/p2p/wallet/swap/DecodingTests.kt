@@ -1,10 +1,13 @@
 package com.p2p.wallet.swap
 
 import android.util.Base64
+import com.p2p.wallet.utils.toPublicKey
+import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.utils.crypto.Hex
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.serumswap.model.AccountFlags
 import org.p2p.solanaj.serumswap.orderbook.Orderbook
 import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
@@ -74,6 +77,22 @@ class DecodingTests {
 
         assertEquals(layout.slab.headerLayout.bumpIndex, 255)
         assertEquals(layout.slab.nodes.size, 255)
+    }
+
+    @Test
+    fun `test find associated token address`() = runBlocking {
+        val associatedTokenAddress = TokenTransaction.getAssociatedTokenAddress(
+            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v".toPublicKey(),
+            "3h1zGmCwsRJnVk5BuRNMLsPaQu1y2aqXqXDWYCgrp5UG".toPublicKey()
+        )
+
+        assertEquals("3uetDDizgTtadDHZzyy9BqxrjQcozMEkxzbKhfZF4tG3", associatedTokenAddress.toBase58())
+    }
+
+    @Test
+    fun `test create vault owner`() = runBlocking {
+        val vault = SerumSwapUtils.getVaultOwnerAndNonce("ByRys5tuUWDgL73G8JBAEfkdFf8JWBzPBDHsBVQ5vbQA".toPublicKey())
+        assertEquals("GVV4ZT9pccwy9d17STafFDuiSqFbXuRTdvKQ1zJX6ttX", vault.toBase58())
     }
 
     @Test

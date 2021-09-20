@@ -11,6 +11,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
+import timber.log.Timber
 import java.io.IOException
 
 // todo: Update validation
@@ -70,7 +71,7 @@ class ServerErrorInterceptor(
             *  */
             val result = data.optJSONArray("result")
             if (result?.length() == 0) {
-                throw EmptyDataException("Unexpected data received from the server")
+                throw EmptyDataException("Empty data received from the server")
             } else {
                 createResponse(response, responseBody)
             }
@@ -83,11 +84,15 @@ class ServerErrorInterceptor(
         response.newBuilder().body(responseBody.toResponseBody()).build()
 
     private fun extractException(bodyString: String): Throwable = try {
+        val fullMessage = JSONObject(bodyString).toString(1)
+
+        Timber.tag("ServerErrorInterceptor").d("Handling exception: $fullMessage")
+
         val serverError = gson.fromJson(bodyString, ServerError::class.java)
 
         ServerException(
             errorCode = serverError.error.code,
-            fullMessage = JSONObject(bodyString).toString(1),
+            fullMessage = fullMessage,
             errorMessage = serverError.error.message
         )
     } catch (e: Throwable) {

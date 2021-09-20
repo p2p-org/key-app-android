@@ -19,6 +19,7 @@ import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.solanaj.core.PublicKey
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -32,7 +33,6 @@ class SendPresenter(
 
     companion object {
         private const val DESTINATION_USD = "USD"
-        private const val VALID_ADDRESS_LENGTH = 24
         private const val ROUNDING_VALUE = 6
     }
 
@@ -131,6 +131,9 @@ class SendPresenter(
 
     override fun setNewTargetAddress(address: String) {
         this.destinationAddress = address
+
+        if (!isAddressValid(address.trim())) return
+
         checkDestinationBalance(address)
         calculateData(token!!)
     }
@@ -220,22 +223,22 @@ class SendPresenter(
     }
 
     private fun checkDestinationBalance(address: String) {
-        if (!isAddressValid(address.trim())) {
-            view?.hideAddressConfirmation()
-            return
-        }
-
         if (checkBalanceJob?.isActive == true)
             return
 
         checkBalanceJob = launch {
-            val balance = userInteractor.getBalance(address.trim().toPublicKey())
-            shouldAskConfirmation = if (balance == 0L) {
-                view?.showAddressConfirmation()
-                true
-            } else {
-                view?.hideAddressConfirmation()
-                false
+            try {
+                val balance = userInteractor.getBalance(address.trim().toPublicKey())
+                shouldAskConfirmation = if (balance == 0L) {
+                    view?.showAddressConfirmation()
+                    true
+                } else {
+                    view?.hideAddressConfirmation()
+                    false
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading destination balance")
+                view?.showErrorMessage(e)
             }
         }
     }
@@ -269,6 +272,17 @@ class SendPresenter(
         view?.showButtonEnabled(isEnabled && isValidAddress && !shouldAskConfirmation)
     }
 
-    private fun isAddressValid(address: String): Boolean =
-        address.length > VALID_ADDRESS_LENGTH
+    private fun isAddressValid(address: String): Boolean {
+        try {
+            if (address.length != PublicKey.PUBLIC_KEY_LENGTH) return false
+
+            /* checking public key validation, in case of error it throws exception */
+            address.toPublicKey()
+            return true
+        } catch (e: Throwable) {
+            Timber.e(e, "Invalid address format $address")
+            view?.showWrongWalletError()
+            return false
+        }
+    }
 }

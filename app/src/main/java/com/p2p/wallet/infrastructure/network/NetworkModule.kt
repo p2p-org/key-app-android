@@ -7,6 +7,7 @@ import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
+import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.BigDecimalTypeAdapter
 import com.p2p.wallet.rpc.api.FeeRelayerApi
@@ -45,13 +46,15 @@ object NetworkModule : InjectionModule {
         }
 
         single {
-            val serum = getRetrofit(Environment.SOLANA.endpoint)
+            val serverErrorInterceptor = ServerErrorInterceptor(get())
+//            val serverErrorInterceptor = null
+            val serum = getRetrofit(Environment.SOLANA.endpoint, interceptor = serverErrorInterceptor)
             val serumRpcApi = serum.create(RpcApi::class.java)
 
-            val mainnet = getRetrofit(Environment.MAINNET.endpoint)
+            val mainnet = getRetrofit(Environment.MAINNET.endpoint, interceptor = serverErrorInterceptor)
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-            val testnet = getRetrofit(Environment.TESTNET.endpoint)
+            val testnet = getRetrofit(Environment.TESTNET.endpoint, interceptor = serverErrorInterceptor)
             val testnetRpcApi = testnet.create(RpcApi::class.java)
 
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, testnetRpcApi, get())
@@ -60,26 +63,21 @@ object NetworkModule : InjectionModule {
         single {
 //            val errorInterceptor
             val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
-            val retrofit = Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
-                .client(getClient("FeeRelayer"))
-                .build()
-
-            val api = retrofit.create(FeeRelayerApi::class.java)
+            val api = getRetrofit(baseUrl, "FeeRelayer", interceptor = null).create(FeeRelayerApi::class.java)
             FeeRelayerRemoteRepository(api)
         } bind FeeRelayerRepository::class
     }
 
     private fun Scope.getRetrofit(
         baseUrl: String,
-        tag: String = "OkHttpClient"
+        tag: String = "OkHttpClient",
+        interceptor: Interceptor?
     ): Retrofit {
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
-            .client(getClient(tag))
+            .client(getClient(tag, interceptor))
             .build()
     }
 
