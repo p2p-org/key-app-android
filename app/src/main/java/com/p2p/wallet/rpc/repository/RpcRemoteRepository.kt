@@ -1,12 +1,13 @@
 package com.p2p.wallet.rpc.repository
 
 import android.util.Base64
+import com.p2p.wallet.infrastructure.network.EmptyDataException
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.rpc.api.RpcApi
-import org.p2p.solanaj.kits.MultipleAccountsInfo
-import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.kits.MultipleAccountsInfo
+import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
@@ -18,6 +19,7 @@ import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
+import timber.log.Timber
 import java.math.BigInteger
 
 class RpcRemoteRepository(
@@ -100,25 +102,35 @@ class RpcRemoteRepository(
         return BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
     }
 
-    override suspend fun getAccountInfo(account: PublicKey): AccountInfo {
-        val params = listOf(
-            account.toString(),
-            RequestConfiguration(encoding = Encoding.BASE64)
-        )
-        val rpcRequest = RpcRequest("getAccountInfo", params)
-        return rpcApi.getAccountInfo(rpcRequest).result
+    override suspend fun getAccountInfo(account: PublicKey): AccountInfo? {
+        return try {
+            val params = listOf(
+                account.toString(),
+                RequestConfiguration(encoding = Encoding.BASE64)
+            )
+            val rpcRequest = RpcRequest("getAccountInfo", params)
+            rpcApi.getAccountInfo(rpcRequest).result
+        } catch (e: EmptyDataException) {
+            Timber.w("`getAccountInfo` responded with empty data, returning null")
+            null
+        }
     }
 
     override suspend fun getProgramAccounts(
         publicKey: PublicKey,
         config: RequestConfiguration
     ): List<ProgramAccount> {
-        val params = listOf(publicKey.toString(), config)
-        val rpcRequest = RpcRequest("getProgramAccounts", params)
-        val response = rpcApi.getProgramAccounts(rpcRequest)
+        return try {
+            val params = listOf(publicKey.toString(), config)
+            val rpcRequest = RpcRequest("getProgramAccounts", params)
+            val response = rpcApi.getProgramAccounts(rpcRequest)
 
-        // sometimes result can be null
-        return response.result ?: emptyList()
+            // sometimes result can be null
+            response.result ?: emptyList()
+        } catch (e: EmptyDataException) {
+            Timber.w("`getProgramAccounts` responded with empty data, returning empty list")
+            emptyList()
+        }
     }
 
     override suspend fun getBalance(account: PublicKey): Long {

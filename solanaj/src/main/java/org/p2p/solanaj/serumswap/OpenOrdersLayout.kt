@@ -54,8 +54,6 @@ sealed class OpenOrdersLayout(
         init {
             initialize()
         }
-
-        fun getSpanSum(): Int = 141 + orders.length + clientIds.length + 7
     }
 
     class LayoutV2 constructor(data: ByteArray) : OpenOrdersLayout(data, LAYOUT_V1_SPAN.toInt()) {
@@ -65,8 +63,6 @@ sealed class OpenOrdersLayout(
             initialize()
             referrerRebatesAccrued = readUint64()
         }
-
-        fun getSpanSum(layoutV1Span: Long): Long = layoutV1Span + 8
     }
 }
 

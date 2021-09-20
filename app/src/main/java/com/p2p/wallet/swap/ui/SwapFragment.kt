@@ -4,13 +4,14 @@ import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.text.Editable
 import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
+import com.p2p.wallet.common.ui.SimpleTextWatcher
 import com.p2p.wallet.databinding.FragmentSwapBinding
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
@@ -65,15 +66,9 @@ class SwapFragment :
             destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
             availableTextView.setOnClickListener { presenter.feedAvailableValue() }
             maxTextView.setOnClickListener { presenter.feedAvailableValue() }
-            amountEditText.doAfterTextChanged {
-                presenter.setSourceAmount(it.toString())
-            }
+            amountEditText.addTextChangedListener(inputTextWatcher)
 
             exchangeImageView.setOnClickListener { presenter.reverseTokens() }
-
-            reverseImageView.setOnClickListener {
-                presenter.loadPrice(true)
-            }
 
             slippageView.setOnClickListener {
                 presenter.loadSlippage()
@@ -118,14 +113,32 @@ class SwapFragment :
         binding.swapButton.setText(textRes)
     }
 
+    override fun setNewAmount(sourceAmount: String) {
+        binding.amountEditText.setText(sourceAmount)
+    }
+
     override fun updateInputValue(available: BigDecimal) {
         binding.amountEditText.setText("$available")
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showPrice(amount: BigDecimal, exchangeToken: String, perToken: String) {
+    override fun showPrice(priceData: PriceData) {
         binding.priceGroup.isVisible = true
-        binding.exchangeTextView.text = "$amount $exchangeToken per $perToken"
+
+        val result = "${priceData.sourceAmount} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
+        binding.exchangeTextView.text = result
+
+        var isReverse = false
+        binding.reverseImageView.setOnClickListener {
+            isReverse = !isReverse
+            val updated = if (isReverse) {
+                "${priceData.destinationAmount} ${priceData.destinationSymbol} per ${priceData.sourceSymbol}"
+            } else {
+                "${priceData.sourceAmount} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
+            }
+
+            binding.exchangeTextView.text = updated
+        }
     }
 
     override fun hidePrice() {
@@ -134,9 +147,11 @@ class SwapFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showCalculations(data: CalculationsData) {
-        binding.receiveTextView.text = getString(R.string.main_swap_min_receive, data.estimatedReceiveAmount)
-        binding.destinationAmountTextView.text = data.destinationAmount
+    override fun showCalculations(data: AmountData) {
+        with(binding) {
+            receiveTextView.text = getString(R.string.main_swap_min_receive, data.estimatedReceiveAmount)
+            destinationAmountTextView.text = data.destinationAmount
+        }
     }
 
     override fun showFees(networkFee: String, liquidityFee: String, feeOption: String) {
@@ -224,5 +239,11 @@ class SwapFragment :
     override fun showLoading(isLoading: Boolean) {
         binding.buttonProgressBar.isVisible = isLoading
         binding.swapButton.isVisible = !isLoading
+    }
+
+    private val inputTextWatcher = object : SimpleTextWatcher() {
+        override fun afterTextChanged(text: Editable) {
+            presenter.setSourceAmount(text.toString())
+        }
     }
 }

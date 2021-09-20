@@ -39,16 +39,14 @@ class SwapPresenter(
         view?.showDestinationToken(newValue)
     }
 
-    private var isReverse: Boolean = false
-    private var reverseJob: Job? = null
-
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
-    private var slippage: Double = 0.1
+    private var slippage: Double = 0.5
 
-    private var currentRate: BigDecimal = BigDecimal.ZERO
+    private var sourceRate: BigDecimal = BigDecimal.ZERO
+    private var destinationRate: BigDecimal = BigDecimal.ZERO
 
     private var lamportsPerSignature: BigInteger = BigInteger.ZERO
     private var creatingAccountFee: BigInteger = BigInteger.ZERO
@@ -62,6 +60,10 @@ class SwapPresenter(
         launch {
             view?.showFullScreenLoading(true)
             sourceToken = initialToken ?: userInteractor.getUserTokens().find { it.isSOL }
+
+            val availableAmount = swapInteractor.calculateAvailableAmount(sourceToken!!, currentFees[FeeType.DEFAULT])
+            val available = "$availableAmount ${sourceToken!!.tokenSymbol}"
+            view?.showSourceAvailable(available)
 
             lamportsPerSignature = swapInteractor.getLamportsPerSignature()
             liquidityProviderFee = swapInteractor.calculateLiquidityProviderFee()
@@ -95,7 +97,8 @@ class SwapPresenter(
         sourceToken = newToken
 
         val availableAmount = swapInteractor.calculateAvailableAmount(newToken, currentFees[FeeType.DEFAULT])
-        val available = "$availableAmount ${newToken.tokenSymbol}"
+        val scaledAmount = availableAmount?.scaleLong() ?: BigDecimal.ZERO
+        val available = "$scaledAmount ${newToken.tokenSymbol}"
         view?.showSourceAvailable(available)
 
         destinationToken = null
@@ -111,7 +114,11 @@ class SwapPresenter(
 
     override fun setNewDestinationToken(newToken: Token) {
         destinationToken = newToken
-        sourceToken?.let { calculateRateAndFees(it, newToken) }
+
+        launch {
+            calculateRateAndFees(sourceToken!!, newToken)
+            calculateAmount(sourceToken!!, newToken)
+        }
 
         setButtonEnabled()
     }
@@ -133,28 +140,6 @@ class SwapPresenter(
         view?.updateInputValue(requireSourceToken().total.scaleLong())
     }
 
-    override fun loadPrice(toggle: Boolean) {
-        if (toggle) isReverse = !isReverse
-
-        reverseJob?.cancel()
-        reverseJob = launch {
-            try {
-                val source = requireSourceToken()
-                val destination = requireDestinationToken()
-
-                if (isReverse) {
-                    currentRate = swapInteractor.loadPrice(destination.mintAddress, source.mintAddress)
-                    view?.showPrice(currentRate, destination.tokenSymbol, source.tokenSymbol)
-                } else {
-                    currentRate = swapInteractor.loadPrice(source.mintAddress, destination.mintAddress)
-                    view?.showPrice(currentRate, source.tokenSymbol, destination.tokenSymbol)
-                }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading price")
-            }
-        }
-    }
-
     override fun setSourceAmount(amount: String) {
         sourceAmount = amount
         val token = sourceToken ?: return
@@ -174,11 +159,24 @@ class SwapPresenter(
     }
 
     override fun reverseTokens() {
-        val source = sourceToken
-        sourceToken = destinationToken
-        destinationToken = source
 
-        setButtonEnabled()
+        /* reversing tokens */
+        val newSource = destinationToken!!
+        val newDestination = sourceToken!!
+        sourceToken = null
+
+        /* reversing amounts */
+        sourceAmount = destinationAmount
+        destinationAmount = ""
+
+        /* rate is being used at [calculateAmount], so reversing fields as well */
+        val oldSourceRate = sourceRate
+        sourceRate = destinationRate
+        destinationRate = oldSourceRate
+
+        setNewSourceToken(newSource)
+        setNewDestinationToken(newDestination)
+        view?.showButtonEnabled(false)
     }
 
     override fun swap() {
@@ -213,42 +211,50 @@ class SwapPresenter(
         }
     }
 
-    private fun calculateRateAndFees(source: Token, destination: Token) {
-        launch {
-            try {
-                view?.showButtonText(R.string.swap_calculating_fees)
+    private suspend fun calculateRateAndFees(source: Token, destination: Token) {
+        try {
+            view?.showButtonText(R.string.swap_calculating_fees)
 
-                currentRate = swapInteractor.loadPrice(source.mintAddress, destination.mintAddress)
-                view?.showPrice(currentRate, source.tokenSymbol, destination.tokenSymbol)
+            sourceRate = swapInteractor.loadPrice(source.mintAddress, destination.mintAddress).scaleMedium()
+            destinationRate = swapInteractor.loadPrice(destination.mintAddress, source.mintAddress).scaleMedium()
 
-                val fees = swapInteractor.calculateFees(
-                    sourceToken = source,
-                    destinationToken = destination,
-                    lamportsPerSignature = lamportsPerSignature,
-                    creatingAccountFee = creatingAccountFee
-                )
+            val priceData = PriceData(
+                sourceAmount = sourceRate.toString(),
+                destinationAmount = destinationRate.toString(),
+                sourceSymbol = source.tokenSymbol,
+                destinationSymbol = destination.tokenSymbol
+            )
+            view?.showPrice(priceData)
 
-                currentFees.putAll(fees)
+            /* Load reverse price and caching it */
 
-                val liquidityFee = currentFees[FeeType.LIQUIDITY_PROVIDER]?.stringValue.orEmpty()
-                val defaultFee = currentFees[FeeType.DEFAULT]
+            val fees = swapInteractor.calculateFees(
+                sourceToken = source,
+                destinationToken = destination,
+                lamportsPerSignature = lamportsPerSignature,
+                creatingAccountFee = creatingAccountFee
+            )
 
-                val networkFee = if (defaultFee != null) {
-                    val formattedFee = defaultFee.lamports
-                        .fromLamports(source.decimals)
-                        .toFee()
-                        .scaleMedium()
+            currentFees.putAll(fees)
 
-                    "$formattedFee ${defaultFee.tokenSymbol}"
-                } else null
+            val liquidityFee = currentFees[FeeType.LIQUIDITY_PROVIDER]?.stringValue.orEmpty()
+            val defaultFee = currentFees[FeeType.DEFAULT]
 
-                val feeOption = "${source.tokenSymbol}+${destination.tokenSymbol}"
-                view?.showFees(networkFee = networkFee.orEmpty(), liquidityFee = liquidityFee, feeOption)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error calculating network fees")
-            } finally {
-                updateButtonText(source)
-            }
+            val networkFee = if (defaultFee != null) {
+                val formattedFee = defaultFee.lamports
+                    .fromLamports(source.decimals)
+                    .toFee()
+                    .scaleMedium()
+
+                "$formattedFee ${defaultFee.tokenSymbol}"
+            } else null
+
+            val feeOption = "${source.tokenSymbol}+${destination.tokenSymbol}"
+            view?.showFees(networkFee = networkFee.orEmpty(), liquidityFee = liquidityFee, feeOption)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error calculating network fees")
+        } finally {
+            updateButtonText(source)
         }
     }
 
@@ -256,25 +262,25 @@ class SwapPresenter(
         if (destination == null) return
         calculationJob?.cancel()
         calculationJob = launch {
-            val inputAmount = sourceAmount.toBigDecimalOrZero()
             val estimatedAmount = swapInteractor.calculateEstimatedAmount(
-                inputAmount = inputAmount,
-                rate = currentRate,
+                inputAmount = sourceAmount.toDoubleOrNull(),
+                rate = sourceRate.toDouble(),
                 slippage = slippage
-            )
+            )?.scaleMedium()
 
             destinationAmount = (estimatedAmount ?: BigDecimal.ZERO).toString()
 
-            val data = CalculationsData(
+            val data = AmountData(
                 destinationAmount = destinationAmount,
-                estimatedReceiveAmount = estimatedAmount ?: BigDecimal.ZERO,
-                receiveSymbol = destination.tokenSymbol
+                estimatedReceiveAmount = estimatedAmount ?: BigDecimal.ZERO
             )
 
             updateButtonText(source)
             view?.showCalculations(data)
             view?.showSlippage(slippage)
         }
+
+        setButtonEnabled()
     }
 
     private fun setButtonEnabled() {
@@ -305,10 +311,16 @@ class SwapPresenter(
         destinationToken ?: throw IllegalStateException("Destination token is null")
 }
 
-data class CalculationsData(
+data class AmountData(
     val destinationAmount: String,
-    val estimatedReceiveAmount: BigDecimal,
-    val receiveSymbol: String,
+    val estimatedReceiveAmount: BigDecimal
+)
+
+data class PriceData(
+    val sourceAmount: String,
+    val destinationAmount: String,
+    val sourceSymbol: String,
+    val destinationSymbol: String
 )
 
 private fun BigDecimal.toFee() = this / BigDecimal(1000)

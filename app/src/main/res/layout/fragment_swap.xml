@@ -59,7 +59,7 @@
                     android:layout_marginStart="36dp"
                     android:layout_marginTop="36dp"
                     android:text="@string/main_from"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -72,7 +72,6 @@
                     android:drawablePadding="4dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorAccentPrimary"
-                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/fromTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/fromTextView"
@@ -205,7 +204,7 @@
                     android:layout_marginStart="36dp"
                     android:layout_marginTop="54dp"
                     android:text="@string/main_to"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/dividerView" />
 
@@ -270,7 +269,6 @@
                     android:hint="@string/main_swap_hint"
                     android:maxLines="1"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
-                    android:textSize="26sp"
                     app:layout_constraintBottom_toBottomOf="@id/destinationImageView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/centerGuideline"
@@ -319,7 +317,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="16dp"
                     android:text="@string/main_price"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
                     android:textColor="?colorElementSecondary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/destinationBarrier" />
@@ -329,7 +327,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     app:layout_constraintStart_toStartOf="@id/priceTitleTextView"
                     app:layout_constraintTop_toBottomOf="@id/priceTitleTextView"
                     tools:text="33.87 USDC per SOL" />
@@ -392,7 +390,7 @@
                     android:layout_marginTop="16dp"
                     android:paddingVertical="8dp"
                     android:text="@string/main_swap_fee"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:visibility="gone"
                     app:layout_constraintEnd_toStartOf="@id/feesImageView"
                     app:layout_constraintStart_toStartOf="parent"
@@ -432,12 +430,12 @@
 
                 <ImageView
                     android:id="@+id/poweredImageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_orca_logo"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_srm"
                     app:layout_constraintBottom_toBottomOf="@id/poweredTextView"
-                    app:layout_constraintStart_toEndOf="@id/centerGuideline"
+                    app:layout_constraintEnd_toStartOf="@id/centerGuideline"
+                    app:layout_constraintStart_toEndOf="@id/poweredTextView"
                     app:layout_constraintTop_toTopOf="@id/poweredTextView"
                     tools:ignore="ContentDescription" />
 
@@ -452,7 +450,8 @@
                     android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                     android:textColor="?colorElementSecondary"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/centerGuideline" />
+                    app:layout_constraintEnd_toStartOf="@id/poweredImageView"
+                    app:layout_constraintStart_toEndOf="@id/centerGuideline" />
 
                 <ProgressBar
                     android:id="@+id/buttonProgressBar"

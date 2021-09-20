@@ -9,8 +9,8 @@ import com.p2p.wallet.swap.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import com.p2p.wallet.swap.interactor.SwapInteractor
 import com.p2p.wallet.swap.interactor.SwapMarketInteractor
-import com.p2p.wallet.swap.ui.SwapPresenter
 import com.p2p.wallet.swap.ui.SwapContract
+import com.p2p.wallet.swap.ui.SwapPresenter
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

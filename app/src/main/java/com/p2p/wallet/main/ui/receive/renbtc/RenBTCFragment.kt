@@ -34,6 +34,9 @@ class RenBTCFragment :
                 showButton.isEnabled = isChecked
             }
 
+            receiveCoinView.setOnClickListener {
+            }
+
             showButton.setOnClickListener { presenter.showAddress() }
         }
 

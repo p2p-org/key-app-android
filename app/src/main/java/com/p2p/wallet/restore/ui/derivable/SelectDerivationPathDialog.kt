@@ -13,12 +13,14 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.p2p.solanaj.crypto.DerivationPath
 
+private const val EXTRA_PATH = "EXTRA_PATH"
+
 class SelectDerivationPathDialog(
     private val onPathSelected: (DerivationPath) -> Unit
 ) : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
-        private const val EXTRA_PATH = "EXTRA_PATH"
+
         fun show(fm: FragmentManager, currentPath: DerivationPath, onPathSelected: (DerivationPath) -> Unit) {
             SelectDerivationPathDialog(onPathSelected)
                 .withArgs(EXTRA_PATH to currentPath)

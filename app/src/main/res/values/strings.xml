@@ -240,4 +240,5 @@
     <string name="receive_only_bitcoin">only Bitcoin</string>
     <string name="receive_btc_min_transaction">0.000112 BTC</string>
     <string name="receive_statuses">Receiving statuses</string>
+    <string name="error_invalid_address">Invalid address, please enter correct one</string>
 </resources>

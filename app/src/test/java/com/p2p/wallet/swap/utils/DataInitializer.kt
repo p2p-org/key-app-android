@@ -83,6 +83,7 @@ class DataInitializer {
         rpcRepository = RpcRemoteRepository(
             serumApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
             mainnetApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
+            testnetApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
             environmentManager = mockk(),
             onlyMainnet = true
         )

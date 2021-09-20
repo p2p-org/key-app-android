@@ -158,7 +158,6 @@ class SendFragment :
         binding.correctAddressGroup.isVisible = false
     }
 
-    @SuppressLint("SetTextI18n")
     override fun showSourceToken(token: Token) {
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)

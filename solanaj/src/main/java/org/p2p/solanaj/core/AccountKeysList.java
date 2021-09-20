@@ -1,7 +1,10 @@
 package org.p2p.solanaj.core;
 
+import android.os.Build;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,14 +32,20 @@ public class AccountKeysList {
             int index = AccountMeta.Companion.findAccountIndex(uniqueMetas, pubKey);
             if (index > -1) {
                 uniqueMetas.set(index,
-                        new AccountMeta(pubKey, accountsList.get(index).isSigner() || accountMeta.isSigner(),
-                                accountsList.get(index).isWritable() || accountMeta.isWritable()));
+                        new AccountMeta(pubKey,
+                                uniqueMetas.get(index).isSigner() || accountMeta.isSigner(),
+                                uniqueMetas.get(index).isWritable() || accountMeta.isWritable())
+                );
             } else {
                 uniqueMetas.add(accountMeta);
             }
         }
 
-        uniqueMetas.sort(metaComparator);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uniqueMetas.sort(metaComparator);
+        } else {
+            Collections.sort(uniqueMetas, metaComparator);
+        }
 
         return uniqueMetas;
     }

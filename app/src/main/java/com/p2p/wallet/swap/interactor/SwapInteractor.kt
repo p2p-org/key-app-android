@@ -82,12 +82,12 @@ class SwapInteractor(
 
     // / Estimated amount that user can get after swapping
     fun calculateEstimatedAmount(
-        inputAmount: BigDecimal?,
-        rate: BigDecimal?,
+        inputAmount: Double?,
+        rate: Double?,
         slippage: Double?
     ): BigDecimal? {
-        return if (inputAmount != null && rate != null && !rate.isZero()) {
-            FEE_MULTIPLIER.toBigDecimal() * (inputAmount / rate)
+        return if (inputAmount != null && rate != null && rate != 0.0) {
+            BigDecimal(FEE_MULTIPLIER * (inputAmount / rate))
         } else {
             null
         }
