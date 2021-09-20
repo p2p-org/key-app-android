@@ -118,9 +118,7 @@ public class SolanaChain {
         TransactionInstruction secpInstruction = RenProgram.createInstructionWithEthAddress2(
                 gatewayState.renVMAuthority, renVMMessage, Arrays.copyOfRange(sig, 0, 64), sig[64] - 27);
 
-        Transaction transaction = new Transaction(
-
-        );
+        Transaction transaction = new Transaction();
         transaction.addInstruction(mintInstruction);
         transaction.addInstruction(secpInstruction);
 

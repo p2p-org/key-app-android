@@ -44,7 +44,7 @@ class RpcRemoteRepository(
     private fun createRpcApi(environment: Environment): RpcApi = when (environment) {
         Environment.SOLANA -> serumApi
         Environment.MAINNET -> mainnetApi
-        Environment.TESTNET -> testnetApi
+        Environment.DEVNET -> testnetApi
     }
 
     override suspend fun getRecentBlockhash(): RecentBlockhash {

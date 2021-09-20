@@ -10,6 +10,7 @@ import java.math.BigInteger;
 
 import static org.bitcoinj.core.Utils.*;
 import org.bitcoinj.core.Bech32;
+import org.p2p.solanaj.utils.crypto.Base64UrlUtils;
 import org.p2p.solanaj.utils.crypto.Base64Utils;
 import org.p2p.solanaj.utils.crypto.Hex;
 
@@ -42,11 +43,11 @@ public class Utils {
     }
 
     public static String toURLBase64(byte[] src) {
-        return Base64Utils.INSTANCE.encode(src).replace("=", "");
+        return Base64UrlUtils.toURLBase64(src).replace("=", "");
     }
 
     public static byte[] fromURLBase64(String src) {
-        return Base64Utils.INSTANCE.decode(src);
+        return Base64UrlUtils.fromURLBase64(src);
     }
 
     public static byte[] amountToUint256ByteArrayBE(String amount) {

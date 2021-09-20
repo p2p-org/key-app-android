@@ -82,9 +82,14 @@ public class LockAndMint {
     }
 
     public String mint(Account signer) throws Exception {
-        ResponseQueryTxMint responceQueryMint = renVMProvider.queryMint(state.txHash);
-        String signature = solanaChain.submitMint(session.destinationAddress, signer, responceQueryMint);
+        ResponseQueryTxMint responseQueryMint = renVMProvider.queryMint(state.txHash);
+        String signature = solanaChain.submitMint(session.destinationAddress, signer, responseQueryMint);
         return signature;
+    }
+
+    public String lockAndMint(String txHash) throws Exception {
+        ResponseQueryTxMint responseQueryMint = renVMProvider.queryMint(txHash);
+        return responseQueryMint.txStatus;
     }
 
     public Session getSession() {

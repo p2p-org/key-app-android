@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentRenBtcBinding
+import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.cutMiddle
 import com.p2p.wallet.utils.setTextBold
 import com.p2p.wallet.utils.shareText
@@ -60,6 +61,7 @@ class RenBTCFragment :
             setAttentionText(remaining)
 
             fullAddressTextView.text = address.cutMiddle()
+            fullAddressTextView.setOnClickListener { requireContext().copyToClipBoard(address) }
             shareImageView.setOnClickListener { requireContext().shareText(address) }
         }
     }
@@ -74,7 +76,7 @@ class RenBTCFragment :
             val message = getString(R.string.receive_ren_attention_message)
             val openHoursText = getString(R.string.receive_ren_open_hours)
             val riskLosingText = getString(R.string.receive_ren_risk_losing_deposits)
-            binding.attentionTextView.text = message.setTextBold(openHoursText, riskLosingText)
+            binding.attentionTextView.text = message/*.setTextBold(openHoursText, riskLosingText)*/
         }
     }
 
@@ -83,7 +85,7 @@ class RenBTCFragment :
 
         val onlyBitcoin = getString(R.string.receive_only_bitcoin)
         val minTransaction = getString(R.string.receive_btc_min_transaction)
-        val boldText = text.setTextBold(onlyBitcoin, minTransaction, remaining)
+        val boldText = text/*.setTextBold(onlyBitcoin, minTransaction, remaining)*/
 
         binding.attentionTextView.text = boldText
     }

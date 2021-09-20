@@ -11,8 +11,10 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import timber.log.Timber
+import java.util.Date
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 
 private const val DELAY_IN_MILLIS = 200L
 private const val MILLIS_IN_SECOND = 1000L
@@ -137,7 +139,8 @@ class RenBTCPresenter(
     }
 
     private fun Long.toDateString(): String {
-        var millis = this
+        val oneDay = TimeUnit.DAYS.toMillis(1)
+        var millis = this - oneDay
         val hours = TimeUnit.MILLISECONDS.toHours(millis)
         millis -= TimeUnit.HOURS.toMillis(hours)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(millis)

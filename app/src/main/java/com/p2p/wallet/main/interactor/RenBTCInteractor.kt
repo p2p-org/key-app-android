@@ -10,9 +10,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
-import org.p2p.solanaj.rpc.Environment
+import timber.log.Timber
+
+private const val TAG = "renBTC"
+private const val SESSION_POLLING_DELAY = 5000L
 
 class RenBTCInteractor(
     private val repository: RenBTCRepository,
@@ -20,14 +24,16 @@ class RenBTCInteractor(
     private val environmentManager: EnvironmentManager
 ) {
 
+    private lateinit var lockAndMint: LockAndMint
+
     private val state = MutableStateFlow<List<RenBTCPayment>>(emptyList())
 
     suspend fun getSession(): LockAndMint.Session? = withContext(Dispatchers.IO) {
         val signer = tokenKeyProvider.publicKey
         val existingSession = repository.findSession(signer) ?: return@withContext null
 
-        val networkConfig = NetworkConfig.TESTNET()
-        val lockAndMint = LockAndMint.getSession(networkConfig, existingSession)
+        val networkConfig = NetworkConfig.DEVNET()
+        lockAndMint = LockAndMint.getSession(networkConfig, existingSession)
         lockAndMint.generateGatewayAddress()
         return@withContext lockAndMint.session
     }
@@ -36,14 +42,17 @@ class RenBTCInteractor(
         val signer = tokenKeyProvider.publicKey
 
         val existingSession = repository.findSession(signer)
-        val networkConfig = NetworkConfig.TESTNET()
-        val lockAndMint = if (existingSession == null || !isSessionValid(existingSession)) {
+        val networkConfig = NetworkConfig.DEVNET()
+        lockAndMint = if (existingSession == null || !isSessionValid(existingSession)) {
+            Timber.tag(TAG).d("No existing session found, building new one")
             LockAndMint.buildSession(networkConfig, signer.toPublicKey())
         } else {
+            Timber.tag(TAG).d("Active session found, fetching information")
             LockAndMint.getSession(networkConfig, existingSession)
         }
 
-        lockAndMint.generateGatewayAddress()
+        val gatewayAddress = lockAndMint.generateGatewayAddress()
+        Timber.tag(TAG).d("Gateway address generated: $gatewayAddress")
 
         val session = lockAndMint.session
         repository.clearSessionData()
@@ -54,16 +63,42 @@ class RenBTCInteractor(
     fun getPaymentDataFlow(): Flow<List<RenBTCPayment>> = state
 
     suspend fun startPolling(session: LockAndMint.Session) {
-        // fixme: temporary checking everything at devnet
-        val network = when (val network = environmentManager.loadEnvironment()) {
-            Environment.TESTNET -> "testnet"
-            else -> "testnet"
-//            else -> "mainnet"
-        }
+        if (!this::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
+        Timber.tag(TAG).d("Starting blockstream polling")
+        val environment = environmentManager.loadEnvironment()
+        val secretKey = tokenKeyProvider.secretKey
         while (isSessionValid(session)) {
-            delay(5000L)
-            val data = repository.getPaymentData(network, session.gatewayAddress)
-            state.value = data
+            delay(SESSION_POLLING_DELAY)
+            val data = repository.getPaymentData(environment, session.gatewayAddress)
+            handlePaymentData(data, secretKey)
+        }
+    }
+
+    private suspend fun handlePaymentData(
+        data: List<RenBTCPayment>,
+        secretKey: ByteArray
+    ) = withContext(Dispatchers.IO) {
+        data.forEach {
+            lockAndMint.getDepositState(
+                it.transactionHash,
+                it.txIndex.toString(),
+                it.amount.toString()
+            )
+
+            val txHash = lockAndMint.submitMintTransaction()
+            startQueryMintPolling(txHash, secretKey)
+        }
+    }
+
+    private suspend fun startQueryMintPolling(txHash: String, secretKey: ByteArray) {
+        while (true) {
+            val status = lockAndMint.lockAndMint(txHash)
+            Timber.d("### status $status")
+            if (status == "done") {
+                val signature = lockAndMint.mint(Account(secretKey))
+                Timber.d("### signature received $signature")
+            }
+            delay(1000 * 60)
         }
     }
 

@@ -10,4 +10,7 @@ interface RenBTCApi {
         @Path("network") network: String,
         @Path("gateway") gateway: String
     ): List<RenBTCPaymentResponse>
+
+    @GET("api/address/{gateway}/utxo")
+    suspend fun getPaymentData(@Path("gateway") gateway: String): List<RenBTCPaymentResponse>
 }
