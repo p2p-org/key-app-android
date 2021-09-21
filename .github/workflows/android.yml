@@ -13,9 +13,16 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
-  build:
+  tests:
     runs-on: ubuntu-latest
     needs: ktlint
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: ./gradlew test
+  build:
+    runs-on: ubuntu-latest
+    needs: tests
     if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v2

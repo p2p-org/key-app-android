@@ -15,7 +15,7 @@ import org.p2p.solanaj.utils.ByteUtils
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class DecodingTests {
+class SerumSwapDecodingTests {
 
     @Test
     fun `test account flags - decode`() {

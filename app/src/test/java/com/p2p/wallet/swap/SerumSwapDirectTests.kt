@@ -45,7 +45,7 @@ internal class SerumSwapDirectTests : CoroutineTest() {
     private fun usdtWallet(): Token = userTokens.first { it.tokenSymbol == "USDT" }
     private fun usdcWallet(): Token = userTokens.first { it.tokenSymbol == "USDC" }
     private fun srmWallet(): Token = userTokens.first { it.tokenSymbol == "SRM" }
-    private fun oxyWallet(): Token = userTokens.first { it.tokenSymbol == "OXY" }
+    private fun fidaWallet(): Token = userTokens.first { it.tokenSymbol == "FIDA" }
     private fun solNativeWallet(): Token = userTokens.first { it.tokenSymbol == "SOL" }
 
     private val SRM: PublicKey = PublicKey("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt")
@@ -156,9 +156,9 @@ internal class SerumSwapDirectTests : CoroutineTest() {
         assertNotNull(transactionId)
     }
 
-    fun `test swap OXY to SRM`() = runBlocking {
+    fun `test swap FIDA to SRM`() = runBlocking {
         val transactionId = serumSwapInteractor.swap(
-            fromWallet = oxyWallet(),
+            fromWallet = fidaWallet(),
             toWallet = srmWallet(),
             amount = BigDecimal(5),
             slippage = DEFAULT_SLIPPAGE,
