@@ -90,8 +90,6 @@ public class RpcClient {
                 .addHeader("Content-Type", "application/json")
                 .post(RequestBody.create(JSON, jsonRequest)).build();
 
-        System.out.println("### body " + jsonRequest);
-
         try {
             Response response = httpClient.newCall(request).execute();
             RpcResponse<T> rpcResult = resultAdapter.fromJson(response.body().string());

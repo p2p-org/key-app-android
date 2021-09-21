@@ -5,12 +5,15 @@ import com.p2p.wallet.main.db.SessionDao
 import com.p2p.wallet.main.db.SessionEntity
 import com.p2p.wallet.main.model.RenBTCPayment
 import com.p2p.wallet.utils.toPublicKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.rpc.Environment
 
 interface RenBTCRepository {
     suspend fun getPaymentData(environment: Environment, gateway: String): List<RenBTCPayment>
     suspend fun saveSession(session: LockAndMint.Session)
+    fun findSessionFlow(destinationAddress: String): Flow<LockAndMint.Session?>
     suspend fun findSession(destinationAddress: String): LockAndMint.Session?
     suspend fun clearSessionData()
 }
@@ -38,6 +41,20 @@ class RenBTCRemoteRepository(
             gatewayAddress = session.gatewayAddress
         )
         dao.insert(entity)
+    }
+
+    override fun findSessionFlow(destinationAddress: String): Flow<LockAndMint.Session?> {
+        return dao.getSessionFlow(destinationAddress).map { session ->
+            session?.let {
+                LockAndMint.Session(
+                    session.destinationAddress.toPublicKey(),
+                    session.nonce,
+                    session.createdAt,
+                    session.expiryTime,
+                    session.gatewayAddress
+                )
+            }
+        }
     }
 
     override suspend fun findSession(destinationAddress: String): LockAndMint.Session? {

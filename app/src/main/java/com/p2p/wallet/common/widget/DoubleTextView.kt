@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import com.p2p.wallet.R
 import com.p2p.wallet.databinding.WidgetDoubleTextViewBinding
@@ -43,5 +44,8 @@ class DoubleTextView @JvmOverloads constructor(
 
     fun setBottomText(text: String) {
         binding.bottomTextView.text = text
+    }
+    fun setBottomText(@StringRes text: Int) {
+        binding.bottomTextView.setText(text)
     }
 }

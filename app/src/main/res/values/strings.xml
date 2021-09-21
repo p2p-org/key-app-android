@@ -236,9 +236,19 @@
     <string name="receive_show_address">Show address</string>
     <string name="receive_renbtc">renBTC</string>
     <string name="receive_view_bitcoin_explorer">View in Bitcoin explorer</string>
-    <string name="receive_session_timer_info">• This address accepts only Bitcoin. You may lose assets by sending another coin. \n• Minimum transaction amount of 0.000112 BTC. \n• %s is the remaining time to safely send the assets.</string>
+    <string name="receive_session_info">• This address accepts only Bitcoin. You may lose assets by sending another coin.\n</string>
+    <string name="receive_session_min_transaction">• Minimum transaction amount of %s BTC.\n</string>
+    <string name="receive_session_timer_info">• %s is the remaining time to safely send the assets.</string>
     <string name="receive_only_bitcoin">only Bitcoin</string>
     <string name="receive_btc_min_transaction">0.000112 BTC</string>
     <string name="receive_statuses">Receiving statuses</string>
     <string name="error_invalid_address">Invalid address, please enter correct one</string>
+    <string name="receive_waiting_for_deposit">Waiting for deposit confirmation</string>
+    <string name="receive_submitting_to_renvm">Submitting to RenVM</string>
+    <string name="receive_awaiting_the_signature">Awaiting the signature</string>
+    <string name="receive_minting">Minting</string>
+    <string name="receive_successfully_minted">Successfully minted %s renBTC!</string>
+    <string name="receive_started_session">Created active session</string>
+    <string name="receive_min_transaction_amount">Minimum transaction amount received</string>
+    <string name="receive_no_statuses_yet">No statuses yet</string>
 </resources>

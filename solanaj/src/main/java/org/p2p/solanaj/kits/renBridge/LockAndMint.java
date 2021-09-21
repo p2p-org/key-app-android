@@ -87,9 +87,9 @@ public class LockAndMint {
         return signature;
     }
 
-    public String lockAndMint(String txHash) throws Exception {
+    public ResponseQueryTxMint lockAndMint(String txHash) throws Exception {
         ResponseQueryTxMint responseQueryMint = renVMProvider.queryMint(txHash);
-        return responseQueryMint.txStatus;
+        return responseQueryMint;
     }
 
     public Session getSession() {
@@ -131,6 +131,10 @@ public class LockAndMint {
             this.gatewayAddress = gatewayAddress;
         }
 
+        public Boolean isValid() {
+            long currentTime = System.currentTimeMillis();
+            return currentTime < expiryTime;
+        }
     }
 
 }

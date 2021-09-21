@@ -1,4 +1,4 @@
-package com.p2p.wallet.main.ui.receive.statuses
+package com.p2p.wallet.renBTC.statuses
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentReceivingStatusesBinding
-import com.p2p.wallet.main.model.ReceiveStatus
+import com.p2p.wallet.renBTC.model.RenVMStatus
+import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
@@ -34,11 +35,13 @@ class ReceivingStatusesFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            recyclerView.adapter = adapter
+            recyclerView.attachAdapter(adapter)
         }
+
+        presenter.subscribe()
     }
 
-    override fun showData(statuses: List<ReceiveStatus>) {
+    override fun showData(statuses: List<RenVMStatus>) {
         adapter.setItems(statuses)
     }
 }

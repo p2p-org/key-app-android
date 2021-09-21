@@ -1,7 +1,7 @@
-package com.p2p.wallet.main.ui.receive.statuses
+package com.p2p.wallet.renBTC.statuses
 
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.main.interactor.RenBTCInteractor
+import com.p2p.wallet.renBTC.interactor.RenBTCInteractor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -12,9 +12,7 @@ class ReceivingStatusesPresenter(
 
     override fun subscribe() {
         launch {
-            interactor.getPaymentDataFlow().collect {
-//                view?.showData(it)
-            }
+            interactor.getRenVMStatusFlow().collect { view?.showData(it) }
         }
     }
 }

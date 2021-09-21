@@ -63,10 +63,8 @@ data class Orderbook(
             val nodes = parseNodes(headerLayout)
             slab = Slab(headerLayout, nodes)
 
+            // just skipping 7 bytes
             readBytes(7)
-
-            val dataLength = nodes.size + NodeLayout.NODE_LAYOUT_LENGTH + AccountFlags.ACCOUNT_FLAGS_LENGTH
-            require(data.size >= dataLength) { "Wrong data" }
         }
 
         private fun parseHeaderLayout() = HeaderLayout(

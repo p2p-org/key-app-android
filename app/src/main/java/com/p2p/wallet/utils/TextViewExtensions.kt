@@ -11,6 +11,8 @@ fun String.setTextBold(vararg boldText: String): SpannableString {
     boldText.forEach {
         val copyStart = stringBuilder.indexOf(it)
         val copyEnd = stringBuilder.indexOf(it) + it.length
+        if (copyStart == -1 || copyEnd == -1) return@forEach
+
         stringBuilder.setSpan(StyleSpan(Typeface.BOLD), copyStart, copyEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 

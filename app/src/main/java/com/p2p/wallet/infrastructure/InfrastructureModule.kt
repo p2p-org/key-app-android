@@ -1,10 +1,8 @@
 package com.p2p.wallet.infrastructure
 
 import android.content.Context
-import android.os.Build
 import androidx.room.Room
 import com.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
-import com.p2p.wallet.common.crypto.keystore.EncoderDecoderPreMarshmallow
 import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.db.WalletDatabase
@@ -35,13 +33,7 @@ object InfrastructureModule : InjectionModule {
         }
 
         single {
-            val encoderDecoder =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    EncoderDecoderMarshmallow(get())
-                } else {
-                    EncoderDecoderPreMarshmallow(get())
-                }
-
+            val encoderDecoder = EncoderDecoderMarshmallow(get())
             return@single KeyStoreWrapper(encoderDecoder)
         }
 
