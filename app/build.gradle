@@ -55,8 +55,8 @@ android {
         feature {
             debuggable true
             signingConfig signingConfigs.debug
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             versionNameSuffix ".$VERSION_BUILD"
 
             firebaseAppDistribution {
