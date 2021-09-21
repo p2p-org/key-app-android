@@ -51,10 +51,10 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
     private fun srmWallet(): Token = userTokens.first { it.tokenSymbol == "SRM" }
     private fun ethWallet(): Token = userTokens.first { it.tokenSymbol == "ETH" }
     private fun btcWallet(): Token = userTokens.first { it.tokenSymbol == "BTC" }
-    private fun oxyWallet(): Token = userTokens.first { it.tokenSymbol == "OXY" }
+    private fun fidaWallet(): Token = userTokens.first { it.tokenSymbol == "FIDA" }
 
     private val USDC: PublicKey = PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
-    private val OXY: PublicKey = PublicKey("z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M")
+    private val FIDA: PublicKey = PublicKey("EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp")
 
     private val SRMUSDCMarket = Market(
         programId = dexPID,
@@ -87,7 +87,7 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
     // Create from and to open orders and wait for confirmation before transitive swapping
     @Test
     fun `test create from and to open orders`() = runBlocking {
-        val toMarket = serumSwapInteractor.loadMarkets(OXY, USDC).first()
+        val toMarket = serumSwapInteractor.loadMarkets(FIDA, USDC).first()
 
         val result = serumSwapInteractor.createFromAndToOpenOrdersForSwapTransitive(
             fromMarket = SRMUSDCMarket,
@@ -100,12 +100,12 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
         assertNotNull(result)
     }
 
-    // / Swap SRM -> OXY
+    // / Swap SRM -> FIDA
     @Test
-    fun `test swap SRM to OXY`() = runBlocking {
+    fun `test swap SRM to FIDA`() = runBlocking {
         val tx = serumSwapInteractor.swap(
             fromWallet = srmWallet(),
-            toWallet = oxyWallet(),
+            toWallet = fidaWallet(),
             amount = 1.toBigDecimal(),
             slippage = DEFAULT_SLIPPAGE,
             isSimulation = true
@@ -113,11 +113,11 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
         assertNotNull(tx)
     }
 
-    // / Swap OXY -> SRM
+    // / Swap FIDA -> SRM
     @Test
-    fun `test swap OXY to SRM`() = runBlocking {
+    fun `test swap FIDA to SRM`() = runBlocking {
         val tx = serumSwapInteractor.swap(
-            fromWallet = oxyWallet(),
+            fromWallet = fidaWallet(),
             toWallet = srmWallet(),
             amount = 5.toBigDecimal(),
             slippage = DEFAULT_SLIPPAGE,

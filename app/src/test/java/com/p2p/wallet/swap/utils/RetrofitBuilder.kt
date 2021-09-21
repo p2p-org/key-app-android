@@ -17,11 +17,10 @@ object RetrofitBuilder {
         val client = OkHttpClient.Builder()
             .readTimeout(NetworkModule.DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-//            .addInterceptor(ServerErrorInterceptor(gson))
             .addNetworkInterceptor(ContentTypeInterceptor())
             .build()
 
-        val baseUrl = if (url.isNullOrEmpty()) Environment.MAINNET.endpoint else url
+        val baseUrl = if (url.isNullOrEmpty()) Environment.SOLANA.endpoint else url
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)

@@ -15,7 +15,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 @RunWith(RobolectricTestRunner::class)
-class SwapMarketTests {
+class SerumSwapMarketTests {
 
     private val initializer = DataInitializer()
 
