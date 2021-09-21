@@ -1,13 +1,13 @@
-package com.p2p.wallet.main.ui.receive.statuses
+package com.p2p.wallet.renBTC.statuses
 
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
-import com.p2p.wallet.main.model.ReceiveStatus
+import com.p2p.wallet.renBTC.model.RenVMStatus
 
 interface ReceivingStatusesContract {
 
     interface View : MvpView {
-        fun showData(statuses: List<ReceiveStatus>)
+        fun showData(statuses: List<RenVMStatus>)
     }
 
     interface Presenter : MvpPresenter<View> {

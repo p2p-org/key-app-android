@@ -29,9 +29,6 @@ class NetworkFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             networksGroup.setOnCheckedChangeListener(this@NetworkFragment)
-
-            mainnetButton.text = getString(R.string.node_mainnet)
-            solanaButton.text = getString(R.string.node_solana)
         }
 
         presenter.loadData()
@@ -40,7 +37,9 @@ class NetworkFragment :
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
         val environment = when (checkedId) {
             R.id.mainnetButton -> Environment.MAINNET
-            else -> Environment.SOLANA
+            R.id.solanaButton -> Environment.SOLANA
+            R.id.devnetButton -> Environment.DEVNET
+            else -> throw IllegalStateException("No environment found for this id: $checkedId")
         }
         presenter.setNewEnvironment(environment)
     }
@@ -49,8 +48,7 @@ class NetworkFragment :
         val checkedId = when (environment) {
             Environment.SOLANA -> R.id.solanaButton
             Environment.MAINNET -> R.id.mainnetButton
-            // fixme: add testnet button
-            else -> R.id.mainnetButton
+            Environment.DEVNET -> R.id.devnetButton
         }
 
         binding.networksGroup.setOnCheckedChangeListener(null)

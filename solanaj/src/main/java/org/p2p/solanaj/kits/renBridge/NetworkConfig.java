@@ -9,8 +9,14 @@ public class NetworkConfig {
     private String genesisHash;
     private int p2shPrefix;
 
-    private NetworkConfig(String chain, boolean isTestnet, String endpiont, String lightNode, String gatewayRegistry,
-            String genesisHash, int p2shPrefix) {
+    private NetworkConfig(
+            String chain,
+            boolean isTestnet,
+            String endpiont,
+            String lightNode,
+            String gatewayRegistry,
+            String genesisHash,
+            int p2shPrefix) {
         this.chain = chain;
         this.isTestnet = isTestnet;
         this.endpoint = endpiont;
@@ -26,17 +32,17 @@ public class NetworkConfig {
                 "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d", 0x05);
     }
 
-    public static NetworkConfig TESTNET() {
+    public static NetworkConfig DEVNET() {
         return new NetworkConfig("testnet", true, "https://api.devnet.solana.com",
                 "https://lightnode-testnet.herokuapp.com/", "REGrPFKQhRneFFdUV3e9UDdzqUJyS6SKj88GdXFCRd2",
                 "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG", 0xc4);
     }
 
-    public static NetworkConfig DEVNET() {
-        return new NetworkConfig("devnet", true, "https://api.testnet.solana.com",
-                "https://lightnode-devnet.herokuapp.com", "REGrPFKQhRneFFdUV3e9UDdzqUJyS6SKj88GdXFCRd2",
-                "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY", 0xc4);
-    }
+//    public static NetworkConfig DEVNET() {
+//        return new NetworkConfig("devnet", true, "https://api.testnet.solana.com",
+//                "https://lightnode-devnet.herokuapp.com", "REGrPFKQhRneFFdUV3e9UDdzqUJyS6SKj88GdXFCRd2",
+//                "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY", 0xc4);
+//    }
 
     public String getChain() {
         return chain;

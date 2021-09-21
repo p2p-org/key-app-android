@@ -82,9 +82,14 @@ public class LockAndMint {
     }
 
     public String mint(Account signer) throws Exception {
-        ResponseQueryTxMint responceQueryMint = renVMProvider.queryMint(state.txHash);
-        String signature = solanaChain.submitMint(session.destinationAddress, signer, responceQueryMint);
+        ResponseQueryTxMint responseQueryMint = renVMProvider.queryMint(state.txHash);
+        String signature = solanaChain.submitMint(session.destinationAddress, signer, responseQueryMint);
         return signature;
+    }
+
+    public ResponseQueryTxMint lockAndMint(String txHash) throws Exception {
+        ResponseQueryTxMint responseQueryMint = renVMProvider.queryMint(txHash);
+        return responseQueryMint;
     }
 
     public Session getSession() {
@@ -126,6 +131,10 @@ public class LockAndMint {
             this.gatewayAddress = gatewayAddress;
         }
 
+        public Boolean isValid() {
+            long currentTime = System.currentTimeMillis();
+            return currentTime < expiryTime;
+        }
     }
 
 }

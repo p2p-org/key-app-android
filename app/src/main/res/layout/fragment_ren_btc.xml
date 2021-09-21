@@ -12,7 +12,7 @@
         android:id="@+id/idleState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         app:constraint_referenced_ids="infoTextView,completeSwitch,showButton" />
 
     <androidx.constraintlayout.widget.Group
@@ -20,13 +20,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="viewButton,qrImageView,fullAddressTextView,shareImageView" />
+        app:constraint_referenced_ids="statusView,viewButton,qrImageView,fullAddressTextView,shareImageView"
+        tools:visibility="visible" />
 
     <com.p2p.wallet.common.widget.DoubleTextView
         android:id="@+id/receiveCoinView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:visibility="gone"
         app:bottomText="@string/receive_renbtc"
         app:layout_constraintTop_toTopOf="parent"
         app:topText="@string/receive_want_to_receive" />
@@ -47,16 +49,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_attention"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:visibility="gone" />
 
-        <TextView
-            android:id="@+id/attentionTextView"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
-            android:text="@string/receive_ren_attention_message"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/attentionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:text="@string/receive_ren_attention_message"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular14" />
+
+            <TextView
+                android:id="@+id/timerTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:text="@string/receive_ren_attention_message"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
@@ -126,18 +145,29 @@
         app:tint="@color/colorStaticDark"
         tools:ignore="ContentDescription" />
 
+    <com.p2p.wallet.common.widget.DoubleTextView
+        android:id="@+id/statusView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        app:drawableEnd="@drawable/ic_arrow_right"
+        app:layout_constraintTop_toBottomOf="@id/fullAddressTextView"
+        app:topText="@string/receive_statuses"
+        tools:bottomText="Waiting for deposit confirmation" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/viewButton"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:background="?selectableItemBackground"
         android:text="@string/receive_view_bitcoin_explorer"
         android:textAllCaps="false"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
         android:textColor="?colorElementSecondary"
-        app:layout_constraintTop_toBottomOf="@id/fullAddressTextView"
+        app:layout_constraintTop_toBottomOf="@id/statusView"
         tools:ignore="UnusedAttribute" />
 
     <androidx.appcompat.widget.SwitchCompat

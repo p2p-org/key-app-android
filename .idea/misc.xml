@@ -32,6 +32,7 @@
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/item_transaction.xml" value="0.28888888888888886" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/widget_double_text_view.xml" value="0.3546875" />
         <entry key="..\:/StudioProjects/p2p-wallet-android/app/src/main/res/layout/widget_tab_radiogroup.xml" value="0.29259259259259257" />
+        <entry key="app/src/main/res/drawable/ic_arrow_right.xml" value="0.169" />
         <entry key="app/src/main/res/layout/dialog_fee_info.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/dialog_swap_fees_bottom_sheet.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_buy.xml" value="0.37604166666666666" />
@@ -40,6 +41,7 @@
         <entry key="app/src/main/res/layout/fragment_receive.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_receive_solana.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_receiving_statusees.xml" value="0.24375" />
+        <entry key="app/src/main/res/layout/fragment_receiving_statuses.xml" value="0.2722222222222222" />
         <entry key="app/src/main/res/layout/fragment_ren_brx.xml" value="0.37604166666666666" />
         <entry key="app/src/main/res/layout/fragment_ren_btc.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_send.xml" value="0.37604166666666666" />

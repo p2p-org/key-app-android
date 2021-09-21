@@ -12,6 +12,7 @@ import org.p2p.solanaj.model.types.RpcResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,14 @@ public class RpcClient {
     }
 
     public <T> T call(String method, List<Object> params, Class<T> clazz) throws RpcException {
-        RpcRequest rpcRequest = new RpcRequest(method, params);
+        List<Object> parameters;
+
+        if (params == null || params.isEmpty()) {
+            parameters = new ArrayList();
+        } else {
+            parameters = params;
+        }
+        RpcRequest rpcRequest = new RpcRequest(method, parameters);
 
         JsonAdapter<RpcRequest> rpcRequestJsonAdapter = new Moshi.Builder().build().adapter(RpcRequest.class).lenient();
         JsonAdapter<RpcResponse<T>> resultAdapter = new Moshi.Builder().build()
@@ -77,9 +85,10 @@ public class RpcClient {
         JsonAdapter<RpcResponse<T>> resultAdapter = new Moshi.Builder().build()
                 .adapter(Types.newParameterizedType(RpcResponse.class, Type.class.cast(clazz)));
 
+        String jsonRequest = rpcRequestJsonAdapter.toJson(rpcRequest);
         Request request = new Request.Builder().url(endpoint)
                 .addHeader("Content-Type", "application/json")
-                .post(RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest))).build();
+                .post(RequestBody.create(JSON, jsonRequest)).build();
 
         try {
             Response response = httpClient.newCall(request).execute();
