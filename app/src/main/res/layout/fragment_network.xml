@@ -62,4 +62,10 @@
                 android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
         </RadioGroup>
     </LinearLayout>
+
+    <com.p2p.wallet.common.widget.ProgressView
+        android:id="@+id/progressView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

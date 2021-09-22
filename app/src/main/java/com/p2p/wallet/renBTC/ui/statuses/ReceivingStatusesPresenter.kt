@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.statuses
+package com.p2p.wallet.renBTC.ui.statuses
 
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.renBTC.interactor.RenBTCInteractor

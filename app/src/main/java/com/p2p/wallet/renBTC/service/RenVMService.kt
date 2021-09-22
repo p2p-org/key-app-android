@@ -74,7 +74,7 @@ class RenVMService : Service(), CoroutineScope {
                 val session = interactor.findActiveSession()
                 if (session != null && session.isValid) startNewSession()
             } catch (e: Throwable) {
-                Timber.e(e, "Error generating session")
+                Timber.e(e, "Error starting session")
             }
         }
     }
@@ -89,7 +89,7 @@ class RenVMService : Service(), CoroutineScope {
             return
         }
 
-        Timber.tag(TAG).d("Starting session")
+        Timber.tag(TAG).d("Generating new session")
 
         renVMJob = launch {
             try {

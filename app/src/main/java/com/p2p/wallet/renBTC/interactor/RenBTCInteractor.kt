@@ -26,7 +26,6 @@ private const val SESSION_POLLING_DELAY = 5000L
 private const val MINT_STATUS_POLLING_DELAY = 1000L * 60L
 private const val BTC_DECIMALS = 8
 
-// todo: move this logic to service, we can receive payment any time
 class RenBTCInteractor(
     private val repository: RenBTCRepository,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -79,10 +78,11 @@ class RenBTCInteractor(
         val environment = environmentManager.loadEnvironment()
         val secretKey = tokenKeyProvider.secretKey
         setStatus(RenVMStatus.WaitingDepositConfirm)
+
         while (session.isValid) {
-            delay(SESSION_POLLING_DELAY)
             val data = repository.getPaymentData(environment, session.gatewayAddress)
             handlePaymentData(data, secretKey)
+            delay(SESSION_POLLING_DELAY)
         }
     }
 
@@ -91,6 +91,7 @@ class RenBTCInteractor(
         secretKey: ByteArray
     ) = withContext(Dispatchers.IO) {
         Timber.tag(TAG).d("Payment data received: ${data.size}")
+
         data.forEach {
             lockAndMint.getDepositState(
                 it.transactionHash,
@@ -108,22 +109,29 @@ class RenBTCInteractor(
         setStatus(RenVMStatus.AwaitingForSignature)
         while (true) {
             val response = lockAndMint.lockAndMint(txHash)
-            val amount =
-                (response?.valueOut?.amount?.toBigIntegerOrNull() ?: BigInteger.ZERO).fromLamports(BTC_DECIMALS)
+
+            val bigInteger = response?.valueOut?.amount?.toBigIntegerOrNull() ?: BigInteger.ZERO
+            val amount = bigInteger.fromLamports(BTC_DECIMALS)
             setStatus(RenVMStatus.MinAmountReceived(amount.toString()))
+
             val status = response.txStatus
-            Timber.tag(TAG).d("Current mint status: $status")
-            when (MintStatus.parse(status)) {
-                MintStatus.CONFIRMED -> {
-                    setStatus(RenVMStatus.Minting)
-                }
-                MintStatus.DONE -> {
-                    setStatus(RenVMStatus.SuccessfullyMinted(BigDecimal.ONE))
-                    val signature = lockAndMint.mint(Account(secretKey))
-                    Timber.tag(TAG).d("Mint signature received: $signature")
-                }
-            }
+            handleStatus(status, secretKey)
             delay(MINT_STATUS_POLLING_DELAY)
+        }
+    }
+
+    private fun handleStatus(status: String, secretKey: ByteArray) {
+        Timber.tag(TAG).d("Current mint status: $status")
+
+        when (MintStatus.parse(status)) {
+            MintStatus.CONFIRMED -> {
+                setStatus(RenVMStatus.Minting)
+            }
+            MintStatus.DONE -> {
+                setStatus(RenVMStatus.SuccessfullyMinted(BigDecimal.ONE))
+                val signature = lockAndMint.mint(Account(secretKey))
+                Timber.tag(TAG).d("Mint signature received: $signature")
+            }
         }
     }
 

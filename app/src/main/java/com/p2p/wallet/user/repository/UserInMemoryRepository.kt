@@ -32,6 +32,4 @@ class UserInMemoryRepository : UserLocalRepository {
 
     override fun getTokenData(mintAddress: String): TokenData? =
         decimalsFlow.value.firstOrNull { it.mintAddress == mintAddress }
-
-    override fun getAllData(): List<TokenData> = decimalsFlow.value
 }

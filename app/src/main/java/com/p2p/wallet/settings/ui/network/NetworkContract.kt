@@ -8,6 +8,7 @@ interface NetworkContract {
 
     interface View : MvpView {
         fun showEnvironment(environment: Environment)
+        fun showLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -1,7 +1,6 @@
 package org.p2p.solanaj.kits.renBridge.renVM;
 
 import org.bitcoinj.core.Base58;
-import org.json.JSONObject;
 import org.p2p.solanaj.kits.renBridge.NetworkConfig;
 import org.p2p.solanaj.kits.renBridge.renVM.types.ParamsSubmitMint;
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryBlockState;
@@ -18,7 +17,6 @@ import org.p2p.solanaj.utils.crypto.Base64Utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 public class RenVMProvider {
     private RpcClient client;
@@ -110,6 +108,7 @@ public class RenVMProvider {
 
         String version = "1";
         try {
+            // todo: it was out.writeBytes() workaround
             out.write(marshalString(version));
             out.write(marshalString(selector));
 
@@ -130,7 +129,6 @@ public class RenVMProvider {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return Hash.sha256(out.toByteArray());
     }
 

@@ -9,6 +9,4 @@ interface UserLocalRepository {
 
     fun setTokenData(data: List<TokenData>)
     fun getTokenData(mintAddress: String): TokenData?
-
-    fun getAllData(): List<TokenData>
 }

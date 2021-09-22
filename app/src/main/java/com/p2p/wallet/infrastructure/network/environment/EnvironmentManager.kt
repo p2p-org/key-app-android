@@ -54,6 +54,8 @@ class EnvironmentManager(
 
     private fun parse(url: String): Environment = when (url) {
         Environment.MAINNET.endpoint -> Environment.MAINNET
-        else -> Environment.SOLANA
+        Environment.DEVNET.endpoint -> Environment.DEVNET
+        Environment.SOLANA.endpoint -> Environment.SOLANA
+        else -> throw IllegalStateException("Unknown endpoint $url")
     }
 }
