@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.statuses
+package com.p2p.wallet.renBTC.ui.statuses
 
 import android.os.Bundle
 import android.view.View

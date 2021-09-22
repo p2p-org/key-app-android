@@ -3,6 +3,7 @@ package com.p2p.wallet.settings.ui.network
 import android.os.Bundle
 import android.view.View
 import android.widget.RadioGroup
+import androidx.core.view.isVisible
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentNetworkBinding
@@ -54,5 +55,9 @@ class NetworkFragment :
         binding.networksGroup.setOnCheckedChangeListener(null)
         binding.networksGroup.check(checkedId)
         binding.networksGroup.setOnCheckedChangeListener(this)
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+        binding.progressView.isVisible = isLoading
     }
 }

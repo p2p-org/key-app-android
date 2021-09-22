@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.renbtc
+package com.p2p.wallet.renBTC.ui.main
 
 import android.content.Context
 import android.graphics.Bitmap

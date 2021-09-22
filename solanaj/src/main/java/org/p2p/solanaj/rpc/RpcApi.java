@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RpcApi2 {
+public class RpcApi {
     private RpcClient client;
 
-    public RpcApi2(RpcClient client) {
+    public RpcApi(RpcClient client) {
         this.client = client;
     }
 

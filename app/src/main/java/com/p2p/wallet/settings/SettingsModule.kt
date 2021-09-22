@@ -25,7 +25,7 @@ object SettingsModule : InjectionModule {
         factory { SettingsPresenter(get(), get(), get()) } bind SettingsContract.Presenter::class
         factory { SecurityPresenter(get(), get()) } bind SecurityContract.Presenter::class
         factory { ResetPinPresenter(get()) } bind ResetPinContract.Presenter::class
-        factory { NetworkPresenter(get()) } bind NetworkContract.Presenter::class
+        factory { NetworkPresenter(get(), get(), get()) } bind NetworkContract.Presenter::class
         factory { AppearancePresenter(get()) } bind AppearanceContract.Presenter::class
     }
 }

@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.renbtc
+package com.p2p.wallet.renBTC.ui.main
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit
 
 private const val DELAY_IN_MILLIS = 200L
 private const val ONE_SECOND_IN_MILLIS = 1000L
+private const val THREE_SECONDS = 3000L
 
 class RenBTCPresenter(
     private val interactor: RenBTCInteractor,
@@ -60,7 +61,7 @@ class RenBTCPresenter(
         launch {
             view?.showLoading(true)
             RenVMService.startWithNewSession(context)
-            delay(ONE_SECOND_IN_MILLIS + ONE_SECOND_IN_MILLIS)
+            delay(THREE_SECONDS)
             view?.showLoading(false)
         }
     }

@@ -21,10 +21,10 @@ import com.p2p.wallet.main.ui.receive.solana.ReceiveSolanaContract
 import com.p2p.wallet.main.ui.send.SendContract
 import com.p2p.wallet.main.ui.send.SendPresenter
 import com.p2p.wallet.renBTC.interactor.RenBTCInteractor
-import com.p2p.wallet.renBTC.renbtc.RenBTCContract
-import com.p2p.wallet.renBTC.renbtc.RenBTCPresenter
-import com.p2p.wallet.renBTC.statuses.ReceivingStatusesContract
-import com.p2p.wallet.renBTC.statuses.ReceivingStatusesPresenter
+import com.p2p.wallet.renBTC.ui.main.RenBTCContract
+import com.p2p.wallet.renBTC.ui.main.RenBTCPresenter
+import com.p2p.wallet.renBTC.ui.statuses.ReceivingStatusesContract
+import com.p2p.wallet.renBTC.ui.statuses.ReceivingStatusesPresenter
 import com.p2p.wallet.user.UserModule.createLoggingInterceptor
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind

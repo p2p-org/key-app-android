@@ -1,7 +1,5 @@
 package org.p2p.solanaj.rpc;
 
-import android.util.Log;
-
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -27,7 +25,7 @@ public class RpcClient {
 
     private String endpoint;
     private OkHttpClient httpClient = new OkHttpClient();
-    private RpcApi2 rpcApi;
+    private RpcApi rpcApi;
 
     public RpcClient(Environment endpoint) {
         this(endpoint.getEndpoint());
@@ -35,7 +33,7 @@ public class RpcClient {
 
     public RpcClient(String endpoint) {
         this.endpoint = endpoint;
-        rpcApi = new RpcApi2(this);
+        rpcApi = new RpcApi(this);
     }
 
     public <T> T call(String method, List<Object> params, Class<T> clazz) throws RpcException {
@@ -60,7 +58,7 @@ public class RpcClient {
             Response response = httpClient.newCall(request).execute();
             String bodyString = response.body().string();
             if (response.isSuccessful()) {
-                Log.d("RpcClient", bodyString);
+                System.out.println("RpcClient: " + bodyString);
                 RpcResponse<T> rpcResult = resultAdapter.lenient().fromJson(bodyString);
 
                 if (rpcResult.getError() != null) {
@@ -69,7 +67,7 @@ public class RpcClient {
 
                 return (T) rpcResult.getResult();
             } else {
-                Log.e("RpcClient", bodyString);
+                System.out.println("RpcClientError: " + bodyString);
                 RpcResponse<T> rpcResult = resultAdapter.lenient().fromJson(bodyString);
                 throw new RpcException(rpcResult.getError().getMessage());
             }
@@ -104,7 +102,7 @@ public class RpcClient {
         }
     }
 
-    public RpcApi2 getApi() {
+    public RpcApi getApi() {
         return rpcApi;
     }
 
