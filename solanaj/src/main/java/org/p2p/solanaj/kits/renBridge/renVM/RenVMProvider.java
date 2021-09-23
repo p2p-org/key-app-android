@@ -16,6 +16,7 @@ import org.p2p.solanaj.utils.crypto.Base64Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 
 public class RenVMProvider {
@@ -85,6 +86,12 @@ public class RenVMProvider {
                              String to, String txIndex, byte[] txid) {
         ParamsSubmitMint.MintTransactionInput burnTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
         return Utils.toURLBase64(hashTransactionMint(burnTx, "BTC/fromSolana"));
+    }
+
+    public BigInteger estimateTransactionFee() throws RpcException {
+        ResponseQueryBlockState queryBlockState = queryBlockState();
+        return new BigInteger(queryBlockState.state.v.btc.gasLimit)
+                .multiply(new BigInteger(queryBlockState.state.v.btc.gasCap));
     }
 
     public static ParamsSubmitMint.MintTransactionInput buildTransaction(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce,

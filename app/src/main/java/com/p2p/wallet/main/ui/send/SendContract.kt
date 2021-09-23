@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.model.CurrencyMode
+import com.p2p.wallet.main.model.NetworkType
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import java.math.BigDecimal
@@ -28,6 +29,9 @@ interface SendContract {
         fun showButtonEnabled(isEnabled: Boolean)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
+        fun showNetworkDestination(type: NetworkType)
+        fun showNetworkSelection()
+        fun hideNetworkSelection()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -40,5 +44,6 @@ interface SendContract {
         fun setNewTargetAddress(address: String)
         fun switchCurrency()
         fun setShouldAskConfirmation(shouldAsk: Boolean)
+        fun setNetworkDestination(networkType: NetworkType)
     }
 }

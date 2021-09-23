@@ -4,7 +4,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import com.p2p.wallet.renBTC.interactor.RenBTCInteractor
+import com.p2p.wallet.renBTC.interactor.RenBtcInteractor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,6 +18,7 @@ private const val TAG = "RenVMService"
 class RenVMService : Service(), CoroutineScope {
 
     companion object {
+        private const val ACTION_STOP = "ACTION_STOP"
         private const val ACTION_CHECK = "ACTION_CHECK"
         private const val ACTION_NEW_SESSION = "ACTION_NEW_SESSION"
 
@@ -30,11 +31,16 @@ class RenVMService : Service(), CoroutineScope {
             val intent = Intent(context, RenVMService::class.java).setAction(ACTION_NEW_SESSION)
             context.startService(intent)
         }
+
+        fun stopService(context: Context) {
+            val intent = Intent(context, RenVMService::class.java).setAction(ACTION_STOP)
+            context.startService(intent)
+        }
     }
 
     override val coroutineContext: CoroutineContext = Dispatchers.IO
 
-    private val interactor: RenBTCInteractor by inject()
+    private val interactor: RenBtcInteractor by inject()
 
     private var checkJob: Job? = null
     private var renVMJob: Job? = null
@@ -52,9 +58,17 @@ class RenVMService : Service(), CoroutineScope {
         when (action) {
             ACTION_CHECK -> checkActiveSession()
             ACTION_NEW_SESSION -> startNewSession()
+            ACTION_STOP -> stopServiceAndCleanSession()
         }
 
         return START_NOT_STICKY
+    }
+
+    private fun stopServiceAndCleanSession() {
+        launch {
+            interactor.clearSession()
+            stopSelf()
+        }
     }
 
     /**

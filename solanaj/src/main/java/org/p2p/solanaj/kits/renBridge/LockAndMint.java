@@ -12,6 +12,8 @@ import org.p2p.solanaj.utils.Hash;
 import org.p2p.solanaj.utils.Utils;
 import org.p2p.solanaj.utils.crypto.Hex;
 
+import java.math.BigInteger;
+
 public class LockAndMint {
     private NetworkConfig networkConfig;
     private RenVMProvider renVMProvider;
@@ -92,6 +94,12 @@ public class LockAndMint {
         return responseQueryMint;
     }
 
+    public BigInteger estimateTransactionFee() throws Exception {
+        BigInteger fee = renVMProvider.estimateTransactionFee();
+        session.fee = fee;
+        return fee;
+    }
+
     public Session getSession() {
         return session;
     }
@@ -115,6 +123,7 @@ public class LockAndMint {
         public long createdAt;
         public long expiryTime;
         public String gatewayAddress;
+        public BigInteger fee;
 
         public Session(PublicKey destinationAddress) {
             this.destinationAddress = destinationAddress;
@@ -123,12 +132,34 @@ public class LockAndMint {
             this.expiryTime = Utils.getSessionExpiry();
         }
 
-        public Session(PublicKey destinationAddress, String nonce, long createdAt, long expiryTime, String gatewayAddress) {
+        public Session(
+                PublicKey destinationAddress,
+                String nonce,
+                long createdAt,
+                long expiryTime,
+                String gatewayAddress
+        ) {
             this.destinationAddress = destinationAddress;
             this.nonce = nonce;
             this.createdAt = createdAt;
             this.expiryTime = expiryTime;
             this.gatewayAddress = gatewayAddress;
+        }
+
+        public Session(
+                PublicKey destinationAddress,
+                String nonce,
+                long createdAt,
+                long expiryTime,
+                String gatewayAddress,
+                BigInteger fee
+        ) {
+            this.destinationAddress = destinationAddress;
+            this.nonce = nonce;
+            this.createdAt = createdAt;
+            this.expiryTime = expiryTime;
+            this.gatewayAddress = gatewayAddress;
+            this.fee = fee;
         }
 
         public Boolean isValid() {

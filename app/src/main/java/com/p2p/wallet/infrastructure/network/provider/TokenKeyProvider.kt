@@ -3,7 +3,6 @@ package com.p2p.wallet.infrastructure.network.provider
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.p2p.wallet.R
 import org.p2p.solanaj.utils.crypto.Base58Utils
 import com.p2p.wallet.infrastructure.security.SecureStorage
 import kotlinx.coroutines.runBlocking
@@ -42,9 +41,6 @@ class TokenKeyProvider(
                     secureStorage.saveString(KEY_SECRET_KEY, result)
                 }
             }
-
-    val swapProgramId: String =
-        context.getString(R.string.swapProgramId)
 
     fun clear() {
         sharedPreferences.edit { remove(KEY_PUBLIC_KEY) }

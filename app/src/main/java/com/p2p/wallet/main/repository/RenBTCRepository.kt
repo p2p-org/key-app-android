@@ -38,7 +38,8 @@ class RenBTCRemoteRepository(
             nonce = session.nonce,
             createdAt = session.createdAt,
             expiryTime = session.expiryTime,
-            gatewayAddress = session.gatewayAddress
+            gatewayAddress = session.gatewayAddress,
+            fee = session.fee.toString()
         )
         dao.insert(entity)
     }
@@ -51,7 +52,8 @@ class RenBTCRemoteRepository(
                     session.nonce,
                     session.createdAt,
                     session.expiryTime,
-                    session.gatewayAddress
+                    session.gatewayAddress,
+                    session.fee.toBigInteger()
                 )
             }
         }
@@ -64,7 +66,8 @@ class RenBTCRemoteRepository(
                 it.nonce,
                 it.createdAt,
                 it.expiryTime,
-                it.gatewayAddress
+                it.gatewayAddress,
+                it.fee.toBigInteger()
             )
         }
     }

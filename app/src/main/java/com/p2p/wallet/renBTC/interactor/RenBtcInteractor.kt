@@ -6,7 +6,6 @@ import com.p2p.wallet.main.model.RenBTCPayment
 import com.p2p.wallet.main.repository.RenBTCRepository
 import com.p2p.wallet.renBTC.model.MintStatus
 import com.p2p.wallet.renBTC.model.RenVMStatus
-import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -19,14 +18,12 @@ import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.BigInteger
 
 private const val TAG = "renBTC"
 private const val SESSION_POLLING_DELAY = 5000L
 private const val MINT_STATUS_POLLING_DELAY = 1000L * 60L
-private const val BTC_DECIMALS = 8
 
-class RenBTCInteractor(
+class RenBtcInteractor(
     private val repository: RenBTCRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager
@@ -48,12 +45,17 @@ class RenBTCInteractor(
         return repository.findSession(signer)
     }
 
+    suspend fun clearSession() {
+        repository.clearSessionData()
+    }
+
     suspend fun generateSession(): LockAndMint.Session = withContext(Dispatchers.IO) {
         val signer = tokenKeyProvider.publicKey
 
         val existingSession = repository.findSession(signer)
         val networkConfig = getNetworkConfig()
         lockAndMint = if (existingSession == null || !existingSession.isValid) {
+            repository.clearSessionData()
             Timber.tag(TAG).d("No existing session found, building new one")
             LockAndMint.buildSession(networkConfig, signer.toPublicKey())
         } else {
@@ -64,9 +66,12 @@ class RenBTCInteractor(
         val gatewayAddress = lockAndMint.generateGatewayAddress()
         Timber.tag(TAG).d("Gateway address generated: $gatewayAddress")
 
+        val fee = lockAndMint.estimateTransactionFee()
+        Timber.tag(TAG).d("Fee calculated: $fee")
+
         val session = lockAndMint.session
         setStatus(RenVMStatus.Active(session.createdAt))
-        repository.clearSessionData()
+
         repository.saveSession(session)
         return@withContext session
     }
@@ -109,11 +114,6 @@ class RenBTCInteractor(
         setStatus(RenVMStatus.AwaitingForSignature)
         while (true) {
             val response = lockAndMint.lockAndMint(txHash)
-
-            val bigInteger = response?.valueOut?.amount?.toBigIntegerOrNull() ?: BigInteger.ZERO
-            val amount = bigInteger.fromLamports(BTC_DECIMALS)
-            setStatus(RenVMStatus.MinAmountReceived(amount.toString()))
-
             val status = response.txStatus
             handleStatus(status, secretKey)
             delay(MINT_STATUS_POLLING_DELAY)

@@ -20,7 +20,8 @@ import com.p2p.wallet.main.ui.receive.solana.ReceivePresenter
 import com.p2p.wallet.main.ui.receive.solana.ReceiveSolanaContract
 import com.p2p.wallet.main.ui.send.SendContract
 import com.p2p.wallet.main.ui.send.SendPresenter
-import com.p2p.wallet.renBTC.interactor.RenBTCInteractor
+import com.p2p.wallet.renBTC.interactor.BurnBtcInteractor
+import com.p2p.wallet.renBTC.interactor.RenBtcInteractor
 import com.p2p.wallet.renBTC.ui.main.RenBTCContract
 import com.p2p.wallet.renBTC.ui.main.RenBTCPresenter
 import com.p2p.wallet.renBTC.ui.statuses.ReceivingStatusesContract
@@ -49,7 +50,8 @@ object MainModule : InjectionModule {
             RenBTCRemoteRepository(api, get())
         } bind RenBTCRepository::class
 
-        single { RenBTCInteractor(get(), get(), get()) }
+        single { RenBtcInteractor(get(), get(), get()) }
+        single { BurnBtcInteractor(get(), get()) }
 
         factory { MainDatabaseRepository(get()) } bind MainLocalRepository::class
 
@@ -58,7 +60,7 @@ object MainModule : InjectionModule {
         factory { MainInteractor(get(), get(), get()) }
 
         factory { (token: Token?) -> ReceivePresenter(token, get(), get()) } bind ReceiveSolanaContract.Presenter::class
-        factory { (token: Token) -> SendPresenter(token, get(), get()) } bind SendContract.Presenter::class
+        factory { (token: Token) -> SendPresenter(token, get(), get(), get()) } bind SendContract.Presenter::class
         factory { (token: Token?) -> BuyPresenter(token, get(), get()) } bind BuyContract.Presenter::class
         factory { RenBTCPresenter(get(), get()) } bind RenBTCContract.Presenter::class
         factory { ReceivingStatusesPresenter(get()) } bind ReceivingStatusesContract.Presenter::class

@@ -159,6 +159,7 @@ class SwapPresenter(
     }
 
     override fun reverseTokens() {
+        if (sourceToken == null || destinationToken == null) return
 
         /* reversing tokens */
         val newSource = destinationToken!!
