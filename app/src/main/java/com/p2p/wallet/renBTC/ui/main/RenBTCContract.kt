@@ -9,15 +9,14 @@ import com.p2p.wallet.renBTC.model.RenVMStatus
 interface RenBTCContract {
 
     interface View : MvpView {
-        fun showActiveState(address: String, remaining: String, minTransaction: String?)
+        fun showActiveState(address: String, remaining: String, fee: String)
         fun updateTimer(remaining: String)
 
         fun showIdleState()
-        fun showLatestStatus(statuses: List<RenVMStatus>)
+        fun showLatestStatus(status: RenVMStatus?)
 
         fun renderQr(qrBitmap: Bitmap?)
         fun showLoading(isLoading: Boolean)
-        fun showQrLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

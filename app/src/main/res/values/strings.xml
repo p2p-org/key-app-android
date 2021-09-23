@@ -234,10 +234,11 @@
     <string name="receive_ren_risk_losing_deposits">you risk losing the deposits</string>
     <string name="receive_complete_transaction">I can complete this transaction within time</string>
     <string name="receive_show_address">Show address</string>
+    <string name="receive_make_transaction_confirm">Be sure you can complete this transaction</string>
     <string name="receive_renbtc">renBTC</string>
     <string name="receive_view_bitcoin_explorer">View in Bitcoin explorer</string>
     <string name="receive_session_info">• This address accepts only Bitcoin. You may lose assets by sending another coin.\n</string>
-    <string name="receive_session_min_transaction">• Minimum transaction amount of %s BTC.\n</string>
+    <string name="receive_session_min_transaction">• Minimum transaction amount of %s BTC.</string>
     <string name="receive_session_timer_info">• %s is the remaining time to safely send the assets.</string>
     <string name="receive_only_bitcoin">only Bitcoin</string>
     <string name="receive_btc_min_transaction">0.000112 BTC</string>
@@ -249,6 +250,12 @@
     <string name="receive_minting">Minting</string>
     <string name="receive_successfully_minted">Successfully minted %s renBTC!</string>
     <string name="receive_started_session">Created active session</string>
-    <string name="receive_min_transaction_amount">Minimum transaction amount received</string>
+    <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
     <string name="receive_no_statuses_yet">No statuses yet</string>
+    <string name="send_network_destination">Network destination</string>
+    <string name="send_select_network_destination">Select network destination</string>
+    <string name="send_solana_network">Solana</string>
+    <string name="send_sol_or_spl">SOL or SPL tokens</string>
+    <string name="send_bitcoin_network">Bitcoin</string>
+    <string name="send_native_bitcoin">Native bitcoin</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.FragmentResultListener
+import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
 import com.p2p.wallet.R
 import com.p2p.wallet.common.bottomsheet.ErrorBottomSheet
@@ -14,6 +15,7 @@ import com.p2p.wallet.common.bottomsheet.TextContainer
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSendBinding
 import com.p2p.wallet.main.model.CurrencyMode
+import com.p2p.wallet.main.model.NetworkType
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
@@ -75,6 +77,10 @@ class SendFragment :
 
             amountEditText.doAfterTextChanged {
                 presenter.setNewSourceAmount(it.toString())
+            }
+
+            networkView.setOnClickListener {
+                NetworkDestinationBottomSheet.show(childFragmentManager) { presenter.setNetworkDestination(it) }
             }
 
             clearImageView.setOnClickListener {
@@ -148,6 +154,20 @@ class SendFragment :
             info = info,
             onDismiss = { popBackStack() }
         )
+    }
+
+    override fun showNetworkDestination(type: NetworkType) {
+        binding.networkView.setBottomText(type.stringValue)
+    }
+
+    override fun showNetworkSelection() {
+        binding.networkView.isVisible = true
+        TransitionManager.beginDelayedTransition(binding.containerView)
+    }
+
+    override fun hideNetworkSelection() {
+        binding.networkView.isVisible = false
+        TransitionManager.beginDelayedTransition(binding.containerView)
     }
 
     override fun showAddressConfirmation() {

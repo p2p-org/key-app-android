@@ -13,7 +13,6 @@ sealed class RenVMStatus(
             is WaitingDepositConfirm -> R.string.receive_waiting_for_deposit
             is SubmittingToRenVM -> R.string.receive_submitting_to_renvm
             is AwaitingForSignature -> R.string.receive_awaiting_the_signature
-            is MinAmountReceived -> R.string.receive_min_transaction_amount
             is Minting -> R.string.receive_minting
             is SuccessfullyMinted -> R.string.receive_successfully_minted
         }
@@ -22,7 +21,6 @@ sealed class RenVMStatus(
     object WaitingDepositConfirm : RenVMStatus(System.currentTimeMillis())
     object SubmittingToRenVM : RenVMStatus(System.currentTimeMillis())
     object AwaitingForSignature : RenVMStatus(System.currentTimeMillis())
-    data class MinAmountReceived(val amount: String) : RenVMStatus(System.currentTimeMillis())
     object Minting : RenVMStatus(System.currentTimeMillis())
     data class SuccessfullyMinted(val amount: BigDecimal) : RenVMStatus(System.currentTimeMillis())
 }

@@ -25,6 +25,8 @@ data class SessionEntity(
     @ColumnInfo(name = COLUMN_GATEWAY_ADDRESS)
     val gatewayAddress: String,
 
+    @ColumnInfo(name = COLUMN_FEE)
+    val fee: String
 ) {
 
     companion object {
@@ -34,5 +36,6 @@ data class SessionEntity(
         const val COLUMN_CREATED_AT = "created_at"
         const val COLUMN_EXPIRY_TIME = "expiry_time"
         const val COLUMN_GATEWAY_ADDRESS = "gateway_address"
+        const val COLUMN_FEE = "fee"
     }
 }

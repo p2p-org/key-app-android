@@ -4,22 +4,22 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.CurrencyMode
+import com.p2p.wallet.main.model.NetworkType
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
+import com.p2p.wallet.renBTC.interactor.BurnBtcInteractor
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.isMoreThan
 import com.p2p.wallet.utils.isZero
 import com.p2p.wallet.utils.scaleLong
 import com.p2p.wallet.utils.scaleMedium
-import com.p2p.wallet.utils.scaleShort
 import com.p2p.wallet.utils.toBigDecimalOrZero
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.p2p.solanaj.core.PublicKey
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -28,11 +28,14 @@ import kotlin.properties.Delegates
 class SendPresenter(
     private val initialToken: Token?,
     private val mainInteractor: MainInteractor,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val burnBtcInteractor: BurnBtcInteractor
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
+        private const val VALID_ADDRESS_LENGTH = 24
         private const val DESTINATION_USD = "USD"
+        private const val SYMBOL_REN_BTC = "renBTC"
         private const val ROUNDING_VALUE = 6
     }
 
@@ -48,6 +51,8 @@ class SendPresenter(
     private var mode: CurrencyMode by Delegates.observable(CurrencyMode.Token("")) { _, _, newValue ->
         view?.showCurrencyMode(newValue)
     }
+
+    private var networkType: NetworkType = NetworkType.BITCOIN
 
     private var destinationAddress: String = ""
 
@@ -72,6 +77,12 @@ class SendPresenter(
     override fun setSourceToken(newToken: Token) {
         token = newToken
 
+        if (newToken.tokenSymbol == SYMBOL_REN_BTC) {
+            view?.showNetworkSelection()
+        } else {
+            view?.hideNetworkSelection()
+        }
+
         calculateData(newToken)
     }
 
@@ -82,9 +93,37 @@ class SendPresenter(
         calculateData(token)
     }
 
+    override fun setNetworkDestination(networkType: NetworkType) {
+        this.networkType = networkType
+        view?.showNetworkDestination(networkType)
+    }
+
     override fun send() {
         val token = token ?: throw IllegalStateException("Token cannot be null!")
 
+        when (networkType) {
+            NetworkType.SOLANA -> sendInSolana(token)
+            NetworkType.BITCOIN -> sendInBitcoin(token)
+        }
+    }
+
+    private fun sendInBitcoin(token: Token) {
+        launch {
+            try {
+                view?.showLoading(true)
+                val amount = tokenAmount.toLamports(token.decimals)
+                val transactionId = burnBtcInteractor.submitBurnTransaction(destinationAddress, amount)
+                handleResult(TransactionResult.Success(transactionId))
+            } catch (e: Throwable) {
+                Timber.e(e, "Error sending token")
+                view?.showErrorMessage(e)
+            } finally {
+                view?.showLoading(false)
+            }
+        }
+    }
+
+    private fun sendInSolana(token: Token) {
         launch {
             try {
                 view?.showLoading(true)
@@ -132,7 +171,16 @@ class SendPresenter(
     override fun setNewTargetAddress(address: String) {
         this.destinationAddress = address
 
-        if (!isAddressValid(address.trim())) return
+        if (address.trim().length < VALID_ADDRESS_LENGTH) {
+            view?.showButtonText(R.string.send_enter_address)
+            view?.showButtonEnabled(false)
+            return
+        }
+
+        if (!isAddressValid(address)) {
+            view?.showWrongWalletError()
+            return
+        }
 
         checkDestinationBalance(address)
         calculateData(token!!)
@@ -184,19 +232,21 @@ class SendPresenter(
 
     private fun calculateData(token: Token) {
         if (calculationJob?.isActive == true) return
+
         calculationJob = launch {
             when (mode) {
                 is CurrencyMode.Token -> {
                     tokenAmount = inputAmount.toBigDecimalOrZero()
                     usdAmount = tokenAmount.multiply(token.usdRate)
 
-                    val usdAround = tokenAmount.times(token.usdRate.scaleShort())
+                    val usdAround = tokenAmount.times(token.usdRate).scaleMedium()
+                    val total = token.total.scaleLong()
                     view?.showUsdAroundValue(usdAround)
-                    view?.showAvailableValue(token.total, token.tokenSymbol)
+                    view?.showAvailableValue(total, token.tokenSymbol)
 
                     updateButtonText(token)
 
-                    setButtonEnabled(tokenAmount, token.total)
+                    setButtonEnabled(tokenAmount, total)
                 }
                 is CurrencyMode.Usd -> {
                     usdAmount = inputAmount.toBigDecimalOrZero()
@@ -273,16 +323,13 @@ class SendPresenter(
     }
 
     private fun isAddressValid(address: String): Boolean {
-        try {
-            if (address.length != PublicKey.PUBLIC_KEY_LENGTH) return false
-
+        return try {
             /* checking public key validation, in case of error it throws exception */
             address.toPublicKey()
-            return true
+            true
         } catch (e: Throwable) {
             Timber.e(e, "Invalid address format $address")
-            view?.showWrongWalletError()
-            return false
+            false
         }
     }
 }

@@ -15,6 +15,7 @@ import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.cutMiddle
 import com.p2p.wallet.utils.setTextBold
 import com.p2p.wallet.utils.shareText
+import com.p2p.wallet.utils.showUrlInCustomTabs
 import com.p2p.wallet.utils.toast
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
@@ -38,6 +39,8 @@ class RenBTCFragment :
         with(binding) {
             completeSwitch.setOnCheckedChangeListener { _, isChecked ->
                 showButton.isEnabled = isChecked
+                val text = if (isChecked) R.string.receive_show_address else R.string.receive_make_transaction_confirm
+                showButton.setText(text)
             }
 
             showButton.setOnClickListener {
@@ -52,8 +55,8 @@ class RenBTCFragment :
         presenter.checkActiveSession(requireContext())
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
+        super.onDestroyView()
         presenter.cancelTimer()
     }
 
@@ -61,8 +64,9 @@ class RenBTCFragment :
         binding.qrImageView.setImageBitmap(qrBitmap)
     }
 
-    override fun showActiveState(address: String, remaining: String, minTransaction: String?) {
+    override fun showActiveState(address: String, remaining: String, fee: String) {
         with(binding) {
+            attentionImageView.isVisible = false
             idleState.isVisible = false
             activeState.isVisible = true
 
@@ -72,18 +76,29 @@ class RenBTCFragment :
                 toast(R.string.common_copied)
             }
             shareImageView.setOnClickListener { requireContext().shareText(address) }
+            viewButton.setOnClickListener {
+                val url = getString(R.string.bitcoinExplorer, address)
+                showUrlInCustomTabs(url)
+            }
 
-            setAttentionText(minTransaction)
+            val attentionText = buildSpannedString {
+                val onlyBitcoin = getString(R.string.receive_only_bitcoin)
+                val text = getString(R.string.receive_session_info).setTextBold(onlyBitcoin)
+                append(text)
+
+                val minTransactionText = getString(R.string.receive_session_min_transaction, fee)
+                append(minTransactionText.setTextBold(fee))
+            }
+
+            attentionTextView.text = attentionText
         }
     }
 
-    override fun showLatestStatus(statuses: List<RenVMStatus>) {
-        val status = statuses.lastOrNull()
+    override fun showLatestStatus(status: RenVMStatus?) {
         if (status == null) {
             binding.statusView.setBottomText(R.string.receive_no_statuses_yet)
         } else {
             binding.statusView.setBottomText(getString(status.getStringResId()))
-            if (status is RenVMStatus.MinAmountReceived) setAttentionText(status.amount)
         }
     }
 
@@ -107,29 +122,7 @@ class RenBTCFragment :
         binding.timerTextView.isVisible = true
     }
 
-    override fun showQrLoading(isLoading: Boolean) {
-        binding.progressBar.isVisible = isLoading
-    }
-
     override fun showLoading(isLoading: Boolean) {
-        binding.completeSwitch.isEnabled = !isLoading
         binding.progressView.isVisible = isLoading
-    }
-
-    private fun setAttentionText(minTransaction: String?) {
-        binding.attentionImageView.isVisible = false
-
-        val attentionText = buildSpannedString {
-            val onlyBitcoin = getString(R.string.receive_only_bitcoin)
-            val text = getString(R.string.receive_session_info).setTextBold(onlyBitcoin)
-            append(text)
-
-            if (minTransaction.isNullOrEmpty()) return@buildSpannedString
-            val minTransactionText = getString(R.string.receive_session_min_transaction, minTransaction)
-
-            append(minTransactionText.setTextBold(minTransaction))
-        }
-
-        binding.attentionTextView.text = attentionText
     }
 }

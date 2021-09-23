@@ -1,12 +1,12 @@
 package com.p2p.wallet.renBTC.ui.statuses
 
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.renBTC.interactor.RenBTCInteractor
+import com.p2p.wallet.renBTC.interactor.RenBtcInteractor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ReceivingStatusesPresenter(
-    private val interactor: RenBTCInteractor
+    private val interactor: RenBtcInteractor
 ) : BasePresenter<ReceivingStatusesContract.View>(),
     ReceivingStatusesContract.Presenter {
 
