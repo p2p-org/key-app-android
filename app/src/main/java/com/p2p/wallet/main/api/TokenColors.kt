@@ -32,6 +32,10 @@ object TokenColors {
             R.color.chartBTC
         ),
         TokenColor(
+            "renBTC",
+            R.color.chartBTC
+        ),
+        TokenColor(
             "ETH",
             R.color.chartETH
         ),

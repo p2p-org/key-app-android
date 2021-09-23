@@ -12,7 +12,6 @@ import com.p2p.wallet.user.local.TokenListResponse
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import org.p2p.solanaj.core.PublicKey
 import java.math.BigDecimal
 
 private const val CHUNKED_SIZE = 50
@@ -55,7 +54,7 @@ class UserInteractor(
         mainLocalRepository.updateTokens(newTokens)
     }
 
-    suspend fun getBalance(address: PublicKey) = rpcRepository.getBalance(address)
+    suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
 
     fun getUserTokensFlow(): Flow<List<Token>> =
         mainLocalRepository.getTokensFlow()
