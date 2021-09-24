@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.repository.AuthRemoteRepository
 import com.p2p.wallet.infrastructure.db.WalletDatabase
+import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.infrastructure.security.SecureStorage
 import com.p2p.wallet.main.api.CompareApi
@@ -80,11 +81,13 @@ class DataInitializer {
             "${context.packageName}.prefs", Context.MODE_PRIVATE
         )
 
+        val environmentManager: EnvironmentManager = mockk(relaxed = true)
+
         rpcRepository = RpcRemoteRepository(
             serumApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
             mainnetApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
             testnetApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
-            environmentManager = mockk(),
+            environmentManager = environmentManager,
             onlyMainnet = true
         )
 
@@ -103,7 +106,8 @@ class DataInitializer {
                 .create(CompareApi::class.java),
             tokenProvider = tokenKeyProvider,
             userLocalRepository = userLocalRepository,
-            rpcRepository = rpcRepository
+            rpcRepository = rpcRepository,
+            environmentManager = environmentManager
         )
 
         database = Room.inMemoryDatabaseBuilder(context, WalletDatabase::class.java).build()
