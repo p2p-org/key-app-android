@@ -133,8 +133,8 @@ class RpcRemoteRepository(
         }
     }
 
-    override suspend fun getBalance(account: PublicKey): Long {
-        val params = listOf(account.toString())
+    override suspend fun getBalance(account: String): Long {
+        val params = listOf(account)
         val rpcRequest = RpcRequest("getBalance", params)
         return rpcApi.getBalance(rpcRequest).result.value
     }

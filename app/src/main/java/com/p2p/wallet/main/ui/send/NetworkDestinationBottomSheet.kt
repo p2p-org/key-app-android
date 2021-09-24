@@ -5,15 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
-import com.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import com.p2p.wallet.databinding.DialogNetworkDestinationBinding
 import com.p2p.wallet.main.model.NetworkType
 import com.p2p.wallet.utils.viewbinding.viewBinding
 
 class NetworkDestinationBottomSheet(
     private val onNetworkSelected: (NetworkType) -> Unit
-) : NonDraggableBottomSheetDialogFragment() {
+) : BottomSheetDialogFragment() {
 
     companion object {
         fun show(fm: FragmentManager, onNetworkSelected: (NetworkType) -> Unit) =
@@ -29,10 +29,12 @@ class NetworkDestinationBottomSheet(
         super.onViewCreated(view, savedInstanceState)
         binding.solanaView.setOnClickListener {
             onNetworkSelected.invoke(NetworkType.SOLANA)
+            dismissAllowingStateLoss()
         }
 
         binding.bitcoinView.setOnClickListener {
             onNetworkSelected.invoke(NetworkType.BITCOIN)
+            dismissAllowingStateLoss()
         }
     }
 

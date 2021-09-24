@@ -113,6 +113,7 @@ class SendPresenter(
                 view?.showLoading(true)
                 val amount = tokenAmount.toLamports(token.decimals)
                 val transactionId = burnBtcInteractor.submitBurnTransaction(destinationAddress, amount)
+                Timber.d("Bitcoin successfully burned and released! $transactionId")
                 handleResult(TransactionResult.Success(transactionId))
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
@@ -171,14 +172,9 @@ class SendPresenter(
     override fun setNewTargetAddress(address: String) {
         this.destinationAddress = address
 
-        if (address.trim().length < VALID_ADDRESS_LENGTH) {
+        if (!isAddressValid(address)) {
             view?.showButtonText(R.string.send_enter_address)
             view?.showButtonEnabled(false)
-            return
-        }
-
-        if (!isAddressValid(address)) {
-            view?.showWrongWalletError()
             return
         }
 
@@ -278,7 +274,7 @@ class SendPresenter(
 
         checkBalanceJob = launch {
             try {
-                val balance = userInteractor.getBalance(address.trim().toPublicKey())
+                val balance = userInteractor.getBalance(address.trim())
                 shouldAskConfirmation = if (balance == 0L) {
                     view?.showAddressConfirmation()
                     true
@@ -288,7 +284,7 @@ class SendPresenter(
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading destination balance")
-                view?.showErrorMessage(e)
+                view?.showAddressConfirmation()
             }
         }
     }
@@ -322,14 +318,6 @@ class SendPresenter(
         view?.showButtonEnabled(isEnabled && isValidAddress && !shouldAskConfirmation)
     }
 
-    private fun isAddressValid(address: String): Boolean {
-        return try {
-            /* checking public key validation, in case of error it throws exception */
-            address.toPublicKey()
-            true
-        } catch (e: Throwable) {
-            Timber.e(e, "Invalid address format $address")
-            false
-        }
-    }
+    private fun isAddressValid(address: String): Boolean =
+        address.trim().length >= VALID_ADDRESS_LENGTH
 }

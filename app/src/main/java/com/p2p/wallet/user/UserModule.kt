@@ -44,7 +44,7 @@ object UserModule : InjectionModule {
         }
 
         factory {
-            UserRepositoryImpl(get(), get(), get(), get())
+            UserRepositoryImpl(get(), get(), get(), get(), get())
         } bind UserRepository::class
 
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }
