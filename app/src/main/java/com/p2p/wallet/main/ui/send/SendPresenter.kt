@@ -52,7 +52,7 @@ class SendPresenter(
         view?.showCurrencyMode(newValue)
     }
 
-    private var networkType: NetworkType = NetworkType.BITCOIN
+    private var networkType: NetworkType = NetworkType.SOLANA
 
     private var destinationAddress: String = ""
 
@@ -81,6 +81,7 @@ class SendPresenter(
             view?.showNetworkSelection()
         } else {
             view?.hideNetworkSelection()
+            setNetworkDestination(NetworkType.SOLANA)
         }
 
         calculateData(newToken)

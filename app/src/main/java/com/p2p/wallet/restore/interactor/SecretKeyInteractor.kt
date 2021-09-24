@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.repository.AuthRepository
-import org.p2p.solanaj.utils.crypto.Base58Utils
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.restore.model.DerivableAccount
@@ -15,6 +14,7 @@ import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.mnemoticgenerator.English
 import com.p2p.wallet.utils.toPowerValue
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.solanaj.utils.crypto.Base58Utils
 import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
@@ -51,14 +51,6 @@ class SecretKeyInteractor(
 
     suspend fun generateSecretKeys(): List<String> =
         authRepository.generatePhrase()
-
-    fun getSecretKeys(): List<String> =
-        sharedPreferences.getString(KEY_PHRASES, "").orEmpty().split(",")
-
-    fun getCurrentDerivationPath(): DerivationPath {
-        val path = sharedPreferences.getString(KEY_DERIVATION_PATH, null) ?: DerivationPath.BIP44.stringValue
-        return DerivationPath.parse(path)
-    }
 
     fun verifySeedPhrase(secretKeys: List<SecretKey>): SeedPhraseResult {
         val words = English.INSTANCE.words

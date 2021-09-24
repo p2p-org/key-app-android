@@ -83,10 +83,11 @@ class DataInitializer {
 
         val environmentManager: EnvironmentManager = mockk(relaxed = true)
 
+        val serumApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java)
         rpcRepository = RpcRemoteRepository(
-            serumApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
-            mainnetApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
-            testnetApi = RetrofitBuilder.getRetrofit().create(RpcApi::class.java),
+            serumApi = serumApi,
+            mainnetApi = serumApi,
+            testnetApi = serumApi,
             environmentManager = environmentManager,
             onlyMainnet = true
         )

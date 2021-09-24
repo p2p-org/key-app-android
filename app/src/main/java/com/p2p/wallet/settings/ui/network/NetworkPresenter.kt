@@ -4,7 +4,6 @@ import android.content.Context
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.main.repository.MainLocalRepository
-import com.p2p.wallet.main.repository.RenBTCRepository
 import com.p2p.wallet.renBTC.service.RenVMService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -13,7 +12,6 @@ import timber.log.Timber
 
 class NetworkPresenter(
     private val context: Context,
-    private val renBTCRepository: RenBTCRepository,
     private val mainLocalRepository: MainLocalRepository,
     private val environmentManager: EnvironmentManager
 ) : BasePresenter<NetworkContract.View>(), NetworkContract.Presenter {
@@ -23,7 +21,6 @@ class NetworkPresenter(
         launch {
             try {
                 environmentManager.saveEnvironment(environment)
-                renBTCRepository.clearSessionData()
                 mainLocalRepository.clear()
                 RenVMService.stopService(context)
                 delay(250L)
