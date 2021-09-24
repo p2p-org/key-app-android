@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
-import com.p2p.wallet.main.api.RenBTCApi
+import com.p2p.wallet.renBTC.api.RenBTCApi
 import com.p2p.wallet.main.interactor.MainInteractor
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.repository.MainDatabaseRepository

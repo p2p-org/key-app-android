@@ -1,4 +1,4 @@
-package com.p2p.wallet.main.api
+package com.p2p.wallet.renBTC.api
 
 import retrofit2.http.GET
 import retrofit2.http.Path
