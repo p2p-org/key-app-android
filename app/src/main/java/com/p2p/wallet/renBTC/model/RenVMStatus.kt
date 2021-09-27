@@ -1,5 +1,6 @@
 package com.p2p.wallet.renBTC.model
 
+import android.content.Context
 import com.p2p.wallet.R
 import java.math.BigDecimal
 
@@ -7,14 +8,14 @@ sealed class RenVMStatus(
     open val date: Long
 ) {
 
-    fun getStringResId(): Int =
+    fun getStringResId(context: Context): String =
         when (this) {
-            is Active -> R.string.receive_started_session
-            is WaitingDepositConfirm -> R.string.receive_waiting_for_deposit
-            is SubmittingToRenVM -> R.string.receive_submitting_to_renvm
-            is AwaitingForSignature -> R.string.receive_awaiting_the_signature
-            is Minting -> R.string.receive_minting
-            is SuccessfullyMinted -> R.string.receive_successfully_minted
+            is Active -> context.getString(R.string.receive_started_session)
+            is WaitingDepositConfirm -> context.getString(R.string.receive_waiting_for_deposit)
+            is SubmittingToRenVM -> context.getString(R.string.receive_submitting_to_renvm)
+            is AwaitingForSignature -> context.getString(R.string.receive_awaiting_the_signature)
+            is Minting -> context.getString(R.string.receive_minting)
+            is SuccessfullyMinted -> context.getString(R.string.receive_successfully_minted, this.amount)
         }
 
     data class Active(override val date: Long) : RenVMStatus(date)
@@ -22,5 +23,7 @@ sealed class RenVMStatus(
     object SubmittingToRenVM : RenVMStatus(System.currentTimeMillis())
     object AwaitingForSignature : RenVMStatus(System.currentTimeMillis())
     object Minting : RenVMStatus(System.currentTimeMillis())
-    data class SuccessfullyMinted(val amount: BigDecimal) : RenVMStatus(System.currentTimeMillis())
+    data class SuccessfullyMinted(val amount: BigDecimal) : RenVMStatus(System.currentTimeMillis()) {
+        fun getMintedData(): String = "+ $amount renBTC"
+    }
 }

@@ -2,6 +2,7 @@ package com.p2p.wallet.renBTC.ui.statuses
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import com.p2p.wallet.common.recycler.adapter.BaseDiffAdapter
@@ -37,7 +38,17 @@ class ReceiveStatusesAdapter : BaseDiffAdapter<RenVMStatus>() {
         )
 
         override fun onBind(item: RenVMStatus) {
-            binding.titleTextView.setText(item.getStringResId())
+            when (item) {
+                is RenVMStatus.SuccessfullyMinted -> {
+                    binding.amountTextView.isVisible = true
+                    binding.amountTextView.text = item.getMintedData()
+                }
+                else -> {
+                    binding.amountTextView.isVisible = false
+                }
+            }
+
+            binding.titleTextView.text = item.getStringResId(itemView.context)
             binding.subTitleTextView.text = Date(item.date).toString()
         }
     }

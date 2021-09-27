@@ -13,6 +13,7 @@ import org.p2p.solanaj.utils.Utils;
 import org.p2p.solanaj.utils.crypto.Hex;
 
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
 public class LockAndMint {
     private NetworkConfig networkConfig;
@@ -163,8 +164,10 @@ public class LockAndMint {
         }
 
         public Boolean isValid() {
+            long dayInMillis = TimeUnit.DAYS.toMillis(1);
             long currentTime = System.currentTimeMillis();
-            return currentTime < expiryTime;
+            /* We should subtract one day from expiry time to make it valid  */
+            return currentTime < (expiryTime - dayInMillis);
         }
     }
 

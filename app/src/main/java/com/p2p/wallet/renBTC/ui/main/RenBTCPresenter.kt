@@ -19,10 +19,10 @@ import java.math.BigDecimal
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
+const val BTC_DECIMALS = 8
 private const val DELAY_IN_MILLIS = 200L
 private const val ONE_SECOND_IN_MILLIS = 1000L
 private const val THREE_SECONDS = 3500L
-private const val BTC_DECIMALS = 8
 
 class RenBTCPresenter(
     private val interactor: RenBtcInteractor,
@@ -49,19 +49,6 @@ class RenBTCPresenter(
         }
     }
 
-    private fun handleSession(session: LockAndMint.Session?) {
-        if (session != null && session.isValid) {
-            val remaining = session.expiryTime - System.currentTimeMillis()
-            val fee = session.fee.fromLamports(BTC_DECIMALS).multiply(BigDecimal(2)).scaleMedium()
-            view?.showActiveState(session.gatewayAddress, remaining.toDateString(), fee.toString())
-
-            startTimer(remaining)
-            generateQrCode(session.gatewayAddress)
-        } else {
-            view?.showIdleState()
-        }
-    }
-
     override fun startNewSession(context: Context) {
         launch {
             view?.showLoading(true)
@@ -79,6 +66,27 @@ class RenBTCPresenter(
             view?.showLoading(false)
         }
     }
+
+    override fun cancelTimer() {
+        sessionTimer?.cancel()
+        sessionTimer = null
+    }
+
+    private fun handleSession(session: LockAndMint.Session?) {
+        if (session != null && session.isValid) {
+            val remaining = session.expiryTime - System.currentTimeMillis()
+            val fee = calculateFee(session)
+            view?.showActiveState(session.gatewayAddress, remaining.toDateString(), fee.toString())
+
+            startTimer(remaining)
+            generateQrCode(session.gatewayAddress)
+        } else {
+            view?.showIdleState()
+        }
+    }
+
+    private fun calculateFee(session: LockAndMint.Session) =
+        session.fee.fromLamports(BTC_DECIMALS).multiply(BigDecimal(2)).scaleMedium()
 
     private fun generateQrCode(address: String) {
         if (qrJob?.isActive == true) return
@@ -114,11 +122,6 @@ class RenBTCPresenter(
         }
 
         sessionTimer!!.start()
-    }
-
-    override fun cancelTimer() {
-        sessionTimer?.cancel()
-        sessionTimer = null
     }
 
     private fun Long.toDateString(): String {

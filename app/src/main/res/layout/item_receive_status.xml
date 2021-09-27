@@ -41,6 +41,6 @@
         android:textColor="@color/colorGreen"
         android:visibility="gone"
         tools:text="3/3"
-        tools:visibility="gone" />
+        tools:visibility="visible" />
 
 </LinearLayout>
