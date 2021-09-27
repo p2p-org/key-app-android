@@ -6,7 +6,7 @@ import com.p2p.wallet.common.mvp.MvpView
 interface ReservingUsernameContract {
 
     interface View : MvpView {
-        fun navigateToSecurityKey()
+        fun navigateToPinCode()
     }
 
     interface Presenter : MvpPresenter<View> {
