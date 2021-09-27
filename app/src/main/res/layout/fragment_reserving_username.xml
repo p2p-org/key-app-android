@@ -65,7 +65,56 @@
             android:contentDescription="@string/auth_you_can_receive"
             app:layout_constraintEnd_toStartOf="@+id/tvMainText"
             app:layout_constraintTop_toTopOf="@+id/tvMainText"
-            app:srcCompat="@drawable/ic_lamp" />
+            app:srcCompat="@drawable/ic_lamp"
+            tools:ignore="ImageContrastCheck" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_gray_secondary_rounded_small"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="?colorMessagePrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/viewBg"
+            tools:text="username" />
+
+        <TextView
+            android:id="@+id/tvUseOnly"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:text="@string/auth_use_any_latin"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etName" />
+
+        <TextView
+            android:id="@+id/tvYouCanSkip"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="44dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:text="@string/auth_you_can_skip"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvUseOnly" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnEnterUserName"
