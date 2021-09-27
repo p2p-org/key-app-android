@@ -5,7 +5,11 @@ import java.util.List;
 
 public class SwapDetails extends TransactionDetails {
 
-    public static List<String> KNOWN_SWAP_PROGRAM_IDS = Arrays.asList("DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1");
+    public static List<String> KNOWN_SWAP_PROGRAM_IDS = Arrays.asList(
+            "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1",
+            "9qvG1zUp8xF1Bi4m6UdRNby1BAAuaDrUxSpv4CmRRMjL",
+            "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8"
+    );
 
     private final String mintA;
     private final String mintB;
