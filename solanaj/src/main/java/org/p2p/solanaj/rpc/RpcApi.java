@@ -18,6 +18,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import kotlin.Deprecated;
+
+@Deprecated(
+        message = "Remove [RpcClient] and [RpcApi], replace with rpcrepository, will be replaced with RpcRepository"
+)
 public class RpcApi {
     private RpcClient client;
 

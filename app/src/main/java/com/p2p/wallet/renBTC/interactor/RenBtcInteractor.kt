@@ -6,6 +6,8 @@ import com.p2p.wallet.main.model.RenBTCPayment
 import com.p2p.wallet.main.repository.RenBTCRepository
 import com.p2p.wallet.renBTC.model.MintStatus
 import com.p2p.wallet.renBTC.model.RenVMStatus
+import com.p2p.wallet.renBTC.ui.main.BTC_DECIMALS
+import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -21,7 +23,7 @@ import java.math.BigDecimal
 
 private const val TAG = "renBTC"
 private const val SESSION_POLLING_DELAY = 5000L
-private const val MINT_STATUS_POLLING_DELAY = 1000L * 60L
+private const val ONE_MINUTE_DELAY = 1000L * 60L
 
 class RenBtcInteractor(
     private val repository: RenBTCRepository,
@@ -115,12 +117,13 @@ class RenBtcInteractor(
         while (true) {
             val response = lockAndMint.lockAndMint(txHash)
             val status = response.txStatus
-            handleStatus(status, secretKey)
-            delay(MINT_STATUS_POLLING_DELAY)
+            val amount = response.tx.`in`.valueIn.amount.toBigInteger().fromLamports(BTC_DECIMALS)
+            handleStatus(status, amount, secretKey)
+            delay(ONE_MINUTE_DELAY)
         }
     }
 
-    private fun handleStatus(status: String, secretKey: ByteArray) {
+    private fun handleStatus(status: String, amount: BigDecimal, secretKey: ByteArray) {
         Timber.tag(TAG).d("Current mint status: $status")
 
         when (MintStatus.parse(status)) {
@@ -128,16 +131,16 @@ class RenBtcInteractor(
                 setStatus(RenVMStatus.Minting)
             }
             MintStatus.DONE -> {
-                setStatus(RenVMStatus.SuccessfullyMinted(BigDecimal.ONE))
                 val signature = lockAndMint.mint(Account(secretKey))
                 Timber.tag(TAG).d("Mint signature received: $signature")
+                setStatus(RenVMStatus.SuccessfullyMinted(amount))
             }
         }
     }
 
     private fun setStatus(status: RenVMStatus) {
         state.value = state.value.toMutableList().also { statuses ->
-            if (!statuses.contains(status)) statuses.add(status)
+            if (statuses.lastOrNull() != status) statuses.add(status)
         }
     }
 

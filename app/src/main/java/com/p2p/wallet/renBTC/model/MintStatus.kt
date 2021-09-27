@@ -8,7 +8,7 @@ enum class MintStatus(val stringValue: String) {
         fun parse(status: String): MintStatus = when (status) {
             DONE.stringValue -> DONE
             CONFIRMED.stringValue -> CONFIRMED
-            else -> CONFIRMED // add new status
+            else -> CONFIRMED // todo: add other statuses
         }
     }
 }

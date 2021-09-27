@@ -25,8 +25,7 @@ class RenBTCFragment :
     RenBTCContract.View {
 
     companion object {
-        fun create() =
-            RenBTCFragment()
+        fun create() = RenBTCFragment()
     }
 
     override val presenter: RenBTCContract.Presenter by inject()
@@ -97,9 +96,11 @@ class RenBTCFragment :
     override fun showLatestStatus(status: RenVMStatus?) {
         if (status == null) {
             binding.statusView.setBottomText(R.string.receive_no_statuses_yet)
-        } else {
-            binding.statusView.setBottomText(getString(status.getStringResId()))
+            return
         }
+
+        val text = status.getStringResId(requireContext())
+        binding.statusView.setBottomText(text)
     }
 
     override fun showIdleState() {
