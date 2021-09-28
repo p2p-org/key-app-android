@@ -130,6 +130,8 @@ class RenBtcInteractor(
                 setStatus(RenVMStatus.SubmittingToRenVM)
             }
             MintStatus.DONE -> {
+                if (!isValidStatus()) return
+
                 setStatus(RenVMStatus.Minting)
                 val signature = lockAndMint.mint(Account(secretKey))
                 Timber.tag(TAG).d("Mint signature received: $signature")
@@ -140,9 +142,22 @@ class RenBtcInteractor(
         }
     }
 
+    private fun isValidStatus(): Boolean {
+        val latestStatus = state.value.lastOrNull()
+        if (latestStatus is RenVMStatus.Minting || latestStatus is RenVMStatus.SuccessfullyMinted) return false
+
+        return true
+    }
+
     private fun setStatus(status: RenVMStatus) {
         state.value = state.value.toMutableList().also { statuses ->
-            if (statuses.lastOrNull() != status) statuses.add(status)
+            val latestStatus = statuses.lastOrNull() ?: return@also
+            when {
+                latestStatus is RenVMStatus.SuccessfullyMinted ->
+                    if (status !is RenVMStatus.Minting) statuses.add(status)
+                latestStatus != status ->
+                    statuses.add(status)
+            }
         }
     }
 

@@ -16,7 +16,7 @@ sealed class RenVMStatus(
             is SubmittingToRenVM -> context.getString(R.string.receive_submitting_to_renvm)
             is AwaitingForSignature -> context.getString(R.string.receive_awaiting_the_signature)
             is Minting -> context.getString(R.string.receive_minting)
-            is SuccessfullyMinted -> context.getString(R.string.receive_successfully_minted, this.amount)
+            is SuccessfullyMinted -> context.getString(R.string.receive_successfully_minted, this.amount.scaleMedium())
         }
 
     data class Active(override val date: Long) : RenVMStatus(date)

@@ -16,8 +16,8 @@ interface SendContract {
         fun setAvailableTextColor(@AttrRes availableColor: Int)
         fun showSourceToken(token: Token)
         fun showSuccess(info: TransactionInfo)
+        fun showFee(fee: String?)
         fun showWrongWalletError()
-        fun navigateToTokenSelection(tokens: List<Token>)
         fun showCurrencyMode(mode: CurrencyMode)
         fun showButtonText(@StringRes textRes: Int)
         fun showInputValue(value: BigDecimal)
@@ -32,6 +32,7 @@ interface SendContract {
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelection()
         fun hideNetworkSelection()
+        fun navigateToTokenSelection(tokens: List<Token>)
     }
 
     interface Presenter : MvpPresenter<View> {

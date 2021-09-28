@@ -60,6 +60,7 @@ class SendPresenter(
 
     private var calculationJob: Job? = null
     private var checkBalanceJob: Job? = null
+    private var feeJob: Job? = null
 
     override fun loadInitialData() {
         launch {
@@ -85,6 +86,7 @@ class SendPresenter(
             setNetworkDestination(NetworkType.SOLANA)
         }
 
+        calculateFee()
         calculateData(newToken)
     }
 
@@ -98,6 +100,7 @@ class SendPresenter(
     override fun setNetworkDestination(networkType: NetworkType) {
         this.networkType = networkType
         view?.showNetworkDestination(networkType)
+        calculateFee()
     }
 
     override fun send() {
@@ -273,6 +276,20 @@ class SendPresenter(
                     setButtonEnabled(usdAmount, token.totalInUsd)
                 }
             }
+        }
+    }
+
+    private fun calculateFee() {
+        if (networkType == NetworkType.SOLANA) {
+            view?.showFee(null)
+            return
+        }
+
+        if (feeJob?.isActive == true) return
+
+        launch {
+            val fee = burnBtcInteractor.getBurnFee()
+            view?.showFee(fee.toString())
         }
     }
 
