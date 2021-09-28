@@ -43,6 +43,10 @@ data class Token constructor(
         get() = tokenSymbol == USDC_SYMBOL
 
     @IgnoredOnParcel
+    val isRenBTC: Boolean
+        get() = tokenSymbol == REN_BTC_SYMBOL
+
+    @IgnoredOnParcel
     val totalInUsd: BigDecimal
         get() = total.multiply(usdRate).scaleLong()
 
@@ -73,6 +77,7 @@ data class Token constructor(
     fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
 
     companion object {
+        const val REN_BTC_SYMBOL = "renBTC"
         const val USD_SYMBOL = "USD"
         const val SOL_SYMBOL = "SOL"
         const val USDC_SYMBOL = "USDC"

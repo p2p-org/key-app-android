@@ -95,10 +95,6 @@ class SendFragment :
                 addFragment(target)
             }
 
-            feeView.setOnClickListener {
-                FeeInfoBottomSheet.show(childFragmentManager)
-            }
-
             sourceImageView.setOnClickListener {
                 presenter.loadTokensForSelection()
             }
@@ -188,6 +184,16 @@ class SendFragment :
         }
     }
 
+    override fun showFee(fee: String?) {
+        if (fee.isNullOrEmpty()) {
+            binding.feeView.setBottomText(R.string.send_free_transaction)
+            binding.feeView.setOnClickListener { FeeInfoBottomSheet.show(childFragmentManager) }
+        } else {
+            binding.feeView.setBottomText(fee)
+            binding.feeView.setOnClickListener(null)
+        }
+    }
+
     override fun showInputValue(value: BigDecimal) {
         val textValue = "$value"
         binding.amountEditText.setText(textValue)
@@ -227,7 +233,6 @@ class SendFragment :
         binding.aroundTextView.text = "≈ $tokenValue $symbol"
     }
 
-    @SuppressLint("SetTextI18n")
     override fun showUsdAroundValue(usdValue: BigDecimal) {
         binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue)
     }

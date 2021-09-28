@@ -51,7 +51,7 @@ object MainModule : InjectionModule {
         } bind RenBTCRepository::class
 
         single { RenBtcInteractor(get(), get(), get()) }
-        single { BurnBtcInteractor(get(), get()) }
+        single { BurnBtcInteractor(get(), get(), get()) }
 
         factory { MainDatabaseRepository(get()) } bind MainLocalRepository::class
 
