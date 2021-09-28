@@ -6,7 +6,7 @@ import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.renBTC.api.RenBTCApi
-import com.p2p.wallet.main.interactor.MainInteractor
+import com.p2p.wallet.main.interactor.SendInteractor
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.repository.MainDatabaseRepository
 import com.p2p.wallet.main.repository.MainLocalRepository
@@ -57,7 +57,7 @@ object MainModule : InjectionModule {
 
         /* Cached data exists, therefore creating singleton */
         single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
-        factory { MainInteractor(get(), get(), get()) }
+        factory { SendInteractor(get(), get(), get(), get()) }
 
         factory { (token: Token?) -> ReceivePresenter(token, get(), get()) } bind ReceiveSolanaContract.Presenter::class
         factory { (token: Token) -> SendPresenter(token, get(), get(), get()) } bind SendContract.Presenter::class
