@@ -8,7 +8,6 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import android.widget.Toast
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
@@ -18,7 +17,6 @@ import com.p2p.wallet.utils.edgetoedge.Edge
 import com.p2p.wallet.utils.edgetoedge.edgeToEdge
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
-import com.p2p.wallet.utils.toast
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
@@ -62,7 +60,6 @@ class ReservingUsernameFragment :
             tvYouCanSkip.text = writeFeedbackText
             tvYouCanSkip.movementMethod = LinkMovementMethod.getInstance()
             tvYouCanSkip.highlightColor = Color.TRANSPARENT
-
         }
     }
 
