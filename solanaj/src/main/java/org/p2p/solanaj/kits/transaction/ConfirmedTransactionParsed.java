@@ -55,11 +55,11 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
             return parsed;
         }
 
-        public String gerProgram() {
+        public String getProgram() {
             return program;
         }
 
-        public String gerProgramId() {
+        public String getProgramId() {
             return programId;
         }
 
@@ -124,7 +124,7 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
 
     }
 
-    public static class PostTokenBalance {
+    public static class TokenBalance {
         @SerializedName("accountIndex")
         private int accountIndex;
         @SerializedName("mint")
@@ -146,14 +146,20 @@ public class ConfirmedTransactionParsed extends RpcResultObject {
         @SerializedName("innerInstructions")
         private List<InnerInstruction> innerInstructions;
         @SerializedName("postTokenBalances")
-        private List<PostTokenBalance> postTokenBalances;
+        private List<TokenBalance> postTokenBalances;
+        @SerializedName("preTokenBalances")
+        private List<TokenBalance> preTokenBalances;
 
         public List<InnerInstruction> getInnerInstructions() {
             return innerInstructions;
         }
 
-        public List<PostTokenBalance> getPostTokenBalances() {
+        public List<TokenBalance> getPostTokenBalances() {
             return postTokenBalances;
+        }
+
+        public List<TokenBalance> getPreTokenBalances() {
+            return preTokenBalances;
         }
 
         public long getFee() {

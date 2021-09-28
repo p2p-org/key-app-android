@@ -37,8 +37,7 @@ class HistoryInteractor(
 
         return rpcRepository.getConfirmedTransactions(signatures)
             .mapNotNull { response ->
-                val signature = response.transaction.signatures.firstOrNull()
-                val data = TransactionTypeParser.parse(signature, response)
+                val data = TransactionTypeParser.parse(response)
 
                 val swap = data.firstOrNull { it is SwapDetails }
                 if (swap != null) {
@@ -60,7 +59,11 @@ class HistoryInteractor(
                 }
 
                 val unknown = data.firstOrNull { it is UnknownDetails }
-                TransactionConverter.fromNetwork(unknown as UnknownDetails)
+                if (unknown != null) {
+                    return@mapNotNull TransactionConverter.fromNetwork(unknown as UnknownDetails)
+                }
+
+                return@mapNotNull null
             }
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
