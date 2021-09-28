@@ -2,7 +2,7 @@ package com.p2p.wallet.main.ui.send
 
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.main.interactor.MainInteractor
+import com.p2p.wallet.main.interactor.SendInteractor
 import com.p2p.wallet.main.model.CurrencyMode
 import com.p2p.wallet.main.model.NetworkType
 import com.p2p.wallet.main.model.Token
@@ -27,7 +27,7 @@ import kotlin.properties.Delegates
 
 class SendPresenter(
     private val initialToken: Token?,
-    private val mainInteractor: MainInteractor,
+    private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
     private val burnBtcInteractor: BurnBtcInteractor
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
@@ -135,12 +135,12 @@ class SendPresenter(
                 view?.showLoading(true)
 
                 val result = if (token.isSOL) {
-                    mainInteractor.sendNativeSolToken(
+                    sendInteractor.sendNativeSolToken(
                         destinationAddress = destinationAddress.toPublicKey(),
                         lamports = tokenAmount.toLamports(token.decimals)
                     )
                 } else {
-                    mainInteractor.sendSplToken(
+                    sendInteractor.sendSplToken(
                         destinationAddress = destinationAddress.toPublicKey(),
                         token = token,
                         lamports = tokenAmount.toLamports(token.decimals)

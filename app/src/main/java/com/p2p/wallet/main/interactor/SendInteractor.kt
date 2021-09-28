@@ -6,6 +6,7 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
+import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
@@ -13,13 +14,19 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import timber.log.Timber
 import java.math.BigInteger
 
-class MainInteractor(
+class SendInteractor(
     private val rpcRepository: RpcRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
+    private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
+
+    companion object {
+        private const val SEND_TAG = "SEND"
+    }
 
     suspend fun sendNativeSolToken(
         destinationAddress: PublicKey,
@@ -35,6 +42,7 @@ class MainInteractor(
         val value = accountInfo?.value
 
         if (value?.owner == TokenProgram.PROGRAM_ID.toBase58()) {
+            Timber.tag(SEND_TAG).d("Owner address matches the program id, returning with error")
             return TransactionResult.WrongWallet
         }
 
@@ -83,8 +91,10 @@ class MainInteractor(
         }
 
         val address = try {
+            Timber.tag(SEND_TAG).d("Searching for SPL token address")
             findSplTokenAddress(token.mintAddress, destinationAddress)
         } catch (e: IllegalStateException) {
+            Timber.tag(SEND_TAG).d("Searching address failed, address is wrong")
             return TransactionResult.WrongWallet
         }
 
@@ -102,6 +112,8 @@ class MainInteractor(
         val value = accountInfo?.value
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         if (!associatedNotNeeded) {
+            Timber.tag(SEND_TAG).d("Associated token account creation needed, adding create instruction")
+
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
                 TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                 TokenProgram.PROGRAM_ID,
@@ -142,6 +154,8 @@ class MainInteractor(
             destinationAddress.toBase58()
         }
 
+        Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
+
         val transactionId = feeRelayerRepository.sendSplToken(
             senderTokenAccountPubkey = token.publicKey,
             recipientPubkey = recipientPubkey,
@@ -159,19 +173,29 @@ class MainInteractor(
     private suspend fun findSplTokenAddress(mintAddress: String, destinationAddress: PublicKey): PublicKey {
         val accountInfo = rpcRepository.getAccountInfo(destinationAddress)
 
-        val value = accountInfo?.value
+        // detect if it is a direct token address
+        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        if (info != null && userLocalRepository.getTokenData(info.mint.toBase58()) != null) {
+            Timber.tag(SEND_TAG).d("Token by mint was found. Continuing with direct address")
+            return destinationAddress
+        }
 
         // create associated token address
+        val value = accountInfo?.value
         if (value == null || value.data?.get(0).isNullOrEmpty()) {
+            Timber.tag(SEND_TAG).d("No information found, creating associated token address")
             return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
         }
 
-        val info = TokenTransaction.decodeAccountInfo(value)
         // detect if destination address is already a SPLToken address
-        if (info.mint == destinationAddress) return destinationAddress
+        if (info?.mint == destinationAddress) {
+            Timber.tag(SEND_TAG).d("Destination address is already an SPL Token address, returning")
+            return destinationAddress
+        }
 
         // detect if destination address is a SOL address
-        if (info.owner.toBase58() == TokenProgram.PROGRAM_ID.toBase58()) {
+        if (info?.owner?.toBase58() == TokenProgram.PROGRAM_ID.toBase58()) {
+            Timber.tag(SEND_TAG).d("Destination address is SOL address. Getting the associated token address")
 
             // create associated token address
             return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
