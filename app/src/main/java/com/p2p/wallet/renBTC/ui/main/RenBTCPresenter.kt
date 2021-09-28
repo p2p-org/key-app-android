@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit
 const val BTC_DECIMALS = 8
 private const val DELAY_IN_MILLIS = 200L
 private const val ONE_SECOND_IN_MILLIS = 1000L
-private const val THREE_SECONDS = 3500L
 
 class RenBTCPresenter(
     private val interactor: RenBtcInteractor,
@@ -53,8 +52,6 @@ class RenBTCPresenter(
         launch {
             view?.showLoading(true)
             RenVMService.startWithNewSession(context)
-            delay(THREE_SECONDS)
-            view?.showLoading(false)
         }
     }
 
@@ -73,6 +70,8 @@ class RenBTCPresenter(
     }
 
     private fun handleSession(session: LockAndMint.Session?) {
+        view?.showLoading(false)
+
         if (session != null && session.isValid) {
             val remaining = session.expiryTime - System.currentTimeMillis()
             val fee = calculateFee(session)

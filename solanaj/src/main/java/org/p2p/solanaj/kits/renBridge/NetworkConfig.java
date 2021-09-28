@@ -38,12 +38,6 @@ public class NetworkConfig {
                 "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG", 0xc4);
     }
 
-//    public static NetworkConfig DEVNET() {
-//        return new NetworkConfig("devnet", true, "https://api.testnet.solana.com",
-//                "https://lightnode-devnet.herokuapp.com", "REGrPFKQhRneFFdUV3e9UDdzqUJyS6SKj88GdXFCRd2",
-//                "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY", 0xc4);
-//    }
-
     public String getChain() {
         return chain;
     }

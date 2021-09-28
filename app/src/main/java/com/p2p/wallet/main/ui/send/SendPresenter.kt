@@ -79,6 +79,7 @@ class SendPresenter(
 
         if (newToken.tokenSymbol == SYMBOL_REN_BTC) {
             view?.showNetworkSelection()
+            setNetworkDestination(NetworkType.BITCOIN)
         } else {
             view?.hideNetworkSelection()
             setNetworkDestination(NetworkType.SOLANA)
@@ -179,7 +180,13 @@ class SendPresenter(
             return
         }
 
-        checkDestinationBalance(address)
+        /* Checking destination balance only for Solana network transfers */
+        if (networkType == NetworkType.SOLANA) {
+            checkDestinationBalance(address)
+        } else {
+            view?.hideAddressConfirmation()
+        }
+
         calculateData(token!!)
     }
 

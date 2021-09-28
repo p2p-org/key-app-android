@@ -17,9 +17,9 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.rpc.Environment
 import timber.log.Timber
-import java.math.BigDecimal
 
 private const val TAG = "renBTC"
 private const val SESSION_POLLING_DELAY = 5000L
@@ -84,8 +84,6 @@ class RenBtcInteractor(
 
         val environment = environmentManager.loadEnvironment()
         val secretKey = tokenKeyProvider.secretKey
-        setStatus(RenVMStatus.WaitingDepositConfirm)
-
         while (session.isValid) {
             val data = repository.getPaymentData(environment, session.gatewayAddress)
             handlePaymentData(data, secretKey)
@@ -98,6 +96,7 @@ class RenBtcInteractor(
         secretKey: ByteArray
     ) = withContext(Dispatchers.IO) {
         Timber.tag(TAG).d("Payment data received: ${data.size}")
+        setStatus(RenVMStatus.WaitingDepositConfirm)
 
         data.forEach {
             lockAndMint.getDepositState(
@@ -106,33 +105,36 @@ class RenBtcInteractor(
                 it.amount.toString()
             )
 
-            setStatus(RenVMStatus.SubmittingToRenVM)
             val txHash = lockAndMint.submitMintTransaction()
             startQueryMintPolling(txHash, secretKey)
         }
     }
 
     private suspend fun startQueryMintPolling(txHash: String, secretKey: ByteArray) {
-        setStatus(RenVMStatus.AwaitingForSignature)
         while (true) {
             val response = lockAndMint.lockAndMint(txHash)
-            val status = response.txStatus
-            val amount = response.tx.`in`.valueIn.amount.toBigInteger().fromLamports(BTC_DECIMALS)
-            handleStatus(status, amount, secretKey)
+            handleStatus(response, secretKey)
             delay(ONE_MINUTE_DELAY)
         }
     }
 
-    private fun handleStatus(status: String, amount: BigDecimal, secretKey: ByteArray) {
+    private fun handleStatus(response: ResponseQueryTxMint, secretKey: ByteArray) {
+        val status = response.txStatus
         Timber.tag(TAG).d("Current mint status: $status")
 
         when (MintStatus.parse(status)) {
             MintStatus.CONFIRMED -> {
-                setStatus(RenVMStatus.Minting)
+                setStatus(RenVMStatus.AwaitingForSignature)
+            }
+            MintStatus.EXECUTING -> {
+                setStatus(RenVMStatus.SubmittingToRenVM)
             }
             MintStatus.DONE -> {
+                setStatus(RenVMStatus.Minting)
                 val signature = lockAndMint.mint(Account(secretKey))
                 Timber.tag(TAG).d("Mint signature received: $signature")
+                val amount = response.valueOut.amount.toBigInteger().fromLamports(BTC_DECIMALS)
+
                 setStatus(RenVMStatus.SuccessfullyMinted(amount))
             }
         }

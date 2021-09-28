@@ -48,6 +48,8 @@ class SerumSwapInteractor(
 
         const val BASE_TAKER_FEE_BPS = 0.0022
         const val FEE_MULTIPLIER = 1.0 - BASE_TAKER_FEE_BPS
+
+        private const val DEFAULT_SERUM_DEX_FEE = 23357760L
     }
 
     private val orderBooksCache = mutableMapOf<PublicKey, OrderbookPair>()
@@ -62,7 +64,7 @@ class SerumSwapInteractor(
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
         // default fee for creating serum dex account
-        val creatingSerumDexFee = BigInteger.valueOf(23357760L)
+        val creatingSerumDexFee = BigInteger.valueOf(DEFAULT_SERUM_DEX_FEE)
 
         // get fee for opening orders
         val markets = loadMarkets(fromWallet.mintAddress, toWallet.mintAddress)
@@ -171,8 +173,8 @@ class SerumSwapInteractor(
         return toBbo.bestOffer!!.div(fromBbo.bestBids!!)
     }
 
-    // / Executes a swap against the Serum DEX.
-    // / - Returns: transaction id
+    // Executes a swap against the Serum DEX.
+    // - Returns: transaction id
     suspend fun swap(
         fromWallet: Token,
         toWallet: Token,
@@ -264,9 +266,9 @@ class SerumSwapInteractor(
         }
     }
 
-    // / Executes a swap against the Serum DEX.
-    // / - Parameter params: SwapParams
-    // / - Returns: Signers and instructions for creating multiple transactions
+    // Executes a swap against the Serum DEX.
+    // - Parameter params: SwapParams
+    // - Returns: Signers and instructions for creating multiple transactions
     suspend fun swap(params: SwapParams, isSimulation: Boolean): List<SignersAndInstructions> {
         val data = swapTxs(params, isSimulation)
         if (!params.additionalTransactions.isNullOrEmpty()) {
@@ -611,12 +613,12 @@ class SerumSwapInteractor(
         return loadFair(fromMintPublicKey, toMintPublicKey, markets)
     }
 
-    // / Calculate minExchangeRate needed for swap
-    // / - Parameters:
-    // /   - fair: fair which is gotten from loadFair(fromMint:toMint)
-    // /   - slippage: user input slippage
-    // /   - toDecimal: to token decimal
-    // / - Returns: ExchangeRate
+    // Calculate minExchangeRate needed for swap
+    // - Parameters:
+    //  - fair: fair which is gotten from loadFair(fromMint:toMint)
+    //  - slippage: user input slippage
+    //  - toDecimal: to token decimal
+    // - Returns: ExchangeRate
     fun calculateExchangeRate(
         fair: Double,
         slippage: Double,
@@ -728,7 +730,7 @@ class SerumSwapInteractor(
         return loadMarkets(fromMintKey, toMintKey)
     }
 
-    // / Load market with current mint pair
+    // Load market with current mint pair
     suspend fun loadMarkets(fromMint: PublicKey, toMint: PublicKey): List<Market> {
         val route = swapMarketInteractor.route(fromMint, toMint)
             ?: throw IllegalStateException("Could not retrieve exchange rate")

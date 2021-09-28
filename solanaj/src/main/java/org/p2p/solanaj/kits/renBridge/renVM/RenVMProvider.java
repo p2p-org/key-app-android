@@ -12,7 +12,7 @@ import org.p2p.solanaj.rpc.RpcException;
 import org.p2p.solanaj.utils.ByteUtils;
 import org.p2p.solanaj.utils.Hash;
 import org.p2p.solanaj.utils.Utils;
-import org.p2p.solanaj.utils.crypto.Base64Utils;
+import org.p2p.solanaj.utils.crypto.Base64UrlUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class RenVMProvider {
 
     public byte[] selectPublicKey() throws RpcException {
         String pubKey = queryBlockState().getPubKey();
-        return Base64Utils.INSTANCE.decode(pubKey);
+        return Base64UrlUtils.fromURLBase64(pubKey);
     }
 
     public String submitMint(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,

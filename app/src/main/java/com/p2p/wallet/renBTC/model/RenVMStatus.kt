@@ -2,6 +2,7 @@ package com.p2p.wallet.renBTC.model
 
 import android.content.Context
 import com.p2p.wallet.R
+import com.p2p.wallet.utils.scaleMedium
 import java.math.BigDecimal
 
 sealed class RenVMStatus(
@@ -24,6 +25,6 @@ sealed class RenVMStatus(
     object AwaitingForSignature : RenVMStatus(System.currentTimeMillis())
     object Minting : RenVMStatus(System.currentTimeMillis())
     data class SuccessfullyMinted(val amount: BigDecimal) : RenVMStatus(System.currentTimeMillis()) {
-        fun getMintedData(): String = "+ $amount renBTC"
+        fun getMintedData(): String = "+ ${amount.scaleMedium()} renBTC"
     }
 }

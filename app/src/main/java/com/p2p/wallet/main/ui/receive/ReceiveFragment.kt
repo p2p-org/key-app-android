@@ -35,6 +35,7 @@ class ReceiveFragment : BaseFragment(R.layout.fragment_receive) {
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             viewPager.adapter = ReceivePagerAdapter(this@ReceiveFragment)
+            viewPager.isUserInputEnabled = false
 
             tabsRadioGroup.check(R.id.solanaButton)
             tabsRadioGroup.setOnCheckedChangeListener { _, checkedId ->
