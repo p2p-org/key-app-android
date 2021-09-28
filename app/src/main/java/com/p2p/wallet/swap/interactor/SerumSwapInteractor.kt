@@ -614,11 +614,11 @@ class SerumSwapInteractor(
     }
 
     // Calculate minExchangeRate needed for swap
-    //- Parameters:
+    // - Parameters:
     //  - fair: fair which is gotten from loadFair(fromMint:toMint)
     //  - slippage: user input slippage
     //  - toDecimal: to token decimal
-    //- Returns: ExchangeRate
+    // - Returns: ExchangeRate
     fun calculateExchangeRate(
         fair: Double,
         slippage: Double,

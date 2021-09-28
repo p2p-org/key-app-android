@@ -18,6 +18,8 @@
             android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
             tools:text="Waiting for deposit confirmation" />
 
@@ -37,6 +39,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:ellipsize="end"
+        android:lines="1"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
         android:textColor="@color/colorGreen"
         android:visibility="gone"
