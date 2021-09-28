@@ -73,8 +73,6 @@ data class Token constructor(
     fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
 
     companion object {
-        const val REN_BTC_SYMBOL = "renBTC"
-        const val BTC_SYMBOL = "BTC"
         const val USD_SYMBOL = "USD"
         const val SOL_SYMBOL = "SOL"
         const val USDC_SYMBOL = "USDC"
