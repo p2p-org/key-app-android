@@ -1,6 +1,5 @@
 package com.p2p.wallet.infrastructure.network.provider
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import org.p2p.solanaj.utils.crypto.Base58Utils
@@ -21,12 +20,12 @@ class TokenKeyProvider(
             Base58Utils.decodeToString(result)
         }
         set(value) {
-            field = value
-            runBlocking {
-                val result = Base58Utils.encodeFromString(value)
-                secureStorage.saveString(KEY_PUBLIC_KEY, result)
+                field = value
+                runBlocking {
+                    val result = Base58Utils.encodeFromString(value)
+                    secureStorage.saveString(KEY_PUBLIC_KEY, result)
+                }
             }
-        }
 
     var secretKey: ByteArray =
         runBlocking {
@@ -34,12 +33,12 @@ class TokenKeyProvider(
             Base58Utils.decode(result)
         }
         set(value) {
-            field = value
-            runBlocking {
-                val result = Base58Utils.encode(value)
-                secureStorage.saveString(KEY_SECRET_KEY, result)
+                field = value
+                runBlocking {
+                    val result = Base58Utils.encode(value)
+                    secureStorage.saveString(KEY_SECRET_KEY, result)
+                }
             }
-        }
 
     fun clear() {
         sharedPreferences.edit { remove(KEY_PUBLIC_KEY) }

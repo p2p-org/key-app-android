@@ -47,7 +47,6 @@ class UserRepositoryImpl(
                             result.add(TokenPrice(symbol, price.scaleMedium()))
                         }
                     }
-
                 }
 
             return@withContext result
