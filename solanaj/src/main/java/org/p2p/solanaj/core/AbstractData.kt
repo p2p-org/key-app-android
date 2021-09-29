@@ -58,43 +58,4 @@ abstract class AbstractData protected constructor(data: ByteArray, dataLength: I
         cursor += ByteUtils.UINT_128_LENGTH
         return uint128
     }
-
-    protected fun readSeq128Elements(memoryLayout: MemoryLayout): Seq128Elements<Any> {
-        val length = Seq128Elements.LENGTH + memoryLayout.getSize()
-        val endIndex = cursor + length
-        if (data.size > endIndex) throw IllegalStateException("Bytes length is not valid")
-
-        val bytesArray = data.copyOfRange(cursor, endIndex - 1)
-        val elements = mutableListOf<Any>()
-
-        val chunkedArray = bytesArray.chunked(memoryLayout.getSize())
-
-        chunkedArray.forEachIndexed { index, bytes ->
-            when (memoryLayout) {
-                is MemoryLayout.Byte -> {
-                    val element = bytes[index]
-                    elements.add(element)
-                }
-                is MemoryLayout.Long -> {
-                    val element = Utils.readUint32(bytes, index)
-                    elements.add(element)
-                }
-                is MemoryLayout.BigInteger -> {
-                    val element = ByteUtils.readUint64(bytes, index)
-                    elements.add(element)
-                }
-                is MemoryLayout.BigInteger128 -> {
-                    val element = ByteUtils.readUint128(bytes, index)
-                    elements.add(element)
-                }
-                is MemoryLayout.PublicKey -> {
-                    val element = PublicKey.readPubkey(bytes, index)
-                    elements.add(element)
-                }
-            }
-        }
-
-        cursor += length
-        return Seq128Elements(elements, length)
-    }
 }

@@ -24,9 +24,11 @@ object TransactionTypeParser {
             getSerumSwapInstructionIndex(instructions) != -1 ->
                 parseSerumSwapTransaction(transaction, signature, details)
             instructions.size == 2 ->
-                parseCreateAccount(instructions[0], instructions[1])
+//                parseCreateAccount(instructions[0], instructions[1])
+                parseDetails(transaction, signature, details)
             instructions.size == 1 ->
-                parseCloseAccount()
+//                parseCloseAccount()
+                parseDetails(transaction, signature, details)
             instructions.size == 1 || instructions.size == 4 || instructions.size == 2 ->
                 parseDetails(transaction, signature, details)
         }

@@ -8,7 +8,7 @@ import org.p2p.solanaj.serumswap.model.MemoryLayout
 import org.p2p.solanaj.serumswap.model.Seq128Elements
 import java.math.BigInteger
 
-private const val LAYOUT_V1_SPAN = 160L
+private const val LAYOUT_V1_SPAN = 141L + (128L * 16L) + (128L * 8L) + 7L
 
 sealed class OpenOrdersLayout(
     val data: ByteArray,
@@ -40,13 +40,15 @@ sealed class OpenOrdersLayout(
         freeSlotBits = Integer128(readUint128())
         isBidBits = Integer128(readUint128())
 
-        orders = readSeq128Elements(MemoryLayout.BigInteger128) as Seq128Elements<Integer128>
-        clientIds = readSeq128Elements(MemoryLayout.BigInteger) as Seq128Elements<BigInteger>
+//        orders = readSeq128Elements(MemoryLayout.BigInteger128) as Seq128Elements<Integer128>
+//        clientIds = readSeq128Elements(MemoryLayout.BigInteger) as Seq128Elements<BigInteger>
+        readBytes(Seq128Elements.LENGTH * MemoryLayout.BigInteger128.getSize())
+        readBytes(Seq128Elements.LENGTH * MemoryLayout.BigInteger.getSize())
     }
 
     enum class Type(val span: Long) {
         LAYOUT_V1(LAYOUT_V1_SPAN),
-        LAYOUT_V2(LAYOUT_V1_SPAN + 8);
+        LAYOUT_V2(LAYOUT_V1_SPAN + 8L);
     }
 
     class LayoutV1 constructor(data: ByteArray) : OpenOrdersLayout(data, LAYOUT_V1_SPAN.toInt()) {
