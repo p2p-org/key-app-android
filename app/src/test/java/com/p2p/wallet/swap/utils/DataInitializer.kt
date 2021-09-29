@@ -96,8 +96,7 @@ class DataInitializer {
 
         tokenKeyProvider = TokenKeyProvider(
             sharedPreferences = sharedPreferences,
-            secureStorage = secureStorage,
-            context = context
+            secureStorage = secureStorage
         )
 
         userLocalRepository = UserInMemoryRepository()
