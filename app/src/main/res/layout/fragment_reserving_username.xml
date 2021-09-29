@@ -25,20 +25,20 @@
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
         <View
-            android:id="@+id/viewBg"
+            android:id="@+id/bgView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/bg_gray_secondary_rounded"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMainText"
-            app:layout_constraintEnd_toEndOf="@id/tvMainText"
-            app:layout_constraintStart_toStartOf="@id/tvMainText"
-            app:layout_constraintTop_toTopOf="@+id/tvMainText" />
+            app:layout_constraintBottom_toBottomOf="@+id/canReceiveTextView"
+            app:layout_constraintEnd_toEndOf="@id/canReceiveTextView"
+            app:layout_constraintStart_toStartOf="@id/canReceiveTextView"
+            app:layout_constraintTop_toTopOf="@+id/canReceiveTextView" />
 
         <TextView
-            android:id="@+id/tvMainText"
+            android:id="@+id/canReceiveTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -57,18 +57,18 @@
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
         <ImageView
-            android:id="@+id/ivLamp"
+            android:id="@+id/lampImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:contentDescription="@string/auth_you_can_receive"
-            app:layout_constraintEnd_toStartOf="@+id/tvMainText"
-            app:layout_constraintTop_toTopOf="@+id/tvMainText"
+            app:layout_constraintEnd_toStartOf="@+id/canReceiveTextView"
+            app:layout_constraintTop_toTopOf="@+id/canReceiveTextView"
             app:srcCompat="@drawable/ic_lamp"
             tools:ignore="ImageContrastCheck" />
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/usernameInput"
+            android:id="@+id/usernameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -76,7 +76,7 @@
             android:layout_marginEnd="16dp"
             android:background="@drawable/bg_gray_secondary_rounded_small"
             android:hint="@string/auth_your_username"
-            android:inputType="numberDecimal"
+            android:inputType="text"
             android:maxLength="16"
             android:minHeight="48dp"
             android:paddingHorizontal="16dp"
@@ -85,41 +85,21 @@
             android:textColor="?colorMessagePrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewBg" />
-
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-        <!--            android:id="@+id/usernameInput"-->
-        <!--            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="16dp"-->
-        <!--            android:layout_marginTop="16dp"-->
-        <!--            android:layout_marginEnd="16dp"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/viewBg">-->
-
-        <!--            <com.google.android.material.textfield.TextInputEditText-->
-        <!--                android:id="@+id/usernameEditText"-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:hint="@string/auth_your_username" />-->
-
-        <!--        </com.google.android.material.textfield.TextInputLayout>-->
+            app:layout_constraintTop_toBottomOf="@+id/bgView" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/p2pTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="@string/auth_p2p_sol"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-            app:layout_constraintBottom_toBottomOf="@+id/usernameInput"
-            app:layout_constraintEnd_toEndOf="@+id/usernameInput"
-            app:layout_constraintTop_toTopOf="@+id/usernameInput" />
+            app:layout_constraintBottom_toBottomOf="@+id/usernameEditText"
+            app:layout_constraintEnd_toEndOf="@+id/usernameEditText"
+            app:layout_constraintTop_toTopOf="@+id/usernameEditText" />
 
         <TextView
-            android:id="@+id/tvUseOnly"
+            android:id="@+id/useOnlyTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -131,10 +111,10 @@
             android:textColor="?colorElementSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/usernameInput" />
+            app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
 
         <TextView
-            android:id="@+id/tvYouCanSkip"
+            android:id="@+id/youCanSkipTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -145,10 +125,10 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvUseOnly" />
+            app:layout_constraintTop_toBottomOf="@+id/useOnlyTextView" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnEnterUserName"
+            android:id="@+id/enterUserNameButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginHorizontal="24dp"

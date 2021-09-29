@@ -39,7 +39,7 @@ class ReservingUsernameFragment :
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
-                btnEnterUserName.fitMargin { Edge.BottomArc }
+                enterUserNameButton.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
@@ -57,9 +57,9 @@ class ReservingUsernameFragment :
             }
             // only for en string
             writeFeedbackText.setSpan(clickableSpan, 12, 27, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            tvYouCanSkip.text = writeFeedbackText
-            tvYouCanSkip.movementMethod = LinkMovementMethod.getInstance()
-            tvYouCanSkip.highlightColor = Color.TRANSPARENT
+            youCanSkipTextView.text = writeFeedbackText
+            youCanSkipTextView.movementMethod = LinkMovementMethod.getInstance()
+            youCanSkipTextView.highlightColor = Color.TRANSPARENT
         }
     }
 
