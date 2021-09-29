@@ -30,7 +30,7 @@
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_gray_secondary_rounded"
+            android:background="@drawable/bg_gray_secondary_rounded_small"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/canReceiveTextView"
             app:layout_constraintEnd_toEndOf="@id/canReceiveTextView"

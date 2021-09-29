@@ -35,6 +35,7 @@
             android:padding="16dp"
             android:text="@string/settings_username"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:visibility="gone"
             app:drawableEndCompat="@drawable/ic_arrow_right"
             app:drawableStartCompat="@drawable/ic_network"
             tools:ignore="UnusedAttribute" />

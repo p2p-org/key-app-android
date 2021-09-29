@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
@@ -43,21 +42,7 @@ class ReservingUsernameFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            // set clickable part of text
-            val writeFeedbackText = SpannableString(getString(R.string.auth_skip_this_step))
-            val clickableSpan: ClickableSpan = object : ClickableSpan() {
-                override fun onClick(textView: View) {
-                    navigateToPinCode()
-                }
-
-                override fun updateDrawState(ds: TextPaint) {
-                    super.updateDrawState(ds)
-                    ds.isUnderlineText = false
-                }
-            }
-            // only for en string
-            writeFeedbackText.setSpan(clickableSpan, 12, 27, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            youCanSkipTextView.text = writeFeedbackText
+            youCanSkipTextView.text = skipThisStepClickable()
             youCanSkipTextView.movementMethod = LinkMovementMethod.getInstance()
             youCanSkipTextView.highlightColor = Color.TRANSPARENT
         }
@@ -65,5 +50,20 @@ class ReservingUsernameFragment :
 
     override fun navigateToPinCode() {
         replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
+    }
+
+    private fun skipThisStepClickable(): SpannableString {
+        val clickableText = getString(R.string.auth_clickable_skip_this_step)
+        val message = getString(R.string.auth_skip_this_step)
+        val span = SpannableString(message)
+        val clickableNumber = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                navigateToPinCode()
+            }
+        }
+        val start = span.indexOf(clickableText)
+        val end = span.indexOf(clickableText) + clickableText.length
+        span.setSpan(clickableNumber, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        return span
     }
 }
