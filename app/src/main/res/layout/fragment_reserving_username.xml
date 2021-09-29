@@ -51,8 +51,6 @@
             android:paddingBottom="16dp"
             android:text="@string/auth_you_can_receive"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-            android:textColor="@color/messageSecondary"
-            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -69,45 +67,56 @@
             app:srcCompat="@drawable/ic_lamp"
             tools:ignore="ImageContrastCheck" />
 
-<!--        <androidx.appcompat.widget.AppCompatEditText-->
-<!--            android:id="@+id/usernameInput"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            android:layout_marginEnd="16dp"-->
-<!--            android:background="@drawable/bg_gray_secondary_rounded_small"-->
-<!--            android:inputType="numberDecimal"-->
-<!--            android:maxLength="16"-->
-<!--            android:minHeight="48dp"-->
-<!--            android:paddingHorizontal="16dp"-->
-<!--            android:paddingVertical="12dp"-->
-<!--            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"-->
-<!--            android:textColor="?colorMessagePrimary"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/viewBg"-->
-<!--            tools:text="username" />-->
-
-        <com.google.android.material.textfield.TextInputLayout
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/usernameInput"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_gray_secondary_rounded_small"
+            android:hint="@string/auth_your_username"
+            android:inputType="numberDecimal"
+            android:maxLength="16"
+            android:minHeight="48dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textColor="?colorMessagePrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/viewBg">
+            app:layout_constraintTop_toBottomOf="@+id/viewBg" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/usernameEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/auth_your_username" />
+        <!--        <com.google.android.material.textfield.TextInputLayout-->
+        <!--            android:id="@+id/usernameInput"-->
+        <!--            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            android:layout_marginTop="16dp"-->
+        <!--            android:layout_marginEnd="16dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/viewBg">-->
 
-        </com.google.android.material.textfield.TextInputLayout>
+        <!--            <com.google.android.material.textfield.TextInputEditText-->
+        <!--                android:id="@+id/usernameEditText"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:hint="@string/auth_your_username" />-->
+
+        <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@string/auth_p2p_sol"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            app:layout_constraintBottom_toBottomOf="@+id/usernameInput"
+            app:layout_constraintEnd_toEndOf="@+id/usernameInput"
+            app:layout_constraintTop_toTopOf="@+id/usernameInput" />
 
         <TextView
             android:id="@+id/tvUseOnly"
@@ -118,8 +127,8 @@
             android:layout_marginEnd="16dp"
             android:gravity="center"
             android:text="@string/auth_use_any_latin"
-            android:textColor="#757575"
-            android:textSize="14sp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/usernameInput" />
@@ -133,7 +142,7 @@
             android:layout_marginEnd="16dp"
             android:gravity="center"
             android:text="@string/auth_you_can_skip"
-            android:textSize="20sp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvUseOnly" />
