@@ -1,9 +1,6 @@
 package org.p2p.solanaj.core
 
 import org.bitcoinj.core.Utils
-import org.p2p.solanaj.serumswap.chunked
-import org.p2p.solanaj.serumswap.model.MemoryLayout
-import org.p2p.solanaj.serumswap.model.Seq128Elements
 import org.p2p.solanaj.utils.ByteUtils
 import java.math.BigInteger
 
