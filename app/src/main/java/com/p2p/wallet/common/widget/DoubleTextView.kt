@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import com.p2p.wallet.R
@@ -47,5 +48,14 @@ class DoubleTextView @JvmOverloads constructor(
     }
     fun setBottomText(@StringRes text: Int) {
         binding.bottomTextView.setText(text)
+    }
+
+    fun setDrawableEnd(@DrawableRes icon: Int?) {
+        if (icon != null && icon != 0) {
+            binding.iconImageView.isVisible = true
+            binding.iconImageView.setImageResource(icon)
+        } else {
+            binding.iconImageView.isVisible = false
+        }
     }
 }

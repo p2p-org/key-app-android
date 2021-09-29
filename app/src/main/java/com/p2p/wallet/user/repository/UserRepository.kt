@@ -35,17 +35,22 @@ class UserRepositoryImpl(
 
     override suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice> =
         withContext(Dispatchers.IO) {
+            val result = mutableListOf<TokenPrice>()
             tokens
                 .chunked(CHUNKED_COUNT)
                 .map { list ->
                     val json = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
-                    list.mapNotNull { symbol ->
-                        val tokenObject = json.getAsJsonObject(symbol) ?: return@mapNotNull null
-                        val price = tokenObject.getAsJsonPrimitive(Token.USD_SYMBOL).asBigDecimal
-                        TokenPrice(symbol, price.scaleMedium())
+                    list.forEach { symbol ->
+                        val tokenObject = json.getAsJsonObject(symbol.uppercase())
+                        if (tokenObject != null) {
+                            val price = tokenObject.getAsJsonPrimitive(Token.USD_SYMBOL).asBigDecimal
+                            result.add(TokenPrice(symbol, price.scaleMedium()))
+                        }
                     }
+
                 }
-                .flatten()
+
+            return@withContext result
         }
 
     override suspend fun loadTokens(): List<Token> = withContext(Dispatchers.IO) {

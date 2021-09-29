@@ -188,9 +188,11 @@ class SendFragment :
         if (fee.isNullOrEmpty()) {
             binding.feeView.setBottomText(R.string.send_free_transaction)
             binding.feeView.setOnClickListener { FeeInfoBottomSheet.show(childFragmentManager) }
+            binding.feeView.setDrawableEnd(R.drawable.ic_info)
         } else {
             binding.feeView.setBottomText(fee)
             binding.feeView.setOnClickListener(null)
+            binding.feeView.setDrawableEnd(null)
         }
     }
 

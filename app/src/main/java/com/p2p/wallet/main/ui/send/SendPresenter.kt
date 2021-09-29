@@ -289,7 +289,7 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            view?.showFee(fee.toString())
+            view?.showFee("$fee SOL")
         }
     }
 
