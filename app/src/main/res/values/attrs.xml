@@ -52,7 +52,6 @@
         <attr name="leftDragViewPadding" format="dimension" />
     </declare-styleable>
 
-
     <declare-styleable name="DoubleTextView">
         <attr name="topText" format="string" />
         <attr name="bottomText" format="string" />

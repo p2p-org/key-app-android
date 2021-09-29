@@ -34,7 +34,7 @@ object NetworkModule : InjectionModule {
     const val DEFAULT_READ_TIMEOUT_SECONDS = 60L
 
     override fun create() = module {
-        single { TokenKeyProvider(get(), get(), get()) }
+        single { TokenKeyProvider(get(), get()) }
 
         single {
             GsonBuilder()

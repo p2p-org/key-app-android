@@ -88,6 +88,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
             android:textColor="?colorElementSecondary"
             app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
