@@ -82,6 +82,7 @@
     <string name="auth_reserve_username">Reserve your P2P username</string>
     <string name="auth_you_can_receive">You can receive and send tokens using your P2P username or link. Also, users, who know your URL or username can send you any token, even if you don’t have it in your wallets list.</string>
     <string name="auth_you_can_skip">You can also skip this step and reserve a username later.</string>
+    <string name="auth_your_username">Your username</string>
     <string name="auth_enter_your_username">Enter your username</string>
     <string name="auth_use_any_latin">Use any latin and special symbols or emojis</string>
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
