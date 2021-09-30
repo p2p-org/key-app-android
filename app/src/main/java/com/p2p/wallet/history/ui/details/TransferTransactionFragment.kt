@@ -16,7 +16,7 @@ import com.p2p.wallet.common.date.toDateTimeString
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentTransactionTransferBinding
-import com.p2p.wallet.history.model.TransactionType
+import com.p2p.wallet.history.model.HistoryTransaction
 import com.p2p.wallet.history.model.TransferType
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.copyToClipBoard
@@ -34,12 +34,12 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
         private const val EXTRA_TRANSACTION = "EXTRA_TRANSACTION"
         private const val IMAGE_SIZE = 24
 
-        fun create(transaction: TransactionType) =
+        fun create(transaction: HistoryTransaction) =
             TransferTransactionFragment()
                 .withArgs(EXTRA_TRANSACTION to transaction)
     }
 
-    private val transaction: TransactionType.Transfer by args(EXTRA_TRANSACTION)
+    private val transaction: HistoryTransaction.Transfer by args(EXTRA_TRANSACTION)
 
     private val binding: FragmentTransactionTransferBinding by viewBinding()
 
@@ -70,19 +70,8 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
                 loadImage(destinationImageView, transaction.tokenData.iconUrl.orEmpty())
             }
 
-            val total = if (isSend) {
-                "- ${transaction.getFormattedTotal()}"
-            } else {
-                "+ ${transaction.getFormattedTotal()}"
-            }
-            totalTextView.text = total
-
-            val amount = if (isSend) {
-                "- ${transaction.getFormattedAmount()}"
-            } else {
-                "+ ${transaction.getFormattedAmount()}"
-            }
-            usdAmountTextView.text = amount
+            totalTextView.text = transaction.getTotal()
+            usdAmountTextView.text = transaction.getValue()
 
             sourceSymbolTextView.text = transaction.tokenData.symbol
             destinationSymbolTextView.text = transaction.tokenData.symbol

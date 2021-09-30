@@ -24,9 +24,11 @@ object TransactionTypeParser {
             getSerumSwapInstructionIndex(instructions) != -1 ->
                 parseSerumSwapTransaction(transaction, signature, details)
             instructions.size == 2 ->
-                parseCreateAccount(instructions[0], instructions[1])
+//                parseCreateAccount(instructions[0], instructions[1])
+                parseDetails(transaction, signature, details)
             instructions.size == 1 ->
-                parseCloseAccount()
+//                parseCloseAccount()
+                parseDetails(transaction, signature, details)
             instructions.size == 1 || instructions.size == 4 || instructions.size == 2 ->
                 parseDetails(transaction, signature, details)
         }
@@ -43,6 +45,17 @@ object TransactionTypeParser {
             val parsedInfo = parsedInstruction.parsed
             if (parsedInfo != null) {
                 when (parsedInfo.type) {
+                    "burnChecked" -> {
+                        val transferDetails = BurnOrMintDetails(
+                            signature,
+                            transaction.blockTime,
+                            transaction.slot,
+                            transaction.meta.fee,
+                            parsedInfo.type,
+                            parsedInfo.info
+                        )
+                        details.add(transferDetails)
+                    }
                     "transfer",
                     "transferChecked" -> {
                         val transferDetails = TransferDetails(

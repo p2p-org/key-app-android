@@ -14,7 +14,7 @@ import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.common.recycler.EndlessScrollListener
 import com.p2p.wallet.common.ui.PagingState
 import com.p2p.wallet.databinding.FragmentTokenDetailsBinding
-import com.p2p.wallet.history.model.TransactionType
+import com.p2p.wallet.history.model.HistoryTransaction
 import com.p2p.wallet.history.ui.details.SwapTransactionFragment
 import com.p2p.wallet.history.ui.details.TransferTransactionFragment
 import com.p2p.wallet.history.ui.main.adapter.HistoryAdapter
@@ -126,7 +126,7 @@ class TokenDetailsFragment :
         showInfoDialog(getString(resId, argument))
     }
 
-    override fun showHistory(transactions: List<TransactionType>) {
+    override fun showHistory(transactions: List<HistoryTransaction>) {
         historyAdapter.setTransactions(transactions)
     }
 
@@ -154,10 +154,10 @@ class TokenDetailsFragment :
         presenter.loadHourlyChartData(tokenSymbol, hours)
     }
 
-    private fun onTransactionClicked(transaction: TransactionType) {
+    private fun onTransactionClicked(transaction: HistoryTransaction) {
         when (transaction) {
-            is TransactionType.Swap -> addFragment(SwapTransactionFragment.create(transaction))
-            is TransactionType.Transfer -> addFragment(TransferTransactionFragment.create(transaction))
+            is HistoryTransaction.Swap -> addFragment(SwapTransactionFragment.create(transaction))
+            is HistoryTransaction.Transfer -> addFragment(TransferTransactionFragment.create(transaction))
             else -> {
                 // todo: add close account and unknown transaction details view
             }

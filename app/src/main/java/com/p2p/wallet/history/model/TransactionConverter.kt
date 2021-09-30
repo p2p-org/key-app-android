@@ -4,7 +4,9 @@ import com.p2p.wallet.main.model.TokenPrice
 import com.p2p.wallet.user.model.TokenData
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.scaleMedium
+import com.p2p.wallet.utils.toBigDecimalOrZero
 import com.p2p.wallet.utils.toPowerValue
+import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransferDetails
@@ -22,8 +24,8 @@ object TransactionConverter {
         destinationData: TokenData,
         destinationRate: TokenPrice,
         sourcePublicKey: String
-    ): TransactionType =
-        TransactionType.Swap(
+    ): HistoryTransaction =
+        HistoryTransaction.Swap(
             signature = response.signature,
             sourceAddress = sourcePublicKey,
             destinationAddress = response.destination,
@@ -50,12 +52,37 @@ object TransactionConverter {
         )
 
     fun fromNetwork(
+        response: BurnOrMintDetails,
+        rate: TokenPrice
+    ): HistoryTransaction {
+        val date = ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(response.blockTime),
+            ZoneId.systemDefault()
+        )
+
+        val amount = BigDecimal(response.amount)
+            .scaleMedium()
+            .times(rate.price)
+            .scaleMedium()
+
+        return HistoryTransaction.BurnOrMint(
+            signature = response.signature,
+            blockNumber = response.slot,
+            fee = response.fee.toBigInteger(),
+            amount = amount,
+            total = response.amount.toBigDecimalOrZero(),
+            date = date,
+            type = RenBtcType.BURN
+        )
+    }
+
+    fun fromNetwork(
         response: TransferDetails,
         tokenData: TokenData,
         directPublicKey: String,
         publicKey: String,
         rate: TokenPrice
-    ): TransactionType {
+    ): HistoryTransaction {
         val isSend = if (response.isSimpleTransfer) {
             response.source == directPublicKey && response.destination != publicKey
         } else {
@@ -76,7 +103,7 @@ object TransactionConverter {
             Instant.ofEpochMilli(response.blockTime),
             ZoneId.systemDefault()
         )
-        return TransactionType.Transfer(
+        return HistoryTransaction.Transfer(
             signature = response.signature,
             blockNumber = response.slot,
             destination = if (isSend) response.destination else publicKey,
@@ -90,8 +117,8 @@ object TransactionConverter {
         )
     }
 
-    fun fromNetwork(response: CloseAccountDetails, symbol: String): TransactionType =
-        TransactionType.CloseAccount(
+    fun fromNetwork(response: CloseAccountDetails, symbol: String): HistoryTransaction =
+        HistoryTransaction.CloseAccount(
             signature = response.signature,
             blockNumber = response.slot,
             account = response.account,
@@ -106,8 +133,8 @@ object TransactionConverter {
 
     fun fromNetwork(
         response: UnknownDetails
-    ): TransactionType =
-        TransactionType.Unknown(
+    ): HistoryTransaction =
+        HistoryTransaction.Unknown(
             signature = response.signature,
             date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(response.blockTime), ZoneId.systemDefault()),
             blockNumber = response.slot,

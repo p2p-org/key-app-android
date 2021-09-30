@@ -122,7 +122,6 @@ class SendPresenter(
                 handleResult(TransactionResult.Success(transactionId))
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
-                view?.showErrorMessage(e)
             } finally {
                 view?.showLoading(false)
             }

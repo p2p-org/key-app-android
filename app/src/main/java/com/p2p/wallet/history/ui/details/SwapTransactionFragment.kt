@@ -15,7 +15,7 @@ import com.p2p.wallet.common.date.toDateTimeString
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentTransactionSwapBinding
-import com.p2p.wallet.history.model.TransactionType
+import com.p2p.wallet.history.model.HistoryTransaction
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.dip
 import com.p2p.wallet.utils.edgetoedge.Edge
@@ -31,12 +31,12 @@ class SwapTransactionFragment : BaseFragment(R.layout.fragment_transaction_swap)
         private const val EXTRA_TRANSACTION = "EXTRA_TRANSACTION"
         private const val IMAGE_SIZE = 24
 
-        fun create(transaction: TransactionType.Swap) =
+        fun create(transaction: HistoryTransaction.Swap) =
             SwapTransactionFragment()
                 .withArgs(EXTRA_TRANSACTION to transaction)
     }
 
-    private val transaction: TransactionType.Swap by args(EXTRA_TRANSACTION)
+    private val transaction: HistoryTransaction.Swap by args(EXTRA_TRANSACTION)
 
     private val binding: FragmentTransactionSwapBinding by viewBinding()
 
