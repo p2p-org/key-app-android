@@ -18,6 +18,9 @@ import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
+import android.text.Editable
+
+import android.text.TextWatcher
 
 class ReservingUsernameFragment :
     BaseMvpFragment<ReservingUsernameContract.View,
@@ -45,6 +48,24 @@ class ReservingUsernameFragment :
             youCanSkipTextView.text = buildClickableText()
             youCanSkipTextView.movementMethod = LinkMovementMethod.getInstance()
             youCanSkipTextView.highlightColor = Color.TRANSPARENT
+
+            usernameEditText.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable) {
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+                }
+            })
+
+            enterUserNameButton.setOnClickListener {
+                presenter.registerUsername()
+            }
         }
     }
 

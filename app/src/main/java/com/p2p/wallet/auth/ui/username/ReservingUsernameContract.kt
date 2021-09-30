@@ -10,7 +10,7 @@ interface ReservingUsernameContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun checkUsername()
-        fun createUsername()
+        fun checkUsername(username: String)
+        fun registerUsername()
     }
 }
