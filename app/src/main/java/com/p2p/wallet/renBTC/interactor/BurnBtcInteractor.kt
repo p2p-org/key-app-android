@@ -12,6 +12,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.kits.renBridge.BurnAndRelease
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.RpcException
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -38,8 +39,19 @@ class BurnBtcInteractor(
         )
 
         val burnState = burnAndRelease.getBurnState(burnDetails, amount.toString())
-        println("txHash " + burnState.txHash)
-        return@withContext burnAndRelease.release()
+        val hash = try {
+            burnAndRelease.release()
+        } catch (e: RpcException) {
+            // TODO: Handle this error [invalid burn info: cannot get burn info: decoding solana burn log: expected data len=97, got=0]
+            // TODO: It crashes even if transaction is valid
+            if (e.message?.startsWith("invalid burn info") == true) {
+                return@withContext burnDetails.confirmedSignature
+            } else {
+                throw e
+            }
+        }
+        println("txHash ${burnState.txHash} / $hash")
+        return@withContext burnDetails.confirmedSignature
     }
 
     suspend fun getBurnFee(): BigDecimal {

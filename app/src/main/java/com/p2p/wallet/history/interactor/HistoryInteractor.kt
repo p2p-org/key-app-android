@@ -2,7 +2,7 @@ package com.p2p.wallet.history.interactor
 
 import com.p2p.wallet.history.model.PriceHistory
 import com.p2p.wallet.history.model.TransactionConverter
-import com.p2p.wallet.history.model.TransactionType
+import com.p2p.wallet.history.model.HistoryTransaction
 import com.p2p.wallet.history.repository.TokenRepository
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
@@ -10,6 +10,7 @@ import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.kits.TokenTransaction
+import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionTypeParser
@@ -30,7 +31,7 @@ class HistoryInteractor(
     suspend fun getHourlyPriceHistory(sourceToken: String, destination: String, hours: Int): List<PriceHistory> =
         tokenRepository.getHourlyPriceHistory(sourceToken, destination, hours)
 
-    suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<TransactionType> {
+    suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
         val signatures = rpcRepository.getConfirmedSignaturesForAddress(
             publicKey.toPublicKey(), before, limit
         ).map { it.signature }
@@ -42,6 +43,11 @@ class HistoryInteractor(
                 val swap = data.firstOrNull { it is SwapDetails }
                 if (swap != null) {
                     return@mapNotNull parseSwapDetails(swap as SwapDetails)
+                }
+
+                val burnOrMint = data.firstOrNull { it is BurnOrMintDetails }
+                if (burnOrMint != null) {
+                    return@mapNotNull parseBurnAndMintDetails(burnOrMint as BurnOrMintDetails)
                 }
 
                 val transfer = data.firstOrNull { it is TransferDetails }
@@ -68,7 +74,7 @@ class HistoryInteractor(
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private fun parseSwapDetails(details: SwapDetails): TransactionType? {
+    private fun parseSwapDetails(details: SwapDetails): HistoryTransaction? {
         val sourceData = userLocalRepository.getTokenData(details.mintA) ?: return null
         val destinationData = userLocalRepository.getTokenData(details.mintB) ?: return null
 
@@ -83,7 +89,7 @@ class HistoryInteractor(
         transfer: TransferDetails,
         directPublicKey: String,
         publicKey: String
-    ): TransactionType {
+    ): HistoryTransaction {
         val symbol = if (transfer.isSimpleTransfer) Token.SOL_SYMBOL else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
@@ -93,7 +99,13 @@ class HistoryInteractor(
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
     }
 
-    private suspend fun parseCloseDetails(details: CloseAccountDetails): TransactionType {
+    private fun parseBurnAndMintDetails(details: BurnOrMintDetails): HistoryTransaction {
+        val symbol = findSymbol(details.mint)
+        val rate = userLocalRepository.getPriceByToken(symbol)
+        return TransactionConverter.fromNetwork(details, rate)
+    }
+
+    private suspend fun parseCloseDetails(details: CloseAccountDetails): HistoryTransaction {
         val accountInfo = rpcRepository.getAccountInfo(details.account.toPublicKey())
         val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
         val symbol = findSymbol(info?.mint?.toBase58().orEmpty())

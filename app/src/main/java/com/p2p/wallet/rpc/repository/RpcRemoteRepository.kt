@@ -179,6 +179,9 @@ class RpcRemoteRepository(
         return rpcApi.getMultipleAccounts(rpcRequest).result
     }
 
+    /**
+     * The history is being fetched from main-net despite the selected network
+     * */
     override suspend fun getConfirmedSignaturesForAddress(
         account: PublicKey,
         before: String?,
@@ -190,7 +193,7 @@ class RpcRemoteRepository(
         )
 
         val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
-        return rpcApi.getConfirmedSignaturesForAddress2(rpcRequest).result
+        return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest).result
     }
 
     override suspend fun getConfirmedTransactions(
@@ -203,6 +206,6 @@ class RpcRemoteRepository(
             RpcRequest("getConfirmedTransaction", params)
         }
 
-        return rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
+        return mainnetApi.getConfirmedTransactions(requestsBatch).map { it.result }
     }
 }

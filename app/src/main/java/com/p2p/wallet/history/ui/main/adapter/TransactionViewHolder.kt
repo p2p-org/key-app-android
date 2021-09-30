@@ -15,22 +15,20 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.databinding.ItemTransactionBinding
 import com.p2p.wallet.history.model.HistoryItem
-import com.p2p.wallet.history.model.TransactionType
-import com.p2p.wallet.history.model.TransferType
-import com.p2p.wallet.utils.colorFromTheme
+import com.p2p.wallet.history.model.HistoryTransaction
+import com.p2p.wallet.utils.cutMiddle
 import com.p2p.wallet.utils.dip
 
 class TransactionViewHolder(
     binding: ItemTransactionBinding,
-    private val onTransactionClicked: (TransactionType) -> Unit
+    private val onTransactionClicked: (HistoryTransaction) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
-        private const val ADDRESS_SYMBOL_COUNT = 10
         private const val IMAGE_SIZE = 24
     }
 
-    constructor(parent: ViewGroup, onTransactionClicked: (TransactionType) -> Unit) : this(
+    constructor(parent: ViewGroup, onTransactionClicked: (HistoryTransaction) -> Unit) : this(
         ItemTransactionBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onTransactionClicked
     )
@@ -50,12 +48,24 @@ class TransactionViewHolder(
 
     fun onBind(item: HistoryItem.TransactionItem) {
         when (item.transaction) {
-            is TransactionType.Transfer -> showTransferTransaction(item.transaction)
-            is TransactionType.Swap -> showSwapTransaction(item.transaction)
-            is TransactionType.CloseAccount -> showCloseTransaction(item.transaction)
-            is TransactionType.Unknown -> showUnknownTransaction()
+            is HistoryTransaction.Transfer -> showTransferTransaction(item.transaction)
+            is HistoryTransaction.Swap -> showSwapTransaction(item.transaction)
+            is HistoryTransaction.BurnOrMint -> showBurnOrMint(item.transaction)
+            is HistoryTransaction.CloseAccount -> showCloseTransaction(item.transaction)
+            is HistoryTransaction.Unknown -> showUnknownTransaction()
         }
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
+    }
+
+    private fun showBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
+        tokenImageView.isVisible = true
+        swapView.isVisible = false
+
+        tokenImageView.setImageResource(transaction.getIcon())
+        typeTextView.setText(transaction.getTitle())
+        addressTextView.text = transaction.signature.cutMiddle()
+        totalTextView.text = transaction.getTotal()
+        valueTextView.text = transaction.getValue()
     }
 
     private fun showUnknownTransaction() {
@@ -66,18 +76,18 @@ class TransactionViewHolder(
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showCloseTransaction(transaction: TransactionType.CloseAccount) {
+    private fun showCloseTransaction(transaction: HistoryTransaction.CloseAccount) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
         tokenImageView.setImageResource(R.drawable.ic_trash)
         typeTextView.setText(R.string.main_close_account)
-        addressTextView.text = "${transaction.tokenSymbol} Closed"
+        addressTextView.text = transaction.getInfo()
 
         valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showSwapTransaction(transaction: TransactionType.Swap) {
+    private fun showSwapTransaction(transaction: HistoryTransaction.Swap) {
         tokenImageView.isVisible = false
         swapView.isVisible = true
 
@@ -90,54 +100,16 @@ class TransactionViewHolder(
         valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
     }
 
-    private fun showTransferTransaction(transaction: TransactionType.Transfer) {
+    private fun showTransferTransaction(transaction: HistoryTransaction.Transfer) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
 
-        val isSend = transaction.type == TransferType.SEND
-        val iconResId = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
-        tokenImageView.setImageResource(iconResId)
-
-        typeTextView.setText(if (isSend) R.string.main_transfer else R.string.main_receive)
-
-        val address = if (isSend) {
-            "to ${cutAddress(transaction.destination)}"
-        } else {
-            "from ${cutAddress(transaction.senderAddress)}"
-        }
-        addressTextView.text = address
-
-        val value = if (isSend) {
-            "- ${transaction.getFormattedAmount()}"
-        } else {
-            "+ ${transaction.getFormattedAmount()}"
-        }
-        valueTextView.text = value
-
-        val total = if (isSend) {
-            "- ${transaction.getFormattedTotal()}"
-        } else {
-            "+ ${transaction.getFormattedTotal()}"
-        }
-
-        totalTextView.text = total
-
-        if (!isSend) {
-            valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
-        } else {
-            valueTextView.setTextColor(valueTextView.colorFromTheme(R.attr.colorMessagePrimary))
-        }
-    }
-
-    @Suppress("MagicNumber")
-    fun cutAddress(address: String): String {
-        if (address.length < ADDRESS_SYMBOL_COUNT) {
-            return address
-        }
-
-        val firstSix = address.take(4)
-        val lastFour = address.takeLast(4)
-        return "$firstSix...$lastFour"
+        tokenImageView.setImageResource(transaction.getIcon())
+        typeTextView.setText(transaction.getTitle())
+        addressTextView.text = transaction.getAddress()
+        valueTextView.text = transaction.getValue()
+        totalTextView.text = transaction.getTotal()
+        valueTextView.setTextColor(transaction.getTextColor(valueTextView.context))
     }
 
     private fun loadImage(imageView: ImageView, url: String) {
