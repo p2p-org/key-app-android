@@ -42,7 +42,7 @@ class ReservingUsernameFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            youCanSkipTextView.text = skipThisStepClickable()
+            youCanSkipTextView.text = buildClickableText()
             youCanSkipTextView.movementMethod = LinkMovementMethod.getInstance()
             youCanSkipTextView.highlightColor = Color.TRANSPARENT
         }
@@ -52,7 +52,7 @@ class ReservingUsernameFragment :
         replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
-    private fun skipThisStepClickable(): SpannableString {
+    private fun buildClickableText(): SpannableString {
         val clickableText = getString(R.string.auth_clickable_skip_this_step)
         val message = getString(R.string.auth_skip_this_step)
         val span = SpannableString(message)
