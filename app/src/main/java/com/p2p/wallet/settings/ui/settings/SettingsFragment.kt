@@ -5,6 +5,7 @@ import android.view.View
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
+import com.p2p.wallet.auth.ui.username.ReservingUsernameFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSettingsBinding
 import com.p2p.wallet.settings.ui.appearance.AppearanceFragment
@@ -41,6 +42,10 @@ class SettingsFragment :
 
             zeroBalanceView.setOnClickListener {
                 presenter.setZeroBalanceHidden(!hideZeroSwitch.isChecked)
+            }
+
+            usernameTextView.setOnClickListener {
+                replaceFragment(ReservingUsernameFragment.create())
             }
 
             networkTextView.setOnClickListener {

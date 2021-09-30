@@ -79,6 +79,15 @@
     <string name="auth_derivable_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
     <string name="auth_select_derivation_path">Select Derivation Path</string>
     <string name="auth_derivation_path_info">By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet. To use an alternative path, try restoring an existing wallet.</string>
+    <string name="auth_reserve_username">Reserve your P2P username</string>
+    <string name="auth_you_can_receive">You can receive and send tokens using your P2P username or link. Also, users, who know your URL or username can send you any token, even if you don’t have it in your wallets list.</string>
+    <string name="auth_you_can_skip">You can also skip this step and reserve a username later.</string>
+    <string name="auth_your_username">Your username</string>
+    <string name="auth_enter_your_username">Enter your username</string>
+    <string name="auth_use_any_latin">Use any latin and special symbols or emojis</string>
+    <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
+    <string name="auth_clickable_skip_this_step">skip this step</string>
+    <string name="auth_p2p_sol">.p2p.sol</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">
@@ -204,6 +213,7 @@
     <string name="settings_title">Settings</string>
     <string name="settings_hide_zero_balances">Hide zero balances</string>
     <string name="settings_security">Security</string>
+    <string name="settings_username">Username</string>
     <string name="settings_network">Network</string>
     <string name="settings_appearance">Appearance</string>
     <string name="settings_language">Language</string>

@@ -12,6 +12,8 @@ import com.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import com.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
 import com.p2p.wallet.auth.ui.security.SecurityKeyContract
 import com.p2p.wallet.auth.ui.security.SecurityKeyPresenter
+import com.p2p.wallet.auth.ui.username.ReservingUsernameContract
+import com.p2p.wallet.auth.ui.username.ReservingUsernamePresenter
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -27,5 +29,6 @@ object AuthModule {
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
+        factory { ReservingUsernamePresenter(get()) } bind ReservingUsernameContract.Presenter::class
     }
 }
