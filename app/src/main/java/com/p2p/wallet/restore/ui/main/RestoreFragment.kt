@@ -32,19 +32,34 @@ class RestoreFragment : BaseFragment(R.layout.fragment_restore) {
             backImageView.setOnClickListener { popBackStack() }
             restoreButton.setOnClickListener {
                 requireContext().copyToClipBoard(
+//                    listOf(
+//                        "oval",
+//                        "you",
+//                        "token",
+//                        "plug",
+//                        "copper",
+//                        "visa",
+//                        "employ",
+//                        "link",
+//                        "sell",
+//                        "asset",
+//                        "kick",
+//                        "sausage"
+//                    ).joinToString(" ")
+
                     listOf(
-                        "oval",
-                        "you",
-                        "token",
-                        "plug",
-                        "copper",
-                        "visa",
-                        "employ",
-                        "link",
-                        "sell",
-                        "asset",
-                        "kick",
-                        "sausage"
+                        "miracle",
+                        "pizza",
+                        "supply",
+                        "useful",
+                        "steak",
+                        "border",
+                        "same",
+                        "again",
+                        "youth",
+                        "silver",
+                        "access",
+                        "hundred",
                     ).joinToString(" ")
                 )
                 replaceFragment(SecretKeyFragment.create())

@@ -3,6 +3,7 @@ package com.p2p.wallet.swap.interactor
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.isUsdx
+import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.kits.AccountInstructions
@@ -121,6 +122,15 @@ class SerumSwapInteractor(
         return fee
     }
 
+    // Load minimum amount for trading
+    suspend fun loadMinOrderSize(
+        fromMint: String,
+        toMint: String
+    ): BigDecimal {
+        val market = loadMarkets(fromMint, toMint).firstOrNull()
+        return (market?.minOrderSize() ?: BigDecimal.ZERO).scaleMedium()
+    }
+
     // todo: change double to BigDecimal
     suspend fun loadFair(
         fromMint: PublicKey,
@@ -191,10 +201,7 @@ class SerumSwapInteractor(
 
         val fair = loadFair(fromWallet.mintAddress, toWallet.mintAddress, markets)
 
-        val openOrders = openOrdersInteractor.findForOwner(
-            ownerAddress = owner,
-            programId = dexPID
-        )
+        val openOrders = openOrdersInteractor.findForOwner(owner, dexPID)
 
         val fromMint: PublicKey
         val toMint: PublicKey
@@ -743,7 +750,7 @@ class SerumSwapInteractor(
      * @param market market instance
      * @return OrderbookPair
      * */
-    private suspend fun loadOrderbook(market: Market): OrderbookPair {
+    suspend fun loadOrderbook(market: Market): OrderbookPair {
         val orderbookPair = orderBooksCache[market.address]
         if (orderbookPair != null) return orderbookPair
 
@@ -760,7 +767,7 @@ class SerumSwapInteractor(
      * @param orderbookPair asks and bids
      * @return best bids price, best asks price and middle
      * */
-    private fun loadBbo(orderbookPair: OrderbookPair): Bbo? {
+    fun loadBbo(orderbookPair: OrderbookPair): Bbo? {
         val bestBid = orderbookPair.bids.getList(true).firstOrNull()
         val bestOffer = orderbookPair.asks.getList().firstOrNull()
 

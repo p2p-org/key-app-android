@@ -1,18 +1,18 @@
 package com.p2p.wallet.swap.interactor
 
 import com.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
+import org.p2p.solanaj.programs.SerumSwapProgram
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.serumswap.OpenOrders
-import org.p2p.solanaj.serumswap.OpenOrdersLayout
+import org.p2p.solanaj.serumswap.OpenOrdersLayoutParser
 import org.p2p.solanaj.serumswap.Version
-import org.p2p.solanaj.programs.SerumSwapProgram
 import java.math.BigInteger
 
 class OpenOrdersInteractor(
@@ -113,10 +113,11 @@ class OpenOrdersInteractor(
                 throw IllegalStateException("The address is not owned by the program")
             }
 
+            val decodedData = it.account.getDecodedData()
             val data = if (version == 1) {
-                OpenOrdersLayout.LayoutV1(it.account.getDecodedData())
+                OpenOrdersLayoutParser.parseV1(decodedData)
             } else {
-                OpenOrdersLayout.LayoutV2(it.account.getDecodedData())
+                OpenOrdersLayoutParser.parseV2(decodedData)
             }
             OpenOrders(
                 address = it.pubkey,

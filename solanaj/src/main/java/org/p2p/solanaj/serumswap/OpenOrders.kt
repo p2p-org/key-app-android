@@ -21,7 +21,7 @@ class OpenOrders(
         get() = PublicKey(address)
 
     companion object {
-        fun getLayoutType(programId: String): OpenOrdersLayout.Type {
+        private fun getLayoutType(programId: String): OpenOrdersLayout.Type {
             val version = Version.getVersion(programId)
             return if (version == 1) OpenOrdersLayout.Type.LAYOUT_V1
             else OpenOrdersLayout.Type.LAYOUT_V2

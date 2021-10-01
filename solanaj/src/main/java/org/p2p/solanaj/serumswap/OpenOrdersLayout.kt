@@ -1,68 +1,81 @@
 package org.p2p.solanaj.serumswap
 
-import org.p2p.solanaj.core.AbstractData
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.serumswap.OpenOrdersLayoutParser.LAYOUT_V1_SPAN
 import org.p2p.solanaj.serumswap.model.AccountFlags
 import org.p2p.solanaj.serumswap.model.Integer128
-import org.p2p.solanaj.serumswap.model.MemoryLayout
-import org.p2p.solanaj.serumswap.model.Seq128Elements
 import java.math.BigInteger
 
-private const val LAYOUT_V1_SPAN = 160L
-
 sealed class OpenOrdersLayout(
-    val data: ByteArray,
-    val length: Int
-) : AbstractData(data, length) {
+    open val accountFlags: AccountFlags,
+    open val market: PublicKey,
+    open val owner: PublicKey,
+    open val baseTokenFree: BigInteger,
+    open val baseTokenTotal: BigInteger,
+    open val quoteTokenFree: BigInteger,
+    open val quoteTokenTotal: BigInteger,
+    open val freeSlotBits: Integer128,
+    open val isBidBits: Integer128,
+    open val orders: Any,
+    open val clientIds: Any
+) {
 
-    lateinit var accountFlags: AccountFlags
-    lateinit var market: PublicKey
-    lateinit var owner: PublicKey
-    lateinit var baseTokenFree: BigInteger
-    lateinit var baseTokenTotal: BigInteger
-    lateinit var quoteTokenFree: BigInteger
-    lateinit var quoteTokenTotal: BigInteger
-    lateinit var freeSlotBits: Integer128
-    lateinit var isBidBits: Integer128
-    lateinit var orders: Seq128Elements<Integer128>
-    lateinit var clientIds: Seq128Elements<BigInteger>
+    data class LayoutV1(
+        override val accountFlags: AccountFlags,
+        override val market: PublicKey,
+        override val owner: PublicKey,
+        override val baseTokenFree: BigInteger,
+        override val baseTokenTotal: BigInteger,
+        override val quoteTokenFree: BigInteger,
+        override val quoteTokenTotal: BigInteger,
+        override val freeSlotBits: Integer128,
+        override val isBidBits: Integer128,
+        override val orders: Any,
+        override val clientIds: Any
+    ) : OpenOrdersLayout(
+        accountFlags = accountFlags,
+        market = market,
+        owner = owner,
+        baseTokenFree = baseTokenFree,
+        baseTokenTotal = baseTokenTotal,
+        quoteTokenFree = quoteTokenFree,
+        quoteTokenTotal = quoteTokenTotal,
+        freeSlotBits = freeSlotBits,
+        isBidBits = isBidBits,
+        orders = orders,
+        clientIds = clientIds
+    )
 
-    open fun initialize() {
-        accountFlags = AccountFlags(readUint64())
-
-        market = readPublicKey()
-        owner = readPublicKey()
-        baseTokenFree = readUint64()
-        baseTokenTotal = readUint64()
-        quoteTokenFree = readUint64()
-        quoteTokenTotal = readUint64()
-
-        freeSlotBits = Integer128(readUint128())
-        isBidBits = Integer128(readUint128())
-
-        orders = readSeq128Elements(MemoryLayout.BigInteger128) as Seq128Elements<Integer128>
-        clientIds = readSeq128Elements(MemoryLayout.BigInteger) as Seq128Elements<BigInteger>
-    }
+    data class LayoutV2(
+        override val accountFlags: AccountFlags,
+        override val market: PublicKey,
+        override val owner: PublicKey,
+        override val baseTokenFree: BigInteger,
+        override val baseTokenTotal: BigInteger,
+        override val quoteTokenFree: BigInteger,
+        override val quoteTokenTotal: BigInteger,
+        override val freeSlotBits: Integer128,
+        override val isBidBits: Integer128,
+        override val orders: Any,
+        override val clientIds: Any,
+        val referrerRebatesAccrued: BigInteger
+    ) : OpenOrdersLayout(
+        accountFlags = accountFlags,
+        market = market,
+        owner = owner,
+        baseTokenFree = baseTokenFree,
+        baseTokenTotal = baseTokenTotal,
+        quoteTokenFree = quoteTokenFree,
+        quoteTokenTotal = quoteTokenTotal,
+        freeSlotBits = freeSlotBits,
+        isBidBits = isBidBits,
+        orders = orders,
+        clientIds = clientIds
+    )
 
     enum class Type(val span: Long) {
         LAYOUT_V1(LAYOUT_V1_SPAN),
         LAYOUT_V2(LAYOUT_V1_SPAN + 8);
-    }
-
-    class LayoutV1 constructor(data: ByteArray) : OpenOrdersLayout(data, LAYOUT_V1_SPAN.toInt()) {
-
-        init {
-            initialize()
-        }
-    }
-
-    class LayoutV2 constructor(data: ByteArray) : OpenOrdersLayout(data, LAYOUT_V1_SPAN.toInt()) {
-        val referrerRebatesAccrued: BigInteger
-
-        init {
-            initialize()
-            referrerRebatesAccrued = readUint64()
-        }
     }
 }
 
