@@ -3,13 +3,21 @@ package com.p2p.wallet.swap
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenVisibility
 import com.p2p.wallet.swap.interactor.SerumSwapInteractor
+import com.p2p.wallet.swap.interactor.SwapMarketInteractor
 import com.p2p.wallet.swap.utils.DataInitializer
+import com.p2p.wallet.swap.utils.SerumSwapData.BTCUSDCMarket
+import com.p2p.wallet.swap.utils.SerumSwapData.SOL
+import com.p2p.wallet.swap.utils.SerumSwapData.SRM
+import com.p2p.wallet.swap.utils.SerumSwapData.SRMUSDCMarket
+import com.p2p.wallet.swap.utils.SerumSwapData.USDC
+import com.p2p.wallet.swap.utils.SerumSwapData.USDT
+import com.p2p.wallet.utils.scaleMedium
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.p2p.solanaj.core.PublicKey
 import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -20,20 +28,48 @@ class SerumSwapMarketTests {
     private val initializer = DataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
+    private lateinit var swapMarketInteractor: SwapMarketInteractor
 
     private lateinit var userTokens: List<Token>
 
     private fun solNativeWallet(): Token = userTokens.first { it.tokenSymbol == "SOL" }
 
-    private val SRM = PublicKey("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt")
-    private val USDT = PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB")
-    private val USDC: PublicKey = PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
-
     @Before
     fun setUp() {
         initializer.initialize()
         serumSwapInteractor = initializer.getSwapInteractor()
+        swapMarketInteractor = initializer.getSwapMarketInteractor()
         userTokens = initializer.getTokens()
+    }
+
+    @Test
+    fun `test get market`() = runBlocking {
+        // Swaps SRM -> USDC on the Serum orderbook.
+        val marketAddresses = swapMarketInteractor.route(SRM, USDC)
+        val marketAddress = marketAddresses?.firstOrNull()
+        val market = marketAddress?.let { serumSwapInteractor.loadMarket(it) }
+        assertNotNull(market)
+    }
+
+    @Test
+    fun testGetPriceFromCachedMarket() = runBlocking {
+        val srmUSDCPair = serumSwapInteractor.loadOrderbook(SRMUSDCMarket)
+        assertNotNull(srmUSDCPair)
+
+        val btcUSDCPair = serumSwapInteractor.loadOrderbook(BTCUSDCMarket)
+        assertNotNull(btcUSDCPair)
+
+        val srmBbo = serumSwapInteractor.loadBbo(srmUSDCPair)
+        assertNotNull(srmBbo)
+
+        val btcBbo = serumSwapInteractor.loadBbo(btcUSDCPair)
+        assertNotNull(btcBbo)
+    }
+
+    @Test
+    fun testGetMinOrderSizeFromCachedMarket() = runBlocking {
+        val minOrderSize = serumSwapInteractor.loadMinOrderSize(SOL.toBase58(), USDC.toBase58())
+        assertEquals(BigDecimal(0.1).scaleMedium(), minOrderSize)
     }
 
     @Test

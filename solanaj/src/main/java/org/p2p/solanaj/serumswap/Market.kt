@@ -34,16 +34,21 @@ class Market(
     val coinVault: PublicKey = decoded.baseVault
     val pcVault: PublicKey = decoded.quoteVault
 
-    private val baseSplTokenMultiplier: BigDecimal
-        get() = BigDecimal(10.0.pow(baseSplTokenDecimals))
+    private val baseSplTokenMultiplier: Double
+        get() = 10.0.pow(baseSplTokenDecimals)
 
-    private val quoteSplTokenMultiplier: BigDecimal
-        get() = BigDecimal(10.0.pow(quoteSplTokenDecimals))
+    private val quoteSplTokenMultiplier: Double
+        get() = 10.0.pow(quoteSplTokenDecimals)
+
+    fun minOrderSize(): BigDecimal =
+        baseSizeLotsToNumber(BigInteger.ONE)
 
     fun priceLotsToNumber(price: BigInteger): BigDecimal =
-        (BigDecimal(price) * (BigDecimal(decoded.quoteLotSize)) * baseSplTokenMultiplier) /
-            (BigDecimal(decoded.baseLotSize) * quoteSplTokenMultiplier)
+        BigDecimal(
+            (price.toDouble() * decoded.quoteLotSize.toDouble() * baseSplTokenMultiplier) /
+                (decoded.baseLotSize.toDouble() * quoteSplTokenMultiplier)
+        )
 
     fun baseSizeLotsToNumber(quantity: BigInteger): BigDecimal =
-        (BigDecimal(quantity).multiply(BigDecimal(decoded.baseLotSize))) / baseSplTokenMultiplier
+        BigDecimal((quantity.toDouble() * decoded.baseLotSize.toDouble()) / baseSplTokenMultiplier)
 }

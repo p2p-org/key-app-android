@@ -2,7 +2,6 @@ package com.p2p.wallet.swap
 
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.swap.interactor.SerumSwapInteractor
-import com.p2p.wallet.swap.interactor.SwapMarketInteractor
 import com.p2p.wallet.swap.utils.CoroutineTest
 import com.p2p.wallet.swap.utils.DataInitializer
 import kotlinx.coroutines.runBlocking
@@ -25,7 +24,6 @@ internal class SerumSwapDirectTests : CoroutineTest() {
     private val initializer = DataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
-    private lateinit var swapMarketInteractor: SwapMarketInteractor
 
     private lateinit var userTokens: List<Token>
 
@@ -34,7 +32,6 @@ internal class SerumSwapDirectTests : CoroutineTest() {
         initializer.initialize()
         userTokens = initializer.getTokens()
         serumSwapInteractor = initializer.getSwapInteractor()
-        swapMarketInteractor = initializer.getSwapMarketInteractor()
     }
 
     @After
@@ -191,15 +188,6 @@ internal class SerumSwapDirectTests : CoroutineTest() {
         )
 
         assertNotNull(transactionId)
-    }
-
-    @Test
-    fun `test get market`() = runBlocking {
-        // Swaps SRM -> USDC on the Serum orderbook.
-        val marketAddresses = swapMarketInteractor.route(SRM, USDC)
-        val marketAddress = marketAddresses?.firstOrNull()
-        val market = marketAddress?.let { serumSwapInteractor.loadMarket(it) }
-        assertNotNull(market)
     }
 
     @Test
