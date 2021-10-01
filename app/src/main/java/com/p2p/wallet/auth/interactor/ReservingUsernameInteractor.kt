@@ -13,7 +13,6 @@ class ReservingUsernameInteractor(
     }
 
     suspend fun registerUsername(username: String): String = withContext(Dispatchers.IO) {
-         ""
+        ""
     }
-
 }
