@@ -38,18 +38,19 @@ object AuthModule {
         single { BiometricManager.from(get()) }
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
-        factory { ReservingUsernameInteractor(get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
         factory { SecurityKeyPresenter(get()) } bind SecurityKeyContract.Presenter::class
-
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
-        factory { ReservingUsernamePresenter(get()) } bind ReservingUsernameContract.Presenter::class
 
+        // reserving username
+        factory { ReservingUsernameInteractor(get()) }
+        factory { ReservingUsernamePresenter(get()) } bind ReservingUsernameContract.Presenter::class
+        factory { get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER)).create(UsernameApi::class.java) }
         single {
             val client = OkHttpClient.Builder()
-                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("Blockstream")) }
+                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("solanaUsername")) }
                 .build()
             val api = Retrofit.Builder()
                 .baseUrl(get<Context>().getString(R.string.solanaUsername))
@@ -57,10 +58,7 @@ object AuthModule {
                 .client(client)
                 .build()
                 .create(UsernameApi::class.java)
-
             UsernameRemoteRepository(api)
         } bind UsernameRepository::class
-
-        factory { get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER)).create(UsernameApi::class.java) }
     }
 }
