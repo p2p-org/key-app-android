@@ -3,6 +3,7 @@ package com.p2p.wallet.root.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
@@ -32,7 +33,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         }
 
         presenter.loadPricesAndBids()
-        DebugDrawer.install(this)
+        if (BuildConfig.DEBUG) DebugDrawer.install(this)
     }
 
     override fun navigateToOnboarding() {
