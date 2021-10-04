@@ -21,16 +21,28 @@ fun Int.toPowerValue(): BigDecimal =
     BigDecimal(POWER_VALUE.pow(this))
 
 fun BigDecimal.scaleShort(): BigDecimal =
-    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN).stripTrailingZeros()
+    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .toPlainString() // correcting non-decimal values which stripped, 1+E3 -> 1000
+        .toBigDecimal()
 
 fun BigDecimal.scaleMedium(): BigDecimal =
-    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN).stripTrailingZeros()
+    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN)
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .toPlainString() // correcting non-decimal values which stripped, 1+E3 -> 1000
+        .toBigDecimal()
 
 fun BigDecimal.scaleLong(): BigDecimal =
-    if (this.isZero()) this else this.setScale(SCALE_VALUE_LONG, RoundingMode.HALF_EVEN).stripTrailingZeros()
+    if (this.isZero()) this else this.setScale(SCALE_VALUE_LONG, RoundingMode.HALF_EVEN)
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .toPlainString() // correcting non-decimal values which stripped, 1+E3 -> 1000
+        .toBigDecimal()
 
 fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
-    BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals))).stripTrailingZeros()
+    BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals)))
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .toPlainString() // correcting non-decimal values which stripped, 1+E3 -> 1000
+        .toBigDecimal()
 
 fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()

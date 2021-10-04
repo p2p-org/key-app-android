@@ -104,6 +104,8 @@ class SwapPresenter(
         view?.hidePrice()
         destinationAmount = "0"
 
+        minOrderSize = BigDecimal.ZERO
+
         view?.hideCalculations()
         view?.showButtonText(R.string.main_select_token)
 
@@ -291,7 +293,8 @@ class SwapPresenter(
     }
 
     private suspend fun calculateMinOrderSize(fromMint: String, toMint: String) {
-        minOrderSize = serumSwapInteractor.loadMinOrderSize(fromMint, toMint)
+        val minOrderSize = serumSwapInteractor.loadMinOrderSize(fromMint, toMint)
+        this.minOrderSize = minOrderSize
     }
 
     private fun setButtonEnabled() {
@@ -314,8 +317,8 @@ class SwapPresenter(
         when {
             isMoreThanBalance -> view?.showButtonText(R.string.swap_funds_not_enough)
             decimalAmount.isZero() -> view?.showButtonText(R.string.main_enter_the_amount)
-            minOrderSizeFailed -> view?.showButtonText(R.string.swap_min_order_size_amount, minOrderSize.toString())
             destinationToken == null -> view?.showButtonText(R.string.main_select_token)
+            minOrderSizeFailed -> view?.showButtonText(R.string.swap_min_order_size_amount, minOrderSize.toString())
             else -> view?.showButtonText(R.string.main_swap_now)
         }
     }
