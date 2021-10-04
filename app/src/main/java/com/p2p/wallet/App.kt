@@ -1,9 +1,13 @@
 package com.p2p.wallet
 
 import android.app.Application
+import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.p2p.wallet.auth.AuthModule
+import com.p2p.wallet.common.AppRestarter
 import com.p2p.wallet.common.di.CommonModule
+import com.p2p.wallet.debugdrawer.DebugDrawer
 import com.p2p.wallet.infrastructure.InfrastructureModule
 import com.p2p.wallet.infrastructure.network.NetworkModule
 import com.p2p.wallet.main.MainModule
@@ -14,10 +18,14 @@ import com.p2p.wallet.settings.SettingsModule
 import com.p2p.wallet.settings.interactor.ThemeInteractor
 import com.p2p.wallet.swap.SwapModule
 import com.p2p.wallet.history.TokenModule
+import com.p2p.wallet.root.ui.RootActivity
 import com.p2p.wallet.user.UserModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.KoinContextHandler
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import timber.log.Timber
 
 class App : Application() {
@@ -26,9 +34,8 @@ class App : Application() {
         super.onCreate()
         setupTimber()
         setupKoin()
-
         AndroidThreeTen.init(this)
-
+        DebugDrawer.init(this)
         KoinContextHandler.get().get<ThemeInteractor>().applyCurrentNightMode()
     }
 
@@ -49,10 +56,28 @@ class App : Application() {
                     SettingsModule.create(),
                     SwapModule.create(),
                     CommonModule.create(),
-                    InfrastructureModule.create()
+                    InfrastructureModule.create(),
+                    createAppModule()
                 )
             )
         }
+    }
+
+    private fun createAppModule(): Module = module {
+        single {
+            AppRestarter {
+                restart()
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
+        } bind AppRestarter::class
+    }
+
+    private fun restart() {
+        setupKoin()
+        RootActivity
+            .createIntent(this)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            .let { startActivity(it) }
     }
 
     private fun setupTimber() {

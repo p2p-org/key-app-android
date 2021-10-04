@@ -79,7 +79,7 @@ inline fun Activity.edgeToEdge(block: EdgeToEdgeBuilder.() -> Unit) {
  * Listen for dispatch of WindowInsets and redispatch the offsets to all children. Even if the first
  * child consumes offsets, other children get the original offsets and can react accordingly as well.
  */
-fun View.redispatchWindowInsetsToAllChildren(isConsumed: Boolean = false) {
+fun View.redispatchWindowInsetsToAllChildren() {
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
         view as ViewGroup
         var consumed = false
@@ -93,8 +93,7 @@ fun View.redispatchWindowInsetsToAllChildren(isConsumed: Boolean = false) {
         }
         // If any of the children consumed the insets, return an appropriate value
         return@setOnApplyWindowInsetsListener when {
-            isConsumed -> insets.replaceSystemWindowInsets(0, 0, 0, 0)
-            consumed -> insets.consumeSystemWindowInsets()
+            consumed -> WindowInsetsCompat.CONSUMED
             else -> insets
         }
     }
@@ -106,7 +105,7 @@ fun Fragment.isVisibleTopFragment(): Boolean {
 
 fun Dialog.setOnApplyWindowInsetsListener(view: View, listener: (View, WindowInsetsCompat) -> WindowInsetsCompat) {
     window?.findViewById<View>(com.google.android.material.R.id.container)?.fitsSystemWindows = false
-    window?.decorView?.redispatchWindowInsetsToAllChildren(isConsumed = true)
+    window?.decorView?.redispatchWindowInsetsToAllChildren()
     window?.applyTranslucentFlag()
     ViewCompat.setOnApplyWindowInsetsListener(window?.decorView ?: view, listener)
 }

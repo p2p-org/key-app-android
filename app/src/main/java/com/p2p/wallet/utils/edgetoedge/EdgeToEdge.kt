@@ -96,20 +96,16 @@ class EdgeToEdgeBuilder(
         if (!edgeToEdge.listening) {
             edgeToEdge.listening = true
             ViewCompat.setOnApplyWindowInsetsListener(rootView) { _, insets ->
-                if (insets.systemWindowInsetTop == 0 && insets.systemWindowInsetBottom == 0) {
-                    return@setOnApplyWindowInsetsListener insets
+                if (insets.isInsetConsumed() || !isTopFragmentProvider.invoke()) {
+                    return@setOnApplyWindowInsetsListener WindowInsetsCompat.CONSUMED
                 }
                 WindowInsetsCompat(insets).let {
                     edgeToEdge.insets = it
                     edgeToEdge.applyFittings(it)
                 }
-                if (isTopFragmentProvider.invoke()) insets.consumeSystemWindowInsets() else insets
+                WindowInsetsCompat.CONSUMED
             }
         }
-
-        val currentInsets = edgeToEdge.insets
-        if (currentInsets == null) rootView.dispatchWindowInsets()
-        else edgeToEdge.applyFittings(currentInsets)
     }
 }
 
@@ -213,10 +209,10 @@ private fun EdgeToEdge.applyFittings(insets: WindowInsetsCompat) {
 
 @Suppress("ComplexCondition")
 private fun Fitting.applyInsetsAsPadding(insets: WindowInsetsCompat, view: View, flags: Int) {
-    val left = if (flags and FLAG_LEFT > 0) paddingLeft + insets.systemWindowInsetLeft else view.paddingLeft
-    val top = if (flags and FLAG_TOP > 0) paddingTop + insets.systemWindowInsetTop else view.paddingTop
-    val right = if (flags and FLAG_RIGHT > 0) paddingRight + insets.systemWindowInsetRight else view.paddingRight
-    val bottom = if (flags and FLAG_BOTTOM > 0) paddingBottom + insets.systemWindowInsetBottom else view.paddingBottom
+    val left = if (flags and FLAG_LEFT > 0) paddingLeft + insets.leftBarInset() else view.paddingLeft
+    val top = if (flags and FLAG_TOP > 0) paddingTop + insets.statusBarInset() else view.paddingTop
+    val right = if (flags and FLAG_RIGHT > 0) paddingRight + insets.rightBarInset() else view.paddingRight
+    val bottom = if (flags and FLAG_BOTTOM > 0) paddingBottom + insets.navigationBarInset() else view.paddingBottom
 
     if (view.paddingLeft != left ||
         view.paddingTop != top ||
@@ -230,15 +226,11 @@ private fun Fitting.applyInsetsAsPadding(insets: WindowInsetsCompat, view: View,
 @Suppress("ComplexCondition")
 private fun Fitting.applyInsetsAsMargin(insets: WindowInsetsCompat, view: View, flags: Int) {
     val layoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
-
-    val left = if (flags and FLAG_LEFT > 0) marginLeft + insets.systemWindowInsetLeft else layoutParams.leftMargin
-    val top = if (flags and FLAG_TOP > 0) marginTop + insets.systemWindowInsetTop else layoutParams.topMargin
-    val right = if (flags and FLAG_RIGHT > 0) marginRight + insets.systemWindowInsetRight else layoutParams.rightMargin
-    val bottom = if (flags and FLAG_BOTTOM > 0) {
-        marginBottom + insets.systemWindowInsetBottom
-    } else {
-        layoutParams.bottomMargin
-    }
+    val left = if (flags and FLAG_LEFT > 0) marginLeft + insets.leftBarInset() else layoutParams.leftMargin
+    val top = if (flags and FLAG_TOP > 0) marginTop + insets.statusBarInset() else layoutParams.topMargin
+    val right = if (flags and FLAG_RIGHT > 0) marginRight + insets.rightBarInset() else layoutParams.rightMargin
+    val bottom =
+        if (flags and FLAG_BOTTOM > 0) marginBottom + insets.navigationBarInset() else layoutParams.bottomMargin
 
     if (left != layoutParams.leftMargin ||
         top != layoutParams.topMargin ||
@@ -255,10 +247,10 @@ private fun Fitting.applyInsetsAsMargin(insets: WindowInsetsCompat, view: View, 
 
 private fun applyInsetsAsHeight(insets: WindowInsetsCompat, view: View, flags: Int) {
     val height = when (flags) {
-        FLAG_LEFT -> insets.systemWindowInsetLeft
-        FLAG_TOP -> insets.systemWindowInsetTop
-        FLAG_RIGHT -> insets.systemWindowInsetRight
-        FLAG_BOTTOM -> insets.systemWindowInsetBottom
+        FLAG_LEFT -> insets.leftBarInset()
+        FLAG_TOP -> insets.statusBarInset()
+        FLAG_RIGHT -> insets.rightBarInset()
+        FLAG_BOTTOM -> insets.navigationBarInset()
         else -> error("Unexpected edge flags: $flags")
     }
     if (view.height != height) {
@@ -270,10 +262,10 @@ private fun applyInsetsAsHeight(insets: WindowInsetsCompat, view: View, flags: I
 
 private fun applyInsetsAsWidth(insets: WindowInsetsCompat, view: View, flags: Int) {
     val width = when (flags) {
-        FLAG_LEFT -> insets.systemWindowInsetLeft
-        FLAG_TOP -> insets.systemWindowInsetTop
-        FLAG_RIGHT -> insets.systemWindowInsetRight
-        FLAG_BOTTOM -> insets.systemWindowInsetBottom
+        FLAG_LEFT -> insets.leftBarInset()
+        FLAG_TOP -> insets.statusBarInset()
+        FLAG_RIGHT -> insets.rightBarInset()
+        FLAG_BOTTOM -> insets.navigationBarInset()
         else -> error("Unexpected edge flags: $flags")
     }
     if (view.width != width) {
@@ -325,4 +317,35 @@ private fun View.applyClipToPadding(clipToPadding: Boolean?) {
         }
         this.clipToPadding = it
     }
+}
+
+fun WindowInsetsCompat.statusBarInset(): Int {
+    return getInsets(WindowInsetsCompat.Type.systemBars()).top
+}
+
+fun WindowInsetsCompat.navigationBarInset(): Int {
+    val navigation = getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+    return (if (imeInset() == 0) navigation else 0) + imeInset()
+}
+
+fun WindowInsetsCompat.leftBarInset(): Int {
+    return getInsets(WindowInsetsCompat.Type.captionBar()).left
+}
+
+fun WindowInsetsCompat.rightBarInset(): Int {
+    return getInsets(WindowInsetsCompat.Type.captionBar()).right
+}
+
+fun WindowInsetsCompat.imeInset(): Int {
+    return getInsets(WindowInsetsCompat.Type.ime()).bottom
+}
+
+fun WindowInsetsCompat.systemInset(): Int {
+    return getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+}
+
+fun WindowInsetsCompat.isInsetConsumed(): Boolean {
+    val statusBarHeight = getInsets(WindowInsetsCompat.Type.statusBars()).top
+    val navBarHeight = getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+    return statusBarHeight == 0 && navBarHeight == 0
 }
