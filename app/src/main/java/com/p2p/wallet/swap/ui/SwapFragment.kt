@@ -109,8 +109,13 @@ class SwapFragment :
         binding.availableTextView.text = available
     }
 
-    override fun showButtonText(textRes: Int) {
-        binding.swapButton.setText(textRes)
+    override fun showButtonText(textRes: Int, value: String?) {
+        if (value.isNullOrEmpty()) {
+            binding.swapButton.setText(textRes)
+        } else {
+            val text = getString(textRes, value)
+            binding.swapButton.text = text
+        }
     }
 
     override fun setNewAmount(sourceAmount: String) {

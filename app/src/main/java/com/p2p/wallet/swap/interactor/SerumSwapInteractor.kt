@@ -38,12 +38,10 @@ class SerumSwapInteractor(
 
     companion object {
         // Close account feature flag.
-        //
         // TODO: enable once the DEX supports closing open orders accounts.
         private const val CLOSE_ENABLED = false
 
         // Initialize open orders feature flag.
-        //
         // TODO: enable once the DEX supports initializing open orders accounts.
         private const val OPEN_ENABLED = false
 
@@ -706,7 +704,7 @@ class SerumSwapInteractor(
         instructions += to.instructions
 
         if (feePayer == null) {
-            signers.add(1, Account(tokenKeyProvider.secretKey))
+            signers.add(0, Account(tokenKeyProvider.secretKey))
         }
 
         val serializedTransaction = serializationInteractor.serializeTransaction(

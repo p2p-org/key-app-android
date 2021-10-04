@@ -11,7 +11,9 @@ import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.model.SwapFee
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.fromLamports
+import com.p2p.wallet.utils.isLessThan
 import com.p2p.wallet.utils.isMoreThan
+import com.p2p.wallet.utils.isNotZero
 import com.p2p.wallet.utils.isZero
 import com.p2p.wallet.utils.scaleLong
 import com.p2p.wallet.utils.scaleMedium
@@ -52,6 +54,8 @@ class SwapPresenter(
     private var creatingAccountFee: BigInteger = BigInteger.ZERO
     private var liquidityProviderFee: BigDecimal = BigDecimal.ZERO
 
+    private var minOrderSize: BigDecimal = BigDecimal.ZERO
+
     private var currentFees = mutableMapOf<FeeType, SwapFee>()
 
     private var calculationJob: Job? = null
@@ -61,9 +65,7 @@ class SwapPresenter(
             view?.showFullScreenLoading(true)
             sourceToken = initialToken ?: userInteractor.getUserTokens().find { it.isSOL }
 
-            val availableAmount = swapInteractor.calculateAvailableAmount(sourceToken!!, currentFees[FeeType.DEFAULT])
-            val available = "$availableAmount ${sourceToken!!.tokenSymbol}"
-            view?.showSourceAvailable(available)
+            calculateAvailableAmount(sourceToken!!)
 
             lamportsPerSignature = swapInteractor.getLamportsPerSignature()
             liquidityProviderFee = swapInteractor.calculateLiquidityProviderFee()
@@ -96,14 +98,13 @@ class SwapPresenter(
 
         sourceToken = newToken
 
-        val availableAmount = swapInteractor.calculateAvailableAmount(newToken, currentFees[FeeType.DEFAULT])
-        val scaledAmount = availableAmount?.scaleLong() ?: BigDecimal.ZERO
-        val available = "$scaledAmount ${newToken.tokenSymbol}"
-        view?.showSourceAvailable(available)
+        calculateAvailableAmount(newToken)
 
         destinationToken = null
         view?.hidePrice()
         destinationAmount = "0"
+
+        minOrderSize = BigDecimal.ZERO
 
         view?.hideCalculations()
         view?.showButtonText(R.string.main_select_token)
@@ -115,12 +116,12 @@ class SwapPresenter(
     override fun setNewDestinationToken(newToken: Token) {
         destinationToken = newToken
 
+        val source = sourceToken!!
         launch {
-            calculateRateAndFees(sourceToken!!, newToken)
-            calculateAmount(sourceToken!!, newToken)
+            calculateMinOrderSize(source.mintAddress, newToken.mintAddress)
+            calculateRateAndFees(source, newToken)
+            calculateInputAmount(source, newToken)
         }
-
-        setButtonEnabled()
     }
 
     override fun setSlippage(slippage: Double) {
@@ -153,7 +154,7 @@ class SwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
-        calculateAmount(requireSourceToken(), destinationToken)
+        calculateInputAmount(requireSourceToken(), destinationToken)
 
         setButtonEnabled()
     }
@@ -212,6 +213,13 @@ class SwapPresenter(
         }
     }
 
+    private fun calculateAvailableAmount(newToken: Token) {
+        val availableAmount = swapInteractor.calculateAvailableAmount(newToken, currentFees[FeeType.DEFAULT])
+        val scaledAmount = availableAmount?.scaleLong() ?: BigDecimal.ZERO
+        val available = "$scaledAmount ${newToken.tokenSymbol}"
+        view?.showSourceAvailable(available)
+    }
+
     private suspend fun calculateRateAndFees(source: Token, destination: Token) {
         try {
             view?.showButtonText(R.string.swap_calculating_fees)
@@ -259,7 +267,7 @@ class SwapPresenter(
         }
     }
 
-    private fun calculateAmount(source: Token, destination: Token?) {
+    private fun calculateInputAmount(source: Token, destination: Token?) {
         if (destination == null) return
         calculationJob?.cancel()
         calculationJob = launch {
@@ -284,10 +292,18 @@ class SwapPresenter(
         setButtonEnabled()
     }
 
+    private suspend fun calculateMinOrderSize(fromMint: String, toMint: String) {
+        val minOrderSize = serumSwapInteractor.loadMinOrderSize(fromMint, toMint)
+        this.minOrderSize = minOrderSize
+    }
+
     private fun setButtonEnabled() {
-        val isMoreThanBalance = sourceAmount.toBigDecimalOrZero() > sourceToken?.total ?: BigDecimal.ZERO
-        val isEnabled = sourceAmount.toBigDecimalOrZero().compareTo(BigDecimal.ZERO) != 0 &&
-            !isMoreThanBalance && destinationToken != null
+        val sourceAmount = sourceAmount.toBigDecimalOrZero()
+        val minOrderSizeFailed = sourceAmount.isLessThan(minOrderSize) && minOrderSize.isNotZero()
+        val total = sourceToken?.total ?: BigDecimal.ZERO
+        val isMoreThanBalance = sourceAmount.isMoreThan(total)
+        val destinationValid = destinationToken != null
+        val isEnabled = sourceAmount.isNotZero() && !isMoreThanBalance && destinationValid && !minOrderSizeFailed
         view?.showButtonEnabled(isEnabled)
     }
 
@@ -296,11 +312,13 @@ class SwapPresenter(
         aroundValue = source.usdRate.multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
+        val minOrderSizeFailed = decimalAmount.isLessThan(minOrderSize)
 
         when {
             isMoreThanBalance -> view?.showButtonText(R.string.swap_funds_not_enough)
             decimalAmount.isZero() -> view?.showButtonText(R.string.main_enter_the_amount)
             destinationToken == null -> view?.showButtonText(R.string.main_select_token)
+            minOrderSizeFailed -> view?.showButtonText(R.string.swap_min_order_size_amount, minOrderSize.toString())
             else -> view?.showButtonText(R.string.main_swap_now)
         }
     }
