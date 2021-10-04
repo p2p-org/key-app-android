@@ -45,7 +45,7 @@ class SelectTokenViewHolder(
         }
         wrappedImageView.isVisible = item.isWrapped
         symbolTextView.text = item.tokenSymbol
-        nameTextView.text = item.tokenName
+        nameTextView.text = item.getFormattedAddress()
         valueTextView.text = item.getFormattedPrice()
         totalTextView.text = item.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, item.color))

@@ -27,7 +27,7 @@ interface SwapContract {
         fun showButtonEnabled(isEnabled: Boolean)
         fun showSwapSuccess(info: TransactionInfo)
         fun showSlippage(slippage: Double)
-        fun showButtonText(@StringRes textRes: Int)
+        fun showButtonText(@StringRes textRes: Int, value: String? = null)
         fun setNewAmount(sourceAmount: String)
         fun updateInputValue(available: BigDecimal)
         fun openSourceSelection(tokens: List<Token>)

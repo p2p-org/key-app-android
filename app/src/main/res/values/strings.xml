@@ -273,5 +273,6 @@
     <string name="receive_started_session">Created active session</string>
     <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
     <string name="receive_no_statuses_yet">No statuses yet</string>
+    <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
 
 </resources>

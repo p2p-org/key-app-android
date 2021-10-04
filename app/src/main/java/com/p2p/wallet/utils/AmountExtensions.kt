@@ -36,5 +36,6 @@ fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
 
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
+fun BigDecimal.isNotZero() = this.compareTo(BigDecimal.ZERO) != 0
 fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
 fun BigDecimal.isLessThan(value: BigDecimal) = this.compareTo(value) == -1
