@@ -22,7 +22,7 @@ class ReservingUsernamePresenter(
 
     override fun registerUsername() {
         launch {
-            interactor.registerUsername("")
+            interactor.registerUsername()
         }
     }
 }

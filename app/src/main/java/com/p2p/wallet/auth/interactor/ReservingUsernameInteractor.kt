@@ -1,6 +1,7 @@
 package com.p2p.wallet.auth.interactor
 
 import com.p2p.wallet.auth.api.UsernameCheckResponse
+import com.p2p.wallet.auth.model.NameRegisterBody
 import com.p2p.wallet.auth.repository.UsernameRemoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,7 +14,17 @@ class ReservingUsernameInteractor(
         usernameRemoteRepository.usernameCheck(username)
     }
 
-    suspend fun registerUsername(username: String): String = withContext(Dispatchers.IO) {
-        usernameRemoteRepository.usernameRegister(username)
+    suspend fun registerUsername(): String = withContext(Dispatchers.IO) {
+        usernameRemoteRepository.usernameRegister(
+            NameRegisterBody(
+                owner = "",
+                credentials = NameRegisterBody.Credentials(
+                    geeTestValidate = "",
+                    geeTestSecCode = "",
+                    geeTestChallenge = ""
+
+                )
+            )
+        )
     }
 }

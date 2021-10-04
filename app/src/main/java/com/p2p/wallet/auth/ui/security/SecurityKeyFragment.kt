@@ -6,7 +6,8 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.p2p.wallet.R
-import com.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import com.p2p.wallet.utils.attachAdapter
@@ -76,7 +77,8 @@ class SecurityKeyFragment :
     }
 
     override fun navigateToCreatePin() {
-        replaceFragment(ReservingUsernameFragment.create())
+//        replaceFragment(ReservingUsernameFragment.create())
+        replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
     override fun copyToClipboard(keys: List<String>) {
