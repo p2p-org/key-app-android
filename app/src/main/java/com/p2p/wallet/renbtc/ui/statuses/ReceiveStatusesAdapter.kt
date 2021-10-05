@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.ui.statuses
+package com.p2p.wallet.renbtc.ui.statuses
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.p2p.wallet.common.recycler.adapter.BaseDiffAdapter
 import com.p2p.wallet.common.recycler.adapter.BaseViewHolder
 import com.p2p.wallet.databinding.ItemReceiveStatusBinding
-import com.p2p.wallet.renBTC.model.RenVMStatus
+import com.p2p.wallet.renbtc.model.RenVMStatus
 import java.util.Date
 
 class ReceiveStatusesAdapter : BaseDiffAdapter<RenVMStatus>() {

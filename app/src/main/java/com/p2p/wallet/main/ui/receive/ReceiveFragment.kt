@@ -8,7 +8,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentReceiveBinding
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.renBTC.ui.main.RenBTCFragment
+import com.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import com.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.popBackStack

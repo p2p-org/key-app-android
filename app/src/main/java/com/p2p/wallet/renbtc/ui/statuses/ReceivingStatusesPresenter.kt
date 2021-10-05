@@ -1,7 +1,7 @@
-package com.p2p.wallet.renBTC.ui.statuses
+package com.p2p.wallet.renbtc.ui.statuses
 
 import com.p2p.wallet.common.mvp.BasePresenter
-import com.p2p.wallet.renBTC.interactor.RenBtcInteractor
+import com.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 

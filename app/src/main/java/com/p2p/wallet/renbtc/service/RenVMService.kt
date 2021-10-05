@@ -1,10 +1,10 @@
-package com.p2p.wallet.renBTC.service
+package com.p2p.wallet.renbtc.service
 
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import com.p2p.wallet.renBTC.interactor.RenBtcInteractor
+import com.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.model
+package com.p2p.wallet.renbtc.model
 
 import android.content.Context
 import com.p2p.wallet.R

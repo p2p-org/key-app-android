@@ -4,7 +4,7 @@ import android.content.Context
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.main.repository.MainLocalRepository
-import com.p2p.wallet.renBTC.service.RenVMService
+import com.p2p.wallet.renbtc.service.RenVMService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.Environment

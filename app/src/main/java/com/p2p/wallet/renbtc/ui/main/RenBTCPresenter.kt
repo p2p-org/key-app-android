@@ -1,12 +1,12 @@
-package com.p2p.wallet.renBTC.ui.main
+package com.p2p.wallet.renbtc.ui.main
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.CountDownTimer
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.qr.interactor.QrCodeInteractor
-import com.p2p.wallet.renBTC.interactor.RenBtcInteractor
-import com.p2p.wallet.renBTC.service.RenVMService
+import com.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import com.p2p.wallet.renbtc.service.RenVMService
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.scaleMedium
 import kotlinx.coroutines.Job

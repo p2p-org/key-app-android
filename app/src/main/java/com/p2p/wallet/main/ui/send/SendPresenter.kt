@@ -9,7 +9,7 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
-import com.p2p.wallet.renBTC.interactor.BurnBtcInteractor
+import com.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.isMoreThan
 import com.p2p.wallet.utils.isZero
