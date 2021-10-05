@@ -3,19 +3,18 @@ package com.p2p.wallet.auth.interactor
 import com.p2p.wallet.auth.api.UsernameCheckResponse
 import com.p2p.wallet.auth.model.NameRegisterBody
 import com.p2p.wallet.auth.repository.UsernameRemoteRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class ReservingUsernameInteractor(
     private val usernameRemoteRepository: UsernameRemoteRepository,
 ) {
 
-    suspend fun checkUsername(username: String): UsernameCheckResponse = withContext(Dispatchers.IO) {
-        usernameRemoteRepository.usernameCheck(username)
+    suspend fun checkUsername(username: String): UsernameCheckResponse {
+        return usernameRemoteRepository.checkUsername(username)
+//        return usernameRemoteRepository.checkUsername("kstep-test-1")
     }
 
-    suspend fun registerUsername(): String = withContext(Dispatchers.IO) {
-        usernameRemoteRepository.usernameRegister(
+    suspend fun registerUsername(): String {
+        return usernameRemoteRepository.registerUsername(
             NameRegisterBody(
                 owner = "",
                 credentials = NameRegisterBody.Credentials(

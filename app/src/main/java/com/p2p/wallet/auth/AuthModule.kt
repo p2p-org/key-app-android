@@ -53,7 +53,7 @@ object AuthModule {
                 .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("solanaUsername")) }
                 .build()
             val api = Retrofit.Builder()
-                .baseUrl(get<Context>().getString(R.string.solanaUsername))
+                .baseUrl(get<Context>().getString(R.string.feeRelayerBaseUrl))
                 .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
                 .client(client)
                 .build()

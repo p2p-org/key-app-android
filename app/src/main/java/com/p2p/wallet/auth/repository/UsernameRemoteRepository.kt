@@ -8,12 +8,12 @@ class UsernameRemoteRepository(
     private val api: UsernameApi,
 ) : UsernameRepository {
 
-    override suspend fun usernameCheck(username: String): UsernameCheckResponse {
+    override suspend fun checkUsername(username: String): UsernameCheckResponse {
         val response = api.usernameCheck(username)
         return response
     }
 
-    override suspend fun usernameRegister(body: NameRegisterBody): String {
+    override suspend fun registerUsername(body: NameRegisterBody): String {
         val response = api.usernameRegister(body)
         return response
     }

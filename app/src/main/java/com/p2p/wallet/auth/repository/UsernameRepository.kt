@@ -4,6 +4,6 @@ import com.p2p.wallet.auth.api.UsernameCheckResponse
 import com.p2p.wallet.auth.model.NameRegisterBody
 
 interface UsernameRepository {
-    suspend fun usernameCheck(username: String): UsernameCheckResponse
-    suspend fun usernameRegister(body: NameRegisterBody): String
+    suspend fun checkUsername(username: String): UsernameCheckResponse
+    suspend fun registerUsername(body: NameRegisterBody): String
 }

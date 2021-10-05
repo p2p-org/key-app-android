@@ -11,6 +11,6 @@ interface UsernameApi {
     @GET("name_register/{username}")
     suspend fun usernameCheck(@Path("username") username: String): UsernameCheckResponse
 
-    @POST("name_register/{username}")
+    @POST("name_register/")
     suspend fun usernameRegister(@Body body: NameRegisterBody): String
 }

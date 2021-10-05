@@ -18,6 +18,4 @@
     <string name="transakApiSecret" tools:ignore="TypographyDashes,Typos">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBUElfS0VZIjoiYmVmMTlhNTUtNjg3MC00NTJhLWI5OTctM2Q2M2ViNTkyMDVkIiwiaWF0IjoxNjI2MzYzMzg0fQ.iSj4iY1i5Erem1MI33nM87a8TjibF08Qs6M_54X_rXo</string>
 
     <string name="blockstreamUrl">https://blockstream.info/</string>
-
-    <string name="solanaUsername">https://fee-relayer.solana.p2p.org/</string>
 </resources>
