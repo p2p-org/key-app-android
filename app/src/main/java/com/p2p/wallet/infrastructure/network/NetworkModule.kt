@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
+import com.p2p.wallet.auth.AuthModule.RESERVING_USERNAME_QUALIFIER
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import com.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
@@ -19,6 +20,7 @@ import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.user.UserModule.createLoggingInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -47,7 +49,6 @@ object NetworkModule : InjectionModule {
 
         single {
             val serverErrorInterceptor = ServerErrorInterceptor(get())
-//            val serverErrorInterceptor = null
             val serum = getRetrofit(Environment.SOLANA.endpoint, interceptor = serverErrorInterceptor)
             val serumRpcApi = serum.create(RpcApi::class.java)
 
@@ -60,10 +61,14 @@ object NetworkModule : InjectionModule {
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, testnetRpcApi, get())
         } bind RpcRepository::class
 
-        single {
-//            val errorInterceptor
+        single(named(RESERVING_USERNAME_QUALIFIER)) {
             val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
-            val api = getRetrofit(baseUrl, "FeeRelayer", interceptor = null).create(FeeRelayerApi::class.java)
+            getRetrofit(baseUrl, "FeeRelayer", interceptor = null)
+        }
+
+        single {
+            val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
+            val api = retrofit.create(FeeRelayerApi::class.java)
             FeeRelayerRemoteRepository(api)
         } bind FeeRelayerRepository::class
     }

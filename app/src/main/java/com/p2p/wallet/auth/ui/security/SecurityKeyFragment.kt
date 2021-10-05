@@ -77,8 +77,8 @@ class SecurityKeyFragment :
     }
 
     override fun navigateToCreatePin() {
-        replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
 //        replaceFragment(ReservingUsernameFragment.create())
+        replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
     override fun copyToClipboard(keys: List<String>) {

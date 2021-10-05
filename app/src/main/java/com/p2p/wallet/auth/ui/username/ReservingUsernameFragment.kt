@@ -19,6 +19,8 @@ import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
+import androidx.core.widget.doAfterTextChanged
+
 class ReservingUsernameFragment :
     BaseMvpFragment<ReservingUsernameContract.View,
         ReservingUsernameContract.Presenter>(R.layout.fragment_reserving_username),
@@ -45,6 +47,12 @@ class ReservingUsernameFragment :
             youCanSkipTextView.text = buildClickableText()
             youCanSkipTextView.movementMethod = LinkMovementMethod.getInstance()
             youCanSkipTextView.highlightColor = Color.TRANSPARENT
+
+            usernameEditText.doAfterTextChanged { presenter.checkUsername(it.toString()) }
+
+            enterUserNameButton.setOnClickListener {
+                presenter.registerUsername()
+            }
         }
     }
 
