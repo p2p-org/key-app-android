@@ -7,6 +7,8 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.widget.doAfterTextChanged
+import com.geetest.sdk.GT3GeetestUtils
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import com.p2p.wallet.auth.ui.pin.create.PinLaunchMode
@@ -18,8 +20,6 @@ import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
-
-import androidx.core.widget.doAfterTextChanged
 
 class ReservingUsernameFragment :
     BaseMvpFragment<ReservingUsernameContract.View,
@@ -33,6 +33,12 @@ class ReservingUsernameFragment :
     override val presenter: ReservingUsernameContract.Presenter by inject()
 
     private val binding: FragmentReservingUsernameBinding by viewBinding()
+    private var gt3GeeTestUtils: GT3GeetestUtils? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        gt3GeeTestUtils = GT3GeetestUtils(requireContext())
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
