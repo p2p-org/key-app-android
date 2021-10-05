@@ -13,9 +13,11 @@ import org.p2p.solanaj.utils.crypto.HashingUtils
 import com.p2p.wallet.common.crypto.keystore.DecodeCipher
 import com.p2p.wallet.common.crypto.keystore.EncodeCipher
 import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
+import com.p2p.wallet.common.di.AppScope
 import com.p2p.wallet.infrastructure.security.SecureStorage
 import com.p2p.wallet.main.repository.MainLocalRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
@@ -158,6 +160,14 @@ class AuthInteractor(
         sharedPreferences.edit { clear() }
         secureStorage.clear()
         mainLocalRepository.clear()
+    }
+
+    fun clear() {
+        AppScope.launch {
+            sharedPreferences.edit { clear() }
+            secureStorage.clear()
+            mainLocalRepository.clear()
+        }
     }
 
     private fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED

@@ -1,16 +1,24 @@
 package com.p2p.wallet.root.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import com.p2p.wallet.common.mvp.BaseMvpActivity
+import com.p2p.wallet.debugdrawer.DebugDrawer
 import com.p2p.wallet.utils.edgetoedge.applyTranslucentFlag
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
 import org.koin.android.ext.android.inject
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
+
+    companion object {
+        fun createIntent(context: Context) = Intent(context, RootActivity::class.java)
+    }
 
     override val presenter: RootContract.Presenter by inject()
 
@@ -25,6 +33,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         }
 
         presenter.loadPricesAndBids()
+        if (BuildConfig.DEBUG) DebugDrawer.install(this)
     }
 
     override fun navigateToOnboarding() {
