@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.kits.transaction.SwapDetails.KNOWN_SWAP_PROGRAM_IDS
+import org.p2p.solanaj.kits.transaction.SwapDetails.SWAP_PROGRAM_ID
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -26,13 +26,12 @@ class OrcaSwapInteractor(
 ) {
 
     suspend fun loadAllPools() {
-        val swapProgramId = KNOWN_SWAP_PROGRAM_IDS.first()
+        val swapProgramId = SWAP_PROGRAM_ID
         val pools = swapRepository.loadPoolInfoList(swapProgramId)
         swapLocalRepository.setPools(pools)
     }
 
-    fun getAllPools() =
-        swapLocalRepository.getPools()
+    fun getAllPools() = swapLocalRepository.getPools()
 
     suspend fun findPool(sourceMint: String, destinationMint: String): Pool.PoolInfo? = withContext(Dispatchers.IO) {
         val allPools = swapLocalRepository.getPools()

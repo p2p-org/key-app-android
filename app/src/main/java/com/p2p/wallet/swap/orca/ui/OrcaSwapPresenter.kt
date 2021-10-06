@@ -78,15 +78,7 @@ class OrcaSwapPresenter(
         launch {
             val tokens = userInteractor.getUserTokens()
             val pools = swapInteractor.getAllPools()
-            val result = tokens.filter { token ->
-
-                if (destinationToken == null) return@filter true
-
-                pools.any {
-                    it.swapData.mintA.toBase58() == token.mintAddress ||
-                        it.swapData.mintB.toBase58() == token.mintAddress
-                }
-            }
+            val result = tokens.filter { token -> filterSourceTokens(token, pools) }
             view?.openSourceSelection(result)
         }
     }
@@ -95,15 +87,7 @@ class OrcaSwapPresenter(
         launch {
             val tokens = userInteractor.getUserTokens()
             val pools = swapInteractor.getAllPools()
-
-            val result = tokens.filter { token ->
-                pools.any {
-                    it.swapData.mintB.toBase58() == token.mintAddress &&
-                        it.swapData.mintA.toBase58() == sourceToken.mintAddress ||
-                        it.swapData.mintA.toBase58() == token.mintAddress &&
-                        it.swapData.mintB.toBase58() == sourceToken.mintAddress
-                } && token.publicKey != sourceToken.publicKey
-            }
+            val result = tokens.filter { token -> filterDestinationTokens(pools, token) }
             view?.openDestinationSelection(result)
         }
     }
@@ -299,6 +283,27 @@ class OrcaSwapPresenter(
         view?.hideCalculations()
         view?.showButtonText(R.string.main_select_token)
     }
+
+    private fun filterSourceTokens(token: Token, pools: List<Pool.PoolInfo>): Boolean {
+        if (token.isZero) return false
+        if (destinationToken == null) return true
+
+        return pools.any {
+            val containsMintA = it.swapData.mintA.toBase58() == token.mintAddress
+            val containsMintB = it.swapData.mintB.toBase58() == token.mintAddress
+            containsMintA || containsMintB
+        }
+    }
+
+    private fun filterDestinationTokens(
+        pools: List<Pool.PoolInfo>,
+        token: Token
+    ) = pools.any {
+        it.swapData.mintB.toBase58() == token.mintAddress &&
+            it.swapData.mintA.toBase58() == sourceToken.mintAddress ||
+            it.swapData.mintA.toBase58() == token.mintAddress &&
+            it.swapData.mintB.toBase58() == sourceToken.mintAddress
+    } && token.publicKey != sourceToken.publicKey
 
     private fun setButtonEnabled() {
         val isMoreThanBalance = sourceAmount.toBigDecimalOrZero() > sourceToken.total
