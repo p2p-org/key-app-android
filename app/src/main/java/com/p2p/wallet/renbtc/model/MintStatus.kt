@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.model
+package com.p2p.wallet.renbtc.model
 
 enum class MintStatus(val stringValue: String) {
     DONE("done"),

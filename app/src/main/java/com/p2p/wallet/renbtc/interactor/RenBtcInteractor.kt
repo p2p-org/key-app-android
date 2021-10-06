@@ -1,12 +1,12 @@
-package com.p2p.wallet.renBTC.interactor
+package com.p2p.wallet.renbtc.interactor
 
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.RenBTCPayment
 import com.p2p.wallet.main.repository.RenBTCRepository
-import com.p2p.wallet.renBTC.model.MintStatus
-import com.p2p.wallet.renBTC.model.RenVMStatus
-import com.p2p.wallet.renBTC.ui.main.BTC_DECIMALS
+import com.p2p.wallet.renbtc.model.MintStatus
+import com.p2p.wallet.renbtc.model.RenVMStatus
+import com.p2p.wallet.renbtc.ui.main.BTC_DECIMALS
 import com.p2p.wallet.utils.fromLamports
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers

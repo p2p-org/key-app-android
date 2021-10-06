@@ -30,7 +30,7 @@
 
         </activity>
 
-        <service android:name=".renBTC.service.RenVMService" />
+        <service android:name=".renbtc.service.RenVMService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

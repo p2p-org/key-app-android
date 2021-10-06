@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.interactor
+package com.p2p.wallet.renbtc.interactor
 
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider

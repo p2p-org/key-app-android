@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
-import com.p2p.wallet.renBTC.api.RenBTCApi
+import com.p2p.wallet.renbtc.api.RenBTCApi
 import com.p2p.wallet.main.interactor.SendInteractor
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.repository.MainDatabaseRepository
@@ -20,12 +20,12 @@ import com.p2p.wallet.main.ui.receive.solana.ReceivePresenter
 import com.p2p.wallet.main.ui.receive.solana.ReceiveSolanaContract
 import com.p2p.wallet.main.ui.send.SendContract
 import com.p2p.wallet.main.ui.send.SendPresenter
-import com.p2p.wallet.renBTC.interactor.BurnBtcInteractor
-import com.p2p.wallet.renBTC.interactor.RenBtcInteractor
-import com.p2p.wallet.renBTC.ui.main.RenBTCContract
-import com.p2p.wallet.renBTC.ui.main.RenBTCPresenter
-import com.p2p.wallet.renBTC.ui.statuses.ReceivingStatusesContract
-import com.p2p.wallet.renBTC.ui.statuses.ReceivingStatusesPresenter
+import com.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import com.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import com.p2p.wallet.renbtc.ui.main.RenBTCContract
+import com.p2p.wallet.renbtc.ui.main.RenBTCPresenter
+import com.p2p.wallet.renbtc.ui.statuses.ReceivingStatusesContract
+import com.p2p.wallet.renbtc.ui.statuses.ReceivingStatusesPresenter
 import com.p2p.wallet.user.UserModule.createLoggingInterceptor
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind

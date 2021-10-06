@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.ui.statuses
+package com.p2p.wallet.renbtc.ui.statuses
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentReceivingStatusesBinding
-import com.p2p.wallet.renBTC.model.RenVMStatus
+import com.p2p.wallet.renbtc.model.RenVMStatus
 import com.p2p.wallet.utils.attachAdapter
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.viewbinding.viewBinding

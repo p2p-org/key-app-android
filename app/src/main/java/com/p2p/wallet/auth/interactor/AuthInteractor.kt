@@ -9,16 +9,16 @@ import androidx.core.content.edit
 import com.p2p.wallet.auth.model.BiometricStatus
 import com.p2p.wallet.auth.model.BiometricType
 import com.p2p.wallet.auth.model.SignInResult
-import org.p2p.solanaj.utils.crypto.HashingUtils
 import com.p2p.wallet.common.crypto.keystore.DecodeCipher
 import com.p2p.wallet.common.crypto.keystore.EncodeCipher
 import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import com.p2p.wallet.common.di.AppScope
-import com.p2p.wallet.infrastructure.security.SecureStorage
+import com.p2p.wallet.infrastructure.security.SecureStorageContract
 import com.p2p.wallet.main.repository.MainLocalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.p2p.solanaj.utils.crypto.HashingUtils
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
 private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
@@ -33,7 +33,7 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
 
 class AuthInteractor(
     private val keyStoreWrapper: KeyStoreWrapper,
-    private val secureStorage: SecureStorage,
+    private val secureStorage: SecureStorageContract,
     private val sharedPreferences: SharedPreferences,
     private val biometricManager: BiometricManager,
     private val mainLocalRepository: MainLocalRepository

@@ -1,8 +1,8 @@
-package com.p2p.wallet.renBTC.ui.statuses
+package com.p2p.wallet.renbtc.ui.statuses
 
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
-import com.p2p.wallet.renBTC.model.RenVMStatus
+import com.p2p.wallet.renbtc.model.RenVMStatus
 
 interface ReceivingStatusesContract {
 

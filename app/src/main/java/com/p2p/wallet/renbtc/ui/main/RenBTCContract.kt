@@ -1,10 +1,10 @@
-package com.p2p.wallet.renBTC.ui.main
+package com.p2p.wallet.renbtc.ui.main
 
 import android.content.Context
 import android.graphics.Bitmap
 import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
-import com.p2p.wallet.renBTC.model.RenVMStatus
+import com.p2p.wallet.renbtc.model.RenVMStatus
 
 interface RenBTCContract {
 

@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.api
+package com.p2p.wallet.renbtc.api
 
 import com.google.gson.annotations.SerializedName
 

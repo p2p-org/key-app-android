@@ -1,6 +1,6 @@
 package com.p2p.wallet.main.repository
 
-import com.p2p.wallet.renBTC.api.RenBTCApi
+import com.p2p.wallet.renbtc.api.RenBTCApi
 import com.p2p.wallet.main.db.SessionDao
 import com.p2p.wallet.main.db.SessionEntity
 import com.p2p.wallet.main.model.RenBTCPayment

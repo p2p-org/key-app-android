@@ -1,4 +1,4 @@
-package com.p2p.wallet.renBTC.ui.main
+package com.p2p.wallet.renbtc.ui.main
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -8,8 +8,8 @@ import androidx.core.view.isVisible
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentRenBtcBinding
-import com.p2p.wallet.renBTC.model.RenVMStatus
-import com.p2p.wallet.renBTC.ui.statuses.ReceivingStatusesFragment
+import com.p2p.wallet.renbtc.model.RenVMStatus
+import com.p2p.wallet.renbtc.ui.statuses.ReceivingStatusesFragment
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.cutMiddle
