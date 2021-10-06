@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.p2p.wallet.common.crypto.keystore.DecodeCipher
 import com.p2p.wallet.common.crypto.keystore.EncodeCipher
-import com.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.solanaj.utils.crypto.Hex
 
 class SimpleSecureStorage(
