@@ -85,6 +85,7 @@
     <string name="auth_you_can_skip">You can also skip this step and reserve a username later.</string>
     <string name="auth_your_username">Your username</string>
     <string name="auth_enter_your_username">Enter your username</string>
+    <string name="auth_reserve">Reserve</string>
     <string name="auth_use_any_latin">Use any latin and special symbols or emojis</string>
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>

@@ -138,7 +138,7 @@
             android:background="@drawable/bg_blue_selector"
             android:enabled="false"
             android:foreground="?selectableItemBackground"
-            android:text="@string/auth_enter_your_username"
+            android:text="@string/auth_reserve"
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="?colorElementPrimary"

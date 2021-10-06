@@ -7,6 +7,7 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import com.geetest.sdk.GT3GeetestUtils
 import com.p2p.wallet.R
@@ -20,6 +21,11 @@ import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
+import com.geetest.sdk.GT3Listener
+
+import com.geetest.sdk.GT3ConfigBean
+import com.geetest.sdk.GT3ErrorBean
+import com.p2p.wallet.utils.toast
 
 class ReservingUsernameFragment :
     BaseMvpFragment<ReservingUsernameContract.View,
@@ -38,6 +44,39 @@ class ReservingUsernameFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         gt3GeeTestUtils = GT3GeetestUtils(requireContext())
+        val gt3ConfigBean = GT3ConfigBean()
+        gt3ConfigBean.pattern = 2
+        gt3ConfigBean.isCanceledOnTouchOutside = false
+        gt3ConfigBean.lang = null
+        gt3ConfigBean.timeout = 10000
+        gt3ConfigBean.webviewTimeout = 10000
+        gt3ConfigBean.listener = object : GT3Listener() {
+
+            override fun onReceiveCaptchaCode(p0: Int) {
+                toast("onReceiveCaptchaCode", Toast.LENGTH_SHORT)
+            }
+
+            override fun onStatistics(p0: String?) {
+                toast("onStatistics", Toast.LENGTH_SHORT)
+            }
+
+            override fun onClosed(p0: Int) {
+                toast("onClosed", Toast.LENGTH_SHORT)
+            }
+
+            override fun onSuccess(p0: String?) {
+                toast("onSuccess", Toast.LENGTH_SHORT)
+            }
+
+            override fun onFailed(p0: GT3ErrorBean?) {
+                toast("onFailed", Toast.LENGTH_SHORT)
+            }
+
+            override fun onButtonClick() {
+                toast("onButtonClick", Toast.LENGTH_SHORT)
+            }
+        }
+        gt3GeeTestUtils?.init(gt3ConfigBean)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,10 +95,17 @@ class ReservingUsernameFragment :
 
             usernameEditText.doAfterTextChanged { presenter.checkUsername(it.toString()) }
 
+            enterUserNameButton.isEnabled = true
             enterUserNameButton.setOnClickListener {
-                presenter.registerUsername()
+//                gt3GeeTestUtils?.startCustomFlow()
+//                presenter.registerUsername()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        gt3GeeTestUtils?.destory()
     }
 
     override fun navigateToPinCode() {
