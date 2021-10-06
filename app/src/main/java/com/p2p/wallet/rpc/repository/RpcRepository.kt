@@ -4,11 +4,13 @@ import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.SignatureInformation
+import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import java.math.BigInteger
 
@@ -19,6 +21,8 @@ interface RpcRepository {
     suspend fun simulateTransaction(serializedTransaction: String): String
     suspend fun getFees(commitment: String?): BigInteger
 
+    suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance
+    suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
     suspend fun getAccountInfo(account: PublicKey): AccountInfo?
     suspend fun getProgramAccounts(
         publicKey: PublicKey,

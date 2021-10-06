@@ -205,6 +205,20 @@ public class TokenSwapProgram {
             curveParameters = readBytes(32);
         }
 
+        public TokenSwapData swapMintData() {
+            PublicKey mintAOld = mintA;
+            mintA = mintB;
+            mintB = mintAOld;
+            return this;
+        }
+
+        public TokenSwapData swapTokenAccount() {
+            PublicKey tokenAccountAOld = tokenAccountA;
+            tokenAccountA = tokenAccountB;
+            tokenAccountB = tokenAccountAOld;
+            return this;
+        }
+
         public static TokenSwapData decode(byte[] data) {
             return new TokenSwapData(data);
         }

@@ -32,7 +32,6 @@ object DebugDrawer : KoinComponent {
         val lumberYard = LumberYard.getInstance(application)
         lumberYard.cleanUp()
         Timber.plant(lumberYard.tree())
-        Timber.plant(Timber.DebugTree())
     }
 
     fun install(activity: FragmentActivity) {

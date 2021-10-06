@@ -3,6 +3,7 @@ package com.p2p.wallet.user
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEOUT_SECONDS
@@ -34,6 +35,7 @@ object UserModule : InjectionModule {
         single(named(CRYPTO_COMPARE_QUALIFIER)) {
             val client = createOkHttpClient()
                 .addInterceptor(CompareTokenInterceptor(get()))
+                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("CryptoCompare")) }
                 .build()
 
             Retrofit.Builder()
