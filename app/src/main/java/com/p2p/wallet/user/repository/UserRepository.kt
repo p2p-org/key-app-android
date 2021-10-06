@@ -18,7 +18,7 @@ import java.math.BigDecimal
 interface UserRepository {
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokens(): List<Token>
-    suspend fun getRate(source: String, destination: String): BigDecimal
+    suspend fun getRate(sourceSymbol: String, destinationSymbol: String): BigDecimal
 }
 
 class UserRepositoryImpl(
@@ -83,10 +83,10 @@ class UserRepositoryImpl(
         return@withContext result
     }
 
-    override suspend fun getRate(source: String, destination: String): BigDecimal {
-        val json = compareApi.getPrice(source, destination)
-        val price = json.getAsJsonPrimitive(destination)?.asBigDecimal ?: BigDecimal.ZERO
-        return TokenPrice(source, price.scaleMedium()).price
+    override suspend fun getRate(sourceSymbol: String, destinationSymbol: String): BigDecimal {
+        val json = compareApi.getPrice(sourceSymbol, destinationSymbol)
+        val price = json.getAsJsonPrimitive(destinationSymbol)?.asBigDecimal ?: BigDecimal.ZERO
+        return TokenPrice(sourceSymbol, price.scaleMedium()).price
     }
 
     private fun addDevnetRenBTC(account: Account): Token? {

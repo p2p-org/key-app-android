@@ -192,6 +192,7 @@
     <string name="swap_settings">Swap settings</string>
     <string name="swap_funds_not_enough">Don\'t go over the available funds</string>
     <string name="swap_calculating_fees">Calculating fees</string>
+    <string name="swap_calculating_rates_and_fees">Calculating rates and fees</string>
     <string name="swap_max_available">Max</string>
 
     <!-- details -->

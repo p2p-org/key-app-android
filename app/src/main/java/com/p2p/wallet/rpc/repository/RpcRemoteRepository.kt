@@ -7,6 +7,7 @@ import com.p2p.wallet.rpc.api.RpcApi
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.MultipleAccountsInfo
+import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
@@ -15,7 +16,9 @@ import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
+import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
@@ -100,6 +103,22 @@ class RpcRemoteRepository(
 
         val response = rpcApi.getFees(rpcRequest).result
         return BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
+    }
+
+    override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
+        val params = listOf(account.toString())
+        val rpcRequest = RpcRequest("getTokenAccountBalance", params)
+        return rpcApi.getTokenAccountBalance(rpcRequest).result
+    }
+
+    override suspend fun getPools(account: PublicKey): List<Pool.PoolInfo> {
+        val params = listOf(
+            account.toString(),
+            ConfigObjects.ProgramAccountConfig(RpcSendTransactionConfig.Encoding.base64)
+        )
+        val rpcRequest = RpcRequest("getProgramAccounts", params)
+        val response = rpcApi.getProgramAccounts(rpcRequest).result
+        return response.map { Pool.PoolInfo.fromProgramAccount(it) }
     }
 
     override suspend fun getAccountInfo(account: PublicKey): AccountInfo? {

@@ -52,6 +52,14 @@ class SecretKeyInteractor(
     suspend fun generateSecretKeys(): List<String> =
         authRepository.generatePhrase()
 
+    fun getSecretKeys(): List<String> =
+        sharedPreferences.getString(KEY_PHRASES, "").orEmpty().split(",")
+
+    fun getCurrentDerivationPath(): DerivationPath {
+        val path = sharedPreferences.getString(KEY_DERIVATION_PATH, null) ?: DerivationPath.BIP44.stringValue
+        return DerivationPath.parse(path)
+    }
+
     fun verifySeedPhrase(secretKeys: List<SecretKey>): SeedPhraseResult {
         val words = English.INSTANCE.words
         val data = secretKeys.map { it.text }.filter { it.isNotEmpty() }

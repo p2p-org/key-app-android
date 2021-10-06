@@ -2,15 +2,20 @@ package com.p2p.wallet.swap
 
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.swap.interactor.MarketInteractor
-import com.p2p.wallet.swap.interactor.OpenOrdersInteractor
-import com.p2p.wallet.swap.interactor.SerializationInteractor
-import com.p2p.wallet.swap.interactor.SerumSwapInteractor
-import com.p2p.wallet.swap.interactor.SwapInstructionsInteractor
-import com.p2p.wallet.swap.interactor.SwapInteractor
-import com.p2p.wallet.swap.interactor.SwapMarketInteractor
-import com.p2p.wallet.swap.ui.SwapContract
-import com.p2p.wallet.swap.ui.SwapPresenter
+import com.p2p.wallet.swap.orca.interactor.OrcaSwapInteractor
+import com.p2p.wallet.swap.orca.repository.OrcaSwapInMemoryRepository
+import com.p2p.wallet.swap.orca.repository.OrcaSwapLocalRepository
+import com.p2p.wallet.swap.orca.repository.OrcaSwapRemoteRepository
+import com.p2p.wallet.swap.orca.repository.OrcaSwapRepository
+import com.p2p.wallet.swap.orca.ui.OrcaSwapContract
+import com.p2p.wallet.swap.orca.ui.OrcaSwapPresenter
+import com.p2p.wallet.swap.serum.interactor.SerumMarketInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumOpenOrdersInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapAmountInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInstructionsInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapSerializationInteractor
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -29,20 +34,19 @@ object SwapModule : InjectionModule {
             )
         }
 
-        factory { MarketInteractor(get()) }
-        factory { OpenOrdersInteractor(get()) }
-        factory { SerializationInteractor(get(), get()) }
-        factory { SwapInteractor(get(), get()) }
-        factory { SwapInstructionsInteractor(get()) }
-        factory { SwapMarketInteractor(get()) }
+        factory { SerumMarketInteractor(get()) }
+        factory { SerumOpenOrdersInteractor(get()) }
+        factory { SerumSwapSerializationInteractor(get(), get()) }
+        factory { SerumSwapAmountInteractor(get(), get()) }
+        factory { SerumSwapInstructionsInteractor(get()) }
+        factory { SerumSwapMarketInteractor(get()) }
+
+        factory { OrcaSwapInteractor(get(), get(), get(), get(), get()) }
+        factory { OrcaSwapRemoteRepository(get()) } bind OrcaSwapRepository::class
+        factory { OrcaSwapInMemoryRepository() } bind OrcaSwapLocalRepository::class
 
         factory { (token: Token?) ->
-            SwapPresenter(
-                initialToken = token,
-                userInteractor = get(),
-                swapInteractor = get(),
-                serumSwapInteractor = get()
-            )
-        } bind SwapContract.Presenter::class
+            OrcaSwapPresenter(token, get(), get())
+        } bind OrcaSwapContract.Presenter::class
     }
 }

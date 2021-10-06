@@ -65,8 +65,8 @@ class UserInteractor(
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
 
-    suspend fun getPriceByToken(source: String, destination: String): BigDecimal =
-        userRepository.getRate(source, destination)
+    suspend fun getPriceByToken(sourceSymbol: String, destinationSymbol: String): BigDecimal =
+        userRepository.getRate(sourceSymbol, destinationSymbol)
 
     suspend fun clearMemoryData() {
         mainLocalRepository.setTokens(emptyList())
