@@ -5,4 +5,11 @@ data class PriceData(
     val destinationAmount: String,
     val sourceSymbol: String,
     val destinationSymbol: String
-)
+) {
+
+    fun getPrice(isReverse: Boolean) = if (isReverse) {
+        "$destinationAmount $sourceSymbol per $destinationSymbol"
+    } else {
+        "$sourceAmount $destinationSymbol per $sourceSymbol"
+    }
+}

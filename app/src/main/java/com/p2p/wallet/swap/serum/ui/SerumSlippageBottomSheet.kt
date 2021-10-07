@@ -14,12 +14,12 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 
 class SerumSlippageBottomSheet(
-    private val onSlippageSelected: (Double) -> Unit
+    private val onSlippageSelected: (Slippage) -> Unit
 ) : BottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_SLIPPAGE = "EXTRA_SLIPPAGE"
-        fun show(fm: FragmentManager, currentSlippage: Slippage, onSlippageSelected: (Double) -> Unit) {
+        fun show(fm: FragmentManager, currentSlippage: Slippage, onSlippageSelected: (Slippage) -> Unit) {
             SerumSlippageBottomSheet(onSlippageSelected)
                 .withArgs(EXTRA_SLIPPAGE to currentSlippage)
                 .show(fm, SerumSlippageBottomSheet::javaClass.name)
@@ -30,7 +30,7 @@ class SerumSlippageBottomSheet(
 
     private val initialSlippage: Slippage by args(EXTRA_SLIPPAGE)
 
-    private var slippage: Double = 0.0
+    private var slippage: Slippage = Slippage.MIN
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_slippage_bottom_sheet, container, false)
