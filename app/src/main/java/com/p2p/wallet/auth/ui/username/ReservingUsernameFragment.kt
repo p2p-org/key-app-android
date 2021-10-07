@@ -25,7 +25,10 @@ import com.geetest.sdk.GT3Listener
 
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
+import com.geetest.sdk.GT3LoadImageView
+import com.geetest.sdk.utils.GT3ServiceNode
 import com.p2p.wallet.utils.toast
+import kotlin.math.abs
 
 class ReservingUsernameFragment :
     BaseMvpFragment<ReservingUsernameContract.View,
@@ -50,6 +53,31 @@ class ReservingUsernameFragment :
         gt3ConfigBean.lang = null
         gt3ConfigBean.timeout = 10000
         gt3ConfigBean.webviewTimeout = 10000
+
+        // 设置验证服务集群节点, 默认为中国节点, 使用其他节点需要相应配置, 否则无法使用验证
+//        val node: String = preferences.getString("settings_node", "default")
+//        when (node) {
+//            "na" -> gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_NORTH_AMERICA
+//            "ng" -> gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_NORTH_GOOGLE
+//            "ipv6" -> gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_IPV6
+//            else -> gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_CHINA
+//        }
+
+        gt3ConfigBean.gt3ServiceNode = GT3ServiceNode.NODE_CHINA
+        // 设置自定义 LoadingView
+        // 设置自定义 LoadingView
+        val gt3LoadImageView = GT3LoadImageView(activity)
+        gt3LoadImageView.iconRes = R.drawable.ic_appearance
+        gt3LoadImageView.loadViewWidth = 48 // 单位dp
+
+        gt3LoadImageView.loadViewHeight = 48 // 单位dp
+
+        gt3ConfigBean.loadImageView = gt3LoadImageView
+//        val radius: Int = preferences.getInt("settings_switch_corners_radius", 0)
+        val radius: Int = 0
+        gt3ConfigBean.corners = abs(radius)
+        gt3ConfigBean.dialogOffsetY = radius
+
         gt3ConfigBean.listener = object : GT3Listener() {
 
             override fun onReceiveCaptchaCode(p0: Int) {
