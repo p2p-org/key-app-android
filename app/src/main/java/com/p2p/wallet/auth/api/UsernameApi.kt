@@ -9,8 +9,11 @@ import retrofit2.http.Path
 interface UsernameApi {
 
     @GET("name_register/{username}")
-    suspend fun usernameCheck(@Path("username") username: String): UsernameCheckResponse
+    suspend fun checkUsername(@Path("username") username: String): UsernameCheckResponse
+
+    @GET("name_register/auth/gt/register")
+    suspend fun checkCaptcha(): GetCaptchaResponse
 
     @POST("name_register/")
-    suspend fun usernameRegister(@Body body: NameRegisterBody): String
+    suspend fun registerUsername(@Body body: NameRegisterBody): String
 }

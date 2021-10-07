@@ -11,6 +11,7 @@ interface ReservingUsernameContract {
 
     interface Presenter : MvpPresenter<View> {
         fun checkUsername(username: String)
+        fun checkCaptcha()
         fun registerUsername()
     }
 }

@@ -25,6 +25,12 @@ class ReservingUsernamePresenter(
         }
     }
 
+    override fun checkCaptcha() {
+        launch {
+            interactor.checkCaptcha()
+        }
+    }
+
     override fun registerUsername() {
         launch {
             interactor.registerUsername()
