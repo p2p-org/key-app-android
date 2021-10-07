@@ -137,18 +137,11 @@ class OrcaSwapFragment :
     override fun showPrice(priceData: PriceData) {
         binding.priceGroup.isVisible = true
 
-        val result = "${priceData.sourceAmount} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
-        binding.exchangeTextView.text = result
-
         var isReverse = false
+        binding.exchangeTextView.text = priceData.getPrice(isReverse)
         binding.reverseImageView.setOnClickListener {
             isReverse = !isReverse
-            val updated = if (isReverse) {
-                "${priceData.destinationAmount} ${priceData.destinationSymbol} per ${priceData.sourceSymbol}"
-            } else {
-                "${priceData.sourceAmount} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
-            }
-
+            val updated = priceData.getPrice(isReverse)
             binding.exchangeTextView.text = updated
         }
 
@@ -164,8 +157,8 @@ class OrcaSwapFragment :
     @SuppressLint("SetTextI18n")
     override fun showCalculations(data: OrcaAmountData) {
         with(binding) {
-            receiveTextView.text = getString(R.string.main_swap_min_receive, data.estimatedReceiveAmount)
-            destinationAmountTextView.text = data.destinationAmount
+            receiveTextView.text = getString(R.string.main_swap_min_receive, data.minReceiveAmount)
+            destinationAmountTextView.text = data.estimatedDestinationAmount
         }
     }
 
@@ -199,8 +192,8 @@ class OrcaSwapFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showSlippage(slippage: Double) {
-        binding.slippageView.setBottomText("$slippage %")
+    override fun showSlippage(slippage: Slippage) {
+        binding.slippageView.setBottomText("${slippage.percentValue} %")
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {

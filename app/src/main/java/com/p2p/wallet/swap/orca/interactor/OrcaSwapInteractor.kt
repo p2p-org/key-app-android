@@ -1,23 +1,26 @@
 package com.p2p.wallet.swap.orca.interactor
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.restore.interactor.SecretKeyInteractor
+import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.orca.model.OrcaSwapRequest
 import com.p2p.wallet.swap.orca.model.OrcaSwapResult
 import com.p2p.wallet.swap.orca.repository.OrcaSwapLocalRepository
 import com.p2p.wallet.swap.orca.repository.OrcaSwapRepository
 import com.p2p.wallet.user.interactor.UserInteractor
-import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.transaction.SwapDetails.SWAP_PROGRAM_ID
 import org.p2p.solanaj.model.types.TokenAccountBalance
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import java.math.BigDecimal
 import java.math.BigInteger
 
 class OrcaSwapInteractor(
+    private val rpcRepository: RpcRepository,
     private val swapRepository: OrcaSwapRepository,
     private val swapLocalRepository: OrcaSwapLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -66,64 +69,45 @@ class OrcaSwapInteractor(
         return OrcaSwapResult.Success(signature, receivedAmount, usdReceivedAmount, tokenSymbol)
     }
 
-    fun calculateFee(
-        pool: Pool.PoolInfo,
-        inputAmount: BigInteger,
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance
+    suspend fun getLamportsPerSignature(): BigInteger = rpcRepository.getFees(null)
+
+    suspend fun getAccountMinForRentExemption(): BigInteger =
+        rpcRepository
+            .getMinimumBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH.toLong())
+            .toBigInteger()
+
+    fun calculateNetworkFee(
+        source: Token,
+        destination: Token,
+        lamportsPerSignature: BigInteger,
+        minRentExemption: BigInteger
     ): BigInteger {
-        val swappedAmountWithFee = calculateAmountInOtherToken(
-            pool, inputAmount, true, tokenABalance, tokenBBalance
-        )
+        // default fee
+        var feeInLamports = lamportsPerSignature * BigInteger.valueOf(2L)
 
-        val swappedAmountWithoutFee = calculateAmountInOtherToken(
-            pool, inputAmount, false, tokenABalance, tokenBBalance
-        )
+        // if token is native, a fee for creating wrapped SOL is needed
+        if (source.isSOL) {
+            feeInLamports += lamportsPerSignature
+            feeInLamports += minRentExemption
+        }
 
-        return swappedAmountWithoutFee.subtract(swappedAmountWithFee)
+        // if destination wallet is selected
+        // if destination wallet is a wrapped sol or not yet created a fee for creating it is needed
+        if (destination.publicKey == Token.WRAPPED_SOL_MINT || destination.publicKey.isEmpty()) {
+            feeInLamports += minRentExemption
+        }
+
+        // fee relayer
+        if (isFeeRelayerEnabled(source, destination)) {
+            feeInLamports += lamportsPerSignature // fee for creating a SOL account
+        }
+
+        return feeInLamports
     }
 
-    fun calculateMinReceive(
-        balanceA: TokenAccountBalance,
-        balanceB: TokenAccountBalance,
-        amount: BigInteger,
-        slippage: Double
-    ): BigInteger {
-        val add = balanceA.amount.add(amount)
-        val estimated =
-            if (add.compareTo(BigInteger.ZERO) != 0) balanceB.amount.multiply(amount).divide(add) else BigInteger.ZERO
-        return BigDecimal(estimated).multiply(BigDecimal(1 - slippage)).toBigInteger()
-    }
-
-    fun calculateAmountInOtherToken(
-        pool: Pool.PoolInfo,
-        inputAmount: BigInteger,
-        withFee: Boolean,
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance
-    ): BigInteger {
-
-        val tokenSource = tokenKeyProvider.publicKey.toPublicKey()
-        val isReverse = pool.tokenAccountB.equals(tokenSource)
-
-        val feeRatio = BigDecimal(pool.tradeFeeNumerator).divide(BigDecimal(pool.tradeFeeDenominator))
-
-        val firstAmountInPool = if (isReverse) tokenBBalance.amount else tokenABalance.amount
-        val secondAmountInPool = if (isReverse) tokenABalance.amount else tokenBBalance.amount
-
-        val invariant = firstAmountInPool.multiply(secondAmountInPool)
-        val newFromAmountInPool = firstAmountInPool.add(inputAmount)
-        val newToAmountInPool = if (newFromAmountInPool.compareTo(BigInteger.ZERO) != 0) {
-            invariant.divide(newFromAmountInPool)
-        } else {
-            BigInteger.ZERO
-        }
-        val grossToAmount = secondAmountInPool.subtract(newToAmountInPool)
-        val fees = if (withFee) {
-            BigDecimal(grossToAmount).multiply(feeRatio)
-        } else {
-            BigDecimal.valueOf(0)
-        }
-        return BigDecimal(grossToAmount).subtract(fees).toBigInteger()
+    // MARK: - Helpers
+    private fun isFeeRelayerEnabled(source: Token?, destination: Token?): Boolean {
+        if (source == null || destination == null) return false
+        return !source.isSOL && !destination.isSOL
     }
 }

@@ -6,10 +6,10 @@ import com.p2p.wallet.common.mvp.MvpPresenter
 import com.p2p.wallet.common.mvp.MvpView
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
-import com.p2p.wallet.swap.orca.model.OrcaAmountData
-import com.p2p.wallet.swap.orca.model.OrcaFeeData
 import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
+import com.p2p.wallet.swap.orca.model.OrcaAmountData
+import com.p2p.wallet.swap.orca.model.OrcaFeeData
 import java.math.BigDecimal
 
 interface OrcaSwapContract {
@@ -29,7 +29,7 @@ interface OrcaSwapContract {
         fun showAroundValue(aroundValue: BigDecimal)
         fun showButtonEnabled(isEnabled: Boolean)
         fun showSwapSuccess(info: TransactionInfo)
-        fun showSlippage(slippage: Double)
+        fun showSlippage(slippage: Slippage)
         fun showButtonText(@StringRes textRes: Int, value: String? = null)
         fun setNewAmount(sourceAmount: String)
         fun updateInputValue(available: BigDecimal)
@@ -48,7 +48,7 @@ interface OrcaSwapContract {
         fun setNewSourceToken(newToken: Token)
         fun setNewDestinationToken(newToken: Token)
         fun setSourceAmount(amount: String)
-        fun setSlippage(slippage: Double)
+        fun setSlippage(slippage: Slippage)
         fun swap()
         fun feedAvailableValue()
         fun reverseTokens()

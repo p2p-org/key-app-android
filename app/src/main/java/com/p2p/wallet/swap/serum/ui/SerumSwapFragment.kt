@@ -179,8 +179,8 @@ class SerumSwapFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showSlippage(slippage: Double) {
-        binding.slippageView.setBottomText("$slippage %")
+    override fun showSlippage(slippage: Slippage) {
+        binding.slippageView.setBottomText("${slippage.percentValue} %")
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {

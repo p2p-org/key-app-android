@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.p2p.wallet.R
@@ -15,12 +16,12 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 
 class SerumSettingsBottomSheet(
-    private val onSlippageSelected: (Double) -> Unit
+    private val onSlippageSelected: (Slippage) -> Unit
 ) : BottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_SLIPPAGE = "EXTRA_SLIPPAGE"
-        fun show(fm: FragmentManager, slippage: Slippage, onSlippageSelected: (Double) -> Unit) {
+        fun show(fm: FragmentManager, slippage: Slippage, onSlippageSelected: (Slippage) -> Unit) {
             SerumSettingsBottomSheet(onSlippageSelected)
                 .withArgs(
                     EXTRA_SLIPPAGE to slippage,
@@ -39,8 +40,9 @@ class SerumSettingsBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            slippageView.setBottomText("${slippage.doubleValue} %")
+            slippageView.setBottomText("${slippage.percentValue} %")
             slippageView.setOnClickListener { openSlippage() }
+            payView.isVisible = false
             payView.setOnClickListener {
                 Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show()
             }
@@ -50,7 +52,7 @@ class SerumSettingsBottomSheet(
     private fun openSlippage() {
         SerumSlippageBottomSheet.show(parentFragmentManager, slippage) {
             onSlippageSelected(it)
-            binding.slippageView.setBottomText("$it %")
+            binding.slippageView.setBottomText("${it.percentValue} %")
         }
     }
 

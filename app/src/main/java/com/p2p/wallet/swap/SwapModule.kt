@@ -2,6 +2,7 @@ package com.p2p.wallet.swap
 
 import com.p2p.wallet.common.di.InjectionModule
 import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.swap.orca.interactor.OrcaPoolDataInteractor
 import com.p2p.wallet.swap.orca.interactor.OrcaSwapInteractor
 import com.p2p.wallet.swap.orca.repository.OrcaSwapInMemoryRepository
 import com.p2p.wallet.swap.orca.repository.OrcaSwapLocalRepository
@@ -41,12 +42,13 @@ object SwapModule : InjectionModule {
         factory { SerumSwapInstructionsInteractor(get()) }
         factory { SerumSwapMarketInteractor(get()) }
 
-        factory { OrcaSwapInteractor(get(), get(), get(), get(), get()) }
+        factory { OrcaSwapInteractor(get(), get(), get(), get(), get(), get()) }
+        factory { OrcaPoolDataInteractor(get()) }
         factory { OrcaSwapRemoteRepository(get()) } bind OrcaSwapRepository::class
         factory { OrcaSwapInMemoryRepository() } bind OrcaSwapLocalRepository::class
 
         factory { (token: Token?) ->
-            OrcaSwapPresenter(token, get(), get())
+            OrcaSwapPresenter(token, get(), get(), get())
         } bind OrcaSwapContract.Presenter::class
     }
 }

@@ -6,6 +6,7 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
+import com.p2p.wallet.swap.orca.interactor.OrcaPoolDataInteractor
 import com.p2p.wallet.swap.orca.interactor.OrcaSwapInteractor
 import com.p2p.wallet.swap.orca.model.OrcaAmountData
 import com.p2p.wallet.swap.orca.model.OrcaFeeData
@@ -25,12 +26,14 @@ import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.properties.Delegates
 
 class OrcaSwapPresenter(
     private val initialToken: Token?,
     private val userInteractor: UserInteractor,
-    private val swapInteractor: OrcaSwapInteractor
+    private val swapInteractor: OrcaSwapInteractor,
+    private val poolInteractor: OrcaPoolDataInteractor
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     private lateinit var sourceToken: Token
@@ -46,11 +49,14 @@ class OrcaSwapPresenter(
     private var sourceRate: BigDecimal = BigDecimal.ZERO
     private var destinationRate: BigDecimal = BigDecimal.ZERO
 
+    private var lamportsPerSignature: BigInteger = BigInteger.ZERO
+    private var minRentExemption: BigInteger = BigInteger.ZERO
+
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
-    private var slippage: Double = 0.1
+    private var slippage: Slippage = Slippage.MIN
 
     init {
         launch {
@@ -64,6 +70,10 @@ class OrcaSwapPresenter(
             view?.showFullScreenLoading(true)
             try {
                 swapInteractor.loadAllPools()
+
+                lamportsPerSignature = swapInteractor.getLamportsPerSignature()
+                minRentExemption = swapInteractor.getAccountMinForRentExemption()
+
                 view?.showSlippage(slippage)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading all pools")
@@ -104,17 +114,22 @@ class OrcaSwapPresenter(
         calculateData(newToken)
     }
 
-    override fun setSlippage(slippage: Double) {
+    override fun setSlippage(slippage: Slippage) {
         this.slippage = slippage
-        view?.showSlippage(slippage)
+        view?.showSlippage(this.slippage)
+
+        currentPool?.let {
+            /* If pool is not null, then destination token is not null as well */
+            calculateAmount(sourceToken, destinationToken!!, it)
+        }
     }
 
     override fun loadDataForSwapSettings() {
-        view?.openSwapSettings(Slippage.parse(slippage))
+        view?.openSwapSettings(slippage)
     }
 
     override fun loadSlippage() {
-        view?.openSlippageDialog(Slippage.parse(slippage))
+        view?.openSlippageDialog(slippage)
     }
 
     override fun feedAvailableValue() {
@@ -160,7 +175,7 @@ class OrcaSwapPresenter(
 
                 val request = OrcaSwapRequest(
                     pool = requirePool(),
-                    slippage = slippage,
+                    slippage = slippage.doubleValue,
                     amount = lamports,
                     balanceA = sourceBalance,
                     balanceB = destinationBalance
@@ -225,49 +240,62 @@ class OrcaSwapPresenter(
             return
         }
 
-        val fee = swapInteractor.calculateFee(
-            pool = pool,
+        val liquidityFee = poolInteractor.calculateLiquidityFee(
             inputAmount = enteredAmount.toLamports(source.decimals),
+            pool = pool,
             tokenABalance = sourceBalance,
-            tokenBBalance = destinationBalance
-        )
+            tokenBBalance = destinationBalance,
+        ).fromLamports(destination.decimals).scaleMedium()
 
-        val networkFee = "${fee.fromLamports(destination.decimals).scaleMedium()} ${destination.tokenSymbol}"
+        val liquidityProviderFee = "$liquidityFee ${destination.tokenSymbol}"
 
-        // FIXME: calculate fee
-        val liquidityProviderFee = "N/A"
+        val networkFee = swapInteractor.calculateNetworkFee(
+            source = source,
+            destination = destination,
+            lamportsPerSignature = lamportsPerSignature,
+            minRentExemption = minRentExemption
+        ).fromLamports().scaleMedium()
+
+        val networkFeeResult = "$networkFee ${Token.SOL_SYMBOL}"
 
         // FIXME: pay network option implementation
         val feePaymentOption = Token.SOL_SYMBOL
-        val data = OrcaFeeData(networkFee, liquidityProviderFee, feePaymentOption)
+        val data = OrcaFeeData(
+            networkFee = networkFeeResult,
+            liquidityProviderFee = liquidityProviderFee,
+            paymentOption = feePaymentOption
+        )
         view?.showFees(data)
     }
 
     private fun calculateAmount(source: Token, destination: Token, pool: Pool.PoolInfo) {
         val balanceA = sourceBalance
         val balanceB = destinationBalance
-        val amountInOtherToken = swapInteractor.calculateAmountInOtherToken(
-            pool = pool,
-            inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
-            withFee = false,
+        val inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
+
+        val estimatedAmount = poolInteractor.calculateEstimatedAmount(
+            inputAmount = inputAmount,
+            includeFees = true,
             tokenABalance = balanceA,
-            tokenBBalance = balanceB
-        )
-        val calculatedAmount = amountInOtherToken.fromLamports(destination.decimals).scaleMedium()
+            tokenBBalance = balanceB,
+            pool = pool
+        ).fromLamports(destination.decimals).scaleMedium()
 
-        destinationAmount = calculatedAmount.toString()
+        destinationAmount = estimatedAmount.toString()
 
-        val minReceive = swapInteractor.calculateMinReceive(
-            balanceA = balanceA,
-            balanceB = balanceB,
-            amount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals),
-            slippage = slippage
-        )
+        val minReceive = poolInteractor.calculateMinReceive(
+            inputAmount = inputAmount,
+            slippage = slippage.doubleValue,
+            includesFees = true,
+            tokenABalance = balanceA,
+            tokenBBalance = balanceB,
+            pool = pool
+        ).fromLamports(destination.decimals).scaleMedium()
 
         val data = OrcaAmountData(
-            destinationAmount = destinationAmount,
-            estimatedReceiveAmount = minReceive.fromLamports(destination.decimals).scaleMedium(),
-            estimatedReceiveSymbol = destination.tokenSymbol
+            estimatedDestinationAmount = destinationAmount,
+            minReceiveAmount = minReceive,
+            minReceiveSymbol = destination.tokenSymbol
         )
 
         view?.showCalculations(data)
@@ -306,8 +334,9 @@ class OrcaSwapPresenter(
     } && token.publicKey != sourceToken.publicKey
 
     private fun setButtonEnabled() {
-        val isMoreThanBalance = sourceAmount.toBigDecimalOrZero() > sourceToken.total
-        val isValidAmount = sourceAmount.toBigDecimalOrZero().isNotZero()
+        val amount = sourceAmount.toBigDecimalOrZero()
+        val isMoreThanBalance = amount > sourceToken.total
+        val isValidAmount = amount.isNotZero()
         val isEnabled = isValidAmount && !isMoreThanBalance && destinationToken != null
         view?.showButtonEnabled(isEnabled)
     }

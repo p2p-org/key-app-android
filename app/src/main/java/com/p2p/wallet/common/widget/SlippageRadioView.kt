@@ -16,7 +16,7 @@ class SlippageRadioView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    var onSlippageChanged: ((Double) -> Unit)? = null
+    var onSlippageChanged: ((Slippage) -> Unit)? = null
 
     private val binding = WidgetSlippageRadioViewBinding.inflate(
         LayoutInflater.from(context), this
@@ -27,8 +27,9 @@ class SlippageRadioView @JvmOverloads constructor(
 
         with(binding) {
             customEditText.doAfterTextChanged {
-                val slippage = it.toString().toDoubleOrNull() ?: Slippage.MIN.doubleValue
-                onSlippageChanged?.invoke(slippage)
+                val slippage = it.toString().toDoubleOrNull()
+                val result = slippage?.let { Slippage.parse(slippage) } ?: Slippage.MIN
+                onSlippageChanged?.invoke(result)
             }
         }
     }

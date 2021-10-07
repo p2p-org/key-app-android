@@ -4,12 +4,12 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapAmountInteractor
-import com.p2p.wallet.swap.serum.model.SerumAmountData
-import com.p2p.wallet.swap.serum.model.SerumFeeType
 import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
+import com.p2p.wallet.swap.serum.interactor.SerumSwapAmountInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
+import com.p2p.wallet.swap.serum.model.SerumAmountData
+import com.p2p.wallet.swap.serum.model.SerumFeeType
 import com.p2p.wallet.swap.serum.model.SerumSwapFee
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.utils.fromLamports
@@ -47,7 +47,7 @@ class SwapPresenter(
     private var destinationAmount: String = "0"
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
-    private var slippage: Double = 0.5
+    private var slippage: Slippage = Slippage.MIN
 
     private var sourceRate: BigDecimal = BigDecimal.ZERO
     private var destinationRate: BigDecimal = BigDecimal.ZERO
@@ -126,17 +126,17 @@ class SwapPresenter(
         }
     }
 
-    override fun setSlippage(slippage: Double) {
+    override fun setSlippage(slippage: Slippage) {
         this.slippage = slippage
         view?.showSlippage(slippage)
     }
 
     override fun loadDataForSwapSettings() {
-        view?.openSwapSettings(Slippage.parse(slippage))
+        view?.openSwapSettings(slippage)
     }
 
     override fun loadSlippage() {
-        view?.openSlippageDialog(Slippage.parse(slippage))
+        view?.openSlippageDialog(slippage)
     }
 
     override fun feedAvailableValue() {
@@ -193,7 +193,7 @@ class SwapPresenter(
                     fromWallet = requireSourceToken(),
                     toWallet = requireDestinationToken(),
                     amount = finalAmount,
-                    slippage = slippage
+                    slippage = slippage.doubleValue
                 )
 
                 val info = TransactionInfo(
@@ -276,7 +276,7 @@ class SwapPresenter(
             val estimatedAmount = swapInteractor.calculateEstimatedAmount(
                 inputAmount = sourceAmount.toDoubleOrNull(),
                 rate = sourceRate.toDouble(),
-                slippage = slippage
+                slippage = slippage.doubleValue
             )?.scaleMedium()
 
             destinationAmount = (estimatedAmount ?: BigDecimal.ZERO).toString()
