@@ -25,6 +25,7 @@ import com.geetest.sdk.GT3Listener
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.p2p.wallet.utils.toast
+import org.json.JSONObject
 
 class ReservingUsernameFragment :
     BaseMvpFragment<ReservingUsernameContract.View,
@@ -39,38 +40,40 @@ class ReservingUsernameFragment :
 
     private val binding: FragmentReservingUsernameBinding by viewBinding()
     private var gt3GeeTestUtils: GT3GeetestUtils? = null
+    private var gt3ConfigBean: GT3ConfigBean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         gt3GeeTestUtils = GT3GeetestUtils(requireContext())
-        val gt3ConfigBean = GT3ConfigBean()
-        gt3ConfigBean.pattern = 1
-        gt3ConfigBean.isCanceledOnTouchOutside = false
-        gt3ConfigBean.lang = null
-        gt3ConfigBean.timeout = 10000
-        gt3ConfigBean.webviewTimeout = 10000
-        gt3ConfigBean.listener = object : GT3Listener() {
+        gt3ConfigBean = GT3ConfigBean()
+        gt3ConfigBean?.pattern = 1
+        gt3ConfigBean?.isCanceledOnTouchOutside = false
+        gt3ConfigBean?.lang = null
+        gt3ConfigBean?.timeout = 10000
+        gt3ConfigBean?.webviewTimeout = 10000
+        gt3ConfigBean?.listener = object : GT3Listener() {
             override fun onDialogResult(result: String?) {
-                toast(text = "onDialogResult")
+                presenter.registerUsername(result)
+                toast(text = "onDialogResult $result")
             }
             override fun onReceiveCaptchaCode(p0: Int) {
-                TODO("Not yet implemented")
+                toast(text = "onReceiveCaptchaCode $p0")
             }
 
             override fun onStatistics(p0: String?) {
-                TODO("Not yet implemented")
+                toast(text = "onStatistics $p0")
             }
 
             override fun onClosed(p0: Int) {
-                TODO("Not yet implemented")
+                toast(text = "onClosed $p0")
             }
 
             override fun onSuccess(p0: String?) {
-                TODO("Not yet implemented")
+                toast(text = "onSuccess $p0")
             }
 
             override fun onFailed(p0: GT3ErrorBean?) {
-                TODO("Not yet implemented")
+                toast(text = "onFailed ${p0?.toString()}")
             }
 
             override fun onButtonClick() {
@@ -110,6 +113,11 @@ class ReservingUsernameFragment :
 
     override fun navigateToPinCode() {
         replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
+    }
+
+    override fun getCaptchaResult(params: JSONObject) {
+        gt3ConfigBean?.api1Json = params
+        gt3GeeTestUtils?.getGeetest()
     }
 
     private fun buildClickableText(): SpannableString {
