@@ -17,6 +17,9 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapFeesBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSettingsBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSlippageBottomSheet
 import com.p2p.wallet.swap.serum.model.SerumAmountData
 import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
@@ -164,11 +167,11 @@ class SerumSwapFragment :
     override fun showFees(networkFee: String, liquidityFee: String, feeOption: String) {
         binding.feesGroup.isVisible = true
         binding.feesTextView.setOnClickListener {
-            SerumFeesBottomSheet.show(childFragmentManager, liquidityFee, networkFee, feeOption)
+            SwapFeesBottomSheet.show(childFragmentManager, liquidityFee, networkFee, feeOption)
         }
 
         binding.feesImageView.setOnClickListener {
-            SerumFeesBottomSheet.show(childFragmentManager, liquidityFee, networkFee, feeOption)
+            SwapFeesBottomSheet.show(childFragmentManager, liquidityFee, networkFee, feeOption)
         }
     }
 
@@ -228,13 +231,13 @@ class SerumSwapFragment :
     }
 
     override fun openSwapSettings(currentSlippage: Slippage) {
-        SerumSettingsBottomSheet.show(childFragmentManager, currentSlippage) {
+        SwapSettingsBottomSheet.show(childFragmentManager, currentSlippage) {
             presenter.setSlippage(it)
         }
     }
 
     override fun openSlippageDialog(currentSlippage: Slippage) {
-        SerumSlippageBottomSheet.show(childFragmentManager, currentSlippage) {
+        SwapSlippageBottomSheet.show(childFragmentManager, currentSlippage) {
             presenter.setSlippage(it)
         }
     }

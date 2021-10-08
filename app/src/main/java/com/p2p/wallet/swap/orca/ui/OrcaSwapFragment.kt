@@ -22,9 +22,9 @@ import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.orca.model.OrcaAmountData
 import com.p2p.wallet.swap.orca.model.OrcaFeeData
-import com.p2p.wallet.swap.serum.ui.SerumFeesBottomSheet
-import com.p2p.wallet.swap.serum.ui.SerumSettingsBottomSheet
-import com.p2p.wallet.swap.serum.ui.SerumSlippageBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapFeesBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSettingsBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSlippageBottomSheet
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.colorFromTheme
@@ -49,13 +49,13 @@ class OrcaSwapFragment :
         )
     }
 
+    private val token: Token? by args(EXTRA_TOKEN)
+
     override val presenter: OrcaSwapContract.Presenter by inject {
         parametersOf(token)
     }
 
     private val binding: FragmentSwapOrcaBinding by viewBinding()
-
-    private val token: Token? by args(EXTRA_TOKEN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -129,10 +129,6 @@ class OrcaSwapFragment :
         binding.amountEditText.setText(sourceAmount)
     }
 
-    override fun updateInputValue(available: BigDecimal) {
-        binding.amountEditText.setText("$available")
-    }
-
     @SuppressLint("SetTextI18n")
     override fun showPrice(priceData: PriceData) {
         binding.priceGroup.isVisible = true
@@ -165,7 +161,7 @@ class OrcaSwapFragment :
     override fun showFees(data: OrcaFeeData) {
         binding.feesGroup.isVisible = true
         binding.feesTextView.setOnClickListener {
-            SerumFeesBottomSheet.show(
+            SwapFeesBottomSheet.show(
                 childFragmentManager,
                 data.liquidityProviderFee,
                 data.networkFee,
@@ -174,7 +170,7 @@ class OrcaSwapFragment :
         }
 
         binding.feesImageView.setOnClickListener {
-            SerumFeesBottomSheet.show(
+            SwapFeesBottomSheet.show(
                 childFragmentManager,
                 data.liquidityProviderFee,
                 data.networkFee,
@@ -194,6 +190,11 @@ class OrcaSwapFragment :
     @SuppressLint("SetTextI18n")
     override fun showSlippage(slippage: Slippage) {
         binding.slippageView.setBottomText("${slippage.percentValue} %")
+    }
+
+    override fun showNewAmount(amount: String) {
+        binding.amountEditText.setText(amount)
+        binding.amountEditText.setSelection(amount.length)
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
@@ -241,13 +242,13 @@ class OrcaSwapFragment :
     }
 
     override fun openSwapSettings(currentSlippage: Slippage) {
-        SerumSettingsBottomSheet.show(childFragmentManager, currentSlippage) {
+        SwapSettingsBottomSheet.show(childFragmentManager, currentSlippage) {
             presenter.setSlippage(it)
         }
     }
 
     override fun openSlippageDialog(currentSlippage: Slippage) {
-        SerumSlippageBottomSheet.show(childFragmentManager, currentSlippage) {
+        SwapSlippageBottomSheet.show(childFragmentManager, currentSlippage) {
             presenter.setSlippage(it)
         }
     }

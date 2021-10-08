@@ -80,10 +80,8 @@ class SendPresenter(
 
         if (newToken.tokenSymbol == SYMBOL_REN_BTC) {
             view?.showNetworkSelection()
-            setNetworkDestination(NetworkType.BITCOIN)
         } else {
             view?.hideNetworkSelection()
-            setNetworkDestination(NetworkType.SOLANA)
         }
 
         calculateFee()

@@ -1,4 +1,4 @@
-package com.p2p.wallet.swap.serum.ui
+package com.p2p.wallet.swap.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,18 +15,18 @@ import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 
-class SerumSettingsBottomSheet(
+class SwapSettingsBottomSheet(
     private val onSlippageSelected: (Slippage) -> Unit
 ) : BottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_SLIPPAGE = "EXTRA_SLIPPAGE"
         fun show(fm: FragmentManager, slippage: Slippage, onSlippageSelected: (Slippage) -> Unit) {
-            SerumSettingsBottomSheet(onSlippageSelected)
+            SwapSettingsBottomSheet(onSlippageSelected)
                 .withArgs(
                     EXTRA_SLIPPAGE to slippage,
                 )
-                .show(fm, SerumSlippageBottomSheet::javaClass.name)
+                .show(fm, SwapSlippageBottomSheet::javaClass.name)
         }
     }
 
@@ -50,7 +50,7 @@ class SerumSettingsBottomSheet(
     }
 
     private fun openSlippage() {
-        SerumSlippageBottomSheet.show(parentFragmentManager, slippage) {
+        SwapSlippageBottomSheet.show(parentFragmentManager, slippage) {
             onSlippageSelected(it)
             binding.slippageView.setBottomText("${it.percentValue} %")
         }
