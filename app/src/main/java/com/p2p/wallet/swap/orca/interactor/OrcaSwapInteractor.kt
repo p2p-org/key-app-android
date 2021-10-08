@@ -93,21 +93,21 @@ class OrcaSwapInteractor(
 
         // if destination wallet is selected
         // if destination wallet is a wrapped sol or not yet created a fee for creating it is needed
-        if (destination.publicKey == Token.WRAPPED_SOL_MINT || destination.publicKey.isEmpty()) {
+        if (destination.mintAddress == Token.WRAPPED_SOL_MINT || destination.publicKey.isEmpty()) {
             feeInLamports += minRentExemption
         }
 
         // fee relayer
         if (isFeeRelayerEnabled(source, destination)) {
-            feeInLamports += lamportsPerSignature // fee for creating a SOL account
+            // fee for creating a SOL account
+            feeInLamports += lamportsPerSignature
         }
 
         return feeInLamports
     }
 
     // MARK: - Helpers
-    private fun isFeeRelayerEnabled(source: Token?, destination: Token?): Boolean {
-        if (source == null || destination == null) return false
+    private fun isFeeRelayerEnabled(source: Token, destination: Token): Boolean {
         return !source.isSOL && !destination.isSOL
     }
 }

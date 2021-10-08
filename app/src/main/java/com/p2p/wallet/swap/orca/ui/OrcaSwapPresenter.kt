@@ -207,15 +207,28 @@ class OrcaSwapPresenter(
         launch {
             view?.showButtonText(R.string.swap_calculating_fees)
             calculatePoolAndBalance(sourceToken, destination)
-            calculateFees(sourceToken, destination, requirePool())
-            calculateRates(sourceToken, destination)
+            calculateRates(sourceToken, destination, requirePool())
             calculateAmount(sourceToken, destination, requirePool())
+            calculateFees(sourceToken, destination, requirePool())
         }
     }
 
-    private suspend fun calculateRates(source: Token, destination: Token) {
-        sourceRate = userInteractor.getPriceByToken(source.tokenSymbol, destination.tokenSymbol)
-        destinationRate = userInteractor.getPriceByToken(destination.tokenSymbol, source.tokenSymbol)
+    private fun calculateRates(source: Token, destination: Token, pool: Pool.PoolInfo) {
+        sourceRate = poolInteractor.calculateEstimatedAmount(
+            inputAmount = BigDecimal.ONE.toLamports(source.decimals),
+            includeFees = true,
+            tokenABalance = sourceBalance,
+            tokenBBalance = destinationBalance,
+            pool = pool
+        ).fromLamports(destination.decimals).scaleMedium()
+
+        destinationRate = poolInteractor.calculateEstimatedAmount(
+            inputAmount = BigDecimal.ONE.toLamports(destination.decimals),
+            includeFees = true,
+            tokenABalance = destinationBalance,
+            tokenBBalance = sourceBalance,
+            pool = pool
+        ).fromLamports(source.decimals).scaleMedium()
 
         val priceData = PriceData(
             sourceAmount = sourceRate.toString(),
