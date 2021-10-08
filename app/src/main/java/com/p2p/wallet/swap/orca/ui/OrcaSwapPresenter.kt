@@ -56,25 +56,21 @@ class OrcaSwapPresenter(
     private var destinationAmount: String = "0"
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
-    private var slippage: Slippage = Slippage.MIN
-
-    init {
-        launch {
-            val token = initialToken ?: userInteractor.getUserTokens().first { it.isSOL }
-            setSourceToken(token)
-        }
-    }
+    private var slippage: Slippage = Slippage.MEDIUM
 
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
             try {
+                val token = initialToken ?: userInteractor.getUserTokens().first { it.isSOL }
+                setSourceToken(token)
+
+                view?.showSlippage(slippage)
+
                 swapInteractor.loadAllPools()
 
                 lamportsPerSignature = swapInteractor.getLamportsPerSignature()
                 minRentExemption = swapInteractor.getAccountMinForRentExemption()
-
-                view?.showSlippage(slippage)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading all pools")
                 view?.showErrorMessage(e)
@@ -133,7 +129,7 @@ class OrcaSwapPresenter(
     }
 
     override fun feedAvailableValue() {
-        view?.updateInputValue(sourceToken.total.scaleLong())
+        view?.showNewAmount(sourceToken.total.scaleLong().toString())
     }
 
     override fun setSourceAmount(amount: String) {
@@ -160,11 +156,22 @@ class OrcaSwapPresenter(
     override fun reverseTokens() {
         if (destinationToken == null) return
 
+        /* reversing tokens */
         val source = sourceToken
         setSourceToken(destinationToken!!)
         destinationToken = source
 
-        calculateData(destinationToken!!)
+        /* reversing amounts */
+        sourceAmount = destinationAmount
+        destinationAmount = ""
+
+        /* reverse token balances */
+        val sourceBalanceOld = sourceBalance
+        destinationBalance = sourceBalance
+        sourceBalance = sourceBalanceOld
+
+        /* This trigger recalculation */
+        view?.showNewAmount(sourceAmount)
     }
 
     override fun swap() {
