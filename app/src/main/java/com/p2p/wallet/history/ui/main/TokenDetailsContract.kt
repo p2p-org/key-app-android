@@ -15,7 +15,7 @@ interface TokenDetailsContract {
         fun showChartData(entries: List<Entry>)
         fun showPagingState(newState: PagingState)
         fun showLoading(isLoading: Boolean)
-        fun showSolAddress(sol: Token)
+        fun showSolAddress(sol: Token.Active)
         fun showError(@StringRes resId: Int, argument: String)
     }
 

@@ -6,15 +6,15 @@ import com.p2p.wallet.utils.isUsdx
 import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toLamports
 import com.p2p.wallet.utils.toPublicKey
-import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
-import org.p2p.solanaj.serumswap.Market
+import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.SerumSwapProgram
 import org.p2p.solanaj.programs.SerumSwapProgram.dexPID
 import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
 import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
+import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.model.Bbo
 import org.p2p.solanaj.serumswap.model.ExchangeRate
 import org.p2p.solanaj.serumswap.model.OrderbookPair
@@ -113,7 +113,7 @@ class SerumSwapInteractor(
         // if destination wallet is a wrapped sol or not yet created,
         // a fee for creating it is needed, as new address is an associated token address,
         // the signature fee is NOT needed
-        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet.publicKey.isEmpty()) {
+        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet is Token.Inactive) {
             fee += minRentExemption
         }
 
@@ -184,7 +184,7 @@ class SerumSwapInteractor(
     // Executes a swap against the Serum DEX.
     // - Returns: transaction id
     suspend fun swap(
-        fromWallet: Token,
+        fromWallet: Token.Active,
         toWallet: Token,
         amount: BigDecimal,
         slippage: Double,
@@ -215,7 +215,7 @@ class SerumSwapInteractor(
 
         val fromMarket = markets.firstOrNull() ?: throw IllegalStateException("Market is not available")
 
-        val toWalletPubkey = PublicKey(toWallet.publicKey)
+        val toWalletPubkey = if (toWallet is Token.Active) PublicKey(toWallet.publicKey) else null
         val toMarket = markets.getOrNull(1)
 
         val fromOpenOrder = openOrders.firstOrNull { it.data.market.toBase58() == fromMarket.address.toBase58() }

@@ -101,7 +101,7 @@ class MainFragment :
         binding.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
     }
 
-    override fun showChart(tokens: List<Token>) {
+    override fun showChart(tokens: List<Token.Active>) {
         showPieChart(tokens)
     }
 
@@ -122,7 +122,7 @@ class MainFragment :
     }
 
     @Suppress("MagicNumber")
-    private fun showPieChart(tokens: List<Token>) {
+    private fun showPieChart(tokens: List<Token.Active>) {
         val pieData = tokens.map { PieEntry(it.price.toFloat()) }
         val colors = tokens.map { it.color }.toIntArray()
 
@@ -150,15 +150,15 @@ class MainFragment :
         }
     }
 
-    private fun onTokenClicked(token: Token) {
+    private fun onTokenClicked(token: Token.Active) {
         replaceFragment(TokenDetailsFragment.create(token))
     }
 
-    private fun onEditClicked(token: Token) {
+    private fun onEditClicked(token: Token.Active) {
         TokenOptionsDialog.show(childFragmentManager, token)
     }
 
-    private fun onHideClicked(token: Token) {
+    private fun onHideClicked(token: Token.Active) {
         presenter.toggleVisibility(token)
     }
 }

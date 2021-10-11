@@ -7,6 +7,8 @@
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
     <string name="solanaWalletExplorer">https://explorer.solana.com/address/%s</string>
 
+    <string name="solanaTokensBaseUrl">https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/</string>
+
     <string name="feeRelayerBaseUrl">https://fee-relayer.solana.p2p.org/</string>
 
     <string name="node_solana">https://solana-api.projectserum.com</string>

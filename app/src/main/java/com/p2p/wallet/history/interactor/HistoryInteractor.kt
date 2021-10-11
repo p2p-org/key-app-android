@@ -75,8 +75,8 @@ class HistoryInteractor(
     }
 
     private fun parseSwapDetails(details: SwapDetails): HistoryTransaction? {
-        val sourceData = userLocalRepository.getTokenData(details.mintA) ?: return null
-        val destinationData = userLocalRepository.getTokenData(details.mintB) ?: return null
+        val sourceData = userLocalRepository.findTokenData(details.mintA) ?: return null
+        val destinationData = userLocalRepository.findTokenData(details.mintB) ?: return null
 
         if (sourceData.mintAddress == destinationData.mintAddress) return null
 
@@ -94,7 +94,7 @@ class HistoryInteractor(
         val rate = userLocalRepository.getPriceByToken(symbol)
 
         val mint = if (transfer.isSimpleTransfer) Token.WRAPPED_SOL_MINT else transfer.mint
-        val source = userLocalRepository.getTokenData(mint)!!
+        val source = userLocalRepository.findTokenData(mint)!!
 
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
     }
@@ -113,5 +113,5 @@ class HistoryInteractor(
     }
 
     private fun findSymbol(mint: String): String =
-        if (mint.isNotEmpty()) userLocalRepository.getTokenData(mint)?.symbol.orEmpty() else ""
+        if (mint.isNotEmpty()) userLocalRepository.findTokenData(mint)?.symbol.orEmpty() else ""
 }

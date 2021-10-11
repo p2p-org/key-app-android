@@ -12,27 +12,103 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
-@Parcelize
-data class Token constructor(
-    val publicKey: String,
-    val tokenSymbol: String,
-    val decimals: Int,
-    val mintAddress: String,
-    val tokenName: String,
-    val logoUrl: String?,
-    val price: BigDecimal,
-    val total: BigDecimal,
-    @ColorRes val color: Int,
-    val usdRate: BigDecimal,
-    val visibility: TokenVisibility,
-    val serumV3Usdc: String?,
-    val serumV3Usdt: String?,
-    val isWrapped: Boolean
+sealed class Token constructor(
+    open val tokenSymbol: String,
+    open val decimals: Int,
+    open val mintAddress: String,
+    open val tokenName: String,
+    open val logoUrl: String?,
+    @ColorRes open val color: Int,
+    open val serumV3Usdc: String?,
+    open val serumV3Usdt: String?,
+    open val isWrapped: Boolean
 ) : Parcelable {
 
-    @IgnoredOnParcel
-    val isZero: Boolean
-        get() = total.isZero()
+    @Parcelize
+    data class Active(
+        val publicKey: String,
+        val price: BigDecimal,
+        val total: BigDecimal,
+        val visibility: TokenVisibility,
+        val usdRate: BigDecimal,
+        override val tokenSymbol: String,
+        override val decimals: Int,
+        override val mintAddress: String,
+        override val tokenName: String,
+        override val logoUrl: String?,
+        @ColorRes override val color: Int,
+        override val serumV3Usdc: String?,
+        override val serumV3Usdt: String?,
+        override val isWrapped: Boolean
+    ) : Token(
+        tokenSymbol = tokenSymbol,
+        decimals = decimals,
+        mintAddress = mintAddress,
+        tokenName = tokenName,
+        logoUrl = logoUrl,
+        color = color,
+        serumV3Usdc = serumV3Usdc,
+        serumV3Usdt = serumV3Usdt,
+        isWrapped = isWrapped
+    ) {
+
+        @IgnoredOnParcel
+        val isZero: Boolean
+            get() = total.isZero()
+
+        @IgnoredOnParcel
+        val totalInUsd: BigDecimal
+            get() = total.multiply(usdRate).scaleLong()
+
+        fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
+            visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
+
+        fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
+
+        @Suppress("MagicNumber")
+        fun getFormattedAddress(): String {
+            if (!isSOL) return tokenName
+
+            val firstSix = publicKey.take(4)
+            val lastFour = publicKey.takeLast(4)
+            return "$firstSix...$lastFour"
+        }
+
+        fun getFormattedPrice(): String = "${price.scaleShort()} $"
+
+        fun getFormattedTotal(): String = "$total $tokenSymbol"
+
+        fun getVisibilityIcon(isZerosHidden: Boolean): Int {
+            return if (isDefinitelyHidden(isZerosHidden)) {
+                R.drawable.ic_show
+            } else {
+                R.drawable.ic_hide
+            }
+        }
+    }
+
+    @Parcelize
+    data class Inactive(
+        override val tokenSymbol: String,
+        override val decimals: Int,
+        override val mintAddress: String,
+        override val tokenName: String,
+        override val logoUrl: String?,
+        @ColorRes override val color: Int,
+        override val serumV3Usdc: String?,
+        override val serumV3Usdt: String?,
+        override val isWrapped: Boolean
+    ) : Token(
+        tokenSymbol = tokenSymbol,
+        decimals = decimals,
+        mintAddress = mintAddress,
+        tokenName = tokenName,
+        logoUrl = logoUrl,
+        color = color,
+        serumV3Usdc = serumV3Usdc,
+        serumV3Usdt = serumV3Usdt,
+        isWrapped = isWrapped
+    )
 
     @IgnoredOnParcel
     val isSOL: Boolean
@@ -45,36 +121,6 @@ data class Token constructor(
     @IgnoredOnParcel
     val isRenBTC: Boolean
         get() = tokenSymbol == REN_BTC_SYMBOL
-
-    @IgnoredOnParcel
-    val totalInUsd: BigDecimal
-        get() = total.multiply(usdRate).scaleLong()
-
-    fun getVisibilityIcon(isZerosHidden: Boolean): Int {
-        return if (isDefinitelyHidden(isZerosHidden)) {
-            R.drawable.ic_show
-        } else {
-            R.drawable.ic_hide
-        }
-    }
-
-    fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
-        visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
-
-    @Suppress("MagicNumber")
-    fun getFormattedAddress(): String {
-        if (!isSOL) return tokenName
-
-        val firstSix = publicKey.take(4)
-        val lastFour = publicKey.takeLast(4)
-        return "$firstSix...$lastFour"
-    }
-
-    fun getFormattedPrice(): String = "${price.scaleShort()} $"
-
-    fun getFormattedTotal(): String = "$total $tokenSymbol"
-
-    fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
 
     companion object {
         const val REN_BTC_SYMBOL = "renBTC"
@@ -91,9 +137,9 @@ data class Token constructor(
             tokenData: TokenData,
             amount: Long,
             exchangeRate: BigDecimal
-        ): Token {
+        ): Token.Active {
             val total: BigDecimal = BigDecimal(amount).divide(tokenData.decimals.toPowerValue())
-            return Token(
+            return Active(
                 publicKey = publicKey,
                 tokenSymbol = tokenData.symbol,
                 decimals = tokenData.decimals,

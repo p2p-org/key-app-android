@@ -87,7 +87,7 @@ class OrcaSwapFragment :
         presenter.loadInitialData()
     }
 
-    override fun showSourceToken(token: Token) {
+    override fun showSourceToken(token: Token.Active) {
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
@@ -100,8 +100,8 @@ class OrcaSwapFragment :
             if (token != null) {
                 Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
                 destinationTextView.text = token.tokenSymbol
-                destinationAvailableTextView.isVisible = true
-                destinationAvailableTextView.text = token.getFormattedTotal()
+                destinationAvailableTextView.isVisible = token is Token.Active
+                if (token is Token.Active) destinationAvailableTextView.text = token.getFormattedTotal()
             } else {
                 destinationImageView.setImageResource(R.drawable.ic_wallet)
                 destinationTextView.setText(R.string.main_select)
@@ -221,9 +221,9 @@ class OrcaSwapFragment :
         )
     }
 
-    override fun openSourceSelection(tokens: List<Token>) {
+    override fun openSourceSelection(tokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewSourceToken(it) },
+            target = SelectTokenFragment.create(tokens) { presenter.setNewSourceToken(it as Token.Active) },
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,

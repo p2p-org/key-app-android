@@ -9,9 +9,9 @@ import com.p2p.wallet.main.model.VisibilityState
 import com.p2p.wallet.main.model.Token
 
 class TokenAdapter(
-    private val onItemClicked: (Token) -> Unit,
-    private val onHideClicked: (Token) -> Unit,
-    private val onEditClicked: (Token) -> Unit,
+    private val onItemClicked: (Token.Active) -> Unit,
+    private val onHideClicked: (Token.Active) -> Unit,
+    private val onEditClicked: (Token.Active) -> Unit,
     private val onToggleClicked: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

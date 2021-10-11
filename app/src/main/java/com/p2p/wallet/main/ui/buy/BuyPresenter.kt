@@ -7,7 +7,7 @@ import com.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.launch
 
 class BuyPresenter(
-    private val token: Token?,
+    private val token: Token.Active?,
     private val userInteractor: UserInteractor,
     private val environmentManager: EnvironmentManager
 ) : BasePresenter<BuyContract.View>(), BuyContract.Presenter {

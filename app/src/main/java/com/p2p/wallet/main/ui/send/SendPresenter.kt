@@ -26,7 +26,7 @@ import java.math.RoundingMode
 import kotlin.properties.Delegates
 
 class SendPresenter(
-    private val initialToken: Token?,
+    private val initialToken: Token.Active?,
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
     private val burnBtcInteractor: BurnBtcInteractor
@@ -39,7 +39,7 @@ class SendPresenter(
         private const val ROUNDING_VALUE = 6
     }
 
-    private var token: Token? by Delegates.observable(null) { _, _, newValue ->
+    private var token: Token.Active? by Delegates.observable(null) { _, _, newValue ->
         if (newValue != null) view?.showSourceToken(newValue)
     }
 
@@ -48,7 +48,7 @@ class SendPresenter(
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
-    private var mode: CurrencyMode by Delegates.observable(CurrencyMode.Token("")) { _, _, newValue ->
+    private var mode: CurrencyMode by Delegates.observable(CurrencyMode.Own("")) { _, _, newValue ->
         view?.showCurrencyMode(newValue)
     }
 
@@ -68,7 +68,7 @@ class SendPresenter(
             val source = initialToken ?: userInteractor.getUserTokens().firstOrNull() ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate)
-            mode = CurrencyMode.Token(source.tokenSymbol)
+            mode = CurrencyMode.Own(source.tokenSymbol)
 
             calculateFee()
 
@@ -76,7 +76,7 @@ class SendPresenter(
         }
     }
 
-    override fun setSourceToken(newToken: Token) {
+    override fun setSourceToken(newToken: Token.Active) {
         token = newToken
 
         if (newToken.tokenSymbol == SYMBOL_REN_BTC) {
@@ -111,7 +111,7 @@ class SendPresenter(
         }
     }
 
-    private fun sendInBitcoin(token: Token) {
+    private fun sendInBitcoin(token: Token.Active) {
         launch {
             try {
                 view?.showLoading(true)
@@ -127,7 +127,7 @@ class SendPresenter(
         }
     }
 
-    private fun sendInSolana(token: Token) {
+    private fun sendInSolana(token: Token.Active) {
         launch {
             try {
                 view?.showLoading(true)
@@ -167,7 +167,7 @@ class SendPresenter(
 
         val totalAvailable = when (mode) {
             is CurrencyMode.Usd -> token.totalInUsd
-            is CurrencyMode.Token -> token.total.scaleLong()
+            is CurrencyMode.Own -> token.total.scaleLong()
         }
         view?.showInputValue(totalAvailable)
     }
@@ -194,8 +194,8 @@ class SendPresenter(
     override fun switchCurrency() {
         val token = token ?: return
         mode = when (mode) {
-            is CurrencyMode.Token -> CurrencyMode.Usd
-            is CurrencyMode.Usd -> CurrencyMode.Token(token.tokenSymbol)
+            is CurrencyMode.Own -> CurrencyMode.Usd
+            is CurrencyMode.Usd -> CurrencyMode.Own(token.tokenSymbol)
         }
 
         calculateData(token)
@@ -205,7 +205,7 @@ class SendPresenter(
         shouldAskConfirmation = shouldAsk
         updateButtonText(token!!)
 
-        if (mode is CurrencyMode.Token) {
+        if (mode is CurrencyMode.Own) {
             tokenAmount = inputAmount.toBigDecimalOrZero()
             setButtonEnabled(tokenAmount, token!!.total)
         } else {
@@ -235,12 +235,12 @@ class SendPresenter(
         }
     }
 
-    private fun calculateData(token: Token) {
+    private fun calculateData(token: Token.Active) {
         if (calculationJob?.isActive == true) return
 
         calculationJob = launch {
             when (mode) {
-                is CurrencyMode.Token -> {
+                is CurrencyMode.Own -> {
                     tokenAmount = inputAmount.toBigDecimalOrZero()
                     usdAmount = tokenAmount.multiply(token.usdRate)
 
@@ -312,7 +312,7 @@ class SendPresenter(
         }
     }
 
-    private fun updateButtonText(source: Token) {
+    private fun updateButtonText(source: Token.Active) {
         val decimalAmount = inputAmount.toBigDecimalOrZero()
         val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
 

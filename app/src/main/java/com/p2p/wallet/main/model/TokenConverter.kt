@@ -28,11 +28,11 @@ object TokenConverter {
         account: Account,
         tokenData: TokenData,
         price: TokenPrice
-    ): Token {
+    ): Token.Active {
         val data = account.account.data
         val mintAddress = data.parsed.info.mint
         val total = data.parsed.info.tokenAmount.amount.toBigInteger()
-        return Token(
+        return Token.Active(
             publicKey = account.pubkey,
             tokenSymbol = tokenData.symbol,
             decimals = tokenData.decimals,
@@ -50,7 +50,22 @@ object TokenConverter {
         )
     }
 
-    fun toDatabase(token: Token): TokenEntity =
+    fun fromNetwork(
+        data: TokenData
+    ): Token.Inactive =
+        Token.Inactive(
+            tokenName = data.name,
+            tokenSymbol = data.symbol,
+            decimals = data.decimals,
+            mintAddress = data.mintAddress,
+            logoUrl = data.iconUrl,
+            color = TokenColors.findColorBySymbol(data.symbol),
+            serumV3Usdc = data.serumV3Usdc,
+            serumV3Usdt = data.serumV3Usdt,
+            isWrapped = data.isWrapped
+        )
+
+    fun toDatabase(token: Token.Active): TokenEntity =
         TokenEntity(
             tokenSymbol = token.tokenSymbol,
             publicKey = token.publicKey,
@@ -68,8 +83,8 @@ object TokenConverter {
             isWrapped = token.isWrapped
         )
 
-    fun fromDatabase(entity: TokenEntity): Token =
-        Token(
+    fun fromDatabase(entity: TokenEntity): Token.Active =
+        Token.Active(
             publicKey = entity.publicKey,
             tokenSymbol = entity.tokenSymbol,
             decimals = entity.decimals,

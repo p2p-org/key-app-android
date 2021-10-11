@@ -30,7 +30,7 @@ class UserInMemoryRepository : UserLocalRepository {
         decimalsFlow.value = data
     }
 
-    override fun getTokenData(mintAddress: String): TokenData? {
+    override fun findTokenData(mintAddress: String): TokenData? {
         val data = decimalsFlow.value.firstOrNull { it.mintAddress == mintAddress }
         if (data == null) {
             Timber.w("No data found for $mintAddress")

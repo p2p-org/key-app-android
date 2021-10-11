@@ -29,8 +29,8 @@ class OrcaSwapRemoteRepository(
         path: DerivationPath,
         keys: List<String>,
         request: OrcaSwapRequest,
-        accountA: Token?,
-        accountB: Token?
+        accountA: Token.Active?,
+        accountB: Token.Active?
     ): String = withContext(Dispatchers.IO) {
         val owner = when (path) {
             DerivationPath.BIP44 -> Account.fromBip44Mnemonic(keys, 0)

@@ -4,10 +4,10 @@ import com.p2p.wallet.main.model.Token
 import kotlinx.coroutines.flow.Flow
 
 interface MainLocalRepository {
-    suspend fun setTokens(tokens: List<Token>)
-    suspend fun updateTokens(tokens: List<Token>)
-    fun getTokensFlow(): Flow<List<Token>>
-    suspend fun getTokens(): List<Token>
+    suspend fun setTokens(tokens: List<Token.Active>)
+    suspend fun updateTokens(tokens: List<Token.Active>)
+    fun getTokensFlow(): Flow<List<Token.Active>>
+    suspend fun getTokens(): List<Token.Active>
     suspend fun setTokenHidden(mintAddress: String, visibility: String)
     suspend fun clear()
 }

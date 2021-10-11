@@ -19,16 +19,16 @@ import com.p2p.wallet.main.model.VisibilityState
 
 class TokenHiddenViewHolder(
     binding: ItemTokenHiddenBinding,
-    private val onItemClicked: (Token) -> Unit,
-    private val onEditClicked: (Token) -> Unit,
-    private val onDeleteClicked: (Token) -> Unit
+    private val onItemClicked: (Token.Active) -> Unit,
+    private val onEditClicked: (Token.Active) -> Unit,
+    private val onDeleteClicked: (Token.Active) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     constructor(
         parent: ViewGroup,
-        onItemClicked: (Token) -> Unit,
-        onEditClicked: (Token) -> Unit,
-        onDeleteClicked: (Token) -> Unit
+        onItemClicked: (Token.Active) -> Unit,
+        onEditClicked: (Token.Active) -> Unit,
+        onDeleteClicked: (Token.Active) -> Unit
     ) : this(
         binding = ItemTokenHiddenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onItemClicked = onItemClicked,

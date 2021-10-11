@@ -1,6 +1,5 @@
 package com.p2p.wallet.swap.orca.interactor
 
-import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.rpc.repository.RpcRepository
@@ -23,7 +22,6 @@ class OrcaSwapInteractor(
     private val rpcRepository: RpcRepository,
     private val swapRepository: OrcaSwapRepository,
     private val swapLocalRepository: OrcaSwapLocalRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
     private val secretKeyInteractor: SecretKeyInteractor
 ) {
@@ -36,12 +34,29 @@ class OrcaSwapInteractor(
 
     fun getAllPools() = swapLocalRepository.getPools()
 
+    suspend fun getAvailableDestinationTokens(source: Token.Active): List<Token> {
+        val userTokens = userInteractor.getUserTokens()
+        return swapLocalRepository.getPools()
+            .filter { pool ->
+                pool.mintB.toBase58() == source.mintAddress || pool.mintA.toBase58() == source.mintAddress
+            }
+            .mapNotNull { pool ->
+                val mintA = pool.mintA.toBase58()
+                val mintB = pool.mintB.toBase58()
+                val mint = if (mintA == source.mintAddress) mintB else mintA
+                val userToken = userTokens.find { it.mintAddress == mint }
+                userToken ?: userInteractor.findTokenData(mint)
+            }
+            .distinctBy { it.mintAddress }
+            .sortedBy { it is Token.Inactive }
+    }
+
     suspend fun findPool(sourceMint: String, destinationMint: String): Pool.PoolInfo? = withContext(Dispatchers.IO) {
         val allPools = swapLocalRepository.getPools()
-        val pool = allPools.find {
+        val pool = allPools.lastOrNull {
             val mintA = it.swapData.mintA.toBase58()
             val mintB = it.swapData.mintB.toBase58()
-            (sourceMint == mintA && destinationMint == mintB) || (sourceMint == mintB && destinationMint == mintA)
+            sourceMint == mintA && destinationMint == mintB || sourceMint == mintB && destinationMint == mintA
         } ?: return@withContext null
 
         if (pool.swapData.mintB.toBase58() == sourceMint && pool.swapData.mintA.toBase58() == destinationMint) {
@@ -93,7 +108,7 @@ class OrcaSwapInteractor(
 
         // if destination wallet is selected
         // if destination wallet is a wrapped sol or not yet created a fee for creating it is needed
-        if (destination.mintAddress == Token.WRAPPED_SOL_MINT || destination.publicKey.isEmpty()) {
+        if (destination.mintAddress == Token.WRAPPED_SOL_MINT || destination is Token.Inactive) {
             feeInLamports += minRentExemption
         }
 

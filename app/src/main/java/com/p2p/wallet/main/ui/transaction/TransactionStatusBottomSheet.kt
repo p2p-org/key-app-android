@@ -63,8 +63,8 @@ class TransactionStatusBottomSheet(
             statusTextView.text = getString(info.status)
             messageTextView.text = getString(info.message)
             iconImageView.setImageResource(info.iconRes)
-            amountTextView.text = "+${info.amount} ${info.tokenSymbol}"
-            usdAmountTextView.text = "+${getString(R.string.main_usd_end_format, info.usdAmount.toString())}"
+            amountTextView.text = "${info.amount} ${info.tokenSymbol}"
+            usdAmountTextView.text = getString(R.string.main_usd_end_format, info.usdAmount)
             idTextView.text = info.transactionId
 
             viewImageView.setOnClickListener {

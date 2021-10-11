@@ -8,5 +8,5 @@ interface UserLocalRepository {
     fun getPriceByToken(symbol: String): TokenPrice
 
     fun setTokenData(data: List<TokenData>)
-    fun getTokenData(mintAddress: String): TokenData?
+    fun findTokenData(mintAddress: String): TokenData?
 }
