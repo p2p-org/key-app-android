@@ -374,8 +374,8 @@ class OrcaSwapPresenter(
             status = R.string.main_send_success,
             message = R.string.main_send_transaction_confirmed,
             iconRes = R.drawable.ic_success,
-            amount = result.receivedAmount,
-            usdAmount = result.usdReceivedAmount,
+            amount = "+${result.receivedAmount}",
+            usdAmount = "+${result.usdReceivedAmount}",
             tokenSymbol = result.tokenSymbol
         )
         view?.showSwapSuccess(info)

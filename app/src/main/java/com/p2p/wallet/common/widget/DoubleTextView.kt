@@ -4,11 +4,15 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.p2p.wallet.R
 import com.p2p.wallet.databinding.WidgetDoubleTextViewBinding
+import com.p2p.wallet.utils.colorFromTheme
 
 class DoubleTextView @JvmOverloads constructor(
     context: Context,
@@ -46,8 +50,17 @@ class DoubleTextView @JvmOverloads constructor(
     fun setBottomText(text: String) {
         binding.bottomTextView.text = text
     }
+
     fun setBottomText(@StringRes text: Int) {
         binding.bottomTextView.setText(text)
+    }
+
+    fun setBottomTextColor(@ColorRes colorRes: Int) {
+        binding.bottomTextView.setTextColor(ContextCompat.getColor(context, colorRes))
+    }
+
+    fun setBottomTextColorFromTheme(@AttrRes colorAttrId: Int) {
+        binding.bottomTextView.setTextColor(colorFromTheme(colorAttrId))
     }
 
     fun setDrawableEnd(@DrawableRes icon: Int?) {

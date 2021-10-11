@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.p2p.wallet.databinding.ViewDebugDrawerWipeDataBinding
 import io.palaima.debugdrawer.base.DebugModuleAdapter
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 class WipeDataModule(
     private val restart: () -> Unit,

@@ -68,8 +68,9 @@ class SendPresenter(
             val source = initialToken ?: userInteractor.getUserTokens().firstOrNull() ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate)
-
             mode = CurrencyMode.Token(source.tokenSymbol)
+
+            calculateFee()
 
             view?.showFullScreenLoading(false)
         }
@@ -221,8 +222,8 @@ class SendPresenter(
                     status = R.string.main_send_success,
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,
-                    amount = tokenAmount,
-                    usdAmount = token!!.usdRate.multiply(tokenAmount).scaleMedium(),
+                    amount = "-$tokenAmount",
+                    usdAmount = "-${token!!.usdRate.multiply(tokenAmount).scaleMedium()}",
                     tokenSymbol = token!!.tokenSymbol
                 )
                 view?.showSuccess(info)

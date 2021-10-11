@@ -146,7 +146,7 @@ dependencies {
     // seed value
     implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
 
-    def koinVersion = '2.1.6' // TODO: migrate to 2.2.3 or 3.0.X when released
+    def koinVersion = '2.2.2' // TODO: migrate to 2.2.3 or 3.0.X when released
     //noinspection GradleDependency
     implementation "org.koin:koin-android:$koinVersion"
     //noinspection GradleDependency
