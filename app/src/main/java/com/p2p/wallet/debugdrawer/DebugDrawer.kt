@@ -19,8 +19,8 @@ import io.palaima.debugdrawer.base.DebugModuleAdapter
 import io.palaima.debugdrawer.commons.BuildModule
 import io.palaima.debugdrawer.commons.DeviceModule
 import io.palaima.debugdrawer.timber.data.LumberYard
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 object DebugDrawer : KoinComponent {

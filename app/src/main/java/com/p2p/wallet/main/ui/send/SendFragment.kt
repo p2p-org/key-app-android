@@ -187,10 +187,12 @@ class SendFragment :
     override fun showFee(fee: String?) {
         if (fee.isNullOrEmpty()) {
             binding.feeView.setBottomText(R.string.send_free_transaction)
+            binding.feeView.setBottomTextColor(R.color.colorGreen)
             binding.feeView.setOnClickListener { FeeInfoBottomSheet.show(childFragmentManager) }
             binding.feeView.setDrawableEnd(R.drawable.ic_info)
         } else {
             binding.feeView.setBottomText(fee)
+            binding.feeView.setBottomTextColorFromTheme(R.attr.colorMessagePrimary)
             binding.feeView.setOnClickListener(null)
             binding.feeView.setDrawableEnd(null)
         }
@@ -215,6 +217,7 @@ class SendFragment :
 
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+        binding.tokenTextView.isVisible = !isLoading
     }
 
     override fun setAvailableTextColor(availableColor: Int) {

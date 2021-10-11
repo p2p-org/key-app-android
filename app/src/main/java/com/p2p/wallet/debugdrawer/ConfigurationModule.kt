@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import com.p2p.wallet.databinding.ViewDebugDrawerConfigureEnvironmentBinding
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import io.palaima.debugdrawer.base.DebugModuleAdapter
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
 

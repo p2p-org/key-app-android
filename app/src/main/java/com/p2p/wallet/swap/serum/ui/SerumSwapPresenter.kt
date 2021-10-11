@@ -201,8 +201,8 @@ class SwapPresenter(
                     status = R.string.main_send_success,
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,
-                    amount = destinationAmount.toBigDecimalOrZero(),
-                    usdAmount = aroundValue,
+                    amount = "+${destinationAmount.toBigDecimalOrZero()}",
+                    usdAmount = "+$aroundValue",
                     tokenSymbol = requireDestinationToken().tokenSymbol
                 )
                 view?.showSwapSuccess(info)
