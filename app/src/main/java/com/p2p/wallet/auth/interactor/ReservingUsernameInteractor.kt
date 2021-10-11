@@ -11,7 +11,6 @@ class ReservingUsernameInteractor(
 
     suspend fun checkUsername(username: String): UsernameCheckResponse {
         return usernameRemoteRepository.checkUsername(username)
-//        return usernameRemoteRepository.checkUsername("kstep-test-1")
     }
 
     suspend fun checkCaptcha(): GetCaptchaResponse {

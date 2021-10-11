@@ -7,6 +7,7 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.geetest.sdk.GT3GeetestUtils
 import com.p2p.wallet.R
@@ -24,6 +25,7 @@ import com.geetest.sdk.GT3Listener
 
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
+import com.p2p.wallet.auth.api.UsernameCheckResponse
 import com.p2p.wallet.utils.toast
 import org.json.JSONObject
 
@@ -56,6 +58,7 @@ class ReservingUsernameFragment :
                 presenter.registerUsername(result)
                 toast(text = "onDialogResult $result")
             }
+
             override fun onReceiveCaptchaCode(p0: Int) {
                 toast(text = "onReceiveCaptchaCode $p0")
             }
@@ -97,9 +100,10 @@ class ReservingUsernameFragment :
             youCanSkipTextView.movementMethod = LinkMovementMethod.getInstance()
             youCanSkipTextView.highlightColor = Color.TRANSPARENT
 
-            usernameEditText.doAfterTextChanged { presenter.checkUsername(it.toString()) }
+            usernameEditText.doAfterTextChanged {
+                presenter.checkUsername(it.toString())
+            }
 
-            enterUserNameButton.isEnabled = true
             enterUserNameButton.setOnClickListener {
                 gt3GeeTestUtils?.startCustomFlow()
             }
@@ -118,6 +122,18 @@ class ReservingUsernameFragment :
     override fun getCaptchaResult(params: JSONObject) {
         gt3ConfigBean?.api1Json = params
         gt3GeeTestUtils?.getGeetest()
+    }
+
+    override fun showAvailableName(name: String, usernameCheckResponse: UsernameCheckResponse) {
+        binding.useOnlyTextView.text = String.format(getString(R.string.auth_available_name), name)
+        binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
+        binding.enterUserNameButton.isEnabled = true
+    }
+
+    override fun showUnavailableName(name: String) {
+        binding.useOnlyTextView.text = String.format(getString(R.string.auth_unavailable_name), name)
+        binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorRed))
+        binding.enterUserNameButton.isEnabled = false
     }
 
     private fun buildClickableText(): SpannableString {
