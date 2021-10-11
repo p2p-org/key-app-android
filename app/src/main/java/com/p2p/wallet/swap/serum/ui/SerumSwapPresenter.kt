@@ -162,7 +162,7 @@ class SwapPresenter(
     }
 
     override fun reverseTokens() {
-        if (sourceToken == null || destinationToken == null || destinationToken is Token.Inactive) return
+        if (sourceToken == null || destinationToken == null || destinationToken is Token.Other) return
 
         /* reversing tokens */
         val newSource = destinationToken!! as Token.Active

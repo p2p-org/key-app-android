@@ -66,7 +66,7 @@ class SelectTokenViewHolder(
                 valueTextView.isVisible = true
                 totalTextView.isVisible = true
             }
-            is Token.Inactive -> {
+            is Token.Other -> {
                 nameTextView.text = item.tokenName
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false

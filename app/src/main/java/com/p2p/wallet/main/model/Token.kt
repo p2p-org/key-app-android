@@ -88,7 +88,7 @@ sealed class Token constructor(
     }
 
     @Parcelize
-    data class Inactive(
+    data class Other(
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -118,10 +118,6 @@ sealed class Token constructor(
     val isUSDC: Boolean
         get() = tokenSymbol == USDC_SYMBOL
 
-    @IgnoredOnParcel
-    val isRenBTC: Boolean
-        get() = tokenSymbol == REN_BTC_SYMBOL
-
     companion object {
         const val REN_BTC_SYMBOL = "renBTC"
         const val USD_SYMBOL = "USD"
@@ -137,7 +133,7 @@ sealed class Token constructor(
             tokenData: TokenData,
             amount: Long,
             exchangeRate: BigDecimal
-        ): Token.Active {
+        ): Active {
             val total: BigDecimal = BigDecimal(amount).divide(tokenData.decimals.toPowerValue())
             return Active(
                 publicKey = publicKey,

@@ -152,7 +152,7 @@ class OrcaSwapPresenter(
     }
 
     override fun reverseTokens() {
-        if (destinationToken == null || destinationToken is Token.Inactive) return
+        if (destinationToken == null || destinationToken is Token.Other) return
 
         /* reversing tokens */
         val source = sourceToken

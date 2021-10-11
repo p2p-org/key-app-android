@@ -52,8 +52,8 @@ object TokenConverter {
 
     fun fromNetwork(
         data: TokenData
-    ): Token.Inactive =
-        Token.Inactive(
+    ): Token.Other =
+        Token.Other(
             tokenName = data.name,
             tokenSymbol = data.symbol,
             decimals = data.decimals,

@@ -90,7 +90,7 @@ class SerumSwapMarketTests {
         val mre = BigInteger.valueOf(2039280L)
 
         // from native sol to new usdt wallet
-        val newUSDTWallet = Token(
+        val newUSDTWallet = Token.Active(
             publicKey = "",
             tokenSymbol = "USDT",
             decimals = 6,
@@ -119,7 +119,7 @@ class SerumSwapMarketTests {
         // from usdc to srm
         val usdcWallet = userTokens.first { it.mintAddress == USDC.toBase58() }
 
-        val newSRMWallet = Token(
+        val newSRMWallet = Token.Active(
             publicKey = "",
             tokenSymbol = "SRM",
             decimals = 6,

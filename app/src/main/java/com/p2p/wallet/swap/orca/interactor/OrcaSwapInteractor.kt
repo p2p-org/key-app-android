@@ -48,7 +48,7 @@ class OrcaSwapInteractor(
                 userToken ?: userInteractor.findTokenData(mint)
             }
             .distinctBy { it.mintAddress }
-            .sortedBy { it is Token.Inactive }
+            .sortedBy { it is Token.Other }
     }
 
     suspend fun findPool(sourceMint: String, destinationMint: String): Pool.PoolInfo? = withContext(Dispatchers.IO) {
@@ -108,7 +108,7 @@ class OrcaSwapInteractor(
 
         // if destination wallet is selected
         // if destination wallet is a wrapped sol or not yet created a fee for creating it is needed
-        if (destination.mintAddress == Token.WRAPPED_SOL_MINT || destination is Token.Inactive) {
+        if (destination.mintAddress == Token.WRAPPED_SOL_MINT || destination is Token.Other) {
             feeInLamports += minRentExemption
         }
 

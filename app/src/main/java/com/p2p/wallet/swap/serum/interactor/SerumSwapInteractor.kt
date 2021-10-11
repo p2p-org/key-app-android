@@ -113,7 +113,7 @@ class SerumSwapInteractor(
         // if destination wallet is a wrapped sol or not yet created,
         // a fee for creating it is needed, as new address is an associated token address,
         // the signature fee is NOT needed
-        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet is Token.Inactive) {
+        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet is Token.Other) {
             fee += minRentExemption
         }
 
