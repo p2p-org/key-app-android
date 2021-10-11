@@ -136,6 +136,11 @@ class ReservingUsernameFragment :
         binding.enterUserNameButton.isEnabled = false
     }
 
+    override fun finishRegisterName() {
+        gt3GeeTestUtils?.showSuccessDialog()
+        toast("finishRegisterName")
+    }
+
     private fun buildClickableText(): SpannableString {
         val clickableText = getString(R.string.auth_clickable_skip_this_step)
         val message = getString(R.string.auth_skip_this_step)

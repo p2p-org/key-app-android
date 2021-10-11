@@ -2,6 +2,7 @@ package com.p2p.wallet.auth.ui.username
 
 import com.google.gson.Gson
 import com.p2p.wallet.auth.interactor.ReservingUsernameInteractor
+import com.p2p.wallet.auth.model.NameRegisterBody
 import com.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -15,12 +16,14 @@ class ReservingUsernamePresenter(
     ReservingUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
+    private var owner: String? = null
 
     override fun checkUsername(username: String) {
         checkUsernameJob?.cancel()
         checkUsernameJob = launch {
             try {
                 val usernameCheckResponse = interactor.checkUsername(username)
+                owner = usernameCheckResponse.owner
                 view?.showAvailableName(username, usernameCheckResponse)
             } catch (e: HttpException) {
                 view?.showUnavailableName(username)
@@ -33,10 +36,7 @@ class ReservingUsernamePresenter(
         launch {
             try {
                 val getCaptchaResponse = interactor.checkCaptcha()
-                val gson = Gson()
-                gson.toJson(getCaptchaResponse)
-                val jsonObject = JSONObject(gson.toJson(getCaptchaResponse))
-                view?.getCaptchaResult(jsonObject)
+                view?.getCaptchaResult(JSONObject(Gson().toJson(getCaptchaResponse)))
             } catch (e: HttpException) {
                 e.message()
             }
@@ -44,8 +44,21 @@ class ReservingUsernamePresenter(
     }
 
     override fun registerUsername(result: String?) {
+        val credentials = Gson().fromJson(result, NameRegisterBody.Credentials::class.java)
         launch {
-            interactor.registerUsername()
+            try {
+                owner?.let {
+                    NameRegisterBody(
+                        owner = it,
+                        credentials = credentials
+                    )
+                }?.let {
+                    interactor.registerUsername(it)
+                    view?.finishRegisterName()
+                }
+            } catch (e: HttpException) {
+                e.message()
+            }
         }
     }
 }

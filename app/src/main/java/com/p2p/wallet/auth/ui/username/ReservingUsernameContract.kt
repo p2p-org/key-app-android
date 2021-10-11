@@ -12,6 +12,7 @@ interface ReservingUsernameContract {
         fun getCaptchaResult(params: JSONObject)
         fun showAvailableName(name: String, usernameCheckResponse: UsernameCheckResponse)
         fun showUnavailableName(name: String)
+        fun finishRegisterName()
     }
 
     interface Presenter : MvpPresenter<View> {

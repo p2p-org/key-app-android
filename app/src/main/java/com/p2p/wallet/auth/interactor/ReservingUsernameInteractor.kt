@@ -17,17 +17,18 @@ class ReservingUsernameInteractor(
         return usernameRemoteRepository.checkCaptcha()
     }
 
-    suspend fun registerUsername(): String {
+    suspend fun registerUsername(nameRegisterBody: NameRegisterBody): String {
         return usernameRemoteRepository.registerUsername(
-            NameRegisterBody(
-                owner = "",
-                credentials = NameRegisterBody.Credentials(
-                    geeTestValidate = "",
-                    geeTestSecCode = "",
-                    geeTestChallenge = ""
-
-                )
-            )
+            nameRegisterBody
+//            NameRegisterBody(
+//                owner = "",
+//                credentials = NameRegisterBody.Credentials(
+//                    geeTestValidate = "",
+//                    geeTestSecCode = "",
+//                    geeTestChallenge = ""
+//
+//                )
+//            )
         )
     }
 }
