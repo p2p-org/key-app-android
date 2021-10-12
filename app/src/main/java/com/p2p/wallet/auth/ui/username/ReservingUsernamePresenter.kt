@@ -1,6 +1,5 @@
 package com.p2p.wallet.auth.ui.username
 
-import android.util.Log
 import com.google.gson.Gson
 import com.p2p.wallet.auth.interactor.ReservingUsernameInteractor
 import com.p2p.wallet.auth.model.NameRegisterBody
@@ -17,7 +16,6 @@ class ReservingUsernamePresenter(
     ReservingUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
-    private var owner: String = ""
 
     override fun checkUsername(username: String) {
         checkUsernameJob?.cancel()
@@ -26,8 +24,6 @@ class ReservingUsernamePresenter(
                 val usernameCheckResponse = interactor.checkUsername(username)
                 view?.showUnavailableName(username, usernameCheckResponse)
             } catch (e: HttpException) {
-//                owner = usernameCheckResponse.owner
-                Log.i("efefef owner", owner)
                 view?.showAvailableName(username)
                 e.message()
             }
@@ -45,17 +41,11 @@ class ReservingUsernamePresenter(
         }
     }
 
-    //    kstep-test-8
-    override fun registerUsername(result: String?) {
+    override fun registerUsername(username: String, result: String?) {
         val credentials = Gson().fromJson(result, NameRegisterBody.Credentials::class.java)
-
-        Log.i("efefef geeTestValidate", credentials.geeTestValidate)
-        Log.i("efefef geeTestSecCode", credentials.geeTestSecCode)
-        Log.i("efefef geeTestChallenge", credentials.geeTestChallenge)
-
         launch {
             try {
-                interactor.registerUsername(NameRegisterBody(owner = owner, credentials = credentials))
+                interactor.registerUsername(username, credentials)
                 view?.successRegisterName()
             } catch (e: HttpException) {
                 view?.failRegisterName()

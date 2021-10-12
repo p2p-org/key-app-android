@@ -25,7 +25,7 @@ import com.geetest.sdk.GT3Listener
 
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
-import com.p2p.wallet.auth.api.UsernameCheckResponse
+import com.p2p.wallet.auth.api.CheckUsernameResponse
 import com.p2p.wallet.utils.toast
 import org.json.JSONObject
 
@@ -55,7 +55,7 @@ class ReservingUsernameFragment :
         gt3ConfigBean?.webviewTimeout = 10000
         gt3ConfigBean?.listener = object : GT3Listener() {
             override fun onDialogResult(result: String?) {
-                presenter.registerUsername(result)
+                presenter.registerUsername(binding.usernameEditText.text.toString(), result)
             }
 
             override fun onReceiveCaptchaCode(p0: Int) {
@@ -115,7 +115,7 @@ class ReservingUsernameFragment :
         replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
-    override fun showUnavailableName(name: String, usernameCheckResponse: UsernameCheckResponse) {
+    override fun showUnavailableName(name: String, checkUsernameResponse: CheckUsernameResponse) {
         binding.useOnlyTextView.text = String.format(getString(R.string.auth_unavailable_name), name)
         binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorRed))
         binding.enterUserNameButton.isEnabled = false
