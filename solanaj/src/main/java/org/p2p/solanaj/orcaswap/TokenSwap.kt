@@ -28,7 +28,8 @@ class TokenSwap {
         balanceB: TokenAccountBalance,
         wrappedSolAccount: PublicKey,
         accountAddressA: PublicKey?,
-        accountAddressB: PublicKey?,
+        associatedAddress: PublicKey,
+        shouldCreateAssociatedInstruction: Boolean,
         getAccountInfo: suspend (PublicKey) -> AccountInfo?,
         getBalanceNeeded: suspend (Long) -> Long,
         getRecentBlockhash: suspend () -> String,
@@ -73,29 +74,21 @@ class TokenSwap {
         } else {
             accountAddressA
         }
-        var toAccount = accountAddressB
         val isWrappedSol = mintB.equals(wrappedSolAccount)
-        if (toAccount == null || isWrappedSol) {
-            val newAccount = Account()
-            val newAccountPubKey = newAccount.publicKey
-            val createAccountInstruction = SystemProgram.createAccount(
-                owner.publicKey,
-                newAccountPubKey,
-                balanceNeeded,
-                AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong(),
-                TokenProgram.PROGRAM_ID
-            )
-            val initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
+
+        if (shouldCreateAssociatedInstruction) {
+            val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
+                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                 TokenProgram.PROGRAM_ID,
-                newAccountPubKey,
                 mintB,
+                associatedAddress,
+                owner.publicKey,
                 owner.publicKey
             )
-            transaction.addInstruction(createAccountInstruction)
-            transaction.addInstruction(initializeAccountInstruction)
-            signers.add(newAccount)
-            toAccount = newAccountPubKey
+
+            transaction.addInstruction(createAccount)
         }
+
         val userTransferAuthority = Account()
         val approve = TokenProgram.approveInstruction(
             TokenProgram.PROGRAM_ID,
@@ -120,7 +113,7 @@ class TokenSwap {
             fromAccount,
             tokenA,
             tokenB,
-            toAccount,
+            associatedAddress,
             pool.tokenPool,
             pool.feeAccount,
             pool.feeAccount,
@@ -136,7 +129,7 @@ class TokenSwap {
         if (tokenAInfo.isNative) {
             closeAccountPublicKey = fromAccount
         } else if (isWrappedSol) {
-            closeAccountPublicKey = toAccount
+            closeAccountPublicKey = associatedAddress
         }
         if (isNeedCloseAccount && closeAccountPublicKey != null) {
             val closeAccountInstruction = TokenProgram.closeAccountInstruction(

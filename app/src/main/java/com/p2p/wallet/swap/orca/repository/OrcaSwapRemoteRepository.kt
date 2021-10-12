@@ -30,7 +30,8 @@ class OrcaSwapRemoteRepository(
         keys: List<String>,
         request: OrcaSwapRequest,
         accountA: Token.Active?,
-        accountB: Token.Active?
+        associatedAddress: PublicKey,
+        shouldCreateAssociatedInstruction: Boolean
     ): String = withContext(Dispatchers.IO) {
         val owner = when (path) {
             DerivationPath.BIP44 -> Account.fromBip44Mnemonic(keys, 0)
@@ -49,7 +50,8 @@ class OrcaSwapRemoteRepository(
             balanceB = request.balanceB,
             wrappedSolAccount = Token.WRAPPED_SOL_MINT.toPublicKey(),
             accountAddressA = accountA?.publicKey?.toPublicKey(),
-            accountAddressB = accountB?.publicKey?.toPublicKey(),
+            associatedAddress = associatedAddress,
+            shouldCreateAssociatedInstruction = shouldCreateAssociatedInstruction,
             getAccountInfo = { rpcRepository.getAccountInfo(it) },
             getBalanceNeeded = { rpcRepository.getMinimumBalanceForRentExemption(it) },
             getRecentBlockhash = { rpcRepository.getRecentBlockhash().recentBlockhash },

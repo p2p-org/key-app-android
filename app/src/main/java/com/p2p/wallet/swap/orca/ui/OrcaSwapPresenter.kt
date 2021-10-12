@@ -177,7 +177,6 @@ class OrcaSwapPresenter(
             try {
                 view?.showLoading(true)
                 val lamports = sourceAmount.toBigDecimalOrZero().toLamports(sourceToken.decimals)
-
                 val request = OrcaSwapRequest(
                     pool = requirePool(),
                     slippage = slippage.doubleValue,
@@ -231,8 +230,8 @@ class OrcaSwapPresenter(
         val priceData = PriceData(
             sourceAmount = sourceRate.toString(),
             destinationAmount = destinationRate.toString(),
-            sourceSymbol = source.tokenSymbol,
-            destinationSymbol = destination.tokenSymbol
+            sourceSymbol = destination.tokenSymbol,
+            destinationSymbol = source.tokenSymbol
         )
         view?.showPrice(priceData)
     }

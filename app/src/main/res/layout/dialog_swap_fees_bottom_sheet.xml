@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_alert_elevation_rounded_top"
@@ -28,7 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
         android:layout_marginStart="20dp"
-        app:topText="@string/swap_liquidity_provider_fees" />
+        app:topText="@string/swap_liquidity_provider_fees"
+        tools:bottomText="0.00235 USDT" />
 
     <View
         android:layout_width="match_parent"
@@ -41,7 +43,8 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
         android:layout_marginStart="20dp"
-        app:topText="@string/swap_network_fee" />
+        app:topText="@string/swap_network_fee"
+        tools:bottomText="0.00005 SOL" />
 
     <View
         android:layout_width="match_parent"
@@ -54,6 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
         android:layout_marginStart="20dp"
+        android:visibility="gone"
         app:drawableEnd="@drawable/ic_arrow_right"
         app:topText="@string/swap_pay_network_fee" />
 

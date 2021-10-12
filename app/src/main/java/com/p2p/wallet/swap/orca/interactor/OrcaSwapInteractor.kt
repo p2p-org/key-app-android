@@ -1,5 +1,7 @@
 package com.p2p.wallet.swap.orca.interactor
 
+import com.p2p.wallet.R
+import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.rpc.repository.RpcRepository
@@ -8,21 +10,30 @@ import com.p2p.wallet.swap.orca.model.OrcaSwapResult
 import com.p2p.wallet.swap.orca.repository.OrcaSwapLocalRepository
 import com.p2p.wallet.swap.orca.repository.OrcaSwapRepository
 import com.p2p.wallet.user.interactor.UserInteractor
+import com.p2p.wallet.user.repository.UserLocalRepository
+import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.SwapDetails.SWAP_PROGRAM_ID
 import org.p2p.solanaj.model.types.TokenAccountBalance
+import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+
+private const val SWAP_TAG = "OrcaSwap"
 
 class OrcaSwapInteractor(
     private val rpcRepository: RpcRepository,
     private val swapRepository: OrcaSwapRepository,
     private val swapLocalRepository: OrcaSwapLocalRepository,
     private val userInteractor: UserInteractor,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val userLocalRepository: UserLocalRepository,
     private val secretKeyInteractor: SecretKeyInteractor
 ) {
 
@@ -70,6 +81,9 @@ class OrcaSwapInteractor(
     suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance =
         swapRepository.loadTokenBalance(publicKey)
 
+    /*
+    * TODO: optimize this one! remove [TokenSwap] move logic here
+    * */
     suspend fun swap(
         request: OrcaSwapRequest,
         receivedAmount: BigDecimal,
@@ -77,11 +91,68 @@ class OrcaSwapInteractor(
         tokenSymbol: String
     ): OrcaSwapResult {
         val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA.toBase58())
-        val accountAddressB = userInteractor.findAccountAddress(request.pool.mintB.toBase58())
         val keys = secretKeyInteractor.getSecretKeys()
         val path = secretKeyInteractor.getCurrentDerivationPath()
-        val signature = swapRepository.swap(path, keys, request, accountAddressA, accountAddressB)
+
+        val owner = tokenKeyProvider.publicKey.toPublicKey()
+        val associatedAddress = try {
+            Timber.tag(SWAP_TAG).d("Searching for SPL token address")
+            findSplTokenAddress(request.pool.mintB.toBase58(), owner)
+        } catch (e: IllegalStateException) {
+            Timber.tag(SWAP_TAG).d("Searching address failed, address is wrong")
+            return OrcaSwapResult.Error(R.string.error_invalid_address)
+        }
+
+        /* If account is not found, create one */
+        val accountInfo = rpcRepository.getAccountInfo(associatedAddress)
+        val value = accountInfo?.value
+        val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
+
+        val signature = swapRepository.swap(
+            path,
+            keys,
+            request,
+            accountAddressA,
+            associatedAddress,
+            !associatedNotNeeded
+        )
+
         return OrcaSwapResult.Success(signature, receivedAmount, usdReceivedAmount, tokenSymbol)
+    }
+
+    @Throws(IllegalStateException::class)
+    private suspend fun findSplTokenAddress(mintAddress: String, destinationAddress: PublicKey): PublicKey {
+        val accountInfo = rpcRepository.getAccountInfo(destinationAddress)
+
+        // detect if it is a direct token address
+        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
+            Timber.tag(SWAP_TAG).d("Token by mint was found. Continuing with direct address")
+            return destinationAddress
+        }
+
+        // create associated token address
+        val value = accountInfo?.value
+        if (value == null || value.data?.get(0).isNullOrEmpty()) {
+            Timber.tag(SWAP_TAG).d("No information found, creating associated token address")
+            return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
+        }
+
+        // detect if destination address is already a SPLToken address
+        if (info?.mint == destinationAddress) {
+            Timber.tag(SWAP_TAG).d("Destination address is already an SPL Token address, returning")
+            return destinationAddress
+        }
+
+        // detect if destination address is a SOL address
+        if (info?.owner?.toBase58() == TokenProgram.PROGRAM_ID.toBase58()) {
+            Timber.tag(SWAP_TAG).d("Destination address is SOL address. Getting the associated token address")
+
+            // create associated token address
+            return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
+        }
+
+        throw IllegalStateException("Wallet address is not valid")
     }
 
     suspend fun getLamportsPerSignature(): BigInteger = rpcRepository.getFees(null)

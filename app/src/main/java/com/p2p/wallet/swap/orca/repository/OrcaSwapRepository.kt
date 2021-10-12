@@ -15,6 +15,7 @@ interface OrcaSwapRepository {
         keys: List<String>,
         request: OrcaSwapRequest,
         accountA: Token.Active?,
-        accountB: Token.Active?
+        associatedAddress: PublicKey,
+        shouldCreateAssociatedInstruction: Boolean
     ): String
 }
