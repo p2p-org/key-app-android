@@ -1,11 +1,16 @@
 package com.p2p.wallet.main.ui.select
 
+import android.graphics.drawable.PictureDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
+import com.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import com.p2p.wallet.databinding.ItemTokenSimpleBinding
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.utils.dip
@@ -17,6 +22,7 @@ class SelectTokenViewHolder(
 
     companion object {
         private const val LIST_TOP_MARGIN_IN_DP = 16
+        private const val IMAGE_SIZE = 56
     }
 
     constructor(
@@ -26,6 +32,10 @@ class SelectTokenViewHolder(
         binding = ItemTokenSimpleBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onItemClicked = onItemClicked
     )
+
+    private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
+        .`as`(PictureDrawable::class.java)
+        .listener(SvgSoftwareLayerSetter())
 
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView
@@ -41,15 +51,38 @@ class SelectTokenViewHolder(
         }
 
         if (!item.logoUrl.isNullOrEmpty()) {
-            Glide.with(tokenImageView).load(item.logoUrl).into(tokenImageView)
+            loadImage(tokenImageView, item.logoUrl!!)
         }
         wrappedImageView.isVisible = item.isWrapped
         symbolTextView.text = item.tokenSymbol
-        nameTextView.text = item.getFormattedAddress()
-        valueTextView.text = item.getFormattedPrice()
-        totalTextView.text = item.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, item.color))
-
         itemView.setOnClickListener { onItemClicked(item) }
+
+        when (item) {
+            is Token.Active -> {
+                nameTextView.text = item.getFormattedAddress()
+                valueTextView.text = item.getFormattedPrice()
+                totalTextView.text = item.getFormattedTotal()
+                valueTextView.isVisible = true
+                totalTextView.isVisible = true
+            }
+            is Token.Other -> {
+                nameTextView.text = item.tokenName
+                valueTextView.isVisible = false
+                totalTextView.isVisible = false
+            }
+        }
+    }
+
+    private fun loadImage(imageView: ImageView, url: String) {
+        if (url.contains(".svg")) {
+            val size = imageView.context.dip(IMAGE_SIZE)
+            requestBuilder.load(url)
+                .apply(RequestOptions().override(size, size))
+                .centerCrop()
+                .into(imageView)
+        } else {
+            Glide.with(imageView).load(url).into(imageView)
+        }
     }
 }

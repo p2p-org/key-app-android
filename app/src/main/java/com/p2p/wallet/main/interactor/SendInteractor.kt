@@ -81,7 +81,7 @@ class SendInteractor(
 
     suspend fun sendSplToken(
         destinationAddress: PublicKey,
-        token: Token,
+        token: Token.Active,
         lamports: BigInteger
     ): TransactionResult {
         val currentUser = tokenKeyProvider.publicKey
@@ -175,7 +175,7 @@ class SendInteractor(
 
         // detect if it is a direct token address
         val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
-        if (info != null && userLocalRepository.getTokenData(info.mint.toBase58()) != null) {
+        if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
             Timber.tag(SEND_TAG).d("Token by mint was found. Continuing with direct address")
             return destinationAddress
         }

@@ -73,7 +73,7 @@ class ReceiveSolanaFragment :
         presenter.loadData()
     }
 
-    override fun showSolAddress(token: Token) {
+    override fun showSolAddress(token: Token.Active) {
         with(binding) {
             fullAddressTextView.text = token.publicKey.cutMiddle()
             fullAddressTextView.setOnClickListener {
@@ -87,7 +87,7 @@ class ReceiveSolanaFragment :
         }
     }
 
-    override fun showReceiveToken(token: Token) {
+    override fun showReceiveToken(token: Token.Active) {
         with(binding) {
             viewButton.setOnClickListener {
                 val url = getString(R.string.solanaWalletExplorer, token.publicKey)

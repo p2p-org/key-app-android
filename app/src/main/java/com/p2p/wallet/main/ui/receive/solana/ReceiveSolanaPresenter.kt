@@ -15,7 +15,7 @@ import kotlin.properties.Delegates
 private const val DELAY_IN_MILLIS = 200L
 
 class ReceivePresenter(
-    private val defaultToken: Token?,
+    private val defaultToken: Token.Active?,
     private val userInteractor: UserInteractor,
     private val qrCodeInteractor: QrCodeInteractor
 ) : BasePresenter<ReceiveSolanaContract.View>(), ReceiveSolanaContract.Presenter {
@@ -24,7 +24,7 @@ class ReceivePresenter(
 
     private var qrBitmap: Bitmap? = null
 
-    private var token: Token? by Delegates.observable(null) { _, _, newValue ->
+    private var token: Token.Active? by Delegates.observable(null) { _, _, newValue ->
         if (newValue != null) view?.showReceiveToken(newValue)
     }
 

@@ -20,9 +20,9 @@ import com.p2p.wallet.utils.dip
 
 class TokenViewHolder(
     binding: ItemTokenBinding,
-    private val onItemClicked: (Token) -> Unit,
-    private val onEditClicked: (Token) -> Unit,
-    private val onHideClicked: (Token) -> Unit
+    private val onItemClicked: (Token.Active) -> Unit,
+    private val onEditClicked: (Token.Active) -> Unit,
+    private val onHideClicked: (Token.Active) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
@@ -36,9 +36,9 @@ class TokenViewHolder(
 
     constructor(
         parent: ViewGroup,
-        onItemClicked: (Token) -> Unit,
-        onEditClicked: (Token) -> Unit,
-        onDeleteClicked: (Token) -> Unit
+        onItemClicked: (Token.Active) -> Unit,
+        onEditClicked: (Token.Active) -> Unit,
+        onDeleteClicked: (Token.Active) -> Unit
     ) : this(
         binding = ItemTokenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onItemClicked = onItemClicked,

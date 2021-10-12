@@ -24,7 +24,7 @@ class TokenOptionsDialog : NonDraggableBottomSheetDialogFragment() {
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
-        fun show(fm: FragmentManager, token: Token) {
+        fun show(fm: FragmentManager, token: Token.Active) {
             TokenOptionsDialog()
                 .withArgs(EXTRA_TOKEN to token)
                 .show(fm, TokenOptionsDialog::javaClass.name)
@@ -36,7 +36,7 @@ class TokenOptionsDialog : NonDraggableBottomSheetDialogFragment() {
 
     private val binding: DialogTokenOptionsBinding by viewBinding()
 
-    private val token: Token by args(EXTRA_TOKEN)
+    private val token: Token.Active by args(EXTRA_TOKEN)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_token_options, container, false)

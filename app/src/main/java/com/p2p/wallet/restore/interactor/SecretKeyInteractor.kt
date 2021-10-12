@@ -31,7 +31,7 @@ class SecretKeyInteractor(
     suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<DerivableAccount> =
         authRepository.getDerivableAccounts(path, keys).mapNotNull { account ->
             val balance = rpcRepository.getBalance(account.publicKey.toBase58())
-            val tokenData = userLocalRepository.getTokenData(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null
+            val tokenData = userLocalRepository.findTokenData(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null
 
             val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol).price
             val total = BigDecimal(balance).divide(tokenData.decimals.toPowerValue())

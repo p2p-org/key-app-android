@@ -9,8 +9,8 @@ interface ReceiveSolanaContract {
 
     interface View : MvpView {
         fun renderQr(qrBitmap: Bitmap?)
-        fun showReceiveToken(token: Token)
-        fun showSolAddress(token: Token)
+        fun showReceiveToken(token: Token.Active)
+        fun showSolAddress(token: Token.Active)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showQrLoading(isLoading: Boolean)
     }

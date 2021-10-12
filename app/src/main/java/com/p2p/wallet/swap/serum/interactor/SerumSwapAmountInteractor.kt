@@ -107,7 +107,7 @@ class SerumSwapAmountInteractor(
 
     // / Maximum amount that user can use for swapping
     fun calculateAvailableAmount(
-        sourceToken: Token?,
+        sourceToken: Token.Active?,
         fee: SerumSwapFee?
     ): BigDecimal? {
         if (sourceToken == null || sourceToken.total.isZero()) {

@@ -126,7 +126,7 @@ class SendFragment :
             viewLifecycleOwner,
             FragmentResultListener { _, result ->
                 if (!result.containsKey(SelectTokenFragment.EXTRA_TOKEN)) return@FragmentResultListener
-                val token = result.getParcelable<Token>(SelectTokenFragment.EXTRA_TOKEN)
+                val token = result.getParcelable<Token.Active>(SelectTokenFragment.EXTRA_TOKEN)
                 if (token != null) presenter.setSourceToken(token)
             }
         )
@@ -134,7 +134,7 @@ class SendFragment :
         presenter.loadInitialData()
     }
 
-    override fun navigateToTokenSelection(tokens: List<Token>) {
+    override fun navigateToTokenSelection(tokens: List<Token.Active>) {
         addFragment(
             target = SelectTokenFragment.create(tokens),
             enter = R.anim.slide_up,
@@ -174,7 +174,7 @@ class SendFragment :
         binding.correctAddressGroup.isVisible = false
     }
 
-    override fun showSourceToken(token: Token) {
+    override fun showSourceToken(token: Token.Active) {
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol

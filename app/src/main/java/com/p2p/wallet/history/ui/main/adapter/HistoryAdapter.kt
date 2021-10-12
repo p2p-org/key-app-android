@@ -30,7 +30,7 @@ class HistoryAdapter(
     private var data: MutableList<HistoryItem> = mutableListOf()
     private var pagingState: PagingState = PagingState.Idle
 
-    fun setHeaderData(currentToken: Token, sol: Token) {
+    fun setHeaderData(currentToken: Token.Active, sol: Token.Active) {
         if (data.isEmpty() || data.firstOrNull() !is HistoryItem.Header) {
             val header = HistoryItem.Header(currentToken, sol, emptyList())
             data.add(0, header)

@@ -18,13 +18,13 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapFeesBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSettingsBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSlippageBottomSheet
 import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.orca.model.OrcaAmountData
 import com.p2p.wallet.swap.orca.model.OrcaFeeData
-import com.p2p.wallet.swap.bottomsheet.SwapFeesBottomSheet
-import com.p2p.wallet.swap.bottomsheet.SwapSettingsBottomSheet
-import com.p2p.wallet.swap.bottomsheet.SwapSlippageBottomSheet
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.colorFromTheme
@@ -87,7 +87,7 @@ class OrcaSwapFragment :
         presenter.loadInitialData()
     }
 
-    override fun showSourceToken(token: Token) {
+    override fun showSourceToken(token: Token.Active) {
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
@@ -100,8 +100,8 @@ class OrcaSwapFragment :
             if (token != null) {
                 Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
                 destinationTextView.text = token.tokenSymbol
-                destinationAvailableTextView.isVisible = true
-                destinationAvailableTextView.text = token.getFormattedTotal()
+                destinationAvailableTextView.isVisible = token is Token.Active
+                if (token is Token.Active) destinationAvailableTextView.text = token.getFormattedTotal()
             } else {
                 destinationImageView.setImageResource(R.drawable.ic_wallet)
                 destinationTextView.setText(R.string.main_select)
@@ -221,9 +221,9 @@ class OrcaSwapFragment :
         )
     }
 
-    override fun openSourceSelection(tokens: List<Token>) {
+    override fun openSourceSelection(tokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewSourceToken(it) },
+            target = SelectTokenFragment.create(tokens) { presenter.setNewSourceToken(it as Token.Active) },
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,
@@ -264,7 +264,9 @@ class OrcaSwapFragment :
 
     private val inputTextWatcher = object : SimpleTextWatcher() {
         override fun afterTextChanged(text: Editable) {
-            presenter.setSourceAmount(text.toString())
+            val amount = text.toString()
+            presenter.setSourceAmount(amount)
+            binding.maxTextView.isVisible = amount.isBlank()
         }
     }
 }

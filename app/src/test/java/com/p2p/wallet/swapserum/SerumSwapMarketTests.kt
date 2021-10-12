@@ -1,7 +1,6 @@
 package com.p2p.wallet.swapserum
 
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.main.model.TokenVisibility
 import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
 import com.p2p.wallet.swapserum.utils.DataInitializer
@@ -30,9 +29,9 @@ class SerumSwapMarketTests {
     private lateinit var serumSwapInteractor: SerumSwapInteractor
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor
 
-    private lateinit var userTokens: List<Token>
+    private lateinit var userTokens: List<Token.Active>
 
-    private fun solNativeWallet(): Token = userTokens.first { it.tokenSymbol == "SOL" }
+    private fun solNativeWallet(): Token.Active = userTokens.first { it.tokenSymbol == "SOL" }
 
     @Before
     fun setUp() {
@@ -90,18 +89,13 @@ class SerumSwapMarketTests {
         val mre = BigInteger.valueOf(2039280L)
 
         // from native sol to new usdt wallet
-        val newUSDTWallet = Token(
-            publicKey = "",
+        val newUSDTWallet = Token.Other(
             tokenSymbol = "USDT",
             decimals = 6,
             mintAddress = USDT.toBase58(),
             tokenName = "USDT",
             logoUrl = null,
-            price = BigDecimal.TEN,
-            total = BigDecimal.TEN,
             color = 0,
-            usdRate = BigDecimal.TEN,
-            visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = null,
             serumV3Usdt = null,
             isWrapped = false
@@ -114,23 +108,16 @@ class SerumSwapMarketTests {
             minRentExemption = mre
         )
 
-        assertEquals(BigInteger.valueOf(27451320L), networkFees)
-
         // from usdc to srm
         val usdcWallet = userTokens.first { it.mintAddress == USDC.toBase58() }
 
-        val newSRMWallet = Token(
-            publicKey = "",
+        val newSRMWallet = Token.Other(
             tokenSymbol = "SRM",
             decimals = 6,
             mintAddress = SRM.toBase58(),
             tokenName = "Serum",
             logoUrl = null,
-            price = BigDecimal.TEN,
-            total = BigDecimal.TEN,
             color = 0,
-            usdRate = BigDecimal.TEN,
-            visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = null,
             serumV3Usdt = null,
             isWrapped = false
@@ -143,6 +130,7 @@ class SerumSwapMarketTests {
             minRentExemption = mre
         )
 
-        assertEquals(BigInteger.valueOf(25407040), networkFees2)
+        assertEquals(BigInteger.valueOf(27451320L), networkFees)
+        assertEquals(BigInteger.valueOf(25407040L), networkFees2)
     }
 }

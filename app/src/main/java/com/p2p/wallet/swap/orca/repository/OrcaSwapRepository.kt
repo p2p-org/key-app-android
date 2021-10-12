@@ -14,7 +14,7 @@ interface OrcaSwapRepository {
         path: DerivationPath,
         keys: List<String>,
         request: OrcaSwapRequest,
-        accountA: Token?,
-        accountB: Token?
+        accountA: Token.Active?,
+        accountB: Token.Active?
     ): String
 }

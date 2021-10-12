@@ -28,7 +28,7 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
     private lateinit var serumSwapInteractor: SerumSwapInteractor
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor
 
-    private lateinit var userTokens: List<Token>
+    private lateinit var userTokens: List<Token.Active>
 
     @Before
     fun setUp() {
@@ -43,10 +43,10 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
         initializer.closeDb()
     }
 
-    private fun srmWallet(): Token = userTokens.first { it.tokenSymbol == "SRM" }
-    private fun ethWallet(): Token = userTokens.first { it.tokenSymbol == "ETH" }
-    private fun btcWallet(): Token = userTokens.first { it.tokenSymbol == "BTC" }
-    private fun fidaWallet(): Token = userTokens.first { it.tokenSymbol == "FIDA" }
+    private fun srmWallet(): Token.Active = userTokens.first { it.tokenSymbol == "SRM" }
+    private fun ethWallet(): Token.Active = userTokens.first { it.tokenSymbol == "ETH" }
+    private fun btcWallet(): Token.Active = userTokens.first { it.tokenSymbol == "BTC" }
+    private fun fidaWallet(): Token.Active = userTokens.first { it.tokenSymbol == "FIDA" }
 
     // Create from and to open orders and wait for confirmation before transitive swapping
     @Test

@@ -41,7 +41,7 @@ class TokenDetailsFragment :
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
-        fun create(token: Token) =
+        fun create(token: Token.Active) =
             TokenDetailsFragment().withArgs(
                 EXTRA_TOKEN to token
             )
@@ -49,7 +49,7 @@ class TokenDetailsFragment :
 
     override val presenter: TokenDetailsContract.Presenter by inject()
 
-    private val token: Token by args(EXTRA_TOKEN)
+    private val token: Token.Active by args(EXTRA_TOKEN)
 
     private val binding: FragmentTokenDetailsBinding by viewBinding()
 
@@ -118,7 +118,7 @@ class TokenDetailsFragment :
         presenter.loadHistory(token.publicKey, token.tokenSymbol)
     }
 
-    override fun showSolAddress(sol: Token) {
+    override fun showSolAddress(sol: Token.Active) {
         historyAdapter.setHeaderData(token, sol)
     }
 

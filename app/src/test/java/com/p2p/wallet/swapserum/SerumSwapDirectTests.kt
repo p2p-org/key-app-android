@@ -25,7 +25,7 @@ internal class SerumSwapDirectTests : CoroutineTest() {
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
 
-    private lateinit var userTokens: List<Token>
+    private lateinit var userTokens: List<Token.Active>
 
     @Before
     fun setUp() {
@@ -39,11 +39,11 @@ internal class SerumSwapDirectTests : CoroutineTest() {
         initializer.closeDb()
     }
 
-    private fun usdtWallet(): Token = userTokens.first { it.tokenSymbol == "USDT" }
-    private fun usdcWallet(): Token = userTokens.first { it.tokenSymbol == "USDC" }
-    private fun srmWallet(): Token = userTokens.first { it.tokenSymbol == "SRM" }
-    private fun fidaWallet(): Token = userTokens.first { it.tokenSymbol == "FIDA" }
-    private fun solNativeWallet(): Token = userTokens.first { it.tokenSymbol == "SOL" }
+    private fun usdtWallet(): Token.Active = userTokens.first { it.tokenSymbol == "USDT" }
+    private fun usdcWallet(): Token.Active = userTokens.first { it.tokenSymbol == "USDC" }
+    private fun srmWallet(): Token.Active = userTokens.first { it.tokenSymbol == "SRM" }
+    private fun fidaWallet(): Token.Active = userTokens.first { it.tokenSymbol == "FIDA" }
+    private fun solNativeWallet(): Token.Active = userTokens.first { it.tokenSymbol == "SOL" }
 
     private val SRM: PublicKey = PublicKey("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt")
     private val SOL: PublicKey = PublicKey("So11111111111111111111111111111111111111112")

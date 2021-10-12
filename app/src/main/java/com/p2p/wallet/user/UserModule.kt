@@ -10,6 +10,7 @@ import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEO
 import com.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
 import com.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
 import com.p2p.wallet.main.api.CompareApi
+import com.p2p.wallet.user.api.SolanaApi
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
 import com.p2p.wallet.user.repository.UserLocalRepository
@@ -45,8 +46,21 @@ object UserModule : InjectionModule {
                 .build()
         }
 
+        single {
+            val client = createOkHttpClient()
+                .addInterceptor(CompareTokenInterceptor(get()))
+                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("SolanaApi")) }
+                .build()
+            Retrofit.Builder()
+                .baseUrl(get<Context>().getString(R.string.solanaTokensBaseUrl))
+                .addConverterFactory(GsonConverterFactory.create(get()))
+                .client(client)
+                .build()
+                .create(SolanaApi::class.java)
+        }
+
         factory {
-            UserRepositoryImpl(get(), get(), get(), get(), get())
+            UserRepositoryImpl(get(), get(), get(), get(), get(), get())
         } bind UserRepository::class
 
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }

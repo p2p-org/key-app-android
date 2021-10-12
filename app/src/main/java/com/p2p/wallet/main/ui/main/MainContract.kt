@@ -12,7 +12,7 @@ interface MainContract {
     interface View : MvpView {
         fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState)
         fun showBalance(balance: BigDecimal)
-        fun showChart(tokens: List<Token>)
+        fun showChart(tokens: List<Token.Active>)
         fun showLoading(isLoading: Boolean)
         fun showRefreshing(isRefreshing: Boolean)
     }
@@ -20,7 +20,7 @@ interface MainContract {
     interface Presenter : MvpPresenter<View> {
         fun collectData()
         fun refresh()
-        fun toggleVisibility(token: Token)
+        fun toggleVisibility(token: Token.Active)
         fun toggleVisibilityState()
         fun clearCache()
     }

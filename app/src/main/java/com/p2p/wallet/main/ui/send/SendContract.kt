@@ -14,7 +14,7 @@ interface SendContract {
 
     interface View : MvpView {
         fun setAvailableTextColor(@AttrRes availableColor: Int)
-        fun showSourceToken(token: Token)
+        fun showSourceToken(token: Token.Active)
         fun showSuccess(info: TransactionInfo)
         fun showFee(fee: String?)
         fun showWrongWalletError()
@@ -32,7 +32,7 @@ interface SendContract {
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelection()
         fun hideNetworkSelection()
-        fun navigateToTokenSelection(tokens: List<Token>)
+        fun navigateToTokenSelection(tokens: List<Token.Active>)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -40,7 +40,7 @@ interface SendContract {
         fun loadInitialData()
         fun loadTokensForSelection()
         fun loadAvailableValue()
-        fun setSourceToken(newToken: Token)
+        fun setSourceToken(newToken: Token.Active)
         fun setNewSourceAmount(amount: String)
         fun setNewTargetAddress(address: String)
         fun switchCurrency()

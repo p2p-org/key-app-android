@@ -22,10 +22,11 @@ import com.p2p.wallet.rpc.repository.RpcRemoteRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.serum.interactor.SerumMarketInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumOpenOrdersInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapSerializationInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapInstructionsInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapSerializationInteractor
+import com.p2p.wallet.user.api.SolanaApi
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
 import com.p2p.wallet.user.repository.UserLocalRepository
@@ -38,7 +39,7 @@ import org.p2p.solanaj.crypto.DerivationPath
 
 class DataInitializer {
 
-    private lateinit var userTokens: List<Token>
+    private lateinit var userTokens: List<Token.Active>
 
     private val keys =
         listOf(
@@ -108,7 +109,10 @@ class DataInitializer {
             tokenProvider = tokenKeyProvider,
             userLocalRepository = userLocalRepository,
             rpcRepository = rpcRepository,
-            environmentManager = environmentManager
+            environmentManager = environmentManager,
+            solanaApi = RetrofitBuilder
+                .getRetrofit(context.getString(R.string.solanaTokensBaseUrl))
+                .create(SolanaApi::class.java)
         )
 
         database = Room.inMemoryDatabaseBuilder(context, WalletDatabase::class.java).build()
@@ -159,6 +163,7 @@ class DataInitializer {
     }
 
     fun getSwapInteractor(): SerumSwapInteractor = interactor
+
     fun getSwapMarketInteractor(): SerumSwapMarketInteractor = swapMarketInteractor
 
     fun getTokens() = userTokens

@@ -29,13 +29,13 @@ import kotlin.properties.Delegates
 
 // TODO: Refactor this class, too complicated logic, it can be optimized
 class SwapPresenter(
-    private val initialToken: Token?,
+    private val initialToken: Token.Active?,
     private val userInteractor: UserInteractor,
     private val swapInteractor: SerumSwapAmountInteractor,
     private val serumSwapInteractor: SerumSwapInteractor
 ) : BasePresenter<SerumSwapContract.View>(), SerumSwapContract.Presenter {
 
-    private var sourceToken: Token? by Delegates.observable(null) { _, _, newValue ->
+    private var sourceToken: Token.Active? by Delegates.observable(null) { _, _, newValue ->
         if (newValue != null) view?.showSourceToken(newValue)
     }
 
@@ -95,7 +95,7 @@ class SwapPresenter(
         }
     }
 
-    override fun setNewSourceToken(newToken: Token) {
+    override fun setNewSourceToken(newToken: Token.Active) {
         if (sourceToken == newToken) return
 
         sourceToken = newToken
@@ -162,10 +162,10 @@ class SwapPresenter(
     }
 
     override fun reverseTokens() {
-        if (sourceToken == null || destinationToken == null) return
+        if (sourceToken == null || destinationToken == null || destinationToken is Token.Other) return
 
         /* reversing tokens */
-        val newSource = destinationToken!!
+        val newSource = destinationToken!! as Token.Active
         val newDestination = sourceToken!!
         sourceToken = null
 
@@ -215,14 +215,14 @@ class SwapPresenter(
         }
     }
 
-    private fun calculateAvailableAmount(newToken: Token) {
+    private fun calculateAvailableAmount(newToken: Token.Active) {
         val availableAmount = swapInteractor.calculateAvailableAmount(newToken, currentFees[SerumFeeType.DEFAULT])
         val scaledAmount = availableAmount?.scaleLong() ?: BigDecimal.ZERO
         val available = "$scaledAmount ${newToken.tokenSymbol}"
         view?.showSourceAvailable(available)
     }
 
-    private suspend fun calculateRateAndFees(source: Token, destination: Token) {
+    private suspend fun calculateRateAndFees(source: Token.Active, destination: Token) {
         try {
             view?.showButtonText(R.string.swap_calculating_fees)
 
@@ -269,7 +269,7 @@ class SwapPresenter(
         }
     }
 
-    private fun calculateInputAmount(source: Token, destination: Token?) {
+    private fun calculateInputAmount(source: Token.Active, destination: Token?) {
         if (destination == null) return
         calculationJob?.cancel()
         calculationJob = launch {
@@ -309,7 +309,7 @@ class SwapPresenter(
         view?.showButtonEnabled(isEnabled)
     }
 
-    private fun updateButtonText(source: Token) {
+    private fun updateButtonText(source: Token.Active) {
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
         aroundValue = source.usdRate.multiply(decimalAmount).scaleMedium()
 
@@ -325,7 +325,7 @@ class SwapPresenter(
         }
     }
 
-    private fun requireSourceToken(): Token =
+    private fun requireSourceToken(): Token.Active =
         sourceToken ?: throw IllegalStateException("Source token is null")
 
     private fun requireDestinationToken(): Token =

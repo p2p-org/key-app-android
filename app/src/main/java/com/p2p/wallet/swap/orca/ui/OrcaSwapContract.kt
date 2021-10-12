@@ -15,7 +15,7 @@ import java.math.BigDecimal
 interface OrcaSwapContract {
 
     interface View : MvpView {
-        fun showSourceToken(token: Token)
+        fun showSourceToken(token: Token.Active)
         fun showDestinationToken(token: Token?)
         fun showSourceAvailable(available: String)
         fun showFullScreenLoading(isLoading: Boolean)
@@ -33,7 +33,7 @@ interface OrcaSwapContract {
         fun showSlippage(slippage: Slippage)
         fun showButtonText(@StringRes textRes: Int, value: String? = null)
         fun setNewAmount(sourceAmount: String)
-        fun openSourceSelection(tokens: List<Token>)
+        fun openSourceSelection(tokens: List<Token.Active>)
         fun openDestinationSelection(tokens: List<Token>)
         fun openSwapSettings(currentSlippage: Slippage)
         fun openSlippageDialog(currentSlippage: Slippage)
@@ -45,7 +45,7 @@ interface OrcaSwapContract {
         fun loadTokensForDestinationSelection()
         fun loadDataForSwapSettings()
         fun loadSlippage()
-        fun setNewSourceToken(newToken: Token)
+        fun setNewSourceToken(newToken: Token.Active)
         fun setNewDestinationToken(newToken: Token)
         fun setSourceAmount(amount: String)
         fun setSlippage(slippage: Slippage)

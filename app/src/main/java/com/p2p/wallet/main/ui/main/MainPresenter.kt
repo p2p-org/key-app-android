@@ -36,7 +36,7 @@ class MainPresenter(
         view?.showBalance(newValue)
     }
 
-    private var tokens: List<Token> by Delegates.observable(emptyList()) { _, _, newValue ->
+    private var tokens: List<Token.Active> by Delegates.observable(emptyList()) { _, _, newValue ->
         balance = mapBalance(newValue)
         val isZerosHidden = settingsInteractor.isZerosHidden()
         val actualState = when (state) {
@@ -84,7 +84,7 @@ class MainPresenter(
         }
     }
 
-    override fun toggleVisibility(token: Token) {
+    override fun toggleVisibility(token: Token.Active) {
         launch {
             val visibility = when (token.visibility) {
                 TokenVisibility.SHOWN -> TokenVisibility.HIDDEN
@@ -154,13 +154,13 @@ class MainPresenter(
         }
     }
 
-    private fun mapBalance(tokens: List<Token>): BigDecimal =
+    private fun mapBalance(tokens: List<Token.Active>): BigDecimal =
         tokens
             .map { it.price }
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
-    private fun mapTokens(tokens: List<Token>, isZerosHidden: Boolean, state: VisibilityState): List<TokenItem> =
+    private fun mapTokens(tokens: List<Token.Active>, isZerosHidden: Boolean, state: VisibilityState): List<TokenItem> =
         tokens.map {
             if (it.isSOL) return@map TokenItem.Shown(it)
 
