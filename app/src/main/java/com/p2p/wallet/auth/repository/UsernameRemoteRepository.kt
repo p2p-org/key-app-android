@@ -11,17 +11,14 @@ class UsernameRemoteRepository(
 ) : UsernameRepository {
 
     override suspend fun checkUsername(username: String): CheckUsernameResponse {
-        val response = api.checkUsername(username)
-        return response
+        return api.checkUsername(username)
     }
 
     override suspend fun checkCaptcha(): CheckCaptchaResponse {
-        val response = api.checkCaptcha()
-        return response
+        return api.checkCaptcha()
     }
 
     override suspend fun registerUsername(username: String, body: NameRegisterBody): RegisterUsernameResponse {
-        val response = api.registerUsername(username, body)
-        return response
+        return api.registerUsername(username, body)
     }
 }
