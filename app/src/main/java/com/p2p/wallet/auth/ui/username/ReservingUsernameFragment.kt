@@ -25,7 +25,6 @@ import com.geetest.sdk.GT3Listener
 
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
-import com.p2p.wallet.auth.api.CheckUsernameResponse
 import com.p2p.wallet.utils.toast
 import org.json.JSONObject
 
@@ -97,6 +96,7 @@ class ReservingUsernameFragment :
             youCanSkipTextView.highlightColor = Color.TRANSPARENT
 
             usernameEditText.doAfterTextChanged {
+
                 presenter.checkUsername(it.toString())
             }
 
@@ -115,16 +115,18 @@ class ReservingUsernameFragment :
         replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
-    override fun showUnavailableName(name: String, checkUsernameResponse: CheckUsernameResponse) {
-        binding.useOnlyTextView.text = String.format(getString(R.string.auth_unavailable_name), name)
-        binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorRed))
+    override fun showUnavailableName(name: String) {
+        binding.usernameTextView.text = String.format(getString(R.string.auth_unavailable_name), name)
+        binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorRed))
         binding.enterUserNameButton.isEnabled = false
+        setTextColorGrey()
     }
 
     override fun showAvailableName(name: String) {
-        binding.useOnlyTextView.text = String.format(getString(R.string.auth_available_name), name)
-        binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
+        binding.usernameTextView.text = String.format(getString(R.string.auth_available_name), name)
+        binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
         binding.enterUserNameButton.isEnabled = true
+        setTextColorGrey()
     }
 
     override fun getCaptchaResult(params: JSONObject) {
@@ -153,5 +155,12 @@ class ReservingUsernameFragment :
         val end = span.indexOf(clickableText) + clickableText.length
         span.setSpan(clickableNumber, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
         return span
+    }
+
+    private fun setTextColorGrey() {
+        if (binding.usernameEditText.text?.isEmpty() == true) {
+            binding.usernameTextView.text = getString(R.string.auth_use_any_latin)
+            binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.elementSecondary))
+        }
     }
 }

@@ -15,5 +15,8 @@ interface UsernameApi {
     suspend fun checkCaptcha(): CheckCaptchaResponse
 
     @POST("name_register/{username}")
-    suspend fun registerUsername(@Path("username") username: String, @Body body: NameRegisterBody): RegisterUsernameResponse
+    suspend fun registerUsername(
+        @Path("username") username: String,
+        @Body body: NameRegisterBody
+    ): RegisterUsernameResponse
 }

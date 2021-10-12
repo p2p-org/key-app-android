@@ -20,7 +20,10 @@ class ReservingUsernameInteractor(
         return usernameRemoteRepository.checkCaptcha()
     }
 
-    suspend fun registerUsername(username: String, credentials: NameRegisterBody.Credentials): RegisterUsernameResponse {
+    suspend fun registerUsername(
+        username: String,
+        credentials: NameRegisterBody.Credentials
+    ): RegisterUsernameResponse {
         return usernameRemoteRepository.registerUsername(
             username,
             NameRegisterBody(

@@ -21,8 +21,7 @@ class ReservingUsernamePresenter(
         checkUsernameJob?.cancel()
         checkUsernameJob = launch {
             try {
-                val usernameCheckResponse = interactor.checkUsername(username)
-                view?.showUnavailableName(username, usernameCheckResponse)
+                view?.showUnavailableName(username)
             } catch (e: HttpException) {
                 view?.showAvailableName(username)
                 e.message()
