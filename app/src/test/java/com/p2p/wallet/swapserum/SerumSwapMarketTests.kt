@@ -1,7 +1,6 @@
 package com.p2p.wallet.swapserum
 
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.main.model.TokenVisibility
 import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
 import com.p2p.wallet.swapserum.utils.DataInitializer

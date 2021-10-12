@@ -18,13 +18,13 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.select.SelectTokenFragment
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapFeesBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSettingsBottomSheet
+import com.p2p.wallet.swap.bottomsheet.SwapSlippageBottomSheet
 import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.orca.model.OrcaAmountData
 import com.p2p.wallet.swap.orca.model.OrcaFeeData
-import com.p2p.wallet.swap.bottomsheet.SwapFeesBottomSheet
-import com.p2p.wallet.swap.bottomsheet.SwapSettingsBottomSheet
-import com.p2p.wallet.swap.bottomsheet.SwapSlippageBottomSheet
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.colorFromTheme
@@ -264,7 +264,9 @@ class OrcaSwapFragment :
 
     private val inputTextWatcher = object : SimpleTextWatcher() {
         override fun afterTextChanged(text: Editable) {
-            presenter.setSourceAmount(text.toString())
+            val amount = text.toString()
+            presenter.setSourceAmount(amount)
+            binding.maxTextView.isVisible = amount.isBlank()
         }
     }
 }
