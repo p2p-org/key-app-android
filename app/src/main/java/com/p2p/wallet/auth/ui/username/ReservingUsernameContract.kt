@@ -10,9 +10,10 @@ interface ReservingUsernameContract {
     interface View : MvpView {
         fun navigateToPinCode()
         fun getCaptchaResult(params: JSONObject)
-        fun showAvailableName(name: String, usernameCheckResponse: UsernameCheckResponse)
-        fun showUnavailableName(name: String)
-        fun finishRegisterName()
+        fun showUnavailableName(name: String, usernameCheckResponse: UsernameCheckResponse)
+        fun showAvailableName(name: String)
+        fun successRegisterName()
+        fun failRegisterName()
     }
 
     interface Presenter : MvpPresenter<View> {

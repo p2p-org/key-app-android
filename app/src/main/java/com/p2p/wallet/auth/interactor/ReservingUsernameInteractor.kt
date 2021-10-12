@@ -18,17 +18,6 @@ class ReservingUsernameInteractor(
     }
 
     suspend fun registerUsername(nameRegisterBody: NameRegisterBody): String {
-        return usernameRemoteRepository.registerUsername(
-            nameRegisterBody
-//            NameRegisterBody(
-//                owner = "",
-//                credentials = NameRegisterBody.Credentials(
-//                    geeTestValidate = "",
-//                    geeTestSecCode = "",
-//                    geeTestChallenge = ""
-//
-//                )
-//            )
-        )
+        return usernameRemoteRepository.registerUsername(nameRegisterBody)
     }
 }

@@ -1,5 +1,6 @@
 package com.p2p.wallet.auth.ui.username
 
+import android.util.Log
 import com.google.gson.Gson
 import com.p2p.wallet.auth.interactor.ReservingUsernameInteractor
 import com.p2p.wallet.auth.model.NameRegisterBody
@@ -16,17 +17,18 @@ class ReservingUsernamePresenter(
     ReservingUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
-    private var owner: String? = null
+    private var owner: String = ""
 
     override fun checkUsername(username: String) {
         checkUsernameJob?.cancel()
         checkUsernameJob = launch {
             try {
                 val usernameCheckResponse = interactor.checkUsername(username)
-                owner = usernameCheckResponse.owner
-                view?.showAvailableName(username, usernameCheckResponse)
+                view?.showUnavailableName(username, usernameCheckResponse)
             } catch (e: HttpException) {
-                view?.showUnavailableName(username)
+//                owner = usernameCheckResponse.owner
+                Log.i("efefef owner", owner)
+                view?.showAvailableName(username)
                 e.message()
             }
         }
@@ -43,20 +45,20 @@ class ReservingUsernamePresenter(
         }
     }
 
+    //    kstep-test-8
     override fun registerUsername(result: String?) {
         val credentials = Gson().fromJson(result, NameRegisterBody.Credentials::class.java)
+
+        Log.i("efefef geeTestValidate", credentials.geeTestValidate)
+        Log.i("efefef geeTestSecCode", credentials.geeTestSecCode)
+        Log.i("efefef geeTestChallenge", credentials.geeTestChallenge)
+
         launch {
             try {
-                owner?.let {
-                    NameRegisterBody(
-                        owner = it,
-                        credentials = credentials
-                    )
-                }?.let {
-                    interactor.registerUsername(it)
-                    view?.finishRegisterName()
-                }
+                interactor.registerUsername(NameRegisterBody(owner = owner, credentials = credentials))
+                view?.successRegisterName()
             } catch (e: HttpException) {
+                view?.failRegisterName()
                 e.message()
             }
         }

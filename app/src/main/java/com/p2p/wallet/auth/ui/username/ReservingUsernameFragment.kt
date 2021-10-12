@@ -56,27 +56,23 @@ class ReservingUsernameFragment :
         gt3ConfigBean?.listener = object : GT3Listener() {
             override fun onDialogResult(result: String?) {
                 presenter.registerUsername(result)
-                toast(text = "onDialogResult $result")
             }
 
             override fun onReceiveCaptchaCode(p0: Int) {
-                toast(text = "onReceiveCaptchaCode $p0")
             }
 
             override fun onStatistics(p0: String?) {
-                toast(text = "onStatistics $p0")
             }
 
             override fun onClosed(p0: Int) {
-                toast(text = "onClosed $p0")
             }
 
             override fun onSuccess(p0: String?) {
-                toast(text = "onSuccess $p0")
+                navigateToPinCode()
             }
 
             override fun onFailed(p0: GT3ErrorBean?) {
-                toast(text = "onFailed ${p0?.toString()}")
+                toast(text = p0.toString())
             }
 
             override fun onButtonClick() {
@@ -119,26 +115,29 @@ class ReservingUsernameFragment :
         replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
-    override fun getCaptchaResult(params: JSONObject) {
-        gt3ConfigBean?.api1Json = params
-        gt3GeeTestUtils?.getGeetest()
-    }
-
-    override fun showAvailableName(name: String, usernameCheckResponse: UsernameCheckResponse) {
-        binding.useOnlyTextView.text = String.format(getString(R.string.auth_available_name), name)
-        binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
-        binding.enterUserNameButton.isEnabled = true
-    }
-
-    override fun showUnavailableName(name: String) {
+    override fun showUnavailableName(name: String, usernameCheckResponse: UsernameCheckResponse) {
         binding.useOnlyTextView.text = String.format(getString(R.string.auth_unavailable_name), name)
         binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorRed))
         binding.enterUserNameButton.isEnabled = false
     }
 
-    override fun finishRegisterName() {
+    override fun showAvailableName(name: String) {
+        binding.useOnlyTextView.text = String.format(getString(R.string.auth_available_name), name)
+        binding.useOnlyTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
+        binding.enterUserNameButton.isEnabled = true
+    }
+
+    override fun getCaptchaResult(params: JSONObject) {
+        gt3ConfigBean?.api1Json = params
+        gt3GeeTestUtils?.getGeetest()
+    }
+
+    override fun successRegisterName() {
         gt3GeeTestUtils?.showSuccessDialog()
-        toast("finishRegisterName")
+    }
+
+    override fun failRegisterName() {
+        gt3GeeTestUtils?.showFailedDialog()
     }
 
     private fun buildClickableText(): SpannableString {
