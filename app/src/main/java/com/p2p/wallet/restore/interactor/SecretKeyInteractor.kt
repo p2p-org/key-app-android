@@ -14,7 +14,6 @@ import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.mnemoticgenerator.English
 import com.p2p.wallet.utils.toPowerValue
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.solanaj.utils.crypto.Base58Utils
 import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
@@ -41,7 +40,7 @@ class SecretKeyInteractor(
     suspend fun createAndSaveAccount(path: DerivationPath, keys: List<String>) {
         val account = authRepository.createAccount(path, keys)
         tokenProvider.secretKey = account.secretKey
-        tokenProvider.publicKey = Base58Utils.encode(account.publicKey.toByteArray())
+        tokenProvider.publicKey = account.publicKey.toBase58()
 
         sharedPreferences.edit {
             putString(KEY_PHRASES, keys.joinToString(","))

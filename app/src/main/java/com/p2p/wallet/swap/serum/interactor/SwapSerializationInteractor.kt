@@ -10,7 +10,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import timber.log.Timber
 
-class SerumSwapSerializationInteractor(
+class SwapSerializationInteractor(
     private val rpcRepository: RpcRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {

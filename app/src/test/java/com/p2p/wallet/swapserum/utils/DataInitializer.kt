@@ -23,9 +23,9 @@ import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.serum.interactor.SerumMarketInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumOpenOrdersInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapInstructionsInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
+import com.p2p.wallet.swap.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapSerializationInteractor
+import com.p2p.wallet.swap.serum.interactor.SwapSerializationInteractor
 import com.p2p.wallet.user.api.SolanaApi
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
@@ -72,7 +72,7 @@ class DataInitializer {
 
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor
 
-    private lateinit var serializationInteractor: SerumSwapSerializationInteractor
+    private lateinit var serializationInteractor: SwapSerializationInteractor
 
     private lateinit var interactor: SerumSwapInteractor
 
@@ -139,7 +139,7 @@ class DataInitializer {
         marketInteractor = SerumMarketInteractor(rpcRepository)
 
         swapMarketInteractor = SerumSwapMarketInteractor(userInteractor)
-        serializationInteractor = SerumSwapSerializationInteractor(rpcRepository, tokenKeyProvider)
+        serializationInteractor = SwapSerializationInteractor(rpcRepository, tokenKeyProvider)
 
         interactor = SerumSwapInteractor(
             instructionsInteractor = instructionsInteractor,

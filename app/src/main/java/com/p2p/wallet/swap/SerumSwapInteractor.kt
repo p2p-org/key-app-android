@@ -1,7 +1,12 @@
-package com.p2p.wallet.swap.serum.interactor
+package com.p2p.wallet.swap
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.swap.serum.interactor.SerumMarketInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumOpenOrdersInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInstructionsInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
+import com.p2p.wallet.swap.serum.interactor.SwapSerializationInteractor
 import com.p2p.wallet.utils.isUsdx
 import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toLamports
@@ -32,7 +37,7 @@ class SerumSwapInteractor(
     private val openOrdersInteractor: SerumOpenOrdersInteractor,
     private val marketInteractor: SerumMarketInteractor,
     private val swapMarketInteractor: SerumSwapMarketInteractor,
-    private val serializationInteractor: SerumSwapSerializationInteractor,
+    private val serializationInteractor: SwapSerializationInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 

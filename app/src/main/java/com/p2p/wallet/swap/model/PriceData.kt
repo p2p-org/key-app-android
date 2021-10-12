@@ -8,8 +8,8 @@ data class PriceData(
 ) {
 
     fun getPrice(isReverse: Boolean) = if (isReverse) {
-        "$destinationAmount $sourceSymbol per $destinationSymbol"
+        "$destinationAmount $destinationSymbol per $sourceSymbol"
     } else {
-        "$sourceAmount $destinationSymbol per $sourceSymbol"
+        "$sourceAmount $sourceSymbol per $destinationSymbol"
     }
 }

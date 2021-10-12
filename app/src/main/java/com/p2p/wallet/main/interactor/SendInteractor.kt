@@ -170,6 +170,7 @@ class SendInteractor(
         return TransactionResult.Success(transactionId)
     }
 
+    @Throws(IllegalStateException::class)
     private suspend fun findSplTokenAddress(mintAddress: String, destinationAddress: PublicKey): PublicKey {
         val accountInfo = rpcRepository.getAccountInfo(destinationAddress)
 

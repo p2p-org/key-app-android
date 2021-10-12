@@ -7,7 +7,7 @@ import com.p2p.wallet.main.ui.transaction.TransactionInfo
 import com.p2p.wallet.swap.model.PriceData
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.serum.interactor.SerumSwapAmountInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
+import com.p2p.wallet.swap.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.model.SerumAmountData
 import com.p2p.wallet.swap.serum.model.SerumFeeType
 import com.p2p.wallet.swap.serum.model.SerumSwapFee

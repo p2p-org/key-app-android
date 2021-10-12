@@ -410,6 +410,22 @@
                     app:layout_constraintTop_toTopOf="@id/feesTextView"
                     tools:ignore="ContentDescription" />
 
+                <TextView
+                    android:id="@+id/errorTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="@string/main_swap_fee"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    android:textColor="?colorAccentWarning"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feesImageView"
+                    tools:visibility="visible" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/swapButton"
                     android:layout_width="match_parent"
