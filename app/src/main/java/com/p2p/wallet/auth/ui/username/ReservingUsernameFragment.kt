@@ -54,7 +54,7 @@ class ReservingUsernameFragment :
         gt3ConfigBean?.webviewTimeout = 10000
         gt3ConfigBean?.listener = object : GT3Listener() {
             override fun onDialogResult(result: String?) {
-                presenter.registerUsername(binding.usernameEditText.text.toString(), result)
+                presenter.registerUsername(binding.usernameEditText.text.toString().lowercase(), result)
             }
 
             override fun onReceiveCaptchaCode(p0: Int) {
@@ -96,8 +96,7 @@ class ReservingUsernameFragment :
             youCanSkipTextView.highlightColor = Color.TRANSPARENT
 
             usernameEditText.doAfterTextChanged {
-
-                presenter.checkUsername(it.toString())
+                presenter.checkUsername(it.toString().lowercase())
             }
 
             enterUserNameButton.setOnClickListener {
