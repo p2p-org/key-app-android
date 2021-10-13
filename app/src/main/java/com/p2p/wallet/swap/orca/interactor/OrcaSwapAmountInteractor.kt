@@ -1,21 +1,54 @@
 package com.p2p.wallet.swap.orca.interactor
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.model.types.TokenAccountBalance
+import com.p2p.wallet.swap.model.AccountBalance
+import com.p2p.wallet.swap.orca.model.OrcaPool
+import com.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class OrcaPoolDataInteractor(
+class OrcaSwapAmountInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
+
+    fun calculateAmountInOtherToken(
+        pool: OrcaPool,
+        inputAmount: BigInteger,
+        includeFees: Boolean,
+        tokenABalance: AccountBalance,
+        tokenBBalance: AccountBalance
+    ): BigInteger {
+
+        val tokenSource = tokenKeyProvider.publicKey.toPublicKey()
+        val isReverse = pool.tokenAccountB.equals(tokenSource)
+
+        val feeRatio = BigDecimal(pool.tradeFeeNumerator).divide(BigDecimal(pool.tradeFeeDenominator))
+
+        val firstAmountInPool = if (isReverse) tokenBBalance.amount else tokenABalance.amount
+        val secondAmountInPool = if (isReverse) tokenABalance.amount else tokenBBalance.amount
+
+        val invariant = firstAmountInPool.multiply(secondAmountInPool)
+        val newFromAmountInPool = firstAmountInPool.add(inputAmount)
+        val newToAmountInPool = if (newFromAmountInPool.compareTo(BigInteger.ZERO) != 0) {
+            invariant.divide(newFromAmountInPool)
+        } else {
+            BigInteger.ZERO
+        }
+        val grossToAmount = secondAmountInPool.subtract(newToAmountInPool)
+        val fees = if (includeFees) {
+            BigDecimal(grossToAmount).multiply(feeRatio)
+        } else {
+            BigDecimal.ZERO
+        }
+        return BigDecimal(grossToAmount).subtract(fees).toBigInteger()
+    }
 
     fun calculateEstimatedAmount(
         inputAmount: BigInteger,
         includeFees: Boolean,
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance,
-        pool: Pool.PoolInfo
+        tokenABalance: AccountBalance,
+        tokenBBalance: AccountBalance,
+        pool: OrcaPool
     ): BigInteger {
         val feeDenominator = pool.tradeFeeDenominator
         val feeNumerator = if (includeFees) pool.tradeFeeNumerator else BigInteger.ZERO
@@ -36,9 +69,9 @@ class OrcaPoolDataInteractor(
         inputAmount: BigInteger,
         slippage: Double,
         includesFees: Boolean,
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance,
-        pool: Pool.PoolInfo
+        tokenABalance: AccountBalance,
+        tokenBBalance: AccountBalance,
+        pool: OrcaPool
     ): BigInteger {
         val amount = calculateEstimatedAmount(inputAmount, includesFees, tokenABalance, tokenBBalance, pool)
         return BigDecimal(amount).multiply(BigDecimal(1 - slippage)).toBigInteger()
@@ -46,9 +79,9 @@ class OrcaPoolDataInteractor(
 
     fun calculateLiquidityFee(
         inputAmount: BigInteger,
-        pool: Pool.PoolInfo,
-        tokenABalance: TokenAccountBalance,
-        tokenBBalance: TokenAccountBalance
+        pool: OrcaPool,
+        tokenABalance: AccountBalance,
+        tokenBBalance: AccountBalance
     ): BigInteger {
         val feeDenominator = pool.tradeFeeDenominator
         val feeNumerator = pool.tradeFeeNumerator

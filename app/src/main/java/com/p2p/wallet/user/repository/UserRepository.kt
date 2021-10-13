@@ -34,13 +34,14 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     companion object {
-        private const val CHUNKED_COUNT = 30
+        private const val API_CHUNKED_COUNT = 30
+        private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
     }
 
     override suspend fun loadAllTokens(): List<TokenData> =
         solanaApi.loadTokenlist()
             .tokens
-            .chunked(50)
+            .chunked(ALL_TOKENS_MAP_CHUNKED_COUNT)
             .flatMap { chunkedList ->
                 chunkedList.map { TokenConverter.fromNetwork(it) }
             }
@@ -49,8 +50,12 @@ class UserRepositoryImpl(
         withContext(Dispatchers.IO) {
             val result = mutableListOf<TokenPrice>()
             tokens
-                .chunked(CHUNKED_COUNT)
+                .chunked(API_CHUNKED_COUNT)
                 .map { list ->
+                    /**
+                     * CompareApi cannot resolve more than 30 token prices at once,
+                     * therefore we are splitting the tokenlist
+                     * */
                     val json = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
                     list.forEach { symbol ->
                         val tokenObject = json.getAsJsonObject(symbol.uppercase())

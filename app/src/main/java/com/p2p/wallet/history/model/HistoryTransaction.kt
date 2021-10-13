@@ -115,14 +115,6 @@ sealed class HistoryTransaction(
         fun getValue(): String = "${getSymbol(isBurn)} ${amount.scaleMedium()} $"
 
         fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} ${Token.REN_BTC_SYMBOL}"
-
-        @ColorInt
-        fun getTextColor(context: Context) =
-            if (isBurn) {
-                context.colorFromTheme(R.attr.colorMessagePrimary)
-            } else {
-                ContextCompat.getColor(context, R.color.colorGreen)
-            }
     }
 
     @Parcelize
@@ -136,7 +128,7 @@ sealed class HistoryTransaction(
         val tokenSymbol: String,
     ) : HistoryTransaction(date) {
 
-        fun getInfo(): String = "$tokenSymbol Closed"
+        fun getInfo(): String = if (tokenSymbol.isNotBlank()) "$tokenSymbol Closed" else "Closed"
     }
 
     @Parcelize

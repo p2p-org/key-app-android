@@ -28,6 +28,7 @@ import java.math.BigInteger
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
     private val mainnetApi: RpcApi,
+    private val rpcpoolRpcApi: RpcApi,
     private val testnetApi: RpcApi,
     environmentManager: EnvironmentManager,
     onlyMainnet: Boolean = false
@@ -46,6 +47,7 @@ class RpcRemoteRepository(
 
     private fun createRpcApi(environment: Environment): RpcApi = when (environment) {
         Environment.SOLANA -> serumApi
+        Environment.RPC_POOL -> rpcpoolRpcApi
         Environment.MAINNET -> mainnetApi
         Environment.DEVNET -> testnetApi
     }

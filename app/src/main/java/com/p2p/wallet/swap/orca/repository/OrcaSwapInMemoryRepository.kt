@@ -1,38 +1,36 @@
 package com.p2p.wallet.swap.orca.repository
 
-import kotlinx.coroutines.Dispatchers
+import com.p2p.wallet.swap.orca.model.OrcaPool
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.kits.Pool
 
 class OrcaSwapInMemoryRepository : OrcaSwapLocalRepository {
 
-    private val poolsInfoFlow = MutableStateFlow<List<Pool.PoolInfo>>(emptyList())
+    private val poolsInfoFlow = MutableStateFlow<List<OrcaPool>>(emptyList())
 
-    override fun setPools(pools: List<Pool.PoolInfo>) {
+    override fun setPools(pools: List<OrcaPool>) {
         poolsInfoFlow.value = pools
     }
 
-    override fun getPools(): List<Pool.PoolInfo> = poolsInfoFlow.value
+    override fun getPools(): List<OrcaPool> = poolsInfoFlow.value
 
-    override fun getPoolsFlow(): Flow<List<Pool.PoolInfo>> = poolsInfoFlow
+    override fun getPoolsFlow(): Flow<List<OrcaPool>> = poolsInfoFlow
 
-    override suspend fun getPoolInfo(sourceMint: String, destinationMint: String): Pool.PoolInfo? =
-        withContext(Dispatchers.IO) {
-            val pool = poolsInfoFlow.value.firstOrNull {
-                val mintA = it.swapData.mintA.toBase58()
-                val mintB = it.swapData.mintB.toBase58()
+    override fun findPools(sourceMint: String, destinationMint: String): List<OrcaPool> {
+        val pools = poolsInfoFlow.value
+            .filter {
+                val mintA = it.sourceMint.toBase58()
+                val mintB = it.destinationMint.toBase58()
                 (sourceMint == mintA && destinationMint == mintB) || (sourceMint == mintB && destinationMint == mintA)
             }
-
-            if (pool?.swapData?.mintB?.toBase58() == sourceMint &&
-                pool.swapData.mintA.toBase58() == destinationMint
-            ) {
-                pool.swapData.swapMintData()
-                pool.swapData.swapTokenAccount()
+            .map { pool ->
+                if (pool.destinationMint.toBase58() == sourceMint && pool.sourceMint.toBase58() == destinationMint) {
+                    pool.swapData()
+                } else {
+                    pool
+                }
             }
 
-            return@withContext pool
-        }
+        return pools
+    }
 }

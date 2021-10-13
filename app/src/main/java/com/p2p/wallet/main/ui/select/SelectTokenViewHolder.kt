@@ -1,6 +1,7 @@
 package com.p2p.wallet.main.ui.select
 
 import android.graphics.drawable.PictureDrawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -76,9 +77,9 @@ class SelectTokenViewHolder(
 
     private fun loadImage(imageView: ImageView, url: String) {
         if (url.contains(".svg")) {
-            val size = imageView.context.dip(IMAGE_SIZE)
-            requestBuilder.load(url)
-                .apply(RequestOptions().override(size, size))
+            requestBuilder
+                .load(Uri.parse(url))
+                .apply(RequestOptions().override(IMAGE_SIZE, IMAGE_SIZE))
                 .centerCrop()
                 .into(imageView)
         } else {

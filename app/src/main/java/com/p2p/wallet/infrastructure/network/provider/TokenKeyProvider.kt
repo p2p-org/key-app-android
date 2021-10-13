@@ -1,7 +1,5 @@
 package com.p2p.wallet.infrastructure.network.provider
 
-import android.content.SharedPreferences
-import androidx.core.content.edit
 import com.p2p.wallet.infrastructure.security.SecureStorageContract
 import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.utils.crypto.Base58Utils
@@ -10,7 +8,6 @@ private const val KEY_PUBLIC_KEY = "KEY_PUBLIC_KEY"
 private const val KEY_SECRET_KEY = "KEY_SECRET_KEY"
 
 class TokenKeyProvider(
-    private val sharedPreferences: SharedPreferences,
     private val secureStorage: SecureStorageContract
 ) {
 
@@ -39,8 +36,4 @@ class TokenKeyProvider(
                     secureStorage.saveString(KEY_SECRET_KEY, result)
                 }
             }
-
-    fun clear() {
-        sharedPreferences.edit { remove(KEY_PUBLIC_KEY) }
-    }
 }

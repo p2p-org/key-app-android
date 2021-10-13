@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="20dp"
             android:text="@string/auth_derivable_info"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
             android:textColor="?colorElementSecondary" />
 
         <TextView
@@ -68,7 +69,6 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
         </FrameLayout>
-
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/restoreButton"

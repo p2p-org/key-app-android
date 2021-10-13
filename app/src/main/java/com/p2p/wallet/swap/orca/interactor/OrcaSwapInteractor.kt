@@ -3,22 +3,22 @@ package com.p2p.wallet.swap.orca.interactor
 import com.p2p.wallet.R
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.orca.model.OrcaSwapRequest
 import com.p2p.wallet.swap.orca.model.OrcaSwapResult
+import com.p2p.wallet.swap.orca.model.ValidOrcaPool
 import com.p2p.wallet.swap.orca.repository.OrcaSwapLocalRepository
 import com.p2p.wallet.swap.orca.repository.OrcaSwapRepository
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserLocalRepository
+import com.p2p.wallet.utils.isZero
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.SwapDetails.SWAP_PROGRAM_ID
-import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import timber.log.Timber
@@ -33,71 +33,24 @@ class OrcaSwapInteractor(
     private val swapLocalRepository: OrcaSwapLocalRepository,
     private val userInteractor: UserInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val userLocalRepository: UserLocalRepository,
-    private val secretKeyInteractor: SecretKeyInteractor
+    private val userLocalRepository: UserLocalRepository
 ) {
 
-    suspend fun loadAllPools() {
-        val swapProgramId = SWAP_PROGRAM_ID
-        val pools = swapRepository.loadPoolInfoList(swapProgramId)
-        swapLocalRepository.setPools(pools)
-    }
-
-    fun getAllPools() = swapLocalRepository.getPools()
-
-    suspend fun getAvailableDestinationTokens(source: Token.Active): List<Token> {
-        val userTokens = userInteractor.getUserTokens()
-        return swapLocalRepository.getPools()
-            .filter { pool ->
-                pool.mintB.toBase58() == source.mintAddress || pool.mintA.toBase58() == source.mintAddress
-            }
-            .mapNotNull { pool ->
-                val mintA = pool.mintA.toBase58()
-                val mintB = pool.mintB.toBase58()
-                val mint = if (mintA == source.mintAddress) mintB else mintA
-                val userToken = userTokens.find { it.mintAddress == mint }
-                userToken ?: userInteractor.findTokenData(mint)
-            }
-            .distinctBy { it.mintAddress }
-            .sortedBy { it is Token.Other }
-    }
-
-    suspend fun findPool(sourceMint: String, destinationMint: String): Pool.PoolInfo? = withContext(Dispatchers.IO) {
-        val allPools = swapLocalRepository.getPools()
-        val pool = allPools.lastOrNull {
-            val mintA = it.swapData.mintA.toBase58()
-            val mintB = it.swapData.mintB.toBase58()
-            sourceMint == mintA && destinationMint == mintB || sourceMint == mintB && destinationMint == mintA
-        } ?: return@withContext null
-
-        if (pool.swapData.mintB.toBase58() == sourceMint && pool.swapData.mintA.toBase58() == destinationMint) {
-            pool.swapData.swapMintData()
-            pool.swapData.swapTokenAccount()
-        }
-
-        return@withContext pool
-    }
-
-    suspend fun loadTokenBalance(publicKey: PublicKey): TokenAccountBalance =
-        swapRepository.loadTokenBalance(publicKey)
-
     /*
-    * TODO: optimize this one! remove [TokenSwap] move logic here
-    * */
+     * TODO: optimize this one! remove [TokenSwap] move logic here
+     * */
     suspend fun swap(
         request: OrcaSwapRequest,
         receivedAmount: BigDecimal,
         usdReceivedAmount: BigDecimal,
         tokenSymbol: String
     ): OrcaSwapResult {
-        val accountAddressA = userInteractor.findAccountAddress(request.pool.mintA.toBase58())
-        val keys = secretKeyInteractor.getSecretKeys()
-        val path = secretKeyInteractor.getCurrentDerivationPath()
+        val accountAddressA = userInteractor.findAccountAddress(request.pool.sourceMint.toBase58())
 
         val owner = tokenKeyProvider.publicKey.toPublicKey()
         val associatedAddress = try {
             Timber.tag(SWAP_TAG).d("Searching for SPL token address")
-            findSplTokenAddress(request.pool.mintB.toBase58(), owner)
+            findSplTokenAddress(request.pool.destinationMint.toBase58(), owner)
         } catch (e: IllegalStateException) {
             Timber.tag(SWAP_TAG).d("Searching address failed, address is wrong")
             return OrcaSwapResult.Error(R.string.error_invalid_address)
@@ -109,8 +62,7 @@ class OrcaSwapInteractor(
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
 
         val signature = swapRepository.swap(
-            path,
-            keys,
+            Account(tokenKeyProvider.secretKey),
             request,
             accountAddressA,
             associatedAddress,
@@ -118,6 +70,47 @@ class OrcaSwapInteractor(
         )
 
         return OrcaSwapResult.Success(signature, receivedAmount, usdReceivedAmount, tokenSymbol)
+    }
+
+    suspend fun loadAllPools() = withContext(Dispatchers.IO) {
+        val swapProgramId = SWAP_PROGRAM_ID
+        val pools = swapRepository.loadPools(swapProgramId)
+        swapLocalRepository.setPools(pools)
+    }
+
+    fun getAllPools() = swapLocalRepository.getPools()
+
+    suspend fun getAvailableDestinationTokens(source: Token.Active): List<Token> {
+        val userTokens = userInteractor.getUserTokens()
+        return swapLocalRepository.getPools()
+            .filter { pool ->
+                val hasDestination = pool.destinationMint.toBase58() == source.mintAddress
+                val hasSource = pool.sourceMint.toBase58() == source.mintAddress
+                hasDestination || hasSource
+            }
+            .mapNotNull { pool ->
+                val mintA = pool.sourceMint.toBase58()
+                val mintB = pool.destinationMint.toBase58()
+                val mint = if (mintA == source.mintAddress) mintB else mintA
+                val userToken = userTokens.find { it.mintAddress == mint }
+                userToken ?: userInteractor.findTokenData(mint)
+            }
+            .distinctBy { it.mintAddress }
+            .sortedBy { it is Token.Other }
+    }
+
+    suspend fun findValidPool(
+        sourceMint: String,
+        destinationMint: String
+    ): ValidOrcaPool? = withContext(Dispatchers.IO) {
+        swapLocalRepository.findPools(sourceMint, destinationMint)
+            .mapNotNull {
+                val balanceA = swapRepository.loadTokenBalance(it.tokenAccountA)
+                val balanceB = swapRepository.loadTokenBalance(it.tokenAccountB)
+                if (balanceA.amount.isZero() || balanceB.amount.isZero()) return@mapNotNull null
+                ValidOrcaPool(it, balanceA, balanceB)
+            }
+            .firstOrNull()
     }
 
     @Throws(IllegalStateException::class)
@@ -192,7 +185,6 @@ class OrcaSwapInteractor(
         return feeInLamports
     }
 
-    // MARK: - Helpers
     private fun isFeeRelayerEnabled(source: Token, destination: Token): Boolean {
         return !source.isSOL && !destination.isSOL
     }

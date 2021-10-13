@@ -14,10 +14,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TokenDetailsPresenter(
+class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
     private val userInteractor: UserInteractor
-) : BasePresenter<TokenDetailsContract.View>(), TokenDetailsContract.Presenter {
+) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     companion object {
         private const val DESTINATION_TOKEN = "USD"

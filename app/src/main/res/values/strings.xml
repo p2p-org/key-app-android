@@ -28,6 +28,7 @@
     <string name="error_amount">Amount error. Please enter valid amount</string>
     <string name="error_fetching_data_about_token">Couldn\'t fetch information for %s</string>
     <string name="error_invalid_address">Invalid address, please enter correct one</string>
+    <string name="error_unable_to_swap_this_pair">Unable to swap this pair this time</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">Security key</string>
@@ -106,7 +107,7 @@
     <string name="main_no_data">You have no wallets yet</string>
     <string name="main_swap">Swap</string>
     <string name="main_close_account">Close Account</string>
-    <string name="main_unknown">Unknown operation</string>
+    <string name="main_transaction">Transaction</string>
     <string name="main_from">From</string>
     <string name="main_swap_hint">0.0000</string>
     <string name="main_to">To</string>
@@ -275,5 +276,6 @@
     <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
     <string name="receive_no_statuses_yet">No statuses yet</string>
     <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
+    <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
 
 </resources>

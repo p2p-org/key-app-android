@@ -8,7 +8,7 @@ import com.p2p.wallet.common.ui.PagingState
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.history.model.HistoryTransaction
 
-interface TokenDetailsContract {
+interface HistoryContract {
 
     interface View : MvpView {
         fun showHistory(transactions: List<HistoryTransaction>)

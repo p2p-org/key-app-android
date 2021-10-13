@@ -1,7 +1,5 @@
 package com.p2p.wallet.user.interactor
 
-import android.content.Context
-import com.google.gson.Gson
 import com.p2p.wallet.main.api.TokenColors
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenConverter
@@ -13,8 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 
 class UserInteractor(
-    private val context: Context,
-    private val gson: Gson,
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: MainLocalRepository,

@@ -1,12 +1,12 @@
-package org.p2p.solanaj.orcaswap
+package com.p2p.wallet.swap.orca.repository
 
+import com.p2p.wallet.swap.model.AccountBalance
+import com.p2p.wallet.swap.orca.model.OrcaPool
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
-import org.p2p.solanaj.kits.Pool.PoolInfo
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.model.types.AccountInfo
-import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData
@@ -21,11 +21,11 @@ class TokenSwap {
     @Throws(RpcException::class)
     suspend fun swap(
         owner: Account,
-        pool: PoolInfo,
+        pool: OrcaPool,
         slippage: Double,
         amountIn: BigInteger,
-        balanceA: TokenAccountBalance,
-        balanceB: TokenAccountBalance,
+        balanceA: AccountBalance,
+        balanceB: AccountBalance,
         wrappedSolAccount: PublicKey,
         accountAddressA: PublicKey?,
         associatedAddress: PublicKey,
@@ -43,8 +43,8 @@ class TokenSwap {
         val tokenA = if (source.equals(pool.tokenAccountA)) pool.tokenAccountA else pool.tokenAccountB
         val isTokenAEqTokenAccountA = tokenA.equals(pool.tokenAccountA)
         val tokenB = if (isTokenAEqTokenAccountA) pool.tokenAccountB else pool.tokenAccountA
-        val mintA = if (isTokenAEqTokenAccountA) pool.mintA else pool.mintB
-        val mintB = if (isTokenAEqTokenAccountA) pool.mintB else pool.mintA
+        val mintA = if (isTokenAEqTokenAccountA) pool.sourceMint else pool.destinationMint
+        val mintB = if (isTokenAEqTokenAccountA) pool.destinationMint else pool.sourceMint
 
         val accountInfo = getAccountInfo.invoke(tokenA)
         val tokenAInfo = TokenTransaction.getAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
@@ -152,8 +152,8 @@ class TokenSwap {
         }
 
         fun calculateSwapEstimatedAmount(
-            tokenABalance: TokenAccountBalance,
-            tokenBBalance: TokenAccountBalance,
+            tokenABalance: AccountBalance,
+            tokenBBalance: AccountBalance,
             inputAmount: BigInteger
         ): BigInteger {
             return tokenBBalance.amount.multiply(inputAmount).divide(tokenABalance.amount.add(inputAmount))

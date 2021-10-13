@@ -1,12 +1,9 @@
 package com.p2p.wallet.swap.orca.model
 
 import com.p2p.wallet.swap.model.AccountBalance
-import java.math.BigInteger
 
-data class OrcaSwapRequest(
-    val pool: OrcaPool,
-    val slippage: Double,
-    val amount: BigInteger,
+data class ValidOrcaPool(
+    val orcaPool: OrcaPool,
     val balanceA: AccountBalance,
     val balanceB: AccountBalance
 )

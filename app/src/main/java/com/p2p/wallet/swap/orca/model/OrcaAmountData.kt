@@ -4,6 +4,5 @@ import java.math.BigDecimal
 
 data class OrcaAmountData(
     val estimatedDestinationAmount: String,
-    val minReceiveAmount: BigDecimal,
-    val minReceiveSymbol: String
+    val minReceiveAmount: BigDecimal
 )

@@ -13,7 +13,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.common.recycler.EndlessScrollListener
 import com.p2p.wallet.common.ui.PagingState
-import com.p2p.wallet.databinding.FragmentTokenDetailsBinding
+import com.p2p.wallet.databinding.FragmentHistoryBinding
 import com.p2p.wallet.history.model.HistoryTransaction
 import com.p2p.wallet.history.ui.details.SwapTransactionFragment
 import com.p2p.wallet.history.ui.details.TransferTransactionFragment
@@ -33,25 +33,25 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import com.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 
-class TokenDetailsFragment :
-    BaseMvpFragment<TokenDetailsContract.View, TokenDetailsContract.Presenter>(R.layout.fragment_token_details),
-    TokenDetailsContract.View,
+class HistoryFragment :
+    BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
+    HistoryContract.View,
     OnHeaderClickListener {
 
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
         fun create(token: Token.Active) =
-            TokenDetailsFragment().withArgs(
+            HistoryFragment().withArgs(
                 EXTRA_TOKEN to token
             )
     }
 
-    override val presenter: TokenDetailsContract.Presenter by inject()
+    override val presenter: HistoryContract.Presenter by inject()
 
     private val token: Token.Active by args(EXTRA_TOKEN)
 
-    private val binding: FragmentTokenDetailsBinding by viewBinding()
+    private val binding: FragmentHistoryBinding by viewBinding()
 
     private val historyAdapter: HistoryAdapter by lazy {
         HistoryAdapter(

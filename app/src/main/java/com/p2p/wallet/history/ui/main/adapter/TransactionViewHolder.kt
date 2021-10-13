@@ -52,7 +52,7 @@ class TransactionViewHolder(
             is HistoryTransaction.Swap -> showSwapTransaction(item.transaction)
             is HistoryTransaction.BurnOrMint -> showBurnOrMint(item.transaction)
             is HistoryTransaction.CloseAccount -> showCloseTransaction(item.transaction)
-            is HistoryTransaction.Unknown -> showUnknownTransaction()
+            is HistoryTransaction.Unknown -> showUnknownTransaction(item.transaction)
         }
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
     }
@@ -68,17 +68,24 @@ class TransactionViewHolder(
         valueTextView.text = transaction.getValue()
     }
 
-    private fun showUnknownTransaction() {
+    private fun showUnknownTransaction(transaction: HistoryTransaction.Unknown) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
+        valueTextView.isVisible = false
+        totalTextView.isVisible = false
+
         tokenImageView.setImageResource(R.drawable.ic_no_money)
-        typeTextView.setText(R.string.main_unknown)
+        typeTextView.setText(R.string.main_transaction)
+        addressTextView.text = transaction.signature.cutMiddle()
     }
 
     @SuppressLint("SetTextI18n")
     private fun showCloseTransaction(transaction: HistoryTransaction.CloseAccount) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
+        valueTextView.isVisible = true
+        totalTextView.isVisible = false
+
         tokenImageView.setImageResource(R.drawable.ic_trash)
         typeTextView.setText(R.string.main_close_account)
         addressTextView.text = transaction.getInfo()
@@ -90,6 +97,8 @@ class TransactionViewHolder(
     private fun showSwapTransaction(transaction: HistoryTransaction.Swap) {
         tokenImageView.isVisible = false
         swapView.isVisible = true
+        valueTextView.isVisible = true
+        totalTextView.isVisible = true
 
         loadImage(sourceImageView, transaction.sourceTokenUrl)
         loadImage(destinationImageView, transaction.destinationTokenUrl)
@@ -103,6 +112,8 @@ class TransactionViewHolder(
     private fun showTransferTransaction(transaction: HistoryTransaction.Transfer) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
+        valueTextView.isVisible = true
+        totalTextView.isVisible = true
 
         tokenImageView.setImageResource(transaction.getIcon())
         typeTextView.setText(transaction.getTitle())

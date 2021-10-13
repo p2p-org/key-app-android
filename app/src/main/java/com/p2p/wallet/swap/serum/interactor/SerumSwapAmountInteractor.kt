@@ -2,9 +2,8 @@ package com.p2p.wallet.swap.serum.interactor
 
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.rpc.repository.RpcRepository
-import com.p2p.wallet.swap.SerumSwapInteractor
-import com.p2p.wallet.swap.SerumSwapInteractor.Companion.BASE_TAKER_FEE_BPS
-import com.p2p.wallet.swap.SerumSwapInteractor.Companion.FEE_MULTIPLIER
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor.Companion.BASE_TAKER_FEE_BPS
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor.Companion.FEE_MULTIPLIER
 import com.p2p.wallet.swap.serum.model.SerumFeeType
 import com.p2p.wallet.swap.serum.model.SerumSwapFee
 import com.p2p.wallet.utils.fromLamports
