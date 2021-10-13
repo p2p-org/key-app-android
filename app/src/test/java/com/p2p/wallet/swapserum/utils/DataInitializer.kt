@@ -88,6 +88,7 @@ class DataInitializer {
         rpcRepository = RpcRemoteRepository(
             serumApi = serumApi,
             mainnetApi = serumApi,
+            rpcpoolRpcApi = serumApi,
             testnetApi = serumApi,
             environmentManager = environmentManager,
             onlyMainnet = true
