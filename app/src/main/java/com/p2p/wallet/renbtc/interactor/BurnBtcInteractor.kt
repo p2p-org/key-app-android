@@ -62,6 +62,7 @@ class BurnBtcInteractor(
     private fun getNetworkConfig(): NetworkConfig =
         when (environmentManager.loadEnvironment()) {
             Environment.DEVNET -> NetworkConfig.DEVNET()
+            Environment.RPC_POOL,
             Environment.MAINNET,
             Environment.SOLANA -> NetworkConfig.MAINNET()
         }

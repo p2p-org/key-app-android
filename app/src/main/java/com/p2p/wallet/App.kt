@@ -6,19 +6,20 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.p2p.wallet.auth.AuthModule
 import com.p2p.wallet.common.AppRestarter
-import com.p2p.wallet.common.di.CommonModule
 import com.p2p.wallet.debugdrawer.DebugDrawer
+import com.p2p.wallet.history.HistoryModule
 import com.p2p.wallet.infrastructure.InfrastructureModule
 import com.p2p.wallet.infrastructure.network.NetworkModule
 import com.p2p.wallet.main.MainModule
 import com.p2p.wallet.qr.QrModule
+import com.p2p.wallet.renbtc.di.RenBtcModule
 import com.p2p.wallet.restore.BackupModule
 import com.p2p.wallet.root.RootModule
+import com.p2p.wallet.root.ui.RootActivity
+import com.p2p.wallet.rpc.RpcModule
 import com.p2p.wallet.settings.SettingsModule
 import com.p2p.wallet.settings.interactor.ThemeInteractor
 import com.p2p.wallet.swap.SwapModule
-import com.p2p.wallet.history.TokenModule
-import com.p2p.wallet.root.ui.RootActivity
 import com.p2p.wallet.user.UserModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.KoinContextHandler
@@ -50,12 +51,13 @@ class App : Application() {
                     BackupModule.create(),
                     UserModule.create(),
                     MainModule.create(),
+                    RenBtcModule.create(),
                     NetworkModule.create(),
                     QrModule.create(),
-                    TokenModule.create(),
+                    HistoryModule.create(),
                     SettingsModule.create(),
                     SwapModule.create(),
-                    CommonModule.create(),
+                    RpcModule.create(),
                     InfrastructureModule.create(),
                     createAppModule()
                 )

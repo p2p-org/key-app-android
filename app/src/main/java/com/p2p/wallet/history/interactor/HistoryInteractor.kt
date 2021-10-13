@@ -3,7 +3,7 @@ package com.p2p.wallet.history.interactor
 import com.p2p.wallet.history.model.PriceHistory
 import com.p2p.wallet.history.model.TransactionConverter
 import com.p2p.wallet.history.model.HistoryTransaction
-import com.p2p.wallet.history.repository.TokenRepository
+import com.p2p.wallet.history.repository.HistoryRepository
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.rpc.repository.RpcRepository
@@ -19,17 +19,17 @@ import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.programs.TokenProgram
 
 class HistoryInteractor(
-    private val tokenRepository: TokenRepository,
+    private val historyRepository: HistoryRepository,
     private val rpcRepository: RpcRepository,
     private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     suspend fun getDailyPriceHistory(sourceToken: String, destination: String, days: Int): List<PriceHistory> =
-        tokenRepository.getDailyPriceHistory(sourceToken, destination, days)
+        historyRepository.getDailyPriceHistory(sourceToken, destination, days)
 
     suspend fun getHourlyPriceHistory(sourceToken: String, destination: String, hours: Int): List<PriceHistory> =
-        tokenRepository.getHourlyPriceHistory(sourceToken, destination, hours)
+        historyRepository.getHourlyPriceHistory(sourceToken, destination, hours)
 
     suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
         val signatures = rpcRepository.getConfirmedSignaturesForAddress(

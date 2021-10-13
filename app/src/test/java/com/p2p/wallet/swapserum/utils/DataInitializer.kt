@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.google.gson.Gson
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.repository.AuthRemoteRepository
 import com.p2p.wallet.infrastructure.db.WalletDatabase
@@ -20,12 +19,12 @@ import com.p2p.wallet.restore.interactor.SecretKeyInteractor
 import com.p2p.wallet.rpc.api.RpcApi
 import com.p2p.wallet.rpc.repository.RpcRemoteRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
+import com.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumMarketInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumOpenOrdersInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapInstructionsInteractor
-import com.p2p.wallet.swap.SerumSwapInteractor
+import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
-import com.p2p.wallet.swap.serum.interactor.SwapSerializationInteractor
 import com.p2p.wallet.user.api.SolanaApi
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
@@ -89,6 +88,7 @@ class DataInitializer {
         rpcRepository = RpcRemoteRepository(
             serumApi = serumApi,
             mainnetApi = serumApi,
+            rpcpoolRpcApi = serumApi,
             testnetApi = serumApi,
             environmentManager = environmentManager,
             onlyMainnet = true
@@ -96,10 +96,7 @@ class DataInitializer {
 
         secureStorage = SimpleSecureStorage(sharedPreferences)
 
-        tokenKeyProvider = TokenKeyProvider(
-            sharedPreferences = sharedPreferences,
-            secureStorage = secureStorage
-        )
+        tokenKeyProvider = TokenKeyProvider(secureStorage)
 
         userLocalRepository = UserInMemoryRepository()
         userRepository = UserRepositoryImpl(
@@ -118,8 +115,6 @@ class DataInitializer {
         database = Room.inMemoryDatabaseBuilder(context, WalletDatabase::class.java).build()
         mainLocalRepository = MainDatabaseRepository(database.tokenDao())
         userInteractor = UserInteractor(
-            context = context,
-            gson = Gson(),
             userRepository = userRepository,
             userLocalRepository = userLocalRepository,
             mainLocalRepository = mainLocalRepository,

@@ -3,7 +3,7 @@ package com.p2p.wallet.renbtc.interactor
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.RenBTCPayment
-import com.p2p.wallet.main.repository.RenBTCRepository
+import com.p2p.wallet.renbtc.repository.RenBTCRepository
 import com.p2p.wallet.renbtc.model.MintStatus
 import com.p2p.wallet.renbtc.model.RenVMStatus
 import com.p2p.wallet.renbtc.ui.main.BTC_DECIMALS
@@ -120,7 +120,7 @@ class RenBtcInteractor(
 
     private fun handleStatus(response: ResponseQueryTxMint, secretKey: ByteArray) {
         val status = response.txStatus
-        Timber.tag(TAG).d("Current mint status: $status")
+        Timber.tag(TAG).d("Current mint status: $status, will check again in one minute")
 
         when (MintStatus.parse(status)) {
             MintStatus.CONFIRMED -> {
@@ -151,7 +151,7 @@ class RenBtcInteractor(
 
     private fun setStatus(status: RenVMStatus) {
         state.value = state.value.toMutableList().also { statuses ->
-            val latestStatus = statuses.lastOrNull() ?: return@also
+            val latestStatus = statuses.lastOrNull()
             when {
                 latestStatus is RenVMStatus.SuccessfullyMinted ->
                     if (status !is RenVMStatus.Minting) statuses.add(status)
@@ -164,6 +164,7 @@ class RenBtcInteractor(
     private fun getNetworkConfig(): NetworkConfig =
         when (environmentManager.loadEnvironment()) {
             Environment.DEVNET -> NetworkConfig.DEVNET()
+            Environment.RPC_POOL,
             Environment.MAINNET,
             Environment.SOLANA -> NetworkConfig.MAINNET()
         }

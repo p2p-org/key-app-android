@@ -17,13 +17,12 @@ interface OrcaSwapContract {
     interface View : MvpView {
         fun showSourceToken(token: Token.Active)
         fun showDestinationToken(token: Token?)
-        fun showSourceAvailable(available: String)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showFees(data: OrcaFeeData)
         fun showPrice(priceData: PriceData)
         fun hidePrice()
-        fun showCalculations(data: OrcaAmountData)
+        fun showCalculations(data: OrcaAmountData?)
         fun hideCalculations()
         fun setAvailableTextColor(@AttrRes availableColor: Int)
         fun showNewAmount(amount: String)
@@ -37,6 +36,7 @@ interface OrcaSwapContract {
         fun openDestinationSelection(tokens: List<Token>)
         fun openSwapSettings(currentSlippage: Slippage)
         fun openSlippageDialog(currentSlippage: Slippage)
+        fun showError(@StringRes errorText: Int?)
     }
 
     interface Presenter : MvpPresenter<View> {

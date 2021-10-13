@@ -1,12 +1,8 @@
-package com.p2p.wallet.swap
+package com.p2p.wallet.swap.serum.interactor
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.swap.serum.interactor.SerumMarketInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumOpenOrdersInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInstructionsInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
-import com.p2p.wallet.swap.serum.interactor.SwapSerializationInteractor
+import com.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import com.p2p.wallet.utils.isUsdx
 import com.p2p.wallet.utils.scaleMedium
 import com.p2p.wallet.utils.toLamports

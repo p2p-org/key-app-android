@@ -38,6 +38,7 @@ class NetworkFragment :
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
         val environment = when (checkedId) {
             R.id.mainnetButton -> Environment.MAINNET
+            R.id.rpcpoolButton -> Environment.RPC_POOL
             R.id.solanaButton -> Environment.SOLANA
             R.id.devnetButton -> Environment.DEVNET
             else -> throw IllegalStateException("No environment found for this id: $checkedId")
@@ -49,6 +50,7 @@ class NetworkFragment :
         val checkedId = when (environment) {
             Environment.SOLANA -> R.id.solanaButton
             Environment.MAINNET -> R.id.mainnetButton
+            Environment.RPC_POOL -> R.id.rpcpoolButton
             Environment.DEVNET -> R.id.devnetButton
         }
 

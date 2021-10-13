@@ -23,6 +23,10 @@ class NetworkPresenter(
                 environmentManager.saveEnvironment(environment)
                 mainLocalRepository.clear()
                 RenVMService.stopService(context)
+                /* Sometimes these operations are completed too quickly
+                 * On the UI it shows blinking loading effect which is not good
+                 * Adding short delay to show loading state
+                 * */
                 delay(250L)
             } catch (e: Throwable) {
                 Timber.e(e, "Error switching environment")

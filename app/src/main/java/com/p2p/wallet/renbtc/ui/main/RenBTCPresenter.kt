@@ -131,6 +131,10 @@ class RenBTCPresenter(
         val minutes = TimeUnit.MILLISECONDS.toMinutes(millis)
         millis -= TimeUnit.MINUTES.toMillis(minutes)
         val seconds = TimeUnit.MILLISECONDS.toSeconds(millis)
-        return "$hours:$minutes:$seconds"
+        return "${hours.toTimeFormat()}:${minutes.toTimeFormat()}:${seconds.toTimeFormat()}"
     }
+
+    @Suppress("MagicNumber")
+    private fun Long.toTimeFormat(): String =
+        if (this > 10L) this.toString() else "0$this"
 }

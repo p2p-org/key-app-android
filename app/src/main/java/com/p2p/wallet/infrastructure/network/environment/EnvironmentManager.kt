@@ -48,7 +48,6 @@ class EnvironmentManager(
 
     fun saveEnvironment(newEnvironment: Environment) {
         sharedPreferences.edit { putString(KEY_BASE_URL, newEnvironment.endpoint) }
-
         onChanged?.invoke(newEnvironment)
     }
 
@@ -56,6 +55,7 @@ class EnvironmentManager(
         Environment.MAINNET.endpoint -> Environment.MAINNET
         Environment.DEVNET.endpoint -> Environment.DEVNET
         Environment.SOLANA.endpoint -> Environment.SOLANA
+        Environment.RPC_POOL.endpoint -> Environment.RPC_POOL
         else -> throw IllegalStateException("Unknown endpoint $url")
     }
 }

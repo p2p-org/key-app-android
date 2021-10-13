@@ -82,5 +82,6 @@ class DerivableAccountsFragment :
         binding.progressBar.isVisible = isLoading
         binding.accountsRecyclerView.isInvisible = isLoading
         binding.restoreButton.isEnabled = !isLoading
+        binding.derivationPathTextView.isEnabled = !isLoading
     }
 }

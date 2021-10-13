@@ -17,9 +17,10 @@ buildscript {
 allprojects {
     repositories {
         google()
+        /* Remove jcenter and replace deprecated libs, such as zxing, koin etc. */
         jcenter()
         maven { url 'https://jitpack.io' }
-        maven { url "http://maven.google.com/" }
+        maven { url "https://maven.google.com/" }
     }
 }
 

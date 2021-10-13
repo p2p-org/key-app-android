@@ -224,7 +224,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/destinationTitleTextView"
                     tools:ignore="UnusedAttribute,UseCompatTextViewDrawableXml"
-                    tools:text="12210.2 USDC" />
+                    tools:text="12210.2 USDC"
+                    tools:visibility="visible" />
 
                 <com.p2p.wallet.common.widget.RoundedImageView
                     android:id="@+id/destinationImageView"
@@ -414,16 +415,16 @@
                     android:id="@+id/errorTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="16dp"
                     android:paddingVertical="8dp"
-                    android:text="@string/main_swap_fee"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorAccentWarning"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/feesImageView"
+                    tools:text="Unable to swap this pair this time"
                     tools:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -441,7 +442,7 @@
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     android:textColor="?colorElementPrimary"
                     app:layout_constraintBottom_toTopOf="@id/poweredTextView"
-                    app:layout_constraintTop_toBottomOf="@id/feesTextView"
+                    app:layout_constraintTop_toBottomOf="@id/errorTextView"
                     app:layout_constraintVertical_bias="1"
                     tools:ignore="UnusedAttribute" />
 

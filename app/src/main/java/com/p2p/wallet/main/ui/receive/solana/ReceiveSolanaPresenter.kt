@@ -14,7 +14,7 @@ import kotlin.properties.Delegates
 
 private const val DELAY_IN_MILLIS = 200L
 
-class ReceivePresenter(
+class ReceiveSolanaPresenter(
     private val defaultToken: Token.Active?,
     private val userInteractor: UserInteractor,
     private val qrCodeInteractor: QrCodeInteractor

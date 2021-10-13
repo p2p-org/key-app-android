@@ -11,7 +11,7 @@ import com.github.mikephil.charting.data.PieEntry
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentMainBinding
-import com.p2p.wallet.history.ui.main.TokenDetailsFragment
+import com.p2p.wallet.history.ui.main.HistoryFragment
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TokenItem
 import com.p2p.wallet.main.model.VisibilityState
@@ -151,7 +151,7 @@ class MainFragment :
     }
 
     private fun onTokenClicked(token: Token.Active) {
-        replaceFragment(TokenDetailsFragment.create(token))
+        replaceFragment(HistoryFragment.create(token))
     }
 
     private fun onEditClicked(token: Token.Active) {

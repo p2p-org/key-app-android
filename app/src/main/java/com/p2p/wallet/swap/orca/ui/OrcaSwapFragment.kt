@@ -92,6 +92,8 @@ class OrcaSwapFragment :
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             maxTextView.isVisible = true
+            availableTextView.isVisible = true
+            availableTextView.text = token.getFormattedTotal()
         }
     }
 
@@ -109,11 +111,6 @@ class OrcaSwapFragment :
                 destinationAvailableTextView.text = ""
             }
         }
-    }
-
-    override fun showSourceAvailable(available: String) {
-        binding.availableTextView.isVisible = true
-        binding.availableTextView.text = available
     }
 
     override fun showButtonText(textRes: Int, value: String?) {
@@ -151,10 +148,15 @@ class OrcaSwapFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showCalculations(data: OrcaAmountData) {
+    override fun showCalculations(data: OrcaAmountData?) {
         with(binding) {
-            receiveTextView.text = getString(R.string.main_swap_min_receive, data.minReceiveAmount)
-            destinationAmountTextView.text = data.estimatedDestinationAmount
+            if (data != null) {
+                receiveTextView.text = getString(R.string.main_swap_min_receive, data.minReceiveAmount)
+                destinationAmountTextView.text = data.estimatedDestinationAmount
+            } else {
+                receiveTextView.text = ""
+                destinationAmountTextView.text = ""
+            }
         }
     }
 
@@ -189,7 +191,7 @@ class OrcaSwapFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showSlippage(slippage: Slippage) {
-        binding.slippageView.setBottomText("${slippage.percentValue} %")
+        binding.slippageView.setBottomText(slippage.percentValue)
     }
 
     override fun showNewAmount(amount: String) {
@@ -202,6 +204,15 @@ class OrcaSwapFragment :
         binding.availableTextView.setTextColor(colorFromTheme)
         binding.availableTextView.compoundDrawables.filterNotNull().forEach {
             it.colorFilter = PorterDuffColorFilter(colorFromTheme, PorterDuff.Mode.SRC_IN)
+        }
+    }
+
+    override fun showError(errorText: Int?) {
+        if (errorText != null) {
+            binding.errorTextView.isVisible = true
+            binding.errorTextView.setText(errorText)
+        } else {
+            binding.errorTextView.isVisible = false
         }
     }
 

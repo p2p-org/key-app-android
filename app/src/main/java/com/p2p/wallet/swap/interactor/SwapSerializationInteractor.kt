@@ -1,4 +1,4 @@
-package com.p2p.wallet.swap.serum.interactor
+package com.p2p.wallet.swap.interactor
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.rpc.repository.RpcRepository

@@ -3,9 +3,9 @@ package com.p2p.wallet.history.repository
 import com.p2p.wallet.main.api.CompareApi
 import com.p2p.wallet.history.model.PriceHistory
 
-class TokenRemoteRepository(
-    private val compareApi: CompareApi,
-) : TokenRepository {
+class HistoryRemoteRepository(
+    private val compareApi: CompareApi
+) : HistoryRepository {
 
     companion object {
         private const val CHART_ENTRY_LIMIT = 20

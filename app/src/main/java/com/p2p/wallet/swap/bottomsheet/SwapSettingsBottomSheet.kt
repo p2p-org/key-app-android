@@ -40,7 +40,7 @@ class SwapSettingsBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            slippageView.setBottomText("${slippage.percentValue} %")
+            slippageView.setBottomText(slippage.percentValue)
             slippageView.setOnClickListener { openSlippage() }
             payView.isVisible = false
             payView.setOnClickListener {
@@ -52,7 +52,7 @@ class SwapSettingsBottomSheet(
     private fun openSlippage() {
         SwapSlippageBottomSheet.show(parentFragmentManager, slippage) {
             onSlippageSelected(it)
-            binding.slippageView.setBottomText("${it.percentValue} %")
+            binding.slippageView.setBottomText(slippage.percentValue)
         }
     }
 
