@@ -20,11 +20,11 @@ import com.p2p.wallet.rpc.api.RpcApi
 import com.p2p.wallet.rpc.repository.RpcRemoteRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumMarketInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumOpenOrdersInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInstructionsInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
+import com.p2p.wallet.swap.interactor.serum.SerumMarketInteractor
+import com.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
+import com.p2p.wallet.swap.interactor.serum.SerumSwapInstructionsInteractor
+import com.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+import com.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import com.p2p.wallet.user.api.SolanaApi
 import com.p2p.wallet.user.interactor.UserInteractor
 import com.p2p.wallet.user.repository.UserInMemoryRepository
