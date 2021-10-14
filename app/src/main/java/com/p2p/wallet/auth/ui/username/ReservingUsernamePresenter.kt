@@ -2,7 +2,6 @@ package com.p2p.wallet.auth.ui.username
 
 import com.google.gson.Gson
 import com.p2p.wallet.auth.interactor.ReservingUsernameInteractor
-import com.p2p.wallet.auth.model.NameRegisterBody
 import com.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -49,10 +48,9 @@ class ReservingUsernamePresenter(
     }
 
     override fun registerUsername(username: String, result: String?) {
-        val credentials = Gson().fromJson(result, NameRegisterBody.Credentials::class.java)
         launch {
             try {
-                interactor.registerUsername(username, credentials)
+                interactor.registerUsername(username, result)
                 view?.successRegisterName()
             } catch (e: HttpException) {
                 view?.failRegisterName()
