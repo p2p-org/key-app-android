@@ -25,7 +25,6 @@ import com.geetest.sdk.GT3Listener
 
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
-import com.p2p.wallet.utils.toast
 import org.json.JSONObject
 
 class ReservingUsernameFragment :
@@ -55,6 +54,7 @@ class ReservingUsernameFragment :
         gt3ConfigBean?.listener = object : GT3Listener() {
             override fun onDialogResult(result: String?) {
                 presenter.registerUsername(binding.usernameEditText.text.toString().lowercase(), result)
+                gt3GeeTestUtils?.showSuccessDialog()
             }
 
             override fun onReceiveCaptchaCode(p0: Int) {
@@ -67,11 +67,10 @@ class ReservingUsernameFragment :
             }
 
             override fun onSuccess(p0: String?) {
-                navigateToPinCode()
+                binding.progressView.visibility = View.VISIBLE
             }
 
             override fun onFailed(p0: GT3ErrorBean?) {
-                toast(text = p0.toString())
             }
 
             override fun onButtonClick() {
@@ -83,7 +82,6 @@ class ReservingUsernameFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
@@ -133,12 +131,21 @@ class ReservingUsernameFragment :
         gt3GeeTestUtils?.getGeetest()
     }
 
-    override fun successRegisterName() {
+    override fun successCaptcha() {
         gt3GeeTestUtils?.showSuccessDialog()
     }
 
-    override fun failRegisterName() {
+    override fun failCaptcha() {
         gt3GeeTestUtils?.showFailedDialog()
+    }
+
+    override fun successRegisterName() {
+        binding.progressView.visibility = View.GONE
+        navigateToPinCode()
+    }
+
+    override fun failRegisterName() {
+        binding.progressView.visibility = View.GONE
     }
 
     private fun buildClickableText(): SpannableString {

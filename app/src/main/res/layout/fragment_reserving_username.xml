@@ -148,6 +148,14 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="UnusedAttribute" />
 
+        <com.p2p.wallet.common.widget.ProgressView
+            android:id="@+id/progressView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:translationZ="12dp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

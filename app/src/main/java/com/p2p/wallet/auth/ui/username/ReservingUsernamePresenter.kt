@@ -43,6 +43,7 @@ class ReservingUsernamePresenter(
                 val getCaptchaResponse = interactor.checkCaptcha()
                 view?.getCaptchaResult(JSONObject(Gson().toJson(getCaptchaResponse)))
             } catch (e: HttpException) {
+                view?.failCaptcha()
                 e.message()
             }
         }
