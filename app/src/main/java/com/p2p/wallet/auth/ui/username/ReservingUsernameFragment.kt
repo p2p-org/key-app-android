@@ -25,6 +25,7 @@ import com.geetest.sdk.GT3Listener
 
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
+import com.p2p.wallet.utils.colorFromTheme
 import org.json.JSONObject
 
 class ReservingUsernameFragment :
@@ -113,14 +114,14 @@ class ReservingUsernameFragment :
     }
 
     override fun showUnavailableName(name: String) {
-        binding.usernameTextView.text = String.format(getString(R.string.auth_unavailable_name), name)
-        binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorRed))
+        binding.usernameTextView.text = getString(R.string.auth_unavailable_name, name)
+        binding.usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
         binding.enterUserNameButton.isEnabled = false
         setTextColorGrey()
     }
 
     override fun showAvailableName(name: String) {
-        binding.usernameTextView.text = String.format(getString(R.string.auth_available_name), name)
+        binding.usernameTextView.text = getString(R.string.auth_available_name, name)
         binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
         binding.enterUserNameButton.isEnabled = true
         setTextColorGrey()
@@ -166,7 +167,7 @@ class ReservingUsernameFragment :
     private fun setTextColorGrey() {
         if (binding.usernameEditText.text?.isEmpty() == true) {
             binding.usernameTextView.text = getString(R.string.auth_use_any_latin)
-            binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.elementSecondary))
+            binding.usernameTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
         }
     }
 }

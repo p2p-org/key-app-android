@@ -29,7 +29,6 @@ class ReservingUsernamePresenter(
                     view?.showUnavailableName(username)
                 } catch (e: HttpException) {
                     view?.showAvailableName(username)
-                    e.message()
                 }
                 delay(300)
                 nextCheckAvailable = true
@@ -44,7 +43,7 @@ class ReservingUsernamePresenter(
                 view?.getCaptchaResult(JSONObject(Gson().toJson(getCaptchaResponse)))
             } catch (e: HttpException) {
                 view?.failCaptcha()
-                e.message()
+                view?.showErrorMessage(e)
             }
         }
     }
@@ -57,7 +56,7 @@ class ReservingUsernamePresenter(
                 view?.successRegisterName()
             } catch (e: HttpException) {
                 view?.failRegisterName()
-                e.message()
+                view?.showErrorMessage(e)
             }
         }
     }
