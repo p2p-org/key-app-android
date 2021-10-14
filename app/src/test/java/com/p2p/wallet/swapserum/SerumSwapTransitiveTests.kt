@@ -1,8 +1,8 @@
 package com.p2p.wallet.swapserum
 
 import com.p2p.wallet.main.model.Token
-import com.p2p.wallet.swap.serum.interactor.SerumSwapInteractor
-import com.p2p.wallet.swap.serum.interactor.SerumSwapMarketInteractor
+import com.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+import com.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import com.p2p.wallet.swapserum.utils.CoroutineTest
 import com.p2p.wallet.swapserum.utils.DataInitializer
 import com.p2p.wallet.swapserum.utils.SerumSwapData.FIDA

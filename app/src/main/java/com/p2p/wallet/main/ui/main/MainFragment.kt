@@ -22,7 +22,7 @@ import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
 import com.p2p.wallet.qr.ui.ScanQrFragment
 import com.p2p.wallet.settings.ui.settings.SettingsFragment
-import com.p2p.wallet.swap.orca.ui.OrcaSwapFragment
+import com.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import com.p2p.wallet.utils.replaceFragment
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject

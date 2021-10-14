@@ -23,7 +23,7 @@ import com.p2p.wallet.main.ui.buy.BuyFragment
 import com.p2p.wallet.main.ui.options.TokenOptionsDialog
 import com.p2p.wallet.main.ui.receive.ReceiveFragment
 import com.p2p.wallet.main.ui.send.SendFragment
-import com.p2p.wallet.swap.orca.ui.OrcaSwapFragment
+import com.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import com.p2p.wallet.utils.addFragment
 import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.attachAdapter
