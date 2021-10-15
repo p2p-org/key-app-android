@@ -43,7 +43,7 @@ object AuthModule {
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
             val api = retrofit.create(UsernameApi::class.java)
-            UsernameRemoteRepository(api)
+            UsernameRemoteRepository(api, get(), get())
         } bind UsernameRepository::class
     }
 }

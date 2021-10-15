@@ -76,6 +76,7 @@
             android:layout_marginEnd="16dp"
             android:background="@drawable/bg_gray_secondary_rounded_small"
             android:hint="@string/auth_your_username"
+            android:imeOptions="flagForceAscii"
             android:inputType="text"
             android:maxLength="16"
             android:minHeight="48dp"
@@ -99,7 +100,7 @@
             app:layout_constraintTop_toTopOf="@+id/usernameEditText" />
 
         <TextView
-            android:id="@+id/useOnlyTextView"
+            android:id="@+id/usernameTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -125,7 +126,7 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/useOnlyTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/usernameTextView" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/enterUserNameButton"
@@ -138,7 +139,7 @@
             android:background="@drawable/bg_blue_selector"
             android:enabled="false"
             android:foreground="?selectableItemBackground"
-            android:text="@string/auth_enter_your_username"
+            android:text="@string/auth_reserve"
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="?colorElementPrimary"
@@ -146,6 +147,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="UnusedAttribute" />
+
+        <com.p2p.wallet.common.widget.ProgressView
+            android:id="@+id/progressView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:translationZ="12dp"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

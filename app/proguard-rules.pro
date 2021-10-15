@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# GeeTest SDK has already been obfuscated, please do not obfuscate it again
+-dontwarn com.geetest.sdk.**
+-keep class com.geetest.sdk.**{*;}
