@@ -19,4 +19,7 @@ interface UsernameApi {
         @Path("username") username: String,
         @Body body: NameRegisterBody
     ): RegisterUsernameResponse
+
+    @GET("name_register/lookup/{owner}")
+    suspend fun lookup(@Path("owner") owner: String): ArrayList<LookupUsernameResponse>
 }
