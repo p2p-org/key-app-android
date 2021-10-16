@@ -78,7 +78,7 @@
             android:hint="@string/auth_your_username"
             android:imeOptions="flagForceAscii"
             android:inputType="text"
-            android:maxLength="16"
+            android:maxLength="15"
             android:minHeight="48dp"
             android:paddingHorizontal="16dp"
             android:paddingVertical="12dp"
@@ -139,7 +139,7 @@
             android:background="@drawable/bg_blue_selector"
             android:enabled="false"
             android:foreground="?selectableItemBackground"
-            android:text="@string/auth_reserve"
+            android:text="@string/auth_enter_your_username"
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="?colorElementPrimary"
@@ -154,7 +154,7 @@
             android:layout_height="match_parent"
             android:translationZ="12dp"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
