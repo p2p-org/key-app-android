@@ -4,6 +4,7 @@ import androidx.biometric.BiometricManager
 import com.p2p.wallet.auth.api.UsernameApi
 import com.p2p.wallet.auth.interactor.AuthInteractor
 import com.p2p.wallet.auth.interactor.ReservingUsernameInteractor
+import com.p2p.wallet.auth.interactor.UsernameInteractor
 import com.p2p.wallet.auth.repository.AuthRemoteRepository
 import com.p2p.wallet.auth.repository.AuthRepository
 import com.p2p.wallet.auth.repository.UsernameRemoteRepository
@@ -39,6 +40,7 @@ object AuthModule {
 
         // reserving username
         factory { ReservingUsernameInteractor(get()) }
+        factory { UsernameInteractor(get(), get(), get()) }
         factory { ReservingUsernamePresenter(get()) } bind ReservingUsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
