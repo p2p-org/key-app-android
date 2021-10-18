@@ -42,7 +42,7 @@ class EnvironmentManager(
     }
 
     fun loadEnvironment(): Environment {
-        val url = sharedPreferences.getString(KEY_BASE_URL, Environment.SOLANA.endpoint).orEmpty()
+        val url = sharedPreferences.getString(KEY_BASE_URL, Environment.RPC_POOL.endpoint).orEmpty()
         return parse(url)
     }
 

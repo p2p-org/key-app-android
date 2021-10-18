@@ -1,11 +1,14 @@
 package com.p2p.wallet.auth.ui.username
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.text.style.StyleSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -114,16 +117,18 @@ class ReservingUsernameFragment :
     }
 
     override fun showUnavailableName(name: String) {
-        binding.usernameTextView.text = getString(R.string.auth_unavailable_name, name)
+        binding.usernameTextView.text = buildBoldText(getString(R.string.auth_unavailable_name, name), name.length)
         binding.usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
         binding.enterUserNameButton.isEnabled = false
+        binding.enterUserNameButton.text = getString(R.string.auth_enter_your_username)
         setTextColorGrey()
     }
 
     override fun showAvailableName(name: String) {
-        binding.usernameTextView.text = getString(R.string.auth_available_name, name)
+        binding.usernameTextView.text = buildBoldText(getString(R.string.auth_available_name, name), name.length)
         binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
         binding.enterUserNameButton.isEnabled = true
+        binding.enterUserNameButton.text = getString(R.string.auth_reserve)
         setTextColorGrey()
     }
 
@@ -161,6 +166,12 @@ class ReservingUsernameFragment :
         val start = span.indexOf(clickableText)
         val end = span.indexOf(clickableText) + clickableText.length
         span.setSpan(clickableNumber, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        return span
+    }
+
+    private fun buildBoldText(text: String, boldLength: Int): SpannableString {
+        val span = SpannableString(text)
+        span.setSpan(StyleSpan(Typeface.BOLD), 0, boldLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return span
     }
 
