@@ -9,7 +9,7 @@ import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 private const val KEY_USERNAME = "KEY_USERNAME"
 
-class ReservingUsernameInteractor(
+class UsernameInteractor(
     private val usernameRemoteRepository: UsernameRemoteRepository,
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider

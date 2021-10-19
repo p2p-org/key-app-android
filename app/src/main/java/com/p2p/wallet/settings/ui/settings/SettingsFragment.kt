@@ -14,6 +14,7 @@ import com.p2p.wallet.settings.ui.security.SecurityFragment
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
+import com.p2p.wallet.utils.toast
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
@@ -35,7 +36,6 @@ class SettingsFragment :
             toolbar.setNavigationOnClickListener {
                 popBackStack()
             }
-
             securityTextView.setOnClickListener {
                 replaceFragment(SecurityFragment.create())
             }
@@ -44,8 +44,14 @@ class SettingsFragment :
                 presenter.setZeroBalanceHidden(!hideZeroSwitch.isChecked)
             }
 
-            usernameTextView.setOnClickListener {
-                replaceFragment(ReservingUsernameFragment.create())
+            usernameView.setOnClickListener {
+                if (presenter.checkUsername()) {
+                    replaceFragment(ReservingUsernameFragment.create())
+                    toast(text = "exist")
+                } else {
+                    replaceFragment(ReservingUsernameFragment.create())
+                    toast(text = "not exist")
+                }
             }
 
             networkTextView.setOnClickListener {
@@ -75,5 +81,9 @@ class SettingsFragment :
             target = OnboardingFragment.create(),
             inclusive = true
         )
+    }
+
+    override fun showUsername(username: String?) {
+        binding.usernameValueTextView.text = username
     }
 }

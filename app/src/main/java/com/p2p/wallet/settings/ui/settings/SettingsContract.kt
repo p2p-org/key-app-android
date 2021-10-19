@@ -8,11 +8,13 @@ interface SettingsContract {
     interface View : MvpView {
         fun showHiddenBalance(isHidden: Boolean)
         fun showAuthorization()
+        fun showUsername(username: String?)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
         fun setZeroBalanceHidden(isHidden: Boolean)
         fun logout()
+        fun checkUsername(): Boolean
     }
 }
