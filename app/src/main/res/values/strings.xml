@@ -94,6 +94,10 @@
     <string name="auth_available_name">%1$s is available</string>
     <string name="auth_unavailable_name">%1$s is unavailable</string>
     <string name="auth_username">Username</string>
+    <string name="auth_your_p2p_username">Your P2P username allows you to receive any token within the Solana network even if it is not included in your wallet list.</string>
+    <string name="auth_copy">Copy</string>
+    <string name="auth_share">Share</string>
+    <string name="auth_save">Save</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">
