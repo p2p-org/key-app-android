@@ -1,36 +1,44 @@
 package com.p2p.wallet.auth.interactor
 
+import android.content.SharedPreferences
+import com.p2p.wallet.auth.api.CheckCaptchaResponse
+import com.p2p.wallet.auth.api.CheckUsernameResponse
+import com.p2p.wallet.auth.api.RegisterUsernameResponse
 import com.p2p.wallet.auth.repository.UsernameRemoteRepository
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import com.p2p.wallet.infrastructure.username.UsernameStorageContract
 
 private const val KEY_USERNAME = "KEY_USERNAME"
 
-class UsernameInteractor(
+class ReservingUsernameInteractor(
     private val usernameRemoteRepository: UsernameRemoteRepository,
-    private val usernameStorage: UsernameStorageContract,
+    private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun checkInStorageUsername(): String? {
-        return if (usernameStorage.contains(KEY_USERNAME))
-            usernameStorage.getString(KEY_USERNAME)
-        else
-            lookupUsername(tokenKeyProvider.publicKey)
+    suspend fun checkUsername(username: String): CheckUsernameResponse {
+        return usernameRemoteRepository.checkUsername(username)
     }
 
-    private suspend fun lookupUsername(owner: String): String? {
-        val userName = usernameRemoteRepository.lookup(owner)
+    suspend fun checkCaptcha(): CheckCaptchaResponse {
+        return usernameRemoteRepository.checkCaptcha()
+    }
 
-        var name = ""
-        return if (userName.isNotEmpty()) {
-            for (index in userName.indices) {
-                name = userName[0].name
-            }
+    suspend fun registerUsername(
+        username: String,
+        result: String?
+    ): RegisterUsernameResponse {
+        return usernameRemoteRepository.registerUsername(username, result)
+    }
 
-            name
-        } else {
-            null
-        }
+    fun checkUsernameExist(): String? {
+        return if (sharedPreferences.contains(KEY_USERNAME))
+            sharedPreferences.getString(KEY_USERNAME, null)
+        else
+            ""
+    }
+
+    suspend fun lookupUsername(owner: String): String? {
+        val userName = usernameRemoteRepository.lookup(owner).firstOrNull()
+        return userName?.name
     }
 }

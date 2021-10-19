@@ -9,8 +9,6 @@ import com.p2p.wallet.infrastructure.db.WalletDatabase
 import com.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_NAME
 import com.p2p.wallet.infrastructure.security.SecureStorage
 import com.p2p.wallet.infrastructure.security.SecureStorageContract
-import com.p2p.wallet.infrastructure.username.UsernameStorage
-import com.p2p.wallet.infrastructure.username.UsernameStorageContract
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import java.util.concurrent.Executors
@@ -42,6 +40,5 @@ object InfrastructureModule : InjectionModule {
         }
 
         factory { SecureStorage(get(), get()) } bind SecureStorageContract::class
-        factory { UsernameStorage(get()) } bind UsernameStorageContract::class
     }
 }
