@@ -5,7 +5,7 @@ import android.view.View
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import com.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import com.p2p.wallet.auth.ui.username.UsernameFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSettingsBinding
 import com.p2p.wallet.settings.ui.appearance.AppearanceFragment
@@ -14,7 +14,6 @@ import com.p2p.wallet.settings.ui.security.SecurityFragment
 import com.p2p.wallet.utils.popAndReplaceFragment
 import com.p2p.wallet.utils.popBackStack
 import com.p2p.wallet.utils.replaceFragment
-import com.p2p.wallet.utils.toast
 import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
@@ -46,11 +45,10 @@ class SettingsFragment :
 
             usernameView.setOnClickListener {
                 if (presenter.checkUsername()) {
-                    replaceFragment(ReservingUsernameFragment.create())
-                    toast(text = "exist")
+                    replaceFragment(UsernameFragment.create())
                 } else {
-                    replaceFragment(ReservingUsernameFragment.create())
-                    toast(text = "not exist")
+                    replaceFragment(UsernameFragment.create())
+//                    replaceFragment(ReservingUsernameFragment.create())
                 }
             }
 

@@ -18,6 +18,8 @@ import com.p2p.wallet.auth.ui.security.SecurityKeyContract
 import com.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import com.p2p.wallet.auth.ui.username.ReservingUsernameContract
 import com.p2p.wallet.auth.ui.username.ReservingUsernamePresenter
+import com.p2p.wallet.auth.ui.username.UsernameContract
+import com.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -40,6 +42,7 @@ object AuthModule {
         // reserving username
         factory { UsernameInteractor(get(), get(), get()) }
         factory { ReservingUsernamePresenter(get()) } bind ReservingUsernameContract.Presenter::class
+        factory { UsernamePresenter(get()) } bind UsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
             val api = retrofit.create(UsernameApi::class.java)
