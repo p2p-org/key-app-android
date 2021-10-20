@@ -41,4 +41,7 @@ class UsernameInteractor(
         val userName = usernameRemoteRepository.lookup(owner).firstOrNull()
         return userName?.name
     }
+
+    fun getName(): String? = sharedPreferences.getString(KEY_USERNAME, null)
+    fun getAddress(): String = tokenKeyProvider.publicKey
 }

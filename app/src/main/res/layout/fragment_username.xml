@@ -43,7 +43,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/usernameTextView"
+                    android:id="@+id/nameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -61,7 +61,7 @@
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <TextView
-                    android:id="@+id/publicKeyTextView"
+                    android:id="@+id/addressTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

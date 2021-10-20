@@ -1,5 +1,6 @@
 package com.p2p.wallet.auth.ui.username
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import com.p2p.wallet.R
@@ -33,5 +34,19 @@ class UsernameFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
         }
+
+        presenter.loadData()
+    }
+
+    override fun showName(name: String?) {
+        binding.nameTextView.text = name
+    }
+
+    override fun renderQr(qrBitmap: Bitmap?) {
+        binding.qrImageView.setImageBitmap(qrBitmap)
+    }
+
+    override fun showAddress(address: String?) {
+        binding.addressTextView.text = address
     }
 }
