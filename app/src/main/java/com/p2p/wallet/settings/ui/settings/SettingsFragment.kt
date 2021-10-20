@@ -24,6 +24,7 @@ class SettingsFragment :
 
     companion object {
         fun create() = SettingsFragment()
+        val TAG: String = SettingsFragment::class.java.simpleName
     }
 
     override val presenter: SettingsContract.Presenter by inject()
@@ -48,7 +49,7 @@ class SettingsFragment :
                 if (presenter.checkUsername())
                     replaceFragment(UsernameFragment.create())
                 else
-                    replaceFragment(ReservingUsernameFragment.create())
+                    replaceFragment(ReservingUsernameFragment.create(TAG))
             }
 
             networkTextView.setOnClickListener {

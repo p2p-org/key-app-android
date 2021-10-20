@@ -24,6 +24,7 @@ class SecurityKeyFragment :
 
     companion object {
         fun create() = SecurityKeyFragment()
+        val TAG: String = SecurityKeyFragment::class.java.simpleName
     }
 
     override val presenter: SecurityKeyContract.Presenter by inject()
@@ -76,8 +77,7 @@ class SecurityKeyFragment :
     }
 
     override fun navigateToCreatePin() {
-        replaceFragment(ReservingUsernameFragment.create())
-//        replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
+        replaceFragment(ReservingUsernameFragment.create(TAG))
     }
 
     override fun copyToClipboard(keys: List<String>) {

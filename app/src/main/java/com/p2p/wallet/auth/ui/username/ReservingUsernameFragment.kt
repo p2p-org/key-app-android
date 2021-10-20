@@ -28,7 +28,10 @@ import com.geetest.sdk.GT3Listener
 
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
+import com.p2p.wallet.auth.ui.security.SecurityKeyFragment
+import com.p2p.wallet.utils.args
 import com.p2p.wallet.utils.colorFromTheme
+import com.p2p.wallet.utils.withArgs
 import org.json.JSONObject
 
 class ReservingUsernameFragment :
@@ -37,7 +40,10 @@ class ReservingUsernameFragment :
     ReservingUsernameContract.View {
 
     companion object {
-        fun create() = ReservingUsernameFragment()
+        private const val OPENED_FROM: String = "opened_from"
+        fun create(fromClass: String) =
+            ReservingUsernameFragment()
+                .withArgs(OPENED_FROM to fromClass)
     }
 
     override val presenter: ReservingUsernameContract.Presenter by inject()
@@ -45,6 +51,8 @@ class ReservingUsernameFragment :
     private val binding: FragmentReservingUsernameBinding by viewBinding()
     private var gt3GeeTestUtils: GT3GeetestUtils? = null
     private var gt3ConfigBean: GT3ConfigBean? = null
+
+    private val openedFrom: String by args(OPENED_FROM)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,7 +155,10 @@ class ReservingUsernameFragment :
 
     override fun successRegisterName() {
         binding.progressView.visibility = View.GONE
-        navigateToPinCode()
+        when (openedFrom) {
+            SecurityKeyFragment.TAG -> navigateToPinCode()
+            else -> popBackStack()
+        }
     }
 
     override fun failRegisterName() {
