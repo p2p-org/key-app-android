@@ -1,6 +1,7 @@
 package com.p2p.wallet.auth.interactor
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.p2p.wallet.auth.api.CheckCaptchaResponse
 import com.p2p.wallet.auth.api.CheckUsernameResponse
 import com.p2p.wallet.auth.api.RegisterUsernameResponse
@@ -37,9 +38,10 @@ class UsernameInteractor(
             ""
     }
 
-    suspend fun lookupUsername(owner: String): String? {
+    suspend fun lookupUsername(owner: String) {
         val userName = usernameRemoteRepository.lookup(owner).firstOrNull()
-        return userName?.name
+        sharedPreferences.edit { putString(KEY_USERNAME, userName?.name) }
+//        sharedPreferences.edit { putString(KEY_USERNAME, "konstantink.p2p.sol") }
     }
 
     fun getName(): String? = sharedPreferences.getString(KEY_USERNAME, null)

@@ -17,6 +17,9 @@ class SettingsPresenter(
     override fun loadData() {
         val isHidden = settingsInteractor.isZerosHidden()
         view?.showHiddenBalance(isHidden)
+
+        val username = usernameInteractor.checkUsernameExist()
+        view?.showUsername(username)
     }
 
     override fun setZeroBalanceHidden(isHidden: Boolean) {
@@ -34,11 +37,6 @@ class SettingsPresenter(
 
     override fun checkUsername(): Boolean {
         val username = usernameInteractor.checkUsernameExist()
-        view?.showUsername(username)
-
-        if (username.isNullOrEmpty())
-            return false
-        else
-            return true
+        return !username.isNullOrEmpty()
     }
 }

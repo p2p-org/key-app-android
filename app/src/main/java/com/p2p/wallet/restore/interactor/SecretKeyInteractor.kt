@@ -3,6 +3,7 @@ package com.p2p.wallet.restore.interactor
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.p2p.wallet.R
+import com.p2p.wallet.auth.interactor.UsernameInteractor
 import com.p2p.wallet.auth.repository.AuthRepository
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.main.model.Token
@@ -24,7 +25,8 @@ class SecretKeyInteractor(
     private val userLocalRepository: UserLocalRepository,
     private val rpcRepository: RpcRepository,
     private val tokenProvider: TokenKeyProvider,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val interactor: UsernameInteractor,
 ) {
 
     suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<DerivableAccount> =
@@ -46,6 +48,8 @@ class SecretKeyInteractor(
             putString(KEY_PHRASES, keys.joinToString(","))
             putString(KEY_DERIVATION_PATH, path.stringValue)
         }
+
+        interactor.lookupUsername(tokenProvider.publicKey)
     }
 
     suspend fun generateSecretKeys(): List<String> =

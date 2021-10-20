@@ -5,6 +5,7 @@ import android.view.View
 import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
+import com.p2p.wallet.auth.ui.username.ReservingUsernameFragment
 import com.p2p.wallet.auth.ui.username.UsernameFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSettingsBinding
@@ -44,12 +45,10 @@ class SettingsFragment :
             }
 
             usernameView.setOnClickListener {
-                if (presenter.checkUsername()) {
+                if (presenter.checkUsername())
                     replaceFragment(UsernameFragment.create())
-                } else {
-                    replaceFragment(UsernameFragment.create())
-//                    replaceFragment(ReservingUsernameFragment.create())
-                }
+                else
+                    replaceFragment(ReservingUsernameFragment.create())
             }
 
             networkTextView.setOnClickListener {
