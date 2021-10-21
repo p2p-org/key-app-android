@@ -12,8 +12,8 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_anchor="@+id/constraintLayout"
         android:orientation="vertical"
+        app:layout_anchor="@+id/constraintLayout"
         app:layout_anchorGravity="center">
 
         <androidx.appcompat.widget.Toolbar
@@ -81,34 +81,64 @@
                     android:background="#F6F6F8"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:paddingHorizontal="10dp"
-                        android:id="@+id/textView2"
-                        android:drawablePadding="10dp"
+                    <Space
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
+                    <TextView
+                        android:id="@+id/copyTextView"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:drawablePadding="10dp"
                         android:gravity="center"
+                        android:paddingHorizontal="15dp"
                         android:text="@string/auth_copy"
+                        android:textColor="?colorAccentPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
                         app:drawableStartCompat="@drawable/ic_copy_blue" />
 
-                    <TextView
-                        android:id="@+id/textView3"
+                    <Space
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
+                    <TextView
+                        android:id="@+id/shareTextView"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:drawablePadding="10dp"
                         android:gravity="center"
+                        android:paddingHorizontal="15dp"
                         android:text="@string/auth_share"
+                        android:textColor="?colorAccentPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
                         app:drawableStartCompat="@drawable/ic_share_blue" />
 
-                    <TextView
-                        android:id="@+id/textView4"
+                    <Space
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
+                    <TextView
+                        android:id="@+id/saveTextView"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:drawablePadding="10dp"
                         android:gravity="center"
+                        android:paddingHorizontal="15dp"
                         android:text="@string/auth_save"
+                        android:textColor="?colorAccentPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
                         app:drawableStartCompat="@drawable/ic_save_blue" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
                 </LinearLayout>
 
@@ -118,7 +148,7 @@
 
         <TextView
             android:id="@+id/messageTextView"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"

@@ -33,6 +33,15 @@ class UsernameFragment :
                 toolbar.fit { Edge.TopArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
+
+            copyTextView.setOnClickListener {
+            }
+
+            shareTextView.setOnClickListener {
+            }
+
+            saveTextView.setOnClickListener {
+            }
         }
 
         presenter.loadData()
