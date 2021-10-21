@@ -8,7 +8,7 @@ import com.p2p.wallet.swap.model.orca.OrcaRoutes
 import com.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import com.p2p.wallet.swap.repository.OrcaSwapRepository
 
-class OrcaSwapPoolInteractor(
+class OrcaPoolInteractor(
     private val orcaSwapRepository: OrcaSwapRepository
 ) {
 

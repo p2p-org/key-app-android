@@ -124,7 +124,7 @@ data class OrcaPool(
                     feeRatioNumerator = feeDenominator * ownerTradeFeeDenominator
                     feeRatioDenominator =
                         feeDenominator * ownerTradeFeeDenominator -
-                            (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
+                        (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
                 }
 
                 val inputAmount = inputAmountLessFee * feeRatioNumerator / feeRatioDenominator
@@ -144,7 +144,7 @@ data class OrcaPool(
         return amount.toBigInteger()
     }
 
-    /// baseOutputAmount is the amount the user would receive if fees are included and slippage is excluded.
+    // / baseOutputAmount is the amount the user would receive if fees are included and slippage is excluded.
     fun getBaseOutputAmount(
         inputAmount: BigInteger
     ): BigInteger? {
@@ -174,7 +174,7 @@ data class OrcaPool(
         }
     }
 
-    /// price impact
+    // / price impact
     fun getPriceImpact(
         inputAmount: BigInteger,
         outputAmount: BigInteger
@@ -335,10 +335,10 @@ data class OrcaPool(
             return leverageVal / rVal
         }
 
-        /// Compute swap amount `y` in proportion to `x`
-        /// Solve for y:
-        /// y**2 + y * (sum' - (A*n**n - 1) * D / (A * n**n)) = D ** (n + 1) / (n ** (2 * n) * prod' * A)
-        /// y**2 + b*y = c
+        // Compute swap amount `y` in proportion to `x`
+        // Solve for y:
+        // y**2 + y * (sum' - (A*n**n - 1) * D / (A * n**n)) = D ** (n + 1) / (n ** (2 * n) * prod' * A)
+        // y**2 + b*y = c
         private fun _computeOutputAmount(leverage: BigInteger, newInputAmount: BigInteger, d: BigInteger): BigInteger {
             val c = d.pow(N_COINS + 1) / (newInputAmount * N_COINS_SQUARED.toBigInteger() * leverage)
 

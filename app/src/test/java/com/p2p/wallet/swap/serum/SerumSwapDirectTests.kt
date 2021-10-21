@@ -3,7 +3,7 @@ package com.p2p.wallet.swap.serum
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import com.p2p.wallet.swap.serum.utils.CoroutineTest
-import com.p2p.wallet.swap.serum.utils.DataInitializer
+import com.p2p.wallet.swap.serum.utils.SerumDataInitializer
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertNotNull
@@ -21,7 +21,7 @@ internal class SerumSwapDirectTests : CoroutineTest() {
         const val DEFAULT_SLIPPAGE = 0.005
     }
 
-    private val initializer = DataInitializer()
+    private val initializer = SerumDataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
 

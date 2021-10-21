@@ -7,7 +7,6 @@ import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
-import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey

@@ -4,8 +4,6 @@ import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.ui.transaction.TransactionInfo
-import com.p2p.wallet.swap.interactor.orca.OrcaAmountInteractor
-import com.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import com.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor2
 import com.p2p.wallet.swap.model.Slippage
 import com.p2p.wallet.swap.model.orca.OrcaAmountData
@@ -30,9 +28,7 @@ import kotlin.properties.Delegates
 class OrcaSwapPresenter(
     private val initialToken: Token.Active?,
     private val userInteractor: UserInteractor,
-    private val swapInteractor: OrcaSwapInteractor,
-    private val swapInteractor2: OrcaSwapInteractor2,
-    private val amountInteractor: OrcaAmountInteractor
+    private val swapInteractor: OrcaSwapInteractor2
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     private val poolPairs = mutableListOf<OrcaPoolsPair>()
@@ -59,7 +55,7 @@ class OrcaSwapPresenter(
                 setSourceToken(token)
                 view?.showSlippage(slippage)
 
-                swapInteractor2.load()
+                swapInteractor.load()
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading all data for swap")
                 view?.showErrorMessage(e)
@@ -79,9 +75,8 @@ class OrcaSwapPresenter(
 
     override fun loadTokensForDestinationSelection() {
         launch {
-            val orcaTokens = swapInteractor2.findPossibleDestinations(sourceToken.mintAddress)
-            val result = swapInteractor.mapTokensForDestination(orcaTokens)
-            view?.openDestinationSelection(result)
+            val orcaTokens = swapInteractor.findPossibleDestinations(sourceToken.mintAddress)
+            view?.openDestinationSelection(orcaTokens)
         }
     }
 
@@ -162,13 +157,13 @@ class OrcaSwapPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val data = swapInteractor2.swap(
+                val data = swapInteractor.swap(
                     fromWalletPubkey = sourceToken.publicKey,
                     toWalletPubkey = destinationToken?.publicKey,
                     bestPoolsPair = bestPoolPair,
                     amount = sourceAmount.toDoubleOrNull() ?: 0.toDouble(),
                     slippage = slippage.doubleValue,
-                    isSimulation = false
+                    isSimulation = true
                 )
 
                 handleResult(data)
@@ -193,7 +188,7 @@ class OrcaSwapPresenter(
     }
 
     private suspend fun searchTradablePairs(source: Token.Active, destination: Token) {
-        val pairs = swapInteractor2.getTradablePoolsPairs(source.mintAddress, destination.mintAddress)
+        val pairs = swapInteractor.getTradablePoolsPairs(source.mintAddress, destination.mintAddress)
         Timber.d("Loaded all tradable pool pairs. Size: ${pairs.size}")
         poolPairs.clear()
         poolPairs.addAll(pairs)
@@ -247,7 +242,7 @@ class OrcaSwapPresenter(
     private fun calculateAmount(source: Token.Active, destination: Token) {
         val inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
 
-        bestPoolPair = swapInteractor2.findBestPoolsPairForInputAmount(inputAmount, poolPairs) ?: return
+        bestPoolPair = swapInteractor.findBestPoolsPairForInputAmount(inputAmount, poolPairs) ?: return
         val estimatedOutputAmount = bestPoolPair.getOutputAmount(inputAmount) ?: return
 
         destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).toString()

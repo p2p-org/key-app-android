@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.crypto.DerivationPath
 
-class DataInitializer {
+class SerumDataInitializer {
 
     private lateinit var userTokens: List<Token.Active>
 

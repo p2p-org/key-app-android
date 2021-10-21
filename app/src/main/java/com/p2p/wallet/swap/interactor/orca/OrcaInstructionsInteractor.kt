@@ -21,11 +21,12 @@ class OrcaInstructionsInteractor(
 ) {
 
     suspend fun buildSourceInstructions(
-        owner: PublicKey,
+        source: PublicKey,
         pool: OrcaPool,
         amount: BigInteger,
         sourceMint: PublicKey,
-        destinationMint: PublicKey
+        destinationMint: PublicKey,
+        feePayer: PublicKey
     ): OrcaInstructionsData {
         val sourceTokenAccount = pool.tokenAccountA
 
@@ -43,7 +44,7 @@ class OrcaInstructionsInteractor(
         val fromAccount: PublicKey = if (sourceAccountInfo.isNative) {
             val newAccountPublicKey = newAccount.publicKey
             val createAccountInstruction = SystemProgram.createAccount(
-                fromPublicKey = owner,
+                fromPublicKey = source,
                 newAccountPublicKey = newAccountPublicKey,
                 lamports = amount.toLong() + balanceNeeded,
                 space = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong(),
@@ -53,7 +54,7 @@ class OrcaInstructionsInteractor(
                 TokenProgram.PROGRAM_ID,
                 newAccountPublicKey,
                 wrappedSolAccount,
-                owner
+                feePayer
             )
             instructions.add(createAccountInstruction)
             instructions.add(initializeAccountInstruction)
@@ -73,8 +74,8 @@ class OrcaInstructionsInteractor(
             val closeAccountInstruction = TokenProgram.closeAccountInstruction(
                 TokenProgram.PROGRAM_ID,
                 closeAccountPublicKey,
-                owner,
-                owner
+                feePayer,
+                feePayer
             )
             cleanupInstructions.add(closeAccountInstruction)
         }

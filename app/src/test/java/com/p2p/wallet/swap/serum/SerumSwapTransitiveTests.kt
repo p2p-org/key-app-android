@@ -4,7 +4,7 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import com.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import com.p2p.wallet.swap.serum.utils.CoroutineTest
-import com.p2p.wallet.swap.serum.utils.DataInitializer
+import com.p2p.wallet.swap.serum.utils.SerumDataInitializer
 import com.p2p.wallet.swap.serum.utils.SerumSwapData.FIDA
 import com.p2p.wallet.swap.serum.utils.SerumSwapData.SRMUSDCMarket
 import com.p2p.wallet.swap.serum.utils.SerumSwapData.USDC
@@ -23,7 +23,7 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
         const val DEFAULT_SLIPPAGE = 0.005
     }
 
-    private val initializer = DataInitializer()
+    private val initializer = SerumDataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor

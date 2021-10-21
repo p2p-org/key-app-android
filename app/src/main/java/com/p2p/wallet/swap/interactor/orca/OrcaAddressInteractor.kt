@@ -9,18 +9,20 @@ import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.TokenProgram
 import timber.log.Timber
 
+private const val SWAP_TAG = "OrcaSwap"
+
 class OrcaAddressInteractor(
     private val rpcRepository: RpcRepository,
     private val userLocalRepository: UserLocalRepository
 ) {
 
     suspend fun findAssociatedAddress(
-        ownerAddres: PublicKey,
+        ownerAddress: PublicKey,
         destinationMint: String
     ): OrcaAddressData {
         val associatedAddress = try {
             Timber.tag(SWAP_TAG).d("Searching for SPL token address")
-            findSplTokenAddress(destinationMint, ownerAddres)
+            findSplTokenAddress(destinationMint, ownerAddress)
         } catch (e: IllegalStateException) {
             Timber.tag(SWAP_TAG).d("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")

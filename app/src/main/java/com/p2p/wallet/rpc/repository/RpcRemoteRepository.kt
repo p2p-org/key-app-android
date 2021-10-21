@@ -73,6 +73,25 @@ class RpcRemoteRepository(
         return rpcApi.sendTransaction(rpcRequest).result
     }
 
+    override suspend fun simulateTransaction(transaction: Transaction): String {
+        val serializedTransaction = transaction.serialize()
+
+        val base64Trx = Base64
+            .encodeToString(serializedTransaction, Base64.DEFAULT)
+            .replace("\n", "")
+
+        val params = mutableListOf<Any>()
+
+        params.add(base64Trx)
+        params.add(RequestConfiguration(encoding = Encoding.BASE64))
+
+        val rpcRequest = RpcRequest("simulateTransaction", params)
+        val result = rpcApi.simulateTransaction(rpcRequest).result
+        if (result.value.error != null) {
+            throw IllegalStateException("Transaction simulation failed: ${result.value.linedLogs()}")
+        } else return ""
+    }
+
     override suspend fun sendTransaction(serializedTransaction: String): String {
         val base64Trx = serializedTransaction.replace("\n", "")
 
@@ -92,7 +111,10 @@ class RpcRemoteRepository(
         params.add(RequestConfiguration(encoding = Encoding.BASE64))
 
         val rpcRequest = RpcRequest("simulateTransaction", params)
-        return rpcApi.simulateTransaction(rpcRequest).result.logs?.firstOrNull().orEmpty()
+        val result = rpcApi.simulateTransaction(rpcRequest).result
+        if (result.value.error != null) {
+            throw IllegalStateException("Transaction simulation failed: ${result.value.error}")
+        } else return ""
     }
 
     override suspend fun getFees(commitment: String?): BigInteger {

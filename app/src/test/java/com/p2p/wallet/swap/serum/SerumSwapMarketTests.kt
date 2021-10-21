@@ -3,7 +3,7 @@ package com.p2p.wallet.swap.serum
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import com.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-import com.p2p.wallet.swap.serum.utils.DataInitializer
+import com.p2p.wallet.swap.serum.utils.SerumDataInitializer
 import com.p2p.wallet.swap.serum.utils.SerumSwapData.BTCUSDCMarket
 import com.p2p.wallet.swap.serum.utils.SerumSwapData.SOL
 import com.p2p.wallet.swap.serum.utils.SerumSwapData.SRM
@@ -24,7 +24,7 @@ import java.math.BigInteger
 @RunWith(RobolectricTestRunner::class)
 class SerumSwapMarketTests {
 
-    private val initializer = DataInitializer()
+    private val initializer = SerumDataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor
