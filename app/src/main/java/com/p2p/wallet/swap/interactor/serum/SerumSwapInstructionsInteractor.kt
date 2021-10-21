@@ -97,7 +97,7 @@ class SerumSwapInstructionsInteractor(
             instructions = mutableListOf(
                 SystemProgram.createAccount(
                     fromPublicKey = source,
-                    newAccountPublikkey = newAccount.publicKey,
+                    newAccountPublicKey = newAccount.publicKey,
                     lamports = amount.toLong() + minBalanceForRentExemption
                 ),
                 TokenProgram.initializeAccountInstruction(

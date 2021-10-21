@@ -8,7 +8,6 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 
 interface OrcaSwapRepository {
-    suspend fun loadPools(swapProgramId: String): List<OrcaPool>
     suspend fun loadTokenBalance(publicKey: PublicKey): AccountBalance
     suspend fun swap(
         account: Account,

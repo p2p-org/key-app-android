@@ -32,7 +32,7 @@ class OrcaSwapInteractor(
     suspend fun swap(
         request: OrcaSwapRequest
     ): OrcaSwapResult {
-        val accountAddressA = userInteractor.findAccountAddress(request.sourceMint.toBase58())
+        val sourceAccountAddress = userInteractor.findAccountAddress(request.sourceMint.toBase58())
 
         val owner = tokenKeyProvider.publicKey.toPublicKey()
         val associatedAddress = try {
@@ -51,7 +51,7 @@ class OrcaSwapInteractor(
         val signature = swapRepository.swap(
             Account(tokenKeyProvider.secretKey),
             request,
-            accountAddressA,
+            sourceAccountAddress,
             associatedAddress,
             !associatedNotNeeded
         )

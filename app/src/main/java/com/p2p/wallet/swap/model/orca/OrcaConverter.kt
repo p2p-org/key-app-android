@@ -50,6 +50,8 @@ object OrcaConverter {
             tokenAName = response.tokenAName,
             tokenBName = response.tokenBName,
             curveType = response.curveType,
+            amp = response.amp?.let { BigInteger.valueOf(it) },
+            programVersion = response.programVersion,
             deprecated = response.deprecated == true,
         )
 }

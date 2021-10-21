@@ -1,25 +1,99 @@
 package com.p2p.wallet.swap.interactor.orca
 
+import com.p2p.wallet.main.model.Token
+import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.model.orca.OrcaInstructionsData
+import com.p2p.wallet.swap.model.orca.OrcaPool
+import com.p2p.wallet.user.interactor.UserInteractor
+import com.p2p.wallet.utils.toPublicKey
+import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.kits.TokenTransaction
+import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import java.math.BigInteger
 
 class OrcaInstructionsInteractor(
-    private val orcaAddressInteractor: OrcaAddressInteractor
+    private val rpcRepository: RpcRepository,
+    private val orcaAddressInteractor: OrcaAddressInteractor,
+    private val userInteractor: UserInteractor
 ) {
+
+    suspend fun buildSourceInstructions(
+        owner: PublicKey,
+        pool: OrcaPool,
+        amount: BigInteger,
+        sourceMint: PublicKey,
+        destinationMint: PublicKey
+    ): OrcaInstructionsData {
+        val sourceTokenAccount = pool.tokenAccountA
+
+        val accountInfo = rpcRepository.getAccountInfo(sourceTokenAccount)
+        val sourceAccountInfo = TokenTransaction.getAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        val space = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong()
+        val balanceNeeded = rpcRepository.getMinimumBalanceForRentExemption(space)
+
+        val wrappedSolAccount = Token.WRAPPED_SOL_MINT.toPublicKey()
+
+        val instructions = mutableListOf<TransactionInstruction>()
+        val signers = mutableListOf<Account>()
+
+        val newAccount = Account()
+        val fromAccount: PublicKey = if (sourceAccountInfo.isNative) {
+            val newAccountPublicKey = newAccount.publicKey
+            val createAccountInstruction = SystemProgram.createAccount(
+                fromPublicKey = owner,
+                newAccountPublicKey = newAccountPublicKey,
+                lamports = amount.toLong() + balanceNeeded,
+                space = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong(),
+                programId = TokenProgram.PROGRAM_ID
+            )
+            val initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
+                TokenProgram.PROGRAM_ID,
+                newAccountPublicKey,
+                wrappedSolAccount,
+                owner
+            )
+            instructions.add(createAccountInstruction)
+            instructions.add(initializeAccountInstruction)
+            signers.add(newAccount)
+            newAccountPublicKey
+        } else {
+            userInteractor.findAccountAddress(sourceMint.toBase58())?.publicKey?.toPublicKey()
+                ?: throw IllegalStateException("Source token is not in user's tokens list")
+        }
+
+        val isWrappedSol = destinationMint.equals(wrappedSolAccount)
+        val isNeedCloseAccount = sourceAccountInfo.isNative || isWrappedSol
+        val closeAccountPublicKey = if (sourceAccountInfo.isNative) fromAccount else null
+
+        val cleanupInstructions = mutableListOf<TransactionInstruction>()
+        if (isNeedCloseAccount && closeAccountPublicKey != null) {
+            val closeAccountInstruction = TokenProgram.closeAccountInstruction(
+                TokenProgram.PROGRAM_ID,
+                closeAccountPublicKey,
+                owner,
+                owner
+            )
+            cleanupInstructions.add(closeAccountInstruction)
+        }
+
+        return OrcaInstructionsData(fromAccount, instructions, cleanupInstructions, signers)
+    }
 
     suspend fun buildDestinationInstructions(
         owner: PublicKey,
         destination: PublicKey?,
         destinationMint: PublicKey,
-        feePayer: PublicKey
+        feePayer: PublicKey,
+        closeAfterward: Boolean
     ): OrcaInstructionsData {
-        val transactions = mutableListOf<TransactionInstruction>()
+        val instructions = mutableListOf<TransactionInstruction>()
 
         // if destination is a registered non-native token account
         if (destination != null && !destination.equals(owner)) {
-            return OrcaInstructionsData(destination, transactions)
+            return OrcaInstructionsData(destination, instructions)
         }
 
         // if destination is a native account or is nil
@@ -35,10 +109,19 @@ class OrcaInstructionsInteractor(
                 feePayer
             )
 
-            transactions.add(createAccount)
+            instructions.add(createAccount)
         }
 
-        //todo: close account instruction if needed
-        return OrcaInstructionsData(addressData.associatedAddress, transactions)
+        val closeInstructions = mutableListOf<TransactionInstruction>()
+        if (closeAfterward) {
+            closeInstructions += TokenProgram.closeAccountInstruction(
+                TokenProgram.PROGRAM_ID,
+                addressData.associatedAddress,
+                owner,
+                owner
+            )
+        }
+
+        return OrcaInstructionsData(addressData.associatedAddress, instructions)
     }
 }

@@ -2,7 +2,6 @@ package com.p2p.wallet.swap.interactor.orca
 
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import com.p2p.wallet.rpc.repository.RpcRepository
-import com.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import com.p2p.wallet.swap.model.orca.OrcaPool
 import com.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import com.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
@@ -11,7 +10,6 @@ import com.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import com.p2p.wallet.swap.model.orca.OrcaRoute
 import com.p2p.wallet.swap.model.orca.OrcaRoutes
 import com.p2p.wallet.swap.model.orca.OrcaSwapInfo
-import com.p2p.wallet.swap.model.orca.OrcaSwapRequest
 import com.p2p.wallet.swap.model.orca.OrcaSwapResult
 import com.p2p.wallet.swap.model.orca.OrcaToken
 import com.p2p.wallet.swap.model.orca.OrcaTokens
@@ -25,6 +23,8 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.programs.TokenSwapProgram
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import timber.log.Timber
 import java.math.BigDecimal
@@ -33,7 +33,6 @@ import java.math.BigInteger
 class OrcaSwapInteractor2(
     private val orcaSwapRepository: OrcaSwapRepository,
     private val rpcRepository: RpcRepository,
-    private val serializationInteractor: SwapSerializationInteractor,
     private val orcaSwapInternalRepository: OrcaSwapInternalRepository,
     private val swapPoolInteractor: OrcaSwapPoolInteractor,
     private val orcaSwapInteractor: OrcaSwapInteractor,
@@ -175,7 +174,7 @@ class OrcaSwapInteractor2(
         slippage: Double,
         isSimulation: Boolean = false
     ): OrcaSwapResult {
-        val owner = tokenKeyProvider.publicKey
+        val owner = Account(tokenKeyProvider.secretKey)
 
         if (info == null || bestPoolsPair.isEmpty()) {
             throw IllegalStateException("Swap info missing or best pools pair is empty")
@@ -189,26 +188,15 @@ class OrcaSwapInteractor2(
 
         var feeRelayerFeePayer: PublicKey? = null // TODO: - Fee relayer
 
-        val tokens = info.tokens
         if (bestPoolsPair.size == 1) {
-            val pool = bestPoolsPair.first()
-            val fromMint = tokens[pool.tokenAName]?.mint?.toPublicKey()
-            val toMint = tokens[pool.tokenBName]?.mint?.toPublicKey()
-
-            if (fromMint == null || toMint == null) {
-                throw IllegalStateException("Pool mints not found")
-            }
-
-            val request = OrcaSwapRequest(
-                pool = pool,
-                slippage = slippage,
-                amount = lamports,
-                balanceA = pool.tokenABalance!!,
-                balanceB = pool.tokenBBalance!!,
-                sourceMint = fromMint,
-                destinationMint = toMint
+            return swapDirect(
+                pool = bestPoolsPair.first(),
+                tokens = info.tokens,
+                owner = owner,
+                lamports = lamports,
+                feeRelayerFeePayer = feeRelayerFeePayer,
+                slippage = slippage
             )
-            return orcaSwapInteractor.swap(request)
         } else {
             val pool0 = bestPoolsPair[0]
             val pool1 = bestPoolsPair[1]
@@ -225,11 +213,91 @@ class OrcaSwapInteractor2(
                 toWalletPubkey = toWalletPubkey,
                 feeRelayerFeePayer = feeRelayerFeePayer
             )
-
-
         }
 
         throw IllegalStateException("lala")
+    }
+
+    private suspend fun swapDirect(
+        pool: OrcaPool,
+        tokens: OrcaTokens,
+        owner: Account,
+        lamports: BigInteger,
+        feeRelayerFeePayer: PublicKey?,
+        slippage: Double
+    ): OrcaSwapResult {
+        val fromMint = tokens[pool.tokenAName]?.mint?.toPublicKey()
+        val toMint = tokens[pool.tokenBName]?.mint?.toPublicKey()
+
+        if (fromMint == null || toMint == null) {
+            throw IllegalStateException("Pool mints not found")
+        }
+
+        val signers = mutableListOf(owner)
+        val transaction = Transaction()
+        val sourceData = orcaInstructionsInteractor.buildSourceInstructions(
+            owner = owner.publicKey,
+            pool = pool,
+            amount = lamports,
+            sourceMint = fromMint,
+            destinationMint = toMint
+        )
+
+        sourceData.instructions.forEach { transaction.addInstruction(it) }
+        signers += sourceData.signers
+
+        val destinationData = orcaInstructionsInteractor.buildDestinationInstructions(
+            owner = owner.publicKey,
+            destination = null,
+            destinationMint = toMint,
+            feePayer = feeRelayerFeePayer ?: owner.publicKey,
+            closeAfterward = false
+        )
+
+        destinationData.instructions.forEach { transaction.addInstruction(it) }
+        signers += destinationData.signers
+
+        val userTransferAuthority = Account()
+        val approve = TokenProgram.approveInstruction(
+            TokenProgram.PROGRAM_ID,
+            sourceData.account,
+            userTransferAuthority.publicKey,
+            owner.publicKey,
+            lamports
+        )
+
+        val minAmountOut = pool.getMinimumAmountOut(lamports, slippage)
+            ?: throw IllegalStateException("Couldn't estimate minimum out amount")
+
+        val swap = TokenSwapProgram.swapInstruction(
+            pool.account,
+            pool.authority,
+            userTransferAuthority.publicKey,
+            sourceData.account,
+            pool.tokenAccountA,
+            pool.tokenAccountB,
+            destinationData.account,
+            pool.poolTokenMint,
+            pool.feeAccount,
+            pool.feeAccount,
+            TokenProgram.PROGRAM_ID,
+            pool.swapProgramId,
+            lamports,
+            minAmountOut
+        )
+        transaction.addInstruction(approve)
+        transaction.addInstruction(swap)
+
+        sourceData.closeInstructions.forEach { transaction.addInstruction(it) }
+        destinationData.closeInstructions.forEach { transaction.addInstruction(it) }
+
+        signers.add(userTransferAuthority)
+
+        val recentBlockhash = rpcRepository.getRecentBlockhash()
+        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+        transaction.sign(signers)
+        val signature = rpcRepository.sendTransaction(transaction)
+        return OrcaSwapResult.Success(signature)
     }
 
     // / Find routes for from and to token name, aka symbol
@@ -277,7 +345,8 @@ class OrcaSwapInteractor2(
             owner = owner,
             destination = null,
             destinationMint = intermediaryTokenMint,
-            feePayer = feeRelayerFeePayer ?: owner
+            feePayer = feeRelayerFeePayer ?: owner,
+            closeAfterward = true // todo:
         )
 
         intermediaryData.instructions.forEach { transaction.addInstruction(it) }
@@ -287,7 +356,8 @@ class OrcaSwapInteractor2(
             owner = owner,
             destination = toWalletPubkey?.toPublicKey(),
             destinationMint = destinationMint,
-            feePayer = feeRelayerFeePayer ?: owner
+            feePayer = feeRelayerFeePayer ?: owner,
+            closeAfterward = false // todo:
         )
 
         destinationData.instructions.forEach { transaction.addInstruction(it) }

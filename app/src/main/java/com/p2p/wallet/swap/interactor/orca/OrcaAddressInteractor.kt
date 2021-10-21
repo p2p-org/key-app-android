@@ -1,7 +1,7 @@
 package com.p2p.wallet.swap.interactor.orca
 
 import com.p2p.wallet.rpc.repository.RpcRepository
-import com.p2p.wallet.swap.model.OrcaAddressData
+import com.p2p.wallet.swap.model.orca.OrcaAddressData
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.PublicKey

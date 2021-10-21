@@ -44,7 +44,7 @@ class UserInteractor(
         mainLocalRepository.getTokensFlow()
 
     suspend fun getUserTokens(): List<Token.Active> =
-        mainLocalRepository.getTokens()
+        mainLocalRepository.getUserTokens()
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
@@ -57,7 +57,7 @@ class UserInteractor(
     }
 
     suspend fun findAccountAddress(mintAddress: String): Token.Active? =
-        mainLocalRepository.getTokens().firstOrNull {
+        mainLocalRepository.getUserTokens().firstOrNull {
             it.mintAddress == mintAddress
         }
 }

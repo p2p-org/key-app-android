@@ -4,7 +4,6 @@ import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.model.AccountBalance
-import com.p2p.wallet.swap.model.orca.OrcaPool
 import com.p2p.wallet.swap.model.orca.OrcaSwapRequest
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
@@ -18,12 +17,6 @@ class OrcaSwapRemoteRepository(
     private val rpcRepository: RpcRepository,
     private val environmentManager: EnvironmentManager
 ) : OrcaSwapRepository {
-
-    override suspend fun loadPools(swapProgramId: String): List<OrcaPool> {
-        val publicKey = PublicKey(swapProgramId)
-//        return rpcRepository.getPools(publicKey).map { PoolConverter.fromNetwork(it) }
-        return emptyList()
-    }
 
     override suspend fun loadTokenBalance(publicKey: PublicKey): AccountBalance {
         val response = rpcRepository.getTokenAccountBalance(publicKey)

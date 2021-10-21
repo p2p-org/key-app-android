@@ -39,6 +39,10 @@ data class OrcaPoolResponse(
     val tokenBName: String,
     @SerializedName("curveType")
     val curveType: String,
+    @SerializedName("programVersion")
+    val programVersion: Int?,
+    @SerializedName("amp")
+    val amp: Long?,
     @SerializedName("deprecated")
     val deprecated: Boolean?
 )

@@ -32,8 +32,8 @@ data class OrcaPool(
     val tokenBName: String,
     val curveType: String,
     val deprecated: Boolean = false,
-    val programVersion: BigInteger? = null,
-    val amp: BigInteger? = null,
+    val programVersion: Int?,
+    val amp: BigInteger?,
 
     // lazy load
     var tokenABalance: AccountBalance? = null,
@@ -140,8 +140,8 @@ data class OrcaPool(
         slippage: Double
     ): BigInteger? {
         val estimatedOutputAmount = getOutputAmount(inputAmount) ?: return null
-        val amount = estimatedOutputAmount.toDouble() * (1 - slippage)
-        return amount.toBigDecimal().toBigInteger()
+        val amount = BigDecimal(estimatedOutputAmount.toDouble() * (1 - slippage))
+        return amount.toBigInteger()
     }
 
     /// baseOutputAmount is the amount the user would receive if fees are included and slippage is excluded.

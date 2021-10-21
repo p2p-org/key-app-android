@@ -50,8 +50,6 @@ class TokenSwap {
 
         val tokenA = pool.tokenAccountA
         val tokenB = pool.tokenAccountB
-        val mintA = sourceMint
-        val mintB = destinationMint
 
         val accountInfo = getAccountInfo.invoke(tokenA)
         val tokenAInfo = TokenTransaction.getAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
@@ -81,13 +79,13 @@ class TokenSwap {
         } else {
             accountAddressA
         }
-        val isWrappedSol = mintB.equals(wrappedSolAccount)
+        val isWrappedSol = destinationMint.equals(wrappedSolAccount)
 
         if (shouldCreateAssociatedInstruction) {
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
                 TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                 TokenProgram.PROGRAM_ID,
-                mintB,
+                destinationMint,
                 associatedAddress,
                 owner.publicKey,
                 owner.publicKey

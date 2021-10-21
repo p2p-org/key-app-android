@@ -1,4 +1,4 @@
-package com.p2p.wallet.swap.model
+package com.p2p.wallet.swap.model.orca
 
 import org.p2p.solanaj.core.PublicKey
 
