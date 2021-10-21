@@ -2,7 +2,11 @@ package com.p2p.wallet.auth.ui.username
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.utils.edgetoedge.Edge
@@ -56,6 +60,14 @@ class UsernameFragment :
     }
 
     override fun showAddress(address: String?) {
-        binding.addressTextView.text = address
+        binding.addressTextView.text =
+            address?.let { buildPartTextColor(it, ContextCompat.getColor(requireContext(), R.color.accentPrimary)) }
+    }
+
+    private fun buildPartTextColor(text: String, color: Int): SpannableString {
+        val span = SpannableString(text)
+        span.setSpan(ForegroundColorSpan(color), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        span.setSpan(ForegroundColorSpan(color), text.length - 4, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return span
     }
 }
