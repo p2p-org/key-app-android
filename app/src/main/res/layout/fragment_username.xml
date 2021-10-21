@@ -8,11 +8,12 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_anchor="@+id/constraintLayout"
+        android:orientation="vertical"
         app:layout_anchorGravity="center">
 
         <androidx.appcompat.widget.Toolbar
@@ -81,10 +82,12 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:paddingHorizontal="10dp"
                         android:id="@+id/textView2"
+                        android:drawablePadding="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+
                         android:gravity="center"
                         android:text="@string/auth_copy"
                         app:drawableStartCompat="@drawable/ic_copy_blue" />
@@ -93,7 +96,7 @@
                         android:id="@+id/textView3"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+
                         android:gravity="center"
                         android:text="@string/auth_share"
                         app:drawableStartCompat="@drawable/ic_share_blue" />
@@ -102,7 +105,7 @@
                         android:id="@+id/textView4"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+
                         android:gravity="center"
                         android:text="@string/auth_save"
                         app:drawableStartCompat="@drawable/ic_save_blue" />
@@ -128,6 +131,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_view" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
