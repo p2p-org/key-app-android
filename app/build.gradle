@@ -24,6 +24,11 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
+
+        buildConfigField "String" , "rpcApiKey" ,  "\"$rpcApiKey\""
+        buildConfigField "String" , "transakApiKey" ,  "\"$transakApiKey\""
+        buildConfigField "String" , "transakApiSecret" ,  "\"$transakApiSecret\""
+        buildConfigField "String" , "comparePublicKey" ,  "\"$comparePublicKey\""
     }
 
     signingConfigs {

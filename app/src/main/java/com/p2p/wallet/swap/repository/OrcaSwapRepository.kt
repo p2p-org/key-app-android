@@ -17,4 +17,6 @@ interface OrcaSwapRepository {
         associatedAddress: PublicKey,
         shouldCreateAssociatedInstruction: Boolean
     ): String
+
+    suspend fun sendAndWait(serializedTransaction: String, onConfirmed: () -> Unit)
 }

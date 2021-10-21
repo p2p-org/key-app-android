@@ -7,7 +7,7 @@ import com.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class OrcaSwapAmountInteractor(
+class OrcaAmountInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -22,7 +22,7 @@ class OrcaSwapAmountInteractor(
         val tokenSource = tokenKeyProvider.publicKey.toPublicKey()
         val isReverse = pool.tokenAccountB.equals(tokenSource)
 
-        val feeRatio = BigDecimal(pool.tradeFeeNumerator).divide(BigDecimal(pool.tradeFeeDenominator))
+        val feeRatio = BigDecimal(pool.feeNumerator).divide(BigDecimal(pool.feeDenominator))
 
         val firstAmountInPool = if (isReverse) tokenBBalance.amount else tokenABalance.amount
         val secondAmountInPool = if (isReverse) tokenABalance.amount else tokenBBalance.amount
@@ -50,8 +50,8 @@ class OrcaSwapAmountInteractor(
         tokenBBalance: AccountBalance,
         pool: OrcaPool
     ): BigInteger {
-        val feeDenominator = pool.tradeFeeDenominator
-        val feeNumerator = if (includeFees) pool.tradeFeeNumerator else BigInteger.ZERO
+        val feeDenominator = pool.feeDenominator
+        val feeNumerator = if (includeFees) pool.feeNumerator else BigInteger.ZERO
 
         val amountA = tokenABalance.amount
         val amountB = tokenBBalance.amount
@@ -83,8 +83,8 @@ class OrcaSwapAmountInteractor(
         tokenABalance: AccountBalance,
         tokenBBalance: AccountBalance
     ): BigInteger {
-        val feeDenominator = pool.tradeFeeDenominator
-        val feeNumerator = pool.tradeFeeNumerator
+        val feeDenominator = pool.feeDenominator
+        val feeNumerator = pool.feeNumerator
 
         val aBalance = tokenABalance.amount
         val bBalance = tokenBBalance.amount

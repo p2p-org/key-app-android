@@ -32,7 +32,7 @@ object UserModule : InjectionModule {
 
         single(named(CRYPTO_COMPARE_QUALIFIER)) {
             val client = createOkHttpClient()
-                .addInterceptor(CompareTokenInterceptor(get()))
+                .addInterceptor(CompareTokenInterceptor())
                 .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("CryptoCompare")) }
                 .build()
 
@@ -45,7 +45,6 @@ object UserModule : InjectionModule {
 
         single {
             val client = createOkHttpClient()
-                .addInterceptor(CompareTokenInterceptor(get()))
                 .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("SolanaApi")) }
                 .build()
             Retrofit.Builder()

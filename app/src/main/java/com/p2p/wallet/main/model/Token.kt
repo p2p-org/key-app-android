@@ -13,6 +13,7 @@ import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 sealed class Token constructor(
+    open val publicKey: String?,
     open val tokenSymbol: String,
     open val decimals: Int,
     open val mintAddress: String,
@@ -26,7 +27,7 @@ sealed class Token constructor(
 
     @Parcelize
     data class Active(
-        val publicKey: String,
+        override val publicKey: String,
         val price: BigDecimal,
         val total: BigDecimal,
         val visibility: TokenVisibility,
@@ -41,6 +42,7 @@ sealed class Token constructor(
         override val serumV3Usdt: String?,
         override val isWrapped: Boolean
     ) : Token(
+        publicKey = publicKey,
         tokenSymbol = tokenSymbol,
         decimals = decimals,
         mintAddress = mintAddress,
@@ -99,6 +101,7 @@ sealed class Token constructor(
         override val serumV3Usdt: String?,
         override val isWrapped: Boolean
     ) : Token(
+        publicKey = null,
         tokenSymbol = tokenSymbol,
         decimals = decimals,
         mintAddress = mintAddress,

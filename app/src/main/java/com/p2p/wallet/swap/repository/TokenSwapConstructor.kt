@@ -16,7 +16,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.ArrayList
 
-class TokenSwap {
+class TokenSwapConstructor {
 
     @Throws(RpcException::class)
     suspend fun swap(
@@ -41,17 +41,12 @@ class TokenSwap {
         val transaction = Transaction()
 
         // swap type
-//        val source = pool.tokenAccountA
-//        val tokenA = if (source.equals(pool.tokenAccountA)) pool.tokenAccountA else pool.tokenAccountB
-//        val isTokenAEqTokenAccountA = tokenA.equals(pool.tokenAccountA)
-//        val tokenB = if (isTokenAEqTokenAccountA) pool.tokenAccountB else pool.tokenAccountA
-//        val mintA = if (isTokenAEqTokenAccountA) sourceMint else destinationMint
-//        val mintB = if (isTokenAEqTokenAccountA) destinationMint else sourceMint
-
-        val tokenA = pool.tokenAccountA
-        val tokenB = pool.tokenAccountB
-        val mintA = sourceMint
-        val mintB = destinationMint
+        val source = pool.tokenAccountA
+        val tokenA = if (source.equals(pool.tokenAccountA)) pool.tokenAccountA else pool.tokenAccountB
+        val isTokenAEqTokenAccountA = tokenA.equals(pool.tokenAccountA)
+        val tokenB = if (isTokenAEqTokenAccountA) pool.tokenAccountB else pool.tokenAccountA
+        val mintA = if (isTokenAEqTokenAccountA) sourceMint else destinationMint
+        val mintB = if (isTokenAEqTokenAccountA) destinationMint else sourceMint
 
         val accountInfo = getAccountInfo.invoke(tokenA)
         val tokenAInfo = TokenTransaction.getAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)

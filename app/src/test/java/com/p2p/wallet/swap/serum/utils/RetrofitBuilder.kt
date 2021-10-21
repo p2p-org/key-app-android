@@ -1,4 +1,4 @@
-package com.p2p.wallet.swapserum.utils
+package com.p2p.wallet.swap.serum.utils
 
 import com.google.gson.Gson
 import com.p2p.wallet.infrastructure.network.NetworkModule

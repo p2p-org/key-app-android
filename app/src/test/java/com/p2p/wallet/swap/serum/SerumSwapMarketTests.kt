@@ -1,15 +1,15 @@
-package com.p2p.wallet.swapserum
+package com.p2p.wallet.swap.serum
 
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import com.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-import com.p2p.wallet.swapserum.utils.DataInitializer
-import com.p2p.wallet.swapserum.utils.SerumSwapData.BTCUSDCMarket
-import com.p2p.wallet.swapserum.utils.SerumSwapData.SOL
-import com.p2p.wallet.swapserum.utils.SerumSwapData.SRM
-import com.p2p.wallet.swapserum.utils.SerumSwapData.SRMUSDCMarket
-import com.p2p.wallet.swapserum.utils.SerumSwapData.USDC
-import com.p2p.wallet.swapserum.utils.SerumSwapData.USDT
+import com.p2p.wallet.swap.serum.utils.DataInitializer
+import com.p2p.wallet.swap.serum.utils.SerumSwapData.BTCUSDCMarket
+import com.p2p.wallet.swap.serum.utils.SerumSwapData.SOL
+import com.p2p.wallet.swap.serum.utils.SerumSwapData.SRM
+import com.p2p.wallet.swap.serum.utils.SerumSwapData.SRMUSDCMarket
+import com.p2p.wallet.swap.serum.utils.SerumSwapData.USDC
+import com.p2p.wallet.swap.serum.utils.SerumSwapData.USDT
 import com.p2p.wallet.utils.scaleMedium
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

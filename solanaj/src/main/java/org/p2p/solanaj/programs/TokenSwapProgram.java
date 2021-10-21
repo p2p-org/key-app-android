@@ -17,6 +17,14 @@ public class TokenSwapProgram {
     public static final int INSTRUCTION_INDEX_DEPOSIT = 2;
     public static final int INSTRUCTION_INDEX_WITHDRAW = 3;
 
+    public static String getSwapProgramId(int version) {
+        if (version == 2) {
+            return "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP";
+        } else {
+            return "9qvG1zUp8xF1Bi4m6UdRNby1BAAuaDrUxSpv4CmRRMjL";
+        }
+    }
+
     public static TransactionInstruction initializeSwapInstruction(PublicKey tokenSwapAccount, PublicKey authority,
                                                                    PublicKey tokenAccountA, PublicKey tokenAccountB, PublicKey tokenPool, PublicKey feeAccount,
                                                                    PublicKey tokenAccountPool, PublicKey tokenProgramId, PublicKey swapProgramId, int nonce, int curveType,

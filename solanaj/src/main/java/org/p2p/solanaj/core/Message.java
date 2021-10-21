@@ -1,12 +1,11 @@
 package org.p2p.solanaj.core;
 
+import org.bitcoinj.core.Base58;
+import org.p2p.solanaj.utils.ShortvecEncoding;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bitcoinj.core.Base58;
-
-import org.p2p.solanaj.utils.ShortvecEncoding;
 
 public class Message {
     private class MessageHeader {
@@ -17,7 +16,7 @@ public class Message {
         byte numReadonlyUnsignedAccounts = 0;
 
         byte[] toByteArray() {
-            return new byte[] { numRequiredSignatures, numReadonlySignedAccounts, numReadonlyUnsignedAccounts };
+            return new byte[]{numRequiredSignatures, numReadonlySignedAccounts, numReadonlyUnsignedAccounts};
         }
     }
 

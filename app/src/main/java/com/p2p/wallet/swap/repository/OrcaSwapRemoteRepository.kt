@@ -1,29 +1,33 @@
 package com.p2p.wallet.swap.repository
 
+import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.rpc.repository.RpcRepository
 import com.p2p.wallet.swap.model.AccountBalance
 import com.p2p.wallet.swap.model.orca.OrcaPool
 import com.p2p.wallet.swap.model.orca.OrcaSwapRequest
-import com.p2p.wallet.swap.model.orca.PoolConverter
 import com.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.ws.NotificationEventListener
+import org.p2p.solanaj.ws.SubscriptionWebSocketClient
 
 class OrcaSwapRemoteRepository(
-    private val rpcRepository: RpcRepository
+    private val rpcRepository: RpcRepository,
+    private val environmentManager: EnvironmentManager
 ) : OrcaSwapRepository {
 
     override suspend fun loadPools(swapProgramId: String): List<OrcaPool> {
         val publicKey = PublicKey(swapProgramId)
-        return rpcRepository.getPools(publicKey).map { PoolConverter.fromNetwork(it) }
+//        return rpcRepository.getPools(publicKey).map { PoolConverter.fromNetwork(it) }
+        return emptyList()
     }
 
     override suspend fun loadTokenBalance(publicKey: PublicKey): AccountBalance {
         val response = rpcRepository.getTokenAccountBalance(publicKey)
-        return AccountBalance(publicKey, response.amount)
+        return AccountBalance(publicKey, response.amount, response.value.decimals)
     }
 
     override suspend fun swap(
@@ -42,6 +46,8 @@ class OrcaSwapRemoteRepository(
             amountIn = request.amount,
             balanceA = request.balanceA,
             balanceB = request.balanceB,
+            sourceMint = request.sourceMint,
+            destinationMint = request.destinationMint,
             wrappedSolAccount = Token.WRAPPED_SOL_MINT.toPublicKey(),
             accountAddressA = accountA?.publicKey?.toPublicKey(),
             associatedAddress = associatedAddress,
@@ -53,5 +59,15 @@ class OrcaSwapRemoteRepository(
                 rpcRepository.sendTransaction(transaction)
             }
         )
+    }
+
+    override suspend fun sendAndWait(serializedTransaction: String, onConfirmed: () -> Unit) {
+        val signature = rpcRepository.sendTransaction(serializedTransaction)
+
+        val listener = NotificationEventListener { onConfirmed() }
+
+        val endpoint = environmentManager.loadEnvironment().endpoint
+        val wssClient = SubscriptionWebSocketClient.getInstance(endpoint)
+        wssClient.signatureSubscribe(signature, listener)
     }
 }

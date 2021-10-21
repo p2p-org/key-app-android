@@ -1,13 +1,13 @@
 package org.p2p.solanaj.core;
 
+import org.bitcoinj.core.Base58;
+import org.p2p.solanaj.utils.ShortvecEncoding;
+import org.p2p.solanaj.utils.TweetNaclFast;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.bitcoinj.core.Base58;
-import org.p2p.solanaj.utils.ShortvecEncoding;
-import org.p2p.solanaj.utils.TweetNaclFast;
 
 public class Transaction {
 
@@ -27,6 +27,7 @@ public class Transaction {
         message.addInstruction(instruction);
         return this;
     }
+
     public Transaction addInstructions(List<TransactionInstruction> instructions) {
         for (TransactionInstruction instruction : instructions) {
             message.addInstruction(instruction);

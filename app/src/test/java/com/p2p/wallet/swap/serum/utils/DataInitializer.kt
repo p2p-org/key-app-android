@@ -1,4 +1,4 @@
-package com.p2p.wallet.swapserum.utils
+package com.p2p.wallet.swap.serum.utils
 
 import android.content.Context
 import android.content.SharedPreferences

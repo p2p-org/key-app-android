@@ -1,4 +1,4 @@
-package com.p2p.wallet.swapserum
+package com.p2p.wallet.swap.serum
 
 import android.util.Base64
 import com.p2p.wallet.utils.toPublicKey

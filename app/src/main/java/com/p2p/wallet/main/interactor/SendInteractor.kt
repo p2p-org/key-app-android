@@ -6,12 +6,12 @@ import com.p2p.wallet.main.model.Token
 import com.p2p.wallet.main.model.TransactionResult
 import com.p2p.wallet.rpc.repository.FeeRelayerRepository
 import com.p2p.wallet.rpc.repository.RpcRepository
+import com.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
 import com.p2p.wallet.user.repository.UserLocalRepository
 import com.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
-import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import timber.log.Timber
@@ -20,7 +20,7 @@ import java.math.BigInteger
 class SendInteractor(
     private val rpcRepository: RpcRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
-    private val userLocalRepository: UserLocalRepository,
+    private val addressInteractor: OrcaAddressInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -92,7 +92,7 @@ class SendInteractor(
 
         val address = try {
             Timber.tag(SEND_TAG).d("Searching for SPL token address")
-            findSplTokenAddress(token.mintAddress, destinationAddress)
+            addressInteractor.findSplTokenAddress(token.mintAddress, destinationAddress)
         } catch (e: IllegalStateException) {
             Timber.tag(SEND_TAG).d("Searching address failed, address is wrong")
             return TransactionResult.WrongWallet
@@ -168,40 +168,5 @@ class SendInteractor(
         )
 
         return TransactionResult.Success(transactionId)
-    }
-
-    @Throws(IllegalStateException::class)
-    private suspend fun findSplTokenAddress(mintAddress: String, destinationAddress: PublicKey): PublicKey {
-        val accountInfo = rpcRepository.getAccountInfo(destinationAddress)
-
-        // detect if it is a direct token address
-        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
-        if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
-            Timber.tag(SEND_TAG).d("Token by mint was found. Continuing with direct address")
-            return destinationAddress
-        }
-
-        // create associated token address
-        val value = accountInfo?.value
-        if (value == null || value.data?.get(0).isNullOrEmpty()) {
-            Timber.tag(SEND_TAG).d("No information found, creating associated token address")
-            return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
-        }
-
-        // detect if destination address is already a SPLToken address
-        if (info?.mint == destinationAddress) {
-            Timber.tag(SEND_TAG).d("Destination address is already an SPL Token address, returning")
-            return destinationAddress
-        }
-
-        // detect if destination address is a SOL address
-        if (info?.owner?.toBase58() == TokenProgram.PROGRAM_ID.toBase58()) {
-            Timber.tag(SEND_TAG).d("Destination address is SOL address. Getting the associated token address")
-
-            // create associated token address
-            return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
-        }
-
-        throw IllegalStateException("Wallet address is not valid")
     }
 }
