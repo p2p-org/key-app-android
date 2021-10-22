@@ -155,10 +155,7 @@ class ReservingUsernameFragment :
 
     override fun successRegisterName() {
         binding.progressView.visibility = View.GONE
-        when (openedFrom) {
-            SecurityKeyFragment.TAG -> navigateToPinCode()
-            else -> popBackStack()
-        }
+        finishNavigation()
     }
 
     override fun failRegisterName() {
@@ -171,13 +168,20 @@ class ReservingUsernameFragment :
         val span = SpannableString(message)
         val clickableNumber = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                navigateToPinCode()
+                finishNavigation()
             }
         }
         val start = span.indexOf(clickableText)
         val end = span.indexOf(clickableText) + clickableText.length
         span.setSpan(clickableNumber, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
         return span
+    }
+
+    private fun finishNavigation() {
+        when (openedFrom) {
+            SecurityKeyFragment.TAG -> navigateToPinCode()
+            else -> popBackStack()
+        }
     }
 
     private fun buildBoldText(text: String, boldLength: Int): SpannableString {
