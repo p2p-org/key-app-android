@@ -1,17 +1,21 @@
 package com.p2p.wallet.auth.interactor
 
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import androidx.core.content.edit
 import com.p2p.wallet.auth.api.CheckCaptchaResponse
 import com.p2p.wallet.auth.api.CheckUsernameResponse
 import com.p2p.wallet.auth.api.RegisterUsernameResponse
+import com.p2p.wallet.auth.repository.FileLocalRepository
 import com.p2p.wallet.auth.repository.UsernameRepository
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import java.io.File
 
 private const val KEY_USERNAME = "KEY_USERNAME"
 
 class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
+    private val fileLocalRepository: FileLocalRepository,
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -39,5 +43,8 @@ class UsernameInteractor(
     }
 
     fun getName(): String? = sharedPreferences.getString(KEY_USERNAME, null)
+
     fun getAddress(): String = tokenKeyProvider.publicKey
+
+    suspend fun saveQr(name: String, bitmap: Bitmap): File = fileLocalRepository.saveQr(name, bitmap)
 }

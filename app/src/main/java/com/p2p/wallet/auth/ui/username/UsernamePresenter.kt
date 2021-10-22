@@ -2,7 +2,6 @@ package com.p2p.wallet.auth.ui.username
 
 import android.graphics.Bitmap
 import com.p2p.wallet.auth.interactor.UsernameInteractor
-import com.p2p.wallet.auth.repository.FileLocalRepository
 import com.p2p.wallet.common.mvp.BasePresenter
 
 import com.p2p.wallet.qr.interactor.QrCodeInteractor
@@ -12,9 +11,8 @@ import timber.log.Timber
 import java.util.concurrent.CancellationException
 
 class UsernamePresenter(
-    private val interactor: UsernameInteractor,
-    private val qrCodeInteractor: QrCodeInteractor,
-    private val fileLocalRepository: FileLocalRepository,
+    private val usernameInteractor: UsernameInteractor,
+    private val qrCodeInteractor: QrCodeInteractor
 
 ) : BasePresenter<UsernameContract.View>(), UsernameContract.Presenter {
 
@@ -23,8 +21,8 @@ class UsernamePresenter(
     private var qrBitmap: Bitmap? = null
 
     override fun loadData() {
-        val address = interactor.getAddress()
-        view?.showName(interactor.getName())
+        val address = usernameInteractor.getAddress()
+        view?.showName(usernameInteractor.getName())
         generateQrCode(address)
         view?.showAddress(address)
     }
@@ -49,7 +47,7 @@ class UsernamePresenter(
     override fun saveQr(name: String) {
         launch {
             qrBitmap?.let {
-                fileLocalRepository.saveQr(name, it)
+                usernameInteractor.saveQr(name, it)
                 view?.saveSuccess()
             }
         }

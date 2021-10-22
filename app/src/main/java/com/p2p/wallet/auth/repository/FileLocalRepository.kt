@@ -2,7 +2,6 @@ package com.p2p.wallet.auth.repository
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -14,7 +13,6 @@ class FileLocalRepository(context: Context) : FileRepository {
 
     init {
         val rootFolder = File(context.cacheDir.toString() + File.separator + "p2p")
-        Log.i("wdwd", context.cacheDir.toString() + File.separator + "p2p")
         qrFolder = File(rootFolder, "qr")
     }
 

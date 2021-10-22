@@ -43,9 +43,9 @@ object AuthModule {
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
 
         // reserving username
-        factory { UsernameInteractor(get(), get(), get()) }
+        factory { UsernameInteractor(get(), get(), get(), get()) }
         factory { ReservingUsernamePresenter(get(), get()) } bind ReservingUsernameContract.Presenter::class
-        factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
+        factory { UsernamePresenter(get(), get()) } bind UsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
             val api = retrofit.create(UsernameApi::class.java)
