@@ -9,6 +9,7 @@ import com.p2p.wallet.R
 import com.p2p.wallet.auth.api.UsernameApi
 import com.p2p.wallet.auth.interactor.UsernameInteractor
 import com.p2p.wallet.auth.repository.AuthRemoteRepository
+import com.p2p.wallet.auth.repository.FileLocalRepository
 import com.p2p.wallet.auth.repository.UsernameRemoteRepository
 import com.p2p.wallet.infrastructure.db.WalletDatabase
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
@@ -74,6 +75,7 @@ class DataInitializer {
     private lateinit var userLocalRepository: UserLocalRepository
     private lateinit var userInteractor: UserInteractor
     private lateinit var usernameInteractor: UsernameInteractor
+    private lateinit var fileLocalRepository: FileLocalRepository
 
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor
 
@@ -135,8 +137,11 @@ class DataInitializer {
             tokenKeyProvider = tokenKeyProvider
         )
 
+        fileLocalRepository = FileLocalRepository(context)
+
         usernameInteractor = UsernameInteractor(
             usernameRepository = usernameRemoteRepository,
+            fileLocalRepository = fileLocalRepository,
             sharedPreferences = sharedPreferences,
             tokenKeyProvider = tokenKeyProvider
 
