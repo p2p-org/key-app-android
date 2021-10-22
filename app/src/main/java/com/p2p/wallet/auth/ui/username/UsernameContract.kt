@@ -14,5 +14,6 @@ interface UsernameContract {
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
+        fun saveQr(name: String)
     }
 }

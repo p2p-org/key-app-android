@@ -1,5 +1,6 @@
 package com.p2p.wallet.auth.ui.username
 
+import android.Manifest
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.SpannableString
@@ -18,6 +19,12 @@ import com.p2p.wallet.databinding.FragmentUsernameBinding
 import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.shareText
+import androidx.core.app.ActivityCompat
+
+import android.content.pm.PackageManager
+
+import android.os.Build
+import android.util.Log
 
 class UsernameFragment :
     BaseMvpFragment<UsernameContract.View,
@@ -49,6 +56,8 @@ class UsernameFragment :
             }
 
             saveTextView.setOnClickListener {
+
+                presenter.saveQr("testQR")
             }
         }
 

@@ -6,6 +6,8 @@ import com.p2p.wallet.auth.interactor.AuthInteractor
 import com.p2p.wallet.auth.interactor.UsernameInteractor
 import com.p2p.wallet.auth.repository.AuthRemoteRepository
 import com.p2p.wallet.auth.repository.AuthRepository
+import com.p2p.wallet.auth.repository.FileLocalRepository
+import com.p2p.wallet.auth.repository.FileRepository
 import com.p2p.wallet.auth.repository.UsernameRemoteRepository
 import com.p2p.wallet.auth.repository.UsernameRepository
 import com.p2p.wallet.auth.ui.biometric.BiometricContract
@@ -34,6 +36,7 @@ object AuthModule {
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
+        factory { FileLocalRepository(get()) } bind FileRepository::class
         factory { SecurityKeyPresenter(get()) } bind SecurityKeyContract.Presenter::class
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class
@@ -42,7 +45,7 @@ object AuthModule {
         // reserving username
         factory { UsernameInteractor(get(), get(), get()) }
         factory { ReservingUsernamePresenter(get(), get()) } bind ReservingUsernameContract.Presenter::class
-        factory { UsernamePresenter(get(), get()) } bind UsernameContract.Presenter::class
+        factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
             val api = retrofit.create(UsernameApi::class.java)

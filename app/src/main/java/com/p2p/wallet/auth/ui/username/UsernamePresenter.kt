@@ -2,6 +2,7 @@ package com.p2p.wallet.auth.ui.username
 
 import android.graphics.Bitmap
 import com.p2p.wallet.auth.interactor.UsernameInteractor
+import com.p2p.wallet.auth.repository.FileLocalRepository
 import com.p2p.wallet.common.mvp.BasePresenter
 
 import com.p2p.wallet.qr.interactor.QrCodeInteractor
@@ -12,7 +13,9 @@ import java.util.concurrent.CancellationException
 
 class UsernamePresenter(
     private val interactor: UsernameInteractor,
-    private val qrCodeInteractor: QrCodeInteractor
+    private val qrCodeInteractor: QrCodeInteractor,
+    private val fileLocalRepository: FileLocalRepository,
+
 ) : BasePresenter<UsernameContract.View>(), UsernameContract.Presenter {
 
     private var qrJob: Job? = null
@@ -40,6 +43,12 @@ class UsernamePresenter(
                 Timber.e(e, "Failed to generate qr bitmap")
                 view?.showErrorMessage()
             }
+        }
+    }
+
+    override fun saveQr(name: String) {
+        launch {
+            qrBitmap?.let { fileLocalRepository.saveQr(name, it) }
         }
     }
 }
