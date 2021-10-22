@@ -98,6 +98,7 @@
     <string name="auth_copy">Copy</string>
     <string name="auth_share">Share</string>
     <string name="auth_save">Save</string>
+    <string name="auth_saved">Saved!</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">

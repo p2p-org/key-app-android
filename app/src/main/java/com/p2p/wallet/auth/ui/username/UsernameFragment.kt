@@ -1,6 +1,5 @@
 package com.p2p.wallet.auth.ui.username
 
-import android.Manifest
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.SpannableString
@@ -19,12 +18,7 @@ import com.p2p.wallet.databinding.FragmentUsernameBinding
 import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.shareText
-import androidx.core.app.ActivityCompat
-
-import android.content.pm.PackageManager
-
-import android.os.Build
-import android.util.Log
+import com.p2p.wallet.utils.toast
 
 class UsernameFragment :
     BaseMvpFragment<UsernameContract.View,
@@ -49,6 +43,7 @@ class UsernameFragment :
 
             copyTextView.setOnClickListener {
                 requireActivity().copyToClipBoard(addressTextView.text.toString())
+                copySuccess()
             }
 
             shareTextView.setOnClickListener {
@@ -56,8 +51,7 @@ class UsernameFragment :
             }
 
             saveTextView.setOnClickListener {
-
-                presenter.saveQr("testQR")
+                presenter.saveQr(nameTextView.text.toString())
             }
         }
 
@@ -75,6 +69,14 @@ class UsernameFragment :
     override fun showAddress(address: String?) {
         binding.addressTextView.text =
             address?.let { buildPartTextColor(it, colorFromTheme(R.attr.colorAccent)) }
+    }
+
+    override fun copySuccess() {
+        toast(getString(R.string.auth_copied))
+    }
+
+    override fun saveSuccess() {
+        toast(getString(R.string.auth_saved))
     }
 
     private fun buildPartTextColor(text: String, color: Int): SpannableString {

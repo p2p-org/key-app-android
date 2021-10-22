@@ -10,6 +10,8 @@ interface UsernameContract {
         fun showName(name: String?)
         fun renderQr(qrBitmap: Bitmap?)
         fun showAddress(address: String?)
+        fun copySuccess()
+        fun saveSuccess()
     }
 
     interface Presenter : MvpPresenter<View> {

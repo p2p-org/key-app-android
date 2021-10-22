@@ -48,7 +48,10 @@ class UsernamePresenter(
 
     override fun saveQr(name: String) {
         launch {
-            qrBitmap?.let { fileLocalRepository.saveQr(name, it) }
+            qrBitmap?.let {
+                fileLocalRepository.saveQr(name, it)
+                view?.saveSuccess()
+            }
         }
     }
 }
