@@ -16,6 +16,8 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
 import com.p2p.wallet.databinding.FragmentUsernameBinding
+import com.p2p.wallet.utils.copyToClipBoard
+import com.p2p.wallet.utils.shareText
 
 class UsernameFragment :
     BaseMvpFragment<UsernameContract.View,
@@ -39,9 +41,11 @@ class UsernameFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
 
             copyTextView.setOnClickListener {
+                requireActivity().copyToClipBoard(addressTextView.text.toString())
             }
 
             shareTextView.setOnClickListener {
+                requireActivity().shareText(addressTextView.text.toString())
             }
 
             saveTextView.setOnClickListener {
