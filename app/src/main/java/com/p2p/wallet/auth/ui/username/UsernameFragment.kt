@@ -1,11 +1,15 @@
 package com.p2p.wallet.auth.ui.username
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.utils.edgetoedge.Edge
@@ -33,6 +37,16 @@ class UsernameFragment :
 
     private val binding: FragmentUsernameBinding by viewBinding()
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted)
+                presenter.saveQr(binding.nameTextView.text.toString())
+            else
+                toast(getString(R.string.auth_function_not_available))
+        }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
@@ -51,7 +65,7 @@ class UsernameFragment :
             }
 
             saveTextView.setOnClickListener {
-                presenter.saveQr(nameTextView.text.toString())
+                checkPermission()
             }
         }
 
@@ -84,5 +98,13 @@ class UsernameFragment :
         span.setSpan(ForegroundColorSpan(color), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         span.setSpan(ForegroundColorSpan(color), text.length - 4, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         return span
+    }
+
+    private fun checkPermission() {
+        when (PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ->
+                presenter.saveQr(binding.nameTextView.text.toString())
+            else -> requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
     }
 }
