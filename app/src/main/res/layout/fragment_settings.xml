@@ -9,7 +9,6 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?colorBackgroundSecondary"
@@ -24,26 +23,49 @@
             app:title="@string/settings_title"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-        <TextView
-            android:id="@+id/usernameTextView"
+        <LinearLayout
+            android:id="@+id/usernameView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="1dp"
             android:background="?colorElementPrimary"
-            android:drawablePadding="16dp"
             android:foreground="?selectableItemBackground"
-            android:padding="16dp"
-            android:text="@string/settings_username"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-            android:visibility="gone"
-            app:drawableEndCompat="@drawable/ic_arrow_right"
-            app:drawableStartCompat="@drawable/ic_network"
-            tools:ignore="UnusedAttribute" />
+            android:orientation="horizontal"
+            tools:ignore="UnusedAttribute">
+
+            <TextView
+                android:id="@+id/usernameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="16dp"
+                android:padding="16dp"
+                android:text="@string/settings_username"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
+
+            <TextView
+                android:id="@+id/usernameValueTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                tools:text="username" />
+
+            <ImageView
+                android:id="@+id/usernameArrowImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_arrow_right"
+                tools:ignore="ContentDescription" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/networkTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
             android:background="?colorElementPrimary"
             android:drawablePadding="16dp"
             android:foreground="?selectableItemBackground"

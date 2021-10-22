@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.p2p.wallet.auth.api.CheckCaptchaResponse
 import com.p2p.wallet.auth.api.UsernameApi
 import com.p2p.wallet.auth.api.CheckUsernameResponse
+import com.p2p.wallet.auth.api.LookupUsernameResponse
 import com.p2p.wallet.auth.api.RegisterUsernameResponse
 import com.p2p.wallet.auth.model.NameRegisterBody
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -31,5 +32,9 @@ class UsernameRemoteRepository(
                 credentials = credentials
             )
         )
+    }
+
+    override suspend fun lookup(owner: String): ArrayList<LookupUsernameResponse> {
+        return api.lookup(owner)
     }
 }

@@ -93,6 +93,12 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="WalletTheme.TextAppearance.Regular20">
+        <item name="android:textColor">?colorMessagePrimary</item>
+        <item name="fontFamily">@font/open_sans_regular</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <style name="WalletTheme.TextAppearance.Regular16">
         <item name="android:textColor">?colorMessagePrimary</item>
         <item name="fontFamily">@font/open_sans_regular</item>

@@ -6,6 +6,7 @@ import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import com.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import com.p2p.wallet.auth.ui.username.UsernameFragment
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.databinding.FragmentSettingsBinding
 import com.p2p.wallet.settings.ui.appearance.AppearanceFragment
@@ -23,6 +24,7 @@ class SettingsFragment :
 
     companion object {
         fun create() = SettingsFragment()
+        val TAG: String = SettingsFragment::class.java.simpleName
     }
 
     override val presenter: SettingsContract.Presenter by inject()
@@ -35,17 +37,12 @@ class SettingsFragment :
             toolbar.setNavigationOnClickListener {
                 popBackStack()
             }
-
             securityTextView.setOnClickListener {
                 replaceFragment(SecurityFragment.create())
             }
 
             zeroBalanceView.setOnClickListener {
                 presenter.setZeroBalanceHidden(!hideZeroSwitch.isChecked)
-            }
-
-            usernameTextView.setOnClickListener {
-                replaceFragment(ReservingUsernameFragment.create())
             }
 
             networkTextView.setOnClickListener {
@@ -75,5 +72,21 @@ class SettingsFragment :
             target = OnboardingFragment.create(),
             inclusive = true
         )
+    }
+
+    override fun showUsername(username: String?) {
+        binding.usernameValueTextView.text = username
+    }
+
+    override fun openUsernameScreen() {
+        binding.usernameView.setOnClickListener {
+            replaceFragment(UsernameFragment.create())
+        }
+    }
+
+    override fun openReserveUsernameScreen() {
+        binding.usernameView.setOnClickListener {
+            replaceFragment(ReservingUsernameFragment.create(TAG))
+        }
     }
 }

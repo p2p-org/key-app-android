@@ -1,8 +1,9 @@
 package com.p2p.wallet.auth.ui.username
 
 import com.google.gson.Gson
-import com.p2p.wallet.auth.interactor.ReservingUsernameInteractor
+import com.p2p.wallet.auth.interactor.UsernameInteractor
 import com.p2p.wallet.common.mvp.BasePresenter
+import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -10,7 +11,8 @@ import org.json.JSONObject
 import retrofit2.HttpException
 
 class ReservingUsernamePresenter(
-    private val interactor: ReservingUsernameInteractor
+    private val interactor: UsernameInteractor,
+    private val tokenProvider: TokenKeyProvider,
 ) :
     BasePresenter<ReservingUsernameContract.View>(),
     ReservingUsernameContract.Presenter {
@@ -51,6 +53,7 @@ class ReservingUsernamePresenter(
         launch {
             try {
                 interactor.registerUsername(username, result)
+                interactor.lookupUsername(tokenProvider.publicKey)
                 view?.successRegisterName()
             } catch (e: HttpException) {
                 view?.failRegisterName()

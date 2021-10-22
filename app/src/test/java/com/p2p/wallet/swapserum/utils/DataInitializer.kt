@@ -4,8 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.google.gson.Gson
 import com.p2p.wallet.R
+import com.p2p.wallet.auth.api.UsernameApi
+import com.p2p.wallet.auth.interactor.UsernameInteractor
 import com.p2p.wallet.auth.repository.AuthRemoteRepository
+import com.p2p.wallet.auth.repository.FileLocalRepository
+import com.p2p.wallet.auth.repository.UsernameRemoteRepository
 import com.p2p.wallet.infrastructure.db.WalletDatabase
 import com.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import com.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -66,8 +71,11 @@ class DataInitializer {
     private lateinit var marketInteractor: SerumMarketInteractor
 
     private lateinit var userRepository: UserRepository
+    private lateinit var usernameRemoteRepository: UsernameRemoteRepository
     private lateinit var userLocalRepository: UserLocalRepository
     private lateinit var userInteractor: UserInteractor
+    private lateinit var usernameInteractor: UsernameInteractor
+    private lateinit var fileLocalRepository: FileLocalRepository
 
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor
 
@@ -121,12 +129,31 @@ class DataInitializer {
             rpcRepository = rpcRepository
         )
 
+        usernameRemoteRepository = UsernameRemoteRepository(
+            api = RetrofitBuilder
+                .getRetrofit(context.getString(R.string.feeRelayerBaseUrl))
+                .create(UsernameApi::class.java),
+            gson = Gson(),
+            tokenKeyProvider = tokenKeyProvider
+        )
+
+        fileLocalRepository = FileLocalRepository(context)
+
+        usernameInteractor = UsernameInteractor(
+            usernameRepository = usernameRemoteRepository,
+            fileLocalRepository = fileLocalRepository,
+            sharedPreferences = sharedPreferences,
+            tokenKeyProvider = tokenKeyProvider
+
+        )
+
         secretKeyInteractor = SecretKeyInteractor(
             authRepository = AuthRemoteRepository(),
             userLocalRepository = userLocalRepository,
             rpcRepository = rpcRepository,
             tokenProvider = tokenKeyProvider,
-            sharedPreferences = sharedPreferences
+            sharedPreferences = sharedPreferences,
+            usernameInteractor = usernameInteractor
         )
 
         instructionsInteractor = SerumSwapInstructionsInteractor(rpcRepository)
