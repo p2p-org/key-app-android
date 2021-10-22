@@ -6,7 +6,6 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.View
-import androidx.core.content.ContextCompat
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseMvpFragment
 import com.p2p.wallet.utils.edgetoedge.Edge
@@ -16,6 +15,7 @@ import com.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 
 import com.p2p.wallet.databinding.FragmentUsernameBinding
+import com.p2p.wallet.utils.colorFromTheme
 import com.p2p.wallet.utils.copyToClipBoard
 import com.p2p.wallet.utils.shareText
 
@@ -65,7 +65,7 @@ class UsernameFragment :
 
     override fun showAddress(address: String?) {
         binding.addressTextView.text =
-            address?.let { buildPartTextColor(it, ContextCompat.getColor(requireContext(), R.color.accentPrimary)) }
+            address?.let { buildPartTextColor(it, colorFromTheme(R.attr.colorAccent)) }
     }
 
     private fun buildPartTextColor(text: String, color: Int): SpannableString {

@@ -50,7 +50,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="16dp"
                     android:gravity="center"
-                    android:textSize="20sp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular20"
                     tools:text="konstantink.p2p.sol" />
 
                 <ImageView
@@ -72,7 +72,7 @@
                     android:layout_marginEnd="40dp"
                     android:layout_marginBottom="24dp"
                     android:gravity="center"
-                    android:textSize="16sp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
                     tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
 
                 <LinearLayout
@@ -94,6 +94,7 @@
                         android:gravity="center"
                         android:paddingHorizontal="15dp"
                         android:text="@string/auth_copy"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                         android:textColor="?colorAccentPrimary"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -112,8 +113,8 @@
                         android:gravity="center"
                         android:paddingHorizontal="15dp"
                         android:text="@string/auth_share"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                         android:textColor="?colorAccentPrimary"
-                        android:textSize="14sp"
                         android:textStyle="bold"
                         app:drawableStartCompat="@drawable/ic_share_blue" />
 
@@ -130,8 +131,8 @@
                         android:gravity="center"
                         android:paddingHorizontal="15dp"
                         android:text="@string/auth_save"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                         android:textColor="?colorAccentPrimary"
-                        android:textSize="14sp"
                         android:textStyle="bold"
                         app:drawableStartCompat="@drawable/ic_save_blue" />
 
@@ -156,7 +157,7 @@
             android:layout_marginEnd="16dp"
             android:gravity="center"
             android:text="@string/auth_your_p2p_username"
-            android:textSize="20sp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_view" />

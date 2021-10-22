@@ -18,8 +18,13 @@ class SettingsPresenter(
         val isHidden = settingsInteractor.isZerosHidden()
         view?.showHiddenBalance(isHidden)
 
-        val username = usernameInteractor.checkUsernameExist()
-        view?.showUsername(username)
+        val usernameExists = usernameInteractor.checkUsernameExist()
+        if (usernameExists.isNullOrEmpty())
+            view?.openReserveUsernameScreen()
+        else
+            view?.openUsernameScreen()
+
+        view?.showUsername(usernameExists)
     }
 
     override fun setZeroBalanceHidden(isHidden: Boolean) {

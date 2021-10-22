@@ -40,10 +40,10 @@ class ReservingUsernameFragment :
     ReservingUsernameContract.View {
 
     companion object {
-        private const val OPENED_FROM: String = "opened_from"
+        private const val KEY_OPENED_FROM: String = "opened_from"
         fun create(fromClass: String) =
             ReservingUsernameFragment()
-                .withArgs(OPENED_FROM to fromClass)
+                .withArgs(KEY_OPENED_FROM to fromClass)
     }
 
     override val presenter: ReservingUsernameContract.Presenter by inject()
@@ -52,7 +52,7 @@ class ReservingUsernameFragment :
     private var gt3GeeTestUtils: GT3GeetestUtils? = null
     private var gt3ConfigBean: GT3ConfigBean? = null
 
-    private val openedFrom: String by args(OPENED_FROM)
+    private val openedFrom: String by args(KEY_OPENED_FROM)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

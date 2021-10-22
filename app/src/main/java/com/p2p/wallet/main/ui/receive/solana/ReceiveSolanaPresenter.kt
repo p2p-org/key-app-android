@@ -1,7 +1,6 @@
 package com.p2p.wallet.main.ui.receive.solana
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.p2p.wallet.common.mvp.BasePresenter
 import com.p2p.wallet.qr.interactor.QrCodeInteractor
 import com.p2p.wallet.main.model.Token
@@ -56,7 +55,6 @@ class ReceiveSolanaPresenter(
                 view?.showQrLoading(true)
                 delay(DELAY_IN_MILLIS)
                 val qr = qrCodeInteractor.generateQrCode(address)
-                Log.i("efeffv", address)
                 qrBitmap?.recycle()
                 qrBitmap = qr
                 view?.renderQr(qr)

@@ -9,6 +9,8 @@ interface SettingsContract {
         fun showHiddenBalance(isHidden: Boolean)
         fun showAuthorization()
         fun showUsername(username: String?)
+        fun openUsernameScreen()
+        fun openReserveUsernameScreen()
     }
 
     interface Presenter : MvpPresenter<View> {

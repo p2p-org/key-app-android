@@ -20,9 +20,10 @@ class UsernamePresenter(
     private var qrBitmap: Bitmap? = null
 
     override fun loadData() {
+        val address = interactor.getAddress()
         view?.showName(interactor.getName())
-        generateQrCode(interactor.getAddress())
-        view?.showAddress(interactor.getAddress())
+        generateQrCode(address)
+        view?.showAddress(address)
     }
 
     private fun generateQrCode(address: String) {

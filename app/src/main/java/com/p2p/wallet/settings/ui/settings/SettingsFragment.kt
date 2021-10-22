@@ -45,13 +45,6 @@ class SettingsFragment :
                 presenter.setZeroBalanceHidden(!hideZeroSwitch.isChecked)
             }
 
-            usernameView.setOnClickListener {
-                if (presenter.checkUsername())
-                    replaceFragment(UsernameFragment.create())
-                else
-                    replaceFragment(ReservingUsernameFragment.create(TAG))
-            }
-
             networkTextView.setOnClickListener {
                 replaceFragment(NetworkFragment.create())
             }
@@ -83,5 +76,17 @@ class SettingsFragment :
 
     override fun showUsername(username: String?) {
         binding.usernameValueTextView.text = username
+    }
+
+    override fun openUsernameScreen() {
+        binding.usernameView.setOnClickListener {
+            replaceFragment(UsernameFragment.create())
+        }
+    }
+
+    override fun openReserveUsernameScreen() {
+        binding.usernameView.setOnClickListener {
+            replaceFragment(ReservingUsernameFragment.create(TAG))
+        }
     }
 }
