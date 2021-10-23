@@ -41,6 +41,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553127941597:android:e555c8e43db6e8f22c5234",
+        "android_client_info": {
+          "package_name": "org.p2p.wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALuyoazWQsOcvVJnDWphITAPH1Suna2L8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "553127941597-2cueeajq5d7rrmh7l0945j02lcdghimo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.p2p.p2p-wallet"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

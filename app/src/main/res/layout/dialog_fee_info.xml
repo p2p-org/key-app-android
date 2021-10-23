@@ -19,7 +19,7 @@
             android:layout_gravity="center_vertical"
             android:background="?colorElementTertiary" />
 
-        <com.p2p.wallet.common.widget.RoundedImageView
+        <org.p2p.wallet.common.widget.RoundedImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

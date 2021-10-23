@@ -39,7 +39,7 @@
             android:layout_gravity="center_vertical"
             android:background="?colorElementTertiary" />
 
-        <com.p2p.wallet.common.widget.RoundedImageView
+        <org.p2p.wallet.common.widget.RoundedImageView
             android:id="@+id/iconImageView"
             android:layout_width="56dp"
             android:layout_height="56dp"
