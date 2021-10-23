@@ -18,13 +18,13 @@
         android:splitMotionEvents="false"
         android:weightSum="3">
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/onePinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
             app:keyboard_button_text="1" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/twoPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -32,7 +32,7 @@
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="2" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/threePinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -49,13 +49,13 @@
         android:splitMotionEvents="false"
         android:weightSum="3">
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/fourPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
             app:keyboard_button_text="4" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/fivePinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -63,7 +63,7 @@
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="5" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/sixPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -81,13 +81,13 @@
         android:splitMotionEvents="false"
         android:weightSum="3">
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/sevenPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
             app:keyboard_button_text="7" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/eightPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -95,7 +95,7 @@
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="8" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/ninePinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -112,13 +112,13 @@
         android:splitMotionEvents="false"
         android:weightSum="3">
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/additionalLeftPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:visibility="invisible" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/zeroPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -126,7 +126,7 @@
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="0" />
 
-        <com.p2p.wallet.common.widget.NumberKeyboardButtonView
+        <org.p2p.wallet.common.widget.NumberKeyboardButtonView
             android:id="@+id/additionalRightPinCodeButton"
             android:layout_width="72dp"
             android:layout_height="72dp"
