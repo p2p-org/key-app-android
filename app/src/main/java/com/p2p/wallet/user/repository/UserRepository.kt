@@ -86,7 +86,7 @@ class UserRepositoryImpl(
             }
             .toMutableList()
             .also { tokens ->
-                tokens.sortByDescending { it.total }
+                tokens.sortByDescending { it.totalInUsd }
             }
 
         /*
