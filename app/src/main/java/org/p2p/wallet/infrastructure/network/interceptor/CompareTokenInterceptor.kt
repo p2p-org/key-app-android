@@ -1,9 +1,9 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
 import android.content.Context
-import org.p2p.wallet.R
 import okhttp3.Interceptor
 import okhttp3.Response
+import org.p2p.wallet.R
 
 class CompareTokenInterceptor(
     context: Context

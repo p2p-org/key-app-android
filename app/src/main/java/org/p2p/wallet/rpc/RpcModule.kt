@@ -1,6 +1,11 @@
 package org.p2p.wallet.rpc
 
 import android.content.Context
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.di.InjectionModule
@@ -12,10 +17,6 @@ import org.p2p.wallet.rpc.repository.FeeRelayerRemoteRepository
 import org.p2p.wallet.rpc.repository.FeeRelayerRepository
 import org.p2p.wallet.rpc.repository.RpcRemoteRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
-import org.koin.dsl.module
-import org.p2p.solanaj.rpc.Environment
 import retrofit2.Retrofit
 
 object RpcModule : InjectionModule {
@@ -29,7 +30,10 @@ object RpcModule : InjectionModule {
             val mainnet = getRetrofit(Environment.MAINNET.endpoint, interceptor = serverErrorInterceptor)
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-            val rpcpool = getRetrofit(Environment.RPC_POOL.endpoint, interceptor = serverErrorInterceptor)
+            /* This string is in gitignore and it's null when CI/CD runs some actions */
+            val rpcPoolApiKey = BuildConfig.rpcPoolApiKey
+            val baseUrl = String.format(Environment.RPC_POOL.endpoint, rpcPoolApiKey).replace("//", "/")
+            val rpcpool = getRetrofit(baseUrl, interceptor = serverErrorInterceptor)
             val rpcpoolRpcApi = rpcpool.create(RpcApi::class.java)
 
             val testnet = getRetrofit(Environment.DEVNET.endpoint, interceptor = serverErrorInterceptor)

@@ -1,7 +1,10 @@
 package org.p2p.wallet.user
 
 import android.content.Context
-import com.google.gson.Gson
+import okhttp3.OkHttpClient
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
@@ -16,10 +19,6 @@ import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.user.repository.UserRepositoryImpl
-import okhttp3.OkHttpClient
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
-import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -38,14 +37,13 @@ object UserModule : InjectionModule {
 
             Retrofit.Builder()
                 .baseUrl(get<Context>().getString(R.string.compareBaseUrl))
-                .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
+                .addConverterFactory(GsonConverterFactory.create(get()))
                 .client(client)
                 .build()
         }
 
         single {
             val client = createOkHttpClient()
-                .addInterceptor(CompareTokenInterceptor(get()))
                 .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("SolanaApi")) }
                 .build()
             Retrofit.Builder()

@@ -19,7 +19,6 @@ class EnvironmentManager(
     private var onChanged: ((Environment) -> Unit)? = null
 
     fun getTransakUrl(token: Token.Active): String {
-        val apiKey = context.getString(R.string.transakApiKey)
         val baseUrl = context.getString(R.string.transakBaseUrl)
         val symbol = if (token.isUSDC) Token.USDC_SYMBOL else Token.SOL_SYMBOL
         val environment = if (BuildConfig.DEBUG) "staging" else "production"
@@ -28,7 +27,7 @@ class EnvironmentManager(
             .authority(baseUrl)
             .appendQueryParameter("networks", "mainnet")
             .appendQueryParameter("environment", environment)
-            .appendQueryParameter("apiKey", apiKey)
+//            .appendQueryParameter("apiKey", apiKey)
             .appendQueryParameter("defaultCryptoCurrency", symbol)
             .appendQueryParameter("walletAddress", token.publicKey)
             .appendQueryParameter("disableWalletAddressForm", "true")
