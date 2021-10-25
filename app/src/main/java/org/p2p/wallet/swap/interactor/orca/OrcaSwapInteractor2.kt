@@ -1,5 +1,16 @@
 package org.p2p.wallet.swap.interactor.orca
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.kits.AccountInstructions
+import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.programs.TokenSwapProgram
+import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.rpc.repository.RpcRepository
@@ -20,15 +31,6 @@ import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.Transaction
-import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.solanaj.programs.TokenSwapProgram
-import org.p2p.solanaj.utils.crypto.Base64Utils
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -213,57 +215,58 @@ class OrcaSwapInteractor2(
 
             // FIRST TRANSACTION
 
-            // todo: should be default owner?
-            val signers = mutableListOf(owner)
-            val transaction = Transaction()
-
             val (intermediary, destination) = createIntermediaryTokenAndDestinationTokenAddressIfNeeded(
-                pool0 = pool0,
-                pool1 = pool1,
-                toWalletPubkey = toWalletPubkey,
-                feeRelayerFeePayer = feeRelayerFeePayer
+                pool0, pool1, toWalletPubkey, feeRelayerFeePayer
             )
 
-            buildSwapTransaction(
-                transaction = transaction,
-                signers = signers,
-                tokens = info.tokens,
+            val pool0AccountInstructions = poolInteractor.constructExchange(
                 pool = pool0,
-                owner = owner,
-                source = fromWalletPubkey.toPublicKey(),
-                destination = intermediary,
-                lamports = lamports,
-                feeRelayerFeePayer = feeRelayerFeePayer ?: owner.publicKey,
-                slippage = slippage,
-                shouldCreateAssociatedAddress = false
-            )
-
-            val finalAmount = pool0.getMinimumAmountOut(lamports, slippage)
-                ?: throw IllegalStateException("Min amount is null, make sure inputs are correct")
-
-            buildSwapTransaction(
-                transaction = transaction,
-                signers = signers,
                 tokens = info.tokens,
-                pool = pool0,
                 owner = owner,
-                source = intermediary,
-                destination = destination,
-                lamports = finalAmount,
-                feeRelayerFeePayer = feeRelayerFeePayer ?: owner.publicKey,
+                fromTokenPubkey = fromWalletPubkey,
+                toTokenPubkey = intermediary.toBase58(),
+                amount = lamports,
                 slippage = slippage,
-                shouldCreateAssociatedAddress = false
+                feeRelayerFeePayer = feeRelayerFeePayer,
+                shouldCreateAssociatedTokenAccount = false
             )
 
-            val recentBlockhash = rpcRepository.getRecentBlockhash()
-            transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
-            transaction.sign(signers)
-            val signature = if (isSimulation) {
-                rpcRepository.simulateTransaction(transaction)
+            val minOutAmount = pool0.getMinimumAmountOut(lamports, slippage)
+                ?: throw IllegalStateException("Couldn't calculate min amount out")
+
+            val pool1AccountInstructions = poolInteractor.constructExchange(
+                pool = pool1,
+                tokens = info.tokens,
+                owner = owner,
+                fromTokenPubkey = intermediary.toBase58(),
+                toTokenPubkey = destination.toBase58(),
+                amount = minOutAmount,
+                slippage = slippage,
+                feeRelayerFeePayer = feeRelayerFeePayer,
+                shouldCreateAssociatedTokenAccount = false
+            )
+
+            val accountInstructions = AccountInstructions(
+                account = pool1AccountInstructions.account,
+                instructions = (pool0AccountInstructions.instructions + pool1AccountInstructions.instructions) as MutableList<TransactionInstruction>,
+                cleanupInstructions = pool0AccountInstructions.cleanupInstructions + pool1AccountInstructions.cleanupInstructions,
+                signers = pool0AccountInstructions.signers + pool1AccountInstructions.signers
+            )
+
+            if (feeRelayerFeePayer != null) {
+                throw  IllegalStateException("Fee relayer is implementing")
             } else {
-                rpcRepository.sendTransaction(transaction)
+                val transaction = Transaction()
+                transaction.addInstructions(accountInstructions.instructions)
+                transaction.addInstructions(accountInstructions.cleanupInstructions)
+
+                val recentBlockhash = rpcRepository.getRecentBlockhash()
+                transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+                transaction.sign(accountInstructions.signers)
+
+                val transactionId = rpcRepository.sendTransaction(transaction)
+                return OrcaSwapResult.Success(transactionId)
             }
-            return OrcaSwapResult.Success(signature)
         }
     }
 

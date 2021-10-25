@@ -39,6 +39,7 @@ object OrcaConverter {
             tokenAccountA = response.tokenAccountA.toPublicKey(),
             tokenAccountB = response.tokenAccountB.toPublicKey(),
             feeAccount = response.feeAccount.toPublicKey(),
+            hostFeeAccount = response.hostFeeAccount?.toPublicKey(),
             feeNumerator = BigInteger.valueOf(response.feeNumerator),
             feeDenominator = BigInteger.valueOf(response.feeDenominator),
             ownerTradeFeeNumerator = BigInteger.valueOf(response.ownerTradeFeeNumerator),

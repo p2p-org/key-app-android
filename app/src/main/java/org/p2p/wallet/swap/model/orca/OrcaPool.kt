@@ -20,6 +20,7 @@ data class OrcaPool(
     val tokenAccountA: PublicKey,
     val tokenAccountB: PublicKey,
     val feeAccount: PublicKey,
+    val hostFeeAccount: PublicKey?,
     val feeNumerator: BigInteger,
     val feeDenominator: BigInteger,
     val ownerTradeFeeNumerator: BigInteger,

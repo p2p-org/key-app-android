@@ -60,7 +60,7 @@ class SerumSwapInstructionsInteractor(
     }
 
     // MARK: - Account and instructions
-    private suspend fun prepareSourceAccountAndInstructions(
+    suspend fun prepareSourceAccountAndInstructions(
         myNativeWallet: PublicKey,
         source: PublicKey,
         sourceMint: PublicKey,
@@ -120,7 +120,7 @@ class SerumSwapInstructionsInteractor(
         )
     }
 
-    private suspend fun prepareDestinationAccountAndInstructions(
+    suspend fun prepareDestinationAccountAndInstructions(
         myAccount: PublicKey,
         destination: PublicKey?,
         destinationMint: PublicKey,

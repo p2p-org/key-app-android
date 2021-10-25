@@ -17,6 +17,8 @@ data class OrcaPoolResponse(
     val tokenAccountB: String,
     @SerializedName("feeAccount")
     val feeAccount: String,
+    @SerializedName("hostFeeAccount")
+    val hostFeeAccount: String?,
     @SerializedName("feeNumerator")
     val feeNumerator: Long,
     @SerializedName("feeDenominator")

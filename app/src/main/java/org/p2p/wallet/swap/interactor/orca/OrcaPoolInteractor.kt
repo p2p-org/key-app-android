@@ -1,18 +1,147 @@
 package org.p2p.wallet.swap.interactor.orca
 
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.kits.AccountInstructions
+import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.programs.TokenSwapProgram
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.swap.interactor.serum.SerumSwapInstructionsInteractor
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPools
 import org.p2p.wallet.swap.model.orca.OrcaRoute
 import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
+import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.utils.toPublicKey
+import java.math.BigInteger
 
 class OrcaPoolInteractor(
-    private val orcaSwapRepository: OrcaSwapRepository
+    private val orcaSwapRepository: OrcaSwapRepository,
+    private val instructions: SerumSwapInstructionsInteractor
 ) {
 
     private val balancesCache = mutableMapOf<String, AccountBalance>()
+
+    /// Construct exchange
+    suspend fun constructExchange(
+        pool: OrcaPool,
+        tokens: OrcaTokens,
+        owner: Account,
+        fromTokenPubkey: String,
+        toTokenPubkey: String?,
+        amount: BigInteger,
+        slippage: Double,
+        feeRelayerFeePayer: PublicKey?,
+        shouldCreateAssociatedTokenAccount: Boolean
+    ): AccountInstructions {
+        val fromMint = tokens[pool.tokenAName]?.mint?.toPublicKey()
+        val toMint = tokens[pool.tokenBName]?.mint?.toPublicKey()
+        val fromTokenPubkey = fromTokenPubkey.toPublicKey()
+
+        if (fromMint == null || toMint == null) {
+            throw IllegalStateException("Pool mints are not found")
+        }
+
+        // prepare source
+        val sourceAccountInstructions = instructions.prepareSourceAccountAndInstructions(
+            myNativeWallet = owner.publicKey,
+            source = fromTokenPubkey,
+            sourceMint = fromMint,
+            amount = amount,
+            feePayer = feeRelayerFeePayer ?: owner.publicKey
+        )
+
+        // prepare destination
+        val destination = toTokenPubkey?.toPublicKey()
+        val destinationAccountInstructions = if (destination != null && !shouldCreateAssociatedTokenAccount) {
+            AccountInstructions(destination)
+        } else {
+            instructions.prepareDestinationAccountAndInstructions(
+                myAccount = owner.publicKey,
+                destination = toTokenPubkey?.toPublicKey(),
+                destinationMint = toMint,
+                feePayer = feeRelayerFeePayer ?: owner.publicKey,
+                closeAfterward = false // FIXME: Check later
+            )
+        }
+
+        // form instructions
+        val instructions = mutableListOf<TransactionInstruction>()
+        val cleanupInstructions = mutableListOf<TransactionInstruction>()
+
+        // source
+        instructions += sourceAccountInstructions.instructions
+        cleanupInstructions += sourceAccountInstructions.cleanupInstructions
+
+        // destination
+        instructions += destinationAccountInstructions.instructions
+        cleanupInstructions += destinationAccountInstructions.cleanupInstructions
+
+        // userTransferAuthorityPubkey
+        val userTransferAuthority = Account()
+        var userTransferAuthorityPubkey = userTransferAuthority.publicKey
+
+        if (feeRelayerFeePayer == null) {
+            // approve (if send without feeRelayer)
+
+            val approveTransaction = TokenProgram.approveInstruction(
+                TokenProgram.PROGRAM_ID,
+                sourceAccountInstructions.account,
+                userTransferAuthorityPubkey,
+                owner.publicKey,
+                amount
+            )
+            instructions += approveTransaction
+        } else {
+            userTransferAuthorityPubkey = owner.publicKey
+        }
+
+        // swap
+        val minAmountOut = pool.getMinimumAmountOut(amount, slippage)
+            ?: throw IllegalStateException("Couldn't estimate minimum out amount")
+
+        val swapInstruction = TokenSwapProgram.swapInstruction(
+            pool.account,
+            pool.authority,
+            userTransferAuthorityPubkey,
+            sourceAccountInstructions.account,
+            pool.tokenAccountA,
+            pool.tokenAccountB,
+            destinationAccountInstructions.account,
+            pool.poolTokenMint,
+            pool.feeAccount,
+            pool.hostFeeAccount,
+            TokenProgram.PROGRAM_ID, //
+            pool.swapProgramId,// todo: ios has another order of swapprogramid and tokenprogramid
+            amount,
+            minAmountOut
+        )
+
+        instructions += swapInstruction
+
+        // send to proxy
+        if (feeRelayerFeePayer != null) {
+            throw IllegalStateException("Fee Relayer is implementing")
+        }
+
+        // send without proxy
+        else {
+            val signers = mutableListOf(userTransferAuthority)
+            signers += sourceAccountInstructions.signers
+            signers += destinationAccountInstructions.signers
+
+            return AccountInstructions(
+                destinationAccountInstructions.account,
+                instructions,
+                cleanupInstructions,
+                signers
+            )
+        }
+    }
 
     suspend fun getPools(
         infoPools: OrcaPools?,
@@ -96,8 +225,8 @@ class OrcaPoolInteractor(
     }
 
     // Find possible destination token (symbol)
-    // - Parameter fromTokenName: from token name (symbol)
-    // - Returns: List of token symbols that can be swapped to
+// - Parameter fromTokenName: from token name (symbol)
+// - Returns: List of token symbols that can be swapped to
     fun findPossibleDestinations(
         info: OrcaSwapInfo,
         fromTokenName: String
