@@ -50,13 +50,6 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-debug"
-
-            def containsKey = project.hasProperty("rpcPoolApiKey")
-            if (containsKey) {
-                buildConfigField "String", "rpcPoolApiKey", "\"$rpcPoolApiKey\""
-            } else {
-                buildConfigField "String", "rpcPoolApiKey", ""
-            }
         }
 
         feature {
@@ -65,14 +58,6 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD"
-
-            def containsKey = project.hasProperty("rpcPoolApiKey")
-            if (containsKey) {
-                buildConfigField "String", "rpcPoolApiKey", "\"$rpcPoolApiKey\""
-            } else {
-                buildConfigField "String", "rpcPoolApiKey", ""
-            }
-
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
@@ -84,13 +69,6 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            def containsKey = project.hasProperty("rpcPoolApiKey")
-            if (containsKey) {
-                buildConfigField "String", "rpcPoolApiKey", "\"$rpcPoolApiKey\""
-            } else {
-                buildConfigField "String", "rpcPoolApiKey", ""
-            }
         }
     }
 
