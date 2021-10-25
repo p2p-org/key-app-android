@@ -56,12 +56,12 @@ class UsernameFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
 
             copyTextView.setOnClickListener {
-                requireActivity().copyToClipBoard(addressTextView.text.toString())
+                requireActivity().copyToClipBoard(nameTextView.text.toString())
                 copySuccess()
             }
 
             shareTextView.setOnClickListener {
-                requireActivity().shareText(addressTextView.text.toString())
+                requireActivity().shareText(nameTextView.text.toString())
             }
 
             saveTextView.setOnClickListener {
