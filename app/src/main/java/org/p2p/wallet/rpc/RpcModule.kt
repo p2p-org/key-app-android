@@ -5,6 +5,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.di.InjectionModule
@@ -30,10 +31,8 @@ object RpcModule : InjectionModule {
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
             /* This string is in gitignore and it's null when CI/CD runs some actions */
-            val rpcPoolApiKey = if (R.string.rpcPoolApiKey != null) {
-                get<Context>().getString(R.string.rpcPoolApiKey)
-            } else ""
-            val baseUrl = String.format(Environment.RPC_POOL.endpoint, rpcPoolApiKey)
+            val rpcPoolApiKey = BuildConfig.rpcPoolApiKey
+            val baseUrl = String.format(Environment.RPC_POOL.endpoint, rpcPoolApiKey).replace("//", "/")
             val rpcpool = getRetrofit(baseUrl, interceptor = serverErrorInterceptor)
             val rpcpoolRpcApi = rpcpool.create(RpcApi::class.java)
 

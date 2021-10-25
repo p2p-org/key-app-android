@@ -23,6 +23,7 @@ build/
 # Local configuration file (sdk path, etc)
 local.properties
 signing.properties
+apikey.properties
 credentials.properties
 *.keystore
 
@@ -49,9 +50,6 @@ captures/
 
 # Keystore files
 #*.jks
-
-# Private xml files
-app/src/main/res/values/private_credentials_config.xml
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild

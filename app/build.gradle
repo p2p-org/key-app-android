@@ -24,6 +24,15 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
+
+        def apikeyPropertiesFile = rootProject.file("apikey.properties")
+        def apikeyProperties = new Properties()
+        if (apikeyPropertiesFile.canRead()) {
+            apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+            buildConfigField("String", "rpcPoolApiKey", apikeyProperties['rpcPoolApiKey'])
+        } else {
+            buildConfigField("String", "rpcPoolApiKey", "\"\"")
+        }
     }
 
     signingConfigs {
