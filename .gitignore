@@ -23,7 +23,7 @@ build/
 # Local configuration file (sdk path, etc)
 local.properties
 signing.properties
-gradle.properties
+apikey.properties
 credentials.properties
 *.keystore
 

@@ -32,13 +32,13 @@ object UserModule : InjectionModule {
 
         single(named(CRYPTO_COMPARE_QUALIFIER)) {
             val client = createOkHttpClient()
-                .addInterceptor(CompareTokenInterceptor())
+                .addInterceptor(CompareTokenInterceptor(get()))
                 .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("CryptoCompare")) }
                 .build()
 
             Retrofit.Builder()
                 .baseUrl(get<Context>().getString(R.string.compareBaseUrl))
-                .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
+                .addConverterFactory(GsonConverterFactory.create(get()))
                 .client(client)
                 .build()
         }

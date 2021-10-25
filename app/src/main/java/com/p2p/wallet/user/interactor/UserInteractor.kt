@@ -17,15 +17,20 @@ class UserInteractor(
     private val rpcRepository: RpcRepository
 ) {
 
+    fun findTokenData(mintAddress: String): Token? {
+        val tokenData = userLocalRepository.findTokenData(mintAddress)
+        return tokenData?.let { TokenConverter.fromNetwork(tokenData) }
+    }
+
+    fun getUserTokensFlow(): Flow<List<Token.Active>> =
+        mainLocalRepository.getTokensFlow()
+
+    suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
+
     suspend fun loadTokenPrices(targetCurrency: String) {
         val tokens = TokenColors.getSymbols()
         val prices = userRepository.loadTokensPrices(tokens, targetCurrency)
         userLocalRepository.setTokenPrices(prices)
-    }
-
-    fun findTokenData(mintAddress: String): Token? {
-        val tokenData = userLocalRepository.findTokenData(mintAddress)
-        return tokenData?.let { TokenConverter.fromNetwork(tokenData) }
     }
 
     suspend fun loadAllTokensData() {
@@ -37,11 +42,6 @@ class UserInteractor(
         val newTokens = userRepository.loadTokens()
         mainLocalRepository.updateTokens(newTokens)
     }
-
-    suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
-
-    fun getUserTokensFlow(): Flow<List<Token.Active>> =
-        mainLocalRepository.getTokensFlow()
 
     suspend fun getUserTokens(): List<Token.Active> =
         mainLocalRepository.getUserTokens()

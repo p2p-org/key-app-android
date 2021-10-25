@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="compareBaseUrl">https://min-api.cryptocompare.com/</string>
+    <string name="comparePublicKey">ad6104e4e9d655c1faab7ef1743c16651a1628f01d384bc5fea09661c0eb18db</string>
 
     <string name="bitcoinExplorer">https://btc.com/btc/address/%s</string>
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
@@ -16,6 +17,9 @@
     <string name="node_devnet">https://api.devnet.solana.com/</string>
 
     <string name="transakBaseUrl">staging-global.transak.com</string>
+    <string name="transakApiKey" tools:ignore="TypographyDashes">bef19a55-6870-452a-b997-3d63eb59205d</string>
+    <string name="transakApiSecret" tools:ignore="TypographyDashes,Typos">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBUElfS0VZIjoiYmVmMTlhNTUtNjg3MC00NTJhLWI5OTctM2Q2M2ViNTkyMDVkIiwiaWF0IjoxNjI2MzYzMzg0fQ.iSj4iY1i5Erem1MI33nM87a8TjibF08Qs6M_54X_rXo</string>
+
     <string name="blockstreamUrl">https://blockstream.info/</string>
 
     <string name="p2pWebBaseUrl">https://raw.githubusercontent.com/p2p-org/p2p-wallet-web/develop/src/app/contexts/swap/orca-commons/data/json/</string>

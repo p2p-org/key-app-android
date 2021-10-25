@@ -19,7 +19,7 @@ class EnvironmentManager(
     private var onChanged: ((Environment) -> Unit)? = null
 
     fun getTransakUrl(token: Token.Active): String {
-        val apiKey = BuildConfig.transakApiKey
+        val apiKey =  context.getString(R.string.transakApiKey)
         val baseUrl = context.getString(R.string.transakBaseUrl)
         val symbol = if (token.isUSDC) Token.USDC_SYMBOL else Token.SOL_SYMBOL
         val environment = if (BuildConfig.DEBUG) "staging" else "production"

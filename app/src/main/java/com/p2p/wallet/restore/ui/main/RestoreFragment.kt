@@ -2,6 +2,7 @@ package com.p2p.wallet.restore.ui.main
 
 import android.os.Bundle
 import android.view.View
+import com.p2p.wallet.BuildConfig
 import com.p2p.wallet.R
 import com.p2p.wallet.common.mvp.BaseFragment
 import com.p2p.wallet.databinding.FragmentRestoreBinding
@@ -31,39 +32,44 @@ class RestoreFragment : BaseFragment(R.layout.fragment_restore) {
             }
             backImageView.setOnClickListener { popBackStack() }
             restoreButton.setOnClickListener {
-                requireContext().copyToClipBoard(
-                    listOf(
-                        "oval",
-                        "you",
-                        "token",
-                        "plug",
-                        "copper",
-                        "visa",
-                        "employ",
-                        "link",
-                        "sell",
-                        "asset",
-                        "kick",
-                        "sausage"
-                    ).joinToString(" ")
-
-//                    listOf(
-//                        "miracle",
-//                        "pizza",
-//                        "supply",
-//                        "useful",
-//                        "steak",
-//                        "border",
-//                        "same",
-//                        "again",
-//                        "youth",
-//                        "silver",
-//                        "access",
-//                        "hundred",
-//                    ).joinToString(" ")
-                )
+                copyPhrase()
                 replaceFragment(SecretKeyFragment.create())
             }
         }
+    }
+
+    private fun copyPhrase() {
+        if (!BuildConfig.DEBUG) return
+        requireContext().copyToClipBoard(
+            listOf(
+                "oval",
+                "you",
+                "token",
+                "plug",
+                "copper",
+                "visa",
+                "employ",
+                "link",
+                "sell",
+                "asset",
+                "kick",
+                "sausage"
+            ).joinToString(" ")
+
+    //                    listOf(
+    //                        "miracle",
+    //                        "pizza",
+    //                        "supply",
+    //                        "useful",
+    //                        "steak",
+    //                        "border",
+    //                        "same",
+    //                        "again",
+    //                        "youth",
+    //                        "silver",
+    //                        "access",
+    //                        "hundred",
+    //                    ).joinToString(" ")
+        )
     }
 }
