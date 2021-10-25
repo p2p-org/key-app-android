@@ -1,7 +1,6 @@
 package org.p2p.wallet.user
 
 import android.content.Context
-import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
