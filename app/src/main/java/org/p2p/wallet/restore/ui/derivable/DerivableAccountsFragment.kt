@@ -20,6 +20,8 @@ import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import org.p2p.wallet.utils.replaceFragment
 
 class DerivableAccountsFragment :
     BaseMvpFragment<DerivableAccountsContract.View, DerivableAccountsContract.Presenter>(
@@ -32,6 +34,7 @@ class DerivableAccountsFragment :
         fun create(secretKeys: List<SecretKey>) = DerivableAccountsFragment().withArgs(
             EXTRA_SECRET_KEYS to secretKeys
         )
+        val TAG: String = DerivableAccountsFragment::class.java.simpleName
     }
 
     private val secretKeys: List<SecretKey> by args(EXTRA_SECRET_KEYS)
@@ -76,6 +79,10 @@ class DerivableAccountsFragment :
 
     override fun navigateToCreatePin() {
         popAndReplaceFragment(CreatePinFragment.create(PinLaunchMode.RECOVER), inclusive = true)
+    }
+
+    override fun navigateToReserveUsername() {
+        replaceFragment(ReservingUsernameFragment.create(TAG))
     }
 
     override fun showLoading(isLoading: Boolean) {

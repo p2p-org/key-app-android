@@ -16,7 +16,7 @@ object BackupModule : InjectionModule {
         factory { SecretKeyInteractor(get(), get(), get(), get(), get(), get()) }
         factory { SecretKeyPresenter(get()) } bind SecretKeyContract.Presenter::class
         factory { (secretKeys: List<SecretKey>) ->
-            DerivableAccountsPresenter(secretKeys, get())
+            DerivableAccountsPresenter(secretKeys, get(), get())
         } bind DerivableAccountsContract.Presenter::class
     }
 }
