@@ -73,7 +73,7 @@ class UsernameFragment :
     }
 
     override fun showName(name: String?) {
-        binding.nameTextView.text = name
+        binding.nameTextView.text = getString(R.string.auth_name_p2p_sol, name)
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
