@@ -22,7 +22,7 @@ import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.user.UserModule
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.KoinContextHandler
+import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -37,11 +37,11 @@ class App : Application() {
         setupKoin()
         AndroidThreeTen.init(this)
         DebugDrawer.init(this)
-        KoinContextHandler.get().get<ThemeInteractor>().applyCurrentNightMode()
+        GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
     }
 
     private fun setupKoin() {
-        KoinContextHandler.stop()
+        GlobalContext.stop()
         startKoin {
             androidContext(this@App)
             modules(

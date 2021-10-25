@@ -1,15 +1,12 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
-import android.content.Context
-import org.p2p.wallet.R
 import okhttp3.Interceptor
 import okhttp3.Response
+import org.p2p.wallet.BuildConfig
 
-class CompareTokenInterceptor(
-    context: Context
-) : Interceptor {
+class CompareTokenInterceptor : Interceptor {
 
-    private val publicKey = context.getString(R.string.comparePublicKey)
+    private val publicKey = BuildConfig.comparePublicKey
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

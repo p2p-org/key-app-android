@@ -16,6 +16,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.BuildConfig
 import retrofit2.Retrofit
 
 object RpcModule : InjectionModule {
@@ -29,7 +30,8 @@ object RpcModule : InjectionModule {
             val mainnet = getRetrofit(Environment.MAINNET.endpoint, interceptor = serverErrorInterceptor)
             val mainnetRpcApi = mainnet.create(RpcApi::class.java)
 
-            val rpcpool = getRetrofit(Environment.RPC_POOL.endpoint, interceptor = serverErrorInterceptor)
+            val baseUrl = String.format(Environment.RPC_POOL.endpoint, BuildConfig.rpcPoolApiKey)
+            val rpcpool = getRetrofit(baseUrl, interceptor = serverErrorInterceptor)
             val rpcpoolRpcApi = rpcpool.create(RpcApi::class.java)
 
             val testnet = getRetrofit(Environment.DEVNET.endpoint, interceptor = serverErrorInterceptor)

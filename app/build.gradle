@@ -24,6 +24,9 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
+
+        buildConfigField "String" , "rpcPoolApiKey" ,  "\"$rpcPoolApiKey\""
+        buildConfigField "String" , "comparePublicKey" ,  "\"$comparePublicKey\""
     }
 
     signingConfigs {
@@ -146,10 +149,8 @@ dependencies {
     // seed value
     implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
 
-    def koinVersion = '2.2.2' // TODO: migrate to 2.2.3 or 3.0.X when released
-    //noinspection GradleDependency
+    def koinVersion = '2.2.2'
     implementation "org.koin:koin-android:$koinVersion"
-    //noinspection GradleDependency
     implementation "org.koin:koin-androidx-scope:$koinVersion"
 
     // MPAndroidChart

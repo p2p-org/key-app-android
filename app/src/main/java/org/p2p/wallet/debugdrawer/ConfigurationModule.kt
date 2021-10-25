@@ -3,11 +3,11 @@ package org.p2p.wallet.debugdrawer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import org.p2p.wallet.databinding.ViewDebugDrawerConfigureEnvironmentBinding
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import io.palaima.debugdrawer.base.DebugModuleAdapter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.p2p.wallet.databinding.ViewDebugDrawerConfigureEnvironmentBinding
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 
 class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
 
