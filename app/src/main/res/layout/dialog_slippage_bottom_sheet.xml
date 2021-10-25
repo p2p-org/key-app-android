@@ -50,7 +50,7 @@
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="?colorElementSecondary" />
 
-    <com.p2p.wallet.common.widget.SlippageRadioView
+    <org.p2p.wallet.common.widget.SlippageRadioView
         android:id="@+id/slippageRadioView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

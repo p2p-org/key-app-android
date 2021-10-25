@@ -23,7 +23,7 @@
         android:layout_height="1dp"
         android:background="?colorElementTertiary" />
 
-    <com.p2p.wallet.common.widget.DoubleTextView
+    <org.p2p.wallet.common.widget.DoubleTextView
         android:id="@+id/slippageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         android:layout_height="1dp"
         android:background="?colorElementTertiary" />
 
-    <com.p2p.wallet.common.widget.DoubleTextView
+    <org.p2p.wallet.common.widget.DoubleTextView
         android:id="@+id/payView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

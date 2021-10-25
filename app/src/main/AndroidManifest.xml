@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.p2p.wallet">
+    package="org.p2p.wallet">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,7 +17,7 @@
         android:theme="@style/WalletTheme">
 
         <activity
-            android:name="com.p2p.wallet.root.ui.RootActivity"
+            android:name="org.p2p.wallet.root.ui.RootActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"

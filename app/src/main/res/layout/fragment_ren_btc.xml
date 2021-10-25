@@ -23,7 +23,7 @@
         android:visibility="visible"
         app:constraint_referenced_ids="statusView,viewButton,qrImageView,fullAddressTextView,shareImageView" />
 
-    <com.p2p.wallet.common.widget.DoubleTextView
+    <org.p2p.wallet.common.widget.DoubleTextView
         android:id="@+id/receiveCoinView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
         app:tint="@color/colorStaticDark"
         tools:ignore="ContentDescription" />
 
-    <com.p2p.wallet.common.widget.DoubleTextView
+    <org.p2p.wallet.common.widget.DoubleTextView
         android:id="@+id/statusView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -190,7 +190,7 @@
         app:layout_constraintVertical_bias="1"
         tools:ignore="UnusedAttribute" />
 
-    <com.p2p.wallet.common.widget.ProgressView
+    <org.p2p.wallet.common.widget.ProgressView
         android:id="@+id/progressView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

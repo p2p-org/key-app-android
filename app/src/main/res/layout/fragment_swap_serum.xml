@@ -78,7 +78,7 @@
                     tools:ignore="UseCompatTextViewDrawableXml"
                     tools:text="2140.0000" />
 
-                <com.p2p.wallet.common.widget.RoundedImageView
+                <org.p2p.wallet.common.widget.RoundedImageView
                     android:id="@+id/sourceImageView"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -225,7 +225,7 @@
                     tools:ignore="UnusedAttribute,UseCompatTextViewDrawableXml"
                     tools:text="12210.2 USDC" />
 
-                <com.p2p.wallet.common.widget.RoundedImageView
+                <org.p2p.wallet.common.widget.RoundedImageView
                     android:id="@+id/destinationImageView"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -353,7 +353,7 @@
                     android:background="?colorElementTertiary"
                     app:layout_constraintTop_toBottomOf="@id/exchangeTextView" />
 
-                <com.p2p.wallet.common.widget.DoubleTextView
+                <org.p2p.wallet.common.widget.DoubleTextView
                     android:id="@+id/slippageView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -463,7 +463,7 @@
                     app:layout_constraintStart_toStartOf="@id/swapButton"
                     app:layout_constraintTop_toTopOf="@id/swapButton" />
 
-                <com.p2p.wallet.common.widget.ProgressView
+                <org.p2p.wallet.common.widget.ProgressView
                     android:id="@+id/progressView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

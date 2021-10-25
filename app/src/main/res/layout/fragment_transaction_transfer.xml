@@ -131,7 +131,7 @@
                 app:layout_constraintTop_toBottomOf="@id/transferAmountDivider"
                 tools:visibility="visible" />
 
-            <com.p2p.wallet.common.widget.RoundedImageView
+            <org.p2p.wallet.common.widget.RoundedImageView
                 android:id="@+id/sourceImageView"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
@@ -209,7 +209,7 @@
                 app:layout_constraintTop_toBottomOf="@id/sourceDivider"
                 tools:visibility="visible" />
 
-            <com.p2p.wallet.common.widget.RoundedImageView
+            <org.p2p.wallet.common.widget.RoundedImageView
                 android:id="@+id/destinationImageView"
                 android:layout_width="44dp"
                 android:layout_height="44dp"

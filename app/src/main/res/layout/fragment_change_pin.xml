@@ -26,7 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/headerGuideline" />
 
-    <com.p2p.wallet.common.widget.PinView
+    <org.p2p.wallet.common.widget.PinView
         android:id="@+id/pinView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

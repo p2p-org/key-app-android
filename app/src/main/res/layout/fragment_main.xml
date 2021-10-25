@@ -233,7 +233,7 @@
             app:layout_constraintStart_toStartOf="@id/swapImageView"
             app:layout_constraintTop_toBottomOf="@id/swapImageView" />
 
-        <com.p2p.wallet.common.widget.ProgressView
+        <org.p2p.wallet.common.widget.ProgressView
             android:id="@+id/progressView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
