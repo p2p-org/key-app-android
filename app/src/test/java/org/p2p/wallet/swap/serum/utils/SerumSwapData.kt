@@ -1,4 +1,4 @@
-package org.p2p.wallet.swapserum.utils
+package org.p2p.wallet.swap.serum.utils
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.SerumSwapProgram

@@ -13,7 +13,7 @@ data class TokenAccountBalance(
         val amount: String,
 
         @SerializedName("decimals")
-        private val decimals: Int
+        val decimals: Int
     )
 
     val amount: BigInteger

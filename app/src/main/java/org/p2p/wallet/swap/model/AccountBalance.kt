@@ -5,5 +5,6 @@ import java.math.BigInteger
 
 data class AccountBalance(
     val account: PublicKey,
-    val amount: BigInteger
+    val amount: BigInteger,
+    val decimals: Int
 )

@@ -231,8 +231,8 @@ class SwapPresenter(
             destinationRate = swapInteractor.loadPrice(destination.mintAddress, source.mintAddress).scaleMedium()
 
             val priceData = PriceData(
-                sourceAmount = sourceRate.toString(),
-                destinationAmount = destinationRate.toString(),
+                sourcePrice = sourceRate.toString(),
+                destinationPrice = destinationRate.toString(),
                 sourceSymbol = source.tokenSymbol,
                 destinationSymbol = destination.tokenSymbol
             )

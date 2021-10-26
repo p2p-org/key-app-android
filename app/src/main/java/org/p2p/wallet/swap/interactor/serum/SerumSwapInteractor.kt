@@ -1,12 +1,5 @@
 package org.p2p.wallet.swap.interactor.serum
 
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import org.p2p.wallet.utils.isUsdx
-import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.toLamports
-import org.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
@@ -23,13 +16,21 @@ import org.p2p.solanaj.serumswap.model.Side
 import org.p2p.solanaj.serumswap.model.SignersAndInstructions
 import org.p2p.solanaj.serumswap.model.SwapParams
 import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
+import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
+import org.p2p.wallet.utils.isUsdx
+import org.p2p.wallet.utils.scaleMedium
+import org.p2p.wallet.utils.toLamports
+import org.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class SerumSwapInteractor(
-    private val instructionsInteractor: SerumSwapInstructionsInteractor,
+    private val instructionsInteractor: SwapInstructionsInteractor,
     private val openOrdersInteractor: SerumOpenOrdersInteractor,
     private val marketInteractor: SerumMarketInteractor,
     private val swapMarketInteractor: SerumSwapMarketInteractor,

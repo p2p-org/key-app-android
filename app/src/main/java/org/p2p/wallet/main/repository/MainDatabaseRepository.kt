@@ -28,7 +28,7 @@ class MainDatabaseRepository(
                 .sortedByDescending { it.isSOL }
         }
 
-    override suspend fun getTokens(): List<Token.Active> =
+    override suspend fun getUserTokens(): List<Token.Active> =
         tokenDao.getTokens().map { TokenConverter.fromDatabase(it) }
 
     override suspend fun setTokenHidden(mintAddress: String, visibility: String) {
