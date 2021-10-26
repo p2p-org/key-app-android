@@ -255,7 +255,7 @@ class OrcaDataInitializer {
             val balanceB = orcaSwapRepository.loadTokenBalance(pool.tokenAccountB)
 
             pool.tokenABalance = balanceA
-            pool.tokenABalance = balanceB
+            pool.tokenBBalance = balanceB
             pool
         }
 

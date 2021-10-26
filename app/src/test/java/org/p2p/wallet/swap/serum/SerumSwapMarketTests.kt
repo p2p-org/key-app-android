@@ -1,28 +1,28 @@
-//package org.p2p.wallet.swap.serum
+// package org.p2p.wallet.swap.serum
 //
-//import kotlinx.coroutines.runBlocking
-//import org.junit.Assert.assertEquals
-//import org.junit.Assert.assertNotNull
-//import org.junit.Before
-//import org.junit.Test
-//import org.junit.runner.RunWith
-//import org.p2p.wallet.main.model.Token
-//import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
-//import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-//import org.p2p.wallet.swap.serum.utils.SerumDataInitializer
-//import org.p2p.wallet.swap.serum.utils.SerumSwapData.BTCUSDCMarket
-//import org.p2p.wallet.swap.serum.utils.SerumSwapData.SOL
-//import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRM
-//import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRMUSDCMarket
-//import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDC
-//import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDT
-//import org.p2p.wallet.utils.scaleMedium
-//import org.robolectric.RobolectricTestRunner
-//import java.math.BigDecimal
-//import java.math.BigInteger
+// import kotlinx.coroutines.runBlocking
+// import org.junit.Assert.assertEquals
+// import org.junit.Assert.assertNotNull
+// import org.junit.Before
+// import org.junit.Test
+// import org.junit.runner.RunWith
+// import org.p2p.wallet.main.model.Token
+// import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+// import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
+// import org.p2p.wallet.swap.serum.utils.SerumDataInitializer
+// import org.p2p.wallet.swap.serum.utils.SerumSwapData.BTCUSDCMarket
+// import org.p2p.wallet.swap.serum.utils.SerumSwapData.SOL
+// import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRM
+// import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRMUSDCMarket
+// import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDC
+// import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDT
+// import org.p2p.wallet.utils.scaleMedium
+// import org.robolectric.RobolectricTestRunner
+// import java.math.BigDecimal
+// import java.math.BigInteger
 //
-//@RunWith(RobolectricTestRunner::class)
-//class SerumSwapMarketTests {
+// @RunWith(RobolectricTestRunner::class)
+// class SerumSwapMarketTests {
 //
 //    private val initializer = SerumDataInitializer()
 //
@@ -133,4 +133,4 @@
 //        assertEquals(BigInteger.valueOf(27451320L), networkFees)
 //        assertEquals(BigInteger.valueOf(25407040L), networkFees2)
 //    }
-//}
+// }

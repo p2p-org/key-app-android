@@ -1,21 +1,21 @@
-//package org.p2p.wallet.swap.serum
+// package org.p2p.wallet.swap.serum
 //
-//import kotlinx.coroutines.runBlocking
-//import org.junit.After
-//import org.junit.Assert.assertNotNull
-//import org.junit.Before
-//import org.junit.Test
-//import org.junit.runner.RunWith
-//import org.p2p.solanaj.core.PublicKey
-//import org.p2p.wallet.main.model.Token
-//import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
-//import org.p2p.wallet.swap.serum.utils.CoroutineTest
-//import org.p2p.wallet.swap.serum.utils.SerumDataInitializer
-//import org.robolectric.RobolectricTestRunner
-//import java.math.BigDecimal
+// import kotlinx.coroutines.runBlocking
+// import org.junit.After
+// import org.junit.Assert.assertNotNull
+// import org.junit.Before
+// import org.junit.Test
+// import org.junit.runner.RunWith
+// import org.p2p.solanaj.core.PublicKey
+// import org.p2p.wallet.main.model.Token
+// import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+// import org.p2p.wallet.swap.serum.utils.CoroutineTest
+// import org.p2p.wallet.swap.serum.utils.SerumDataInitializer
+// import org.robolectric.RobolectricTestRunner
+// import java.math.BigDecimal
 //
-//@RunWith(RobolectricTestRunner::class)
-//internal class SerumSwapDirectTests : CoroutineTest() {
+// @RunWith(RobolectricTestRunner::class)
+// internal class SerumSwapDirectTests : CoroutineTest() {
 //
 //    companion object {
 //        const val DEFAULT_SLIPPAGE = 0.005
@@ -195,4 +195,4 @@
 //        val price = serumSwapInteractor.loadFair(SOL, SRM)
 //        print(price)
 //    }
-//}
+// }
