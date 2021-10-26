@@ -65,7 +65,7 @@ class OrcaPoolInteractor(
         // If destination token is Solana, create WSOL if needed
         val destinationAccountInstructions = if (toMint.toBase58() == Token.WRAPPED_SOL_MINT) {
             val toTokenPublicKey = toTokenPubkey?.toPublicKey()
-            if (toTokenPublicKey != null && toTokenPublicKey.equals(owner.publicKey)) {
+            if (toTokenPublicKey != null && !toTokenPublicKey.equals(owner.publicKey)) {
                 // wrapped sol has already been created, just return it, then close later
                 val cleanupInstructions = listOf(
                     TokenProgram.closeAccountInstruction(

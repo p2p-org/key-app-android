@@ -4,7 +4,6 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
-import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.main.model.Token
@@ -147,15 +146,7 @@ class SwapInstructionsInteractor(
         feePayer: PublicKey,
         closeAfterward: Boolean
     ): AccountInstructions {
-        val associatedAddress = TokenTransaction.getAssociatedTokenAddress(mint, owner)
-
-        val info = rpcRepository.getAccountInfo(associatedAddress)
-        // check if associated address is registered
-        val accountInfo = TokenTransaction.parseAccountInfoData(info, TokenProgram.PROGRAM_ID)
-
-        val isRegistered = if (accountInfo == null) true else {
-            throw IllegalStateException("Associated token account belongs to another user")
-        }
+        val addressData = orcaAddressInteractor.findAssociatedAddress(owner, mint.toBase58())
 
         // cleanup instructions
         val cleanupInstructions = mutableListOf<TransactionInstruction>()
@@ -163,7 +154,7 @@ class SwapInstructionsInteractor(
             cleanupInstructions.add(
                 TokenProgram.closeAccountInstruction(
                     TokenProgram.PROGRAM_ID,
-                    associatedAddress,
+                    addressData.associatedAddress,
                     owner,
                     owner
                 )
@@ -171,28 +162,28 @@ class SwapInstructionsInteractor(
         }
 
         // if associated address is registered, there is no need to creating it again
-        if (isRegistered) {
+        if (!addressData.shouldCreateAssociatedInstruction) {
             return AccountInstructions(
-                account = associatedAddress,
+                account = addressData.associatedAddress,
                 cleanupInstructions = cleanupInstructions
             )
         }
 
         // create associated address
         return AccountInstructions(
-            account = associatedAddress,
+            account = addressData.associatedAddress,
             instructions = mutableListOf(
                 TokenProgram.createAssociatedTokenAccountInstruction(
                     TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                     TokenProgram.PROGRAM_ID,
                     mint,
-                    associatedAddress,
+                    addressData.associatedAddress,
                     owner,
                     feePayer
                 )
             ),
             cleanupInstructions = cleanupInstructions,
-            newWalletPubkey = associatedAddress.toBase58()
+            newWalletPubkey = addressData.associatedAddress.toBase58()
         )
     }
 }
