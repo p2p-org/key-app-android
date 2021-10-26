@@ -1,16 +1,11 @@
-package org.p2p.wallet.swapserum.utils
+package org.p2p.wallet.swap.serum.utils
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.google.gson.Gson
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.api.UsernameApi
-import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
-import org.p2p.wallet.auth.repository.FileLocalRepository
-import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -27,7 +22,7 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumMarketInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInstructionsInteractor
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.user.api.SolanaApi
@@ -41,7 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.crypto.DerivationPath
 
-class DataInitializer {
+class SerumDataInitializer {
 
     private lateinit var userTokens: List<Token.Active>
 
@@ -66,16 +61,13 @@ class DataInitializer {
 
     private lateinit var mainLocalRepository: MainLocalRepository
 
-    private lateinit var instructionsInteractor: SerumSwapInstructionsInteractor
+    private lateinit var instructionsInteractor: SwapInstructionsInteractor
     private lateinit var openOrdersInteractor: SerumOpenOrdersInteractor
     private lateinit var marketInteractor: SerumMarketInteractor
 
     private lateinit var userRepository: UserRepository
-    private lateinit var usernameRemoteRepository: UsernameRemoteRepository
     private lateinit var userLocalRepository: UserLocalRepository
     private lateinit var userInteractor: UserInteractor
-    private lateinit var usernameInteractor: UsernameInteractor
-    private lateinit var fileLocalRepository: FileLocalRepository
 
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor
 
@@ -129,34 +121,16 @@ class DataInitializer {
             rpcRepository = rpcRepository
         )
 
-        usernameRemoteRepository = UsernameRemoteRepository(
-            api = RetrofitBuilder
-                .getRetrofit(context.getString(R.string.feeRelayerBaseUrl))
-                .create(UsernameApi::class.java),
-            gson = Gson(),
-            tokenKeyProvider = tokenKeyProvider
-        )
-
-        fileLocalRepository = FileLocalRepository(context)
-
-        usernameInteractor = UsernameInteractor(
-            usernameRepository = usernameRemoteRepository,
-            fileLocalRepository = fileLocalRepository,
-            sharedPreferences = sharedPreferences,
-            tokenKeyProvider = tokenKeyProvider
-
-        )
-
         secretKeyInteractor = SecretKeyInteractor(
             authRepository = AuthRemoteRepository(),
             userLocalRepository = userLocalRepository,
             rpcRepository = rpcRepository,
             tokenProvider = tokenKeyProvider,
             sharedPreferences = sharedPreferences,
-            usernameInteractor = usernameInteractor
+            usernameInteractor = mockk()
         )
 
-        instructionsInteractor = SerumSwapInstructionsInteractor(rpcRepository)
+        instructionsInteractor = SwapInstructionsInteractor(rpcRepository)
         openOrdersInteractor = SerumOpenOrdersInteractor(rpcRepository)
         marketInteractor = SerumMarketInteractor(rpcRepository)
 

@@ -1,22 +1,22 @@
-package org.p2p.wallet.swapserum
+package org.p2p.wallet.swap.serum
 
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-import org.p2p.wallet.swapserum.utils.DataInitializer
-import org.p2p.wallet.swapserum.utils.SerumSwapData.BTCUSDCMarket
-import org.p2p.wallet.swapserum.utils.SerumSwapData.SOL
-import org.p2p.wallet.swapserum.utils.SerumSwapData.SRM
-import org.p2p.wallet.swapserum.utils.SerumSwapData.SRMUSDCMarket
-import org.p2p.wallet.swapserum.utils.SerumSwapData.USDC
-import org.p2p.wallet.swapserum.utils.SerumSwapData.USDT
-import org.p2p.wallet.utils.scaleMedium
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
+import org.p2p.wallet.swap.serum.utils.SerumDataInitializer
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.BTCUSDCMarket
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.SOL
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRM
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRMUSDCMarket
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDC
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDT
+import org.p2p.wallet.utils.scaleMedium
 import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -24,7 +24,7 @@ import java.math.BigInteger
 @RunWith(RobolectricTestRunner::class)
 class SerumSwapMarketTests {
 
-    private val initializer = DataInitializer()
+    private val initializer = SerumDataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor

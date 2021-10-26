@@ -39,7 +39,7 @@ class SerumOpenOrdersInteractor(
         val instructions = mutableListOf(
             SystemProgram.createAccount(
                 fromPublicKey = ownerAddress,
-                newAccountPublikkey = order.publicKey,
+                newAccountPublicKey = order.publicKey,
                 lamports = requestMinRentExemption,
                 space = OpenOrders.getLayoutSpan(programId.toBase58()),
                 programId = programId

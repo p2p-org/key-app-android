@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.interactor.serum
+package org.p2p.wallet.swap.interactor
 
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.rpc.repository.RpcRepository
@@ -12,7 +12,7 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import java.math.BigInteger
 
-class SerumSwapInstructionsInteractor(
+class SwapInstructionsInteractor(
     private val rpcRepository: RpcRepository
 ) {
 
@@ -73,15 +73,15 @@ class SerumSwapInstructionsInteractor(
         }
 
         // if token is native
-        return prepareForCreatingTempAccountAndClose(
-            source = source,
+        return prepareCreatingWSOLAccountAndCloseWhenDone(
+            from = source,
             amount = amount,
             payer = feePayer
         )
     }
 
-    private suspend fun prepareForCreatingTempAccountAndClose(
-        source: PublicKey,
+    suspend fun prepareCreatingWSOLAccountAndCloseWhenDone(
+        from: PublicKey,
         amount: BigInteger,
         payer: PublicKey
     ): AccountInstructions {
@@ -96,8 +96,8 @@ class SerumSwapInstructionsInteractor(
             account = newAccount.publicKey,
             instructions = mutableListOf(
                 SystemProgram.createAccount(
-                    fromPublicKey = source,
-                    newAccountPublikkey = newAccount.publicKey,
+                    fromPublicKey = from,
+                    newAccountPublicKey = newAccount.publicKey,
                     lamports = amount.toLong() + minBalanceForRentExemption
                 ),
                 TokenProgram.initializeAccountInstruction(
@@ -120,7 +120,7 @@ class SerumSwapInstructionsInteractor(
         )
     }
 
-    private suspend fun prepareDestinationAccountAndInstructions(
+    suspend fun prepareDestinationAccountAndInstructions(
         myAccount: PublicKey,
         destination: PublicKey?,
         destinationMint: PublicKey,
@@ -141,7 +141,7 @@ class SerumSwapInstructionsInteractor(
         )
     }
 
-    private suspend fun prepareForCreatingAssociatedTokenAccount(
+    suspend fun prepareForCreatingAssociatedTokenAccount(
         owner: PublicKey,
         mint: PublicKey,
         feePayer: PublicKey,

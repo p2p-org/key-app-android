@@ -1,19 +1,19 @@
-package org.p2p.wallet.swapserum
+package org.p2p.wallet.swap.serum
 
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-import org.p2p.wallet.swapserum.utils.CoroutineTest
-import org.p2p.wallet.swapserum.utils.DataInitializer
-import org.p2p.wallet.swapserum.utils.SerumSwapData.FIDA
-import org.p2p.wallet.swapserum.utils.SerumSwapData.SRMUSDCMarket
-import org.p2p.wallet.swapserum.utils.SerumSwapData.USDC
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
+import org.p2p.wallet.swap.serum.utils.CoroutineTest
+import org.p2p.wallet.swap.serum.utils.SerumDataInitializer
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.FIDA
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRMUSDCMarket
+import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDC
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -23,7 +23,7 @@ internal class SerumSwapTransitiveTests : CoroutineTest() {
         const val DEFAULT_SLIPPAGE = 0.005
     }
 
-    private val initializer = DataInitializer()
+    private val initializer = SerumDataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
     private lateinit var swapMarketInteractor: SerumSwapMarketInteractor

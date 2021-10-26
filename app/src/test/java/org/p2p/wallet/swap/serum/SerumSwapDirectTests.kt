@@ -1,9 +1,5 @@
-package org.p2p.wallet.swapserum
+package org.p2p.wallet.swap.serum
 
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
-import org.p2p.wallet.swapserum.utils.CoroutineTest
-import org.p2p.wallet.swapserum.utils.DataInitializer
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertNotNull
@@ -11,6 +7,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+import org.p2p.wallet.swap.serum.utils.CoroutineTest
+import org.p2p.wallet.swap.serum.utils.SerumDataInitializer
 import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
 
@@ -21,7 +21,7 @@ internal class SerumSwapDirectTests : CoroutineTest() {
         const val DEFAULT_SLIPPAGE = 0.005
     }
 
-    private val initializer = DataInitializer()
+    private val initializer = SerumDataInitializer()
 
     private lateinit var serumSwapInteractor: SerumSwapInteractor
 

@@ -1,28 +1,43 @@
 package org.p2p.wallet.swap
 
+import android.content.Context
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.swap.api.InternalWebApi
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaSwapAmountInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaAmountInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
-import org.p2p.wallet.swap.repository.OrcaSwapInMemoryRepository
-import org.p2p.wallet.swap.repository.OrcaSwapLocalRepository
+import org.p2p.wallet.swap.interactor.serum.SerumMarketInteractor
+import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
+import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
+import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
+import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
+import org.p2p.wallet.swap.repository.OrcaSwapInternalRemoteRepository
+import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
-import org.p2p.wallet.swap.interactor.serum.SerumMarketInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInstructionsInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-import org.koin.dsl.bind
-import org.koin.dsl.module
 
 object SwapModule : InjectionModule {
 
     override fun create() = module {
+        single {
+            val baseUrl = get<Context>().getString(R.string.p2pWebBaseUrl)
+            getRetrofit(baseUrl, "p2pWeb", null).create(InternalWebApi::class.java)
+        }
+
+        single {
+            OrcaSwapInternalRemoteRepository(get(), get())
+        } bind OrcaSwapInternalRepository::class
 
         single {
             SerumSwapInteractor(
@@ -39,13 +54,15 @@ object SwapModule : InjectionModule {
         factory { SerumOpenOrdersInteractor(get()) }
         factory { SwapSerializationInteractor(get(), get()) }
         factory { SerumSwapAmountInteractor(get(), get()) }
-        factory { SerumSwapInstructionsInteractor(get()) }
+        factory { SwapInstructionsInteractor(get()) }
         factory { SerumSwapMarketInteractor(get()) }
 
-        factory { OrcaSwapInteractor(get(), get(), get(), get(), get(), get()) }
-        factory { OrcaSwapAmountInteractor(get()) }
-        factory { OrcaSwapRemoteRepository(get()) } bind OrcaSwapRepository::class
-        factory { OrcaSwapInMemoryRepository() } bind OrcaSwapLocalRepository::class
+        single { OrcaPoolInteractor(get(), get()) }
+        factory { OrcaInstructionsInteractor(get()) }
+        factory { OrcaAddressInteractor(get(), get()) }
+        factory { OrcaSwapInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory { OrcaAmountInteractor(get()) }
+        factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->
             OrcaSwapPresenter(token, get(), get(), get())

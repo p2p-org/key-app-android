@@ -30,14 +30,14 @@ object SystemProgram {
 
     fun createAccount(
         fromPublicKey: PublicKey,
-        newAccountPublikkey: PublicKey,
+        newAccountPublicKey: PublicKey,
         lamports: Long,
         space: Long = TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong(),
         programId: PublicKey = TokenProgram.PROGRAM_ID
     ): TransactionInstruction {
         val keys = ArrayList<AccountMeta>()
         keys.add(AccountMeta(fromPublicKey, isSigner = true, isWritable = true))
-        keys.add(AccountMeta(newAccountPublikkey, isSigner = true, isWritable = true))
+        keys.add(AccountMeta(newAccountPublicKey, isSigner = true, isWritable = true))
         val data = ByteArray(4 + 8 + 8 + 32)
         Utils.uint32ToByteArrayLE(PROGRAM_INDEX_CREATE_ACCOUNT.toLong(), data, 0)
         Utils.int64ToByteArrayLE(lamports, data, 4)

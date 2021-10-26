@@ -135,16 +135,16 @@ class SerumSwapFragment :
     override fun showPrice(priceData: PriceData) {
         binding.priceGroup.isVisible = true
 
-        val result = "${priceData.sourceAmount} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
+        val result = "${priceData.sourcePrice} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
         binding.exchangeTextView.text = result
 
         var isReverse = false
         binding.reverseImageView.setOnClickListener {
             isReverse = !isReverse
             val updated = if (isReverse) {
-                "${priceData.destinationAmount} ${priceData.destinationSymbol} per ${priceData.sourceSymbol}"
+                "${priceData.destinationPrice} ${priceData.destinationSymbol} per ${priceData.sourceSymbol}"
             } else {
-                "${priceData.sourceAmount} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
+                "${priceData.sourcePrice} ${priceData.sourceSymbol} per ${priceData.destinationSymbol}"
             }
 
             binding.exchangeTextView.text = updated
