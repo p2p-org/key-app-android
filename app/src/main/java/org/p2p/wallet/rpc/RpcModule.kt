@@ -32,7 +32,11 @@ object RpcModule : InjectionModule {
 
             /* This string is in gitignore and it's null when CI/CD runs some actions */
             val rpcPoolApiKey = BuildConfig.rpcPoolApiKey
-            val baseUrl = String.format(Environment.RPC_POOL.endpoint, rpcPoolApiKey).replace("//", "/")
+            val baseUrl = if (rpcPoolApiKey.isNotBlank()) {
+                "${Environment.RPC_POOL.endpoint}$rpcPoolApiKey/"
+            } else {
+                Environment.RPC_POOL.endpoint
+            }
             val rpcpool = getRetrofit(baseUrl, interceptor = serverErrorInterceptor)
             val rpcpoolRpcApi = rpcpool.create(RpcApi::class.java)
 

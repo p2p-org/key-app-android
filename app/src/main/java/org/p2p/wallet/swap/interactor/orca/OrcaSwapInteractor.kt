@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.interactor.orca
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
@@ -44,6 +45,10 @@ class OrcaSwapInteractor(
     private val orcaInstructionsInteractor: OrcaInstructionsInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
+
+    companion object {
+        private const val DELAY_FIVE_SECONDS_MS = 5000L
+    }
 
     private var info: OrcaSwapInfo? = null
 
@@ -325,12 +330,23 @@ class OrcaSwapInteractor(
 
         // FIRST TRANSACTION
 
+        var createTransactionConfirmed = false
+
         val (intermediary, destination) = createIntermediaryTokenAndDestinationTokenAddressIfNeeded(
             pool0 = pool0,
             pool1 = pool1,
             toWalletPubkey = toWalletPubkey,
-            feeRelayerFeePayer = feeRelayerFeePayer
+            feeRelayerFeePayer = feeRelayerFeePayer,
+            onConfirmed = { createTransactionConfirmed = true }
         )
+
+        while (!createTransactionConfirmed) {
+            /* Checking transaction is confirmed every 5 seconds */
+            Timber.tag("TransitiveSwap").d("Account creation is not confirmed yet, will check in 5 seconds")
+            delay(DELAY_FIVE_SECONDS_MS)
+        }
+
+        Timber.tag("TransitiveSwap").d("Account creation is confirmed, going forward")
 
         val pool0AccountInstructions = poolInteractor.constructExchange(
             pool = pool0,
@@ -425,7 +441,8 @@ class OrcaSwapInteractor(
         pool0: OrcaPool,
         pool1: OrcaPool,
         toWalletPubkey: String?,
-        feeRelayerFeePayer: PublicKey?
+        feeRelayerFeePayer: PublicKey?,
+        onConfirmed: (isConfirmed: Boolean) -> Unit
     ): Pair<PublicKey, PublicKey> {
 
         val owner = tokenKeyProvider.publicKey.toPublicKey()
@@ -461,6 +478,7 @@ class OrcaSwapInteractor(
 
         // if token address has already been created, then no need to send any transactions
         if (intermediaryData.instructions.isEmpty() && destinationData.instructions.isEmpty()) {
+            onConfirmed(true)
             return intermediaryData.account to destinationData.account
         }
 
@@ -480,6 +498,7 @@ class OrcaSwapInteractor(
         val signature = swapRepository.sendAndWait(serializedTransaction) {
             // TODO: wait for confirmation and return the addresses
             // notificationHandler.observeSignatureNotification(signature: txid)
+            onConfirmed(true)
         }
 
         return intermediaryData.account to destinationData.account
