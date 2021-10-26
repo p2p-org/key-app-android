@@ -7,11 +7,13 @@ import org.p2p.wallet.restore.model.SecretKey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import kotlin.properties.Delegates
 
 class DerivableAccountsPresenter(
     private val secretKeys: List<SecretKey>,
-    private val secretKeyInteractor: SecretKeyInteractor
+    private val secretKeyInteractor: SecretKeyInteractor,
+    private val usernameInteractor: UsernameInteractor
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
@@ -54,7 +56,12 @@ class DerivableAccountsPresenter(
         launch {
             val keys = secretKeys.map { it.text }
             secretKeyInteractor.createAndSaveAccount(path, keys)
-            view?.navigateToCreatePin()
+
+            val usernameExists = usernameInteractor.checkUsernameExist()
+            if (usernameExists.isNullOrEmpty())
+                view?.navigateToReserveUsername()
+            else
+                view?.navigateToCreatePin()
         }
     }
 

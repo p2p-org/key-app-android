@@ -9,6 +9,7 @@ interface DerivableAccountsContract {
 
     interface View : MvpView {
         fun navigateToCreatePin()
+        fun navigateToReserveUsername()
         fun showAccounts(path: DerivationPath, accounts: List<DerivableAccount>)
         fun showPathSelectionDialog(path: DerivationPath)
         fun showLoading(isLoading: Boolean)

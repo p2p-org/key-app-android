@@ -33,6 +33,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.withArgs
 import org.json.JSONObject
+import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 
 class ReservingUsernameFragment :
     BaseMvpFragment<ReservingUsernameContract.View,
@@ -180,6 +181,7 @@ class ReservingUsernameFragment :
     private fun finishNavigation() {
         when (openedFrom) {
             SecurityKeyFragment.TAG -> navigateToPinCode()
+            DerivableAccountsFragment.TAG -> navigateToPinCode()
             else -> popBackStack()
         }
     }
