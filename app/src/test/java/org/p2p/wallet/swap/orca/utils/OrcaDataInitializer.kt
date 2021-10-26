@@ -36,7 +36,6 @@ import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
-import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPools
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.repository.OrcaSwapInternalRemoteRepository
@@ -246,12 +245,18 @@ class OrcaDataInitializer {
         slippage: Double,
         isSimulation: Boolean
     ): OrcaSwapResult {
-        val bestPair = bestPoolsPair.map { rawPool ->
-            var pool = pools[rawPool.name]
+        val bestPair = bestPoolsPair.mapNotNull { rawPool ->
+            var pool = pools[rawPool.name] ?: return@mapNotNull null
             if (rawPool.reversed) {
-                pool = pool?.reversed
+                pool = pool.reversed
             }
-            filledWithUpdatedBalances(pool!!)
+
+            val balanceA = orcaSwapRepository.loadTokenBalance(pool.tokenAccountA)
+            val balanceB = orcaSwapRepository.loadTokenBalance(pool.tokenAccountB)
+
+            pool.tokenABalance = balanceA
+            pool.tokenABalance = balanceB
+            pool
         }
 
         return interactor.swap(
@@ -272,14 +277,4 @@ class OrcaDataInitializer {
         val name: String,
         val reversed: Boolean
     )
-
-    private suspend fun filledWithUpdatedBalances(pool: OrcaPool): OrcaPool {
-        val balanceA = orcaSwapRepository.loadTokenBalance(pool.tokenAccountA)
-        val balanceB = orcaSwapRepository.loadTokenBalance(pool.tokenAccountB)
-
-        pool.tokenABalance = balanceA
-        pool.tokenABalance = balanceB
-
-        return pool
-    }
 }

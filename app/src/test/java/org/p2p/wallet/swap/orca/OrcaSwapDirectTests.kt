@@ -5,8 +5,6 @@ import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
 import org.p2p.wallet.swap.orca.utils.OrcaSwapData.socnSOLStableAquafarmsPool
 import org.p2p.wallet.swap.orca.utils.OrcaSwapData.socnUSDCAquafarmsPool
-import org.p2p.wallet.swap.orca.utils.OrcaSwapData.solNinjaAquafarmsPool
-import org.p2p.wallet.swap.orca.utils.OrcaSwapData.usdcMNGOAquafarmsPool
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before

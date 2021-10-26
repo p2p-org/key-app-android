@@ -149,7 +149,6 @@ class SerumDataInitializer {
             tokenKeyProvider = tokenKeyProvider,
         )
 
-
         secretKeyInteractor = SecretKeyInteractor(
             authRepository = AuthRemoteRepository(),
             userLocalRepository = userLocalRepository,

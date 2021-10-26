@@ -1,20 +1,20 @@
-//package org.p2p.wallet.swap.orca
+// package org.p2p.wallet.swap.orca
 //
-//import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
-//import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
-//import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
-//import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
-//import junit.framework.Assert.assertEquals
-//import kotlinx.coroutines.runBlocking
-//import org.junit.After
-//import org.junit.Before
-//import org.junit.Test
-//import org.junit.runner.RunWith
-//import org.robolectric.RobolectricTestRunner
-//import java.math.BigInteger
+// import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+// import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
+// import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
+// import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
+// import junit.framework.Assert.assertEquals
+// import kotlinx.coroutines.runBlocking
+// import org.junit.After
+// import org.junit.Before
+// import org.junit.Test
+// import org.junit.runner.RunWith
+// import org.robolectric.RobolectricTestRunner
+// import java.math.BigInteger
 //
-//@RunWith(RobolectricTestRunner::class)
-//class OrcaSwapPreparationTests {
+// @RunWith(RobolectricTestRunner::class)
+// class OrcaSwapPreparationTests {
 //
 //    val btcMint = "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E"
 //    val ethMint = "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"
@@ -37,7 +37,7 @@
 //
 //    @Test
 //    fun testLoadSwap() = runBlocking {
-////        assertEquals(1035, swapInteractor.getSwapInfo()?.routes?.size)
+// //        assertEquals(1035, swapInteractor.getSwapInfo()?.routes?.size)
 //        assertEquals(6738, swapInteractor.getSwapInfo()?.routes?.size)
 //        assertEquals(117, swapInteractor.getSwapInfo()?.tokens?.size)
 //        assertEquals(71, swapInteractor.getSwapInfo()?.pools?.size)
@@ -197,4 +197,4 @@
 //        val inputAmount2 = bestPoolsPair2?.getInputAmount(estimatedAmount2)
 //        assertEquals(BigInteger.valueOf(413909257520L), inputAmount2) // 413.909257520 BTC
 //    }
-//}
+// }

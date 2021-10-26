@@ -63,8 +63,9 @@ data class OrcaPool(
     ): BigInteger? {
         val poolInputAmount = tokenABalance?.amount
         val poolOutputAmount = tokenBBalance?.amount
-        if (poolInputAmount == null || poolOutputAmount == null)
+        if (poolInputAmount == null || poolOutputAmount == null) {
             throw IllegalStateException("Account balances not found")
+        }
 
         val fees = getFee(inputAmount)
         val inputAmountLessFee = inputAmount - fees
