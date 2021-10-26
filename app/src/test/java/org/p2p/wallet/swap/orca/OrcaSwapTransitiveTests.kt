@@ -1,28 +1,32 @@
 package org.p2p.wallet.swap.orca
 
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor2
-import org.p2p.wallet.swap.model.orca.OrcaSwapResult
-import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
-import org.p2p.wallet.swap.orca.utils.OrcaSwapData.solUSDCAquafarmsPool
-import org.p2p.wallet.swap.orca.utils.OrcaSwapData.usdcKUROAquafarmsPool
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+import org.p2p.wallet.swap.model.orca.OrcaSwapResult
+import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
+import org.p2p.wallet.swap.orca.utils.OrcaSwapData.solUSDCAquafarmsPool
+import org.p2p.wallet.swap.orca.utils.OrcaSwapData.usdcKUROAquafarmsPool
+import org.robolectric.RobolectricTestRunner
 
-/* TODO: not ready yet */
-// @RunWith(RobolectricTestRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class OrcaSwapTransitiveTests {
 
     private val initializer = OrcaDataInitializer()
 
-    private lateinit var swapInteractor: OrcaSwapInteractor2
+    private lateinit var swapInteractor: OrcaSwapInteractor
     private lateinit var tokenKeyProvider: TokenKeyProvider
+
+    private val slimPubkey = "ECHvg7FdfakbKQpeStwh1K3iU6XwfBQWMNrH7rUAQkN7"
 
     @Before
     fun setUp() {
-        initializer.initialize()
+        initializer.initialize(false)
         tokenKeyProvider = initializer.getTokenKeyProvider()
         swapInteractor = initializer.getSwapInteractor()
     }
@@ -48,5 +52,22 @@ class OrcaSwapTransitiveTests {
         )
 
         assertEquals(swapSimulation is OrcaSwapResult.Success, true)
+    }
+
+    @Test
+    fun testTransitiveSwapSPLToUncreatedSPL() = runBlocking {
+        val swapSimulation = initializer.fillPoolsBalancesAndSwap(
+            fromWalletPubkey = slimPubkey,
+            toWalletPubkey = null,
+            bestPoolsPair = listOf(
+                OrcaDataInitializer.RawPool("SLIM/USDC[aquafarm]", false),
+                OrcaDataInitializer.RawPool("ABR/USDC[aquafarm]", true)
+            ),
+            amount = 0.01,
+            slippage = 0.05,
+            isSimulation = true
+        )
+
+        assert(swapSimulation is OrcaSwapResult.Success)
     }
 }

@@ -20,7 +20,7 @@ data class OrcaPool(
     val tokenAccountA: PublicKey,
     val tokenAccountB: PublicKey,
     val feeAccount: PublicKey,
-    val hostFeeAccount: PublicKey?,
+    val hostFeeAccount: PublicKey? = null,
     val feeNumerator: BigInteger,
     val feeDenominator: BigInteger,
     val ownerTradeFeeNumerator: BigInteger,
@@ -136,6 +136,11 @@ data class OrcaPool(
         }
     }
 
+    fun calculatingFees(inputAmount: BigInteger): BigInteger {
+        val inputFees = getFee(inputAmount)
+        return _getOutputAmount(inputFees)
+    }
+
     fun getMinimumAmountOut(
         inputAmount: BigInteger,
         slippage: Double
@@ -189,11 +194,38 @@ data class OrcaPool(
     }
 
     // MARK: - Helpers
-    fun getFee(inputAmount: BigInteger): BigInteger {
+    private fun getFee(inputAmount: BigInteger): BigInteger {
         if (curveType != STABLE && curveType != CONSTANT_PRODUCT) throw IllegalStateException("Curve type unknown")
         val tradingFee = computeFee(inputAmount, feeNumerator, feeDenominator)
         val ownerFee = computeFee(inputAmount, ownerTradeFeeNumerator, ownerTradeFeeDenominator)
         return tradingFee + ownerFee
+    }
+
+    private fun _getOutputAmount(inputAmount: BigInteger): BigInteger {
+        val poolInputAmount = tokenABalance?.amount
+        val poolOutputAmount = tokenBBalance?.amount
+
+        if (poolInputAmount == null || poolOutputAmount == null) {
+            throw IllegalStateException("Account balances not found")
+        }
+
+        when (curveType) {
+            STABLE -> {
+                val amp = amp ?: throw IllegalStateException("Amp doesn't exist in pool config")
+                return computeOutputAmount(
+                    inputAmount = inputAmount,
+                    inputPoolAmount = poolInputAmount,
+                    outputPoolAmount = poolOutputAmount,
+                    amp = amp
+                )
+            }
+            CONSTANT_PRODUCT -> {
+                val invariant = poolInputAmount * poolOutputAmount
+                val newPoolOutputAmount = ceilingDivision(invariant, poolInputAmount + inputAmount).first
+                return poolOutputAmount - newPoolOutputAmount
+            }
+            else -> throw IllegalStateException("Curve type is unknown $curveType")
+        }
     }
 
     private fun computeFee(baseAmount: BigInteger, feeNumerator: BigInteger, feeDenominator: BigInteger): BigInteger {
@@ -218,16 +250,14 @@ data class OrcaPool(
             val estimatedAmountOfPool0 = pool0.getOutputAmount(inputAmount) ?: return null
 
             // direct
-            if (size == 1) {
-                return estimatedAmountOfPool0
+            return if (size == 1) {
+                estimatedAmountOfPool0
             }
 
             // transitive
             else {
                 val pool1 = this[1]
-                val estimatedAmountOfPool1 = pool1.getOutputAmount(estimatedAmountOfPool0) ?: return null
-
-                return estimatedAmountOfPool1
+                pool1.getOutputAmount(estimatedAmountOfPool0)
             }
         }
 
@@ -248,8 +278,7 @@ data class OrcaPool(
                 val inputAmountOfPool1 = pool1.getInputAmount(estimatedAmount) ?: return null
                 val pool0 = this[0]
 
-                val inputAmountOfPool0 = pool0.getInputAmount(inputAmountOfPool1) ?: return null
-                return inputAmountOfPool0
+                return pool0.getInputAmount(inputAmountOfPool1) ?: return null
             }
         }
 

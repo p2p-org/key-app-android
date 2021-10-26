@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.orca
 
-import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor2
+import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
 import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
@@ -22,7 +22,7 @@ class OrcaSwapPreparationTests {
 
     private val initializer = OrcaDataInitializer()
 
-    private lateinit var swapInteractor: OrcaSwapInteractor2
+    private lateinit var swapInteractor: OrcaSwapInteractor
 
     @Before
     fun setUp() {

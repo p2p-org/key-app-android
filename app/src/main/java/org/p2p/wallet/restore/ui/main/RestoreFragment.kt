@@ -42,34 +42,60 @@ class RestoreFragment : BaseFragment(R.layout.fragment_restore) {
         if (!BuildConfig.DEBUG) return
         requireContext().copyToClipBoard(
             listOf(
-                "oval",
-                "you",
-                "token",
-                "plug",
-                "copper",
-                "visa",
-                "employ",
-                "link",
-                "sell",
-                "asset",
-                "kick",
-                "sausage"
+                "matter",
+                "outer",
+                "client",
+                "aspect",
+                "pear",
+                "cigar",
+                "caution",
+                "robust",
+                "easily",
+                "merge",
+                "dwarf",
+                "wide",
+                "short",
+                "sail",
+                "unusual",
+                "indicate",
+                "roast",
+                "giraffe",
+                "clay",
+                "meat",
+                "crowd",
+                "exile ",
+                "curious ",
+                "vibrant",
             ).joinToString(" ")
+//            listOf(
+//                "oval",
+//                "you",
+//                "token",
+//                "plug",
+//                "copper",
+//                "visa",
+//                "employ",
+//                "link",
+//                "sell",
+//                "asset",
+//                "kick",
+//                "sausage"
+//            ).joinToString(" ")
 
-    //                    listOf(
-    //                        "miracle",
-    //                        "pizza",
-    //                        "supply",
-    //                        "useful",
-    //                        "steak",
-    //                        "border",
-    //                        "same",
-    //                        "again",
-    //                        "youth",
-    //                        "silver",
-    //                        "access",
-    //                        "hundred",
-    //                    ).joinToString(" ")
+            //                    listOf(
+            //                        "miracle",
+            //                        "pizza",
+            //                        "supply",
+            //                        "useful",
+            //                        "steak",
+            //                        "border",
+            //                        "same",
+            //                        "again",
+            //                        "youth",
+            //                        "silver",
+            //                        "access",
+            //                        "hundred",
+            //                    ).joinToString(" ")
         )
     }
 }

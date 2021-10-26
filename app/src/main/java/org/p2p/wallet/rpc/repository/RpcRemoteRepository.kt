@@ -65,7 +65,6 @@ class RpcRemoteRepository(
             .replace("\n", "")
 
         val params = mutableListOf<Any>()
-
         params.add(base64Trx)
         params.add(RequestConfiguration(encoding = Encoding.BASE64))
 

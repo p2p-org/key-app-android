@@ -23,13 +23,14 @@ import org.p2p.solanaj.serumswap.model.Side
 import org.p2p.solanaj.serumswap.model.SignersAndInstructions
 import org.p2p.solanaj.serumswap.model.SwapParams
 import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class SerumSwapInteractor(
-    private val instructionsInteractor: SerumSwapInstructionsInteractor,
+    private val instructionsInteractor: SwapInstructionsInteractor,
     private val openOrdersInteractor: SerumOpenOrdersInteractor,
     private val marketInteractor: SerumMarketInteractor,
     private val swapMarketInteractor: SerumSwapMarketInteractor,

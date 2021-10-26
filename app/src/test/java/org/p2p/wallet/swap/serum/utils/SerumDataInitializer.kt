@@ -22,7 +22,7 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumMarketInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInstructionsInteractor
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.user.api.SolanaApi
@@ -61,7 +61,7 @@ class SerumDataInitializer {
 
     private lateinit var mainLocalRepository: MainLocalRepository
 
-    private lateinit var instructionsInteractor: SerumSwapInstructionsInteractor
+    private lateinit var instructionsInteractor: SwapInstructionsInteractor
     private lateinit var openOrdersInteractor: SerumOpenOrdersInteractor
     private lateinit var marketInteractor: SerumMarketInteractor
 
@@ -129,7 +129,7 @@ class SerumDataInitializer {
             sharedPreferences = sharedPreferences
         )
 
-        instructionsInteractor = SerumSwapInstructionsInteractor(rpcRepository)
+        instructionsInteractor = SwapInstructionsInteractor(rpcRepository)
         openOrdersInteractor = SerumOpenOrdersInteractor(rpcRepository)
         marketInteractor = SerumMarketInteractor(rpcRepository)
 

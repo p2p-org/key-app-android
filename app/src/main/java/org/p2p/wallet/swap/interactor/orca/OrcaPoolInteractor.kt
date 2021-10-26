@@ -6,27 +6,30 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenSwapProgram
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.swap.interactor.serum.SerumSwapInstructionsInteractor
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPools
+import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaRoute
 import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
+import java.math.BigDecimal
 import java.math.BigInteger
 
 class OrcaPoolInteractor(
     private val orcaSwapRepository: OrcaSwapRepository,
-    private val instructions: SerumSwapInstructionsInteractor
+    private val instructionsInteractor: SwapInstructionsInteractor
 ) {
 
     private val balancesCache = mutableMapOf<String, AccountBalance>()
 
-    /// Construct exchange
+    // / Construct exchange
     suspend fun constructExchange(
         pool: OrcaPool,
         tokens: OrcaTokens,
@@ -46,26 +49,54 @@ class OrcaPoolInteractor(
             throw IllegalStateException("Pool mints are not found")
         }
 
-        // prepare source
-        val sourceAccountInstructions = instructions.prepareSourceAccountAndInstructions(
-            myNativeWallet = owner.publicKey,
-            source = fromTokenPubkey,
-            sourceMint = fromMint,
-            amount = amount,
-            feePayer = feeRelayerFeePayer ?: owner.publicKey
-        )
+        // Create fromTokenAccount when needed
+        val sourceAccountInstructions =
+            if (fromMint.toBase58() == Token.WRAPPED_SOL_MINT && owner.publicKey.equals(fromTokenPubkey)) {
+                instructionsInteractor.prepareCreatingWSOLAccountAndCloseWhenDone(
+                    from = owner.publicKey,
+                    amount = amount,
+                    payer = feeRelayerFeePayer ?: owner.publicKey
+                )
+            } else {
+                AccountInstructions(fromTokenPubkey)
+            }
 
-        // prepare destination
-        val destination = toTokenPubkey?.toPublicKey()
-        val destinationAccountInstructions = if (destination != null && !shouldCreateAssociatedTokenAccount) {
-            AccountInstructions(destination)
+        // If necessary, create a TokenAccount for the output token
+        // If destination token is Solana, create WSOL if needed
+        val destinationAccountInstructions = if (toMint.toBase58() == Token.WRAPPED_SOL_MINT) {
+            val toTokenPublicKey = toTokenPubkey?.toPublicKey()
+            if (toTokenPublicKey != null && toTokenPublicKey.equals(owner.publicKey)) {
+                // wrapped sol has already been created, just return it, then close later
+                val cleanupInstructions = listOf(
+                    TokenProgram.closeAccountInstruction(
+                        TokenProgram.PROGRAM_ID,
+                        toTokenPublicKey,
+                        feeRelayerFeePayer ?: owner.publicKey,
+                        feeRelayerFeePayer ?: owner.publicKey
+                    )
+                )
+                AccountInstructions(
+                    account = toTokenPublicKey,
+                    cleanupInstructions = cleanupInstructions
+                )
+            } else {
+                // create wrapped sol
+                instructionsInteractor.prepareCreatingWSOLAccountAndCloseWhenDone(
+                    from = owner.publicKey,
+                    amount = BigInteger.ZERO,
+                    payer = feeRelayerFeePayer ?: owner.publicKey
+                )
+            }
+        } else if (toTokenPubkey != null) {
+            // If destination is another token and has already been created
+            AccountInstructions(toTokenPubkey.toPublicKey())
         } else {
-            instructions.prepareDestinationAccountAndInstructions(
-                myAccount = owner.publicKey,
-                destination = toTokenPubkey?.toPublicKey(),
-                destinationMint = toMint,
+            // Create associated token address
+            instructionsInteractor.prepareForCreatingAssociatedTokenAccount(
+                owner = owner.publicKey,
+                mint = toMint,
                 feePayer = feeRelayerFeePayer ?: owner.publicKey,
-                closeAfterward = false // FIXME: Check later
+                closeAfterward = false
             )
         }
 
@@ -87,7 +118,6 @@ class OrcaPoolInteractor(
 
         if (feeRelayerFeePayer == null) {
             // approve (if send without feeRelayer)
-
             val approveTransaction = TokenProgram.approveInstruction(
                 TokenProgram.PROGRAM_ID,
                 sourceAccountInstructions.account,
@@ -115,8 +145,8 @@ class OrcaPoolInteractor(
             pool.poolTokenMint,
             pool.feeAccount,
             pool.hostFeeAccount,
-            TokenProgram.PROGRAM_ID, //
-            pool.swapProgramId,// todo: ios has another order of swapprogramid and tokenprogramid
+            TokenProgram.PROGRAM_ID,
+            pool.swapProgramId,
             amount,
             minAmountOut
         )
@@ -130,9 +160,10 @@ class OrcaPoolInteractor(
 
         // send without proxy
         else {
-            val signers = mutableListOf(userTransferAuthority)
+            val signers = mutableListOf<Account>()
             signers += sourceAccountInstructions.signers
             signers += destinationAccountInstructions.signers
+            signers.add(userTransferAuthority)
 
             return AccountInstructions(
                 destinationAccountInstructions.account,
@@ -225,8 +256,8 @@ class OrcaPoolInteractor(
     }
 
     // Find possible destination token (symbol)
-// - Parameter fromTokenName: from token name (symbol)
-// - Returns: List of token symbols that can be swapped to
+    // - Parameter fromTokenName: from token name (symbol)
+    // - Returns: List of token symbols that can be swapped to
     fun findPossibleDestinations(
         info: OrcaSwapInfo,
         fromTokenName: String
@@ -237,6 +268,35 @@ class OrcaPoolInteractor(
             }
             .distinct()
             .sorted()
+    }
+
+    fun calculateLiquidityProviderFees(
+        poolsPair: OrcaPoolsPair,
+        inputAmount: BigDecimal,
+        slippage: Double
+    ): List<BigInteger> {
+        if (poolsPair.size < 1) return emptyList()
+        val pool0 = poolsPair[0]
+
+        val sourceDecimals = pool0.tokenABalance?.decimals ?: throw IllegalStateException("Token A balance is null")
+        val inputAmount = inputAmount.toLamports(sourceDecimals)
+
+        // 1 pool
+        val result = mutableListOf<BigInteger>()
+        val fee0 = pool0.calculatingFees(inputAmount)
+        result.add(fee0)
+
+        // 2 pool
+        if (poolsPair.size == 2) {
+            val pool1 = poolsPair[1]
+
+            val inputAmountLamports = pool0.getMinimumAmountOut(inputAmount, slippage)
+            if (inputAmountLamports != null) {
+                val fee1 = pool1.calculatingFees(inputAmount)
+                result.add(fee1)
+            }
+        }
+        return result
     }
 
     // / Find routes for from and to token name, aka symbol

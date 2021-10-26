@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import io.mockk.mockk
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.infrastructure.db.WalletDatabase
@@ -12,7 +16,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SimpleSecureStorage
 import org.p2p.wallet.main.api.CompareApi
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.repository.MainDatabaseRepository
 import org.p2p.wallet.main.repository.MainLocalRepository
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
@@ -20,10 +23,15 @@ import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.wallet.rpc.repository.RpcRemoteRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.api.InternalWebApi
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
+import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor2
+import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+import org.p2p.wallet.swap.model.orca.OrcaPool
+import org.p2p.wallet.swap.model.orca.OrcaPools
+import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.repository.OrcaSwapInternalRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
@@ -35,14 +43,10 @@ import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.user.repository.UserRepositoryImpl
-import io.mockk.mockk
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import org.p2p.solanaj.crypto.DerivationPath
 
 class OrcaDataInitializer {
 
-    private lateinit var userTokens: List<Token.Active>
+    private lateinit var pools: OrcaPools
 
     private val keys =
         listOf(
@@ -68,16 +72,18 @@ class OrcaDataInitializer {
     private lateinit var userRepository: UserRepository
     private lateinit var userLocalRepository: UserLocalRepository
     private lateinit var userInteractor: UserInteractor
+    private lateinit var swapInstructionsInteractor: SwapInstructionsInteractor
 
     private lateinit var orcaSwapRepository: OrcaSwapRepository
     private lateinit var orcaSwapInternalRepository: OrcaSwapInternalRepository
     private lateinit var orcaPoolInteractor: OrcaPoolInteractor
     private lateinit var instructionsInteractor: OrcaInstructionsInteractor
     private lateinit var addressInteractor: OrcaAddressInteractor
+    private lateinit var serializationInteractor: SwapSerializationInteractor
 
-    private lateinit var interactor: OrcaSwapInteractor2
+    private lateinit var interactor: OrcaSwapInteractor
 
-    fun initialize(shouldMockRepo: Boolean = false) {
+    fun initialize(shouldMockRepo: Boolean = true) {
         context = ApplicationProvider.getApplicationContext()
 
         sharedPreferences = context.getSharedPreferences(
@@ -147,8 +153,11 @@ class OrcaDataInitializer {
             sharedPreferences = sharedPreferences
         )
 
+        swapInstructionsInteractor = SwapInstructionsInteractor(rpcRepository)
+
         orcaPoolInteractor = OrcaPoolInteractor(
-            orcaSwapRepository = orcaSwapRepository
+            orcaSwapRepository = orcaSwapRepository,
+            instructionsInteractor = swapInstructionsInteractor
         )
 
         addressInteractor = OrcaAddressInteractor(
@@ -162,14 +171,17 @@ class OrcaDataInitializer {
             userInteractor = userInteractor
         )
 
-        interactor = OrcaSwapInteractor2(
+        serializationInteractor = SwapSerializationInteractor(rpcRepository, tokenKeyProvider)
+
+        interactor = OrcaSwapInteractor(
             swapRepository = orcaSwapRepository,
             rpcRepository = rpcRepository,
             internalRepository = orcaSwapInternalRepository,
             poolInteractor = orcaPoolInteractor,
             userInteractor = userInteractor,
             orcaInstructionsInteractor = instructionsInteractor,
-            tokenKeyProvider = tokenKeyProvider
+            tokenKeyProvider = tokenKeyProvider,
+            serializationInteractor = serializationInteractor
         )
 
         runBlocking {
@@ -180,19 +192,59 @@ class OrcaDataInitializer {
             delay(1000L)
             secretKeyInteractor.createAndSaveAccount(DerivationPath.BIP32DEPRECATED, keys)
             userInteractor.loadUserTokensAndUpdateData()
-            userTokens = userInteractor.getUserTokens()
 
             interactor.load()
+
+            pools = orcaSwapInternalRepository.getPools()
         }
     }
 
-    fun getSwapInteractor(): OrcaSwapInteractor2 = interactor
+    fun getSwapInteractor(): OrcaSwapInteractor = interactor
 
     fun getTokenKeyProvider(): TokenKeyProvider = tokenKeyProvider
 
-    fun getTokens() = userTokens
+    suspend fun fillPoolsBalancesAndSwap(
+        fromWalletPubkey: String,
+        toWalletPubkey: String?,
+        bestPoolsPair: List<RawPool>,
+        amount: Double,
+        slippage: Double,
+        isSimulation: Boolean
+    ): OrcaSwapResult {
+        val bestPair = bestPoolsPair.map { rawPool ->
+            var pool = pools[rawPool.name]
+            if (rawPool.reversed) {
+                pool = pool?.reversed
+            }
+            filledWithUpdatedBalances(pool!!)
+        }
+
+        return interactor.swap(
+            fromWalletPubkey = fromWalletPubkey,
+            toWalletPubkey = toWalletPubkey,
+            bestPoolsPair = bestPair as MutableList,
+            amount = amount,
+            slippage = slippage,
+            isSimulation = isSimulation
+        )
+    }
 
     fun closeDb() {
         database.close()
+    }
+
+    data class RawPool(
+        val name: String,
+        val reversed: Boolean
+    )
+
+    private suspend fun filledWithUpdatedBalances(pool: OrcaPool): OrcaPool {
+        val balanceA = orcaSwapRepository.loadTokenBalance(pool.tokenAccountA)
+        val balanceB = orcaSwapRepository.loadTokenBalance(pool.tokenAccountB)
+
+        pool.tokenABalance = balanceA
+        pool.tokenABalance = balanceB
+
+        return pool
     }
 }

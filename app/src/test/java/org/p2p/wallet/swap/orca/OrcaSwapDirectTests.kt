@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.orca
 
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor2
+import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
 import org.p2p.wallet.swap.orca.utils.OrcaSwapData.socnSOLStableAquafarmsPool
@@ -20,19 +19,15 @@ class OrcaSwapDirectTests {
 
     private val initializer = OrcaDataInitializer()
 
-    private lateinit var swapInteractor: OrcaSwapInteractor2
-
-    private lateinit var userTokens: List<Token.Active>
+    private lateinit var swapInteractor: OrcaSwapInteractor
 
     val socnPubkey = "64DzCPdUpQUTnSgY6hP6ux125vY2v3aWbE4T4G42SM1j"
     val solPubkey = "3h1zGmCwsRJnVk5BuRNMLsPaQu1y2aqXqXDWYCgrp5UG"
     val usdcPubkey = "3uetDDizgTtadDHZzyy9BqxrjQcozMEkxzbKhfZF4tG3"
-    val slimPubkey = "ECHvg7FdfakbKQpeStwh1K3iU6XwfBQWMNrH7rUAQkN7"
 
     @Before
     fun setUp() {
         initializer.initialize()
-        userTokens = initializer.getTokens()
         swapInteractor = initializer.getSwapInteractor()
     }
 

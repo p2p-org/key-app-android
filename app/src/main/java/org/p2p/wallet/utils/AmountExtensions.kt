@@ -55,3 +55,4 @@ fun BigDecimal.isLessThan(value: BigDecimal) = this.compareTo(value) == -1
 
 fun Double.isZero() = this == ZERO_VALUE
 fun BigInteger.isZero() = this.compareTo(BigInteger.ZERO) == 0
+fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1

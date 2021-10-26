@@ -1,7 +1,6 @@
 package org.p2p.wallet.user
 
 import android.content.Context
-import com.google.gson.Gson
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule

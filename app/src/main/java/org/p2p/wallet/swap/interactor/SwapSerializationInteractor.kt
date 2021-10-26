@@ -15,6 +15,31 @@ class SwapSerializationInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
+    // / Traditional sending without FeeRelayer
+    // / - Parameters:
+    // /   - instructions: transaction's instructions
+    // /   - recentBlockhash: recentBlockhash
+    // /   - signers: signers
+    // /   - isSimulation: define if this is a simulation or real transaction
+    // / - Returns: transaction id
+    suspend fun serializeAndSend(
+        instructions: List<TransactionInstruction>,
+        recentBlockhash: String? = null,
+        signers: List<Account>,
+        isSimulation: Boolean
+    ): String {
+        val serializedTransaction = serializeTransaction(
+            instructions = instructions,
+            recentBlockhash = recentBlockhash,
+            signers = signers
+        )
+        return if (isSimulation) {
+            rpcRepository.simulateTransaction(serializedTransaction)
+        } else {
+            rpcRepository.sendTransaction(serializedTransaction)
+        }
+    }
+
     suspend fun sendTransaction(serializedTransaction: String, isSimulation: Boolean): String =
         if (isSimulation) {
             rpcRepository.simulateTransaction(serializedTransaction)
