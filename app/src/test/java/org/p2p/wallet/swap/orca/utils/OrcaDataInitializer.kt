@@ -4,12 +4,19 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.google.gson.Gson
 import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
+import org.p2p.wallet.auth.repository.FileLocalRepository
+import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.repository.UsernameRemoteRepository
+import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -50,8 +57,18 @@ class OrcaDataInitializer {
 
     private val keys =
         listOf(
-            "oval", "you", "token", "plug", "copper", "visa",
-            "employ", "link", "sell", "asset", "kick", "sausage"
+            "miracle",
+            "pizza",
+            "supply",
+            "useful",
+            "steak",
+            "border",
+            "same",
+            "again",
+            "youth",
+            "silver",
+            "access",
+            "hundred"
         )
 
     private lateinit var context: Context
@@ -80,6 +97,10 @@ class OrcaDataInitializer {
     private lateinit var instructionsInteractor: OrcaInstructionsInteractor
     private lateinit var addressInteractor: OrcaAddressInteractor
     private lateinit var serializationInteractor: SwapSerializationInteractor
+
+    private lateinit var usernameInteractor: UsernameInteractor
+    private lateinit var usernameRepository: UsernameRepository
+    private lateinit var fileLocalRepository: FileRepository
 
     private lateinit var interactor: OrcaSwapInteractor
 
@@ -145,25 +166,42 @@ class OrcaDataInitializer {
             rpcRepository = rpcRepository
         )
 
+        usernameRepository = UsernameRemoteRepository(
+            api = RetrofitBuilder
+                .getRetrofit(context.getString(R.string.feeRelayerBaseUrl))
+                .create(UsernameApi::class.java),
+            gson = Gson(),
+            tokenKeyProvider = tokenKeyProvider
+        )
+
+        fileLocalRepository = FileLocalRepository(context)
+
+        usernameInteractor = UsernameInteractor(
+            usernameRepository = usernameRepository,
+            fileLocalRepository = fileLocalRepository,
+            sharedPreferences = sharedPreferences,
+            tokenKeyProvider = tokenKeyProvider,
+        )
+
         secretKeyInteractor = SecretKeyInteractor(
             authRepository = AuthRemoteRepository(),
             userLocalRepository = userLocalRepository,
             rpcRepository = rpcRepository,
             tokenProvider = tokenKeyProvider,
             sharedPreferences = sharedPreferences,
-            usernameInteractor = mockk()
-        )
-
-        swapInstructionsInteractor = SwapInstructionsInteractor(rpcRepository)
-
-        orcaPoolInteractor = OrcaPoolInteractor(
-            orcaSwapRepository = orcaSwapRepository,
-            instructionsInteractor = swapInstructionsInteractor
+            usernameInteractor = usernameInteractor
         )
 
         addressInteractor = OrcaAddressInteractor(
             rpcRepository = rpcRepository,
             userLocalRepository = userLocalRepository
+        )
+
+        swapInstructionsInteractor = SwapInstructionsInteractor(rpcRepository, addressInteractor)
+
+        orcaPoolInteractor = OrcaPoolInteractor(
+            orcaSwapRepository = orcaSwapRepository,
+            instructionsInteractor = swapInstructionsInteractor
         )
 
         instructionsInteractor = OrcaInstructionsInteractor(addressInteractor)

@@ -54,7 +54,7 @@ object SwapModule : InjectionModule {
         factory { SerumOpenOrdersInteractor(get()) }
         factory { SwapSerializationInteractor(get(), get()) }
         factory { SerumSwapAmountInteractor(get(), get()) }
-        factory { SwapInstructionsInteractor(get()) }
+        factory { SwapInstructionsInteractor(get(), get()) }
         factory { SerumSwapMarketInteractor(get()) }
 
         single { OrcaPoolInteractor(get(), get()) }

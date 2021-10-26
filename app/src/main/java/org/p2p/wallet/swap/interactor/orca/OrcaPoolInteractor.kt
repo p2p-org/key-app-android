@@ -91,7 +91,7 @@ class OrcaPoolInteractor(
             // If destination is another token and has already been created
             AccountInstructions(toTokenPubkey.toPublicKey())
         } else {
-            // Create associated token address
+            // create wrapped sol
             instructionsInteractor.prepareForCreatingAssociatedTokenAccount(
                 owner = owner.publicKey,
                 mint = toMint,

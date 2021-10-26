@@ -113,7 +113,7 @@ class RpcRemoteRepository(
         val rpcRequest = RpcRequest("simulateTransaction", params)
         val result = rpcApi.simulateTransaction(rpcRequest).result
         if (result.value.error != null) {
-            throw IllegalStateException("Transaction simulation failed: ${result.value.error}")
+            throw IllegalStateException("Transaction simulation failed: ${result.value.linedLogs()}")
         } else return ""
     }
 

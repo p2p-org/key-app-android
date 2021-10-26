@@ -6,7 +6,7 @@ import androidx.core.content.edit
 import org.p2p.wallet.auth.api.CheckCaptchaResponse
 import org.p2p.wallet.auth.api.CheckUsernameResponse
 import org.p2p.wallet.auth.api.RegisterUsernameResponse
-import org.p2p.wallet.auth.repository.FileLocalRepository
+import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import java.io.File
@@ -15,7 +15,7 @@ private const val KEY_USERNAME = "KEY_USERNAME"
 
 class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
-    private val fileLocalRepository: FileLocalRepository,
+    private val fileLocalRepository: FileRepository,
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider
 ) {

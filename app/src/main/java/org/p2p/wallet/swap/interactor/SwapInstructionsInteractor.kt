@@ -1,8 +1,5 @@
 package org.p2p.wallet.swap.interactor
 
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
@@ -10,10 +7,15 @@ import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
+import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class SwapInstructionsInteractor(
-    private val rpcRepository: RpcRepository
+    private val rpcRepository: RpcRepository,
+    private val orcaAddressInteractor: OrcaAddressInteractor
 ) {
 
     suspend fun prepareValidAccountAndInstructions(
@@ -28,7 +30,6 @@ class SwapInstructionsInteractor(
             val accountInstructions = prepareSourceAccountAndInstructions(
                 myNativeWallet = myAccount,
                 source = address ?: myAccount,
-                sourceMint = mint,
                 amount = BigInteger.ZERO,
                 feePayer = feePayer
             )
@@ -60,10 +61,9 @@ class SwapInstructionsInteractor(
     }
 
     // MARK: - Account and instructions
-    private suspend fun prepareSourceAccountAndInstructions(
+    suspend fun prepareSourceAccountAndInstructions(
         myNativeWallet: PublicKey,
         source: PublicKey,
-        sourceMint: PublicKey,
         amount: BigInteger,
         feePayer: PublicKey
     ): AccountInstructions {
@@ -153,7 +153,7 @@ class SwapInstructionsInteractor(
         // check if associated address is registered
         val accountInfo = TokenTransaction.parseAccountInfoData(info, TokenProgram.PROGRAM_ID)
 
-        val isRegistered = if (accountInfo != null) true else {
+        val isRegistered = if (accountInfo == null) true else {
             throw IllegalStateException("Associated token account belongs to another user")
         }
 
