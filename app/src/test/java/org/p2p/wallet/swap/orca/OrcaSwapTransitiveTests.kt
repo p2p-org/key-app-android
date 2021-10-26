@@ -1,18 +1,18 @@
-//package org.p2p.wallet.swap.orca
+// package org.p2p.wallet.swap.orca
 //
-//import kotlinx.coroutines.runBlocking
-//import org.junit.After
-//import org.junit.Before
-//import org.junit.Test
-//import org.junit.runner.RunWith
-//import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-//import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
-//import org.p2p.wallet.swap.model.orca.OrcaSwapResult
-//import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
-//import org.robolectric.RobolectricTestRunner
+// import kotlinx.coroutines.runBlocking
+// import org.junit.After
+// import org.junit.Before
+// import org.junit.Test
+// import org.junit.runner.RunWith
+// import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+// import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+// import org.p2p.wallet.swap.model.orca.OrcaSwapResult
+// import org.p2p.wallet.swap.orca.utils.OrcaDataInitializer
+// import org.robolectric.RobolectricTestRunner
 //
-//@RunWith(RobolectricTestRunner::class)
-//class OrcaSwapTransitiveTests {
+// @RunWith(RobolectricTestRunner::class)
+// class OrcaSwapTransitiveTests {
 //
 //    private val initializer = OrcaDataInitializer()
 //
@@ -34,23 +34,23 @@
 //    }
 //
 //    // Transitive SOL to SPL
-////    @Test
-////    fun testTransitiveSwapSOLToCreatedSPL() = runBlocking {
-////        val amount: Double = 0.01 // 0.001 SOL to created KURO
-////        val solPubkey = tokenKeyProvider.publicKey
-////
-////        val kuroPubkey = ""
-////        val swapSimulation = swapInteractor.swap(
-////            fromWalletPubkey = solPubkey,
-////            toWalletPubkey = kuroPubkey,
-////            bestPoolsPair = mutableListOf(solUSDCAquafarmsPool, usdcKUROAquafarmsPool),
-////            amount = amount,
-////            slippage = 0.05,
-////            isSimulation = true
-////        )
-////
-////        assertEquals(swapSimulation is OrcaSwapResult.Success, true)
-////    }
+// //    @Test
+// //    fun testTransitiveSwapSOLToCreatedSPL() = runBlocking {
+// //        val amount: Double = 0.01 // 0.001 SOL to created KURO
+// //        val solPubkey = tokenKeyProvider.publicKey
+// //
+// //        val kuroPubkey = ""
+// //        val swapSimulation = swapInteractor.swap(
+// //            fromWalletPubkey = solPubkey,
+// //            toWalletPubkey = kuroPubkey,
+// //            bestPoolsPair = mutableListOf(solUSDCAquafarmsPool, usdcKUROAquafarmsPool),
+// //            amount = amount,
+// //            slippage = 0.05,
+// //            isSimulation = true
+// //        )
+// //
+// //        assertEquals(swapSimulation is OrcaSwapResult.Success, true)
+// //    }
 //
 //    @Test
 //    fun testTransitiveSwapSPLToUncreatedSPL() = runBlocking {
@@ -68,4 +68,4 @@
 //
 //        assert(swapSimulation is OrcaSwapResult.Success)
 //    }
-//}
+// }
