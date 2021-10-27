@@ -38,7 +38,7 @@ class HistoryInteractor(
 
         return rpcRepository.getConfirmedTransactions(signatures)
             .mapNotNull { response ->
-                val data = TransactionTypeParser.parse(response)
+                val data = TransactionTypeParser.parse(response, null)
 
                 val swap = data.firstOrNull { it is SwapDetails }
                 if (swap != null) {
