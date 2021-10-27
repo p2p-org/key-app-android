@@ -1,5 +1,6 @@
 package org.p2p.wallet.main.ui.send
 
+import android.content.Context
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.main.interactor.SendInteractor
@@ -20,6 +21,7 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.wallet.utils.getClipBoardData
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -100,6 +102,11 @@ class SendPresenter(
         this.networkType = networkType
         view?.showNetworkDestination(networkType)
         calculateFee()
+    }
+
+    override fun checkClipBoard(context: Context) {
+        val clipBoardData = context.getClipBoardData()
+        clipBoardData.let { view?.setEnablePasteButton(clipBoardData.toString()) }
     }
 
     override fun send() {

@@ -1,5 +1,6 @@
 package org.p2p.wallet.main.ui.send
 
+import android.content.Context
 import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
@@ -40,6 +41,7 @@ interface SendContract {
         fun showBufferUsernameResolvedOk()
         fun showBufferUsernameResolvedNotOk()
         fun showBufferOther()
+        fun setEnablePasteButton(data: String?)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -53,5 +55,6 @@ interface SendContract {
         fun switchCurrency()
         fun setShouldAskConfirmation(shouldAsk: Boolean)
         fun setNetworkDestination(networkType: NetworkType)
+        fun checkClipBoard(context: Context)
     }
 }

@@ -30,6 +30,8 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.utils.clearClipBoard
+import org.p2p.wallet.utils.toast
 import java.math.BigDecimal
 
 class SendFragment :
@@ -121,9 +123,7 @@ class SendFragment :
             }
 
             scanQrTextView.setOnClickListener {
-            }
-
-            pasteTextView.setOnClickListener {
+                requireActivity().clearClipBoard()
             }
 
             p2pUsernameTextView.setOnClickListener {
@@ -141,6 +141,7 @@ class SendFragment :
         )
 
         presenter.loadInitialData()
+        presenter.checkClipBoard(requireContext())
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -282,6 +283,13 @@ class SendFragment :
 
     override fun showBufferOther() {
         TODO("Not yet implemented")
+    }
+
+    override fun setEnablePasteButton(data: String?) {
+        binding.pasteTextView.setTextColor(colorFromTheme(R.attr.colorAccent))
+        binding.pasteTextView.setOnClickListener {
+            toast(data.toString())
+        }
     }
 
     override fun navigateToQrFromCamera() {

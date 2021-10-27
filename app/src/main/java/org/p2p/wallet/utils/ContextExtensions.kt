@@ -32,6 +32,19 @@ fun Context.copyToClipBoard(content: String) {
     clipboard.setPrimaryClip(clip)
 }
 
+fun Context.getClipBoardData(): CharSequence? {
+    val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+    return if (clipboard.hasPrimaryClip())
+        clipboard.primaryClip?.getItemAt(0)?.text
+    else
+        null
+}
+
+fun Context.clearClipBoard() {
+    val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+    clipboard.clearPrimaryClip()
+}
+
 fun Context.shareText(value: String) {
     val shareIntent = Intent(Intent.ACTION_SEND)
     shareIntent.type = "text/plain"
