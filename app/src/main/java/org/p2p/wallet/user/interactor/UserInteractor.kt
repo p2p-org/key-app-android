@@ -45,6 +45,8 @@ class UserInteractor(
 
     suspend fun getUserTokens(): List<Token.Active> =
         mainLocalRepository.getUserTokens()
+            .sortedByDescending { it.totalInUsd }
+            .sortedByDescending { it.isSOL }
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)

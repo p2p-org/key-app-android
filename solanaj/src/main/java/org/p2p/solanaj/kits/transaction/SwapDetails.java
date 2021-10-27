@@ -5,9 +5,8 @@ import java.util.List;
 
 public class SwapDetails extends TransactionDetails {
 
-    public static String SWAP_PROGRAM_ID = "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP";
-
     public static List<String> KNOWN_SWAP_PROGRAM_IDS = Arrays.asList(
+            "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP",
             "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1",
             "9qvG1zUp8xF1Bi4m6UdRNby1BAAuaDrUxSpv4CmRRMjL",
             "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8"

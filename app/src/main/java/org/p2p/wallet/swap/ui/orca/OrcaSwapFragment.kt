@@ -179,14 +179,12 @@ class OrcaSwapFragment :
                 data.paymentOption
             )
         }
-        TransitionManager.beginDelayedTransition(binding.bodyContentView)
     }
 
     override fun hideCalculations() {
         binding.receiveTextView.text = ""
         binding.destinationAmountTextView.text = ""
         binding.feesGroup.isVisible = false
-        TransitionManager.beginDelayedTransition(binding.bodyContentView)
     }
 
     @SuppressLint("SetTextI18n")

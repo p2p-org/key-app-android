@@ -612,17 +612,18 @@ class OrcaSwapInteractor(
 
     private suspend fun mapTokensForDestination(orcaTokens: List<OrcaToken>): List<Token> {
         val userTokens = userInteractor.getUserTokens()
-        val allTokens = orcaTokens.mapNotNull { orcaToken ->
-            val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
-            if (userToken != null) {
-                return@mapNotNull userToken
-            } else {
-                return@mapNotNull userInteractor.findTokenData(orcaToken.mint)
+        val allTokens = orcaTokens
+            .mapNotNull { orcaToken ->
+                val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
+                if (userToken != null) {
+                    return@mapNotNull userToken
+                } else {
+                    return@mapNotNull userInteractor.findTokenData(orcaToken.mint)
+                }
             }
-        }
+            .sortedByDescending { (it as? Token.Active)?.totalInUsd }
+            .sortedByDescending { it.isSOL }
 
         return allTokens
-            .sortedByDescending { it.isSOL }
-            .sortedByDescending { it is Token.Active }
     }
 }

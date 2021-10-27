@@ -13,13 +13,14 @@ import java.math.BigInteger
 // https://github.com/p2p-org/solana-swift/blob/main/Sources/SolanaSwift/Helpers/TransactionParser.swift#L74-L86
 object TransactionTypeParser {
 
-    fun parse(transaction: ConfirmedTransactionParsed): List<TransactionDetails> {
+    fun parse(transaction: ConfirmedTransactionParsed, myAccountSymbol: String?): List<TransactionDetails> {
         val details: MutableList<TransactionDetails> = ArrayList()
         val signature = transaction.transaction.signatures.firstOrNull().orEmpty()
         val instructions = transaction.transaction.message.instructions
 
         when {
             getOrcaSwapInstructionIndex(instructions) != -1 ->
+//                checkOrcaSwapDetails(transaction, myAccountSymbol)
                 parseDetails(transaction, signature, details)
             getSerumSwapInstructionIndex(instructions) != -1 ->
                 parseSerumSwapTransaction(transaction, signature, details)
@@ -35,6 +36,70 @@ object TransactionTypeParser {
 
         return details
     }
+
+//    private fun checkOrcaSwapDetails(
+//        transaction: ConfirmedTransactionParsed,
+//        myAccountSymbol: String?,
+//    ) {
+//        when {
+//            isLiquidityToPool(transaction.meta.innerInstructions) -> return
+//            isBurn(transaction.meta.innerInstructions) -> return
+//            else -> {
+//                val instructions = transaction.transaction.message.instructions
+//                val innerInstructions = transaction.meta.innerInstructions
+//                val balances = transaction.meta.postTokenBalances
+//                val index = getOrcaSwapInstructionIndex(instructions)
+//                parseSwapTransaction(index, instructions, innerInstructions, balances, myAccountSymbol)
+//            }
+//        }
+//    }
+
+//    private fun parseSwapTransaction(
+//        index: Int,
+//        instructions: List<InstructionParsed>,
+//        innerInstructions: List<ConfirmedTransactionParsed.InnerInstruction>,
+//        postTokenBalances: List<ConfirmedTransactionParsed.TokenBalance>,
+//        myAccountSymbol: String?
+//    ): TransactionDetails? {
+//        // get instruction
+//        if (index >= instructions.size) return null
+//
+//        val instruction = instructions[index]
+//
+//        // group request
+//        var sourceAmountLamports: BigInteger?
+//        var destinationAmountLamports: BigInteger?
+//
+//        // check inner instructions
+//        val data = instruction.data ?: return null
+//        val instructionIndex = Base58Utils.decode(data).first().toInt()
+//        if (instructionIndex != 1) return null
+//        val swapInnerInstruction = innerInstructions.getOrNull(instructionIndex) ?: return null
+//        // get instructions
+//        val transfersInstructions = swapInnerInstruction.instructions.filter {
+//            it.parsed.type == "transfer"
+//        }
+//
+//        if (transfersInstructions.size < 2) return null
+//
+//        val sourceInstruction = transfersInstructions[0]
+//        val destinationInstruction = transfersInstructions[1]
+//
+//        val sourceInfo = sourceInstruction.parsed?.info
+//        val destinationInfo = destinationInstruction.parsed?.info
+//
+//        // get source
+//        val accountInfoRequests = mutableListOf<AccountInfo>()
+//        var sourcePubkey: PublicKey?
+//        if (sourceInfo)
+//            if val sourceString = sourceInfo?.source {
+//                sourcePubkey = try ? PublicKey(string: sourceString)
+//                    accountInfoRequests.append(
+//                        getAccountInfo(account: sourceString, retryWithAccount: sourceInfo?. destination
+//                    )
+//                    )
+//                }
+//    }
 
     private fun parseDetails(
         transaction: ConfirmedTransactionParsed,
@@ -125,8 +190,8 @@ object TransactionTypeParser {
                 var firstIndex = 0
                 var secondIndex = 1
                 if (instructionParsed.size > 2) {
-                    firstIndex += 1
-                    secondIndex += 1
+                    firstIndex = instructionParsed.size - 2
+                    secondIndex = instructionParsed.size - 1
                 }
                 val amountA = instructionParsed[firstIndex].parsed.info["amount"] as String?
                 val userSource = instructionParsed[firstIndex].parsed.info["source"] as String?
@@ -266,6 +331,38 @@ object TransactionTypeParser {
         instructions.indexOfFirst {
             SwapDetails.KNOWN_SWAP_PROGRAM_IDS.contains(it.programId)
         }
+
+    /**
+     * Check liquidity to pool
+     * @param: inner instructions
+     * */
+    private fun isLiquidityToPool(innerInstructions: List<ConfirmedTransactionParsed.InnerInstruction>?): Boolean {
+        val instructions = innerInstructions?.firstOrNull()?.instructions
+        return when (instructions?.size) {
+            3 -> {
+                instructions[0].parsed?.type == "transfer" &&
+                    instructions[1].parsed?.type == "transfer" &&
+                    instructions[2].parsed?.type == "mintTo"
+            }
+            else -> false
+        }
+    }
+
+    /**
+     Check liquidity to pool
+     - Parameter instructions: inner instructions
+     */
+    private fun isBurn(innerInstructions: List<ConfirmedTransactionParsed.InnerInstruction>?): Boolean {
+        val instructions = innerInstructions?.firstOrNull()?.instructions
+        return when (instructions?.size) {
+            3 -> {
+                instructions[0].parsed?.type == "burn" &&
+                    instructions[1].parsed?.type == "transfer" &&
+                    instructions[2].parsed?.type == "transfer"
+            }
+            else -> false
+        }
+    }
 
     private fun isUsdx(value: String?): Boolean {
         return value == SerumSwapProgram.usdcMint.toBase58() || value == SerumSwapProgram.usdtMint.toBase58()
