@@ -119,6 +119,15 @@ class SendFragment :
                 errorTextView.setTextColor(colorFromTheme(color))
                 presenter.setShouldAskConfirmation(!isChecked)
             }
+
+            scanQrTextView.setOnClickListener {
+            }
+
+            pasteTextView.setOnClickListener {
+            }
+
+            p2pUsernameTextView.setOnClickListener {
+            }
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -253,5 +262,33 @@ class SendFragment :
             title = TextContainer(R.string.main_send_wrong_wallet),
             message = TextContainer(R.string.main_send_wrong_wallet_message)
         )
+    }
+
+    override fun showBufferAddressValid() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showBufferAddressValidWithoutFunds() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showBufferUsernameResolvedOk() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showBufferUsernameResolvedNotOk() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showBufferOther() {
+        TODO("Not yet implemented")
+    }
+
+    override fun navigateToQrFromCamera() {
+        TODO("Not yet implemented")
+    }
+
+    override fun navigateToTypingResolve() {
+        TODO("Not yet implemented")
     }
 }

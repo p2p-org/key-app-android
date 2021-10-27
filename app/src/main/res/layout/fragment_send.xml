@@ -40,18 +40,18 @@
                     android:orientation="vertical"
                     app:layout_constraintGuide_percent="0.5" />
 
-                <!--                <View-->
-                <!--                    android:id="@+id/view3"-->
-                <!--                    android:layout_width="0dp"-->
-                <!--                    android:layout_height="0dp"-->
-                <!--                    android:layout_marginHorizontal="20dp"-->
-                <!--                    android:layout_marginTop="20dp"-->
-                <!--                    android:layout_marginBottom="16dp"-->
-                <!--                    android:background="@drawable/bg_stroke_rounded"-->
-                <!--                    app:layout_constraintBottom_toTopOf="@id/currentPriceView"-->
-                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                    app:layout_constraintStart_toStartOf="parent"-->
-                <!--                    app:layout_constraintTop_toTopOf="parent" />-->
+                <View
+                    android:id="@+id/view3"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_stroke_rounded"
+                    app:layout_constraintBottom_toTopOf="@id/currentPriceView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/fromTextView"
@@ -168,8 +168,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:layout_marginEnd="24dp"
-                    android:drawableStart="@drawable/ic_wallet_small"
+                    android:layout_marginEnd="36dp"
+                    android:drawableStart="@drawable/ic_paste"
                     android:drawablePadding="4dp"
                     android:text="@string/main_paste"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
@@ -182,8 +182,8 @@
                     android:id="@+id/scanQrTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:drawableStart="@drawable/ic_wallet_small"
+                    android:layout_marginEnd="32dp"
+                    android:drawableStart="@drawable/ic_scan_qr"
                     android:drawablePadding="4dp"
                     android:text="@string/main_scan_qr"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
@@ -194,17 +194,30 @@
                     tools:ignore="UseCompatTextViewDrawableXml" />
 
                 <TextView
+                    android:id="@+id/to1TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="36dp"
+                    android:text="@string/main_to"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    app:layout_constraintBottom_toBottomOf="@+id/scanQrTextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/scanQrTextView" />
+
+                <TextView
                     android:id="@+id/p2pUsernameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="64dp"
+                    android:drawablePadding="10dp"
                     android:gravity="center"
                     android:text="@string/main_p2p_username_sol_address"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
                     android:textColor="?colorElementSecondary"
+                    app:drawableStartCompat="@drawable/ic_magnifier"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/pasteTextView" />
 
                 <org.p2p.wallet.common.widget.DoubleTextView

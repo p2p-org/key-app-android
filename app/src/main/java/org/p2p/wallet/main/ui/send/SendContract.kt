@@ -33,6 +33,13 @@ interface SendContract {
         fun showNetworkSelection()
         fun hideNetworkSelection()
         fun navigateToTokenSelection(tokens: List<Token.Active>)
+        fun navigateToQrFromCamera()
+        fun navigateToTypingResolve()
+        fun showBufferAddressValid()
+        fun showBufferAddressValidWithoutFunds()
+        fun showBufferUsernameResolvedOk()
+        fun showBufferUsernameResolvedNotOk()
+        fun showBufferOther()
     }
 
     interface Presenter : MvpPresenter<View> {
