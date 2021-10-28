@@ -67,7 +67,7 @@ class RpcRemoteRepository(
         val params = mutableListOf<Any>()
 
         params.add(base64Trx)
-        params.add(RequestConfiguration(encoding = Encoding.BASE64))
+        params.add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
 
         val rpcRequest = RpcRequest("sendTransaction", params)
         return rpcApi.sendTransaction(rpcRequest).result
@@ -83,7 +83,7 @@ class RpcRemoteRepository(
         val params = mutableListOf<Any>()
 
         params.add(base64Trx)
-        params.add(RequestConfiguration(encoding = Encoding.BASE64))
+        params.add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
 
         val rpcRequest = RpcRequest("simulateTransaction", params)
         val result = rpcApi.simulateTransaction(rpcRequest).result
@@ -97,7 +97,7 @@ class RpcRemoteRepository(
 
         val params = mutableListOf<Any>()
         params.add(base64Trx)
-        params.add(RequestConfiguration(encoding = Encoding.BASE64))
+        params.add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
 
         val rpcRequest = RpcRequest("sendTransaction", params)
         return rpcApi.sendTransaction(rpcRequest).result
@@ -108,7 +108,7 @@ class RpcRemoteRepository(
 
         val params = mutableListOf<Any>()
         params.add(base64Trx)
-        params.add(RequestConfiguration(encoding = Encoding.BASE64))
+        params.add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
 
         val rpcRequest = RpcRequest("simulateTransaction", params)
         val result = rpcApi.simulateTransaction(rpcRequest).result
@@ -149,7 +149,7 @@ class RpcRemoteRepository(
         return try {
             val params = listOf(
                 account.toString(),
-                RequestConfiguration(encoding = Encoding.BASE64)
+                RequestConfiguration(encoding = Encoding.BASE64.encoding)
             )
             val rpcRequest = RpcRequest("getAccountInfo", params)
             rpcApi.getAccountInfo(rpcRequest).result
