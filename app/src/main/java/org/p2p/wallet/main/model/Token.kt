@@ -67,15 +67,6 @@ sealed class Token constructor(
 
         fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
 
-        @Suppress("MagicNumber")
-        fun getFormattedAddress(): String {
-            if (!isSOL) return tokenName
-
-            val firstSix = publicKey.take(4)
-            val lastFour = publicKey.takeLast(4)
-            return "$firstSix...$lastFour"
-        }
-
         fun getFormattedPrice(): String = "${price.scaleShort()} $"
 
         fun getFormattedTotal(): String = "$total $tokenSymbol"

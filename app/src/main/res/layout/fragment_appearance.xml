@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:background="?colorElementPrimary"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/settings_appearance"
+            app:title="@string/settings_theme"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
         <RadioGroup

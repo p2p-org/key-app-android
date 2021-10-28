@@ -54,6 +54,8 @@ class SelectTokenViewHolder(
         if (!item.logoUrl.isNullOrEmpty()) {
             loadImage(tokenImageView, item.logoUrl!!)
         }
+
+        nameTextView.text = item.tokenName
         wrappedImageView.isVisible = item.isWrapped
         symbolTextView.text = item.tokenSymbol
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, item.color))
@@ -61,14 +63,12 @@ class SelectTokenViewHolder(
 
         when (item) {
             is Token.Active -> {
-                nameTextView.text = item.getFormattedAddress()
                 valueTextView.text = item.getFormattedPrice()
                 totalTextView.text = item.getFormattedTotal()
                 valueTextView.isVisible = true
                 totalTextView.isVisible = true
             }
             is Token.Other -> {
-                nameTextView.text = item.tokenName
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
             }

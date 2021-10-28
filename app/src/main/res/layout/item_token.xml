@@ -97,7 +97,7 @@
             app:layout_constraintStart_toEndOf="@id/tokenImageView"
             app:layout_constraintTop_toBottomOf="@id/nameTextView"
             app:layout_constraintVertical_bias="1"
-            tools:text="0xG97y...g7R4" />
+            tools:text="Solana" />
 
         <TextView
             android:id="@+id/valueTextView"

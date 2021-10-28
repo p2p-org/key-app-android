@@ -24,6 +24,19 @@
             app:tint="?colorElementSecondary"
             tools:ignore="ContentDescription" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/titleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="16dp"
+            android:text="@string/app_name"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold20"
+            app:layout_constraintEnd_toStartOf="@id/settingsImageView"
+            app:layout_constraintStart_toEndOf="@id/scanImageView"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/settingsImageView"
             android:layout_width="56dp"
@@ -37,7 +50,7 @@
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/headerCardView"
+            android:id="@+id/headerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -46,72 +59,111 @@
             app:cardElevation="5dp"
             app:layout_constraintTop_toBottomOf="@id/scanImageView">
 
-            <LinearLayout
-                android:id="@+id/headerView"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingVertical="12dp">
-
-                    <TextView
-                        android:id="@+id/balanceTitleTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/main_total_balance"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
-
-                    <TextView
-                        android:id="@+id/balanceTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
-                        android:text="$ 0.00"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
-                        tools:ignore="HardcodedText" />
-
-                    <TextView
-                        android:id="@+id/tokensTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/main_all_tokens"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-                        android:textColor="?colorElementSecondary" />
-                </LinearLayout>
+                android:layout_height="wrap_content">
 
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/mainPieChart"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center_vertical" />
-            </LinearLayout>
+                    android:layout_width="84dp"
+                    android:layout_height="84dp"
+                    android:layout_gravity="center_vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/balanceTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/main_combined_token_value"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+                    android:textColor="?colorElementSecondary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/balanceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="$ 0.00"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/balanceTitleTextView"
+                    tools:ignore="HardcodedText" />
+
+                <View
+                    android:id="@+id/actionView"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:background="?colorAccentTertiary"
+                    app:layout_constraintTop_toBottomOf="@id/mainPieChart" />
+
+                <org.p2p.wallet.common.widget.SimpleActionButton
+                    android:id="@+id/sendButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:actionButtonText="@string/main_send"
+                    app:actionDrawable="@drawable/ic_send_blue"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/receiveButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/actionView" />
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="16dp"
+                    android:background="?colorElementSecondary"
+                    app:layout_constraintBottom_toBottomOf="@id/sendButton"
+                    app:layout_constraintEnd_toStartOf="@id/receiveButton"
+                    app:layout_constraintStart_toEndOf="@id/sendButton"
+                    app:layout_constraintTop_toTopOf="@id/sendButton" />
+
+                <org.p2p.wallet.common.widget.SimpleActionButton
+                    android:id="@+id/receiveButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:actionButtonText="@string/main_receive"
+                    app:actionDrawable="@drawable/ic_receive_blue"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/swapButton"
+                    app:layout_constraintStart_toEndOf="@id/sendButton"
+                    app:layout_constraintTop_toTopOf="@id/actionView" />
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="16dp"
+                    android:background="?colorElementSecondary"
+                    app:layout_constraintBottom_toBottomOf="@id/sendButton"
+                    app:layout_constraintEnd_toStartOf="@id/swapButton"
+                    app:layout_constraintStart_toEndOf="@id/receiveButton"
+                    app:layout_constraintTop_toTopOf="@id/sendButton" />
+
+                <org.p2p.wallet.common.widget.SimpleActionButton
+                    android:id="@+id/swapButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:actionButtonText="@string/main_swap"
+                    app:actionDrawable="@drawable/ic_swap_blue"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/receiveButton"
+                    app:layout_constraintTop_toTopOf="@id/actionView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/headerBarrier"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:barrierMargin="-8dp"
-            app:constraint_referenced_ids="headerCardView" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/bottomView"
-            app:layout_constraintTop_toBottomOf="@id/headerBarrier">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerView">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mainRecyclerView"
@@ -120,120 +172,6 @@
                 android:overScrollMode="never"
                 tools:listitem="@layout/item_token" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-        <View
-            android:id="@+id/topShadowView"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:background="@drawable/bg_shadow_vertical"
-            app:layout_constraintBottom_toTopOf="@id/bottomView" />
-
-        <View
-            android:id="@+id/bottomView"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="?colorElementPrimary"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <ImageView
-            android:id="@+id/buyImageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:visibility="gone"
-            android:layout_marginTop="16dp"
-            android:src="@drawable/ic_buy"
-            app:layout_constraintEnd_toStartOf="@id/receiveImageView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bottomView"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/receiveImageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="16dp"
-            android:src="@drawable/ic_receive"
-            app:layout_constraintEnd_toStartOf="@id/sendImageView"
-            app:layout_constraintStart_toEndOf="@id/buyImageView"
-            app:layout_constraintTop_toTopOf="@id/bottomView"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/sendImageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_send"
-            app:layout_constraintEnd_toStartOf="@id/swapImageView"
-            app:layout_constraintStart_toEndOf="@id/receiveImageView"
-            app:layout_constraintTop_toTopOf="@id/receiveImageView"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/swapImageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_swap"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/sendImageView"
-            app:layout_constraintTop_toTopOf="@id/receiveImageView"
-            tools:ignore="ContentDescription" />
-
-        <TextView
-            android:id="@+id/buyTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:visibility="gone"
-            android:singleLine="true"
-            android:text="@string/main_buy"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintEnd_toEndOf="@id/buyImageView"
-            app:layout_constraintStart_toStartOf="@id/buyImageView"
-            app:layout_constraintTop_toBottomOf="@id/buyImageView" />
-
-        <TextView
-            android:id="@+id/receiveTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="@string/main_receive"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintEnd_toEndOf="@id/receiveImageView"
-            app:layout_constraintStart_toStartOf="@id/receiveImageView"
-            app:layout_constraintTop_toBottomOf="@id/receiveImageView" />
-
-        <TextView
-            android:id="@+id/sendTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="@string/main_send"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintEnd_toEndOf="@id/sendImageView"
-            app:layout_constraintStart_toStartOf="@id/sendImageView"
-            app:layout_constraintTop_toBottomOf="@id/sendImageView" />
-
-        <TextView
-            android:id="@+id/swapTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="@string/main_swap"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintEnd_toEndOf="@id/swapImageView"
-            app:layout_constraintStart_toStartOf="@id/swapImageView"
-            app:layout_constraintTop_toBottomOf="@id/swapImageView" />
 
         <org.p2p.wallet.common.widget.ProgressView
             android:id="@+id/progressView"

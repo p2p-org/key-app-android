@@ -35,14 +35,12 @@ class UsernameInteractor(
         return usernameRepository.registerUsername(username, result)
     }
 
-    fun checkUsernameExist(): String? = sharedPreferences.getString(KEY_USERNAME, null)
-
     suspend fun lookupUsername(owner: String) {
         val userName = usernameRepository.lookup(owner).firstOrNull()
         sharedPreferences.edit { putString(KEY_USERNAME, userName?.name) }
     }
 
-    fun getName(): String? = sharedPreferences.getString(KEY_USERNAME, null)
+    fun getUsername(): String? = sharedPreferences.getString(KEY_USERNAME, null)
 
     fun getAddress(): String = tokenKeyProvider.publicKey
 

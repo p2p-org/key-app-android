@@ -47,7 +47,7 @@ class OrcaSwapPresenter(
         view?.showDestinationToken(newValue)
     }
 
-    private lateinit var bestPoolPair: OrcaPoolsPair
+    private var bestPoolPair: OrcaPoolsPair? = null
 
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
@@ -171,13 +171,14 @@ class OrcaSwapPresenter(
     }
 
     override fun swap() {
+        val pair = bestPoolPair ?: return
         launch {
             try {
                 view?.showLoading(true)
                 val data = swapInteractor.swap(
                     fromWalletPubkey = sourceToken.publicKey,
                     toWalletPubkey = destinationToken?.publicKey,
-                    bestPoolsPair = bestPoolPair,
+                    bestPoolsPair = pair,
                     amount = sourceAmount.toDoubleOrNull() ?: 0.toDouble(),
                     slippage = slippage.doubleValue,
                     isSimulation = false
@@ -231,7 +232,7 @@ class OrcaSwapPresenter(
             return
         }
 
-        if (!this::bestPoolPair.isInitialized) return
+        val pair = bestPoolPair ?: return
 
         val myWalletsMints = userInteractor.getUserTokens().map { it.mintAddress }
         val fees = swapInteractor.getFees(
@@ -239,7 +240,7 @@ class OrcaSwapPresenter(
             fromWalletPubkey = source.publicKey,
             toWalletPubkey = destination.publicKey,
             feeRelayerFeePayerPubkey = null,
-            bestPoolsPair = bestPoolPair,
+            bestPoolsPair = pair,
             inputAmount = enteredAmount,
             slippage = slippage.doubleValue,
             lamportsPerSignature = lamportsPerSignature,
@@ -247,15 +248,15 @@ class OrcaSwapPresenter(
         )
         val networkFee = fees.first.fromLamports().scaleMedium()
 
-        val liquidityProviderFee = if (bestPoolPair.size == 1) {
+        val liquidityProviderFee = if (pair.size == 1) {
             val fee = fees.second[0].fromLamports(destination.decimals).scaleMedium()
             "$fee ${destination.tokenSymbol}"
         } else {
-            val intermediaryPool = bestPoolPair[0]
+            val intermediaryPool = pair[0]
             val intermediaryTokenSymbol = intermediaryPool.tokenBName
             val intermediaryFee = fees.second[0].fromLamports(intermediaryPool.tokenBBalance!!.decimals).scaleMedium()
 
-            val destinationPool = bestPoolPair[1]
+            val destinationPool = pair[1]
             val destinationTokenSymbol = destinationPool.tokenBName
             val destinationFee = fees.second[1].fromLamports(destinationPool.tokenBBalance!!.decimals).scaleMedium()
             "$intermediaryFee $intermediaryTokenSymbol + $destinationFee $destinationTokenSymbol"
@@ -286,7 +287,7 @@ class OrcaSwapPresenter(
         bestPoolPair = pair
 
         val deprecatedValues = pair.map { it.deprecated }.joinToString()
-        Timber.tag(SWAP_STATE_TAG).d("Best pair found, deprecation value: $deprecatedValues")
+        Timber.tag(SWAP_STATE_TAG).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
         destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleLong().toString()
 
