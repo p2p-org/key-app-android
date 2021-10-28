@@ -67,7 +67,6 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-feature"
-            applicationIdSuffix '.feature'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             firebaseAppDistribution {
