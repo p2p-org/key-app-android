@@ -1,9 +1,10 @@
 package org.p2p.wallet.auth.ui.security
 
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.restore.interactor.SecretKeyInteractor
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 class SecurityKeyPresenter(
@@ -18,9 +19,16 @@ class SecurityKeyPresenter(
 
     override fun createAccount() {
         launch {
-            /* Creating account in default bip44change path */
-            interactor.createAndSaveAccount(DerivationPath.BIP44CHANGE, keys)
-            view?.navigateToCreatePin()
+            try {
+                view?.showLoading(true)
+                /* Creating account in default bip44change path */
+                interactor.createAndSaveAccount(DerivationPath.BIP44CHANGE, keys)
+                view?.navigateToCreatePin()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error occured while creating account")
+            } finally {
+                view?.showLoading(false)
+            }
         }
     }
 

@@ -29,14 +29,16 @@
     <string name="error_fetching_data_about_token">Couldn\'t fetch information for %s</string>
     <string name="error_invalid_address">Invalid address, please enter correct one</string>
     <string name="error_unable_to_swap_this_pair">Unable to swap this pair this time</string>
+    <string name="error_opening_file">Couldn\'t open the file</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">Security key</string>
     <string name="auth_onboarding_subtitle">Secure non-custodial bank of future\nSimple finance for everyone</string>
     <string name="auth_decline">Decline</string>
     <string name="auth_accept">Accept</string>
-    <string name="auth_terms_and_conditions">Terms and Conditions</string>
-    <string name="auth_policy">Physiological respiration involves the mechanisms that ensure that the composition of the functional residual capacity is kept constant, and equilibrates with the gases dissolved in the pulmonary capillary blood, and thus throughout the body. Thus, in precise usage, the words breathing and ventilation are hyponyms, not synonyms, of respiration; but this prescription is not consistently followed, even by most health care providers, because the term respiratory rate (RR) is a well-established term in health care, even though it would need to be consistently replaced with ventilation rate if the precise usage were to be followed. (RR) is a well-established term in health care, even though it would need to be consistently replaced with ventilation rate if the precise usage were to be followed.\n\nMaxwell\'s equations—the foundation of classical electromagnetism—describe light as a wave that moves with a characteristic velocity. The modern view is that light needs no medium of transmission, but Maxwell and his contemporaries were convinced that light waves were propagated in a medium, analogous to sound propagating in air, and ripples propagating on the surface of a pond. This hypothetical medium was called the luminiferous aether, at rest relative to the "fixed stars" and through which the Earth moves. Fresnel\'s partial ether dragging hypothesis ruled out the measurement of first-order (v/c) effects, and although observations of second-order effects (v2/c2) were possible in principle, Maxwell thought they were too small to be detected with then-current technology.</string>
+    <string name="auth_agree_terms_and_privacy">By continuing, you agree wallet\'s Terms of Use and Privacy Policy</string>
+    <string name="auth_terms_of_use">Terms of Use</string>
+    <string name="auth_privacy_policy">Privacy Policy</string>
     <string name="auth_seed_order">Place seed phrases in a correct order to recover your wallet.</string>
     <string name="auth_enter_seed_phrase">Enter a seed phrase from your account</string>
     <string name="auth_seed_phrase_limit">Secret phrase can\'t contain more than 12 words</string>

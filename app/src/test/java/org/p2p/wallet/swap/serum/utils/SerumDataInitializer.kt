@@ -38,7 +38,6 @@ import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.auth.repository.FileLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
@@ -132,7 +131,7 @@ class SerumDataInitializer {
             rpcRepository = rpcRepository
         )
 
-        fileLocalRepository = FileLocalRepository(context)
+        fileLocalRepository = FileRepository(context)
 
         usernameRepository = UsernameRemoteRepository(
             api = RetrofitBuilder

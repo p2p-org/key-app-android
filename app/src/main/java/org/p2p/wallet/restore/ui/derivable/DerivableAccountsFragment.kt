@@ -20,7 +20,7 @@ import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.utils.replaceFragment
 
 class DerivableAccountsFragment :
@@ -82,7 +82,7 @@ class DerivableAccountsFragment :
     }
 
     override fun navigateToReserveUsername() {
-        replaceFragment(ReservingUsernameFragment.create(TAG))
+        replaceFragment(ReserveUsernameFragment.create(TAG))
     }
 
     override fun showLoading(isLoading: Boolean) {

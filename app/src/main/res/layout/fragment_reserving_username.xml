@@ -119,15 +119,28 @@
             android:id="@+id/youCanSkipTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginTop="44dp"
-            android:layout_marginEnd="16dp"
             android:gravity="center"
             android:text="@string/auth_you_can_skip"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/usernameTextView" />
+
+        <TextView
+            android:id="@+id/termsAndConditionsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="56dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="@string/auth_agree_terms_and_privacy"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/youCanSkipTextView" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/enterUserNameButton"

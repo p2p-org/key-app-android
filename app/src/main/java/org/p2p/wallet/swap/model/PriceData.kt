@@ -1,15 +1,15 @@
 package org.p2p.wallet.swap.model
 
 data class PriceData(
-    val sourcePrice: String,
-    val destinationPrice: String,
-    val sourceSymbol: String,
-    val destinationSymbol: String
+    val inputPrice: String,
+    val outputPrice: String,
+    val inputSymbol: String,
+    val outputSymbol: String
 ) {
 
     fun getPrice(isReverse: Boolean) = if (isReverse) {
-        "$destinationPrice $destinationSymbol per $sourceSymbol"
+        "$inputPrice $inputSymbol per $outputSymbol"
     } else {
-        "$sourcePrice $sourceSymbol per $destinationSymbol"
+        "$outputPrice $outputSymbol per $inputSymbol"
     }
 }

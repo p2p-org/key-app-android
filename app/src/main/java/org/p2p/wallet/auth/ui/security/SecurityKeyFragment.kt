@@ -2,11 +2,13 @@ package org.p2p.wallet.auth.ui.security
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import org.p2p.wallet.utils.attachAdapter
@@ -16,7 +18,6 @@ import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
 
 class SecurityKeyFragment :
     BaseMvpFragment<SecurityKeyContract.View, SecurityKeyContract.Presenter>(R.layout.fragment_security_key),
@@ -77,7 +78,11 @@ class SecurityKeyFragment :
     }
 
     override fun navigateToCreatePin() {
-        replaceFragment(ReservingUsernameFragment.create(TAG))
+        replaceFragment(ReserveUsernameFragment.create(TAG))
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+        binding.progressView.isVisible = isLoading
     }
 
     override fun copyToClipboard(keys: List<String>) {

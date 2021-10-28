@@ -290,8 +290,8 @@ class OrcaPoolInteractor(
         if (poolsPair.size == 2) {
             val pool1 = poolsPair[1]
 
-            val inputAmountLamports = pool0.getMinimumAmountOut(inputAmount, slippage)
-            if (inputAmountLamports != null) {
+            val inputAmount = pool0.getMinimumAmountOut(inputAmount, slippage)
+            if (inputAmount != null) {
                 val fee1 = pool1.calculatingFees(inputAmount)
                 result.add(fee1)
             }
