@@ -30,8 +30,6 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.wallet.utils.clearClipBoard
-import org.p2p.wallet.utils.toast
 import java.math.BigDecimal
 
 class SendFragment :
@@ -71,7 +69,6 @@ class SendFragment :
                 val address = it.toString()
                 val isEmpty = address.isEmpty()
 
-                scanImageView.isVisible = isEmpty
                 clearImageView.isVisible = !isEmpty
 
                 presenter.setNewTargetAddress(address)
@@ -87,14 +84,6 @@ class SendFragment :
 
             clearImageView.setOnClickListener {
                 addressEditText.text?.clear()
-            }
-
-            scanImageView.setOnClickListener {
-                val target = ScanQrFragment.create {
-                    addressEditText.text?.clear()
-                    addressEditText.setText(it)
-                }
-                addFragment(target)
             }
 
             sourceImageView.setOnClickListener {
@@ -123,10 +112,11 @@ class SendFragment :
             }
 
             scanQrTextView.setOnClickListener {
-                requireActivity().clearClipBoard()
-            }
-
-            p2pUsernameTextView.setOnClickListener {
+                val target = ScanQrFragment.create {
+                    addressEditText.text?.clear()
+                    addressEditText.setText(it)
+                }
+                addFragment(target)
             }
         }
 
@@ -285,18 +275,10 @@ class SendFragment :
         TODO("Not yet implemented")
     }
 
-    override fun setEnablePasteButton(data: String?) {
+    override fun setEnablePasteButton(data: CharSequence?) {
         binding.pasteTextView.setTextColor(colorFromTheme(R.attr.colorAccent))
         binding.pasteTextView.setOnClickListener {
-            toast(data.toString())
+            binding.addressEditText.setText(data)
         }
-    }
-
-    override fun navigateToQrFromCamera() {
-        TODO("Not yet implemented")
-    }
-
-    override fun navigateToTypingResolve() {
-        TODO("Not yet implemented")
     }
 }

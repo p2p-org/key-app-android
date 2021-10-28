@@ -106,7 +106,11 @@ class SendPresenter(
 
     override fun checkClipBoard(context: Context) {
         val clipBoardData = context.getClipBoardData()
-        clipBoardData.let { view?.setEnablePasteButton(clipBoardData.toString()) }
+        if (clipBoardData == null) {
+            view?.setEnablePasteButton(null)
+        } else
+            view?.setEnablePasteButton(clipBoardData)
+//        clipBoardData.let { view?.setEnablePasteButton(clipBoardData.toString()) }
     }
 
     override fun send() {

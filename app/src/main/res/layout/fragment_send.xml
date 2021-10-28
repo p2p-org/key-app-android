@@ -162,64 +162,6 @@
                     app:layout_constraintTop_toBottomOf="@id/amountEditText"
                     tools:text="≈ 0.00 $" />
 
-
-                <TextView
-                    android:id="@+id/scanQrTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:drawableStart="@drawable/ic_scan_qr"
-                    android:drawablePadding="4dp"
-                    android:text="@string/main_scan_qr"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="?colorAccentPrimary"
-                    app:layout_constraintBottom_toBottomOf="@+id/pasteTextView"
-                    app:layout_constraintEnd_toStartOf="@+id/pasteTextView"
-                    app:layout_constraintTop_toTopOf="@+id/pasteTextView"
-                    tools:ignore="UseCompatTextViewDrawableXml" />
-
-                <TextView
-                    android:id="@+id/pasteTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="36dp"
-                    android:drawableStart="@drawable/ic_paste"
-                    android:drawablePadding="4dp"
-                    android:text="@string/main_paste"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="@color/colorGreen"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/aroundTextView"
-                    tools:ignore="UseCompatTextViewDrawableXml" />
-
-                <TextView
-                    android:id="@+id/to1TextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="36dp"
-                    android:text="@string/main_to"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    app:layout_constraintBottom_toBottomOf="@+id/scanQrTextView"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/scanQrTextView" />
-
-                <TextView
-                    android:id="@+id/p2pUsernameTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="16dp"
-                    android:drawablePadding="10dp"
-                    android:gravity="center"
-                    android:text="@string/main_p2p_username_sol_address"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-                    android:textColor="?colorElementSecondary"
-                    app:drawableStartCompat="@drawable/ic_magnifier"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/pasteTextView" />
-
                 <org.p2p.wallet.common.widget.DoubleTextView
                     android:id="@+id/currentPriceView"
                     android:layout_width="match_parent"
@@ -227,7 +169,7 @@
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="32dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/p2pUsernameTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/aroundTextView"
                     app:topText="@string/main_price"
                     tools:bottomText="$35.08 per SOL">
 
@@ -314,6 +256,36 @@
                     tools:ignore="UseCompatTextViewDrawableXml"
                     tools:text="Receive at least: 0,0261 renBTC" />
 
+                <TextView
+                    android:id="@+id/scanQrTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp"
+                    android:drawableStart="@drawable/ic_scan_qr"
+                    android:drawablePadding="4dp"
+                    android:text="@string/main_scan_qr"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textColor="?colorAccentPrimary"
+                    app:layout_constraintBottom_toBottomOf="@+id/pasteTextView"
+                    app:layout_constraintEnd_toStartOf="@+id/pasteTextView"
+                    app:layout_constraintTop_toTopOf="@+id/pasteTextView"
+                    tools:ignore="UseCompatTextViewDrawableXml" />
+
+                <TextView
+                    android:id="@+id/pasteTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="36dp"
+                    android:drawableStart="@drawable/ic_paste"
+                    android:drawablePadding="4dp"
+                    android:text="@string/main_paste"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textColor="@color/colorGreen"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/receiveAtLeastTextView"
+                    tools:ignore="UseCompatTextViewDrawableXml" />
+
                 <View
                     android:id="@+id/addressBackgroundView"
                     android:layout_width="0dp"
@@ -330,7 +302,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="36dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="42dp"
                     android:background="@android:color/transparent"
                     android:hint="@string/main_wallet_address"
                     android:inputType="text"
@@ -399,19 +371,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:barrierDirection="start"
-                    app:constraint_referenced_ids="scanImageView,clearImageView" />
+                    app:constraint_referenced_ids="clearImageView" />
 
-                <ImageView
-                    android:id="@+id/scanImageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_qr_scan"
-                    app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"
-                    app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"
-                    app:layout_constraintTop_toTopOf="@id/addressBackgroundView"
-                    app:tint="?colorElementSecondary"
-                    tools:ignore="ContentDescription" />
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/scanImageView"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:padding="12dp"-->
+                <!--                    android:src="@drawable/ic_qr_scan"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="@id/addressBackgroundView"-->
+                <!--                    app:layout_constraintEnd_toEndOf="@id/addressBackgroundView"-->
+                <!--                    app:layout_constraintTop_toTopOf="@id/addressBackgroundView"-->
+                <!--                    app:tint="?colorElementSecondary"-->
+                <!--                    tools:ignore="ContentDescription" />-->
 
                 <ImageView
                     android:id="@+id/clearImageView"

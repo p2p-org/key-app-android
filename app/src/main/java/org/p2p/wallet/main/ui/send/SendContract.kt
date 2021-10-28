@@ -34,14 +34,13 @@ interface SendContract {
         fun showNetworkSelection()
         fun hideNetworkSelection()
         fun navigateToTokenSelection(tokens: List<Token.Active>)
-        fun navigateToQrFromCamera()
-        fun navigateToTypingResolve()
+
         fun showBufferAddressValid()
         fun showBufferAddressValidWithoutFunds()
         fun showBufferUsernameResolvedOk()
         fun showBufferUsernameResolvedNotOk()
         fun showBufferOther()
-        fun setEnablePasteButton(data: String?)
+        fun setEnablePasteButton(data: CharSequence?)
     }
 
     interface Presenter : MvpPresenter<View> {
