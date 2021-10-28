@@ -9,6 +9,7 @@ interface SecurityKeyContract {
         fun showKeys(keys: List<String>)
         fun copyToClipboard(keys: List<String>)
         fun navigateToCreatePin()
+        fun showLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

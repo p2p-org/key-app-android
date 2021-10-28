@@ -28,7 +28,6 @@ import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
@@ -127,11 +126,11 @@ class OrcaSwapInteractor(
     }
 
     // Find best pool to swap from input amount
-    suspend fun findBestPoolsPairForInputAmount(
+    fun findBestPoolsPairForInputAmount(
         inputAmount: BigInteger,
         poolsPairs: List<OrcaPoolsPair>
-    ): OrcaPoolsPair? = withContext(Dispatchers.Default) {
-        if (poolsPairs.isEmpty()) return@withContext null
+    ): OrcaPoolsPair? {
+        if (poolsPairs.isEmpty()) return null
 
         var bestPools = mutableListOf<OrcaPool>()
         var bestEstimatedAmount: BigInteger = BigInteger.ZERO
@@ -144,7 +143,7 @@ class OrcaSwapInteractor(
             }
         }
 
-        return@withContext bestPools
+        return bestPools
     }
 
     // Find best pool to swap from estimated amount
@@ -175,24 +174,21 @@ class OrcaSwapInteractor(
         fromWalletPubkey: String,
         toWalletPubkey: String?,
         feeRelayerFeePayerPubkey: String?,
-        bestPoolsPair: OrcaPoolsPair,
-        inputAmount: BigDecimal,
+        bestPoolsPair: OrcaPoolsPair?,
+        inputAmount: BigDecimal?,
         slippage: Double,
         lamportsPerSignature: BigInteger,
         minRentExempt: BigInteger
     ): Pair<BigInteger, List<BigInteger>> {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
-        val numberOfPools = BigInteger.valueOf(bestPoolsPair.size.toLong())
-        if (numberOfPools.isLessThan(BigInteger.ONE)) {
-            throw IllegalStateException("Number of pools is empty")
-        }
+        val numberOfPools = BigInteger.valueOf(bestPoolsPair?.size?.toLong() ?: 0L)
 
         var numberOfTransactions = BigInteger.ONE
 
         if (numberOfPools == BigInteger.valueOf(2L)) {
             val myTokens = myWalletsMints.mapNotNull { getTokenFromMint(it) }.map { it.first }
-            val intermediaryTokenName = bestPoolsPair[0].tokenBName
+            val intermediaryTokenName = bestPoolsPair!![0].tokenBName
 
             if (!myTokens.contains(intermediaryTokenName) || toWalletPubkey == null) {
                 numberOfTransactions += BigInteger.ONE
@@ -205,7 +201,7 @@ class OrcaSwapInteractor(
         transactionFees += lamportsPerSignature * numberOfTransactions
 
         if (feeRelayerFeePayerPubkey == null) {
-            // userAuthoritys' signatures
+            // userAuthority's signatures
             transactionFees += lamportsPerSignature * numberOfPools
         } else {
             throw IllegalStateException("feeRelayer is being implemented")
@@ -217,11 +213,13 @@ class OrcaSwapInteractor(
             transactionFees += minRentExempt
         }
 
-        val liquidityProviderFees = poolInteractor.calculateLiquidityProviderFees(
-            poolsPair = bestPoolsPair,
-            inputAmount = inputAmount,
-            slippage = slippage
-        )
+        val liquidityProviderFees = if (inputAmount != null && bestPoolsPair != null) {
+            poolInteractor.calculateLiquidityProviderFees(
+                poolsPair = bestPoolsPair,
+                inputAmount = inputAmount,
+                slippage = slippage
+            )
+        } else emptyList()
 
         return transactionFees to liquidityProviderFees
     }

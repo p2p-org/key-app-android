@@ -3,8 +3,9 @@ package org.p2p.wallet.auth.ui.username
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.json.JSONObject
+import java.io.File
 
-interface ReservingUsernameContract {
+interface ReserveUsernameContract {
 
     interface View : MvpView {
         fun navigateToPinCode()
@@ -15,11 +16,14 @@ interface ReservingUsernameContract {
         fun failCaptcha()
         fun successRegisterName()
         fun failRegisterName()
+        fun showFile(file: File)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun checkUsername(username: String)
         fun checkCaptcha()
         fun registerUsername(username: String, result: String?)
+        fun openPrivacyPolicy()
+        fun openTermsOfUse()
     }
 }

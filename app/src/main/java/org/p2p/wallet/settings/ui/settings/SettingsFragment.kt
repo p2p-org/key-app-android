@@ -6,7 +6,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import org.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
@@ -53,7 +53,7 @@ class SettingsFragment :
                 replaceFragment(AppearanceFragment.create())
             }
 
-            binding.usernameView.setOnClickListener {
+            usernameView.setOnClickListener {
                 presenter.onUsernameClicked()
             }
 
@@ -88,6 +88,6 @@ class SettingsFragment :
     }
 
     override fun openReserveUsernameScreen() {
-        replaceFragment(ReservingUsernameFragment.create(TAG))
+        replaceFragment(ReserveUsernameFragment.create(TAG))
     }
 }

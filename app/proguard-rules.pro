@@ -7,6 +7,8 @@
 
 -keepclassmembers enum org.p2p.wallet.** { *; }
 
+-keep class org.p2p.wallet.utils.NavigationExtensionsKt
+
 # Remove logging
 -assumenosideeffects class android.util.Log {
     public static *** e(...);

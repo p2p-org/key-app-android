@@ -6,6 +6,7 @@ import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toPublicKey
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -60,34 +61,10 @@ data class OrcaPool(
 
     fun getOutputAmount(
         inputAmount: BigInteger
-    ): BigInteger? {
-        val poolInputAmount = tokenABalance?.amount
-        val poolOutputAmount = tokenBBalance?.amount
-        if (poolInputAmount == null || poolOutputAmount == null) {
-            throw IllegalStateException("Account balances not found")
-        }
-
+    ): BigInteger {
         val fees = getFee(inputAmount)
         val inputAmountLessFee = inputAmount - fees
-
-        return when (curveType) {
-            STABLE -> {
-                if (amp == null) throw IllegalStateException("Amp doesn't exist in pool config")
-                computeBaseOutputAmount(
-                    inputAmountLessFee,
-                    poolInputAmount,
-                    poolOutputAmount,
-                    amp
-                )
-            }
-            CONSTANT_PRODUCT -> {
-                val invariant = poolInputAmount * poolOutputAmount
-                val newPoolOutputAmount = ceilingDivision(invariant, poolInputAmount + inputAmountLessFee).first
-                return poolOutputAmount - newPoolOutputAmount
-            }
-            else ->
-                return null
-        }
+        return _getOutputAmount(inputAmountLessFee)
     }
 
     fun getInputAmount(
@@ -100,15 +77,15 @@ data class OrcaPool(
             throw IllegalStateException("Account balances not found")
 
         if (estimatedAmount > poolOutputAmount) {
-            throw IllegalStateException("Estimated amount is too high")
+            Timber.e("Estimated amount is too high")
+            return null
         }
 
         when (curveType) {
             STABLE -> {
                 if (amp == null) throw IllegalStateException("Amp doesn't exist in pool config")
                 val inputAmountLessFee = computeInputAmount(estimatedAmount, poolInputAmount, poolOutputAmount, amp)
-                val inputAmount = inputAmountLessFee * feeDenominator / feeDenominator - feeNumerator
-                return inputAmount
+                return inputAmountLessFee * feeDenominator / feeDenominator - feeNumerator
             }
             CONSTANT_PRODUCT -> {
                 val invariant = poolInputAmount * poolOutputAmount
@@ -146,13 +123,13 @@ data class OrcaPool(
         inputAmount: BigInteger,
         slippage: Double
     ): BigInteger? {
-        val estimatedOutputAmount = getOutputAmount(inputAmount) ?: return null
+        val estimatedOutputAmount = getOutputAmount(inputAmount)
         val amount = BigDecimal(estimatedOutputAmount.toDouble() * (1 - slippage))
         return amount.toBigInteger()
     }
 
     // / baseOutputAmount is the amount the user would receive if fees are included and slippage is excluded.
-    fun getBaseOutputAmount(
+    private fun getBaseOutputAmount(
         inputAmount: BigInteger
     ): BigInteger? {
         val poolInputAmount = tokenABalance?.amount
@@ -248,7 +225,7 @@ data class OrcaPool(
             if (this.isEmpty()) return null
 
             val pool0 = this[0]
-            val estimatedAmountOfPool0 = pool0.getOutputAmount(inputAmount) ?: return null
+            val estimatedAmountOfPool0 = pool0.getOutputAmount(inputAmount)
 
             // direct
             return if (size == 1) {
@@ -279,7 +256,7 @@ data class OrcaPool(
                 val inputAmountOfPool1 = pool1.getInputAmount(estimatedAmount) ?: return null
                 val pool0 = this[0]
 
-                return pool0.getInputAmount(inputAmountOfPool1) ?: return null
+                return pool0.getInputAmount(inputAmountOfPool1)
             }
         }
 
@@ -294,7 +271,7 @@ data class OrcaPool(
                 pool0.getMinimumAmountOut(inputAmount, slippage) ?: return null
             } else {
                 // transitive
-                val outputAmountOfPool0 = pool0.getOutputAmount(inputAmount) ?: return null
+                val outputAmountOfPool0 = pool0.getOutputAmount(inputAmount)
                 val pool1 = this[1]
                 pool1.getMinimumAmountOut(outputAmountOfPool0, slippage) ?: return null
             }

@@ -13,7 +13,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
-import org.p2p.wallet.auth.repository.FileLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
@@ -173,7 +172,7 @@ class OrcaDataInitializer {
             tokenKeyProvider = tokenKeyProvider
         )
 
-        fileLocalRepository = FileLocalRepository(context)
+        fileLocalRepository = FileRepository(context)
 
         usernameInteractor = UsernameInteractor(
             usernameRepository = usernameRepository,

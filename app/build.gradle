@@ -64,9 +64,10 @@ android {
         feature {
             debuggable true
             signingConfig signingConfigs.debug
-            minifyEnabled true
-            shrinkResources true
-            versionNameSuffix ".$VERSION_BUILD"
+            minifyEnabled false
+            shrinkResources false
+            versionNameSuffix ".$VERSION_BUILD-feature"
+            applicationIdSuffix '.feature'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             firebaseAppDistribution {
@@ -77,8 +78,8 @@ android {
 
         release {
             signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

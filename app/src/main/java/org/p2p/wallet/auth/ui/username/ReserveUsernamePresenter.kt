@@ -1,21 +1,24 @@
 package org.p2p.wallet.auth.ui.username
 
+import android.content.Context
 import com.google.gson.Gson
-import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import retrofit2.HttpException
 
-class ReservingUsernamePresenter(
+class ReserveUsernamePresenter(
+    private val context: Context,
     private val interactor: UsernameInteractor,
     private val tokenProvider: TokenKeyProvider,
-) :
-    BasePresenter<ReservingUsernameContract.View>(),
-    ReservingUsernameContract.Presenter {
+    private val fileRepository: FileRepository
+) : BasePresenter<ReserveUsernameContract.View>(),
+    ReserveUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
     private var nextCheckAvailable: Boolean = true
@@ -60,5 +63,17 @@ class ReservingUsernamePresenter(
                 view?.showErrorMessage(e)
             }
         }
+    }
+
+    override fun openTermsOfUse() {
+        val inputStream = context.assets.open("p2p_terms_of_service.pdf")
+        val file = fileRepository.savePdf("p2p_terms_of_service", inputStream.readBytes())
+        view?.showFile(file)
+    }
+
+    override fun openPrivacyPolicy() {
+        val inputStream = context.assets.open("p2p_privacy_policy.pdf")
+        val file = fileRepository.savePdf("p2p_privacy_policy", inputStream.readBytes())
+        view?.showFile(file)
     }
 }
