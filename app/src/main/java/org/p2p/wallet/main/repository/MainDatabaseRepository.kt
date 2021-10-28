@@ -20,6 +20,10 @@ class MainDatabaseRepository(
         tokenDao.insertOrUpdate(entities)
     }
 
+    override suspend fun setHiddenSol(publicKey: String) {
+        tokenDao.removeIfExists(publicKey, Token.SOL_SYMBOL)
+    }
+
     override fun getTokensFlow(): Flow<List<Token.Active>> =
         tokenDao.getTokensFlow().map { entities ->
             entities
