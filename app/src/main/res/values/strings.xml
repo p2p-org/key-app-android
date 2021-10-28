@@ -73,7 +73,7 @@
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
-    <string name="auth_logout">Logout</string>
+    <string name="auth_logout">Logout now</string>
     <string name="auth_done">Done</string>
     <string name="auth_wrong_seed_phrase">Wrong order or seed phrase, please check it and try again</string>
     <string name="auth_wrong_seed_phrase_empty">Seed phrase is empty</string>
@@ -108,7 +108,7 @@
         <item quantity="other">%d hidden wallets</item>
     </plurals>
 
-    <string name="main_total_balance">Total balance</string>
+    <string name="main_combined_token_value">Combined token value</string>
     <string name="main_receive">Receive</string>
     <string name="main_send">Send</string>
     <string name="main_transfer">Transfer</string>
@@ -184,6 +184,35 @@
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
 
+    <!-- receive -->
+    <string name="receive_solana">Solana</string>
+    <string name="receive_bitcoin">Bitcoin</string>
+    <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
+    <string name="receive_want_to_receive">I want to receive</string>
+    <string name="receive_ren_attention_message">Bitcoin deposit address is only open for 36 hours, but you can send to it multiple times within this session.</string>
+    <string name="receive_ren_open_hours">is only open for 36 hours</string>
+    <string name="receive_ren_info">• Each transaction to this deposit address takes about 60 minutes to complete. For security reasons, you will need to wait for 6 block confirmations before you can mint renBTC on Solana. \n• If you cannot complete this transaction within the required time, please return at a later date. \n• If you do not finish your transaction within this period/session/time frame, you risk losing the deposits.</string>
+    <string name="receive_ren_risk_losing_deposits">you risk losing the deposits</string>
+    <string name="receive_complete_transaction">I can complete this transaction within time</string>
+    <string name="receive_show_address">Show address</string>
+    <string name="receive_make_transaction_confirm">Be sure you can complete this transaction</string>
+    <string name="receive_renbtc">renBTC</string>
+    <string name="receive_view_bitcoin_explorer">View in Bitcoin explorer</string>
+    <string name="receive_session_info">• This address accepts only Bitcoin. You may lose assets by sending another coin.\n</string>
+    <string name="receive_session_min_transaction">• Minimum transaction amount of %s BTC.</string>
+    <string name="receive_session_timer_info">• %s is the remaining time to safely send the assets.</string>
+    <string name="receive_only_bitcoin">only Bitcoin</string>
+    <string name="receive_btc_min_transaction">0.000112 BTC</string>
+    <string name="receive_statuses">Receiving statuses</string>
+    <string name="receive_waiting_for_deposit">Waiting for deposit confirmation</string>
+    <string name="receive_submitting_to_renvm">Submitting to RenVM</string>
+    <string name="receive_awaiting_the_signature">Awaiting the signature</string>
+    <string name="receive_minting">Minting</string>
+    <string name="receive_successfully_minted">Successfully minted %s renBTC!</string>
+    <string name="receive_started_session">Created active session</string>
+    <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
+    <string name="receive_no_statuses_yet">No statuses yet</string>
+
     <!-- send -->
     <string name="send_make_sure_correct_address">Make sure the address is correct</string>
     <string name="send_enter_address">Enter the recipient\'s address</string>
@@ -207,6 +236,8 @@
     <string name="swap_searching_swap_pair">Searching pairs for swap</string>
     <string name="swap_calculating_rates_and_fees">Calculating rates and fees</string>
     <string name="swap_max_available">Max</string>
+    <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
+    <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -242,7 +273,7 @@
     <string name="settings_security">Security</string>
     <string name="settings_username">Username</string>
     <string name="settings_network">Network</string>
-    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
     <string name="settings_security_face_id">FaceID</string>
     <string name="settings_security_fingerprint">Fingerprint</string>
@@ -258,36 +289,6 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
-
-    <!-- receive -->
-    <string name="receive_solana">Solana</string>
-    <string name="receive_bitcoin">Bitcoin</string>
-    <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
-    <string name="receive_want_to_receive">I want to receive</string>
-    <string name="receive_ren_attention_message">Bitcoin deposit address is only open for 36 hours, but you can send to it multiple times within this session.</string>
-    <string name="receive_ren_open_hours">is only open for 36 hours</string>
-    <string name="receive_ren_info">• Each transaction to this deposit address takes about 60 minutes to complete. For security reasons, you will need to wait for 6 block confirmations before you can mint renBTC on Solana. \n• If you cannot complete this transaction within the required time, please return at a later date. \n• If you do not finish your transaction within this period/session/time frame, you risk losing the deposits.</string>
-    <string name="receive_ren_risk_losing_deposits">you risk losing the deposits</string>
-    <string name="receive_complete_transaction">I can complete this transaction within time</string>
-    <string name="receive_show_address">Show address</string>
-    <string name="receive_make_transaction_confirm">Be sure you can complete this transaction</string>
-    <string name="receive_renbtc">renBTC</string>
-    <string name="receive_view_bitcoin_explorer">View in Bitcoin explorer</string>
-    <string name="receive_session_info">• This address accepts only Bitcoin. You may lose assets by sending another coin.\n</string>
-    <string name="receive_session_min_transaction">• Minimum transaction amount of %s BTC.</string>
-    <string name="receive_session_timer_info">• %s is the remaining time to safely send the assets.</string>
-    <string name="receive_only_bitcoin">only Bitcoin</string>
-    <string name="receive_btc_min_transaction">0.000112 BTC</string>
-    <string name="receive_statuses">Receiving statuses</string>
-    <string name="receive_waiting_for_deposit">Waiting for deposit confirmation</string>
-    <string name="receive_submitting_to_renvm">Submitting to RenVM</string>
-    <string name="receive_awaiting_the_signature">Awaiting the signature</string>
-    <string name="receive_minting">Minting</string>
-    <string name="receive_successfully_minted">Successfully minted %s renBTC!</string>
-    <string name="receive_started_session">Created active session</string>
-    <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
-    <string name="receive_no_statuses_yet">No statuses yet</string>
-    <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
-    <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
+    <string name="settings_app_version">App version</string>
 
 </resources>

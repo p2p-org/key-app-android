@@ -64,9 +64,11 @@ android {
         feature {
             debuggable true
             signingConfig signingConfigs.debug
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             versionNameSuffix ".$VERSION_BUILD"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"

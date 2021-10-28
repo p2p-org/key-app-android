@@ -17,6 +17,6 @@ interface SettingsContract {
         fun loadData()
         fun setZeroBalanceHidden(isHidden: Boolean)
         fun logout()
-        fun checkUsername(): Boolean
+        fun onUsernameClicked()
     }
 }

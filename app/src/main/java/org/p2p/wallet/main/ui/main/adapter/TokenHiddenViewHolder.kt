@@ -68,7 +68,7 @@ class TokenHiddenViewHolder(
         }
         wrappedImageView.isVisible = data.isWrapped
         nameTextView.text = data.tokenSymbol
-        addressTextView.text = data.getFormattedAddress()
+        addressTextView.text = data.tokenName
         valueTextView.text = data.getFormattedPrice()
         totalTextView.text = data.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, data.color))

@@ -103,7 +103,7 @@ class SerumOpenOrdersInteractor(
         val updatedFilters = filters.toMutableList()
         updatedFilters.add(0, dataSize)
         val config = RequestConfiguration(
-            encoding = Encoding.BASE64,
+            encoding = Encoding.BASE64.encoding,
             filters = updatedFilters
         )
         val programAccounts = rpcRepository.getProgramAccounts(programId, config)

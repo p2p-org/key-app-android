@@ -22,7 +22,7 @@ class UsernamePresenter(
 
     override fun loadData() {
         val address = usernameInteractor.getAddress()
-        view?.showName(usernameInteractor.getName())
+        view?.showName(usernameInteractor.getUsername())
         generateQrCode(address)
         view?.showAddress(address)
     }

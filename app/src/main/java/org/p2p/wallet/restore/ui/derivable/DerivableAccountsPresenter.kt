@@ -1,13 +1,13 @@
 package org.p2p.wallet.restore.ui.derivable
 
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.restore.model.SecretKey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.restore.interactor.SecretKeyInteractor
+import org.p2p.wallet.restore.model.DerivableAccount
+import org.p2p.wallet.restore.model.SecretKey
 import kotlin.properties.Delegates
 
 class DerivableAccountsPresenter(
@@ -54,14 +54,18 @@ class DerivableAccountsPresenter(
 
     override fun createAndSaveAccount() {
         launch {
+            view?.showLoading(true)
             val keys = secretKeys.map { it.text }
             secretKeyInteractor.createAndSaveAccount(path, keys)
 
-            val usernameExists = usernameInteractor.checkUsernameExist()
-            if (usernameExists.isNullOrEmpty())
+            val username = usernameInteractor.getUsername()
+            if (username.isNullOrEmpty()) {
                 view?.navigateToReserveUsername()
-            else
+            } else {
                 view?.navigateToCreatePin()
+            }
+
+            view?.showLoading(false)
         }
     }
 

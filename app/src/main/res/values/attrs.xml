@@ -57,4 +57,9 @@
         <attr name="bottomText" format="string" />
         <attr name="drawableEnd" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="SimpleActionButton">
+        <attr name="actionButtonText" format="string" />
+        <attr name="actionDrawable" format="reference" />
+    </declare-styleable>
 </resources>

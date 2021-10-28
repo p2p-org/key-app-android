@@ -50,7 +50,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="16dp"
                     android:gravity="center"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular20"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold20"
                     tools:text="konstantink.p2p.sol" />
 
                 <ImageView
@@ -72,7 +72,7 @@
                     android:layout_marginEnd="40dp"
                     android:layout_marginBottom="24dp"
                     android:gravity="center"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
 
                 <LinearLayout
@@ -157,7 +157,7 @@
             android:layout_marginEnd="16dp"
             android:gravity="center"
             android:text="@string/auth_your_p2p_username"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular20"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_view" />

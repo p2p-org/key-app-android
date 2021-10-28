@@ -2,6 +2,7 @@ package org.p2p.wallet.settings.ui.settings
 
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
@@ -16,7 +17,6 @@ import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
 
 class SettingsFragment :
     BaseMvpFragment<SettingsContract.View, SettingsContract.Presenter>(R.layout.fragment_settings),
@@ -53,7 +53,12 @@ class SettingsFragment :
                 replaceFragment(AppearanceFragment.create())
             }
 
-            logoutTextView.setOnClickListener {
+            binding.usernameView.setOnClickListener {
+                presenter.onUsernameClicked()
+            }
+
+            logoutView.clipToOutline = true
+            logoutView.setOnClickListener {
                 presenter.logout()
             }
 
@@ -79,14 +84,10 @@ class SettingsFragment :
     }
 
     override fun openUsernameScreen() {
-        binding.usernameView.setOnClickListener {
-            replaceFragment(UsernameFragment.create())
-        }
+        replaceFragment(UsernameFragment.create())
     }
 
     override fun openReserveUsernameScreen() {
-        binding.usernameView.setOnClickListener {
-            replaceFragment(ReservingUsernameFragment.create(TAG))
-        }
+        replaceFragment(ReservingUsernameFragment.create(TAG))
     }
 }
