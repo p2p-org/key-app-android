@@ -21,8 +21,6 @@ import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.utils.getClipBoardData
 import retrofit2.HttpException
