@@ -30,6 +30,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.utils.getClipBoardData
 import java.math.BigDecimal
 
 class SendFragment :
@@ -71,7 +72,7 @@ class SendFragment :
 
                 clearImageView.isVisible = !isEmpty
 
-                binding.addressTextView.visibility = View.GONE
+                binding.addressTextView.isVisible = false
 
                 presenter.setNewTargetAddress(address)
             }
@@ -133,7 +134,7 @@ class SendFragment :
         )
 
         presenter.loadInitialData()
-        presenter.checkClipBoard(requireContext())
+        checkClipBoard()
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -258,12 +259,12 @@ class SendFragment :
     }
 
     override fun showBufferUsernameResolvedOk(data: String) {
-        binding.addressTextView.visibility = View.VISIBLE
+        binding.addressTextView.isVisible = true
         binding.addressTextView.text = data
     }
 
     override fun showBufferNoAddress() {
-        binding.addressTextView.visibility = View.VISIBLE
+        binding.addressTextView.isVisible = true
         binding.addressTextView.text = getString(R.string.send_no_address)
     }
 
@@ -272,5 +273,13 @@ class SendFragment :
         binding.pasteTextView.setOnClickListener {
             binding.addressEditText.setText(data)
         }
+    }
+
+    private fun checkClipBoard() {
+        val clipBoardData = requireContext().getClipBoardData()
+        if (clipBoardData == null)
+            setEnablePasteButton(null)
+        else
+            setEnablePasteButton(clipBoardData)
     }
 }

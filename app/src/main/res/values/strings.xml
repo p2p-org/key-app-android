@@ -185,7 +185,6 @@
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
-    <string name="main_paste">Paste</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_p2p_username_sol_address">P2P username / SOL address</string>
 
@@ -231,6 +230,7 @@
     <string name="send_bitcoin_network">Bitcoin</string>
     <string name="send_native_bitcoin">Native bitcoin</string>
     <string name="send_free_transaction">Free</string>
+    <string name="send_paste">Paste</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>

@@ -22,7 +22,6 @@ import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.utils.getClipBoardData
 import retrofit2.HttpException
 import timber.log.Timber
 import java.math.BigDecimal
@@ -34,7 +33,7 @@ class SendPresenter(
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
-    private val interactor: UsernameInteractor,
+    private val usernameInteractor: UsernameInteractor,
     private val context: Context,
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -108,14 +107,6 @@ class SendPresenter(
         calculateFee()
     }
 
-    override fun checkClipBoard(context: Context) {
-        val clipBoardData = context.getClipBoardData()
-        if (clipBoardData == null) {
-            view?.setEnablePasteButton(null)
-        } else
-            view?.setEnablePasteButton(clipBoardData)
-    }
-
     override fun send() {
         val token = token ?: throw IllegalStateException("Token cannot be null!")
 
@@ -149,13 +140,12 @@ class SendPresenter(
             addressOrName.length in 1..15 -> {
                 launch {
                     try {
-                        val res = interactor.checkUsername(addressOrName)
+                        val res = usernameInteractor.checkUsername(addressOrName)
                         view?.showBufferUsernameResolvedOk(res.owner)
                     } catch (e: HttpException) {
                         view?.showBufferNoAddress()
                     }
                 }
-                return
             }
 
             addressOrName.length >= 24 -> {
