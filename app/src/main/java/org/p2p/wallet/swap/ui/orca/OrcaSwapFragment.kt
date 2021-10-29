@@ -136,7 +136,6 @@ class OrcaSwapFragment :
                 isReverse = !isReverse
                 val updated = priceData.getPrice(isReverse)
                 exchangeTextView.text = updated
-
                 reverseImageView.tag = isReverse
             }
         }

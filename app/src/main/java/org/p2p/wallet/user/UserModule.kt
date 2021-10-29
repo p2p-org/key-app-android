@@ -61,7 +61,7 @@ object UserModule : InjectionModule {
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }
 
         single { UserInMemoryRepository() } bind UserLocalRepository::class
-        factory { UserInteractor(get(), get(), get(), get()) }
+        factory { UserInteractor(get(), get(), get(), get(), get()) }
     }
 
     private fun createOkHttpClient(): OkHttpClient.Builder =

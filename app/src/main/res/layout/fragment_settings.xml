@@ -111,6 +111,7 @@
             android:padding="16dp"
             android:text="@string/settings_theme"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:visibility="gone"
             app:drawableEndCompat="@drawable/ic_arrow_right"
             tools:ignore="UnusedAttribute" />
 
