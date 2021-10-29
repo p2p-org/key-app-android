@@ -30,7 +30,6 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.wallet.utils.getClipBoardData
 import java.math.BigDecimal
 
 class SendFragment :
@@ -70,9 +69,8 @@ class SendFragment :
                 val address = it.toString()
                 val isEmpty = address.isEmpty()
 
+                scanImageView.isVisible = isEmpty
                 clearImageView.isVisible = !isEmpty
-
-                binding.addressTextView.isVisible = false
 
                 presenter.setNewTargetAddress(address)
             }
@@ -87,6 +85,14 @@ class SendFragment :
 
             clearImageView.setOnClickListener {
                 addressEditText.text?.clear()
+            }
+
+            scanImageView.setOnClickListener {
+                val target = ScanQrFragment.create {
+                    addressEditText.text?.clear()
+                    addressEditText.setText(it)
+                }
+                addFragment(target)
             }
 
             sourceImageView.setOnClickListener {
@@ -113,14 +119,6 @@ class SendFragment :
                 errorTextView.setTextColor(colorFromTheme(color))
                 presenter.setShouldAskConfirmation(!isChecked)
             }
-
-            scanQrTextView.setOnClickListener {
-                val target = ScanQrFragment.create {
-                    addressEditText.text?.clear()
-                    addressEditText.setText(it)
-                }
-                addFragment(target)
-            }
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -134,7 +132,6 @@ class SendFragment :
         )
 
         presenter.loadInitialData()
-        checkClipBoard()
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -256,30 +253,5 @@ class SendFragment :
             title = TextContainer(R.string.main_send_wrong_wallet),
             message = TextContainer(R.string.main_send_wrong_wallet_message)
         )
-    }
-
-    override fun showBufferUsernameResolvedOk(data: String) {
-        binding.addressTextView.isVisible = true
-        binding.addressTextView.text = data
-    }
-
-    override fun showBufferNoAddress() {
-        binding.addressTextView.isVisible = true
-        binding.addressTextView.text = getString(R.string.send_no_address)
-    }
-
-    override fun setEnablePasteButton(data: CharSequence?) {
-        binding.pasteTextView.setTextColor(colorFromTheme(R.attr.colorAccent))
-        binding.pasteTextView.setOnClickListener {
-            binding.addressEditText.setText(data)
-        }
-    }
-
-    private fun checkClipBoard() {
-        val clipBoardData = requireContext().getClipBoardData()
-        if (clipBoardData == null)
-            setEnablePasteButton(null)
-        else
-            setEnablePasteButton(clipBoardData)
     }
 }
