@@ -34,12 +34,8 @@ interface SendContract {
         fun showNetworkSelection()
         fun hideNetworkSelection()
         fun navigateToTokenSelection(tokens: List<Token.Active>)
-
-        fun showBufferAddressValid()
-        fun showBufferAddressValidWithoutFunds()
-        fun showBufferUsernameResolvedOk()
-        fun showBufferUsernameResolvedNotOk()
-        fun showBufferOther()
+        fun showBufferUsernameResolvedOk(data: String)
+        fun showBufferNoAddress()
         fun setEnablePasteButton(data: CharSequence?)
     }
 

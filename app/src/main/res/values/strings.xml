@@ -190,6 +190,7 @@
     <!-- send -->
     <string name="send_make_sure_correct_address">Make sure the address is correct</string>
     <string name="send_enter_address">Enter the recipient\'s address</string>
+    <string name="send_no_address">There\'s no address like this</string>
     <string name="send_now">Send now</string>
     <string name="send_network_destination">Network destination</string>
     <string name="send_select_network_destination">Select network destination</string>

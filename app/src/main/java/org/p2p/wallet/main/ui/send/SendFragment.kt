@@ -71,6 +71,8 @@ class SendFragment :
 
                 clearImageView.isVisible = !isEmpty
 
+                binding.addressTextView.visibility = View.GONE
+
                 presenter.setNewTargetAddress(address)
             }
 
@@ -255,24 +257,14 @@ class SendFragment :
         )
     }
 
-    override fun showBufferAddressValid() {
-        TODO("Not yet implemented")
+    override fun showBufferUsernameResolvedOk(data: String) {
+        binding.addressTextView.visibility = View.VISIBLE
+        binding.addressTextView.text = data
     }
 
-    override fun showBufferAddressValidWithoutFunds() {
-        TODO("Not yet implemented")
-    }
-
-    override fun showBufferUsernameResolvedOk() {
-        TODO("Not yet implemented")
-    }
-
-    override fun showBufferUsernameResolvedNotOk() {
-        TODO("Not yet implemented")
-    }
-
-    override fun showBufferOther() {
-        TODO("Not yet implemented")
+    override fun showBufferNoAddress() {
+        binding.addressTextView.visibility = View.VISIBLE
+        binding.addressTextView.text = getString(R.string.send_no_address)
     }
 
     override fun setEnablePasteButton(data: CharSequence?) {
