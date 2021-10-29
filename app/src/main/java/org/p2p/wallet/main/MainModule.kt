@@ -26,7 +26,7 @@ object MainModule : InjectionModule {
         factory { SendInteractor(get(), get(), get(), get()) }
 
         factory { (token: Token.Active?) ->
-            ReceiveSolanaPresenter(token, get(), get())
+            ReceiveSolanaPresenter(token, get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (token: Token.Active) ->
             SendPresenter(token, get(), get(), get())

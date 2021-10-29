@@ -63,6 +63,44 @@
             app:layout_constraintTop_toTopOf="@id/qrImageView" />
 
         <TextView
+            android:id="@+id/usernameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_gray_secondary_start_rounded"
+            android:gravity="center"
+            android:padding="20dp"
+            android:singleLine="true"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="@color/colorStaticDark"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/shareImageView"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/qrImageView"
+            tools:text="chingiz.p2p.sol"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/usernameShareImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="40dp"
+            android:background="@drawable/bg_gray_secondary_end_rounded"
+            android:paddingHorizontal="16dp"
+            android:src="@drawable/ic_share"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/usernameTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/usernameTextView"
+            app:layout_constraintTop_toTopOf="@id/usernameTextView"
+            app:tint="@color/colorStaticDark"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
+
+        <TextView
             android:id="@+id/fullAddressTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -78,7 +116,7 @@
             app:layout_constraintEnd_toStartOf="@id/shareImageView"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/qrImageView"
+            app:layout_constraintTop_toBottomOf="@id/usernameTextView"
             tools:text="7YVptYAqb9...wmoovv4XwL" />
 
         <ImageView

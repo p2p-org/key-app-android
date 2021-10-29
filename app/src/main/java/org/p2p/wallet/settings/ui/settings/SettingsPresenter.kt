@@ -36,11 +36,11 @@ class SettingsPresenter(
     }
 
     override fun onUsernameClicked() {
-        val username = usernameInteractor.getUsername()
-        if (username.isNullOrEmpty()) {
-            view?.openReserveUsernameScreen()
-        } else {
+        val usernameExists = usernameInteractor.usernameExists()
+        if (usernameExists) {
             view?.openUsernameScreen()
+        } else {
+            view?.openReserveUsernameScreen()
         }
     }
 }
