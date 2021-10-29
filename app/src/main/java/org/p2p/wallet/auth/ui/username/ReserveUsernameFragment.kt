@@ -27,7 +27,7 @@ import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import org.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentReservingUsernameBinding
+import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
@@ -43,7 +43,7 @@ import java.io.File
 
 class ReserveUsernameFragment :
     BaseMvpFragment<ReserveUsernameContract.View,
-        ReserveUsernameContract.Presenter>(R.layout.fragment_reserving_username),
+        ReserveUsernameContract.Presenter>(R.layout.fragment_reserve_username),
     ReserveUsernameContract.View {
 
     companion object {
@@ -55,7 +55,7 @@ class ReserveUsernameFragment :
 
     override val presenter: ReserveUsernameContract.Presenter by inject()
 
-    private val binding: FragmentReservingUsernameBinding by viewBinding()
+    private val binding: FragmentReserveUsernameBinding by viewBinding()
     private var gt3GeeTestUtils: GT3GeetestUtils? = null
     private var gt3ConfigBean: GT3ConfigBean? = null
 
@@ -68,7 +68,7 @@ class ReserveUsernameFragment :
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
-                enterUserNameButton.fitMargin { Edge.BottomArc }
+                termsAndConditionsTextView.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 

@@ -5,6 +5,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
@@ -79,8 +80,8 @@ class SettingsFragment :
         )
     }
 
-    override fun showUsername(username: String?) {
-        binding.usernameValueTextView.text = username
+    override fun showUsername(username: Username?) {
+        binding.usernameValueTextView.text = username?.getFullUsername(requireContext())
     }
 
     override fun openUsernameScreen() {

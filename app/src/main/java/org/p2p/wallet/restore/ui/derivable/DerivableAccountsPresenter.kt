@@ -58,11 +58,11 @@ class DerivableAccountsPresenter(
             val keys = secretKeys.map { it.text }
             secretKeyInteractor.createAndSaveAccount(path, keys)
 
-            val username = usernameInteractor.getUsername()
-            if (username.isNullOrEmpty()) {
-                view?.navigateToReserveUsername()
-            } else {
+            val usernameExists = usernameInteractor.usernameExists()
+            if (usernameExists) {
                 view?.navigateToCreatePin()
+            } else {
+                view?.navigateToReserveUsername()
             }
 
             view?.showLoading(false)

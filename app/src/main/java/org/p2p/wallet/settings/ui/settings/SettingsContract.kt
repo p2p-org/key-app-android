@@ -1,5 +1,6 @@
 package org.p2p.wallet.settings.ui.settings
 
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
@@ -8,7 +9,7 @@ interface SettingsContract {
     interface View : MvpView {
         fun showHiddenBalance(isHidden: Boolean)
         fun showAuthorization()
-        fun showUsername(username: String?)
+        fun showUsername(username: Username?)
         fun openUsernameScreen()
         fun openReserveUsernameScreen()
     }

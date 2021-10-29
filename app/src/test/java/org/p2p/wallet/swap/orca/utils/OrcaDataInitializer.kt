@@ -178,8 +178,7 @@ class OrcaDataInitializer {
         usernameInteractor = UsernameInteractor(
             usernameRepository = usernameRepository,
             fileLocalRepository = fileLocalRepository,
-            sharedPreferences = sharedPreferences,
-            tokenKeyProvider = tokenKeyProvider,
+            sharedPreferences = sharedPreferences
         )
 
         secretKeyInteractor = SecretKeyInteractor(

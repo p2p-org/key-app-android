@@ -93,7 +93,7 @@
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>
     <string name="auth_p2p_sol">.p2p.sol</string>
-    <string name="auth_name_p2p_sol">%1$s.p2p.sol</string>
+    <string name="auth_name_p2p_sol">%s.p2p.sol</string>
     <string name="auth_available_name">%1$s is available</string>
     <string name="auth_unavailable_name">%1$s is unavailable</string>
     <string name="auth_username">Username</string>
@@ -214,6 +214,7 @@
     <string name="receive_started_session">Created active session</string>
     <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
     <string name="receive_no_statuses_yet">No statuses yet</string>
+    <string name="receive_username_copied">Username copied to clipboard!</string>
 
     <!-- send -->
     <string name="send_make_sure_correct_address">Make sure the address is correct</string>
