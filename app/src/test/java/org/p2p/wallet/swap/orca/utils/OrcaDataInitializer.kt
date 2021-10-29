@@ -161,7 +161,8 @@ class OrcaDataInitializer {
             userRepository = userRepository,
             userLocalRepository = userLocalRepository,
             mainLocalRepository = mainLocalRepository,
-            rpcRepository = rpcRepository
+            rpcRepository = rpcRepository,
+            tokenKeyProvider = tokenKeyProvider
         )
 
         usernameRepository = UsernameRemoteRepository(

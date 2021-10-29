@@ -128,7 +128,8 @@ class SerumDataInitializer {
             userRepository = userRepository,
             userLocalRepository = userLocalRepository,
             mainLocalRepository = mainLocalRepository,
-            rpcRepository = rpcRepository
+            rpcRepository = rpcRepository,
+            tokenKeyProvider = tokenKeyProvider
         )
 
         fileLocalRepository = FileRepository(context)
