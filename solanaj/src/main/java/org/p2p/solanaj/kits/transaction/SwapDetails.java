@@ -16,7 +16,10 @@ public class SwapDetails extends TransactionDetails {
     private final String mintB;
     private final String amountA;
     private final String amountB;
+    private final String source;
+    private final String alternateSource;
     private final String destination;
+    private final String alternateDestination;
     private final Long fee;
 
     public SwapDetails(
@@ -24,11 +27,14 @@ public class SwapDetails extends TransactionDetails {
             long blockTime,
             int slot,
             long fee,
+            String source,
             String destination,
             String amountA,
             String amountB,
             String mintA,
-            String mintB
+            String mintB,
+            String alternateSource,
+            String alternateDestination
     ) {
         super(signature, blockTime, slot);
         this.amountA = amountA;
@@ -37,6 +43,9 @@ public class SwapDetails extends TransactionDetails {
         this.mintB = mintB;
         this.fee = fee;
         this.destination = destination;
+        this.source = source;
+        this.alternateSource = alternateSource;
+        this.alternateDestination = alternateDestination;
     }
 
     @Override
@@ -65,8 +74,19 @@ public class SwapDetails extends TransactionDetails {
         return amountB;
     }
 
+    public String getSource() {
+        return source;
+    }
     public String getDestination() {
         return destination;
+    }
+
+    public String getAlternateSource() {
+        return alternateSource;
+    }
+
+    public String getAlternateDestination() {
+        return alternateDestination;
     }
 
     public Long getFee() {
