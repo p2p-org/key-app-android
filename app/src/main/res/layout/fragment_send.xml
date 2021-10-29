@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contentView"
@@ -246,10 +247,10 @@
                     android:layout_marginEnd="36dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorElementSecondary"
+                    app:drawableStartCompat="@drawable/ic_back"
                     app:layout_constraintBottom_toBottomOf="@id/toTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/toTextView"
-                    tools:ignore="UseCompatTextViewDrawableXml"
                     tools:text="Receive at least: 0,0261 renBTC" />
 
                 <View

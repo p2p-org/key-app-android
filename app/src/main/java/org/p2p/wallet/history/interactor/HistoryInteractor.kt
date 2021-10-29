@@ -1,14 +1,5 @@
 package org.p2p.wallet.history.interactor
 
-import org.p2p.wallet.history.model.PriceHistory
-import org.p2p.wallet.history.model.TransactionConverter
-import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.repository.HistoryRepository
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
@@ -17,6 +8,15 @@ import org.p2p.solanaj.kits.transaction.TransactionTypeParser
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.PriceHistory
+import org.p2p.wallet.history.model.TransactionConverter
+import org.p2p.wallet.history.repository.HistoryRepository
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
     private val historyRepository: HistoryRepository,
@@ -38,7 +38,7 @@ class HistoryInteractor(
 
         return rpcRepository.getConfirmedTransactions(signatures)
             .mapNotNull { response ->
-                val data = TransactionTypeParser.parse(response, null)
+                val data = TransactionTypeParser.parse(response)
 
                 val swap = data.firstOrNull { it is SwapDetails }
                 if (swap != null) {
@@ -74,9 +74,30 @@ class HistoryInteractor(
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private fun parseSwapDetails(details: SwapDetails): HistoryTransaction? {
-        val sourceData = userLocalRepository.findTokenData(details.mintA) ?: return null
-        val destinationData = userLocalRepository.findTokenData(details.mintB) ?: return null
+    private suspend fun parseSwapDetails(details: SwapDetails): HistoryTransaction? {
+        val finalMintA = if (details.mintA.isNullOrEmpty()) {
+            val accountInfo = rpcRepository.getAccountInfo(details.source.toPublicKey())
+            val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+            if (info != null) {
+                info.mint.toBase58()
+            } else {
+                val alternateAccountInfo = rpcRepository.getAccountInfo(details.alternateSource.toPublicKey())
+                val alternateInfo = TokenTransaction.parseAccountInfoData(
+                    alternateAccountInfo,
+                    TokenProgram.PROGRAM_ID
+                ) ?: return null
+                alternateInfo.mint.toBase58()
+            }
+        } else details.mintA
+
+        val finalMintB = if (details.mintB.isNullOrEmpty()) {
+            val accountInfo = rpcRepository.getAccountInfo(details.destination.toPublicKey())
+            val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID) ?: return null
+            info.mint.toBase58()
+        } else details.mintB
+
+        val sourceData = userLocalRepository.findTokenData(finalMintA) ?: return null
+        val destinationData = userLocalRepository.findTokenData(finalMintB) ?: return null
 
         if (sourceData.mintAddress == destinationData.mintAddress) return null
 

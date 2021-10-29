@@ -13,93 +13,96 @@ import java.math.BigInteger
 // https://github.com/p2p-org/solana-swift/blob/main/Sources/SolanaSwift/Helpers/TransactionParser.swift#L74-L86
 object TransactionTypeParser {
 
-    fun parse(transaction: ConfirmedTransactionParsed, myAccountSymbol: String?): List<TransactionDetails> {
-        val details: MutableList<TransactionDetails> = ArrayList()
+    private var details = mutableListOf<TransactionDetails>()
+
+    fun parse(transaction: ConfirmedTransactionParsed): List<TransactionDetails> {
+        details = ArrayList()
         val signature = transaction.transaction.signatures.firstOrNull().orEmpty()
         val instructions = transaction.transaction.message.instructions
 
-        when {
-            getOrcaSwapInstructionIndex(instructions) != -1 ->
-//                checkOrcaSwapDetails(transaction, myAccountSymbol)
-                parseDetails(transaction, signature, details)
-            getSerumSwapInstructionIndex(instructions) != -1 ->
-                parseSerumSwapTransaction(transaction, signature, details)
-            instructions.size == 2 ->
-//                parseCreateAccount(instructions[0], instructions[1])
-                parseDetails(transaction, signature, details)
-            instructions.size == 1 ->
-//                parseCloseAccount()
-                parseDetails(transaction, signature, details)
-            instructions.size == 1 || instructions.size == 4 || instructions.size == 2 ->
-                parseDetails(transaction, signature, details)
+        /* Orca Swap */
+        val orcaSwapInstructionIndex = getOrcaSwapInstructionIndex(instructions)
+        if (orcaSwapInstructionIndex != -1) {
+            checkOrcaSwapDetails(orcaSwapInstructionIndex, transaction)
+            return details
         }
 
+        val serumSwapInstructionIndex = getSerumSwapInstructionIndex(instructions)
+        if (serumSwapInstructionIndex != -1) {
+            parseSerumSwapTransaction(transaction, signature)
+            return details
+        }
+
+        parseDetails(transaction, signature, details)
         return details
     }
 
-//    private fun checkOrcaSwapDetails(
-//        transaction: ConfirmedTransactionParsed,
-//        myAccountSymbol: String?,
-//    ) {
-//        when {
-//            isLiquidityToPool(transaction.meta.innerInstructions) -> return
-//            isBurn(transaction.meta.innerInstructions) -> return
-//            else -> {
-//                val instructions = transaction.transaction.message.instructions
-//                val innerInstructions = transaction.meta.innerInstructions
-//                val balances = transaction.meta.postTokenBalances
-//                val index = getOrcaSwapInstructionIndex(instructions)
-//                parseSwapTransaction(index, instructions, innerInstructions, balances, myAccountSymbol)
-//            }
-//        }
-//    }
+    private fun checkOrcaSwapDetails(
+        instructionIndex: Int,
+        transaction: ConfirmedTransactionParsed
+    ) {
+        when {
+            isLiquidityToPool(transaction.meta.innerInstructions) -> return
+            isBurn(transaction.meta.innerInstructions) -> return
+            else -> {
+                val swapDetails = parseSwapTransaction(instructionIndex, transaction)
+                swapDetails?.let { details.add(it) }
+            }
+        }
+    }
 
-//    private fun parseSwapTransaction(
-//        index: Int,
-//        instructions: List<InstructionParsed>,
-//        innerInstructions: List<ConfirmedTransactionParsed.InnerInstruction>,
-//        postTokenBalances: List<ConfirmedTransactionParsed.TokenBalance>,
-//        myAccountSymbol: String?
-//    ): TransactionDetails? {
-//        // get instruction
-//        if (index >= instructions.size) return null
-//
-//        val instruction = instructions[index]
-//
-//        // group request
-//        var sourceAmountLamports: BigInteger?
-//        var destinationAmountLamports: BigInteger?
-//
-//        // check inner instructions
-//        val data = instruction.data ?: return null
-//        val instructionIndex = Base58Utils.decode(data).first().toInt()
-//        if (instructionIndex != 1) return null
-//        val swapInnerInstruction = innerInstructions.getOrNull(instructionIndex) ?: return null
-//        // get instructions
-//        val transfersInstructions = swapInnerInstruction.instructions.filter {
-//            it.parsed.type == "transfer"
-//        }
-//
-//        if (transfersInstructions.size < 2) return null
-//
-//        val sourceInstruction = transfersInstructions[0]
-//        val destinationInstruction = transfersInstructions[1]
-//
-//        val sourceInfo = sourceInstruction.parsed?.info
-//        val destinationInfo = destinationInstruction.parsed?.info
-//
-//        // get source
-//        val accountInfoRequests = mutableListOf<AccountInfo>()
-//        var sourcePubkey: PublicKey?
-//        if (sourceInfo)
-//            if val sourceString = sourceInfo?.source {
-//                sourcePubkey = try ? PublicKey(string: sourceString)
-//                    accountInfoRequests.append(
-//                        getAccountInfo(account: sourceString, retryWithAccount: sourceInfo?. destination
-//                    )
-//                    )
-//                }
-//    }
+    private fun parseSwapTransaction(
+        index: Int,
+        transaction: ConfirmedTransactionParsed
+    ): TransactionDetails? {
+        val signature = transaction.transaction.signatures.firstOrNull().orEmpty()
+        val instructions = transaction.transaction.message.instructions
+        val innerInstructions = transaction.meta.innerInstructions
+        val balances = transaction.meta.postTokenBalances
+
+        // get instruction
+        if (index >= instructions.size) return null
+
+        // check inner instructions
+        val swapInnerInstruction = innerInstructions.lastOrNull() ?: return null
+        // get instructions
+        val transfersInstructions = swapInnerInstruction.instructions.filter {
+            it.parsed.type == "transfer"
+        }
+
+        if (transfersInstructions.size < 2) return null
+
+        val sourceInstruction = transfersInstructions[0]
+        val destinationInstruction = transfersInstructions[1]
+
+        val sourceInfo = sourceInstruction.parsed?.info ?: return null
+        val destinationInfo = destinationInstruction.parsed?.info ?: return null
+
+        // get source
+        val fromAddress = sourceInfo["source"] as? String
+        val alternateFromAddress = sourceInfo["destination"] as? String
+
+        val toAddress = destinationInfo["destination"] as? String
+        val alternateToAddress = sourceInfo["source"] as? String
+
+        val amountA = sourceInfo["amount"] as? String ?: "0"
+        val amountB = destinationInfo["amount"] as? String ?: "0"
+
+        return SwapDetails(
+            signature,
+            transaction.blockTime,
+            transaction.slot,
+            transaction.meta.fee,
+            fromAddress,
+            toAddress,
+            amountA,
+            amountB,
+            null,
+            null,
+            alternateFromAddress,
+            alternateToAddress
+        )
+    }
 
     private fun parseDetails(
         transaction: ConfirmedTransactionParsed,
@@ -194,11 +197,11 @@ object TransactionTypeParser {
                     secondIndex = instructionParsed.size - 1
                 }
                 val amountA = instructionParsed[firstIndex].parsed.info["amount"] as String?
-                val userSource = instructionParsed[firstIndex].parsed.info["source"] as String?
+                val source = instructionParsed[firstIndex].parsed.info["source"] as String?
                 val amountB = instructionParsed[secondIndex].parsed.info["amount"] as String?
                 val poolDestination = instructionParsed[secondIndex].parsed.info["source"] as String?
                 val destination = instructionParsed[secondIndex].parsed.info["destination"] as String?
-                val userSourceKeyIndex = parsedInstruction.accounts.indexOf(userSource)
+                val userSourceKeyIndex = parsedInstruction.accounts.indexOf(source)
                 val poolDestinationKeyIndex = parsedInstruction.accounts.indexOf(poolDestination)
                 val postTokenBalances = transaction.meta.postTokenBalances
                 var mintA = ""
@@ -216,11 +219,14 @@ object TransactionTypeParser {
                     transaction.blockTime,
                     transaction.slot,
                     transaction.meta.fee,
+                    source,
                     destination,
                     amountA,
                     amountB,
                     mintA,
-                    mintB
+                    mintB,
+                    null,
+                    null
                 )
                 details.add(swapDetails)
             }
@@ -231,8 +237,7 @@ object TransactionTypeParser {
 
     private fun parseSerumSwapTransaction(
         transaction: ConfirmedTransactionParsed,
-        signature: String,
-        details: MutableList<TransactionDetails>
+        signature: String
     ) {
         val instructions = transaction.transaction.message.instructions
         val swapInstructionIndex = getSerumSwapInstructionIndex(instructions)
@@ -312,11 +317,14 @@ object TransactionTypeParser {
             transaction.blockTime,
             transaction.slot,
             transaction.meta.fee,
+            fromAddress,
             toAddress,
             fromAmount.toString(),
             toAmount.toString(),
             mints[0],
-            mints[1]
+            mints[1],
+            null,
+            null
         )
 
         details.add(transactionDetails)
