@@ -6,7 +6,7 @@ data class RequestConfiguration(
     @SerializedName("commitment")
     val commitment: String? = null,
     @SerializedName("encoding")
-    val encoding: Encoding? = null,
+    val encoding: String? = null,
     @SerializedName("dataSlice")
     val dataSlice: DataSlice? = null,
     @SerializedName("filters")

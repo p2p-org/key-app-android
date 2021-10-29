@@ -102,5 +102,11 @@
             android:textColor="?colorElementPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="UnusedAttribute" />
+
+        <org.p2p.wallet.common.widget.ProgressView
+            android:id="@+id/progressView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

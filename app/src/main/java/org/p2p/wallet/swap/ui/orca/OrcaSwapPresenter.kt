@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.orca
 
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -7,9 +8,11 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.swap.interactor.orca.OrcaAmountInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+import org.p2p.wallet.swap.model.PriceData
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaAmountData
 import org.p2p.wallet.swap.model.orca.OrcaFeeData
+import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getMinimumAmountOut
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
@@ -47,7 +50,7 @@ class OrcaSwapPresenter(
         view?.showDestinationToken(newValue)
     }
 
-    private lateinit var bestPoolPair: OrcaPoolsPair
+    private var bestPoolPair: OrcaPoolsPair? = null
 
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
@@ -57,6 +60,8 @@ class OrcaSwapPresenter(
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
     private var slippage: Slippage = Slippage.MEDIUM
+
+    private var calculationJob: Job? = null
 
     override fun loadInitialData() {
         launch {
@@ -110,10 +115,8 @@ class OrcaSwapPresenter(
         view?.showSlippage(this.slippage)
 
         destinationToken?.let {
-            launch {
-                /* If pool is not null, then destination token is not null as well */
-                calculateAmount(sourceToken, it)
-            }
+            /* If pool is not null, then destination token is not null as well */
+            calculateAmount(sourceToken, it)
         }
     }
 
@@ -142,12 +145,15 @@ class OrcaSwapPresenter(
         view?.showAroundValue(aroundValue)
 
         destinationToken?.let {
-            launch {
+            calculationJob?.cancel()
+            calculationJob = launch {
                 /* If pool is not null, then destination token is not null as well */
                 calculateAmount(sourceToken, it)
 
                 /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
                 calculateFees(sourceToken, it)
+
+                calculateRates(sourceToken, it)
             }
         }
     }
@@ -171,13 +177,14 @@ class OrcaSwapPresenter(
     }
 
     override fun swap() {
+        val pair = bestPoolPair ?: return
         launch {
             try {
                 view?.showLoading(true)
                 val data = swapInteractor.swap(
                     fromWalletPubkey = sourceToken.publicKey,
                     toWalletPubkey = destinationToken?.publicKey,
-                    bestPoolsPair = bestPoolPair,
+                    bestPoolsPair = pair,
                     amount = sourceAmount.toDoubleOrNull() ?: 0.toDouble(),
                     slippage = slippage.doubleValue,
                     isSimulation = false
@@ -198,9 +205,9 @@ class OrcaSwapPresenter(
             view?.showButtonText(R.string.swap_searching_swap_pair)
             searchTradablePairs(sourceToken, destination)
             view?.showButtonText(R.string.swap_calculating_fees)
-            calculateRates(sourceToken, destination)
             calculateAmount(sourceToken, destination)
             calculateFees(sourceToken, destination)
+            calculateRates(sourceToken, destination)
         }
     }
 
@@ -211,19 +218,6 @@ class OrcaSwapPresenter(
         poolPairs.addAll(pairs)
     }
 
-    private fun calculateRates(source: Token.Active, destination: Token) {
-        Timber.tag(SWAP_STATE_TAG).d("Calculating rates")
-        val input = BigInteger.ONE
-
-//        val priceData = PriceData(
-//            sourcePrice = estimatedSourceOutputAmount.fromLamports(source.decimals).scaleMedium().toString(),
-//            destinationPrice = estimatedDestOutputAmount.fromLamports(destination.decimals).scaleMedium().toString(),
-//            sourceSymbol = source.tokenSymbol,
-//            destinationSymbol = destination.tokenSymbol
-//        )
-//        view?.showPrice(priceData)
-    }
-
     private suspend fun calculateFees(source: Token.Active, destination: Token) {
         val enteredAmount = sourceAmount.toBigDecimalOrZero()
         if (enteredAmount.isZero()) {
@@ -231,7 +225,7 @@ class OrcaSwapPresenter(
             return
         }
 
-        if (!this::bestPoolPair.isInitialized) return
+        val pair = bestPoolPair ?: return
 
         val myWalletsMints = userInteractor.getUserTokens().map { it.mintAddress }
         val fees = swapInteractor.getFees(
@@ -239,25 +233,28 @@ class OrcaSwapPresenter(
             fromWalletPubkey = source.publicKey,
             toWalletPubkey = destination.publicKey,
             feeRelayerFeePayerPubkey = null,
-            bestPoolsPair = bestPoolPair,
+            bestPoolsPair = pair,
             inputAmount = enteredAmount,
             slippage = slippage.doubleValue,
             lamportsPerSignature = lamportsPerSignature,
             minRentExempt = minRentExemption,
         )
         val networkFee = fees.first.fromLamports().scaleMedium()
+        val liquidityProviderFees = fees.second
 
-        val liquidityProviderFee = if (bestPoolPair.size == 1) {
+        val liquidityProviderFee = if (pair.size == 1 && liquidityProviderFees.isNotEmpty()) {
             val fee = fees.second[0].fromLamports(destination.decimals).scaleMedium()
             "$fee ${destination.tokenSymbol}"
         } else {
-            val intermediaryPool = bestPoolPair[0]
+            val intermediaryPool = pair[0]
             val intermediaryTokenSymbol = intermediaryPool.tokenBName
-            val intermediaryFee = fees.second[0].fromLamports(intermediaryPool.tokenBBalance!!.decimals).scaleMedium()
+            val intermediaryFee =
+                liquidityProviderFees[0].fromLamports(intermediaryPool.tokenBBalance!!.decimals).scaleMedium()
 
-            val destinationPool = bestPoolPair[1]
+            val destinationPool = pair[1]
             val destinationTokenSymbol = destinationPool.tokenBName
-            val destinationFee = fees.second[1].fromLamports(destinationPool.tokenBBalance!!.decimals).scaleMedium()
+            val destinationFee =
+                liquidityProviderFees[1].fromLamports(destinationPool.tokenBBalance!!.decimals).scaleMedium()
             "$intermediaryFee $intermediaryTokenSymbol + $destinationFee $destinationTokenSymbol"
         }
 
@@ -273,7 +270,7 @@ class OrcaSwapPresenter(
         view?.showFees(data)
     }
 
-    private suspend fun calculateAmount(source: Token.Active, destination: Token) {
+    private fun calculateAmount(source: Token.Active, destination: Token) {
         val inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
 
         val pair = swapInteractor.findBestPoolsPairForInputAmount(inputAmount, poolPairs)
@@ -286,7 +283,7 @@ class OrcaSwapPresenter(
         bestPoolPair = pair
 
         val deprecatedValues = pair.map { it.deprecated }.joinToString()
-        Timber.tag(SWAP_STATE_TAG).d("Best pair found, deprecation value: $deprecatedValues")
+        Timber.tag(SWAP_STATE_TAG).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
         destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleLong().toString()
 
@@ -296,6 +293,30 @@ class OrcaSwapPresenter(
         val data = OrcaAmountData(destinationAmount, minReceiveResult)
         view?.showCalculations(data)
         setButtonEnabled(source)
+    }
+
+    private fun calculateRates(source: Token.Active, destination: Token) {
+        val pair = bestPoolPair ?: return
+        /* TODO: Add dynamic fee */
+//        val inputAmount = sourceAmount.toBigDecimalOrNull() ?: return
+        val inputAmount = BigDecimal.ONE
+        Timber.tag(SWAP_STATE_TAG).d("Calculating rates")
+
+        val estimatedOutputAmount = pair.getOutputAmount(inputAmount.toLamports(source.decimals)) ?: return
+        Timber.tag(SWAP_STATE_TAG).d("Calculating rates, found min amount for output: $estimatedOutputAmount")
+        val finalOutputAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleMedium()
+
+        val estimatedInputAmount = pair.getInputAmount(inputAmount.toLamports(destination.decimals)) ?: return
+        Timber.tag(SWAP_STATE_TAG).d("Calculating rates, found min amount for input: $estimatedInputAmount")
+        val finalInputAmount = estimatedInputAmount.fromLamports(source.decimals).scaleMedium()
+
+        val priceData = PriceData(
+            inputPrice = finalInputAmount.toString(),
+            outputPrice = finalOutputAmount.toString(),
+            inputSymbol = source.tokenSymbol,
+            outputSymbol = destination.tokenSymbol
+        )
+        view?.showPrice(priceData)
     }
 
     private fun setSourceToken(token: Token.Active) {

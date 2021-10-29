@@ -8,13 +8,15 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import java.math.BigDecimal
 
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: MainLocalRepository,
-    private val rpcRepository: RpcRepository
+    private val rpcRepository: RpcRepository,
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
@@ -40,11 +42,16 @@ class UserInteractor(
 
     suspend fun loadUserTokensAndUpdateData() {
         val newTokens = userRepository.loadTokens()
+        /* We have case when temporary SOL account is created but not deleted in database */
+        val owner = tokenKeyProvider.publicKey
+        mainLocalRepository.setHiddenSol(owner)
         mainLocalRepository.updateTokens(newTokens)
     }
 
     suspend fun getUserTokens(): List<Token.Active> =
         mainLocalRepository.getUserTokens()
+            .sortedByDescending { it.totalInUsd }
+            .sortedByDescending { it.isSOL }
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)

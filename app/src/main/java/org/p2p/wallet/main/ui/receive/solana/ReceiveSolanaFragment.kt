@@ -21,6 +21,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.auth.model.Username
 
 class ReceiveSolanaFragment :
     BaseMvpFragment<ReceiveSolanaContract.View, ReceiveSolanaContract.Presenter>(R.layout.fragment_receive_solana),
@@ -73,16 +74,31 @@ class ReceiveSolanaFragment :
         presenter.loadData()
     }
 
-    override fun showSolAddress(token: Token.Active) {
+    override fun showUserData(solToken: Token.Active, username: Username?) {
         with(binding) {
-            fullAddressTextView.text = token.publicKey.cutMiddle()
+            fullAddressTextView.text = solToken.publicKey.cutMiddle()
             fullAddressTextView.setOnClickListener {
-                requireContext().copyToClipBoard(token.publicKey)
+                requireContext().copyToClipBoard(solToken.publicKey)
                 fullAddressTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
                 Toast.makeText(requireContext(), R.string.main_receive_address_copied, Toast.LENGTH_SHORT).show()
             }
             shareImageView.setOnClickListener {
-                requireContext().shareText(token.publicKey)
+                requireContext().shareText(solToken.publicKey)
+            }
+
+            if (username == null) return
+            usernameTextView.isVisible = true
+            usernameShareImageView.isVisible = true
+
+            val fullUsername = username.getFullUsername(requireContext())
+            usernameTextView.text = fullUsername
+            usernameTextView.setOnClickListener {
+                requireContext().copyToClipBoard(fullUsername)
+                usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
+                Toast.makeText(requireContext(), R.string.receive_username_copied, Toast.LENGTH_SHORT).show()
+            }
+            usernameShareImageView.setOnClickListener {
+                requireContext().shareText(fullUsername)
             }
         }
     }

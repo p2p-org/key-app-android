@@ -6,9 +6,9 @@ import androidx.core.content.edit
 import org.p2p.wallet.auth.api.CheckCaptchaResponse
 import org.p2p.wallet.auth.api.CheckUsernameResponse
 import org.p2p.wallet.auth.api.RegisterUsernameResponse
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import java.io.File
 
 private const val KEY_USERNAME = "KEY_USERNAME"
@@ -16,8 +16,7 @@ private const val KEY_USERNAME = "KEY_USERNAME"
 class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
     private val fileLocalRepository: FileRepository,
-    private val sharedPreferences: SharedPreferences,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val sharedPreferences: SharedPreferences
 ) {
 
     suspend fun checkUsername(username: String): CheckUsernameResponse {
@@ -35,16 +34,17 @@ class UsernameInteractor(
         return usernameRepository.registerUsername(username, result)
     }
 
-    fun checkUsernameExist(): String? = sharedPreferences.getString(KEY_USERNAME, null)
-
     suspend fun lookupUsername(owner: String) {
         val userName = usernameRepository.lookup(owner).firstOrNull()
         sharedPreferences.edit { putString(KEY_USERNAME, userName?.name) }
     }
 
-    fun getName(): String? = sharedPreferences.getString(KEY_USERNAME, null)
+    fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
 
-    fun getAddress(): String = tokenKeyProvider.publicKey
+    fun getUsername(): Username? {
+        val username = sharedPreferences.getString(KEY_USERNAME, null)
+        return username?.let { Username(it) }
+    }
 
     suspend fun saveQr(name: String, bitmap: Bitmap): File = fileLocalRepository.saveQr(name, bitmap)
 }

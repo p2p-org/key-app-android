@@ -17,6 +17,7 @@ import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.auth.model.Username
 
 import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.utils.colorFromTheme
@@ -72,8 +73,8 @@ class UsernameFragment :
         presenter.loadData()
     }
 
-    override fun showName(name: String?) {
-        binding.nameTextView.text = getString(R.string.auth_name_p2p_sol, name)
+    override fun showUsername(username: Username?) {
+        binding.nameTextView.text = username?.getFullUsername(requireContext())
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {

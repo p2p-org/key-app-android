@@ -2,10 +2,12 @@ package org.p2p.wallet.settings.ui.settings
 
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import org.p2p.wallet.auth.ui.username.ReservingUsernameFragment
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
@@ -16,7 +18,6 @@ import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
 
 class SettingsFragment :
     BaseMvpFragment<SettingsContract.View, SettingsContract.Presenter>(R.layout.fragment_settings),
@@ -53,7 +54,12 @@ class SettingsFragment :
                 replaceFragment(AppearanceFragment.create())
             }
 
-            logoutTextView.setOnClickListener {
+            usernameView.setOnClickListener {
+                presenter.onUsernameClicked()
+            }
+
+            logoutView.clipToOutline = true
+            logoutView.setOnClickListener {
                 presenter.logout()
             }
 
@@ -74,19 +80,15 @@ class SettingsFragment :
         )
     }
 
-    override fun showUsername(username: String?) {
-        binding.usernameValueTextView.text = username
+    override fun showUsername(username: Username?) {
+        binding.usernameValueTextView.text = username?.getFullUsername(requireContext())
     }
 
     override fun openUsernameScreen() {
-        binding.usernameView.setOnClickListener {
-            replaceFragment(UsernameFragment.create())
-        }
+        replaceFragment(UsernameFragment.create())
     }
 
     override fun openReserveUsernameScreen() {
-        binding.usernameView.setOnClickListener {
-            replaceFragment(ReservingUsernameFragment.create(TAG))
-        }
+        replaceFragment(ReserveUsernameFragment.create(TAG))
     }
 }

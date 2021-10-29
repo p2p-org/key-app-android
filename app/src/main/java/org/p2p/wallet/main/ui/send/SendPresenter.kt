@@ -1,5 +1,7 @@
 package org.p2p.wallet.main.ui.send
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import android.content.Context
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -125,50 +127,6 @@ class SendPresenter(
         }
     }
 
-    private fun sendInBitcoin(token: Token.Active) {
-        launch {
-            try {
-                view?.showLoading(true)
-                val amount = tokenAmount.toLamports(token.decimals)
-                val transactionId = burnBtcInteractor.submitBurnTransaction(destinationAddress, amount)
-                Timber.d("Bitcoin successfully burned and released! $transactionId")
-                handleResult(TransactionResult.Success(transactionId))
-            } catch (e: Throwable) {
-                Timber.e(e, "Error sending token")
-            } finally {
-                view?.showLoading(false)
-            }
-        }
-    }
-
-    private fun sendInSolana(token: Token.Active) {
-        launch {
-            try {
-                view?.showLoading(true)
-
-                val result = if (token.isSOL) {
-                    sendInteractor.sendNativeSolToken(
-                        destinationAddress = destinationAddress.toPublicKey(),
-                        lamports = tokenAmount.toLamports(token.decimals)
-                    )
-                } else {
-                    sendInteractor.sendSplToken(
-                        destinationAddress = destinationAddress.toPublicKey(),
-                        token = token,
-                        lamports = tokenAmount.toLamports(token.decimals)
-                    )
-                }
-
-                handleResult(result)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error sending token")
-                view?.showErrorMessage(e)
-            } finally {
-                view?.showLoading(false)
-            }
-        }
-    }
-
     override fun loadTokensForSelection() {
         launch {
             val tokens = userInteractor.getUserTokens()
@@ -249,6 +207,50 @@ class SendPresenter(
         } else {
             usdAmount = inputAmount.toBigDecimalOrZero()
             setButtonEnabled(usdAmount, token!!.totalInUsd)
+        }
+    }
+
+    private fun sendInBitcoin(token: Token.Active) {
+        launch {
+            try {
+                view?.showLoading(true)
+                val amount = tokenAmount.toLamports(token.decimals)
+                val transactionId = burnBtcInteractor.submitBurnTransaction(destinationAddress, amount)
+                Timber.d("Bitcoin successfully burned and released! $transactionId")
+                handleResult(TransactionResult.Success(transactionId))
+            } catch (e: Throwable) {
+                Timber.e(e, "Error sending token")
+            } finally {
+                view?.showLoading(false)
+            }
+        }
+    }
+
+    private fun sendInSolana(token: Token.Active) {
+        launch {
+            try {
+                view?.showLoading(true)
+
+                val result = if (token.isSOL) {
+                    sendInteractor.sendNativeSolToken(
+                        destinationAddress = destinationAddress.toPublicKey(),
+                        lamports = tokenAmount.toLamports(token.decimals)
+                    )
+                } else {
+                    sendInteractor.sendSplToken(
+                        destinationAddress = destinationAddress.toPublicKey(),
+                        token = token,
+                        lamports = tokenAmount.toLamports(token.decimals)
+                    )
+                }
+
+                handleResult(result)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error sending token")
+                view?.showErrorMessage(e)
+            } finally {
+                view?.showLoading(false)
+            }
         }
     }
 

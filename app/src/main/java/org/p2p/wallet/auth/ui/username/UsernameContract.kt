@@ -1,13 +1,14 @@
 package org.p2p.wallet.auth.ui.username
 
 import android.graphics.Bitmap
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
 interface UsernameContract {
 
     interface View : MvpView {
-        fun showName(name: String?)
+        fun showUsername(username: Username?)
         fun renderQr(qrBitmap: Bitmap?)
         fun showAddress(address: String?)
         fun copySuccess()

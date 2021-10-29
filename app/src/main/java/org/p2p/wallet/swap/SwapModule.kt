@@ -58,9 +58,10 @@ object SwapModule : InjectionModule {
         factory { SerumSwapMarketInteractor(get()) }
 
         single { OrcaPoolInteractor(get(), get()) }
+        single { OrcaSwapInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
+
         factory { OrcaInstructionsInteractor(get()) }
         factory { OrcaAddressInteractor(get(), get()) }
-        factory { OrcaSwapInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { OrcaAmountInteractor(get()) }
         factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class
 

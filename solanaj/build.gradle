@@ -1,5 +1,51 @@
-apply from: "$project.rootDir/scripts/common-library.gradle"
+plugins {
+    id 'kotlin-android'
+    id 'com.android.library'
+}
 
+android {
+    compileSdkVersion sdkCompileVersion
+    buildToolsVersion buildToolsAllVersion
+
+    defaultConfig {
+        minSdkVersion sdkMinVersion
+        targetSdkVersion sdkTargetVersion
+
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
+    }
+
+    buildTypes {
+        debug
+        feature {
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
+        animationsDisabled = true
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+}
 dependencies {
 
     implementation "androidx.appcompat:appcompat:1.3.1"

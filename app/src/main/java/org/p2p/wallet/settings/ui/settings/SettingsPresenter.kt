@@ -1,11 +1,11 @@
 package org.p2p.wallet.settings.ui.settings
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
-import kotlinx.coroutines.launch
 
 class SettingsPresenter(
     private val authInteractor: AuthInteractor,
@@ -18,13 +18,8 @@ class SettingsPresenter(
         val isHidden = settingsInteractor.isZerosHidden()
         view?.showHiddenBalance(isHidden)
 
-        val usernameExists = usernameInteractor.checkUsernameExist()
-        if (usernameExists.isNullOrEmpty())
-            view?.openReserveUsernameScreen()
-        else
-            view?.openUsernameScreen()
-
-        view?.showUsername(usernameExists)
+        val username = usernameInteractor.getUsername()
+        view?.showUsername(username)
     }
 
     override fun setZeroBalanceHidden(isHidden: Boolean) {
@@ -40,8 +35,12 @@ class SettingsPresenter(
         }
     }
 
-    override fun checkUsername(): Boolean {
-        val username = usernameInteractor.checkUsernameExist()
-        return !username.isNullOrEmpty()
+    override fun onUsernameClicked() {
+        val usernameExists = usernameInteractor.usernameExists()
+        if (usernameExists) {
+            view?.openUsernameScreen()
+        } else {
+            view?.openReserveUsernameScreen()
+        }
     }
 }

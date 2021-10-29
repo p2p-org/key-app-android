@@ -67,8 +67,8 @@ object TokenConverter {
 
     fun toDatabase(token: Token.Active): TokenEntity =
         TokenEntity(
-            tokenSymbol = token.tokenSymbol,
             publicKey = token.publicKey,
+            tokenSymbol = token.tokenSymbol,
             decimals = token.decimals,
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,

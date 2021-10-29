@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'com.google.firebase.appdistribution'
+    id 'com.google.firebase.crashlytics'
     id 'com.google.gms.google-services'
 }
 
@@ -64,9 +65,11 @@ android {
         feature {
             debuggable true
             signingConfig signingConfigs.debug
-            minifyEnabled false
-            shrinkResources false
-            versionNameSuffix ".$VERSION_BUILD"
+            minifyEnabled true
+            shrinkResources true
+            versionNameSuffix ".$VERSION_BUILD-feature"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
@@ -75,8 +78,8 @@ android {
 
         release {
             signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -132,6 +135,13 @@ dependencies {
     def okHttpVersion = '4.9.1'
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:28.4.2')
+
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics'
 
     // Debug drawer
     def debugDrawerVersion = '0.8.0'

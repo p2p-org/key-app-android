@@ -8,6 +8,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import timber.log.Timber
 import java.util.concurrent.CancellationException
 import kotlin.properties.Delegates
@@ -17,7 +18,8 @@ private const val DELAY_IN_MILLIS = 200L
 class ReceiveSolanaPresenter(
     private val defaultToken: Token.Active?,
     private val userInteractor: UserInteractor,
-    private val qrCodeInteractor: QrCodeInteractor
+    private val qrCodeInteractor: QrCodeInteractor,
+    private val usernameInteractor: UsernameInteractor
 ) : BasePresenter<ReceiveSolanaContract.View>(), ReceiveSolanaContract.Presenter {
 
     private var qrJob: Job? = null
@@ -41,7 +43,9 @@ class ReceiveSolanaPresenter(
             token = receive
 
             val sol = tokens.first { it.isSOL }
-            view?.showSolAddress(sol)
+            val username = usernameInteractor.getUsername()
+            view?.showUserData(sol, username)
+
             generateQrCode(sol.publicKey)
 
             view?.showFullScreenLoading(false)

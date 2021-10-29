@@ -44,6 +44,9 @@ interface TokenDao {
         visibility: String
     )
 
+    @Query("DELETE FROM token_table WHERE symbol = :symbol AND public_key != :solAddress")
+    suspend fun removeIfExists(solAddress: String, symbol: String)
+
     @Query("SELECT * FROM token_table WHERE public_key = :publicKey")
     suspend fun findByPublicKey(publicKey: String): TokenEntity?
 

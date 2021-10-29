@@ -8,8 +8,9 @@ import android.text.Editable
 import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
-import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.SimpleTextWatcher
@@ -18,21 +19,19 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
-import org.p2p.wallet.swap.ui.bottomsheet.SwapFeesBottomSheet
-import org.p2p.wallet.swap.ui.bottomsheet.SwapSettingsBottomSheet
-import org.p2p.wallet.swap.ui.bottomsheet.SwapSlippageBottomSheet
 import org.p2p.wallet.swap.model.PriceData
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaAmountData
 import org.p2p.wallet.swap.model.orca.OrcaFeeData
+import org.p2p.wallet.swap.ui.bottomsheet.SwapFeesBottomSheet
+import org.p2p.wallet.swap.ui.bottomsheet.SwapSettingsBottomSheet
+import org.p2p.wallet.swap.ui.bottomsheet.SwapSlippageBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
 
 class OrcaSwapFragment :
@@ -128,23 +127,23 @@ class OrcaSwapFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showPrice(priceData: PriceData) {
-        binding.priceGroup.isVisible = true
+        with(binding) {
+            priceGroup.isVisible = true
 
-        var isReverse = false
-        binding.exchangeTextView.text = priceData.getPrice(isReverse)
-        binding.reverseImageView.setOnClickListener {
-            isReverse = !isReverse
-            val updated = priceData.getPrice(isReverse)
-            binding.exchangeTextView.text = updated
+            var isReverse = reverseImageView.tag as? Boolean ?: false
+            exchangeTextView.text = priceData.getPrice(isReverse)
+            reverseImageView.setOnClickListener {
+                isReverse = !isReverse
+                val updated = priceData.getPrice(isReverse)
+                exchangeTextView.text = updated
+                reverseImageView.tag = isReverse
+            }
         }
-
-        TransitionManager.beginDelayedTransition(binding.bodyContentView)
     }
 
     override fun hidePrice() {
         binding.priceGroup.isVisible = false
         binding.exchangeTextView.text = ""
-        TransitionManager.beginDelayedTransition(binding.bodyContentView)
     }
 
     @SuppressLint("SetTextI18n")
@@ -179,14 +178,12 @@ class OrcaSwapFragment :
                 data.paymentOption
             )
         }
-        TransitionManager.beginDelayedTransition(binding.bodyContentView)
     }
 
     override fun hideCalculations() {
         binding.receiveTextView.text = ""
         binding.destinationAmountTextView.text = ""
         binding.feesGroup.isVisible = false
-        TransitionManager.beginDelayedTransition(binding.bodyContentView)
     }
 
     @SuppressLint("SetTextI18n")

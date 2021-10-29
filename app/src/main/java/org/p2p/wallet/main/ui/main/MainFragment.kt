@@ -15,7 +15,6 @@ import org.p2p.wallet.history.ui.main.HistoryFragment
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.VisibilityState
-import org.p2p.wallet.main.ui.buy.BuyFragment
 import org.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.main.ui.options.TokenOptionsDialog
 import org.p2p.wallet.main.ui.receive.ReceiveFragment
@@ -66,19 +65,19 @@ class MainFragment :
                 presenter.refresh()
             }
 
-            buyImageView.setOnClickListener {
-                replaceFragment(BuyFragment.create(null))
-            }
+//            buyButton.setOnClickListener {
+//                replaceFragment(BuyFragment.create(null))
+//            }
 
-            receiveImageView.setOnClickListener {
+            receiveButton.setOnClickListener {
                 replaceFragment(ReceiveFragment.create(null))
             }
 
-            sendImageView.setOnClickListener {
+            sendButton.setOnClickListener {
                 replaceFragment(SendFragment.create())
             }
 
-            swapImageView.setOnClickListener {
+            swapButton.setOnClickListener {
                 replaceFragment(OrcaSwapFragment.create())
             }
 

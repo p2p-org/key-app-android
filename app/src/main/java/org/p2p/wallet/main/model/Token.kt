@@ -2,14 +2,14 @@ package org.p2p.wallet.main.model
 
 import android.os.Parcelable
 import androidx.annotation.ColorRes
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toPowerValue
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 sealed class Token constructor(
@@ -67,15 +67,6 @@ sealed class Token constructor(
 
         fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
 
-        @Suppress("MagicNumber")
-        fun getFormattedAddress(): String {
-            if (!isSOL) return tokenName
-
-            val firstSix = publicKey.take(4)
-            val lastFour = publicKey.takeLast(4)
-            return "$firstSix...$lastFour"
-        }
-
         fun getFormattedPrice(): String = "${price.scaleShort()} $"
 
         fun getFormattedTotal(): String = "$total $tokenSymbol"
@@ -131,6 +122,8 @@ sealed class Token constructor(
         const val SOL_MINT =
             "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ" // Arbitrary mint to represent SOL (not wrapped SOL).
 
+        const val SOL_NAME = "Solana"
+
         fun createSOL(
             publicKey: String,
             tokenData: TokenData,
@@ -143,7 +136,7 @@ sealed class Token constructor(
                 tokenSymbol = tokenData.symbol,
                 decimals = tokenData.decimals,
                 mintAddress = tokenData.mintAddress,
-                tokenName = tokenData.name,
+                tokenName = SOL_NAME,
                 logoUrl = tokenData.iconUrl,
                 price = total.multiply(exchangeRate),
                 total = total,
