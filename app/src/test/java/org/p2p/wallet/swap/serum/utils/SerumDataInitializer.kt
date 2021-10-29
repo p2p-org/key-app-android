@@ -5,8 +5,17 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.gson.Gson
+import io.mockk.mockk
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
+import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.repository.UsernameRemoteRepository
+import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -20,10 +29,10 @@ import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.wallet.rpc.repository.RpcRemoteRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumMarketInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
-import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.user.api.SolanaApi
@@ -32,15 +41,6 @@ import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.user.repository.UserRepositoryImpl
-import io.mockk.mockk
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.auth.api.UsernameApi
-import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.auth.repository.FileRepository
-import org.p2p.wallet.auth.repository.UsernameRemoteRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
 
 class SerumDataInitializer {
 
@@ -145,8 +145,7 @@ class SerumDataInitializer {
         usernameInteractor = UsernameInteractor(
             usernameRepository = usernameRepository,
             fileLocalRepository = fileLocalRepository,
-            sharedPreferences = sharedPreferences,
-            tokenKeyProvider = tokenKeyProvider,
+            sharedPreferences = sharedPreferences
         )
 
         secretKeyInteractor = SecretKeyInteractor(
