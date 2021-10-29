@@ -33,9 +33,6 @@ interface SendContract {
         fun showNetworkSelection()
         fun hideNetworkSelection()
         fun navigateToTokenSelection(tokens: List<Token.Active>)
-        fun showBufferUsernameResolvedOk(data: String)
-        fun showBufferNoAddress()
-        fun setEnablePasteButton(data: CharSequence?)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -2,7 +2,6 @@ package org.p2p.wallet.main.ui.send
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import android.content.Context
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.main.interactor.SendInteractor
@@ -21,8 +20,6 @@ import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.wallet.auth.interactor.UsernameInteractor
-import retrofit2.HttpException
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -32,9 +29,7 @@ class SendPresenter(
     private val initialToken: Token.Active?,
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
-    private val burnBtcInteractor: BurnBtcInteractor,
-    private val usernameInteractor: UsernameInteractor,
-    private val context: Context,
+    private val burnBtcInteractor: BurnBtcInteractor
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -135,44 +130,21 @@ class SendPresenter(
 
     override fun setNewTargetAddress(address: String) {
         this.destinationAddress = address
-        val addressOrName = address.replace(context.getString(R.string.auth_p2p_sol), "")
-        when {
-            addressOrName.length in 1..15 -> {
-                launch {
-                    try {
-                        val res = usernameInteractor.checkUsername(addressOrName)
-                        view?.showBufferUsernameResolvedOk(res.owner)
-                    } catch (e: HttpException) {
-                        view?.showBufferNoAddress()
-                    }
-                }
-            }
 
-            addressOrName.length >= 24 -> {
-                if (!isAddressValid(address)) {
-                    view?.showButtonText(R.string.send_enter_address)
-                    view?.showButtonEnabled(false)
-                    return
-                }
-
-                /* Checking destination balance only for Solana network transfers */
-                if (networkType == NetworkType.SOLANA) {
-                    checkDestinationBalance(address)
-                } else {
-                    view?.hideAddressConfirmation()
-                }
-
-                calculateData(token!!)
-            }
-
-            else -> {
-                if (address.isNotEmpty()) {
-                    view?.showBufferNoAddress()
-                    view?.showButtonText(R.string.send_enter_address)
-                    view?.showButtonEnabled(false)
-                }
-            }
+        if (!isAddressValid(address)) {
+            view?.showButtonText(R.string.send_enter_address)
+            view?.showButtonEnabled(false)
+            return
         }
+
+        /* Checking destination balance only for Solana network transfers */
+        if (networkType == NetworkType.SOLANA) {
+            checkDestinationBalance(address)
+        } else {
+            view?.hideAddressConfirmation()
+        }
+
+        calculateData(token!!)
     }
 
     override fun switchCurrency() {
