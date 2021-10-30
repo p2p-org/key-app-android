@@ -41,7 +41,7 @@
                     app:layout_constraintGuide_percent="0.5" />
 
                 <View
-                    android:id="@+id/view3"
+                    android:id="@+id/view"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginHorizontal="20dp"
@@ -69,14 +69,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="36dp"
-                    android:drawableStart="@drawable/ic_wallet_small"
                     android:drawablePadding="4dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorAccentPrimary"
+                    app:drawableStartCompat="@drawable/ic_wallet_small"
                     app:layout_constraintBottom_toBottomOf="@id/fromTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/fromTextView"
-                    tools:ignore="UseCompatTextViewDrawableXml"
                     tools:text="2140.0000" />
 
                 <org.p2p.wallet.common.widget.RoundedImageView
@@ -169,7 +168,7 @@
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="32dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/aroundTextView"
+                    app:layout_constraintTop_toBottomOf="@id/aroundTextView"
                     app:topText="@string/main_price"
                     tools:bottomText="$35.08 per SOL">
 
@@ -253,7 +252,6 @@
                     app:layout_constraintBottom_toBottomOf="@id/toTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/toTextView"
-                    tools:ignore="UseCompatTextViewDrawableXml"
                     tools:text="Receive at least: 0,0261 renBTC" />
 
                 <TextView
@@ -261,15 +259,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
-                    android:drawableStart="@drawable/ic_scan_qr"
                     android:drawablePadding="4dp"
                     android:text="@string/main_scan_qr"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     android:textColor="?colorAccentPrimary"
+                    app:drawableStartCompat="@drawable/ic_scan_qr"
                     app:layout_constraintBottom_toBottomOf="@+id/pasteTextView"
                     app:layout_constraintEnd_toStartOf="@+id/pasteTextView"
-                    app:layout_constraintTop_toTopOf="@+id/pasteTextView"
-                    tools:ignore="UseCompatTextViewDrawableXml" />
+                    app:layout_constraintTop_toTopOf="@+id/pasteTextView" />
 
                 <TextView
                     android:id="@+id/pasteTextView"
@@ -277,14 +274,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="36dp"
-                    android:drawableStart="@drawable/ic_paste"
                     android:drawablePadding="4dp"
                     android:text="@string/send_paste"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     android:textColor="?colorAccentPrimary"
+                    app:drawableStartCompat="@drawable/ic_paste"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/receiveAtLeastTextView"
-                    tools:ignore="UseCompatTextViewDrawableXml" />
+                    app:layout_constraintTop_toBottomOf="@+id/receiveAtLeastTextView" />
 
                 <View
                     android:id="@+id/addressBackgroundView"

@@ -144,6 +144,7 @@ class SendPresenter(
                         view?.showBufferUsernameResolvedOk(res.owner)
                     } catch (e: HttpException) {
                         view?.showBufferNoAddress()
+                        Timber.e(e, e.message())
                     }
                 }
             }

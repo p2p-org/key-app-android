@@ -35,7 +35,7 @@ interface SendContract {
         fun navigateToTokenSelection(tokens: List<Token.Active>)
         fun showBufferUsernameResolvedOk(data: String)
         fun showBufferNoAddress()
-        fun setEnablePasteButton(data: CharSequence?)
+        fun setEnablePasteButton(isEnabled: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

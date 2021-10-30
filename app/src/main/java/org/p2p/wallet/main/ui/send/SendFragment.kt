@@ -121,6 +121,10 @@ class SendFragment :
                 }
                 addFragment(target)
             }
+
+            pasteTextView.setOnClickListener {
+                requireContext().getClipBoardData().let { addressEditText.setText(it) }
+            }
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -135,6 +139,14 @@ class SendFragment :
 
         presenter.loadInitialData()
         checkClipBoard()
+    }
+
+    private fun checkClipBoard() {
+        val clipBoardData = requireContext().getClipBoardData()
+        if (clipBoardData == null)
+            setEnablePasteButton(false)
+        else
+            setEnablePasteButton(true)
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -268,18 +280,7 @@ class SendFragment :
         binding.addressTextView.text = getString(R.string.send_no_address)
     }
 
-    override fun setEnablePasteButton(data: CharSequence?) {
-        binding.pasteTextView.setTextColor(colorFromTheme(R.attr.colorAccent))
-        binding.pasteTextView.setOnClickListener {
-            binding.addressEditText.setText(data)
-        }
-    }
-
-    private fun checkClipBoard() {
-        val clipBoardData = requireContext().getClipBoardData()
-        if (clipBoardData == null)
-            setEnablePasteButton(null)
-        else
-            setEnablePasteButton(clipBoardData)
+    override fun setEnablePasteButton(isEnabled: Boolean) {
+        binding.pasteTextView.isEnabled = isEnabled
     }
 }
