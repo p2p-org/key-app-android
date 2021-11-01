@@ -143,10 +143,7 @@ class SendFragment :
 
     private fun checkClipBoard() {
         val clipBoardData = requireContext().getClipBoardData()
-        if (clipBoardData == null)
-            setEnablePasteButton(false)
-        else
-            setEnablePasteButton(true)
+        setEnablePasteButton(clipBoardData != null)
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -280,7 +277,7 @@ class SendFragment :
         binding.addressTextView.text = getString(R.string.send_no_address)
     }
 
-    override fun setEnablePasteButton(isEnabled: Boolean) {
+    private fun setEnablePasteButton(isEnabled: Boolean) {
         binding.pasteTextView.isEnabled = isEnabled
     }
 }

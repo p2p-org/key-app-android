@@ -296,16 +296,17 @@
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/addressEditText"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="36dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="36dp"
                     android:background="@android:color/transparent"
                     android:hint="@string/main_wallet_address"
                     android:inputType="text"
                     android:padding="16dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-                    app:layout_constraintEnd_toStartOf="@id/endIconBarrier"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/scanQrTextView" />
 
@@ -376,12 +377,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/sureTextView" />
 
-                <androidx.constraintlayout.widget.Barrier
-                    android:id="@+id/endIconBarrier"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:barrierDirection="start"
-                    app:constraint_referenced_ids="clearImageView" />
 
                 <ImageView
                     android:id="@+id/clearImageView"
