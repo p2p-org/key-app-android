@@ -277,9 +277,9 @@
                     android:drawablePadding="4dp"
                     android:text="@string/send_paste"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="@drawable/ic_paste_selector"
+                    android:textColor="@color/color_paste_selector"
                     app:drawableStartCompat="@drawable/ic_paste"
-                    app:drawableTint="@drawable/ic_paste_selector"
+                    app:drawableTint="@color/color_paste_selector"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/receiveAtLeastTextView" />
 
