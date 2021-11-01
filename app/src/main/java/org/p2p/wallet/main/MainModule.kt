@@ -29,7 +29,7 @@ object MainModule : InjectionModule {
             ReceiveSolanaPresenter(token, get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (token: Token.Active) ->
-            SendPresenter(token, get(), get(), get())
+            SendPresenter(token, get(), get(), get(), get(), get())
         } bind SendContract.Presenter::class
         factory { (token: Token.Active?) -> BuyPresenter(token, get(), get()) } bind BuyContract.Presenter::class
     }
