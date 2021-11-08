@@ -11,7 +11,7 @@ interface ReserveUsernameContract {
         fun navigateToPinCode()
         fun showUnavailableName(name: String)
         fun showAvailableName(name: String)
-        fun getCaptchaResult(params: JSONObject)
+        fun getCaptchaResult(api1Json: JSONObject)
         fun successCaptcha()
         fun failCaptcha()
         fun successRegisterName()

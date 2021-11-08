@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.repository
 
 import com.google.gson.Gson
-import org.p2p.wallet.auth.api.CheckCaptchaResponse
+import org.json.JSONObject
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.model.CheckUsername
 import org.p2p.wallet.auth.model.LookupUsername
@@ -22,7 +22,7 @@ class UsernameRemoteRepository(
         )
     }
 
-    override suspend fun checkCaptcha(): CheckCaptchaResponse {
+    override suspend fun checkCaptcha(): JSONObject {
         return api.checkCaptcha()
     }
 

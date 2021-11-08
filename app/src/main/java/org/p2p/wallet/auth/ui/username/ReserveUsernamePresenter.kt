@@ -43,8 +43,8 @@ class ReserveUsernamePresenter(
     override fun checkCaptcha() {
         launch {
             try {
-                val getCaptchaResponse = interactor.checkCaptcha()
-                view?.getCaptchaResult(JSONObject(Gson().toJson(getCaptchaResponse)))
+                val api1Json = interactor.checkCaptcha()
+                view?.getCaptchaResult(api1Json)
             } catch (e: HttpException) {
                 view?.failCaptcha()
                 view?.showErrorMessage(e)

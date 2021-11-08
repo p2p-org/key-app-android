@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.interactor
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import androidx.core.content.edit
-import org.p2p.wallet.auth.api.CheckCaptchaResponse
+import org.json.JSONObject
 import org.p2p.wallet.auth.model.CheckUsername
 import org.p2p.wallet.auth.model.RegisterUsername
 import org.p2p.wallet.auth.model.Username
@@ -23,7 +23,7 @@ class UsernameInteractor(
         return usernameRepository.checkUsername(username)
     }
 
-    suspend fun checkCaptcha(): CheckCaptchaResponse {
+    suspend fun checkCaptcha(): JSONObject {
         return usernameRepository.checkCaptcha()
     }
 
