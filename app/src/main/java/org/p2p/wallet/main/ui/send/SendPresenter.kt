@@ -145,6 +145,7 @@ class SendPresenter(
                         val checkUsername = usernameInteractor.checkUsername(addressOrName)
                         username = addressOrName
                         view?.showBufferUsernameResolvedOk(checkUsername.owner)
+                        calculateData(token!!)
                     } catch (e: HttpException) {
                         view?.showBufferNoAddress()
                         Timber.e(e, "Error checking username")
