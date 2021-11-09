@@ -62,4 +62,9 @@
         <attr name="actionButtonText" format="string" />
         <attr name="actionDrawable" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="ProgressButton">
+        <attr name="buttonText" format="string" />
+        <attr name="buttonDrawable" format="reference" />
+    </declare-styleable>
 </resources>

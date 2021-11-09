@@ -61,27 +61,22 @@
                 android:layout_height="match_parent"
                 tools:listitem="@layout/item_token_simple" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                tools:visibility="visible" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_gradient_white" />
         </FrameLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <org.p2p.wallet.common.widget.ProgressButton
             android:id="@+id/restoreButton"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginVertical="16dp"
-            android:background="@drawable/bg_blue_selector"
-            android:foreground="?selectableItemBackground"
-            android:text="@string/common_continue"
-            android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="?colorElementPrimary"
-            tools:ignore="UnusedAttribute" />
+            android:enabled="false"
+            app:buttonDrawable="@drawable/ic_restore"
+            app:buttonText="@string/auth_restore"
+            app:layout_constraintBottom_toBottomOf="parent" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,13 +8,13 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
-import org.p2p.wallet.BuildConfig
 import io.palaima.debugdrawer.timber.R
 import io.palaima.debugdrawer.timber.data.LumberYard
 import io.palaima.debugdrawer.timber.data.LumberYard.OnSaveLogListener
 import io.palaima.debugdrawer.timber.model.LogEntry
 import io.palaima.debugdrawer.timber.ui.LogAdapter
 import io.palaima.debugdrawer.timber.util.Intents
+import org.p2p.wallet.BuildConfig
 import java.io.File
 
 class CustomLogDialog(context: Context) : AlertDialog(context, R.style.Theme_AppCompat) {
@@ -25,14 +25,16 @@ class CustomLogDialog(context: Context) : AlertDialog(context, R.style.Theme_App
 
     private val handler = Handler(Looper.getMainLooper())
 
-    init {
+    private val logListView: ListView = ListView(context)
 
-        val listView = ListView(context)
-        listView.transcriptMode = ListView.TRANSCRIPT_MODE_NORMAL
-        listView.adapter = adapter
+    private val logs = mutableListOf<LogEntry>()
+
+    init {
+        logListView.transcriptMode = ListView.TRANSCRIPT_MODE_NORMAL
+        logListView.adapter = adapter
 
         setTitle("Logs")
-        setView(listView)
+        setView(logListView)
         setButton(BUTTON_NEGATIVE, "Close") { _, _ -> /* no-op */ }
         setButton(BUTTON_POSITIVE, "Share") { _, _ -> share() }
     }
@@ -40,7 +42,9 @@ class CustomLogDialog(context: Context) : AlertDialog(context, R.style.Theme_App
     override fun onStart() {
         super.onStart()
         val lumberYard = LumberYard.getInstance(context)
-        adapter.setLogs(lumberYard.bufferedLogs())
+        logs += lumberYard.bufferedLogs()
+        adapter.setLogs(logs)
+        logListView.setSelection(logs.size - 1)
         lumberYard.setOnLogListener { logEntry -> addLogEntry(logEntry) }
     }
 

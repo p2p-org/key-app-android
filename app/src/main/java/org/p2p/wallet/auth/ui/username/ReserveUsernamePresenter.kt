@@ -21,21 +21,20 @@ class ReserveUsernamePresenter(
     ReserveUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
-    private var nextCheckAvailable: Boolean = true
 
     override fun checkUsername(username: String) {
-        if (nextCheckAvailable) {
-            nextCheckAvailable = false
-            checkUsernameJob?.cancel()
-            checkUsernameJob = launch {
-                try {
-                    interactor.checkUsername(username)
-                    view?.showUnavailableName(username)
-                } catch (e: HttpException) {
-                    view?.showAvailableName(username)
-                }
+        checkUsernameJob?.cancel()
+        checkUsernameJob = launch {
+            try {
+                /*
+                * We should check the availability of the latest entered value by the user
+                * therefore we cancel old request if new value is entered and waiting for the latest response only
+                * */
                 delay(300)
-                nextCheckAvailable = true
+                interactor.checkUsername(username)
+                view?.showUnavailableName(username)
+            } catch (e: HttpException) {
+                view?.showAvailableName(username)
             }
         }
     }

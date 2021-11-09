@@ -57,23 +57,27 @@ object TransactionTypeParser {
     ): TransactionDetails? {
         val signature = transaction.transaction.signatures.firstOrNull().orEmpty()
         val instructions = transaction.transaction.message.instructions
-        val innerInstructions = transaction.meta.innerInstructions
-        val balances = transaction.meta.postTokenBalances
 
         // get instruction
         if (index >= instructions.size) return null
 
+        val innerInstructions = transaction.meta.innerInstructions
         // check inner instructions
-        val swapInnerInstruction = innerInstructions.lastOrNull() ?: return null
+        val source = innerInstructions.firstOrNull() ?: return null
+        val destination = innerInstructions.lastOrNull() ?: return null
         // get instructions
-        val transfersInstructions = swapInnerInstruction.instructions.filter {
+        val sourceInstructions = source.instructions.filter {
             it.parsed.type == "transfer"
         }
 
-        if (transfersInstructions.size < 2) return null
+        val destinationInstructions = destination.instructions.filter {
+            it.parsed.type == "transfer"
+        }
 
-        val sourceInstruction = transfersInstructions[0]
-        val destinationInstruction = transfersInstructions[1]
+        if (sourceInstructions.size < 2 || destinationInstructions.size < 2) return null
+
+        val sourceInstruction = sourceInstructions[0]
+        val destinationInstruction = destinationInstructions[1]
 
         val sourceInfo = sourceInstruction.parsed?.info ?: return null
         val destinationInfo = destinationInstruction.parsed?.info ?: return null

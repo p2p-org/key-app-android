@@ -20,7 +20,7 @@ class MainDatabaseRepository(
         tokenDao.insertOrUpdate(entities)
     }
 
-    override suspend fun setHiddenSol(publicKey: String) {
+    override suspend fun removeTemporarySol(publicKey: String) {
         tokenDao.removeIfExists(publicKey, Token.SOL_SYMBOL)
     }
 

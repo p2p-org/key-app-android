@@ -20,7 +20,7 @@ class SecretKeyPresenter(
         if (oldValue != newValue) {
             val size = newValue.size
             val isVisible = size == SEED_PHRASE_SIZE_LONG || size == SEED_PHRASE_SIZE_SHORT
-            view?.showActionButtons(isVisible)
+            view?.setButtonEnabled(isVisible)
         }
     }
 
