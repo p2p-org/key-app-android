@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
@@ -17,7 +18,6 @@ import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
 
 class SecretKeyFragment :
     BaseMvpFragment<SecretKeyContract.View, SecretKeyContract.Presenter>(R.layout.fragment_secret_key),
@@ -31,7 +31,10 @@ class SecretKeyFragment :
     private val binding: FragmentSecretKeyBinding by viewBinding()
 
     private val phraseAdapter: SecretPhraseAdapter by lazy {
-        SecretPhraseAdapter { presenter.setNewKeys(it) }
+        SecretPhraseAdapter {
+            presenter.setNewKeys(it)
+            clearError()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,52 +44,42 @@ class SecretKeyFragment :
                 popBackStack()
                 it.hideKeyboard()
             }
-            toolbar.inflateMenu(R.menu.menu_secret_key)
-            toolbar.setOnMenuItemClickListener {
-                if (it.itemId == R.id.actionDone) {
-                    presenter.verifySeedPhrase()
-                    return@setOnMenuItemClickListener true
-                }
 
-                return@setOnMenuItemClickListener false
+            restoreButton.setOnClickListener {
+                presenter.verifySeedPhrase()
             }
 
-            with(keysRecyclerView) {
-                layoutManager = FlexboxLayoutManager(requireContext()).also {
-                    it.flexDirection = FlexDirection.ROW
-                    it.justifyContent = JustifyContent.FLEX_START
-                }
-                attachAdapter(phraseAdapter)
+            keysRecyclerView.layoutManager = FlexboxLayoutManager(requireContext()).also {
+                it.flexDirection = FlexDirection.ROW
+                it.justifyContent = JustifyContent.FLEX_START
             }
+            keysRecyclerView.attachAdapter(phraseAdapter)
+
             phraseTextView.setOnClickListener {
                 phraseTextView.isVisible = false
                 keysRecyclerView.isVisible = true
-                errorTextView.text = ""
                 phraseAdapter.addSecretKey(SecretKey())
             }
-            resetButton.setOnClickListener { resetPhrase() }
-
-            showActionButtons(false)
         }
+
+        setButtonEnabled(false)
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
         replaceFragment(DerivableAccountsFragment.create(secretKeys))
     }
 
-    override fun showActionButtons(isVisible: Boolean) {
-        val item = binding.toolbar.menu.findItem(R.id.actionDone)
-        item.isVisible = isVisible
-
-        binding.resetButton.isVisible = isVisible
+    override fun setButtonEnabled(isEnabled: Boolean) {
+        binding.restoreButton.isEnabled = isEnabled
     }
 
     override fun showError(messageRes: Int) {
         binding.errorTextView.setText(messageRes)
+        binding.messageTextView.isVisible = false
     }
 
-    private fun resetPhrase() {
-        phraseAdapter.clear()
-        presenter.setNewKeys(emptyList())
+    private fun clearError() {
+        binding.errorTextView.text = ""
+        binding.messageTextView.isVisible = true
     }
 }

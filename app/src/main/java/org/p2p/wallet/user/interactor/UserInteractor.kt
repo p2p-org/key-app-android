@@ -44,7 +44,7 @@ class UserInteractor(
         val newTokens = userRepository.loadTokens()
         /* We have case when temporary SOL account is created but not deleted in database */
         val owner = tokenKeyProvider.publicKey
-        mainLocalRepository.setHiddenSol(owner)
+        mainLocalRepository.removeTemporarySol(owner)
         mainLocalRepository.updateTokens(newTokens)
     }
 

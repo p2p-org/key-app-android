@@ -10,7 +10,7 @@ interface SecretKeyContract {
     interface View : MvpView {
         fun showSuccess(secretKeys: List<SecretKey>)
         fun showError(@StringRes messageRes: Int)
-        fun showActionButtons(isVisible: Boolean)
+        fun setButtonEnabled(isEnabled: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

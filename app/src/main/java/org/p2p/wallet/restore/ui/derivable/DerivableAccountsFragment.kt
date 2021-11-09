@@ -2,8 +2,6 @@ package org.p2p.wallet.restore.ui.derivable
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
@@ -86,9 +84,8 @@ class DerivableAccountsFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.progressBar.isVisible = isLoading
-        binding.accountsRecyclerView.isInvisible = isLoading
-        binding.restoreButton.isEnabled = !isLoading
+        binding.restoreButton.setLoading(isLoading)
+        binding.accountsRecyclerView.isEnabled = !isLoading
         binding.derivationPathTextView.isEnabled = !isLoading
     }
 }
