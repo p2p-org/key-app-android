@@ -1,11 +1,9 @@
 package org.p2p.wallet.auth.ui.username
 
 import android.content.Context
-import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -43,8 +41,8 @@ class ReserveUsernamePresenter(
     override fun checkCaptcha() {
         launch {
             try {
-                val getCaptchaResponse = interactor.checkCaptcha()
-                view?.getCaptchaResult(JSONObject(Gson().toJson(getCaptchaResponse)))
+                val api1Json = interactor.checkCaptcha()
+                view?.getCaptchaResult(api1Json)
             } catch (e: HttpException) {
                 view?.failCaptcha()
                 view?.showErrorMessage(e)

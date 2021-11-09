@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.api
 
+import org.json.JSONObject
 import org.p2p.wallet.auth.model.NameRegisterBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -12,7 +13,7 @@ interface UsernameApi {
     suspend fun checkUsername(@Path("username") username: String): CheckUsernameResponse
 
     @GET("name_register/auth/gt/register")
-    suspend fun checkCaptcha(): CheckCaptchaResponse
+    suspend fun checkCaptcha(): JSONObject
 
     @POST("name_register/{username}")
     suspend fun registerUsername(

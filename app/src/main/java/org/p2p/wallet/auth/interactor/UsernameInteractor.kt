@@ -3,9 +3,9 @@ package org.p2p.wallet.auth.interactor
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import androidx.core.content.edit
-import org.p2p.wallet.auth.api.CheckCaptchaResponse
-import org.p2p.wallet.auth.api.CheckUsernameResponse
-import org.p2p.wallet.auth.api.RegisterUsernameResponse
+import org.json.JSONObject
+import org.p2p.wallet.auth.model.CheckUsername
+import org.p2p.wallet.auth.model.RegisterUsername
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
@@ -19,24 +19,24 @@ class UsernameInteractor(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun checkUsername(username: String): CheckUsernameResponse {
+    suspend fun checkUsername(username: String): CheckUsername {
         return usernameRepository.checkUsername(username)
     }
 
-    suspend fun checkCaptcha(): CheckCaptchaResponse {
+    suspend fun checkCaptcha(): JSONObject {
         return usernameRepository.checkCaptcha()
     }
 
     suspend fun registerUsername(
         username: String,
         result: String?
-    ): RegisterUsernameResponse {
+    ): RegisterUsername {
         return usernameRepository.registerUsername(username, result)
     }
 
     suspend fun lookupUsername(owner: String) {
-        val userName = usernameRepository.lookup(owner).firstOrNull()
-        sharedPreferences.edit { putString(KEY_USERNAME, userName?.name) }
+        val lookupUsername = usernameRepository.lookup(owner)
+        sharedPreferences.edit { putString(KEY_USERNAME, lookupUsername.name) }
     }
 
     fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
