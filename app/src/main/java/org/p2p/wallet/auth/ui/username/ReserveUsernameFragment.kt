@@ -114,8 +114,8 @@ class ReserveUsernameFragment :
         setTextColorGrey()
     }
 
-    override fun getCaptchaResult(api1Json: JSONObject) {
-        gt3ConfigBean?.api1Json = api1Json
+    override fun getCaptchaResult(params: JSONObject) {
+        gt3ConfigBean?.api1Json = params
         gt3GeeTestUtils?.getGeetest()
     }
 

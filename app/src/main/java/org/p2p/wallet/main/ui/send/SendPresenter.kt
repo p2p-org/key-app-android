@@ -370,7 +370,6 @@ class SendPresenter(
 
         val isValidAddress = isAddressValid(destinationAddress)
         val isUserNameValid = isUsernameValid(username)
-        val length = username.length
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
         view?.setAvailableTextColor(availableColor)
         view?.showButtonEnabled(
