@@ -39,6 +39,7 @@ class SendPresenter(
 
     companion object {
         private const val VALID_ADDRESS_LENGTH = 24
+        private val VALID_USER_NAME_RANGE = 1..15
         private const val DESTINATION_USD = "USD"
         private const val SYMBOL_REN_BTC = "renBTC"
         private const val ROUNDING_VALUE = 6
@@ -60,6 +61,7 @@ class SendPresenter(
     private var networkType: NetworkType = NetworkType.SOLANA
 
     private var destinationAddress: String = ""
+    private var username: String = ""
 
     private var shouldAskConfirmation: Boolean = false
 
@@ -137,10 +139,11 @@ class SendPresenter(
         this.destinationAddress = address
         val addressOrName = address.replace(context.getString(R.string.auth_p2p_sol), "")
         when {
-            addressOrName.length in 1..15 -> {
+            addressOrName.length in VALID_USER_NAME_RANGE -> {
                 launch {
                     try {
                         val checkUsername = usernameInteractor.checkUsername(addressOrName)
+                        username = addressOrName
                         view?.showBufferUsernameResolvedOk(checkUsername.owner)
                     } catch (e: HttpException) {
                         view?.showBufferNoAddress()
@@ -149,7 +152,7 @@ class SendPresenter(
                 }
             }
 
-            addressOrName.length >= 24 -> {
+            addressOrName.length >= VALID_ADDRESS_LENGTH -> {
                 if (!isAddressValid(address)) {
                     view?.showButtonText(R.string.send_enter_address)
                     view?.showButtonEnabled(false)
@@ -365,11 +368,18 @@ class SendPresenter(
         val isEnabled = isNotZero && !isMoreThanBalance
 
         val isValidAddress = isAddressValid(destinationAddress)
+        val isUserNameValid = isUsernameValid(username)
+        val length = username.length
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
         view?.setAvailableTextColor(availableColor)
-        view?.showButtonEnabled(isEnabled && isValidAddress && !shouldAskConfirmation)
+        view?.showButtonEnabled(
+            isEnabled && isValidAddress || isUserNameValid && !shouldAskConfirmation
+        )
     }
 
     private fun isAddressValid(address: String): Boolean =
         address.trim().length >= VALID_ADDRESS_LENGTH
+
+    private fun isUsernameValid(userName: String): Boolean =
+        userName.length in VALID_USER_NAME_RANGE
 }
