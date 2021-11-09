@@ -373,7 +373,7 @@ class SendPresenter(
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
         view?.setAvailableTextColor(availableColor)
         view?.showButtonEnabled(
-            isEnabled && isValidAddress || isUserNameValid && !shouldAskConfirmation
+            isEnabled && (isValidAddress || isUserNameValid) && !shouldAskConfirmation
         )
     }
 
