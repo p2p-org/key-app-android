@@ -37,7 +37,7 @@ class SendInteractor(
             return TransactionResult.Error(R.string.main_send_to_yourself_error)
         }
 
-        val accountInfo = rpcRepository.getAccountInfo(destinationAddress)
+        val accountInfo = rpcRepository.getAccountInfo(destinationAddress.toBase58())
         val value = accountInfo?.value
 
         if (value?.owner == TokenProgram.PROGRAM_ID.toBase58()) {
@@ -107,7 +107,7 @@ class SendInteractor(
         val transaction = Transaction()
 
         /* If account is not found, create one */
-        val accountInfo = rpcRepository.getAccountInfo(address)
+        val accountInfo = rpcRepository.getAccountInfo(address.toBase58())
         val value = accountInfo?.value
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         if (!associatedNotNeeded) {

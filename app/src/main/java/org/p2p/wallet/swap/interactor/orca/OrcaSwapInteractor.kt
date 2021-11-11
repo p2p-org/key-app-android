@@ -182,6 +182,8 @@ class OrcaSwapInteractor(
     ): Pair<BigInteger, List<BigInteger>> {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
+        var transactionFees: BigInteger = BigInteger.ZERO
+
         val numberOfPools = BigInteger.valueOf(bestPoolsPair?.size?.toLong() ?: 0L)
 
         var numberOfTransactions = BigInteger.ONE
@@ -194,8 +196,6 @@ class OrcaSwapInteractor(
                 numberOfTransactions += BigInteger.ONE
             }
         }
-
-        var transactionFees: BigInteger = BigInteger.ZERO
 
         // owner's signatures
         transactionFees += lamportsPerSignature * numberOfTransactions
@@ -493,9 +493,7 @@ class OrcaSwapInteractor(
         val serializedMessage = transaction.serialize()
         val serializedTransaction = Base64Utils.encode(serializedMessage)
 
-        val signature = swapRepository.sendAndWait(serializedTransaction) {
-            // TODO: wait for confirmation and return the addresses
-            // notificationHandler.observeSignatureNotification(signature: txid)
+        swapRepository.sendAndWait(serializedTransaction) {
             onConfirmed(true)
         }
 

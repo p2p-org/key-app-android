@@ -43,8 +43,8 @@ class HistoryPresenter(
                 view?.showPagingState(state)
 
                 val lastSignature = if (transactions.isNotEmpty()) {
-                    val size = transactions.size
-                    transactions[size - 1].signature
+                    val lastIndex = transactions.size - 1
+                    transactions[lastIndex].signature
                 } else null
                 val history = historyInteractor.getHistory(publicKey, lastSignature, PAGE_SIZE)
 
