@@ -96,8 +96,8 @@ class UsernameFragment :
 
     private fun buildPartTextColor(text: String, color: Int): SpannableString {
         val span = SpannableString(text)
-        span.setSpan(ForegroundColorSpan(color), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        span.setSpan(ForegroundColorSpan(color), text.length - 4, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        span.setSpan(ForegroundColorSpan(color), 0, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        span.setSpan(ForegroundColorSpan(color), text.length - 4, text.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
         return span
     }
 

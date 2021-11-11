@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.ui.username
 
 import android.content.Context
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -9,6 +10,7 @@ import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import retrofit2.HttpException
+import timber.log.Timber
 
 class ReserveUsernamePresenter(
     private val context: Context,
@@ -22,6 +24,12 @@ class ReserveUsernamePresenter(
 
     override fun checkUsername(username: String) {
         checkUsernameJob?.cancel()
+
+        if (username.isEmpty()) {
+            view?.showIdleState()
+            return
+        }
+
         checkUsernameJob = launch {
             try {
                 /*
@@ -31,6 +39,8 @@ class ReserveUsernamePresenter(
                 delay(300)
                 interactor.checkUsername(username)
                 view?.showUnavailableName(username)
+            } catch (e: CancellationException) {
+                Timber.w(e, "Cancelled request for checking username: $username")
             } catch (e: HttpException) {
                 view?.showAvailableName(username)
             }
