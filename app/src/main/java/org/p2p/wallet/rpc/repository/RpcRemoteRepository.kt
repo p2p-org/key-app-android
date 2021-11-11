@@ -1,9 +1,6 @@
 package org.p2p.wallet.rpc.repository
 
 import android.util.Base64
-import org.p2p.wallet.infrastructure.network.EmptyDataException
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.MultipleAccountsInfo
@@ -22,6 +19,9 @@ import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.infrastructure.network.EmptyDataException
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.rpc.api.RpcApi
 import timber.log.Timber
 import java.math.BigInteger
 
@@ -145,10 +145,10 @@ class RpcRemoteRepository(
         return response.map { Pool.PoolInfo.fromProgramAccount(it) }
     }
 
-    override suspend fun getAccountInfo(account: PublicKey): AccountInfo? {
+    override suspend fun getAccountInfo(account: String): AccountInfo? {
         return try {
             val params = listOf(
-                account.toString(),
+                account,
                 RequestConfiguration(encoding = Encoding.BASE64.encoding)
             )
             val rpcRequest = RpcRequest("getAccountInfo", params)
@@ -156,6 +156,24 @@ class RpcRemoteRepository(
         } catch (e: EmptyDataException) {
             Timber.w("`getAccountInfo` responded with empty data, returning null")
             null
+        }
+    }
+
+    override suspend fun getAccountsInfo(accounts: List<String>): List<Pair<String, AccountInfo>> {
+        val requestsBatch = accounts.map {
+            val params = listOf(it, RequestConfiguration(encoding = Encoding.BASE64.encoding))
+            RpcRequest("getAccountInfo", params)
+        }
+
+        return try {
+            rpcApi
+                .getAccountsInfo(requestsBatch)
+                .mapIndexed { index, response ->
+                    requestsBatch[index].params!!.first() as String to response.result
+                }
+        } catch (e: EmptyDataException) {
+            Timber.w("`getAccountsInfo` responded with empty data, returning null")
+            emptyList()
         }
     }
 
@@ -180,6 +198,19 @@ class RpcRemoteRepository(
         val params = listOf(account)
         val rpcRequest = RpcRequest("getBalance", params)
         return rpcApi.getBalance(rpcRequest).result.value
+    }
+
+    override suspend fun getBalances(accounts: List<String>): List<Pair<String, Long>> {
+        val requestsBatch = accounts.map {
+            val params = listOf(it)
+            RpcRequest("getBalance", params)
+        }
+
+        return rpcApi
+            .getBalances(requestsBatch)
+            .mapIndexed { index, response ->
+                requestsBatch[index].params!!.first() as String to response.result.value
+            }
     }
 
     override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts {

@@ -2,6 +2,7 @@ package org.p2p.wallet.restore.interactor
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
@@ -14,7 +15,6 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.toPowerValue
-import org.p2p.solanaj.crypto.DerivationPath
 import java.math.BigDecimal
 
 private const val KEY_PHRASES = "KEY_PHRASES"
@@ -29,15 +29,19 @@ class SecretKeyInteractor(
     private val usernameInteractor: UsernameInteractor,
 ) {
 
-    suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<DerivableAccount> =
-        authRepository.getDerivableAccounts(path, keys).mapNotNull { account ->
-            val balance = rpcRepository.getBalance(account.publicKey.toBase58())
+    suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<DerivableAccount> {
+        val derivableAccounts = authRepository.getDerivableAccounts(path, keys)
+        val balanceAccounts = derivableAccounts.map { it.publicKey.toBase58() }
+        val balances = rpcRepository.getBalances(balanceAccounts)
+        return derivableAccounts.mapNotNull { account ->
+            val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
             val tokenData = userLocalRepository.findTokenData(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null
 
             val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol).price
             val total = BigDecimal(balance).divide(tokenData.decimals.toPowerValue())
             DerivableAccount(path, account, total, total.multiply(exchangeRate))
         }
+    }
 
     suspend fun createAndSaveAccount(path: DerivationPath, keys: List<String>) {
         val account = authRepository.createAccount(path, keys)
