@@ -192,7 +192,7 @@ class SendFragment :
             sourceTextView.text = token.tokenSymbol
             tokenTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
-            currentPriceView.setBottomText(token.getCurrentPrice())
+            currentPriceView.setBottomText(getString(R.string.main_usd_format, token.getCurrentPrice()))
         }
     }
 
