@@ -136,7 +136,7 @@ class OrcaSwapPresenter(
         sourceAmount = amount
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = sourceToken.usdRate.multiply(decimalAmount).scaleMedium()
+        aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(sourceToken.total)
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
@@ -361,7 +361,7 @@ class OrcaSwapPresenter(
             iconRes = R.drawable.ic_success,
             // Show usd and token amount from confirmed transaction
             amount = destinationAmount.toBigDecimalOrZero().scaleMedium().toString(),
-            usdAmount = sourceToken.usdRate.multiply(sourceAmount.toBigDecimalOrZero()).scaleMedium().toString(),
+            usdAmount = sourceToken.usdRateOrZero.multiply(sourceAmount.toBigDecimalOrZero()).scaleMedium().toString(),
             tokenSymbol = requireDestinationToken().tokenSymbol
         )
         view?.showSwapSuccess(info)

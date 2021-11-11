@@ -7,7 +7,6 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
@@ -28,10 +27,10 @@ sealed class Token constructor(
     @Parcelize
     data class Active(
         override val publicKey: String,
-        val price: BigDecimal,
+        val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
-        val usdRate: BigDecimal,
+        val usdRate: BigDecimal?,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -59,15 +58,19 @@ sealed class Token constructor(
             get() = total.isZero()
 
         @IgnoredOnParcel
-        val totalInUsd: BigDecimal
-            get() = total.multiply(usdRate).scaleLong()
+        val usdRateOrZero: BigDecimal
+            get() = usdRate ?: BigDecimal.ZERO
+
+        @IgnoredOnParcel
+        val totalInUsdOrZero: BigDecimal
+            get() = totalInUsd ?: BigDecimal.ZERO
 
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
-        fun getCurrentPrice(): String = "${String.format("%.2f", usdRate)} per $tokenSymbol"
+        fun getCurrentPrice(): String = "${String.format("%.2f", usdRateOrZero)} per $tokenSymbol"
 
-        fun getFormattedPrice(): String = "${price.scaleShort()} $"
+        fun getFormattedPrice(): String? = totalInUsd?.let { "${totalInUsd.scaleShort()} $" }
 
         fun getFormattedTotal(): String = "$total $tokenSymbol"
 
@@ -138,7 +141,7 @@ sealed class Token constructor(
                 mintAddress = tokenData.mintAddress,
                 tokenName = SOL_NAME,
                 logoUrl = tokenData.iconUrl,
-                price = total.multiply(exchangeRate),
+                totalInUsd = total.multiply(exchangeRate),
                 total = total,
                 color = R.color.chartSOL,
                 usdRate = exchangeRate,

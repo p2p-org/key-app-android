@@ -27,7 +27,7 @@ object TokenConverter {
     fun fromNetwork(
         account: Account,
         tokenData: TokenData,
-        price: TokenPrice
+        price: TokenPrice?
     ): Token.Active {
         val data = account.account.data
         val mintAddress = data.parsed.info.mint
@@ -39,10 +39,10 @@ object TokenConverter {
             mintAddress = mintAddress,
             tokenName = tokenData.name,
             logoUrl = tokenData.iconUrl,
-            price = total.fromLamports(tokenData.decimals).times(price.price),
+            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(price.price) },
             total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
             color = TokenColors.findColorBySymbol(tokenData.symbol),
-            usdRate = price.price,
+            usdRate = price?.price,
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = tokenData.serumV3Usdc,
             serumV3Usdt = tokenData.serumV3Usdt,
@@ -73,10 +73,10 @@ object TokenConverter {
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,
             iconUrl = token.logoUrl,
-            price = token.price,
+            totalInUsd = token.totalInUsd,
             total = token.total,
             color = token.color,
-            exchangeRate = token.usdRate.toString(),
+            exchangeRate = token.usdRate?.toString(),
             visibility = token.visibility.stringValue,
             serumV3Usdc = token.serumV3Usdc,
             serumV3Usdt = token.serumV3Usdt,
@@ -91,10 +91,10 @@ object TokenConverter {
             mintAddress = entity.mintAddress,
             tokenName = entity.tokenName,
             logoUrl = entity.iconUrl,
-            price = entity.price,
+            totalInUsd = entity.totalInUsd,
             total = entity.total,
             color = entity.color,
-            usdRate = entity.exchangeRate.toBigDecimalOrZero(),
+            usdRate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             serumV3Usdc = entity.serumV3Usdc,
             serumV3Usdt = entity.serumV3Usdt,

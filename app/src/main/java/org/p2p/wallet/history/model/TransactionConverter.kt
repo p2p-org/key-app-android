@@ -1,16 +1,16 @@
 package org.p2p.wallet.history.model
 
+import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
+import org.p2p.solanaj.kits.transaction.CloseAccountDetails
+import org.p2p.solanaj.kits.transaction.SwapDetails
+import org.p2p.solanaj.kits.transaction.TransferDetails
+import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.wallet.main.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toPowerValue
-import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
-import org.p2p.solanaj.kits.transaction.CloseAccountDetails
-import org.p2p.solanaj.kits.transaction.SwapDetails
-import org.p2p.solanaj.kits.transaction.TransferDetails
-import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -22,7 +22,7 @@ object TransactionConverter {
         response: SwapDetails,
         sourceData: TokenData,
         destinationData: TokenData,
-        destinationRate: TokenPrice,
+        destinationRate: TokenPrice?,
         sourcePublicKey: String
     ): HistoryTransaction =
         HistoryTransaction.Swap(
@@ -43,7 +43,7 @@ object TransactionConverter {
             amountReceivedInUsd = response.amountB
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
-                .times(destinationRate.price)
+                .times(destinationRate?.price ?: BigDecimal.ZERO)
                 .scaleMedium(),
             sourceSymbol = sourceData.symbol,
             sourceTokenUrl = sourceData.iconUrl.orEmpty(),
@@ -53,7 +53,7 @@ object TransactionConverter {
 
     fun fromNetwork(
         response: BurnOrMintDetails,
-        rate: TokenPrice
+        rate: TokenPrice?
     ): HistoryTransaction {
         val date = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(response.blockTime),
@@ -62,7 +62,7 @@ object TransactionConverter {
 
         val amount = BigDecimal(response.amount)
             .scaleMedium()
-            .times(rate.price)
+            .times(rate?.price ?: BigDecimal.ZERO)
             .scaleMedium()
 
         return HistoryTransaction.BurnOrMint(
@@ -81,7 +81,7 @@ object TransactionConverter {
         tokenData: TokenData,
         directPublicKey: String,
         publicKey: String,
-        rate: TokenPrice
+        rate: TokenPrice?
     ): HistoryTransaction {
         val isSend = if (response.isSimpleTransfer) {
             response.source == directPublicKey && response.destination != publicKey
@@ -97,7 +97,7 @@ object TransactionConverter {
         val amount = BigDecimal(response.amount).toBigInteger()
             .fromLamports(response.decimals)
             .scaleMedium()
-            .times(rate.price)
+            .times(rate?.price ?: BigDecimal.ZERO)
 
         val date = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(response.blockTime),

@@ -16,7 +16,7 @@ interface TokenDao {
         entities.forEach { entity ->
             val found = findByPublicKey(entity.publicKey)
             if (found != null) {
-                update(entity.publicKey, entity.price, entity.total, entity.exchangeRate, found.visibility)
+                update(entity.publicKey, entity.totalInUsd, entity.total, entity.exchangeRate, found.visibility)
             } else {
                 insertOrReplace(entity)
             }
@@ -38,9 +38,9 @@ interface TokenDao {
     )
     suspend fun update(
         publicKey: String,
-        price: BigDecimal,
+        price: BigDecimal?,
         total: BigDecimal,
-        exchangeRate: String,
+        exchangeRate: String?,
         visibility: String
     )
 

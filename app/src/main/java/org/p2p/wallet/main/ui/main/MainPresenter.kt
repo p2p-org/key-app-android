@@ -156,7 +156,7 @@ class MainPresenter(
 
     private fun mapBalance(tokens: List<Token.Active>): BigDecimal =
         tokens
-            .map { it.price }
+            .mapNotNull { it.totalInUsd }
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 

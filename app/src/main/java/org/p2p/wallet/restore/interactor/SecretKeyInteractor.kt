@@ -37,7 +37,7 @@ class SecretKeyInteractor(
             val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
             val tokenData = userLocalRepository.findTokenData(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null
 
-            val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol).price
+            val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol)?.price ?: BigDecimal.ZERO
             val total = BigDecimal(balance).divide(tokenData.decimals.toPowerValue())
             DerivableAccount(path, account, total, total.multiply(exchangeRate))
         }

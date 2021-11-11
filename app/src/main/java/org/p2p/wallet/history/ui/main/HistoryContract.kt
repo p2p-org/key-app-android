@@ -20,6 +20,7 @@ interface HistoryContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun refreshHistory()
         fun loadSolAddress()
         fun loadHistory(publicKey: String, tokenSymbol: String)
         fun loadDailyChartData(tokenSymbol: String, days: Int)

@@ -99,13 +99,13 @@ class TokenAdapter(
                         old.token.mintAddress == new.token.mintAddress &&
                         old.token.visibility == new.token.visibility &&
                         old.token.total == new.token.total &&
-                        old.token.price == new.token.price
+                        old.token.totalInUsd == new.token.totalInUsd
                 old is TokenItem.Hidden && new is TokenItem.Hidden ->
                     old.token.publicKey == new.token.publicKey &&
                         old.token.mintAddress == new.token.mintAddress &&
                         old.token.visibility == new.token.visibility &&
                         old.token.total == new.token.total &&
-                        old.token.price == new.token.price
+                        old.token.totalInUsd == new.token.totalInUsd
                 old is TokenItem.Action && new is TokenItem.Action ->
                     old.state == new.state
                 else -> false
