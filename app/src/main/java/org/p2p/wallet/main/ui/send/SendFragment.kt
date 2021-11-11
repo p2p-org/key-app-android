@@ -30,7 +30,8 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.wallet.utils.getClipBoardData
+import org.p2p.wallet.utils.getClipBoard
+import org.p2p.wallet.utils.getClipBoardTrim
 import java.math.BigDecimal
 
 class SendFragment :
@@ -123,7 +124,7 @@ class SendFragment :
             }
 
             pasteTextView.setOnClickListener {
-                requireContext().getClipBoardData().let { addressEditText.setText(it) }
+                requireContext().getClipBoardTrim().let { addressEditText.setText(it) }
             }
         }
 
@@ -142,7 +143,7 @@ class SendFragment :
     }
 
     private fun checkClipBoard() {
-        val clipBoardData = requireContext().getClipBoardData()
+        val clipBoardData = requireContext().getClipBoard()
         setEnablePasteButton(clipBoardData != null)
     }
 
