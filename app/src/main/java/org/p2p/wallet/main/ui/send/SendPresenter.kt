@@ -1,9 +1,10 @@
 package org.p2p.wallet.main.ui.send
 
+import android.content.Context
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import android.content.Context
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.main.interactor.SendInteractor
 import org.p2p.wallet.main.model.CurrencyMode
@@ -21,7 +22,6 @@ import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.wallet.auth.interactor.UsernameInteractor
 import retrofit2.HttpException
 import timber.log.Timber
 import java.math.BigDecimal
@@ -74,7 +74,7 @@ class SendPresenter(
             view?.showFullScreenLoading(true)
             val source = initialToken ?: userInteractor.getUserTokens().firstOrNull() ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
-            token = source.copy(usdRate = exchangeRate)
+            token = source.copy(usdRate = exchangeRate?.price)
             mode = CurrencyMode.Own(source.tokenSymbol)
 
             calculateFee()
@@ -131,7 +131,8 @@ class SendPresenter(
         val totalAvailable = when (mode) {
             is CurrencyMode.Usd -> token.totalInUsd
             is CurrencyMode.Own -> token.total.scaleLong()
-        }
+        } ?: return
+
         view?.showInputValue(totalAvailable)
     }
 
@@ -199,7 +200,7 @@ class SendPresenter(
             setButtonEnabled(tokenAmount, token!!.total)
         } else {
             usdAmount = inputAmount.toBigDecimalOrZero()
-            setButtonEnabled(usdAmount, token!!.totalInUsd)
+            setButtonEnabled(usdAmount, token!!.totalInUsd ?: BigDecimal.ZERO)
         }
     }
 
@@ -256,7 +257,7 @@ class SendPresenter(
                     message = R.string.main_send_transaction_confirmed,
                     iconRes = R.drawable.ic_success,
                     amount = "-$tokenAmount",
-                    usdAmount = "-${token!!.usdRate.multiply(tokenAmount).scaleMedium()}",
+                    usdAmount = "-${(token!!.usdRate ?: BigDecimal.ZERO).multiply(tokenAmount).scaleMedium()}",
                     tokenSymbol = token!!.tokenSymbol
                 )
                 view?.showSuccess(info)
@@ -275,9 +276,9 @@ class SendPresenter(
             when (mode) {
                 is CurrencyMode.Own -> {
                     tokenAmount = inputAmount.toBigDecimalOrZero()
-                    usdAmount = tokenAmount.multiply(token.usdRate)
+                    usdAmount = tokenAmount.multiply(token.usdRateOrZero)
 
-                    val usdAround = tokenAmount.times(token.usdRate).scaleMedium()
+                    val usdAround = tokenAmount.times(token.usdRateOrZero).scaleMedium()
                     val total = token.total.scaleLong()
                     view?.showUsdAroundValue(usdAround)
                     view?.showAvailableValue(total, token.tokenSymbol)
@@ -288,23 +289,25 @@ class SendPresenter(
                 }
                 is CurrencyMode.Usd -> {
                     usdAmount = inputAmount.toBigDecimalOrZero()
-                    tokenAmount = if (token.usdRate.isZero()) {
+                    tokenAmount = if (token.usdRateOrZero.isZero()) {
                         BigDecimal.ZERO
                     } else {
-                        usdAmount.divide(token.usdRate, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
+                        usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN)
+                            .stripTrailingZeros()
                     }
 
-                    val tokenAround = if (usdAmount.isZero() || token.usdRate.isZero()) {
+                    val tokenAround = if (usdAmount.isZero() || token.usdRateOrZero.isZero()) {
                         BigDecimal.ZERO
                     } else {
-                        usdAmount.divide(token.usdRate, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
+                        usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN)
+                            .stripTrailingZeros()
                     }
                     view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
-                    view?.showAvailableValue(token.totalInUsd, USD_SYMBOL)
+                    view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_SYMBOL)
 
                     updateButtonText(token)
 
-                    setButtonEnabled(usdAmount, token.totalInUsd)
+                    setButtonEnabled(usdAmount, token.totalInUsd ?: BigDecimal.ZERO)
                 }
             }
         }

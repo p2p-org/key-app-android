@@ -17,6 +17,7 @@ import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.utils.dip
+import org.p2p.wallet.utils.withTextOrGone
 
 class TokenViewHolder(
     binding: ItemTokenBinding,
@@ -74,7 +75,7 @@ class TokenViewHolder(
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenSymbol
         addressTextView.text = token.tokenName
-        valueTextView.text = token.getFormattedPrice()
+        valueTextView withTextOrGone token.getFormattedPrice()
         totalTextView.text = token.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, token.color))
 

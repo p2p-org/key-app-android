@@ -1,5 +1,9 @@
 package org.p2p.wallet.user.repository
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.model.types.Account
+import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.api.CompareApi
@@ -11,17 +15,13 @@ import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toPublicKey
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.model.types.Account
-import org.p2p.solanaj.rpc.Environment
 import java.math.BigDecimal
 
 interface UserRepository {
     suspend fun loadAllTokens(): List<TokenData>
     suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice>
     suspend fun loadTokens(): List<Token.Active>
-    suspend fun getRate(sourceSymbol: String, destinationSymbol: String): BigDecimal
+    suspend fun getRate(sourceSymbol: String, destinationSymbol: String): TokenPrice?
 }
 
 class UserRepositoryImpl(
@@ -92,15 +92,20 @@ class UserRepositoryImpl(
         val solBalance = rpcRepository.getBalance(tokenProvider.publicKey)
         val tokenData = userLocalRepository.findTokenData(Token.WRAPPED_SOL_MINT) ?: return@withContext result
         val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
-        val token = Token.createSOL(tokenProvider.publicKey, tokenData, solBalance, solPrice.getScaledValue())
+        val token = Token.createSOL(
+            publicKey = tokenProvider.publicKey,
+            tokenData = tokenData,
+            amount = solBalance,
+            exchangeRate = solPrice?.getScaledValue() ?: BigDecimal.ZERO
+        )
         result.add(0, token)
         return@withContext result
     }
 
-    override suspend fun getRate(sourceSymbol: String, destinationSymbol: String): BigDecimal {
+    override suspend fun getRate(sourceSymbol: String, destinationSymbol: String): TokenPrice? {
         val json = compareApi.getPrice(sourceSymbol, destinationSymbol)
-        val price = json.getAsJsonPrimitive(destinationSymbol)?.asBigDecimal ?: BigDecimal.ZERO
-        return TokenPrice(sourceSymbol, price.scaleMedium()).price
+        val price = json.getAsJsonPrimitive(destinationSymbol)?.asBigDecimal
+        return price?.let { TokenPrice(sourceSymbol, price.scaleMedium()) }
     }
 
     private fun mapDevnetRenBTC(account: Account): Token.Active? {

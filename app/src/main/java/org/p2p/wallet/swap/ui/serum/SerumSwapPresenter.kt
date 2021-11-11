@@ -148,7 +148,7 @@ class SwapPresenter(
         val token = sourceToken ?: return
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = token.usdRate.multiply(decimalAmount).scaleMedium()
+        aroundValue = token.usdRateOrZero.multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(token.total)
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
@@ -311,7 +311,7 @@ class SwapPresenter(
 
     private fun updateButtonText(source: Token.Active) {
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = source.usdRate.multiply(decimalAmount).scaleMedium()
+        aroundValue = (source.usdRate ?: BigDecimal.ZERO).multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
         val minOrderSizeFailed = decimalAmount.isLessThan(minOrderSize)

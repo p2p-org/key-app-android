@@ -17,11 +17,12 @@ import org.p2p.wallet.common.widget.TabItem
 import org.p2p.wallet.databinding.ItemTokenDetailsHeaderBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.PeriodHistory
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.history.ui.main.OnHeaderClickListener
+import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.receive.ReceiveFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.resFromTheme
+import org.p2p.wallet.utils.withTextOrGone
 
 class HeaderViewHolder(
     private val binding: ItemTokenDetailsHeaderBinding,
@@ -40,7 +41,7 @@ class HeaderViewHolder(
             val token = item.token
             setupTabsView(token, this)
 
-            balanceTextView.text = token.getFormattedPrice()
+            balanceTextView withTextOrGone token.getFormattedPrice()
             totalTextView.text = token.getFormattedTotal()
 
             qrImageView.setOnClickListener { listener.navigateToFragment(ReceiveFragment.create(token)) }

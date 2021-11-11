@@ -1,15 +1,16 @@
 package org.p2p.wallet.user.interactor
 
+import kotlinx.coroutines.flow.Flow
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.api.TokenColors
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.model.TokenComparator
 import org.p2p.wallet.main.model.TokenConverter
+import org.p2p.wallet.main.model.TokenPrice
 import org.p2p.wallet.main.repository.MainLocalRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import java.math.BigDecimal
 
 class UserInteractor(
     private val userRepository: UserRepository,
@@ -50,13 +51,12 @@ class UserInteractor(
 
     suspend fun getUserTokens(): List<Token.Active> =
         mainLocalRepository.getUserTokens()
-            .sortedByDescending { it.totalInUsd }
-            .sortedByDescending { it.isSOL }
+            .sortedWith(TokenComparator())
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
 
-    suspend fun getPriceByToken(sourceSymbol: String, destinationSymbol: String): BigDecimal =
+    suspend fun getPriceByToken(sourceSymbol: String, destinationSymbol: String): TokenPrice? =
         userRepository.getRate(sourceSymbol, destinationSymbol)
 
     suspend fun clearMemoryData() {

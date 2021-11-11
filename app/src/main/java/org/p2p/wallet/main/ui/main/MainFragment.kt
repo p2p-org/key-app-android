@@ -122,7 +122,7 @@ class MainFragment :
 
     @Suppress("MagicNumber")
     private fun showPieChart(tokens: List<Token.Active>) {
-        val pieData = tokens.map { PieEntry(it.price.toFloat()) }
+        val pieData = tokens.map { PieEntry(it.totalInUsd?.toFloat() ?: 0f) }
         val colors = tokens.map { it.color }.toIntArray()
 
         binding.mainPieChart.apply {

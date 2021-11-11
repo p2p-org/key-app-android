@@ -12,6 +12,7 @@ import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.model.TokenComparator
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
@@ -617,8 +618,7 @@ class OrcaSwapInteractor(
                     return@mapNotNull userInteractor.findTokenData(orcaToken.mint)
                 }
             }
-            .sortedByDescending { (it as? Token.Active)?.totalInUsd }
-            .sortedByDescending { it.isSOL }
+            .sortedWith(TokenComparator())
 
         return allTokens
     }

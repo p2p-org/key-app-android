@@ -4,6 +4,8 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.widget.TextView
+import androidx.core.view.isVisible
 
 fun String.setTextBold(vararg boldText: String): SpannableString {
     val stringBuilder = SpannableString(this)
@@ -17,4 +19,14 @@ fun String.setTextBold(vararg boldText: String): SpannableString {
     }
 
     return stringBuilder
+}
+
+infix fun TextView.withTextOrGone(text: String?) {
+    if (text.isNullOrEmpty()) {
+        isVisible = false
+        this.text = ""
+    } else {
+        isVisible = true
+        this.text = text
+    }
 }
