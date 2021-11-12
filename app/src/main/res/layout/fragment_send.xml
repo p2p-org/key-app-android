@@ -249,7 +249,6 @@
                     android:layout_marginEnd="36dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorElementSecondary"
-                    app:drawableStartCompat="@drawable/ic_back"
                     app:layout_constraintBottom_toBottomOf="@id/toTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/toTextView"

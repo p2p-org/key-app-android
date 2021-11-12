@@ -30,8 +30,12 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.auth.ui.username.ResolveUsernameFragment
+import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.utils.getClipBoard
 import org.p2p.wallet.utils.getClipBoardTrim
+import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toast
 import java.math.BigDecimal
 
 class SendFragment :
@@ -125,6 +129,10 @@ class SendFragment :
 
             pasteTextView.setOnClickListener {
                 requireContext().getClipBoardTrim().let { addressEditText.setText(it) }
+            }
+
+            addressEditText.setOnClickListener {
+                openResolveUsernameScreen()
             }
         }
 
@@ -276,6 +284,10 @@ class SendFragment :
     override fun showBufferNoAddress() {
         binding.addressTextView.isVisible = true
         binding.addressTextView.text = getString(R.string.send_no_address)
+    }
+
+    override fun openResolveUsernameScreen() {
+        replaceFragment(ResolveUsernameFragment.create())
     }
 
     private fun setEnablePasteButton(isEnabled: Boolean) {

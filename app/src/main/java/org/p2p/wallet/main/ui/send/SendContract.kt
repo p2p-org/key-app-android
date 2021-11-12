@@ -35,6 +35,7 @@ interface SendContract {
         fun navigateToTokenSelection(tokens: List<Token.Active>)
         fun showBufferUsernameResolvedOk(data: String)
         fun showBufferNoAddress()
+        fun openResolveUsernameScreen()
     }
 
     interface Presenter : MvpPresenter<View> {

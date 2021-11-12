@@ -30,7 +30,11 @@ class ResolveUsernameFragment :
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
             }
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            backImageView.setOnClickListener { popBackStack() }
         }
+    }
+
+    override fun showNetworkSelection() {
+
     }
 }

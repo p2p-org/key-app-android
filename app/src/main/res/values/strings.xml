@@ -103,6 +103,7 @@
     <string name="auth_save">Save</string>
     <string name="auth_saved">Saved!</string>
     <string name="auth_function_not_available">This function not available because need write external storage permission</string>
+    <string name="auth_multiple_accounts">Multiple accounts were found</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">
