@@ -4,9 +4,11 @@ import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
+import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.TransactionTypeParser
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
+import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.PriceHistory
@@ -36,52 +38,79 @@ class HistoryInteractor(
             publicKey.toPublicKey(), before, limit
         ).map { it.signature }
 
-        return rpcRepository.getConfirmedTransactions(signatures)
-            .mapNotNull { response ->
+        val transactions = mutableListOf<TransactionDetails>()
+        rpcRepository.getConfirmedTransactions(signatures)
+            .forEach { response ->
                 val data = TransactionTypeParser.parse(response)
-
                 val swap = data.firstOrNull { it is SwapDetails }
                 if (swap != null) {
-                    return@mapNotNull parseSwapDetails(swap as SwapDetails)
+                    transactions.add(swap)
+                    return@forEach
                 }
 
                 val burnOrMint = data.firstOrNull { it is BurnOrMintDetails }
                 if (burnOrMint != null) {
-                    return@mapNotNull parseBurnAndMintDetails(burnOrMint as BurnOrMintDetails)
+                    transactions.add(burnOrMint)
+                    return@forEach
                 }
 
                 val transfer = data.firstOrNull { it is TransferDetails }
                 if (transfer != null) {
-                    return@mapNotNull parseTransferDetails(
-                        transfer as TransferDetails,
-                        publicKey,
-                        tokenKeyProvider.publicKey
-                    )
+                    transactions.add(transfer)
+                    return@forEach
                 }
 
                 val close = data.firstOrNull { it is CloseAccountDetails }
                 if (close != null) {
-                    return@mapNotNull parseCloseDetails(close as CloseAccountDetails)
+                    transactions.add(close)
+                    return@forEach
                 }
 
                 val unknown = data.firstOrNull { it is UnknownDetails }
                 if (unknown != null) {
-                    return@mapNotNull TransactionConverter.fromNetwork(unknown as UnknownDetails)
+                    transactions.add(unknown)
+                    return@forEach
                 }
+            }
 
-                return@mapNotNull null
+        val accountsInfoIds = transactions
+            .flatMap { details ->
+                when (details) {
+                    is SwapDetails -> listOf(details.source, details.alternateSource, details.destination)
+                    is CloseAccountDetails -> listOf(details.account)
+                    else -> emptyList()
+                }
+            }
+            .distinct()
+
+        val accountsInfo = rpcRepository.getAccountsInfo(accountsInfoIds)
+
+        return transactions
+            .mapNotNull { details ->
+                when (details) {
+                    is SwapDetails -> parseSwapDetails(details, accountsInfo)
+                    is BurnOrMintDetails -> parseBurnAndMintDetails(details)
+                    is TransferDetails -> parseTransferDetails(details, publicKey, tokenKeyProvider.publicKey)
+                    is CloseAccountDetails -> parseCloseDetails(details, accountsInfo)
+                    is UnknownDetails -> TransactionConverter.fromNetwork(details)
+                    else -> throw IllegalStateException("Unknown transaction details $details")
+                }
             }
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private suspend fun parseSwapDetails(details: SwapDetails): HistoryTransaction? {
+    private fun parseSwapDetails(
+        details: SwapDetails,
+        accountsInfo: List<Pair<String, AccountInfo>>
+    ): HistoryTransaction? {
         val finalMintA = if (details.mintA.isNullOrEmpty()) {
-            val accountInfo = rpcRepository.getAccountInfo(details.source.toPublicKey())
+            val accountInfo = accountsInfo.find { it.first == details.source }?.second ?: return null
             val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
             if (info != null) {
                 info.mint.toBase58()
             } else {
-                val alternateAccountInfo = rpcRepository.getAccountInfo(details.alternateSource.toPublicKey())
+                val alternateAccountInfo =
+                    accountsInfo.find { it.first == details.alternateSource }?.second ?: return null
                 val alternateInfo = TokenTransaction.parseAccountInfoData(
                     alternateAccountInfo,
                     TokenProgram.PROGRAM_ID
@@ -91,7 +120,7 @@ class HistoryInteractor(
         } else details.mintA
 
         val finalMintB = if (details.mintB.isNullOrEmpty()) {
-            val accountInfo = rpcRepository.getAccountInfo(details.destination.toPublicKey())
+            val accountInfo = accountsInfo.find { it.first == details.destination }?.second ?: return null
             val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID) ?: return null
             info.mint.toBase58()
         } else details.mintB
@@ -126,8 +155,11 @@ class HistoryInteractor(
         return TransactionConverter.fromNetwork(details, rate)
     }
 
-    private suspend fun parseCloseDetails(details: CloseAccountDetails): HistoryTransaction {
-        val accountInfo = rpcRepository.getAccountInfo(details.account.toPublicKey())
+    private fun parseCloseDetails(
+        details: CloseAccountDetails,
+        accountsInfo: List<Pair<String, AccountInfo>>
+    ): HistoryTransaction? {
+        val accountInfo = accountsInfo.find { it.first == details.account }?.second ?: return null
         val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
         val symbol = findSymbol(info?.mint?.toBase58().orEmpty())
         return TransactionConverter.fromNetwork(details, symbol)

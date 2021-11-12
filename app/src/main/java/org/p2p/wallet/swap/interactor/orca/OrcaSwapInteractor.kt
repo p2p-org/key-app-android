@@ -12,6 +12,7 @@ import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.model.TokenComparator
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
@@ -182,6 +183,8 @@ class OrcaSwapInteractor(
     ): Pair<BigInteger, List<BigInteger>> {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
+        var transactionFees: BigInteger = BigInteger.ZERO
+
         val numberOfPools = BigInteger.valueOf(bestPoolsPair?.size?.toLong() ?: 0L)
 
         var numberOfTransactions = BigInteger.ONE
@@ -194,8 +197,6 @@ class OrcaSwapInteractor(
                 numberOfTransactions += BigInteger.ONE
             }
         }
-
-        var transactionFees: BigInteger = BigInteger.ZERO
 
         // owner's signatures
         transactionFees += lamportsPerSignature * numberOfTransactions
@@ -493,9 +494,7 @@ class OrcaSwapInteractor(
         val serializedMessage = transaction.serialize()
         val serializedTransaction = Base64Utils.encode(serializedMessage)
 
-        val signature = swapRepository.sendAndWait(serializedTransaction) {
-            // TODO: wait for confirmation and return the addresses
-            // notificationHandler.observeSignatureNotification(signature: txid)
+        swapRepository.sendAndWait(serializedTransaction) {
             onConfirmed(true)
         }
 
@@ -619,8 +618,7 @@ class OrcaSwapInteractor(
                     return@mapNotNull userInteractor.findTokenData(orcaToken.mint)
                 }
             }
-            .sortedByDescending { (it as? Token.Active)?.totalInUsd }
-            .sortedByDescending { it.isSOL }
+            .sortedWith(TokenComparator())
 
         return allTokens
     }

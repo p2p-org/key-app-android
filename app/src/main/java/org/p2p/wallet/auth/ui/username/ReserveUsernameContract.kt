@@ -9,6 +9,7 @@ interface ReserveUsernameContract {
 
     interface View : MvpView {
         fun navigateToPinCode()
+        fun showIdleState()
         fun showUnavailableName(name: String)
         fun showAvailableName(name: String)
         fun getCaptchaResult(params: JSONObject)

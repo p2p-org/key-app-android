@@ -49,6 +49,8 @@ class SelectTokenViewHolder(
     fun onBind(item: Token) {
         if (adapterPosition == 0) {
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
+        } else {
+            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
         }
 
         if (!item.logoUrl.isNullOrEmpty()) {

@@ -98,20 +98,31 @@ class ReserveUsernameFragment :
         replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
     }
 
+    override fun showIdleState() {
+        with(binding) {
+            enterUserNameButton.isEnabled = false
+            enterUserNameButton.text = getString(R.string.auth_enter_your_username)
+            usernameTextView.text = getString(R.string.auth_use_any_latin)
+            usernameTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
+        }
+    }
+
     override fun showUnavailableName(name: String) {
-        binding.usernameTextView.text = buildBoldText(getString(R.string.auth_unavailable_name, name), name.length)
-        binding.usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
-        binding.enterUserNameButton.isEnabled = false
-        binding.enterUserNameButton.text = getString(R.string.auth_enter_your_username)
-        setTextColorGrey()
+        with(binding) {
+            usernameTextView.text = buildBoldText(getString(R.string.auth_unavailable_name, name), name)
+            usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
+            enterUserNameButton.isEnabled = false
+            enterUserNameButton.text = getString(R.string.auth_enter_your_username)
+        }
     }
 
     override fun showAvailableName(name: String) {
-        binding.usernameTextView.text = buildBoldText(getString(R.string.auth_available_name, name), name.length)
-        binding.usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
-        binding.enterUserNameButton.isEnabled = true
-        binding.enterUserNameButton.text = getString(R.string.auth_reserve)
-        setTextColorGrey()
+        with(binding) {
+            usernameTextView.text = buildBoldText(getString(R.string.auth_available_name, name), name)
+            usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
+            enterUserNameButton.isEnabled = true
+            enterUserNameButton.text = getString(R.string.auth_reserve)
+        }
     }
 
     override fun getCaptchaResult(params: JSONObject) {
@@ -250,16 +261,12 @@ class ReserveUsernameFragment :
         }
     }
 
-    private fun buildBoldText(text: String, boldLength: Int): SpannableString {
+    private fun buildBoldText(text: String, boldText: String): SpannableString {
         val span = SpannableString(text)
-        span.setSpan(StyleSpan(Typeface.BOLD), 0, boldLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return span
-    }
 
-    private fun setTextColorGrey() {
-        if (binding.usernameEditText.text?.isEmpty() == true) {
-            binding.usernameTextView.text = getString(R.string.auth_use_any_latin)
-            binding.usernameTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
-        }
+        if (boldText.isBlank()) return span
+
+        span.setSpan(StyleSpan(Typeface.BOLD), 0, boldText.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        return span
     }
 }

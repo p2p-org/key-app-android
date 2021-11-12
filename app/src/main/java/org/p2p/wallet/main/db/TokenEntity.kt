@@ -31,7 +31,7 @@ data class TokenEntity(
     val iconUrl: String?,
 
     @ColumnInfo(name = COLUMN_PRICE)
-    val price: BigDecimal,
+    val totalInUsd: BigDecimal?,
 
     @ColumnInfo(name = COLUMN_TOTAL)
     val total: BigDecimal,
@@ -40,7 +40,7 @@ data class TokenEntity(
     val color: Int,
 
     @ColumnInfo(name = COLUMN_EXCHANGE_RATE)
-    val exchangeRate: String,
+    val exchangeRate: String?,
 
     @ColumnInfo(name = COLUMN_VISIBILITY)
     val visibility: String,

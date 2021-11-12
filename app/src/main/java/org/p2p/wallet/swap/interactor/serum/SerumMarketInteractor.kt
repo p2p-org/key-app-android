@@ -54,7 +54,7 @@ class SerumMarketInteractor(
         loadOrderbook(market, market.asksAddress)
 
     private suspend fun getMintData(account: PublicKey): TokenProgram.MintData {
-        val info = rpcRepository.getAccountInfo(account)
+        val info = rpcRepository.getAccountInfo(account.toBase58())
             ?: throw IllegalStateException("No mint data")
 
         if (info.value?.owner != TokenProgram.PROGRAM_ID.toBase58()) {
@@ -72,7 +72,7 @@ class SerumMarketInteractor(
         type: MarketStatLayout.Type
     ): MarketStatLayout {
 
-        val info = rpcRepository.getAccountInfo(account)
+        val info = rpcRepository.getAccountInfo(account.toBase58())
             ?: throw IllegalStateException("No address data")
 
         val base64Data = info.value.data!![0]
@@ -85,7 +85,7 @@ class SerumMarketInteractor(
     }
 
     private suspend fun loadOrderbook(market: Market, address: PublicKey): Orderbook {
-        val account = rpcRepository.getAccountInfo(address)
+        val account = rpcRepository.getAccountInfo(address.toBase58())
         if (account?.value == null) throw IllegalStateException("Invalid account info")
 
         val base64Data = account.value.data!![0]

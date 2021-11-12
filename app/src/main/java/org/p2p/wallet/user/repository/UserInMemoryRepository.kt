@@ -1,10 +1,9 @@
 package org.p2p.wallet.user.repository
 
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.main.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
-import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
-import java.math.BigDecimal
 
 class UserInMemoryRepository : UserLocalRepository {
 
@@ -14,15 +13,8 @@ class UserInMemoryRepository : UserLocalRepository {
         pricesFlow.value = prices
     }
 
-    override fun getPriceByToken(symbol: String): TokenPrice {
-        val price = pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
-        return if (price != null) {
-            price
-        } else {
-            Timber.w("No price found for token $symbol, continuing with 0")
-            TokenPrice(symbol, BigDecimal.ZERO)
-        }
-    }
+    override fun getPriceByToken(symbol: String): TokenPrice? =
+        pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
 
     private val decimalsFlow = MutableStateFlow<List<TokenData>>(emptyList())
 

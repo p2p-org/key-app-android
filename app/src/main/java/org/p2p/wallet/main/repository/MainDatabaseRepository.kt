@@ -5,6 +5,7 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenConverter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.p2p.wallet.main.model.TokenComparator
 
 class MainDatabaseRepository(
     private val tokenDao: TokenDao
@@ -28,8 +29,7 @@ class MainDatabaseRepository(
         tokenDao.getTokensFlow().map { entities ->
             entities
                 .map { TokenConverter.fromDatabase(it) }
-                .sortedByDescending { it.totalInUsd }
-                .sortedByDescending { it.isSOL }
+                .sortedWith(TokenComparator())
         }
 
     override suspend fun getUserTokens(): List<Token.Active> =

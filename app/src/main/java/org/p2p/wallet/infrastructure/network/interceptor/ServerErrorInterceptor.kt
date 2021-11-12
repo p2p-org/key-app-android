@@ -1,16 +1,17 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
-import org.p2p.wallet.infrastructure.network.EmptyDataException
-import org.p2p.wallet.infrastructure.network.ErrorCode
-import org.p2p.wallet.infrastructure.network.ServerError
-import org.p2p.wallet.infrastructure.network.ServerException
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
+import org.p2p.wallet.infrastructure.network.EmptyDataException
+import org.p2p.wallet.infrastructure.network.ErrorCode
+import org.p2p.wallet.infrastructure.network.ServerError
+import org.p2p.wallet.infrastructure.network.ServerException
 import timber.log.Timber
 import java.io.IOException
 
@@ -36,10 +37,14 @@ class ServerErrorInterceptor(
             throw IOException("Error reading response error body", e)
         }
 
-        return when (val data = JSONTokener(responseBody).nextValue()) {
-            is JSONObject -> parseObject(data, response, responseBody)
-            is JSONArray -> parseArray(data, response, responseBody)
-            else -> createResponse(response, responseBody)
+        return try {
+            when (val data = JSONTokener(responseBody).nextValue()) {
+                is JSONObject -> parseObject(data, response, responseBody)
+                is JSONArray -> parseArray(data, response, responseBody)
+                else -> createResponse(response, responseBody)
+            }
+        } catch (e: JSONException) {
+            throw IllegalStateException("Error parsing data", e)
         }
     }
 

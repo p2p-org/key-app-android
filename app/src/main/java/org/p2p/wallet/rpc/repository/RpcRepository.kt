@@ -26,13 +26,15 @@ interface RpcRepository {
     suspend fun getFees(commitment: String?): BigInteger
     suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance
     suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
-    suspend fun getAccountInfo(account: PublicKey): AccountInfo?
+    suspend fun getAccountInfo(account: String): AccountInfo?
+    suspend fun getAccountsInfo(accounts: List<String>): List<Pair<String, AccountInfo>>
     suspend fun getProgramAccounts(
         publicKey: PublicKey,
         config: RequestConfiguration
     ): List<ProgramAccount>
 
     suspend fun getBalance(account: String): Long
+    suspend fun getBalances(accounts: List<String>): List<Pair<String, Long>>
     suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts
     suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo

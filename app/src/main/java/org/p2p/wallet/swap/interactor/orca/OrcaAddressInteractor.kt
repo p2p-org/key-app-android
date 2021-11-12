@@ -29,7 +29,7 @@ class OrcaAddressInteractor(
         }
 
         /* If account is not found, create one */
-        val accountInfo = rpcRepository.getAccountInfo(associatedAddress)
+        val accountInfo = rpcRepository.getAccountInfo(associatedAddress.toBase58())
         val value = accountInfo?.value
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         return OrcaAddressData(
@@ -40,7 +40,7 @@ class OrcaAddressInteractor(
 
     @Throws(IllegalStateException::class)
     suspend fun findSplTokenAddress(mintAddress: String, destinationAddress: PublicKey): PublicKey {
-        val accountInfo = rpcRepository.getAccountInfo(destinationAddress)
+        val accountInfo = rpcRepository.getAccountInfo(destinationAddress.toBase58())
 
         // detect if it is a direct token address
         val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)

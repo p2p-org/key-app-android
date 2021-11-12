@@ -1,6 +1,9 @@
 package org.p2p.wallet.history.ui.main
 
 import com.github.mikephil.charting.data.Entry
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.PagingState
@@ -9,9 +12,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.EmptyDataException
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.user.interactor.UserInteractor
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HistoryPresenter(
@@ -28,6 +28,8 @@ class HistoryPresenter(
 
     private var pagingJob: Job? = null
 
+    private var paginationEnded: Boolean = false
+
     override fun loadSolAddress() {
         launch {
             val sol = userInteractor.findAccountAddress(Token.WRAPPED_SOL_MINT) ?: return@launch
@@ -36,20 +38,23 @@ class HistoryPresenter(
     }
 
     override fun loadHistory(publicKey: String, tokenSymbol: String) {
+        if (paginationEnded) return
+
         pagingJob?.cancel()
         pagingJob = launch {
             try {
                 val state = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
                 view?.showPagingState(state)
 
-                val lastSignature = if (transactions.isNotEmpty()) {
-                    val size = transactions.size
-                    transactions[size - 1].signature
-                } else null
+                val lastSignature = transactions.lastOrNull()?.signature
                 val history = historyInteractor.getHistory(publicKey, lastSignature, PAGE_SIZE)
+                if (history.isEmpty()) {
+                    paginationEnded = true
+                } else {
+                    transactions.addAll(history)
+                    view?.showHistory(history)
+                }
 
-                transactions.addAll(history)
-                view?.showHistory(history)
                 view?.showPagingState(PagingState.Idle)
             } catch (e: CancellationException) {
                 Timber.w(e, "Cancelled history load")
@@ -63,6 +68,10 @@ class HistoryPresenter(
                 }
             }
         }
+    }
+
+    override fun refreshHistory() {
+        paginationEnded = false
     }
 
     override fun loadDailyChartData(tokenSymbol: String, days: Int) {

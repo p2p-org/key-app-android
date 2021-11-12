@@ -56,6 +56,12 @@ interface RpcApi {
     ): CommonResponse<AccountInfo>
 
     @POST
+    suspend fun getAccountsInfo(
+        @Body rpcRequest: List<RpcRequest>,
+        @Url url: String = ""
+    ): List<CommonResponse<AccountInfo>>
+
+    @POST
     suspend fun getProgramAccounts(
         @Body rpcRequest: RpcRequest,
         @Url url: String = ""
@@ -66,6 +72,12 @@ interface RpcApi {
         @Body rpcRequest: RpcRequest,
         @Url url: String = ""
     ): CommonResponse<RpcResultTypes.ValueLong>
+
+    @POST
+    suspend fun getBalances(
+        @Body rpcRequest: List<RpcRequest>,
+        @Url url: String = ""
+    ): List<CommonResponse<RpcResultTypes.ValueLong>>
 
     @POST
     suspend fun getTokenAccountsByOwner(
