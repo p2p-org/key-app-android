@@ -47,7 +47,7 @@ object AuthModule {
         factory { UsernameInteractor(get(), get(), get()) }
         factory { ReserveUsernamePresenter(get(), get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
         factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
-        factory { ResolveUsernamePresenter() } bind ResolveUsernameContract.Presenter::class
+        factory { ResolveUsernamePresenter(get()) } bind ResolveUsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
             val api = retrofit.create(UsernameApi::class.java)

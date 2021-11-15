@@ -6,6 +6,7 @@ import androidx.core.content.edit
 import org.json.JSONObject
 import org.p2p.wallet.auth.model.CheckUsername
 import org.p2p.wallet.auth.model.RegisterUsername
+import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
@@ -47,4 +48,8 @@ class UsernameInteractor(
     }
 
     suspend fun saveQr(name: String, bitmap: Bitmap): File = fileLocalRepository.saveQr(name, bitmap)
+
+    suspend fun resolveUsername(name: String): List<ResolveUsername> {
+        return usernameRepository.resolve(name)
+    }
 }

@@ -7,6 +7,7 @@ import org.p2p.wallet.auth.model.CheckUsername
 import org.p2p.wallet.auth.model.LookupUsername
 import org.p2p.wallet.auth.model.NameRegisterBody
 import org.p2p.wallet.auth.model.RegisterUsername
+import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class UsernameRemoteRepository(
@@ -45,5 +46,17 @@ class UsernameRemoteRepository(
         return LookupUsername(
             name = response.firstOrNull()?.name
         )
+    }
+
+    override suspend fun resolve(name: String): List<ResolveUsername> {
+        val response = api.resolve(name)
+        return response.withIndex().flatMap { (_, transaction) ->
+            listOf(
+                ResolveUsername(
+                    owner = transaction.owner,
+                    name = transaction.name,
+                )
+            )
+        }
     }
 }
