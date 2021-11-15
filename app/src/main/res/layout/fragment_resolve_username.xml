@@ -42,7 +42,7 @@
                 android:layout_height="?android:actionBarSize"
                 android:iconifiedByDefault="false"
                 android:queryBackground="@android:color/transparent"
-                android:queryHint="@string/auth_p2p_username_sol_address"
+                android:queryHint="@string/auth_type_paste"
                 android:searchIcon="@null"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +63,7 @@
             android:textColor="?colorElementSecondary" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/item_resolve_username" />

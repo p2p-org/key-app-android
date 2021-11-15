@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.username
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.utils.edgetoedge.Edge
@@ -12,6 +13,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.databinding.FragmentResolveUsernameBinding
+import timber.log.Timber
 
 class ResolveUsernameFragment :
     BaseMvpFragment<ResolveUsernameContract.View,
@@ -25,6 +27,12 @@ class ResolveUsernameFragment :
     override val presenter: ResolveUsernameContract.Presenter by inject()
 
     private val binding: FragmentResolveUsernameBinding by viewBinding()
+
+    private val resolveUsernameAdapter: ResolveUsernameAdapter by lazy {
+        ResolveUsernameAdapter(
+            onItemClicked = { onNameClicked("") },
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,9 +52,17 @@ class ResolveUsernameFragment :
                     return false
                 }
             })
+
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            recyclerView.adapter = resolveUsernameAdapter
         }
     }
 
     override fun showUsernameResult(names: List<ResolveUsername>) {
+        resolveUsernameAdapter.setItems(names)
+        Timber.i(names.toString())
+    }
+
+    private fun onNameClicked(data: String) {
     }
 }

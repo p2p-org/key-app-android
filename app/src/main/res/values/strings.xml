@@ -105,6 +105,7 @@
     <string name="auth_function_not_available">This function not available because need write external storage permission</string>
     <string name="auth_multiple_accounts">Multiple accounts were found</string>
     <string name="auth_p2p_username_sol_address">P2P username / SOL address</string>
+    <string name="auth_type_paste">Type or paste</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">
