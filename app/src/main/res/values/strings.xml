@@ -187,6 +187,8 @@
     <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_p2p_username_sol_address">P2P username / SOL address</string>
+    <string name="main_reserve_username">Reserve your P2P username now</string>
+    <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -297,5 +299,4 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
-
 </resources>

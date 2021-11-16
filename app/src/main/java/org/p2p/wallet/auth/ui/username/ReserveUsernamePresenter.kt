@@ -9,7 +9,6 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import retrofit2.HttpException
 import timber.log.Timber
 
 class ReserveUsernamePresenter(
@@ -41,7 +40,7 @@ class ReserveUsernamePresenter(
                 view?.showUnavailableName(username)
             } catch (e: CancellationException) {
                 Timber.w(e, "Cancelled request for checking username: $username")
-            } catch (e: HttpException) {
+            } catch (e: Throwable) {
                 view?.showAvailableName(username)
             }
         }
@@ -52,7 +51,7 @@ class ReserveUsernamePresenter(
             try {
                 val api1Json = interactor.checkCaptcha()
                 view?.getCaptchaResult(api1Json)
-            } catch (e: HttpException) {
+            } catch (e: Throwable) {
                 view?.failCaptcha()
                 view?.showErrorMessage(e)
             }
@@ -65,9 +64,10 @@ class ReserveUsernamePresenter(
                 interactor.registerUsername(username, result)
                 interactor.lookupUsername(tokenProvider.publicKey)
                 view?.successRegisterName()
-            } catch (e: HttpException) {
-                view?.failRegisterName()
+            } catch (e: Throwable) {
                 view?.showErrorMessage(e)
+            } finally {
+                view?.showLoading(false)
             }
         }
     }

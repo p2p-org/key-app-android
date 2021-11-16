@@ -8,7 +8,7 @@ interface SecurityKeyContract {
     interface View : MvpView {
         fun showKeys(keys: List<String>)
         fun copyToClipboard(keys: List<String>)
-        fun navigateToCreatePin()
+        fun navigateToReserveUsername()
         fun showLoading(isLoading: Boolean)
     }
 

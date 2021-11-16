@@ -8,6 +8,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
@@ -77,8 +78,8 @@ class SecurityKeyFragment :
         keysAdapter.setItems(keys)
     }
 
-    override fun navigateToCreatePin() {
-        replaceFragment(ReserveUsernameFragment.create(TAG))
+    override fun navigateToReserveUsername() {
+        replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE))
     }
 
     override fun showLoading(isLoading: Boolean) {

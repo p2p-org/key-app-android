@@ -14,6 +14,7 @@ import android.text.style.StyleSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
@@ -23,12 +24,11 @@ import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import org.p2p.wallet.auth.ui.pin.create.PinLaunchMode
-import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
-import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.edgetoedge.Edge
@@ -47,10 +47,10 @@ class ReserveUsernameFragment :
     ReserveUsernameContract.View {
 
     companion object {
-        private const val KEY_OPENED_FROM: String = "opened_from"
-        fun create(fromClass: String) =
+        private const val EXTRA_MODE: String = "EXTRA_MODE"
+        fun create(mode: ReserveMode) =
             ReserveUsernameFragment()
-                .withArgs(KEY_OPENED_FROM to fromClass)
+                .withArgs(EXTRA_MODE to mode)
     }
 
     override val presenter: ReserveUsernameContract.Presenter by inject()
@@ -59,7 +59,7 @@ class ReserveUsernameFragment :
     private var gt3GeeTestUtils: GT3GeetestUtils? = null
     private var gt3ConfigBean: GT3ConfigBean? = null
 
-    private val openedFrom: String by args(KEY_OPENED_FROM)
+    private val mode: ReserveMode by args(EXTRA_MODE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -139,12 +139,11 @@ class ReserveUsernameFragment :
     }
 
     override fun successRegisterName() {
-        binding.progressView.visibility = View.GONE
         finishNavigation()
     }
 
-    override fun failRegisterName() {
-        binding.progressView.visibility = View.GONE
+    override fun showLoading(isLoading: Boolean) {
+        binding.progressView.isVisible = isLoading
     }
 
     override fun showFile(file: File) {
@@ -191,7 +190,7 @@ class ReserveUsernameFragment :
             }
 
             override fun onSuccess(p0: String?) {
-                binding.progressView.visibility = View.VISIBLE
+                binding.progressView.isVisible = true
             }
 
             override fun onFailed(p0: GT3ErrorBean?) {
@@ -254,10 +253,9 @@ class ReserveUsernameFragment :
     }
 
     private fun finishNavigation() {
-        when (openedFrom) {
-            SecurityKeyFragment.TAG -> navigateToPinCode()
-            DerivableAccountsFragment.TAG -> navigateToPinCode()
-            else -> popBackStack()
+        when (mode) {
+            ReserveMode.PIN_CODE -> navigateToPinCode()
+            ReserveMode.POP -> popBackStack()
         }
     }
 
