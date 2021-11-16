@@ -22,7 +22,7 @@ object MainModule : InjectionModule {
         factory { MainDatabaseRepository(get()) } bind MainLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { MainPresenter(get(), get()) } bind MainContract.Presenter::class
+        single { MainPresenter(get(), get(), get()) } bind MainContract.Presenter::class
         factory { SendInteractor(get(), get(), get(), get()) }
 
         factory { (token: Token.Active?) ->

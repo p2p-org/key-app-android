@@ -5,6 +5,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
@@ -25,7 +26,6 @@ class SettingsFragment :
 
     companion object {
         fun create() = SettingsFragment()
-        val TAG: String = SettingsFragment::class.java.simpleName
     }
 
     override val presenter: SettingsContract.Presenter by inject()
@@ -89,6 +89,6 @@ class SettingsFragment :
     }
 
     override fun openReserveUsernameScreen() {
-        replaceFragment(ReserveUsernameFragment.create(TAG))
+        replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
     }
 }

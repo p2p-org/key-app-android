@@ -15,6 +15,7 @@ interface MainContract {
         fun showChart(tokens: List<Token.Active>)
         fun showLoading(isLoading: Boolean)
         fun showRefreshing(isRefreshing: Boolean)
+        fun showUsernameBanner(isVisible: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -23,5 +24,6 @@ interface MainContract {
         fun toggleVisibility(token: Token.Active)
         fun toggleVisibilityState()
         fun clearCache()
+        fun hideUsernameBanner()
     }
 }

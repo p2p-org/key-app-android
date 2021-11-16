@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
@@ -23,7 +24,8 @@ private const val DELAY_MS = 10000L
 
 class MainPresenter(
     private val userInteractor: UserInteractor,
-    private val settingsInteractor: SettingsInteractor
+    private val settingsInteractor: SettingsInteractor,
+    private val usernameInteractor: UsernameInteractor
 ) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
     companion object {
@@ -51,11 +53,14 @@ class MainPresenter(
         view?.showChart(newValue)
     }
 
+    private var isVisibleBanner: Boolean = true
+
     private var collectJob: Job? = null
 
     override fun attach(view: MainContract.View) {
         super.attach(view)
         loadData()
+        checkUsername()
     }
 
     override fun collectData() {
@@ -118,6 +123,11 @@ class MainPresenter(
         tokens = emptyList()
     }
 
+    override fun hideUsernameBanner() {
+        isVisibleBanner = false
+        view?.showUsernameBanner(false)
+    }
+
     private fun loadData() {
         if (tokens.isNotEmpty()) {
             startPolling()
@@ -152,6 +162,11 @@ class MainPresenter(
                 Timber.e(e, "Error loading tokens from remote")
             }
         }
+    }
+
+    private fun checkUsername() {
+        val isBannerVisible = !usernameInteractor.usernameExists() && isVisibleBanner
+        view?.showUsernameBanner(isBannerVisible)
     }
 
     private fun mapBalance(tokens: List<Token.Active>): BigDecimal =
