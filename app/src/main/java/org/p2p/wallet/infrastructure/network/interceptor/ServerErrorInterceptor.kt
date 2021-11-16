@@ -37,6 +37,10 @@ class ServerErrorInterceptor(
             throw IOException("Error reading response error body", e)
         }
 
+        if (responseBody.isEmpty()) {
+            throw EmptyDataException("Data is empty")
+        }
+
         return try {
             when (val data = JSONTokener(responseBody).nextValue()) {
                 is JSONObject -> parseObject(data, response, responseBody)
