@@ -145,6 +145,7 @@ class SendPresenter(
                     try {
                         val checkUsername = usernameInteractor.checkUsername(addressOrName)
                         username = addressOrName
+                        destinationAddress = checkUsername.owner
                         view?.showBufferUsernameResolvedOk(checkUsername.owner)
                         calculateData(token!!)
                     } catch (e: HttpException) {
@@ -221,6 +222,7 @@ class SendPresenter(
     }
 
     private fun sendInSolana(token: Token.Active) {
+        Timber.i("efef " + destinationAddress)
         launch {
             try {
                 view?.showLoading(true)
