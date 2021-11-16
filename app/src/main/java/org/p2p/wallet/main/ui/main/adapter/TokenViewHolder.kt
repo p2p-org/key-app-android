@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
-import org.p2p.wallet.common.recycler.SwipeLayout
+import org.p2p.wallet.common.ui.recycler.SwipeLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
@@ -75,7 +75,7 @@ class TokenViewHolder(
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenSymbol
         addressTextView.text = token.tokenName
-        valueTextView withTextOrGone token.getFormattedPrice()
+        valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, token.color))
 

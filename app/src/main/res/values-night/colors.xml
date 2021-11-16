@@ -4,6 +4,7 @@
     <color name="accentSecondary">#96B1F8</color>
     <color name="accentTertiary">#EFF3FF</color>
     <color name="accentWarning">#FF5858</color>
+    <color name="accentGraph">#2DB533</color>
 
     <color name="elementPrimary">#CC000000</color>
     <color name="elementSecondary">#A3A5BA</color>

@@ -103,7 +103,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="UnusedAttribute" />
 
-        <org.p2p.wallet.common.widget.ProgressView
+        <org.p2p.wallet.common.ui.widget.ProgressView
             android:id="@+id/progressView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

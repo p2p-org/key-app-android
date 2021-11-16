@@ -1,13 +1,5 @@
 package org.p2p.wallet.main.ui.main
 
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.main.model.TokenItem
-import org.p2p.wallet.main.model.VisibilityState
-import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.model.TokenVisibility
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.scaleShort
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,6 +7,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.model.TokenItem
+import org.p2p.wallet.main.model.TokenVisibility
+import org.p2p.wallet.main.model.VisibilityState
+import org.p2p.wallet.settings.interactor.SettingsInteractor
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.properties.Delegates

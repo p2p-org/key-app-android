@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <org.p2p.wallet.common.widget.PinCodeView
+        <org.p2p.wallet.common.ui.widget.PinCodeView
             android:id="@+id/pinCodeView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
         tools:text="PIN-codes do not match"
         tools:visibility="visible" />
 
-    <org.p2p.wallet.common.widget.NumberKeyboardView
+    <org.p2p.wallet.common.ui.widget.NumberKeyboardView
         android:id="@+id/keyboardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

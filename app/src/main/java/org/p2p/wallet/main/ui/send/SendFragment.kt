@@ -10,8 +10,8 @@ import androidx.fragment.app.FragmentResultListener
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
 import org.p2p.wallet.R
-import org.p2p.wallet.common.bottomsheet.ErrorBottomSheet
-import org.p2p.wallet.common.bottomsheet.TextContainer
+import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
+import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.main.model.CurrencyMode
@@ -193,7 +193,7 @@ class SendFragment :
             sourceTextView.text = token.tokenSymbol
             tokenTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
-            currentPriceView.setBottomText(getString(R.string.main_usd_format, token.getCurrentPrice()))
+            currentPriceView.setBottomText(getString(R.string.main_usd_format, token.getCurrentPricePerItem()))
         }
     }
 

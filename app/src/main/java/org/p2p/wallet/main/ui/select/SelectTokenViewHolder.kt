@@ -65,7 +65,7 @@ class SelectTokenViewHolder(
 
         when (item) {
             is Token.Active -> {
-                valueTextView.text = item.getFormattedPrice()
+                valueTextView.text = item.getFormattedUsdTotal()
                 totalTextView.text = item.getFormattedTotal()
                 valueTextView.isVisible = true
                 totalTextView.isVisible = true

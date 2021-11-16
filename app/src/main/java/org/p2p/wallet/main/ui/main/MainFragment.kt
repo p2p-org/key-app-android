@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
-import org.p2p.wallet.history.ui.main.HistoryFragment
+import org.p2p.wallet.history.ui.TokenContainerFragment
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.VisibilityState
@@ -24,7 +25,6 @@ import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 
 class MainFragment :
@@ -150,7 +150,7 @@ class MainFragment :
     }
 
     private fun onTokenClicked(token: Token.Active) {
-        replaceFragment(HistoryFragment.create(token))
+        replaceFragment(TokenContainerFragment.create(token))
     }
 
     private fun onEditClicked(token: Token.Active) {

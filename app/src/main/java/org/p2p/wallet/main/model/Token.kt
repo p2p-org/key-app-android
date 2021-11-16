@@ -61,16 +61,14 @@ sealed class Token constructor(
         val usdRateOrZero: BigDecimal
             get() = usdRate ?: BigDecimal.ZERO
 
-        @IgnoredOnParcel
-        val totalInUsdOrZero: BigDecimal
-            get() = totalInUsd ?: BigDecimal.ZERO
-
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
-        fun getCurrentPrice(): String = "${String.format("%.2f", usdRateOrZero)} per $tokenSymbol"
+        fun getCurrentPricePerItem(): String = "${String.format("%.2f", usdRateOrZero)} per $tokenSymbol"
 
-        fun getFormattedPrice(): String? = totalInUsd?.let { "${totalInUsd.scaleShort()} $" }
+        fun getCurrentPrice(): String? = usdRate?.let { "$ $it" }
+
+        fun getFormattedUsdTotal(): String? = totalInUsd?.let { "${totalInUsd.scaleShort()} $" }
 
         fun getFormattedTotal(): String = "$total $tokenSymbol"
 

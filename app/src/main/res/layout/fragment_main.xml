@@ -104,7 +104,7 @@
                     android:background="?colorAccentTertiary"
                     app:layout_constraintTop_toBottomOf="@id/mainPieChart" />
 
-                <org.p2p.wallet.common.widget.SimpleActionButton
+                <org.p2p.wallet.common.ui.widget.SimpleActionButton
                     android:id="@+id/sendButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
                     app:layout_constraintStart_toEndOf="@id/sendButton"
                     app:layout_constraintTop_toTopOf="@id/sendButton" />
 
-                <org.p2p.wallet.common.widget.SimpleActionButton
+                <org.p2p.wallet.common.ui.widget.SimpleActionButton
                     android:id="@+id/receiveButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -144,7 +144,7 @@
                     app:layout_constraintStart_toEndOf="@id/receiveButton"
                     app:layout_constraintTop_toTopOf="@id/sendButton" />
 
-                <org.p2p.wallet.common.widget.SimpleActionButton
+                <org.p2p.wallet.common.ui.widget.SimpleActionButton
                     android:id="@+id/swapButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -173,7 +173,7 @@
                 tools:listitem="@layout/item_token" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <org.p2p.wallet.common.widget.ProgressView
+        <org.p2p.wallet.common.ui.widget.ProgressView
             android:id="@+id/progressView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
