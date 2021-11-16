@@ -54,7 +54,7 @@ class ProgressButton @JvmOverloads constructor(
 
     fun setLoading(isLoading: Boolean) {
         with(binding) {
-            actionTextView.isInvisible = isLoading
+            contentView.isInvisible = isLoading
             actionProgressBar.isVisible = isLoading
             isEnabled = !isLoading
         }
