@@ -78,7 +78,7 @@
                     app:layout_constraintTop_toTopOf="@id/fromTextView"
                     tools:text="2140.0000" />
 
-                <org.p2p.wallet.common.widget.RoundedImageView
+                <org.p2p.wallet.common.ui.widget.RoundedImageView
                     android:id="@+id/sourceImageView"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -161,7 +161,7 @@
                     app:layout_constraintTop_toBottomOf="@id/amountEditText"
                     tools:text="≈ 0.00 $" />
 
-                <org.p2p.wallet.common.widget.DoubleTextView
+                <org.p2p.wallet.common.ui.widget.DoubleTextView
                     android:id="@+id/currentPriceView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -172,7 +172,7 @@
                     app:topText="@string/main_price"
                     tools:bottomText="$35.08 per SOL">
 
-                </org.p2p.wallet.common.widget.DoubleTextView>
+                </org.p2p.wallet.common.ui.widget.DoubleTextView>
 
                 <View
                     android:id="@+id/dividerView"
@@ -183,7 +183,7 @@
                     android:background="?colorElementTertiary"
                     app:layout_constraintTop_toBottomOf="@id/currentPriceView" />
 
-                <org.p2p.wallet.common.widget.DoubleTextView
+                <org.p2p.wallet.common.ui.widget.DoubleTextView
                     android:id="@+id/networkView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -206,7 +206,7 @@
                     android:background="?colorElementTertiary"
                     app:layout_constraintTop_toBottomOf="@id/networkView" />
 
-                <org.p2p.wallet.common.widget.DoubleTextView
+                <org.p2p.wallet.common.ui.widget.DoubleTextView
                     android:id="@+id/feeView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -432,7 +432,7 @@
                     android:textColor="?colorElementSecondary"
                     app:layout_constraintBottom_toBottomOf="parent" />
 
-                <org.p2p.wallet.common.widget.ProgressView
+                <org.p2p.wallet.common.ui.widget.ProgressView
                     android:id="@+id/progressView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

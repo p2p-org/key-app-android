@@ -5,8 +5,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingHorizontal="20dp"
-    android:paddingVertical="16dp"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
     tools:layout_gravity="center"
     tools:parentTag="android.widget.LinearLayout">
 

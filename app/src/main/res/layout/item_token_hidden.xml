@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.p2p.wallet.common.recycler.SwipeLayout
+<org.p2p.wallet.common.ui.recycler.SwipeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:background="?colorBackgroundSecondary">
 
-        <org.p2p.wallet.common.widget.RoundedImageView
+        <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/tokenImageView"
             android:layout_width="44dp"
             android:layout_height="44dp"
@@ -137,4 +137,4 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</org.p2p.wallet.common.recycler.SwipeLayout>
+</org.p2p.wallet.common.ui.recycler.SwipeLayout>

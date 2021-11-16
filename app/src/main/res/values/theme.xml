@@ -18,6 +18,7 @@
         <item name="colorAccentSecondary">@color/accentSecondary</item>
         <item name="colorAccentTertiary">@color/accentTertiary</item>
         <item name="colorAccentWarning">@color/accentWarning</item>
+        <item name="colorAccentGraph">@color/accentGraph</item>
 
         <item name="colorElementPrimary">@color/elementPrimary</item>
         <item name="colorElementSecondary">@color/elementSecondary</item>

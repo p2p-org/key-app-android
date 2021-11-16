@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
-import org.p2p.wallet.common.recycler.adapter.BaseDiffAdapter
-import org.p2p.wallet.common.recycler.adapter.BaseViewHolder
+import org.p2p.wallet.common.ui.recycler.adapter.BaseDiffAdapter
+import org.p2p.wallet.common.ui.recycler.adapter.BaseViewHolder
 import org.p2p.wallet.databinding.ItemReceiveStatusBinding
 import org.p2p.wallet.renbtc.model.RenVMStatus
 import java.util.Date

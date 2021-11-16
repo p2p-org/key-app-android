@@ -11,6 +11,7 @@ import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.wallet.common.glide.GlideManager
 import java.util.concurrent.Executors
 
 object InfrastructureModule : InjectionModule {
@@ -40,5 +41,7 @@ object InfrastructureModule : InjectionModule {
         }
 
         factory { SecureStorage(get(), get()) } bind SecureStorageContract::class
+
+        single { GlideManager(get()) }
     }
 }

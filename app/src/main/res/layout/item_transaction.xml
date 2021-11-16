@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <org.p2p.wallet.common.widget.RoundedImageView
+        <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/sourceImageView"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -27,7 +27,7 @@
             app:cornerRadius="12dp"
             tools:src="@tools:sample/avatars" />
 
-        <org.p2p.wallet.common.widget.RoundedImageView
+        <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/destinationImageView"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -37,7 +37,7 @@
 
     </FrameLayout>
 
-    <org.p2p.wallet.common.widget.RoundedImageView
+    <org.p2p.wallet.common.ui.widget.RoundedImageView
         android:id="@+id/tokenImageView"
         android:layout_width="44dp"
         android:layout_height="44dp"

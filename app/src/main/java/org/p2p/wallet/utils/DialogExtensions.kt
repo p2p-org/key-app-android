@@ -6,8 +6,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
-import org.p2p.wallet.common.bottomsheet.ErrorBottomSheet
-import org.p2p.wallet.common.bottomsheet.TextContainer
+import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
+import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 
 fun FragmentManager.showInfoDialog(
     @StringRes titleRes: Int,

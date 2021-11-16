@@ -299,4 +299,8 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
+    <string name="details_info">Info</string>
+    <string name="details_history">History</string>
+    <string name="details_show_wallet_address">Show wallet address</string>
+
 </resources>
