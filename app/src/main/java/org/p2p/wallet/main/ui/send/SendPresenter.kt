@@ -222,7 +222,6 @@ class SendPresenter(
     }
 
     private fun sendInSolana(token: Token.Active) {
-        Timber.i("efef " + destinationAddress)
         launch {
             try {
                 view?.showLoading(true)
