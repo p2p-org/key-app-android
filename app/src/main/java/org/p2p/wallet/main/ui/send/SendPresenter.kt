@@ -145,6 +145,7 @@ class SendPresenter(
                     try {
                         val checkUsername = usernameInteractor.checkUsername(addressOrName)
                         username = addressOrName
+                        destinationAddress = checkUsername.owner
                         view?.showBufferUsernameResolvedOk(checkUsername.owner)
                         calculateData(token!!)
                     } catch (e: HttpException) {
