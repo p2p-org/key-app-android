@@ -1,9 +1,12 @@
 package org.p2p.solanaj.rpc;
 
+import android.util.Log;
+
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
+import org.p2p.solanaj.BuildConfig;
 import org.p2p.solanaj.model.types.RpcRequest;
 import org.p2p.solanaj.model.types.RpcRequest2;
 import org.p2p.solanaj.model.types.RpcResponse;
@@ -50,9 +53,12 @@ public class RpcClient {
         JsonAdapter<RpcResponse<T>> resultAdapter = new Moshi.Builder().build()
                 .adapter(Types.newParameterizedType(RpcResponse.class, Type.class.cast(clazz)));
 
+        String requestData = rpcRequestJsonAdapter.toJson(rpcRequest);
+        if (BuildConfig.DEBUG) Log.d("RpcClient", "Json request: " + requestData);
+
         Request request = new Request.Builder().url(endpoint)
                 .addHeader("Content-Type", "application/json")
-                .post(RequestBody.create(JSON, rpcRequestJsonAdapter.toJson(rpcRequest))).build();
+                .post(RequestBody.create(JSON, requestData)).build();
 
         try {
             Response response = httpClient.newCall(request).execute();
@@ -84,13 +90,16 @@ public class RpcClient {
                 .adapter(Types.newParameterizedType(RpcResponse.class, Type.class.cast(clazz)));
 
         String jsonRequest = rpcRequestJsonAdapter.toJson(rpcRequest);
+        if (BuildConfig.DEBUG) Log.d("RpcClient", "Json request: " + jsonRequest);
         Request request = new Request.Builder().url(endpoint)
                 .addHeader("Content-Type", "application/json")
                 .post(RequestBody.create(JSON, jsonRequest)).build();
 
         try {
             Response response = httpClient.newCall(request).execute();
-            RpcResponse<T> rpcResult = resultAdapter.fromJson(response.body().string());
+            String bodyString = response.body().string();
+            if (BuildConfig.DEBUG) Log.d("RpcClient", "Json response: " + bodyString);
+            RpcResponse<T> rpcResult = resultAdapter.fromJson(bodyString);
 
             if (rpcResult.getError() != null) {
                 throw new RpcException(rpcResult.getError().getMessage());

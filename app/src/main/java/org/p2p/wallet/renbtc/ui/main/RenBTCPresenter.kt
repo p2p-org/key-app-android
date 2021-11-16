@@ -49,10 +49,8 @@ class RenBTCPresenter(
     }
 
     override fun startNewSession(context: Context) {
-        launch {
-            view?.showLoading(true)
-            RenVMService.startWithNewSession(context)
-        }
+        view?.showLoading(true)
+        RenVMService.startWithNewSession(context)
     }
 
     override fun checkActiveSession(context: Context) {
