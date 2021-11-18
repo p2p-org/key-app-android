@@ -17,6 +17,7 @@ import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
@@ -96,8 +97,8 @@ class SendPresenter(
         when (result) {
             is SearchResult.Full -> view?.showFullTarget(result.address, result.username)
             is SearchResult.AddressOnly -> view?.showAddressOnlyTarget(result.address)
-            is SearchResult.EmptyBalance -> view?.showEmptyBalanceTarget(result.address)
-            is SearchResult.Wrong -> view?.showWrongAddressTarget(result.address)
+            is SearchResult.EmptyBalance -> view?.showEmptyBalanceTarget(result.address.cutEnd())
+            is SearchResult.Wrong -> view?.showWrongAddressTarget(result.address.cutEnd())
             else -> view?.showIdleTarget()
         }
 
@@ -313,7 +314,7 @@ class SendPresenter(
         val validatedAddress = try {
             PublicKey(address)
         } catch (e: Throwable) {
-            view?.showWrongAddressTarget(address)
+            view?.showWrongAddressTarget(address.cutEnd())
             null
         } ?: return
 

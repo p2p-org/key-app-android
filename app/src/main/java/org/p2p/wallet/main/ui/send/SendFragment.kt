@@ -1,5 +1,6 @@
 package org.p2p.wallet.main.ui.send
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isInvisible
@@ -10,9 +11,9 @@ import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.bottomsheet.ErrorBottomSheet
-import org.p2p.wallet.common.bottomsheet.TextContainer
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
+import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
@@ -166,7 +167,7 @@ class SendFragment :
         with(binding) {
             targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
-            targetTextView.text = address.cutEnd()
+            targetTextView.text = address
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
@@ -192,7 +193,7 @@ class SendFragment :
         with(binding) {
             targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
             targetImageView.setImageResource(R.drawable.ic_warning)
-            targetTextView.text = address.cutEnd()
+            targetTextView.text = address
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
@@ -240,7 +241,7 @@ class SendFragment :
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
-            priceTextView.text = getString(R.string.main_usd_format, token.getCurrentPrice())
+            priceTextView.text = token.getCurrentPrice()
         }
     }
 
@@ -280,6 +281,7 @@ class SendFragment :
         binding.availableTextView.setTextColor(colorFromTheme(availableColor))
     }
 
+    @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
         binding.availableTextView.text = "$available $symbol"
     }
@@ -288,6 +290,7 @@ class SendFragment :
         binding.sendButton.setActionText(textRes)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
         binding.aroundTextView.text = "$tokenValue $symbol"
     }

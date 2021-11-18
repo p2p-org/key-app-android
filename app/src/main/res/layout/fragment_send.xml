@@ -79,7 +79,7 @@
                             app:layout_constraintTop_toTopOf="@id/fromTextView"
                             tools:text="2140.0000" />
 
-                        <org.p2p.wallet.common.widget.RoundedImageView
+                        <org.p2p.wallet.common.ui.widget.RoundedImageView
                             android:id="@+id/sourceImageView"
                             android:layout_width="36dp"
                             android:layout_height="36dp"
@@ -181,7 +181,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <org.p2p.wallet.common.widget.RoundedImageView
+                        <org.p2p.wallet.common.ui.widget.RoundedImageView
                             android:id="@+id/targetImageView"
                             android:layout_width="36dp"
                             android:layout_height="36dp"
@@ -381,7 +381,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1" />
 
-                <org.p2p.wallet.common.widget.ProgressButton
+                <org.p2p.wallet.common.ui.widget.ProgressButton
                     android:id="@+id/sendButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -391,7 +391,7 @@
                     app:buttonText="@string/send_now"
                     app:layout_constraintBottom_toBottomOf="parent" />
 
-                <org.p2p.wallet.common.widget.ProgressView
+                <org.p2p.wallet.common.ui.widget.ProgressView
                     android:id="@+id/progressView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
