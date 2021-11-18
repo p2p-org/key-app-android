@@ -22,8 +22,6 @@ import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
-import org.p2p.wallet.auth.ui.username.ResolveUsernameContract
-import org.p2p.wallet.auth.ui.username.ResolveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import retrofit2.Retrofit
@@ -44,14 +42,13 @@ object AuthModule {
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
 
         // reserving username
-        factory { UsernameInteractor(get(), get(), get()) }
+        factory { UsernameInteractor(get(), get(), get(), get()) }
         factory { ReserveUsernamePresenter(get(), get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
         factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
-        factory { ResolveUsernamePresenter(get()) } bind ResolveUsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
             val api = retrofit.create(UsernameApi::class.java)
-            UsernameRemoteRepository(api, get(), get())
+            UsernameRemoteRepository(api)
         } bind UsernameRepository::class
     }
 }

@@ -66,5 +66,6 @@
     <declare-styleable name="ProgressButton">
         <attr name="buttonText" format="string" />
         <attr name="buttonDrawable" format="reference" />
+        <attr name="buttonEnabled" format="boolean" />
     </declare-styleable>
 </resources>

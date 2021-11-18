@@ -1,39 +1,39 @@
 package org.p2p.wallet.main.ui.send
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.FragmentResultListener
 import androidx.transition.TransitionManager
 import com.bumptech.glide.Glide
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.bottomsheet.TextContainer
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendBinding
-import org.p2p.wallet.main.model.CurrencyMode
 import org.p2p.wallet.main.model.NetworkType
+import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
+import org.p2p.wallet.main.ui.send.search.SearchFragment
+import org.p2p.wallet.main.ui.send.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.wallet.utils.getClipBoard
+import org.p2p.wallet.utils.getClipboardData
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
-import org.p2p.wallet.auth.ui.username.ResolveUsernameFragment
-import org.p2p.wallet.utils.getClipBoard
-import org.p2p.wallet.utils.getClipBoardTrim
-import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.withTextOrGone
 import java.math.BigDecimal
 
 class SendFragment :
@@ -43,6 +43,7 @@ class SendFragment :
     companion object {
         private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+        const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
         fun create(address: String? = null) = SendFragment().withArgs(
             EXTRA_ADDRESS to address
         )
@@ -69,15 +70,18 @@ class SendFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             sendButton.setOnClickListener { presenter.send() }
 
-            addressEditText.doAfterTextChanged {
-                val address = it.toString()
-                val isEmpty = address.isEmpty()
+            targetTextView.setOnClickListener {
+                addFragment(SearchFragment.create())
+            }
+            targetImageView.setOnClickListener {
+                addFragment(SearchFragment.create())
+            }
+            messageTextView.setOnClickListener {
+                addFragment(SearchFragment.create())
+            }
 
-                clearImageView.isVisible = !isEmpty
-
-                binding.addressTextView.isVisible = false
-
-                presenter.setNewTargetAddress(address)
+            clearImageView.setOnClickListener {
+                presenter.setTargetResult(null)
             }
 
             amountEditText.doAfterTextChanged {
@@ -88,18 +92,11 @@ class SendFragment :
                 NetworkDestinationBottomSheet.show(childFragmentManager) { presenter.setNetworkDestination(it) }
             }
 
-            clearImageView.setOnClickListener {
-                addressEditText.text?.clear()
-            }
-
             sourceImageView.setOnClickListener {
                 presenter.loadTokensForSelection()
             }
 
-            address?.let {
-                addressEditText.text?.clear()
-                addressEditText.setText(it)
-            }
+            address?.let { presenter.validateTarget(it) }
 
             amountEditText.focusAndShowKeyboard()
 
@@ -107,50 +104,40 @@ class SendFragment :
                 presenter.loadAvailableValue()
             }
 
-            tokenTextView.setOnClickListener {
+            aroundTextView.setOnClickListener {
                 presenter.switchCurrency()
             }
 
-            correctAddressSwitch.setOnCheckedChangeListener { _, isChecked ->
-                val color = if (isChecked) R.attr.colorAccentPrimary else R.attr.colorAccentWarning
-                errorTextView.setTextColor(colorFromTheme(color))
-                presenter.setShouldAskConfirmation(!isChecked)
-            }
-
-            scanQrTextView.setOnClickListener {
-                val target = ScanQrFragment.create {
-                    addressEditText.text?.clear()
-                    addressEditText.setText(it)
-                }
+            scanTextView.setOnClickListener {
+                val target = ScanQrFragment.create { presenter.validateTarget(it) }
                 addFragment(target)
             }
 
             pasteTextView.setOnClickListener {
-                requireContext().getClipBoardTrim().let { addressEditText.setText(it) }
-            }
-
-            addressEditText.setOnClickListener {
-                openResolveUsernameScreen()
+                val nameOrAddress = requireContext().getClipboardData()
+                nameOrAddress?.let { presenter.validateTarget(it) }
             }
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            SelectTokenFragment.REQUEST_KEY,
+            KEY_REQUEST_SEND,
             viewLifecycleOwner,
-            FragmentResultListener { _, result ->
-                if (!result.containsKey(SelectTokenFragment.EXTRA_TOKEN)) return@FragmentResultListener
-                val token = result.getParcelable<Token.Active>(SelectTokenFragment.EXTRA_TOKEN)
-                if (token != null) presenter.setSourceToken(token)
+            { _, result ->
+                when {
+                    result.containsKey(EXTRA_TOKEN) -> {
+                        val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
+                        if (token != null) presenter.setSourceToken(token)
+                    }
+                    result.containsKey(EXTRA_RESULT) -> {
+                        val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
+                        if (searchResult != null) presenter.setTargetResult(searchResult)
+                    }
+                }
             }
         )
 
         presenter.loadInitialData()
         checkClipBoard()
-    }
-
-    private fun checkClipBoard() {
-        val clipBoardData = requireContext().getClipBoard()
-        setEnablePasteButton(clipBoardData != null)
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -163,6 +150,69 @@ class SendFragment :
         )
     }
 
+    override fun showIdleTarget() {
+        with(binding) {
+            targetImageView.setBackgroundResource(R.drawable.bg_gray_secondary_rounded_small)
+            targetImageView.setImageResource(R.drawable.ic_search)
+            targetTextView.setText(R.string.main_p2p_username_sol_address)
+            targetTextView.setTextColor(colorFromTheme(R.attr.colorSecondary))
+
+            messageTextView.isVisible = false
+            clearImageView.isVisible = false
+        }
+    }
+
+    override fun showWrongAddressTarget(address: String) {
+        with(binding) {
+            targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
+            targetImageView.setImageResource(R.drawable.ic_error)
+            targetTextView.text = address.cutEnd()
+            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+
+            messageTextView.withTextOrGone(getString(R.string.send_no_address))
+            messageTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
+            clearImageView.isVisible = true
+        }
+    }
+
+    override fun showFullTarget(address: String, username: String) {
+        with(binding) {
+            targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
+            targetImageView.setImageResource(R.drawable.ic_wallet_white)
+            targetTextView.text = username
+            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+
+            messageTextView.withTextOrGone(address.cutEnd())
+            messageTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
+            clearImageView.isVisible = true
+        }
+    }
+
+    override fun showEmptyBalanceTarget(address: String) {
+        with(binding) {
+            targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
+            targetImageView.setImageResource(R.drawable.ic_warning)
+            targetTextView.text = address.cutEnd()
+            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+
+            messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
+            messageTextView.setTextColor(requireContext().getColor(R.color.colorWarning))
+            clearImageView.isVisible = true
+        }
+    }
+
+    override fun showAddressOnlyTarget(address: String) {
+        with(binding) {
+            targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
+            targetImageView.setImageResource(R.drawable.ic_wallet_white)
+            targetTextView.text = address.cutEnd()
+            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+
+            messageTextView.isVisible = false
+            clearImageView.isVisible = true
+        }
+    }
+
     override fun showSuccess(info: TransactionInfo) {
         TransactionStatusBottomSheet.show(
             fragment = this,
@@ -172,7 +222,7 @@ class SendFragment :
     }
 
     override fun showNetworkDestination(type: NetworkType) {
-        binding.networkView.setBottomText(type.stringValue)
+        binding.networkTextView.text = type.stringValue
     }
 
     override fun showNetworkSelection() {
@@ -185,35 +235,24 @@ class SendFragment :
         TransitionManager.beginDelayedTransition(binding.containerView)
     }
 
-    override fun showAddressConfirmation() {
-        binding.correctAddressGroup.isVisible = true
-    }
-
-    override fun hideAddressConfirmation() {
-        binding.correctAddressGroup.isVisible = false
-    }
-
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
-            tokenTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
-            currentPriceView.setBottomText(getString(R.string.main_usd_format, token.getCurrentPrice()))
+            priceTextView.text = getString(R.string.main_usd_format, token.getCurrentPrice())
         }
     }
 
     override fun showFee(fee: String?) {
         if (fee.isNullOrEmpty()) {
-            binding.feeView.setBottomText(R.string.send_free_transaction)
-            binding.feeView.setBottomTextColor(R.color.colorGreen)
-            binding.feeView.setOnClickListener { FeeInfoBottomSheet.show(childFragmentManager) }
-            binding.feeView.setDrawableEnd(R.drawable.ic_info)
+            binding.feeTextView.setText(R.string.send_free_transaction)
+            binding.feeTextView.setTextColor(requireContext().getColor(R.color.colorGreen))
+            binding.feeTextView.setOnClickListener { FeeInfoBottomSheet.show(childFragmentManager) }
         } else {
-            binding.feeView.setBottomText(fee)
-            binding.feeView.setBottomTextColorFromTheme(R.attr.colorMessagePrimary)
-            binding.feeView.setOnClickListener(null)
-            binding.feeView.setDrawableEnd(null)
+            binding.feeTextView.text = fee
+            binding.feeTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            binding.feeTextView.setOnClickListener(null)
         }
     }
 
@@ -223,38 +262,34 @@ class SendFragment :
         binding.amountEditText.setSelection(textValue.length)
     }
 
-    override fun showCurrencyMode(mode: CurrencyMode) {
-        binding.tokenTextView.text = mode.getSymbol(requireContext())
-    }
-
     override fun showLoading(isLoading: Boolean) {
         with(binding) {
-            sendButton.isInvisible = isLoading
-            buttonProgressBar.isVisible = isLoading
+            sendButton.setLoading(isLoading)
         }
+    }
+
+    override fun showSearchLoading(isLoading: Boolean) {
+        binding.progressBar.isInvisible = !isLoading
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
-        binding.tokenTextView.isVisible = !isLoading
     }
 
     override fun setAvailableTextColor(availableColor: Int) {
         binding.availableTextView.setTextColor(colorFromTheme(availableColor))
     }
 
-    @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
         binding.availableTextView.text = "$available $symbol"
     }
 
     override fun showButtonText(textRes: Int) {
-        binding.sendButton.setText(textRes)
+        binding.sendButton.setActionText(textRes)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
-        binding.aroundTextView.text = "≈ $tokenValue $symbol"
+        binding.aroundTextView.text = "$tokenValue $symbol"
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
@@ -274,21 +309,8 @@ class SendFragment :
         )
     }
 
-    override fun showBufferUsernameResolvedOk(data: String) {
-        binding.addressTextView.isVisible = true
-        binding.addressTextView.text = data
-    }
-
-    override fun showBufferNoAddress() {
-        binding.addressTextView.isVisible = true
-        binding.addressTextView.text = getString(R.string.send_no_address)
-    }
-
-    override fun openResolveUsernameScreen() {
-        replaceFragment(ResolveUsernameFragment.create())
-    }
-
-    private fun setEnablePasteButton(isEnabled: Boolean) {
-        binding.pasteTextView.isEnabled = isEnabled
+    private fun checkClipBoard() {
+        val clipBoardData = requireContext().getClipBoard()
+        binding.pasteTextView.isEnabled = clipBoardData != null
     }
 }

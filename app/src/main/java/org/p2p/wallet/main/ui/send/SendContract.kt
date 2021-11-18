@@ -4,8 +4,8 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.main.model.CurrencyMode
 import org.p2p.wallet.main.model.NetworkType
+import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import java.math.BigDecimal
@@ -18,14 +18,11 @@ interface SendContract {
         fun showSuccess(info: TransactionInfo)
         fun showFee(fee: String?)
         fun showWrongWalletError()
-        fun showCurrencyMode(mode: CurrencyMode)
         fun showButtonText(@StringRes textRes: Int)
         fun showInputValue(value: BigDecimal)
         fun showUsdAroundValue(usdValue: BigDecimal)
         fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String)
         fun showAvailableValue(available: BigDecimal, symbol: String)
-        fun showAddressConfirmation()
-        fun hideAddressConfirmation()
         fun showButtonEnabled(isEnabled: Boolean)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
@@ -33,9 +30,13 @@ interface SendContract {
         fun showNetworkSelection()
         fun hideNetworkSelection()
         fun navigateToTokenSelection(tokens: List<Token.Active>)
-        fun showBufferUsernameResolvedOk(data: String)
-        fun showBufferNoAddress()
-        fun openResolveUsernameScreen()
+
+        fun showSearchLoading(isLoading: Boolean)
+        fun showIdleTarget()
+        fun showWrongAddressTarget(address: String)
+        fun showFullTarget(address: String, username: String)
+        fun showEmptyBalanceTarget(address: String)
+        fun showAddressOnlyTarget(address: String)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -44,10 +45,10 @@ interface SendContract {
         fun loadTokensForSelection()
         fun loadAvailableValue()
         fun setSourceToken(newToken: Token.Active)
+        fun setTargetResult(result: SearchResult?)
+        fun validateTarget(value: String)
         fun setNewSourceAmount(amount: String)
-        fun setNewTargetAddress(address: String)
         fun switchCurrency()
-        fun setShouldAskConfirmation(shouldAsk: Boolean)
         fun setNetworkDestination(networkType: NetworkType)
     }
 }

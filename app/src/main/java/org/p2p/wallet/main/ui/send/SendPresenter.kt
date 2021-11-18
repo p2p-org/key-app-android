@@ -1,14 +1,16 @@
 package org.p2p.wallet.main.ui.send
 
-import android.content.Context
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
 import org.p2p.wallet.main.model.CurrencyMode
 import org.p2p.wallet.main.model.NetworkType
+import org.p2p.wallet.main.model.SearchResult
+import org.p2p.wallet.main.model.Target
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
 import org.p2p.wallet.main.model.TransactionResult
@@ -22,7 +24,6 @@ import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
-import retrofit2.HttpException
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -32,14 +33,12 @@ class SendPresenter(
     private val initialToken: Token.Active?,
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
-    private val burnBtcInteractor: BurnBtcInteractor,
-    private val usernameInteractor: UsernameInteractor,
-    private val context: Context,
+    private val searchInteractor: SearchInteractor,
+    private val burnBtcInteractor: BurnBtcInteractor
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
         private const val VALID_ADDRESS_LENGTH = 24
-        private val VALID_USER_NAME_RANGE = 1..15
         private const val DESTINATION_USD = "USD"
         private const val SYMBOL_REN_BTC = "renBTC"
         private const val ROUNDING_VALUE = 6
@@ -54,19 +53,13 @@ class SendPresenter(
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
-    private var mode: CurrencyMode by Delegates.observable(CurrencyMode.Own("")) { _, _, newValue ->
-        view?.showCurrencyMode(newValue)
-    }
+    private var mode: CurrencyMode = CurrencyMode.Own("")
 
     private var networkType: NetworkType = NetworkType.SOLANA
 
-    private var destinationAddress: String = ""
-    private var username: String = ""
-
-    private var shouldAskConfirmation: Boolean = false
+    private var target: SearchResult? = null
 
     private var calculationJob: Job? = null
-    private var checkBalanceJob: Job? = null
     private var feeJob: Job? = null
 
     override fun loadInitialData() {
@@ -76,6 +69,7 @@ class SendPresenter(
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate?.price)
             mode = CurrencyMode.Own(source.tokenSymbol)
+            view?.showNetworkDestination(networkType)
 
             calculateFee()
 
@@ -96,6 +90,40 @@ class SendPresenter(
         calculateData(newToken)
     }
 
+    override fun setTargetResult(result: SearchResult?) {
+        target = result
+
+        when (result) {
+            is SearchResult.Full -> view?.showFullTarget(result.address, result.username)
+            is SearchResult.AddressOnly -> view?.showAddressOnlyTarget(result.address)
+            is SearchResult.EmptyBalance -> view?.showEmptyBalanceTarget(result.address)
+            is SearchResult.Wrong -> view?.showWrongAddressTarget(result.address)
+            else -> view?.showIdleTarget()
+        }
+
+        val sourceToken = token ?: return
+        calculateData(sourceToken)
+    }
+
+    override fun validateTarget(value: String) {
+        launch {
+            try {
+                view?.showSearchLoading(true)
+                val target = Target(value)
+                when (target.validation) {
+                    Target.Validation.USERNAME -> searchByUsername(target.value)
+                    Target.Validation.ADDRESS -> searchByAddress(target.value)
+                    Target.Validation.EMPTY -> view?.showIdleTarget()
+                    Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error validating target: $value")
+            } finally {
+                view?.showSearchLoading(false)
+            }
+        }
+    }
+
     override fun setNewSourceAmount(amount: String) {
         inputAmount = amount
 
@@ -111,10 +139,11 @@ class SendPresenter(
 
     override fun send() {
         val token = token ?: throw IllegalStateException("Token cannot be null!")
+        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
 
         when (networkType) {
-            NetworkType.SOLANA -> sendInSolana(token)
-            NetworkType.BITCOIN -> sendInBitcoin(token)
+            NetworkType.SOLANA -> sendInSolana(token, address)
+            NetworkType.BITCOIN -> sendInBitcoin(token, address)
         }
     }
 
@@ -136,51 +165,6 @@ class SendPresenter(
         view?.showInputValue(totalAvailable)
     }
 
-    override fun setNewTargetAddress(address: String) {
-        this.destinationAddress = address
-        val addressOrName = address.replace(context.getString(R.string.auth_p2p_sol), "")
-        when {
-            addressOrName.length in VALID_USER_NAME_RANGE -> {
-                launch {
-                    try {
-                        val checkUsername = usernameInteractor.checkUsername(addressOrName)
-                        username = addressOrName
-                        view?.showBufferUsernameResolvedOk(checkUsername.owner)
-                        calculateData(token!!)
-                    } catch (e: HttpException) {
-                        view?.showBufferNoAddress()
-                        Timber.e(e, "Error checking username")
-                    }
-                }
-            }
-
-            addressOrName.length >= VALID_ADDRESS_LENGTH -> {
-                if (!isAddressValid(address)) {
-                    view?.showButtonText(R.string.send_enter_address)
-                    view?.showButtonEnabled(false)
-                    return
-                }
-
-                /* Checking destination balance only for Solana network transfers */
-                if (networkType == NetworkType.SOLANA) {
-                    checkDestinationBalance(address)
-                } else {
-                    view?.hideAddressConfirmation()
-                }
-
-                calculateData(token!!)
-            }
-
-            else -> {
-                if (address.isNotEmpty()) {
-                    view?.showBufferNoAddress()
-                    view?.showButtonText(R.string.send_enter_address)
-                    view?.showButtonEnabled(false)
-                }
-            }
-        }
-    }
-
     override fun switchCurrency() {
         val token = token ?: return
         mode = when (mode) {
@@ -191,25 +175,12 @@ class SendPresenter(
         calculateData(token)
     }
 
-    override fun setShouldAskConfirmation(shouldAsk: Boolean) {
-        shouldAskConfirmation = shouldAsk
-        updateButtonText(token!!)
-
-        if (mode is CurrencyMode.Own) {
-            tokenAmount = inputAmount.toBigDecimalOrZero()
-            setButtonEnabled(tokenAmount, token!!.total)
-        } else {
-            usdAmount = inputAmount.toBigDecimalOrZero()
-            setButtonEnabled(usdAmount, token!!.totalInUsd ?: BigDecimal.ZERO)
-        }
-    }
-
-    private fun sendInBitcoin(token: Token.Active) {
+    private fun sendInBitcoin(token: Token.Active, address: String) {
         launch {
             try {
                 view?.showLoading(true)
                 val amount = tokenAmount.toLamports(token.decimals)
-                val transactionId = burnBtcInteractor.submitBurnTransaction(destinationAddress, amount)
+                val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
                 handleResult(TransactionResult.Success(transactionId))
             } catch (e: Throwable) {
@@ -220,19 +191,19 @@ class SendPresenter(
         }
     }
 
-    private fun sendInSolana(token: Token.Active) {
+    private fun sendInSolana(token: Token.Active, address: String) {
         launch {
             try {
                 view?.showLoading(true)
 
                 val result = if (token.isSOL) {
                     sendInteractor.sendNativeSolToken(
-                        destinationAddress = destinationAddress.toPublicKey(),
+                        destinationAddress = address.toPublicKey(),
                         lamports = tokenAmount.toLamports(token.decimals)
                     )
                 } else {
                     sendInteractor.sendSplToken(
-                        destinationAddress = destinationAddress.toPublicKey(),
+                        destinationAddress = address.toPublicKey(),
                         token = token,
                         lamports = tokenAmount.toLamports(token.decimals)
                     )
@@ -327,40 +298,44 @@ class SendPresenter(
         }
     }
 
-    private fun checkDestinationBalance(address: String) {
-        if (checkBalanceJob?.isActive == true)
+    private suspend fun searchByUsername(username: String) {
+        val usernames = searchInteractor.searchByName(username)
+        if (usernames.isEmpty()) {
+            view?.showWrongAddressTarget(username)
             return
-
-        checkBalanceJob = launch {
-            try {
-                val balance = userInteractor.getBalance(address.trim())
-                shouldAskConfirmation = if (balance == 0L) {
-                    view?.showAddressConfirmation()
-                    true
-                } else {
-                    view?.hideAddressConfirmation()
-                    false
-                }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading destination balance")
-                view?.showAddressConfirmation()
-            }
         }
+
+        val result = usernames.first()
+        setTargetResult(result)
+    }
+
+    private suspend fun searchByAddress(address: String) {
+        val validatedAddress = try {
+            PublicKey(address)
+        } catch (e: Throwable) {
+            view?.showWrongAddressTarget(address)
+            null
+        } ?: return
+
+        val results = searchInteractor.searchByAddress(validatedAddress.toBase58())
+        if (results.isEmpty()) return
+
+        val first = results.first()
+        setTargetResult(first)
     }
 
     private fun updateButtonText(source: Token.Active) {
         val decimalAmount = inputAmount.toBigDecimalOrZero()
         val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
+        val address = target?.address
 
         when {
             isMoreThanBalance ->
                 view?.showButtonText(R.string.swap_funds_not_enough)
             decimalAmount.isZero() ->
                 view?.showButtonText(R.string.main_enter_the_amount)
-            destinationAddress.isBlank() ->
+            address.isNullOrBlank() ->
                 view?.showButtonText(R.string.send_enter_address)
-            shouldAskConfirmation ->
-                view?.showButtonText(R.string.send_make_sure_correct_address)
             else ->
                 view?.showButtonText(R.string.send_now)
         }
@@ -369,20 +344,15 @@ class SendPresenter(
     private fun setButtonEnabled(amount: BigDecimal, total: BigDecimal) {
         val isMoreThanBalance = amount.isMoreThan(total)
         val isNotZero = !amount.isZero()
-        val isEnabled = isNotZero && !isMoreThanBalance
+        val isValidAddress = isAddressValid(target?.address)
 
-        val isValidAddress = isAddressValid(destinationAddress)
-        val isUserNameValid = isUsernameValid(username)
+        val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
+
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
         view?.setAvailableTextColor(availableColor)
-        view?.showButtonEnabled(
-            isEnabled && (isValidAddress || isUserNameValid) && !shouldAskConfirmation
-        )
+        view?.showButtonEnabled(isEnabled)
     }
 
-    private fun isAddressValid(address: String): Boolean =
-        address.trim().length >= VALID_ADDRESS_LENGTH
-
-    private fun isUsernameValid(userName: String): Boolean =
-        userName.length in VALID_USER_NAME_RANGE
+    private fun isAddressValid(address: String?): Boolean =
+        !address.isNullOrBlank() && address.trim().length >= VALID_ADDRESS_LENGTH
 }

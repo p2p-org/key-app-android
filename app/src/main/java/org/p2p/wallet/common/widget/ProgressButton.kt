@@ -27,6 +27,9 @@ class ProgressButton @JvmOverloads constructor(
         context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
         foreground = getDrawable(context, outValue.resourceId)
 
+        isClickable = true
+        isFocusable = true
+
         setBackgroundResource(R.drawable.bg_blue_selector)
 
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ProgressButton)
@@ -38,6 +41,9 @@ class ProgressButton @JvmOverloads constructor(
         if (imageResourceId != 0) {
             binding.actionTextView.setCompoundDrawablesWithIntrinsicBounds(imageResourceId, 0, 0, 0)
         }
+
+        val isEnabled = typedArray.getBoolean(R.styleable.ProgressButton_buttonEnabled, true)
+        setEnabled(isEnabled)
         typedArray.recycle()
     }
 

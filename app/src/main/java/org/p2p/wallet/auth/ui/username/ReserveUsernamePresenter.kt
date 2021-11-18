@@ -50,8 +50,8 @@ class ReserveUsernamePresenter(
     override fun checkCaptcha() {
         launch {
             try {
-                val api1Json = interactor.checkCaptcha()
-                view?.getCaptchaResult(api1Json)
+                val params = interactor.checkCaptcha()
+                view?.showCaptcha(params)
             } catch (e: HttpException) {
                 view?.failCaptcha()
                 view?.showErrorMessage(e)
@@ -59,7 +59,7 @@ class ReserveUsernamePresenter(
         }
     }
 
-    override fun registerUsername(username: String, result: String?) {
+    override fun registerUsername(username: String, result: String) {
         launch {
             try {
                 interactor.registerUsername(username, result)

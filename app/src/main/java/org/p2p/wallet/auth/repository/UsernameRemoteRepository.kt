@@ -1,62 +1,36 @@
 package org.p2p.wallet.auth.repository
 
-import com.google.gson.Gson
 import org.json.JSONObject
 import org.p2p.wallet.auth.api.UsernameApi
-import org.p2p.wallet.auth.model.CheckUsername
-import org.p2p.wallet.auth.model.LookupUsername
-import org.p2p.wallet.auth.model.NameRegisterBody
-import org.p2p.wallet.auth.model.RegisterUsername
+import org.p2p.wallet.auth.model.Credentials
+import org.p2p.wallet.auth.model.RegisterNameRequest
 import org.p2p.wallet.auth.model.ResolveUsername
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
-class UsernameRemoteRepository(
-    private val api: UsernameApi,
-    private val gson: Gson,
-    private val tokenKeyProvider: TokenKeyProvider
-) : UsernameRepository {
+class UsernameRemoteRepository(private val api: UsernameApi) : UsernameRepository {
 
-    override suspend fun checkUsername(username: String): CheckUsername {
-        val response = api.checkUsername(username)
-        return CheckUsername(
-            owner = response.owner
-        )
+    override suspend fun checkUsername(username: String): String =
+        api.checkUsername(username).owner
+
+    override suspend fun checkCaptcha(): JSONObject =
+        api.checkCaptcha()
+
+    override suspend fun registerUsername(publicKey: String, username: String, result: String) {
+        val jsonObject = JSONObject(result)
+        val geeTestValidate = jsonObject.getString("geetest_validate")
+        val geeTestSecCode = jsonObject.getString("geetest_seccode")
+        val geeTestChallenge = jsonObject.getString("geetest_challenge")
+        val credentials = Credentials(geeTestValidate, geeTestSecCode, geeTestChallenge)
+        val body = RegisterNameRequest(publicKey, credentials)
+        api.registerUsername(username, body)
     }
 
-    override suspend fun checkCaptcha(): JSONObject {
-        return api.checkCaptcha()
-    }
-
-    override suspend fun registerUsername(username: String, result: String?): RegisterUsername {
-        val credentials = gson.fromJson(result, NameRegisterBody.Credentials::class.java)
-        val response = api.registerUsername(
-            username,
-            NameRegisterBody(
-                owner = tokenKeyProvider.publicKey,
-                credentials = credentials
-            )
-        )
-        return RegisterUsername(
-            signature = response.signature
-        )
-    }
-
-    override suspend fun lookup(owner: String): LookupUsername {
+    override suspend fun lookup(owner: String): String? {
         val response = api.lookup(owner)
-        return LookupUsername(
-            name = response.firstOrNull()?.name
-        )
+        return response.firstOrNull()?.name
     }
 
     override suspend fun resolve(name: String): List<ResolveUsername> {
         val response = api.resolve(name)
-        return response.withIndex().flatMap { (_, transaction) ->
-            listOf(
-                ResolveUsername(
-                    owner = transaction.owner,
-                    name = transaction.name,
-                )
-            )
-        }
+        return response.map { ResolveUsername(it.owner, it.name) }
     }
 }

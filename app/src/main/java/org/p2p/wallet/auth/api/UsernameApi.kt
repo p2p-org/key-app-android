@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.api
 
 import org.json.JSONObject
-import org.p2p.wallet.auth.model.NameRegisterBody
+import org.p2p.wallet.auth.model.RegisterNameRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -18,7 +18,7 @@ interface UsernameApi {
     @POST("name_register/{username}")
     suspend fun registerUsername(
         @Path("username") username: String,
-        @Body body: NameRegisterBody
+        @Body body: RegisterNameRequest
     ): RegisterUsernameResponse
 
     @GET("name_register/lookup/{owner}")
