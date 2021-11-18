@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.google.gson.Gson
 import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -168,9 +167,7 @@ class OrcaDataInitializer {
         usernameRepository = UsernameRemoteRepository(
             api = RetrofitBuilder
                 .getRetrofit(context.getString(R.string.feeRelayerBaseUrl))
-                .create(UsernameApi::class.java),
-            gson = Gson(),
-            tokenKeyProvider = tokenKeyProvider
+                .create(UsernameApi::class.java)
         )
 
         fileLocalRepository = FileRepository(context)
@@ -178,7 +175,8 @@ class OrcaDataInitializer {
         usernameInteractor = UsernameInteractor(
             usernameRepository = usernameRepository,
             fileLocalRepository = fileLocalRepository,
-            sharedPreferences = sharedPreferences
+            sharedPreferences = sharedPreferences,
+            tokenKeyProvider = tokenKeyProvider
         )
 
         secretKeyInteractor = SecretKeyInteractor(

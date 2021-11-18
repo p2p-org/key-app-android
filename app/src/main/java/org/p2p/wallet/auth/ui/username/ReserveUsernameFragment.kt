@@ -125,7 +125,7 @@ class ReserveUsernameFragment :
         }
     }
 
-    override fun getCaptchaResult(params: JSONObject) {
+    override fun showCaptcha(params: JSONObject) {
         gt3ConfigBean?.api1Json = params
         gt3GeeTestUtils?.getGeetest()
     }
@@ -175,7 +175,7 @@ class ReserveUsernameFragment :
         gt3ConfigBean?.timeout = 10000
         gt3ConfigBean?.webviewTimeout = 10000
         gt3ConfigBean?.listener = object : GT3Listener() {
-            override fun onDialogResult(result: String?) {
+            override fun onDialogResult(result: String) {
                 presenter.registerUsername(binding.usernameEditText.text.toString().lowercase(), result)
                 gt3GeeTestUtils?.showSuccessDialog()
             }

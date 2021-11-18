@@ -4,11 +4,11 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import androidx.core.content.edit
 import org.json.JSONObject
-import org.p2p.wallet.auth.model.CheckUsername
-import org.p2p.wallet.auth.model.RegisterUsername
+import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import java.io.File
 
 private const val KEY_USERNAME = "KEY_USERNAME"
@@ -16,27 +16,24 @@ private const val KEY_USERNAME = "KEY_USERNAME"
 class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
     private val fileLocalRepository: FileRepository,
+    private val tokenKeyProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun checkUsername(username: String): CheckUsername {
+    suspend fun checkUsername(username: String): String {
         return usernameRepository.checkUsername(username)
     }
 
-    suspend fun checkCaptcha(): JSONObject {
-        return usernameRepository.checkCaptcha()
-    }
+    suspend fun checkCaptcha(): JSONObject =
+        usernameRepository.checkCaptcha()
 
-    suspend fun registerUsername(
-        username: String,
-        result: String?
-    ): RegisterUsername {
-        return usernameRepository.registerUsername(username, result)
+    suspend fun registerUsername(username: String, result: String) {
+        usernameRepository.registerUsername(tokenKeyProvider.publicKey, username, result)
     }
 
     suspend fun lookupUsername(owner: String) {
         val lookupUsername = usernameRepository.lookup(owner)
-        sharedPreferences.edit { putString(KEY_USERNAME, lookupUsername.name) }
+        sharedPreferences.edit { putString(KEY_USERNAME, lookupUsername) }
     }
 
     fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
@@ -47,4 +44,7 @@ class UsernameInteractor(
     }
 
     suspend fun saveQr(name: String, bitmap: Bitmap): File = fileLocalRepository.saveQr(name, bitmap)
+
+    suspend fun resolveUsername(name: String): List<ResolveUsername> =
+        usernameRepository.resolve(name)
 }

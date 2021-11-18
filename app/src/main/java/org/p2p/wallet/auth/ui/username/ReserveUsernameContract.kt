@@ -12,7 +12,7 @@ interface ReserveUsernameContract {
         fun showIdleState()
         fun showUnavailableName(name: String)
         fun showAvailableName(name: String)
-        fun getCaptchaResult(params: JSONObject)
+        fun showCaptcha(params: JSONObject)
         fun successCaptcha()
         fun failCaptcha()
         fun successRegisterName()
@@ -23,7 +23,7 @@ interface ReserveUsernameContract {
     interface Presenter : MvpPresenter<View> {
         fun checkUsername(username: String)
         fun checkCaptcha()
-        fun registerUsername(username: String, result: String?)
+        fun registerUsername(username: String, result: String)
         fun openPrivacyPolicy()
         fun openTermsOfUse()
     }

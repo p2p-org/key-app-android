@@ -9,6 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSelectTokenBinding
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.ui.send.SendFragment.Companion.KEY_REQUEST_SEND
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
@@ -20,7 +21,6 @@ class SelectTokenFragment(
 ) : BaseFragment(R.layout.fragment_select_token) {
 
     companion object {
-        const val REQUEST_KEY = "SELECT_TOKEN_KEY"
         const val EXTRA_TOKEN = "EXTRA_TOKEN"
         private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
         fun create(tokens: List<Token>) = SelectTokenFragment(null).withArgs(
@@ -42,7 +42,7 @@ class SelectTokenFragment(
     private val tokenAdapter: SelectTokenAdapter by lazy {
         SelectTokenAdapter {
             onSelected?.invoke(it)
-            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TOKEN to it))
+            setFragmentResult(KEY_REQUEST_SEND, bundleOf(EXTRA_TOKEN to it))
             parentFragmentManager.popBackStack()
         }
     }

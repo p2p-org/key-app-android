@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <org.p2p.wallet.common.ui.widget.RoundedImageView
+        android:id="@+id/walletImageView"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/bg_gray_secondary_rounded"
+        android:padding="8dp"
+        android:src="@drawable/ic_wallet_gray"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/topTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+            tools:text="kirill.p2p.sol" />
+
+        <TextView
+            android:id="@+id/bottomTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            tools:text="FG4Y3yX4AAchp1HvNZ7LfzFTewF2...rdpT" />
+    </LinearLayout>
+
+</LinearLayout>

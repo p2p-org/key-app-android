@@ -69,5 +69,6 @@
         <attr name="buttonDrawable" format="reference" />
         <attr name="buttonBackground" format="reference" />
         <attr name="buttonTextColor" format="color" />
+        <attr name="buttonEnabled" format="boolean" />
     </declare-styleable>
 </resources>

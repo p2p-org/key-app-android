@@ -41,7 +41,7 @@ fun Context.getClipBoard(): CharSequence? {
         null
 }
 
-fun Context.getClipBoardTrim(): String? {
+fun Context.getClipboardData(): String? {
     val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
     return if (clipboard.hasPrimaryClip()) {
         val item = clipboard.primaryClip?.getItemAt(0)

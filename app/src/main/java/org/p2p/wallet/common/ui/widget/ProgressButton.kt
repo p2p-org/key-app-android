@@ -29,6 +29,9 @@ class ProgressButton @JvmOverloads constructor(
         foreground = getDrawable(context, outValue.resourceId)
         clipToOutline = true
 
+        isClickable = true
+        isFocusable = true
+
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ProgressButton)
 
         val backgroundResource = typedArray.getResourceId(
@@ -49,6 +52,9 @@ class ProgressButton @JvmOverloads constructor(
         if (imageResourceId != 0) {
             binding.actionImageView.setImageResource(imageResourceId)
         }
+
+        val isEnabled = typedArray.getBoolean(R.styleable.ProgressButton_buttonEnabled, true)
+        setEnabled(isEnabled)
         typedArray.recycle()
     }
 

@@ -1,0 +1,20 @@
+package org.p2p.wallet.main.ui.send.search
+
+import androidx.annotation.StringRes
+import org.p2p.wallet.common.mvp.MvpPresenter
+import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.main.model.SearchResult
+import org.p2p.wallet.main.model.Target
+
+interface SearchContract {
+
+    interface View : MvpView {
+        fun showResult(result: List<SearchResult>)
+        fun showMessage(@StringRes textRes: Int?)
+        fun showLoading(isLoading: Boolean)
+    }
+
+    interface Presenter : MvpPresenter<View> {
+        fun search(target: Target)
+    }
+}
