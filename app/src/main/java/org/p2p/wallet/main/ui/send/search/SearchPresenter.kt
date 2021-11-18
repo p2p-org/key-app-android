@@ -39,7 +39,7 @@ class SearchPresenter(
 
     private suspend fun validate(target: Target) {
         when (target.validation) {
-            Target.Validation.USERNAME -> searchByUsername(target.value)
+            Target.Validation.USERNAME -> searchByUsername(target.trimmedValue)
             Target.Validation.ADDRESS -> searchByAddress(target.value)
             Target.Validation.EMPTY -> showEmptyState()
             Target.Validation.INVALID -> showNotFound()

@@ -18,11 +18,27 @@ data class Target(
         ADDRESS;
     }
 
+    /**
+     * Removing domain from username if exists.
+     * @sample test.p2p.sol -> test
+     * @sample test.sol -> test
+     * */
     @IgnoredOnParcel
-    val validation: Validation = when {
-        value.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
-        value.length >= ADDRESS_MIN_LENGTH -> Validation.ADDRESS
-        value.isEmpty() -> Validation.EMPTY
-        else -> Validation.INVALID
-    }
+    val trimmedValue: String
+        get() {
+            val dotIndex = value.indexOfFirst { it == '.' }
+            return if (dotIndex != -1) value.substring(0, dotIndex) else value
+        }
+
+    @IgnoredOnParcel
+    val validation: Validation
+        get() {
+            val formatted = trimmedValue
+            return when {
+                formatted.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
+                formatted.length >= ADDRESS_MIN_LENGTH -> Validation.ADDRESS
+                formatted.isEmpty() -> Validation.EMPTY
+                else -> Validation.INVALID
+            }
+        }
 }
