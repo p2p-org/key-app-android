@@ -1,113 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contentView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="match_parent">
 
-    <FrameLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/historyRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_transaction"
+        tools:visibility="visible" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:navigationIcon="@drawable/ic_back"
-                app:subtitleTextAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18"
-                tools:title="SOL" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?colorElementTertiary"
-                app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/historyRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="?actionBarSize"
-                app:layout_constraintTop_toBottomOf="@id/activityTextView"
-                tools:itemCount="1"
-                tools:listitem="@layout/item_token_details_header"
-                tools:visibility="visible" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/emptyImageView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="@drawable/bg_black_top_rounded"
-            android:orientation="horizontal"
-            android:padding="4dp">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/ic_empty"
+            tools:ignore="ContentDescription" />
 
-            <ImageView
-                android:id="@+id/buyImageView"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="20dp"
-                android:padding="16dp"
-                android:src="@drawable/ic_plus"
-                tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/emptyTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/details_no_transactions_yet"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+        <TextView
+            android:id="@+id/emptyMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:text="@string/details_no_transactions_message"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="?colorElementSecondary" />
 
-            <ImageView
-                android:id="@+id/receiveImageView"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="20dp"
-                android:padding="16dp"
-                android:src="@drawable/ic_receive_simple"
-                tools:ignore="ContentDescription" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:id="@+id/sendImageView"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:padding="16dp"
-                android:src="@drawable/ic_send_simple"
-                tools:ignore="ContentDescription" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:id="@+id/swapImageView"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginEnd="20dp"
-                android:padding="16dp"
-                android:src="@drawable/ic_swap_simple"
-                tools:ignore="ContentDescription" />
-        </LinearLayout>
-
-        <org.p2p.wallet.common.widget.ProgressView
-            android:id="@+id/progressView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-    </FrameLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
+</FrameLayout>

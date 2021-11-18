@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorProgressBackground">#33FFFFFF</color>
     <color name="colorGreen">#2DB533</color>
+    <color name="colorGreenTransparent">#802DB533</color>
     <color name="colorWarning">#FFA631</color>
     <color name="colorErrorBackground">#FEF5F5</color>
 
@@ -9,6 +10,7 @@
     <color name="accentSecondary">#96B1F8</color>
     <color name="accentTertiary">#EFF3FF</color>
     <color name="accentWarning">#FF5858</color>
+    <color name="accentGraph">#2DB533</color>
 
     <color name="elementPrimary">#FFFFFFFF</color>
     <color name="elementSecondary">#A3A5BA</color>

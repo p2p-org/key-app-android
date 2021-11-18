@@ -8,10 +8,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.ReserveMode
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
-import org.p2p.wallet.history.ui.main.HistoryFragment
+import org.p2p.wallet.history.ui.TokenContainerFragment
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.VisibilityState
@@ -24,7 +27,6 @@ import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 
 class MainFragment :
@@ -52,32 +54,44 @@ class MainFragment :
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+            val linearLayoutManager = LinearLayoutManager(requireContext())
+            mainRecyclerView.layoutManager = linearLayoutManager
             mainRecyclerView.adapter = mainAdapter
+            mainRecyclerView.isNestedScrollingEnabled = true
 
             showPieChart(emptyList())
+
+            bannerViewContainer.bannerImageView.clipToOutline = true
+
+            bannerViewContainer.reserveButton.setOnClickListener {
+                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+            }
+
+            bannerViewContainer.cancelButton.setOnClickListener {
+                presenter.hideUsernameBanner()
+            }
 
             settingsImageView.setOnClickListener {
                 replaceFragment(SettingsFragment.create())
             }
 
-            refreshLayout.setOnRefreshListener {
-                presenter.refresh()
-            }
+//            refreshLayout.setOnRefreshListener {
+//                presenter.refresh()
+//            }
 
 //            buyButton.setOnClickListener {
 //                replaceFragment(BuyFragment.create(null))
 //            }
 
-            receiveButton.setOnClickListener {
+            headerViewContainer.receiveButton.setOnClickListener {
                 replaceFragment(ReceiveFragment.create(null))
             }
 
-            sendButton.setOnClickListener {
+            headerViewContainer.sendButton.setOnClickListener {
                 replaceFragment(SendFragment.create())
             }
 
-            swapButton.setOnClickListener {
+            headerViewContainer.swapButton.setOnClickListener {
                 replaceFragment(OrcaSwapFragment.create())
             }
 
@@ -92,12 +106,16 @@ class MainFragment :
         presenter.collectData()
     }
 
+    override fun showUsernameBanner(isVisible: Boolean) {
+        binding.bannerViewContainer.bannerView.isVisible = isVisible
+    }
+
     override fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState) {
         mainAdapter.setItems(tokens, isZerosHidden, state)
     }
 
     override fun showBalance(balance: BigDecimal) {
-        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
+        binding.headerViewContainer.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
     }
 
     override fun showChart(tokens: List<Token.Active>) {
@@ -105,12 +123,12 @@ class MainFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.progressView.isVisible = isLoading
+//        binding.progressView.isVisible = isLoading
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
         with(binding) {
-            refreshLayout.isRefreshing = isRefreshing
+//            refreshLayout.isRefreshing = isRefreshing
         }
     }
 
@@ -125,7 +143,7 @@ class MainFragment :
         val pieData = tokens.map { PieEntry(it.totalInUsd?.toFloat() ?: 0f) }
         val colors = tokens.map { it.color }.toIntArray()
 
-        binding.mainPieChart.apply {
+        binding.headerViewContainer.mainPieChart.apply {
             val dataSet = PieDataSet(pieData, null)
             dataSet.sliceSpace = 1f
             dataSet.selectionShift = 15f
@@ -150,7 +168,7 @@ class MainFragment :
     }
 
     private fun onTokenClicked(token: Token.Active) {
-        replaceFragment(HistoryFragment.create(token))
+        replaceFragment(TokenContainerFragment.create(token))
     }
 
     private fun onEditClicked(token: Token.Active) {

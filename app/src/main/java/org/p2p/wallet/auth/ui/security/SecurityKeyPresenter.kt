@@ -23,7 +23,7 @@ class SecurityKeyPresenter(
                 view?.showLoading(true)
                 /* Creating account in default bip44change path */
                 interactor.createAndSaveAccount(DerivationPath.BIP44CHANGE, keys)
-                view?.navigateToCreatePin()
+                view?.navigateToReserveUsername()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occured while creating account")
             } finally {

@@ -90,7 +90,7 @@
             android:paddingVertical="8dp"
             tools:ignore="UnusedAttribute">
 
-            <org.p2p.wallet.common.widget.RoundedImageView
+            <org.p2p.wallet.common.ui.widget.RoundedImageView
                 android:layout_width="44dp"
                 android:layout_height="44dp"
                 android:background="@drawable/bg_gray_secondary_rounded_small"
