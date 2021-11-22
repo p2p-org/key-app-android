@@ -5,6 +5,7 @@ import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
+import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.repository.MainDatabaseRepository
 import org.p2p.wallet.main.repository.MainLocalRepository
@@ -35,7 +36,9 @@ object MainModule : InjectionModule {
         factory { (token: Token.Active) ->
             SendPresenter(token, get(), get(), get(), get())
         } bind SendContract.Presenter::class
-        factory { SearchPresenter(get()) } bind SearchContract.Presenter::class
+        factory { (usernames: List<SearchResult>) ->
+            SearchPresenter(usernames, get())
+        } bind SearchContract.Presenter::class
         factory { (token: Token.Active?) -> BuyPresenter(token, get(), get()) } bind BuyContract.Presenter::class
     }
 }
