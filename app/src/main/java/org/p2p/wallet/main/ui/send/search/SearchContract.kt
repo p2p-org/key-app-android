@@ -9,6 +9,7 @@ import org.p2p.wallet.main.model.Target
 interface SearchContract {
 
     interface View : MvpView {
+        fun showSearchValue(value: String)
         fun showResult(result: List<SearchResult>)
         fun showMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)
@@ -16,5 +17,6 @@ interface SearchContract {
 
     interface Presenter : MvpPresenter<View> {
         fun search(target: Target)
+        fun loadInitialData()
     }
 }

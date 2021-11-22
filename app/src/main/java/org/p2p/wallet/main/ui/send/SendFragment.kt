@@ -214,6 +214,10 @@ class SendFragment :
         }
     }
 
+    override fun showSearchScreen(usernames: List<SearchResult>) {
+        addFragment(SearchFragment.create(usernames))
+    }
+
     override fun showSuccess(info: TransactionInfo) {
         TransactionStatusBottomSheet.show(
             fragment = this,

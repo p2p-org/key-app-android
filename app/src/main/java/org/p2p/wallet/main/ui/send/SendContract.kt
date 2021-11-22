@@ -37,6 +37,7 @@ interface SendContract {
         fun showFullTarget(address: String, username: String)
         fun showEmptyBalanceTarget(address: String)
         fun showAddressOnlyTarget(address: String)
+        fun showSearchScreen(usernames: List<SearchResult>)
     }
 
     interface Presenter : MvpPresenter<View> {

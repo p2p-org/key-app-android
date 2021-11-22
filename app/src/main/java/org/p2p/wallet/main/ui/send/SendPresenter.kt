@@ -306,6 +306,11 @@ class SendPresenter(
             return
         }
 
+        if (usernames.size > 1) {
+            view?.showSearchScreen(usernames)
+            return
+        }
+
         val result = usernames.first()
         setTargetResult(result)
     }

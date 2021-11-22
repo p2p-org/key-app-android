@@ -8,16 +8,33 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.main.interactor.SearchInteractor
+import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.Target
 import timber.log.Timber
 
 private const val DELAY_IN_MS = 250L
 
 class SearchPresenter(
+    private val usernames: List<SearchResult>?,
     private val searchInteractor: SearchInteractor
 ) : BasePresenter<SearchContract.View>(), SearchContract.Presenter {
 
     private var searchJob: Job? = null
+
+    override fun loadInitialData() {
+        val data = usernames
+        if (data.isNullOrEmpty()) return
+        val message = if (data.size > 1) {
+            R.string.send_multiple_accounts
+        } else {
+            R.string.send_account_found
+        }
+
+        val value = (data.first() as SearchResult.Full).username
+        view?.showMessage(message)
+        view?.showResult(data)
+        view?.showSearchValue(value)
+    }
 
     override fun search(target: Target) {
         searchJob?.cancel()
