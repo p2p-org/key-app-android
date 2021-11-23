@@ -16,6 +16,7 @@ import org.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
 import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import org.p2p.wallet.transaction.interactor.TransactionInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.isMoreThan
@@ -35,7 +36,8 @@ class SendPresenter(
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
-    private val burnBtcInteractor: BurnBtcInteractor
+    private val burnBtcInteractor: BurnBtcInteractor,
+    private val transactionInteractor: TransactionInteractor
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {

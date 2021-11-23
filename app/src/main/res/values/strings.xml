@@ -252,6 +252,8 @@
     <string name="swap_max_available">Max</string>
     <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
     <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
+    <string name="swap_transaction_completed">Swap from %1s to %2s completed!</string>
+    <string name="swap_transaction_failed">Swap from %1s to %2s failed. Please try again</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>

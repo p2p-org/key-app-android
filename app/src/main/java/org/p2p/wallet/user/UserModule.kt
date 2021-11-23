@@ -18,7 +18,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
-import org.p2p.wallet.user.repository.UserRepositoryImpl
+import org.p2p.wallet.user.repository.UserRemoteRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -55,7 +55,7 @@ object UserModule : InjectionModule {
         }
 
         factory {
-            UserRepositoryImpl(get(), get(), get(), get(), get(), get())
+            UserRemoteRepository(get(), get(), get(), get(), get(), get())
         } bind UserRepository::class
 
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }

@@ -318,6 +318,6 @@ class SendFragment :
 
     private fun checkClipBoard() {
         val clipBoardData = requireContext().getClipBoard()
-        binding.pasteTextView.isEnabled = clipBoardData != null
+        binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
     }
 }

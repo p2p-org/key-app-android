@@ -1,8 +1,10 @@
 package org.p2p.wallet.swap.ui.orca
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
@@ -17,6 +19,8 @@ import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getMinimumAmountOut
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
+import org.p2p.wallet.transaction.interactor.TransactionInteractor
+import org.p2p.wallet.transaction.model.TransactionExecutionState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
@@ -33,9 +37,11 @@ import kotlin.properties.Delegates
 
 class OrcaSwapPresenter(
     private val initialToken: Token.Active?,
+    private val appScope: AppScope,
     private val userInteractor: UserInteractor,
     private val swapInteractor: OrcaSwapInteractor,
-    private val amountInteractor: OrcaAmountInteractor
+    private val amountInteractor: OrcaAmountInteractor,
+    private val transactionInteractor: TransactionInteractor
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     companion object {
@@ -176,14 +182,23 @@ class OrcaSwapPresenter(
         view?.showNewAmount(sourceAmount)
     }
 
+    /**
+     * Sometimes swap operation is being executed too long
+     * Therefore, launching swap operation in global scope, so user could move inside the app
+     * w/o interrupting swap operation
+     * */
     override fun swap() {
         val pair = bestPoolPair ?: return
-        launch {
+        val destination = destinationToken ?: return
+
+        appScope.launch {
             try {
                 view?.showLoading(true)
                 val data = swapInteractor.swap(
+                    fromWalletSymbol = sourceToken.tokenSymbol,
+                    toWalletSymbol = destination.tokenSymbol,
                     fromWalletPubkey = sourceToken.publicKey,
-                    toWalletPubkey = destinationToken?.publicKey,
+                    toWalletPubkey = destination.publicKey,
                     bestPoolsPair = pair,
                     amount = sourceAmount.toDoubleOrNull() ?: 0.toDouble(),
                     slippage = slippage.doubleValue,
@@ -346,16 +361,30 @@ class OrcaSwapPresenter(
 
     private fun handleResult(result: OrcaSwapResult) {
         when (result) {
-            is OrcaSwapResult.Success -> handleSuccess(result)
-            is OrcaSwapResult.Error -> view?.showErrorMessage(result.messageRes)
+            is OrcaSwapResult.Executing -> handleExecuting(result)
             is OrcaSwapResult.InvalidPool -> view?.showErrorMessage()
             is OrcaSwapResult.InvalidInfoOrPair -> view?.showErrorMessage()
         }
     }
 
-    private fun handleSuccess(result: OrcaSwapResult.Success) {
+    private fun handleExecuting(result: OrcaSwapResult.Executing) {
+        val transactionFlow = transactionInteractor.getTransactionStateFlow(result.transactionId) ?: return
+
+        launch {
+            transactionFlow.collect { state ->
+                when (state) {
+                    is TransactionExecutionState.Executing -> view?.showLoading(true)
+                    is TransactionExecutionState.Finished -> handleFinished(state)
+                    is TransactionExecutionState.Failed -> handleFailed(state)
+                    is TransactionExecutionState.Idle -> view?.showLoading(false)
+                }
+            }
+        }
+    }
+
+    private fun handleFinished(result: TransactionExecutionState.Finished) {
         val info = TransactionInfo(
-            transactionId = result.transactionId,
+            transactionId = result.signature,
             status = R.string.main_send_success,
             message = R.string.main_send_transaction_confirmed,
             iconRes = R.drawable.ic_success,
@@ -365,6 +394,12 @@ class OrcaSwapPresenter(
             tokenSymbol = requireDestinationToken().tokenSymbol
         )
         view?.showSwapSuccess(info)
+        view?.showLoading(false)
+    }
+
+    private fun handleFailed(result: TransactionExecutionState.Failed) {
+        view?.showLoading(false)
+        view?.showErrorMessage(result.throwable)
     }
 
     private fun updateButtonText(source: Token.Active) {

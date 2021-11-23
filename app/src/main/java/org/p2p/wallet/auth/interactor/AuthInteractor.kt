@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.HashingUtils
+import org.p2p.wallet.updates.UpdatesManager
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
 private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
@@ -36,7 +37,9 @@ class AuthInteractor(
     private val secureStorage: SecureStorageContract,
     private val sharedPreferences: SharedPreferences,
     private val biometricManager: BiometricManager,
-    private val mainLocalRepository: MainLocalRepository
+    private val mainLocalRepository: MainLocalRepository,
+    private val updatesManager: UpdatesManager,
+    private val appScope: AppScope
 ) {
 
     // region signing in
@@ -157,16 +160,18 @@ class AuthInteractor(
     }
 
     suspend fun logout() {
+        updatesManager.stop()
         sharedPreferences.edit { clear() }
         secureStorage.clear()
         mainLocalRepository.clear()
     }
 
     fun clear() {
-        AppScope.launch {
+        appScope.launch {
             sharedPreferences.edit { clear() }
             secureStorage.clear()
             mainLocalRepository.clear()
+            updatesManager.stop()
         }
     }
 

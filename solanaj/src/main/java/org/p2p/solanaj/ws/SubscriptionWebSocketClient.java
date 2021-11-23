@@ -1,10 +1,14 @@
 package org.p2p.solanaj.ws;
 
+import android.util.Log;
+
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
+import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.p2p.solanaj.model.types.RpcNotificationResult;
 import org.p2p.solanaj.model.types.RpcRequest;
@@ -17,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// TODO: Refactor this class, move to kotlin, handle 1006 error, maybe ping/pong issue
 public class SubscriptionWebSocketClient extends WebSocketClient {
 
     private class SubscriptionParams {
@@ -31,13 +36,17 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
 
     private static SubscriptionWebSocketClient instance;
 
-    private Map<String, SubscriptionParams> subscriptions = new HashMap<>();
-    private Map<String, Long> subscriptionIds = new HashMap<>();
-    private Map<Long, NotificationEventListener> subscriptionLinsteners = new HashMap<>();
+    private final Map<String, SubscriptionParams> subscriptions = new HashMap<>();
+    private final Map<String, Long> subscriptionIds = new HashMap<>();
+    private final Map<Long, NotificationEventListener> subscriptionLinsteners = new HashMap<>();
 
-    public static SubscriptionWebSocketClient getInstance(String endpoint) {
+    private static SocketStateListener socketStateListener;
+
+    public static SubscriptionWebSocketClient getInstance(String endpoint, SocketStateListener stateListener) {
         URI endpointURI;
         URI serverURI;
+
+        socketStateListener = stateListener;
 
         try {
             endpointURI = new URI(endpoint);
@@ -46,6 +55,7 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
             throw new IllegalArgumentException(e);
         }
 
+        Log.d("SOCKET", "Creating connection, uri: " + serverURI + " + host: " + endpointURI.getHost());
         if (instance == null) {
             instance = new SubscriptionWebSocketClient(serverURI);
         }
@@ -60,7 +70,6 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
 
     public SubscriptionWebSocketClient(URI serverURI) {
         super(serverURI);
-
     }
 
     public void accountSubscribe(String key, NotificationEventListener listener) {
@@ -88,13 +97,20 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
     }
 
     @Override
+    public void onWebsocketPing(WebSocket conn, Framedata f) {
+        super.onWebsocketPing(conn, f);
+    }
+
+    @Override
     public void onOpen(ServerHandshake handshakedata) {
+        socketStateListener.onConnected();
         updateSubscriptions();
     }
 
     @SuppressWarnings({"rawtypes"})
     @Override
     public void onMessage(String message) {
+        Log.d("SOCKET", "New message received: " + message);
         JsonAdapter<RpcResponse<Long>> resultAdapter = new Moshi.Builder().build()
                 .adapter(Types.newParameterizedType(RpcResponse.class, Long.class));
 
@@ -131,14 +147,16 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        System.out.println(
-                "Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason);
-
+        socketStateListener.onClosed(
+                code,
+                "Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason
+        );
     }
 
     @Override
     public void onError(Exception ex) {
         ex.printStackTrace();
+        socketStateListener.onFailed(ex);
     }
 
     private void updateSubscriptions() {

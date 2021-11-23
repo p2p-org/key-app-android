@@ -14,6 +14,7 @@ import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.TokenVisibility
 import org.p2p.wallet.main.model.VisibilityState
 import org.p2p.wallet.settings.interactor.SettingsInteractor
+import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
@@ -23,6 +24,7 @@ import kotlin.properties.Delegates
 private const val DELAY_MS = 10000L
 
 class MainPresenter(
+    private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor
@@ -59,6 +61,7 @@ class MainPresenter(
 
     override fun attach(view: MainContract.View) {
         super.attach(view)
+        updatesManager.start()
         loadData()
         checkUsername()
     }
@@ -151,6 +154,7 @@ class MainPresenter(
     }
 
     private fun startPolling() {
+        return
         launch {
             try {
                 while (true) {

@@ -20,12 +20,15 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
+import org.p2p.wallet.transaction.model.AppTransaction
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.isUsdx
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.UUID
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -265,11 +268,20 @@ class SerumSwapInteractor(
             feePayer = null // TODO: modify for fee relayer
         )
 
-        return try {
-            serializationInteractor.sendTransaction(serializedTransaction, isSimulation)
+        try {
+            val appTransactionId = UUID.randomUUID().toString()
+            val appTransaction = AppTransaction(
+                transactionId = appTransactionId,
+                serializedTransaction = serializedTransaction,
+                sourceSymbol = fromWallet.tokenSymbol,
+                destinationSymbol = toWallet.tokenSymbol,
+                isSimulation = isSimulation
+            )
+            serializationInteractor.sendTransaction(appTransaction)
+            return ""
         } catch (e: Throwable) {
-            // todo: parse error
             throw e
+            // TODO: catch error
         }
     }
 
@@ -621,11 +633,11 @@ class SerumSwapInteractor(
     }
 
     // Calculate minExchangeRate needed for swap
-    // - Parameters:
-    //  - fair: fair which is gotten from loadFair(fromMint:toMint)
-    //  - slippage: user input slippage
-    //  - toDecimal: to token decimal
-    // - Returns: ExchangeRate
+// - Parameters:
+//  - fair: fair which is gotten from loadFair(fromMint:toMint)
+//  - slippage: user input slippage
+//  - toDecimal: to token decimal
+// - Returns: ExchangeRate
     fun calculateExchangeRate(
         fair: Double,
         slippage: Double,
@@ -716,7 +728,15 @@ class SerumSwapInteractor(
             feePayer = feePayer
         )
 
-        val transactionId = serializationInteractor.sendTransaction(serializedTransaction, isSimulation)
+        val appTransactionId = UUID.randomUUID().toString()
+        val appTransaction = AppTransaction(
+            transactionId = appTransactionId,
+            serializedTransaction = serializedTransaction,
+            sourceSymbol = from.account.toBase58().cutMiddle(),
+            destinationSymbol = to.account.toBase58().cutMiddle(),
+            isSimulation = isSimulation
+        )
+        serializationInteractor.sendTransaction(appTransaction)
         return Triple(from.account, to.account, from.cleanupInstructions + to.cleanupInstructions)
     }
 
