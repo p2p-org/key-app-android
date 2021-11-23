@@ -82,9 +82,11 @@ class OrcaSwapInteractor(
         Timber.d("Orca swap info loaded")
     }
 
-    // Find possible destination token (symbol)
-    // - Parameter fromMint: from token mint address
-    // - Returns: List of token symbols that can be swapped to
+    /**
+     * Finds possible destination token (symbol)
+     * @param fromMint from token mint address
+     * @returns list of token symbols that can be swapped to
+     * */
     suspend fun findPossibleDestinations(
         fromMint: String
     ): List<Token> {

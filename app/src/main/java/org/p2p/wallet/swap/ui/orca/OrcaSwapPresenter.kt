@@ -100,8 +100,13 @@ class OrcaSwapPresenter(
 
     override fun loadTokensForDestinationSelection() {
         launch {
-            val orcaTokens = swapInteractor.findPossibleDestinations(sourceToken.mintAddress)
-            view?.openDestinationSelection(orcaTokens)
+            try {
+                val orcaTokens = swapInteractor.findPossibleDestinations(sourceToken.mintAddress)
+                view?.openDestinationSelection(orcaTokens)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error searching possible destinations")
+                view?.openDestinationSelection(emptyList())
+            }
         }
     }
 

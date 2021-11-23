@@ -22,6 +22,7 @@ import org.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.main.ui.options.TokenOptionsDialog
 import org.p2p.wallet.main.ui.receive.ReceiveFragment
 import org.p2p.wallet.main.ui.send.SendFragment
+import org.p2p.wallet.main.ui.username.UsernameConfirmationDialog
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
@@ -68,16 +69,24 @@ class MainFragment :
             }
 
             bannerViewContainer.cancelButton.setOnClickListener {
-                presenter.hideUsernameBanner()
+                UsernameConfirmationDialog.show(
+                    fm = childFragmentManager,
+                    titleRes = R.string.main_hide_banner_confirm_question,
+                    subTitleRes = R.string.main_hide_banner_confirm_body,
+                    primaryButtonRes = R.string.common_proceed,
+                    secondaryButtonRes = R.string.common_proceed_do_not_show,
+                    onPrimaryButtonClicked = { presenter.hideUsernameBanner() },
+                    onSecondaryButtonClicked = { presenter.hideUsernameBanner(forever = true) }
+                )
             }
 
             settingsImageView.setOnClickListener {
                 replaceFragment(SettingsFragment.create())
             }
 
-//            refreshLayout.setOnRefreshListener {
-//                presenter.refresh()
-//            }
+            swipeRefreshLayout.setOnRefreshListener {
+                presenter.refresh()
+            }
 
 //            buyButton.setOnClickListener {
 //                replaceFragment(BuyFragment.create(null))
@@ -124,12 +133,11 @@ class MainFragment :
 
     override fun showLoading(isLoading: Boolean) {
 //        binding.progressView.isVisible = isLoading
+        binding.swipeRefreshLayout.isRefreshing = isLoading
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
-        with(binding) {
-//            refreshLayout.isRefreshing = isRefreshing
-        }
+        binding.swipeRefreshLayout.isRefreshing = isRefreshing
     }
 
     override fun onDestroy() {

@@ -42,10 +42,10 @@ class UserInteractor(
     }
 
     suspend fun loadUserTokensAndUpdateData() {
-        val newTokens = userRepository.loadTokens()
+        val publicKey = tokenKeyProvider.publicKey
+        val newTokens = userRepository.loadTokens(publicKey)
         /* We have case when temporary SOL account is created but not deleted in database */
-        val owner = tokenKeyProvider.publicKey
-        mainLocalRepository.removeTemporarySol(owner)
+        mainLocalRepository.removeTemporarySol(publicKey)
         mainLocalRepository.updateTokens(newTokens)
     }
 

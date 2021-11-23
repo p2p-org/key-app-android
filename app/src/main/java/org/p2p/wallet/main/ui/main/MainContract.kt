@@ -24,6 +24,6 @@ interface MainContract {
         fun toggleVisibility(token: Token.Active)
         fun toggleVisibilityState()
         fun clearCache()
-        fun hideUsernameBanner()
+        fun hideUsernameBanner(forever: Boolean = false)
     }
 }

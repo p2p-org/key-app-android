@@ -5,7 +5,6 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.api.CompareApi
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenConverter
@@ -14,13 +13,11 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
 
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
     private val compareApi: CompareApi,
-    private val tokenProvider: TokenKeyProvider,
     private val userLocalRepository: UserLocalRepository,
     private val rpcRepository: RpcRepository,
     private val environmentManager: EnvironmentManager
@@ -62,8 +59,8 @@ class UserRemoteRepository(
             return@withContext result
         }
 
-    override suspend fun loadTokens(): List<Token.Active> = withContext(Dispatchers.IO) {
-        val response = rpcRepository.getTokenAccountsByOwner(tokenProvider.publicKey.toPublicKey())
+    override suspend fun loadTokens(publicKey: String): List<Token.Active> = withContext(Dispatchers.IO) {
+        val response = rpcRepository.getTokenAccountsByOwner(publicKey)
 
         val result = response.accounts
             .mapNotNull {
@@ -82,11 +79,11 @@ class UserRemoteRepository(
         /*
          * Assuming that SOL is our default token, creating it manually
          * */
-        val solBalance = rpcRepository.getBalance(tokenProvider.publicKey)
+        val solBalance = rpcRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(Token.WRAPPED_SOL_MINT) ?: return@withContext result
         val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
         val token = Token.createSOL(
-            publicKey = tokenProvider.publicKey,
+            publicKey = publicKey,
             tokenData = tokenData,
             amount = solBalance,
             exchangeRate = solPrice?.getScaledValue() ?: BigDecimal.ZERO

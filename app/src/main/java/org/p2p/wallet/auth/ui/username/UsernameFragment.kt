@@ -10,24 +10,22 @@ import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import org.p2p.wallet.R
-import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-
+import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.copyToClipBoard
+import org.p2p.wallet.utils.edgetoedge.Edge
+import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.toast
+import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class UsernameFragment :
-    BaseMvpFragment<UsernameContract.View,
-        UsernameContract.Presenter>(R.layout.fragment_username),
+    BaseMvpFragment<UsernameContract.View, UsernameContract.Presenter>(R.layout.fragment_username),
     UsernameContract.View {
 
     companion object {
@@ -38,15 +36,15 @@ class UsernameFragment :
 
     private val binding: FragmentUsernameBinding by viewBinding()
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted)
-                presenter.saveQr(binding.nameTextView.text.toString())
-            else
-                toast(getString(R.string.auth_function_not_available))
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            presenter.saveQr(binding.nameTextView.text.toString())
+        } else {
+            toast(getString(R.string.auth_function_not_available))
         }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,15 +54,6 @@ class UsernameFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            copyTextView.setOnClickListener {
-                requireActivity().copyToClipBoard(nameTextView.text.toString())
-                copySuccess()
-            }
-
-            shareTextView.setOnClickListener {
-                requireActivity().shareText(nameTextView.text.toString())
-            }
-
             saveTextView.setOnClickListener {
                 checkPermission()
             }
@@ -73,25 +62,30 @@ class UsernameFragment :
         presenter.loadData()
     }
 
-    override fun showUsername(username: Username?) {
-        binding.nameTextView.text = username?.getFullUsername(requireContext())
+    override fun showUsername(username: Username) {
+        val fullUsername = username.getFullUsername(requireContext())
+        binding.nameTextView.text = fullUsername
+
+        binding.copyTextView.setOnClickListener {
+            requireContext().copyToClipBoard(fullUsername)
+            toast(R.string.common_copied)
+        }
+
+        binding.shareTextView.setOnClickListener {
+            requireContext().shareText(fullUsername)
+        }
     }
 
-    override fun renderQr(qrBitmap: Bitmap?) {
+    override fun renderQr(qrBitmap: Bitmap) {
         binding.qrImageView.setImageBitmap(qrBitmap)
     }
 
-    override fun showAddress(address: String?) {
-        binding.addressTextView.text =
-            address?.let { buildPartTextColor(it, colorFromTheme(R.attr.colorAccent)) }
+    override fun showAddress(address: String) {
+        binding.addressTextView.text = buildPartTextColor(address, colorFromTheme(R.attr.colorAccent))
     }
 
-    override fun copySuccess() {
-        toast(getString(R.string.auth_copied))
-    }
-
-    override fun saveSuccess() {
-        toast(getString(R.string.auth_saved))
+    override fun showToastMessage(messageRes: Int) {
+        toast(messageRes)
     }
 
     private fun buildPartTextColor(text: String, color: Int): SpannableString {

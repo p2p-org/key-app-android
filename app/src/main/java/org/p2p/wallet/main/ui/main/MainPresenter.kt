@@ -1,5 +1,7 @@
 package org.p2p.wallet.main.ui.main
 
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,12 +24,14 @@ import java.math.BigDecimal
 import kotlin.properties.Delegates
 
 private const val DELAY_MS = 10000L
+private const val KEY_BANNER_VISIBLE = "KEY_BANNER_VISIBLE"
 
 class MainPresenter(
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val sharedPreferences: SharedPreferences
 ) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
     companion object {
@@ -126,7 +130,10 @@ class MainPresenter(
         tokens = emptyList()
     }
 
-    override fun hideUsernameBanner() {
+    override fun hideUsernameBanner(forever: Boolean) {
+        if (forever) {
+            sharedPreferences.edit { putBoolean(KEY_BANNER_VISIBLE, false) }
+        }
         isVisibleBanner = false
         view?.showUsernameBanner(false)
     }
@@ -168,7 +175,8 @@ class MainPresenter(
     }
 
     private fun checkUsername() {
-        val isBannerVisible = !usernameInteractor.usernameExists() && isVisibleBanner
+        val isNotHidden = sharedPreferences.getBoolean(KEY_BANNER_VISIBLE, true)
+        val isBannerVisible = isNotHidden && !usernameInteractor.usernameExists() && isVisibleBanner
         view?.showUsernameBanner(isBannerVisible)
     }
 

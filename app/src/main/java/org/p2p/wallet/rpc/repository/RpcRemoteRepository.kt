@@ -213,7 +213,7 @@ class RpcRemoteRepository(
             }
     }
 
-    override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts {
+    override suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts {
         val programId = TokenProgram.PROGRAM_ID
         val programIdParam = HashMap<String, String>()
         programIdParam["programId"] = programId.toBase58()
@@ -222,7 +222,7 @@ class RpcRemoteRepository(
         encoding["encoding"] = "jsonParsed"
 
         val params = listOf(
-            owner.toBase58(),
+            owner,
             programIdParam,
             encoding
         )

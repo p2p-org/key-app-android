@@ -89,7 +89,6 @@ class BiometricFragment :
     }
 
     private fun getBiometricType(context: Context): BiometricType {
-        if (Build.VERSION.SDK_INT < 23) return BiometricType.NONE
         val packageManager: PackageManager = context.packageManager
 
         // SDK 29 adds FACE and IRIS authentication

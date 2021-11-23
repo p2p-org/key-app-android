@@ -1,14 +1,15 @@
 package org.p2p.wallet.main.ui.receive.solana
 
 import android.graphics.Bitmap
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.qr.interactor.QrCodeInteractor
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.user.interactor.UserInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.qr.interactor.QrCodeInteractor
+import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.util.concurrent.CancellationException
 import kotlin.properties.Delegates
@@ -19,7 +20,8 @@ class ReceiveSolanaPresenter(
     private val defaultToken: Token.Active?,
     private val userInteractor: UserInteractor,
     private val qrCodeInteractor: QrCodeInteractor,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<ReceiveSolanaContract.View>(), ReceiveSolanaContract.Presenter {
 
     private var qrJob: Job? = null
@@ -42,11 +44,11 @@ class ReceiveSolanaPresenter(
             val receive = defaultToken ?: tokens.firstOrNull() ?: return@launch
             token = receive
 
-            val sol = tokens.first { it.isSOL }
+            val publicKey = tokenKeyProvider.publicKey
             val username = usernameInteractor.getUsername()
-            view?.showUserData(sol, username)
+            view?.showUserData(publicKey, username)
 
-            generateQrCode(sol.publicKey)
+            generateQrCode(publicKey)
 
             view?.showFullScreenLoading(false)
         }

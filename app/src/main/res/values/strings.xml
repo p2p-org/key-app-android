@@ -13,6 +13,10 @@
     <string name="common_copied">Copied to clipboard</string>
     <string name="common_usd">USD</string>
     <string name="common_continue">Continue</string>
+    <string name="common_username_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-</string>
+    <string name="common_username_search_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-.</string>
+    <string name="common_proceed">Proceed</string>
+    <string name="common_proceed_do_not_show">Proceed &amp; don’t show again</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -102,7 +106,7 @@
     <string name="auth_share">Share</string>
     <string name="auth_save">Save</string>
     <string name="auth_saved">Saved!</string>
-    <string name="auth_function_not_available">This function not available because need write external storage permission</string>
+    <string name="auth_function_not_available">This function not available because write external storage permission needed</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">
@@ -110,6 +114,8 @@
         <item quantity="other">%d hidden wallets</item>
     </plurals>
 
+    <string name="main_hide_banner_confirm_question">Proceed without a username?</string>
+    <string name="main_hide_banner_confirm_body">Anytime you want, you can easily reserve a username by going to the settings</string>
     <string name="main_combined_token_value">Combined token value</string>
     <string name="main_receive">Receive</string>
     <string name="main_send">Send</string>
@@ -309,5 +315,6 @@
     <string name="details_info">Info</string>
     <string name="details_history">History</string>
     <string name="details_show_wallet_address">Show wallet address</string>
+    <string name="main_no_tokens_for_swap">No tokens found</string>
 
 </resources>

@@ -99,6 +99,13 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
     @Override
     public void onWebsocketPing(WebSocket conn, Framedata f) {
         super.onWebsocketPing(conn, f);
+        Log.d("SOCKET", "PING");
+    }
+
+    @Override
+    public void onWebsocketPong(WebSocket conn, Framedata f) {
+        super.onWebsocketPong(conn, f);
+        Log.d("SOCKET", "PING");
     }
 
     @Override

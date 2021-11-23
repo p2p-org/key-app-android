@@ -14,7 +14,6 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -22,6 +21,7 @@ import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.utils.cutMiddle
 
 class ReceiveSolanaFragment :
     BaseMvpFragment<ReceiveSolanaContract.View, ReceiveSolanaContract.Presenter>(R.layout.fragment_receive_solana),
@@ -74,16 +74,16 @@ class ReceiveSolanaFragment :
         presenter.loadData()
     }
 
-    override fun showUserData(solToken: Token.Active, username: Username?) {
+    override fun showUserData(userPublicKey: String, username: Username?) {
         with(binding) {
-            fullAddressTextView.text = solToken.publicKey.cutMiddle()
+            fullAddressTextView.text = userPublicKey.cutMiddle()
             fullAddressTextView.setOnClickListener {
-                requireContext().copyToClipBoard(solToken.publicKey)
+                requireContext().copyToClipBoard(userPublicKey)
                 fullAddressTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
                 Toast.makeText(requireContext(), R.string.main_receive_address_copied, Toast.LENGTH_SHORT).show()
             }
             shareImageView.setOnClickListener {
-                requireContext().shareText(solToken.publicKey)
+                requireContext().shareText(userPublicKey)
             }
 
             if (username == null) return
