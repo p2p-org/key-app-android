@@ -1,10 +1,10 @@
 package org.p2p.wallet.rpc.repository
 
-import org.p2p.solanaj.kits.MultipleAccountsInfo
-import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
@@ -35,7 +35,7 @@ interface RpcRepository {
 
     suspend fun getBalance(account: String): Long
     suspend fun getBalances(accounts: List<String>): List<Pair<String, Long>>
-    suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts
+    suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts
     suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo
 

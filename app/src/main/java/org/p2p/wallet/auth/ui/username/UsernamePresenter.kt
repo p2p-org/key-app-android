@@ -7,6 +7,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import timber.log.Timber
 import java.util.concurrent.CancellationException
@@ -18,15 +19,15 @@ class UsernamePresenter(
 ) : BasePresenter<UsernameContract.View>(), UsernameContract.Presenter {
 
     private var qrJob: Job? = null
-
     private var qrBitmap: Bitmap? = null
 
     override fun loadData() {
         val publicKey = tokenKeyProvider.publicKey
-        val username = usernameInteractor.getUsername()
+        val username = usernameInteractor.getUsername() ?: return
         view?.showUsername(username)
-        generateQrCode(publicKey)
         view?.showAddress(publicKey)
+
+        generateQrCode(publicKey)
     }
 
     private fun generateQrCode(address: String) {
@@ -50,7 +51,7 @@ class UsernamePresenter(
         launch {
             qrBitmap?.let {
                 usernameInteractor.saveQr(name, it)
-                view?.saveSuccess()
+                view?.showToastMessage(R.string.auth_saved)
             }
         }
     }

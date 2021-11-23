@@ -36,12 +36,15 @@ class ReserveUsernamePresenter(
                 * therefore we cancel old request if new value is entered and waiting for the latest response only
                 * */
                 delay(300)
+                view?.showUsernameLoading(true)
                 interactor.checkUsername(username)
                 view?.showUnavailableName(username)
             } catch (e: CancellationException) {
                 Timber.w(e, "Cancelled request for checking username: $username")
             } catch (e: Throwable) {
                 view?.showAvailableName(username)
+            } finally {
+                view?.showUsernameLoading(false)
             }
         }
     }
@@ -59,6 +62,7 @@ class ReserveUsernamePresenter(
     }
 
     override fun registerUsername(username: String, result: String) {
+        view?.showLoading(true)
         launch {
             try {
                 interactor.registerUsername(username, result)

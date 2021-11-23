@@ -29,8 +29,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.focusAndShowKeyboard
-import org.p2p.wallet.utils.getClipBoard
-import org.p2p.wallet.utils.getClipboardData
+import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -115,7 +114,7 @@ class SendFragment :
             }
 
             pasteTextView.setOnClickListener {
-                val nameOrAddress = requireContext().getClipboardData()
+                val nameOrAddress = requireContext().getClipBoardText(trimmed = true)
                 nameOrAddress?.let { presenter.validateTarget(it) }
             }
         }
@@ -317,7 +316,7 @@ class SendFragment :
     }
 
     private fun checkClipBoard() {
-        val clipBoardData = requireContext().getClipBoard()
+        val clipBoardData = requireContext().getClipBoardText()
         binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
     }
 }

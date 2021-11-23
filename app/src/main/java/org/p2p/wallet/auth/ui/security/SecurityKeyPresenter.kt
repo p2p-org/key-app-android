@@ -17,6 +17,15 @@ class SecurityKeyPresenter(
         }
     }
 
+    init {
+        loadKeys()
+    }
+
+    override fun attach(view: SecurityKeyContract.View) {
+        super.attach(view)
+        view.showKeys(keys)
+    }
+
     override fun createAccount() {
         launch {
             try {

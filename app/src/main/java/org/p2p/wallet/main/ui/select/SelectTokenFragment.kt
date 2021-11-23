@@ -3,6 +3,7 @@ package org.p2p.wallet.main.ui.select
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.p2p.wallet.R
@@ -54,6 +55,10 @@ class SelectTokenFragment(
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokenRecyclerView.attachAdapter(tokenAdapter)
             tokenAdapter.setItems(tokens)
+
+            val isEmpty = tokens.isEmpty()
+            tokenRecyclerView.isVisible = !isEmpty
+            emptyTextView.isVisible = isEmpty
         }
     }
 }

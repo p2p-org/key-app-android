@@ -83,7 +83,7 @@ class ReserveUsernameFragment :
                 presenter.checkUsername(it.toString().lowercase())
             }
 
-            enterUserNameButton.setOnClickListener {
+            usernameButton.setOnClickListener {
                 gt3GeeTestUtils?.startCustomFlow()
             }
         }
@@ -100,8 +100,8 @@ class ReserveUsernameFragment :
 
     override fun showIdleState() {
         with(binding) {
-            enterUserNameButton.isEnabled = false
-            enterUserNameButton.text = getString(R.string.auth_enter_your_username)
+            usernameButton.isEnabled = false
+            usernameButton.setActionText(R.string.auth_enter_your_username)
             usernameTextView.text = getString(R.string.auth_use_any_latin)
             usernameTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
         }
@@ -111,8 +111,8 @@ class ReserveUsernameFragment :
         with(binding) {
             usernameTextView.text = buildBoldText(getString(R.string.auth_unavailable_name, name), name)
             usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
-            enterUserNameButton.isEnabled = false
-            enterUserNameButton.text = getString(R.string.auth_enter_your_username)
+            usernameButton.isEnabled = false
+            usernameButton.setActionText(R.string.auth_enter_your_username)
         }
     }
 
@@ -120,8 +120,8 @@ class ReserveUsernameFragment :
         with(binding) {
             usernameTextView.text = buildBoldText(getString(R.string.auth_available_name, name), name)
             usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
-            enterUserNameButton.isEnabled = true
-            enterUserNameButton.text = getString(R.string.auth_reserve)
+            usernameButton.isEnabled = true
+            usernameButton.setActionText(R.string.auth_reserve)
         }
     }
 
@@ -143,7 +143,11 @@ class ReserveUsernameFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.progressView.isVisible = isLoading
+        binding.usernameButton.setLoading(isLoading)
+    }
+
+    override fun showUsernameLoading(isLoading: Boolean) {
+        binding.usernameProgressBar.isVisible = isLoading
     }
 
     override fun showFile(file: File) {
@@ -190,7 +194,6 @@ class ReserveUsernameFragment :
             }
 
             override fun onSuccess(p0: String?) {
-                binding.progressView.isVisible = true
             }
 
             override fun onFailed(p0: GT3ErrorBean?) {

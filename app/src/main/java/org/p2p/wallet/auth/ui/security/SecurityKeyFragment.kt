@@ -26,7 +26,6 @@ class SecurityKeyFragment :
 
     companion object {
         fun create() = SecurityKeyFragment()
-        val TAG: String = SecurityKeyFragment::class.java.simpleName
     }
 
     override val presenter: SecurityKeyContract.Presenter by inject()
@@ -70,8 +69,6 @@ class SecurityKeyFragment :
                 }
             }
         }
-
-        presenter.loadKeys()
     }
 
     override fun showKeys(keys: List<String>) {

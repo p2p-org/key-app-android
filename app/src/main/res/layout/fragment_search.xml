@@ -37,6 +37,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:digits="@string/common_username_search_allowed_symbols"
                 android:hint="@string/send_type_paste"
                 android:importantForAutofill="no"
                 android:inputType="text"
