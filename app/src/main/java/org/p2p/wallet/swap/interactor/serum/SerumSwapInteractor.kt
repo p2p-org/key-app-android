@@ -632,12 +632,13 @@ class SerumSwapInteractor(
         return loadFair(fromMintPublicKey, toMintPublicKey, markets)
     }
 
-    // Calculate minExchangeRate needed for swap
-// - Parameters:
-//  - fair: fair which is gotten from loadFair(fromMint:toMint)
-//  - slippage: user input slippage
-//  - toDecimal: to token decimal
-// - Returns: ExchangeRate
+    /**
+    * Calculates minExchangeRate needed for swap
+    * @param fair which is got from loadFair(fromMint:toMint)
+    * @param slippage user input slippage
+    * @param toDecimal to token decimal
+    * @return ExchangeRate
+    * */
     fun calculateExchangeRate(
         fair: Double,
         slippage: Double,

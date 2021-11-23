@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.root.ui.RootActivity
 
-private const val P2P_SWAP_CHANNEL_ID = "P2P_SWAP_CHANNEL_ID"
+private const val P2P_WALLET_CHANNEL_ID = "P2P_WALLET_CHANNEL_ID"
 
 class AppNotificationManager(
     private val context: Context
@@ -33,7 +33,7 @@ class AppNotificationManager(
 
         @RequiresApi(Build.VERSION_CODES.O)
         private fun getNotificationChannels() = listOf(
-            NotificationChannel(P2P_SWAP_CHANNEL_ID, "P2P Swap", NotificationManager.IMPORTANCE_DEFAULT)
+            NotificationChannel(P2P_WALLET_CHANNEL_ID, "P2P Swap", NotificationManager.IMPORTANCE_DEFAULT)
         )
     }
 
@@ -48,7 +48,7 @@ class AppNotificationManager(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(context, P2P_SWAP_CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, P2P_WALLET_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_logo)
             .setContentTitle(context.getString(R.string.main_send_success))
             .setContentIntent(contentIntent)
@@ -71,7 +71,7 @@ class AppNotificationManager(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(context, P2P_SWAP_CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, P2P_WALLET_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_logo)
             .setContentTitle(data.buildTitleText(context))
             .setContentIntent(contentIntent)

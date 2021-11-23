@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
@@ -179,7 +180,10 @@ class SocketUpdatesManager private constructor(
             Timber.tag("SOCKET").d("Stopped")
         } else {
             Timber.tag("SOCKET").d("Reconnecting")
-            launch { client?.reconnect() }
+            launch {
+                delay(DELAY_MS)
+                client?.reconnect()
+            }
         }
     }
 }

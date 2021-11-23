@@ -184,7 +184,7 @@ class OrcaSwapPresenter(
 
     /**
      * Sometimes swap operation is being executed too long
-     * Therefore, launching swap operation in global scope, so user could move inside the app
+     * Therefore, launching swap operation is launching in app scope, so user could move inside the app
      * w/o interrupting swap operation
      * */
     override fun swap() {
