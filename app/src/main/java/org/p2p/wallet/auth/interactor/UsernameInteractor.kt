@@ -20,9 +20,8 @@ class UsernameInteractor(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun checkUsername(username: String): String {
-        return usernameRepository.checkUsername(username)
-    }
+    suspend fun checkUsername(username: String): String =
+        usernameRepository.checkUsername(username)
 
     suspend fun checkCaptcha(): JSONObject =
         usernameRepository.checkCaptcha()

@@ -183,6 +183,7 @@ class SocketUpdatesManager private constructor(
             launch {
                 delay(DELAY_MS)
                 client?.reconnect()
+                client?.sendPing()
             }
         }
     }

@@ -40,7 +40,7 @@ class SendTransactionExecutor(private val transaction: AppTransaction) : Transac
             currentState.emit(TransactionExecutionState.Finished(transaction.transactionId, signature))
             showNotificationIfNeeded(signature)
         } catch (e: Throwable) {
-            Timber.tag(TAG).e("Error sending transaction in background")
+            Timber.tag(TAG).e(e, "Error sending transaction in background")
             currentState.emit(TransactionExecutionState.Failed(transaction.transactionId, e))
             showErrorNotificationIfNeeded(e.message ?: e.localizedMessage)
         }
