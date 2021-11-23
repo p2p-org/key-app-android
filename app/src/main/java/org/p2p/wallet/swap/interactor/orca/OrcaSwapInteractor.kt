@@ -28,12 +28,15 @@ import org.p2p.wallet.swap.model.orca.OrcaToken
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.transaction.interactor.TransactionInteractor
+import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.UUID
 
 class OrcaSwapInteractor(
     private val swapRepository: OrcaSwapRepository,
@@ -43,6 +46,7 @@ class OrcaSwapInteractor(
     private val userInteractor: UserInteractor,
     private val serializationInteractor: SwapSerializationInteractor,
     private val orcaInstructionsInteractor: OrcaInstructionsInteractor,
+    private val transactionInteractor: TransactionInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -225,8 +229,10 @@ class OrcaSwapInteractor(
         return transactionFees to liquidityProviderFees
     }
 
-    // / Execute swap
+    // Execute swap
     suspend fun swap(
+        fromWalletSymbol: String,
+        toWalletSymbol: String,
         fromWalletPubkey: String,
         toWalletPubkey: String?,
         bestPoolsPair: OrcaPoolsPair,
@@ -250,6 +256,8 @@ class OrcaSwapInteractor(
 
         return if (bestPoolsPair.size == 1) {
             swapDirect(
+                fromWalletSymbol = fromWalletSymbol,
+                toWalletSymbol = toWalletSymbol,
                 pool = bestPoolsPair.first(),
                 fromTokenPubkey = fromWalletPubkey,
                 toTokenPubkey = toWalletPubkey,
@@ -260,19 +268,24 @@ class OrcaSwapInteractor(
             )
         } else {
             swapTransitive(
-                bestPoolsPair,
-                toWalletPubkey,
-                feeRelayerFeePayer,
-                info,
-                owner,
-                fromWalletPubkey,
-                lamports,
-                slippage
+                fromWalletSymbol = fromWalletSymbol,
+                toWalletSymbol = toWalletSymbol,
+                bestPoolsPair = bestPoolsPair,
+                toWalletPubkey = toWalletPubkey,
+                feeRelayerFeePayer = feeRelayerFeePayer,
+                info = info,
+                owner = owner,
+                fromWalletPubkey = fromWalletPubkey,
+                lamports = lamports,
+                slippage = slippage,
+                isSimulation = isSimulation
             )
         }
     }
 
     private suspend fun swapDirect(
+        fromWalletSymbol: String,
+        toWalletSymbol: String,
         pool: OrcaPool,
         fromTokenPubkey: String,
         toTokenPubkey: String?,
@@ -299,18 +312,22 @@ class OrcaSwapInteractor(
         if (feeRelayerFeePayer != null) {
             throw IllegalStateException("Fee relayer is implementing")
         } else {
-            val signature = serializationInteractor.serializeAndSend(
+            val transactionId = serializationInteractor.serializeAndSend(
                 instructions = accountInstructions.instructions + accountInstructions.cleanupInstructions,
                 recentBlockhash = null,
                 signers = listOf(owner) + accountInstructions.signers,
+                sourceSymbol = fromWalletSymbol,
+                destinationSymbol = toWalletSymbol,
                 isSimulation = isSimulation
             )
 
-            return OrcaSwapResult.Success(signature)
+            return OrcaSwapResult.Executing(transactionId)
         }
     }
 
     private suspend fun swapTransitive(
+        fromWalletSymbol: String,
+        toWalletSymbol: String,
         bestPoolsPair: OrcaPoolsPair,
         toWalletPubkey: String?,
         feeRelayerFeePayer: PublicKey?,
@@ -318,8 +335,9 @@ class OrcaSwapInteractor(
         owner: Account,
         fromWalletPubkey: String,
         lamports: BigInteger,
-        slippage: Double
-    ): OrcaSwapResult.Success {
+        slippage: Double,
+        isSimulation: Boolean
+    ): OrcaSwapResult.Executing {
         val pool0 = bestPoolsPair[0]
         val pool1 = bestPoolsPair[1]
 
@@ -398,8 +416,20 @@ class OrcaSwapInteractor(
             transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
             transaction.sign(accountInstructions.signers)
 
-            val transactionId = rpcRepository.sendTransaction(transaction)
-            return OrcaSwapResult.Success(transactionId)
+            val serializedMessage = transaction.serialize()
+            val serializedTransaction = Base64Utils.encode(serializedMessage)
+
+            val appTransactionId = UUID.randomUUID().toString()
+            val appTransaction = AppTransaction(
+                transactionId = appTransactionId,
+                serializedTransaction = serializedTransaction,
+                sourceSymbol = fromWalletSymbol,
+                destinationSymbol = toWalletSymbol,
+                isSimulation = isSimulation
+            )
+
+            serializationInteractor.sendTransaction(appTransaction)
+            return OrcaSwapResult.Executing(appTransactionId)
         }
     }
 
@@ -441,7 +471,7 @@ class OrcaSwapInteractor(
         pool1: OrcaPool,
         toWalletPubkey: String?,
         feeRelayerFeePayer: PublicKey?,
-        onConfirmed: (isConfirmed: Boolean) -> Unit
+        onConfirmed: () -> Unit
     ): Pair<PublicKey, PublicKey> {
 
         val owner = tokenKeyProvider.publicKey.toPublicKey()
@@ -477,7 +507,7 @@ class OrcaSwapInteractor(
 
         // if token address has already been created, then no need to send any transactions
         if (intermediaryData.instructions.isEmpty() && destinationData.instructions.isEmpty()) {
-            onConfirmed(true)
+            onConfirmed()
             return intermediaryData.account to destinationData.account
         }
 
@@ -494,9 +524,16 @@ class OrcaSwapInteractor(
         val serializedMessage = transaction.serialize()
         val serializedTransaction = Base64Utils.encode(serializedMessage)
 
-        swapRepository.sendAndWait(serializedTransaction) {
-            onConfirmed(true)
+        /**
+         * [swapRepository.sendAndWait] sends transaction and connects to the socket client
+         * where transaction confirmation status is awaiting.
+         * Once it came, [transactionInteractor] callback triggers and we proceed
+         * */
+        transactionInteractor.onSignatureReceived = {
+            onConfirmed()
         }
+
+        swapRepository.sendAndWait(serializedTransaction)
 
         return intermediaryData.account to destinationData.account
     }

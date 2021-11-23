@@ -3,16 +3,17 @@ package org.p2p.wallet.root.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.debugdrawer.DebugDrawer
+import org.p2p.wallet.infrastructure.navigation.NavigationScreenTracker
 import org.p2p.wallet.utils.edgetoedge.applyTranslucentFlag
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.koin.android.ext.android.inject
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
@@ -21,6 +22,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override val presenter: RootContract.Presenter by inject()
+
+    private val screenTracker: NavigationScreenTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
@@ -34,6 +37,12 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
         presenter.loadPricesAndBids()
         if (BuildConfig.DEBUG) DebugDrawer.install(this)
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            val fragment = supportFragmentManager.findFragmentById(R.id.content)
+            val screenName = fragment?.javaClass?.name.orEmpty()
+            screenTracker.setCurrentScreen(screenName)
+        }
     }
 
     override fun navigateToOnboarding() {

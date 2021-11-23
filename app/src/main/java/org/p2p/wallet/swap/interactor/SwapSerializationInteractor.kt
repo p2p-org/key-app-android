@@ -1,51 +1,54 @@
 package org.p2p.wallet.swap.interactor
 
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.transaction.TransactionSendManager
+import org.p2p.wallet.transaction.model.AppTransaction
+import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
+import java.util.UUID
 
 class SwapSerializationInteractor(
     private val rpcRepository: RpcRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val transactionManager: TransactionSendManager
 ) {
 
-    // / Traditional sending without FeeRelayer
-    // / - Parameters:
-    // /   - instructions: transaction's instructions
-    // /   - recentBlockhash: recentBlockhash
-    // /   - signers: signers
-    // /   - isSimulation: define if this is a simulation or real transaction
-    // / - Returns: transaction id
+    fun sendTransaction(appTransaction: AppTransaction) {
+        transactionManager.addInQueue(appTransaction)
+    }
+
     suspend fun serializeAndSend(
         instructions: List<TransactionInstruction>,
         recentBlockhash: String? = null,
         signers: List<Account>,
-        isSimulation: Boolean
+        isSimulation: Boolean,
+        sourceSymbol: String,
+        destinationSymbol: String
     ): String {
         val serializedTransaction = serializeTransaction(
             instructions = instructions,
             recentBlockhash = recentBlockhash,
             signers = signers
         )
-        return if (isSimulation) {
-            rpcRepository.simulateTransaction(serializedTransaction)
-        } else {
-            rpcRepository.sendTransaction(serializedTransaction)
-        }
-    }
 
-    suspend fun sendTransaction(serializedTransaction: String, isSimulation: Boolean): String =
-        if (isSimulation) {
-            rpcRepository.simulateTransaction(serializedTransaction)
-        } else {
-            rpcRepository.sendTransaction(serializedTransaction)
-        }
+        val transactionId = UUID.randomUUID().toString()
+        val transaction = AppTransaction(
+            transactionId = transactionId,
+            serializedTransaction = serializedTransaction,
+            sourceSymbol = sourceSymbol,
+            destinationSymbol = destinationSymbol,
+            isSimulation = isSimulation
+        )
+        transactionManager.addInQueue(transaction)
+
+        return transactionId
+    }
 
     suspend fun serializeTransaction(
         instructions: List<TransactionInstruction>,

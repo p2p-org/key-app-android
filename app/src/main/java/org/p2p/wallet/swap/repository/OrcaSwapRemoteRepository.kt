@@ -1,15 +1,13 @@
 package org.p2p.wallet.swap.repository
 
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.ws.NotificationEventListener
-import org.p2p.solanaj.ws.SubscriptionWebSocketClient
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.AccountBalance
+import org.p2p.wallet.updates.UpdatesManager
 
 class OrcaSwapRemoteRepository(
     private val rpcRepository: RpcRepository,
-    private val environmentManager: EnvironmentManager
+    private val updatesManager: UpdatesManager
 ) : OrcaSwapRepository {
 
     override suspend fun loadTokenBalance(publicKey: PublicKey): AccountBalance {
@@ -17,13 +15,8 @@ class OrcaSwapRemoteRepository(
         return AccountBalance(publicKey, response.amount, response.value.decimals)
     }
 
-    override suspend fun sendAndWait(serializedTransaction: String, onConfirmed: () -> Unit) {
+    override suspend fun sendAndWait(serializedTransaction: String) {
         val signature = rpcRepository.sendTransaction(serializedTransaction)
-
-        val listener = NotificationEventListener { onConfirmed() }
-
-        val endpoint = environmentManager.loadEnvironment().endpoint
-        val wssClient = SubscriptionWebSocketClient.getInstance(endpoint)
-        wssClient.signatureSubscribe(signature, listener)
+        updatesManager.subscribeToTransaction(signature)
     }
 }

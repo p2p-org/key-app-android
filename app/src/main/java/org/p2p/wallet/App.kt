@@ -4,13 +4,21 @@ import android.app.Application
 import android.content.Intent
 import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
+import org.koin.core.module.Module
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.main.MainModule
+import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.qr.QrModule
 import org.p2p.wallet.renbtc.di.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
@@ -20,13 +28,8 @@ import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.swap.SwapModule
+import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.GlobalContext
-import org.koin.core.context.startKoin
-import org.koin.core.module.Module
-import org.koin.dsl.bind
-import org.koin.dsl.module
 import timber.log.Timber
 
 class App : Application() {
@@ -35,13 +38,16 @@ class App : Application() {
         super.onCreate()
         setupTimber()
         setupKoin()
+
+        AppNotificationManager.createNotificationChannels(this)
+
         AndroidThreeTen.init(this)
         DebugDrawer.init(this)
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
     }
 
     private fun setupKoin() {
-        GlobalContext.stop()
+        GlobalContext.stopKoin()
         startKoin {
             androidContext(this@App)
             modules(
@@ -59,6 +65,7 @@ class App : Application() {
                     SwapModule.create(),
                     RpcModule.create(),
                     InfrastructureModule.create(),
+                    TransactionModule.create(),
                     createAppModule()
                 )
             )
@@ -66,6 +73,7 @@ class App : Application() {
     }
 
     private fun createAppModule(): Module = module {
+        single { AppScope() }
         single {
             AppRestarter {
                 restart()

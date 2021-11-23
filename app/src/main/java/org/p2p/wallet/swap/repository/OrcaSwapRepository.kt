@@ -5,5 +5,5 @@ import org.p2p.wallet.swap.model.AccountBalance
 
 interface OrcaSwapRepository {
     suspend fun loadTokenBalance(publicKey: PublicKey): AccountBalance
-    suspend fun sendAndWait(serializedTransaction: String, onConfirmed: () -> Unit)
+    suspend fun sendAndWait(serializedTransaction: String)
 }

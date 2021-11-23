@@ -14,6 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
+import org.p2p.wallet.updates.ConnectionStateProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
@@ -37,6 +38,8 @@ object NetworkModule : InjectionModule {
                 .disableHtmlEscaping()
                 .create()
         }
+
+        single { ConnectionStateProvider(get()) }
     }
 
     fun Scope.getRetrofit(

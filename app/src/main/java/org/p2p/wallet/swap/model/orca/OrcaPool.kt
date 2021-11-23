@@ -410,6 +410,10 @@ data class OrcaPool(
             dividend: BigInteger,
             divisor: BigInteger
         ): Pair<BigInteger, BigInteger> {
+            if (divisor.isZero()) {
+                return BigInteger.ZERO to divisor
+            }
+
             var divisor = divisor
             var quotient = dividend / divisor
             if (quotient.isZero()) {
