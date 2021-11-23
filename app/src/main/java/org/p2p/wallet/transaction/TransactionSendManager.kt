@@ -12,6 +12,10 @@ import org.p2p.wallet.transaction.model.TransactionExecutionState
 import timber.log.Timber
 import java.util.concurrent.Executors
 
+/**
+ * This manager is responsible for sending transaction despite what the user is doing during the process
+ * Each transaction added in queue is being executed immediately in separate coroutine
+ * */
 class TransactionSendManager private constructor(
     appScope: AppScope,
     private val initDispatcher: CoroutineDispatcher
@@ -28,7 +32,7 @@ class TransactionSendManager private constructor(
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     )
 
-    private val pendingTransactions = mutableListOf<AppTransaction>()
+    private val transactions = mutableListOf<AppTransaction>()
 
     private val executors = HashSet<TransactionExecutor>()
 
@@ -37,11 +41,11 @@ class TransactionSendManager private constructor(
         /*
          * Checking if transaction is already added
          * */
-        val isAlreadyAdded = pendingTransactions.any { it.transactionId == transaction.transactionId }
+        val isAlreadyAdded = transactions.any { it.transactionId == transaction.transactionId }
         if (isAlreadyAdded) return
 
         Timber.tag(TAG).w("Adding new transaction to the queue")
-        pendingTransactions.add(transaction)
+        transactions.add(transaction)
         executeTransactions()
     }
 
@@ -56,7 +60,7 @@ class TransactionSendManager private constructor(
     }
 
     private fun executeTransactions() {
-        val filtered = pendingTransactions.filter { transaction ->
+        val filtered = transactions.filter { transaction ->
             executors.none { it.getTransactionId() == transaction.transactionId }
         }
 

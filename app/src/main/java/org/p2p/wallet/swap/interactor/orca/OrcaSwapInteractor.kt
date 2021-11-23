@@ -525,9 +525,9 @@ class OrcaSwapInteractor(
         val serializedTransaction = Base64Utils.encode(serializedMessage)
 
         /**
-         * [swapRepository.sendAndWait] send transaction and connects to the socket client
-         * where transaction confirmation status is awaiting, once it came,
-         * [transactionInteractor] callback triggers and we proceed
+         * [swapRepository.sendAndWait] sends transaction and connects to the socket client
+         * where transaction confirmation status is awaiting.
+         * Once it came, [transactionInteractor] callback triggers and we proceed
          * */
         transactionInteractor.onSignatureReceived = {
             onConfirmed()
