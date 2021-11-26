@@ -2,8 +2,8 @@
 <resources>
 
     <style name="WalletTheme.Dialog.Wide" parent="Base.Theme.AppCompat.Dialog">
-        <item name="android:windowMinWidthMajor">95%</item>
-        <item name="android:windowMinWidthMinor">95%</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 

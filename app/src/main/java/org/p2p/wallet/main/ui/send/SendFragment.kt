@@ -6,11 +6,10 @@ import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.transition.TransitionManager
-import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.ui.bottomsheet.TextContainer
@@ -31,6 +30,7 @@ import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
@@ -56,6 +56,8 @@ class SendFragment :
     override val presenter: SendContract.Presenter by inject {
         parametersOf(token)
     }
+
+    private val glideManager: GlideManager by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
 
@@ -231,17 +233,17 @@ class SendFragment :
 
     override fun showNetworkSelection() {
         binding.networkView.isVisible = true
-        TransitionManager.beginDelayedTransition(binding.containerView)
+        binding.networkDivider.isVisible = true
     }
 
     override fun hideNetworkSelection() {
         binding.networkView.isVisible = false
-        TransitionManager.beginDelayedTransition(binding.containerView)
+        binding.networkDivider.isVisible = false
     }
 
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
-            Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
+            glideManager.load(sourceImageView, token.logoUrl)
             sourceTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
             priceTextView.text = token.getCurrentPrice()
@@ -286,7 +288,7 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = "$available $symbol"
+        binding.availableTextView.text = "${available.scaleLong()} $symbol"
     }
 
     override fun showButtonText(textRes: Int) {

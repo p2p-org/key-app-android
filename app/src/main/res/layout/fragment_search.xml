@@ -43,7 +43,7 @@
                 android:inputType="text"
                 android:paddingHorizontal="16dp"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold18"
-                tools:text="asdasdasdasd" />
+                tools:text="chingiz.p2p.sol" />
 
             <ImageView
                 android:id="@+id/clearImageView"

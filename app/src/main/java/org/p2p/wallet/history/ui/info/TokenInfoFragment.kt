@@ -61,6 +61,7 @@ class TokenInfoFragment :
             // todo: periodPercentTextView show percent
 
             showAddressButton.setOnClickListener {
+                replaceFragment(ReceiveFragment.create(token))
             }
 
             receiveButton.setOnClickListener {
