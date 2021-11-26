@@ -35,7 +35,7 @@ class HistoryInteractor(
 
     suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
         val signatures = rpcRepository.getConfirmedSignaturesForAddress(
-            publicKey.toPublicKey(), before, 30
+            publicKey.toPublicKey(), before, limit
         ).map { it.signature }
 
         val transactions = mutableListOf<TransactionDetails>()
