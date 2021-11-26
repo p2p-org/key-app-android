@@ -52,6 +52,7 @@ class OrcaSwapInteractor(
 
     companion object {
         private const val DELAY_FIVE_SECONDS_MS = 5000L
+        private const val ONE_MINUTE_WAIT_IN_MS = 60000
     }
 
     private var info: OrcaSwapInfo? = null
@@ -351,6 +352,8 @@ class OrcaSwapInteractor(
 
         var createTransactionConfirmed = false
 
+        var waitingTimeInMs = 0L
+
         val (intermediary, destination) = createIntermediaryTokenAndDestinationTokenAddressIfNeeded(
             pool0 = pool0,
             pool1 = pool1,
@@ -360,8 +363,16 @@ class OrcaSwapInteractor(
         )
 
         while (!createTransactionConfirmed) {
+            if (waitingTimeInMs > ONE_MINUTE_WAIT_IN_MS) {
+                createTransactionConfirmed = true
+                break
+            }
+
+            waitingTimeInMs += DELAY_FIVE_SECONDS_MS
             /* Checking transaction is confirmed every 5 seconds */
-            Timber.tag("TransitiveSwap").d("Account creation is not confirmed yet, will check in 5 seconds")
+            Timber
+                .tag("TransitiveSwap")
+                .d("Account creation is not confirmed, will check in 5 seconds, waiting time: $waitingTimeInMs")
             delay(DELAY_FIVE_SECONDS_MS)
         }
 

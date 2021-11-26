@@ -10,6 +10,8 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import kotlin.properties.Delegates
 
+private const val DELAY_IN_MS = 250L
+
 class DerivableAccountsPresenter(
     private val secretKeys: List<SecretKey>,
     private val secretKeyInteractor: SecretKeyInteractor,
@@ -28,11 +30,13 @@ class DerivableAccountsPresenter(
     }
 
     override fun loadData() {
+        if (allAccounts.isNotEmpty()) return
+
         view?.showLoading(true)
         val keys = secretKeys.map { it.text }
 
         launch {
-            delay(250L)
+            delay(DELAY_IN_MS)
             val accounts = secretKeyInteractor.getDerivableAccounts(DerivationPath.BIP44CHANGE, keys)
             allAccounts.addAll(accounts)
             view?.showLoading(false)
@@ -40,13 +44,13 @@ class DerivableAccountsPresenter(
         }
 
         launch {
-            delay(250L)
+            delay(DELAY_IN_MS)
             val accounts = secretKeyInteractor.getDerivableAccounts(DerivationPath.BIP44, keys)
             allAccounts.addAll(accounts)
         }
 
         launch {
-            delay(250L)
+            delay(DELAY_IN_MS)
             val accounts = secretKeyInteractor.getDerivableAccounts(DerivationPath.BIP32DEPRECATED, keys)
             allAccounts.addAll(accounts)
         }

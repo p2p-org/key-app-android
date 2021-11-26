@@ -41,7 +41,10 @@ class TransactionSendManager private constructor(
         /*
          * Checking if transaction is already added
          * */
-        val isAlreadyAdded = transactions.any { it.transactionId == transaction.transactionId }
+        val isAlreadyAdded = transactions.any {
+            it.transactionId == transaction.transactionId ||
+                it.serializedTransaction == transaction.serializedTransaction
+        }
         if (isAlreadyAdded) return
 
         Timber.tag(TAG).w("Adding new transaction to the queue")

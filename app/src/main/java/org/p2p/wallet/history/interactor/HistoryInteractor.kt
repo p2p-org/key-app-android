@@ -35,7 +35,7 @@ class HistoryInteractor(
 
     suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
         val signatures = rpcRepository.getConfirmedSignaturesForAddress(
-            publicKey.toPublicKey(), before, limit
+            publicKey.toPublicKey(), before, 30
         ).map { it.signature }
 
         val transactions = mutableListOf<TransactionDetails>()
@@ -73,10 +73,19 @@ class HistoryInteractor(
                 }
             }
 
+        /*
+         * Making one request for all accounts info and caching values locally
+         * to avoid multiple requests when constructing transaction
+         * */
         val accountsInfoIds = transactions
             .flatMap { details ->
                 when (details) {
-                    is SwapDetails -> listOf(details.source, details.alternateSource, details.destination)
+                    is SwapDetails -> listOf(
+                        details.source,
+                        details.alternateSource,
+                        details.destination,
+                        details.alternateDestination
+                    )
                     is CloseAccountDetails -> listOf(details.account)
                     else -> emptyList()
                 }
@@ -88,7 +97,7 @@ class HistoryInteractor(
         return transactions
             .mapNotNull { details ->
                 when (details) {
-                    is SwapDetails -> parseSwapDetails(details, accountsInfo)
+                    is SwapDetails -> parseOrcaSwapDetails(details, accountsInfo)
                     is BurnOrMintDetails -> parseBurnAndMintDetails(details)
                     is TransferDetails -> parseTransferDetails(details, publicKey, tokenKeyProvider.publicKey)
                     is CloseAccountDetails -> parseCloseDetails(details, accountsInfo)
@@ -99,31 +108,12 @@ class HistoryInteractor(
             .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private fun parseSwapDetails(
+    private fun parseOrcaSwapDetails(
         details: SwapDetails,
         accountsInfo: List<Pair<String, AccountInfo>>
     ): HistoryTransaction? {
-        val finalMintA = if (details.mintA.isNullOrEmpty()) {
-            val accountInfo = accountsInfo.find { it.first == details.source }?.second ?: return null
-            val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
-            if (info != null) {
-                info.mint.toBase58()
-            } else {
-                val alternateAccountInfo =
-                    accountsInfo.find { it.first == details.alternateSource }?.second ?: return null
-                val alternateInfo = TokenTransaction.parseAccountInfoData(
-                    alternateAccountInfo,
-                    TokenProgram.PROGRAM_ID
-                ) ?: return null
-                alternateInfo.mint.toBase58()
-            }
-        } else details.mintA
-
-        val finalMintB = if (details.mintB.isNullOrEmpty()) {
-            val accountInfo = accountsInfo.find { it.first == details.destination }?.second ?: return null
-            val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID) ?: return null
-            info.mint.toBase58()
-        } else details.mintB
+        val finalMintA = parseOrcaSource(details, accountsInfo) ?: return null
+        val finalMintB = parseOrcaDestination(details, accountsInfo) ?: return null
 
         val sourceData = userLocalRepository.findTokenData(finalMintA) ?: return null
         val destinationData = userLocalRepository.findTokenData(finalMintB) ?: return null
@@ -133,6 +123,40 @@ class HistoryInteractor(
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
         val source = tokenKeyProvider.publicKey
         return TransactionConverter.fromNetwork(details, sourceData, destinationData, destinationRate, source)
+    }
+
+    private fun parseOrcaSource(
+        details: SwapDetails,
+        accountsInfo: List<Pair<String, AccountInfo>>
+    ): String? {
+        if (!details.mintA.isNullOrEmpty()) {
+            return details.mintA
+        }
+
+        val accountInfo = accountsInfo.find { it.first == details.source }?.second ?: return null
+        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        if (info != null) return info.mint.toBase58()
+
+        val account = accountsInfo.find { it.first == details.alternateSource } ?: return null
+        val alternateInfo = TokenTransaction.parseAccountInfoData(account.second, TokenProgram.PROGRAM_ID)
+        return alternateInfo?.mint?.toBase58()
+    }
+
+    private fun parseOrcaDestination(
+        details: SwapDetails,
+        accountsInfo: List<Pair<String, AccountInfo>>
+    ): String? {
+        if (!details.mintB.isNullOrEmpty()) {
+            return details.mintB
+        }
+
+        val accountInfo = accountsInfo.find { it.first == details.destination }?.second ?: return null
+        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        if (info != null) return info.mint.toBase58()
+
+        val account = accountsInfo.find { it.first == details.alternateDestination } ?: return null
+        val alternateInfo = TokenTransaction.parseAccountInfoData(account.second, TokenProgram.PROGRAM_ID)
+        return alternateInfo?.mint?.toBase58()
     }
 
     private fun parseTransferDetails(

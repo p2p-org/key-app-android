@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
@@ -70,7 +71,7 @@ sealed class Token constructor(
 
         fun getFormattedUsdTotal(): String? = totalInUsd?.let { "${totalInUsd.scaleShort()} $" }
 
-        fun getFormattedTotal(): String = "$total $tokenSymbol"
+        fun getFormattedTotal(): String = "${total.scaleLong()} $tokenSymbol"
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int {
             return if (isDefinitelyHidden(isZerosHidden)) {
