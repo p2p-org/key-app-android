@@ -21,7 +21,7 @@ class UserInteractor(
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
-        val tokenData = userLocalRepository.findTokenData(mintAddress)
+        val tokenData = userLocalRepository.findTokenDataBySymbol(mintAddress)
         return tokenData?.let { TokenConverter.fromNetwork(tokenData) }
     }
 

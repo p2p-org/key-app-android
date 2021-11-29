@@ -43,6 +43,7 @@ class ReserveUsernamePresenter(
                 Timber.w(e, "Cancelled request for checking username: $username")
             } catch (e: Throwable) {
                 view?.showAvailableName(username)
+                Timber.e(e, "Error occurred while checking username: $username")
             } finally {
                 view?.showUsernameLoading(false)
             }
@@ -55,7 +56,8 @@ class ReserveUsernamePresenter(
                 val params = interactor.checkCaptcha()
                 view?.showCaptcha(params)
             } catch (e: Throwable) {
-                view?.failCaptcha()
+                Timber.e(e, "Error occurred while checking captcha")
+                view?.showCaptchaFailed()
                 view?.showErrorMessage(e)
             }
         }
@@ -69,6 +71,7 @@ class ReserveUsernamePresenter(
                 interactor.lookupUsername(tokenProvider.publicKey)
                 view?.successRegisterName()
             } catch (e: Throwable) {
+                Timber.e(e, "Error occurred while registering username")
                 view?.showErrorMessage(e)
             } finally {
                 view?.showLoading(false)

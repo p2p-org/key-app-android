@@ -7,12 +7,14 @@ import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.main.api.CompareApi
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.model.Token.Companion.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.wallet.main.model.TokenConverter
 import org.p2p.wallet.main.model.TokenPrice
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.scaleMedium
+import timber.log.Timber
 import java.math.BigDecimal
 
 class UserRemoteRepository(
@@ -65,12 +67,13 @@ class UserRemoteRepository(
         val result = response.accounts
             .mapNotNull {
                 val mintAddress = it.account.data.parsed.info.mint
+                Timber.d("### mint $mintAddress")
 
                 if (mintAddress == Token.REN_BTC_DEVNET_MINT) {
                     return@mapNotNull mapDevnetRenBTC(it)
                 }
 
-                val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
+                val token = userLocalRepository.findTokenDataBySymbol(mintAddress) ?: return@mapNotNull null
                 val price = userLocalRepository.getPriceByToken(token.symbol)
                 TokenConverter.fromNetwork(it, token, price)
             }
@@ -80,7 +83,7 @@ class UserRemoteRepository(
          * Assuming that SOL is our default token, creating it manually
          * */
         val solBalance = rpcRepository.getBalance(publicKey)
-        val tokenData = userLocalRepository.findTokenData(Token.WRAPPED_SOL_MINT) ?: return@withContext result
+        val tokenData = userLocalRepository.findTokenDataBySymbol(Token.WRAPPED_SOL_MINT) ?: return@withContext result
         val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
         val token = Token.createSOL(
             publicKey = publicKey,
@@ -100,8 +103,16 @@ class UserRemoteRepository(
 
     private fun mapDevnetRenBTC(account: Account): Token.Active? {
         if (environmentManager.loadEnvironment() != Environment.DEVNET) return null
-        val token = userLocalRepository.findTokenData(Token.REN_BTC_DEVNET_MINT) ?: return null
-        val price = userLocalRepository.getPriceByToken(token.symbol.uppercase())
-        return TokenConverter.fromNetwork(account, token, price)
+        val token = userLocalRepository.findTokenData(Token.REN_BTC_DEVNET_MINT)
+        val result = if (token == null) {
+            userLocalRepository.findTokenData(REN_BTC_DEVNET_MINT_ALTERNATE)
+        } else {
+            userLocalRepository.findTokenDataBySymbol(Token.REN_BTC_SYMBOL)
+        }
+
+        if (result == null) return null
+
+        val price = userLocalRepository.getPriceByToken(result.symbol.uppercase())
+        return TokenConverter.fromNetwork(account, result, price)
     }
 }

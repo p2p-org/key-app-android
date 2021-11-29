@@ -203,6 +203,14 @@ class OrcaSwapInteractor(
             if (!myTokens.contains(intermediaryTokenName) || toWalletPubkey == null) {
                 numberOfTransactions += BigInteger.ONE
             }
+
+            /*
+             * If intermediary account is SOL, then adding fee for creating sol account
+             * */
+            if (intermediaryTokenName == Token.SOL_SYMBOL) {
+                transactionFees += lamportsPerSignature
+                transactionFees += minRentExempt
+            }
         }
 
         // owner's signatures

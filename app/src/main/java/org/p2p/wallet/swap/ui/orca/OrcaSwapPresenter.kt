@@ -302,7 +302,7 @@ class OrcaSwapPresenter(
 
         bestPoolPair = pair
 
-        val deprecatedValues = pair.map { it.deprecated }.joinToString()
+        val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
         Timber.tag(SWAP_STATE_TAG).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
         destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleLong().toString()

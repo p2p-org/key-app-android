@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.PagingState
@@ -16,9 +17,9 @@ import org.p2p.wallet.history.ui.details.SwapTransactionFragment
 import org.p2p.wallet.history.ui.details.TransferTransactionFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -34,7 +35,9 @@ class HistoryFragment :
             HistoryFragment().withArgs(EXTRA_TOKEN to token)
     }
 
-    override val presenter: HistoryContract.Presenter by inject()
+    override val presenter: HistoryContract.Presenter by inject {
+        parametersOf(token)
+    }
 
     private val token: Token.Active by args(EXTRA_TOKEN)
 
@@ -43,7 +46,7 @@ class HistoryFragment :
     private val historyAdapter: HistoryAdapter by lazy {
         HistoryAdapter(
             onTransactionClicked = { onTransactionClicked(it) },
-            onRetryClicked = { presenter.loadHistory(token.publicKey, token.tokenSymbol) }
+            onRetryClicked = { presenter.fetchNextPage() }
         )
     }
 
@@ -56,17 +59,24 @@ class HistoryFragment :
             attachAdapter(historyAdapter)
 
             val scrollListener = EndlessScrollListener(linearLayoutManager) {
-                presenter.loadHistory(token.publicKey, token.tokenSymbol)
+                presenter.fetchNextPage()
             }
 
             clearOnScrollListeners()
             addOnScrollListener(scrollListener)
         }
-        presenter.loadHistory(token.publicKey, token.tokenSymbol)
+
+        binding.refreshLayout.setOnRefreshListener { presenter.refresh() }
+
+        presenter.loadHistory()
     }
 
     override fun showError(@StringRes resId: Int, argument: String) {
         showInfoDialog(getString(resId, argument))
+    }
+
+    override fun showRefreshing(isRefreshing: Boolean) {
+        binding.refreshLayout.isRefreshing = isRefreshing
     }
 
     override fun showHistory(transactions: List<HistoryTransaction>) {
@@ -74,7 +84,7 @@ class HistoryFragment :
 
         val isEmpty = transactions.isEmpty()
         binding.emptyView.isVisible = isEmpty
-        binding.historyRecyclerView.isVisible = !isEmpty
+        binding.refreshLayout.isVisible = !isEmpty
     }
 
     override fun showPagingState(newState: PagingState) {
@@ -83,8 +93,8 @@ class HistoryFragment :
 
     private fun onTransactionClicked(transaction: HistoryTransaction) {
         when (transaction) {
-            is HistoryTransaction.Swap -> addFragment(SwapTransactionFragment.create(transaction))
-            is HistoryTransaction.Transfer -> addFragment(TransferTransactionFragment.create(transaction))
+            is HistoryTransaction.Swap -> replaceFragment(SwapTransactionFragment.create(transaction))
+            is HistoryTransaction.Transfer -> replaceFragment(TransferTransactionFragment.create(transaction))
             else -> {
                 // todo: add close account and unknown transaction details view
             }

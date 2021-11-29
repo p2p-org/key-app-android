@@ -9,4 +9,5 @@ interface UserLocalRepository {
 
     fun setTokenData(data: List<TokenData>)
     fun findTokenData(mintAddress: String): TokenData?
+    fun findTokenDataBySymbol(symbol: String): TokenData?
 }

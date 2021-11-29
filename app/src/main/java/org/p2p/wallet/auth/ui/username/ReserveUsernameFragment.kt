@@ -130,11 +130,11 @@ class ReserveUsernameFragment :
         gt3GeeTestUtils?.getGeetest()
     }
 
-    override fun successCaptcha() {
+    override fun showCaptchaSucceeded() {
         gt3GeeTestUtils?.showSuccessDialog()
     }
 
-    override fun failCaptcha() {
+    override fun showCaptchaFailed() {
         gt3GeeTestUtils?.showFailedDialog()
     }
 
