@@ -11,11 +11,13 @@ interface HistoryContract {
     interface View : MvpView {
         fun showHistory(transactions: List<HistoryTransaction>)
         fun showPagingState(newState: PagingState)
+        fun showRefreshing(isRefreshing: Boolean)
         fun showError(@StringRes resId: Int, argument: String)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun refreshHistory()
-        fun loadHistory(publicKey: String, tokenSymbol: String)
+        fun loadHistory()
+        fun refresh()
+        fun fetchNextPage()
     }
 }

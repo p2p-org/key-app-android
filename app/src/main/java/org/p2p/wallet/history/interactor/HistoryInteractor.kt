@@ -115,8 +115,8 @@ class HistoryInteractor(
         val finalMintA = parseOrcaSource(details, accountsInfo) ?: return null
         val finalMintB = parseOrcaDestination(details, accountsInfo) ?: return null
 
-        val sourceData = userLocalRepository.findTokenData(finalMintA) ?: return null
-        val destinationData = userLocalRepository.findTokenData(finalMintB) ?: return null
+        val sourceData = userLocalRepository.findTokenDataBySymbol(finalMintA) ?: return null
+        val destinationData = userLocalRepository.findTokenDataBySymbol(finalMintB) ?: return null
 
         if (sourceData.mintAddress == destinationData.mintAddress) return null
 
@@ -168,7 +168,7 @@ class HistoryInteractor(
         val rate = userLocalRepository.getPriceByToken(symbol)
 
         val mint = if (transfer.isSimpleTransfer) Token.WRAPPED_SOL_MINT else transfer.mint
-        val source = userLocalRepository.findTokenData(mint)!!
+        val source = userLocalRepository.findTokenDataBySymbol(mint)!!
 
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
     }
@@ -190,5 +190,5 @@ class HistoryInteractor(
     }
 
     private fun findSymbol(mint: String): String =
-        if (mint.isNotEmpty()) userLocalRepository.findTokenData(mint)?.symbol.orEmpty() else ""
+        if (mint.isNotEmpty()) userLocalRepository.findTokenDataBySymbol(mint)?.symbol.orEmpty() else ""
 }

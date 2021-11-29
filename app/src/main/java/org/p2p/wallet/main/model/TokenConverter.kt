@@ -39,7 +39,7 @@ object TokenConverter {
             mintAddress = mintAddress,
             tokenName = tokenData.name,
             logoUrl = tokenData.iconUrl,
-            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(price.price) },
+            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price) },
             total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
             color = TokenColors.findColorBySymbol(tokenData.symbol),
             usdRate = price?.price,

@@ -172,7 +172,7 @@ dependencies {
     implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
 
     // GeeTest
-    implementation 'com.geetest.sensebot:sensebot:4.3.4.3'
+    implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'

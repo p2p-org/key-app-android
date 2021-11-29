@@ -11,27 +11,27 @@ import kotlinx.coroutines.withContext
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 
 class FileRepository(
     private val context: Context
 ) {
 
     private val pdfFolder: File
-    private val qrFolder: File
 
     init {
         val rootFolder = context.getExternalFilesDir(null)
         pdfFolder = File(rootFolder, "pdf")
-        qrFolder = getQrFolder()
     }
 
-    suspend fun saveQr(name: String, bitmap: Bitmap): File = withContext(Dispatchers.IO) {
-        ensureQrFolderExists()
-        val qrFile = getQrFile(name)
-        FileOutputStream(qrFile).use {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
-        }
-        return@withContext qrFile
+    @Throws(IOException::class)
+    suspend fun saveQr(name: String, bitmap: Bitmap) = withContext(Dispatchers.IO) {
+        val stream: OutputStream = generateOutputStream(name)
+            ?: throw IllegalStateException("Couldn't save qr image")
+
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        stream.close()
     }
 
     fun savePdf(
@@ -49,25 +49,22 @@ class FileRepository(
 
     private fun getPdfFile(fileName: String) = File(pdfFolder, "$fileName.pdf")
 
-    private fun getQrFile(name: String): File = File(qrFolder, "$name.png")
-
-    private fun ensureQrFolderExists() = qrFolder.mkdirs()
-
     private fun ensurePdfFolderExists() = pdfFolder.mkdirs()
 
-    private fun getQrFolder(): File =
+    private fun generateOutputStream(name: String): OutputStream? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val resolver = context.contentResolver
             val contentValues = ContentValues()
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "myQr")
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-            val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).toString()
-            File(uri)
+            val directory = Environment.DIRECTORY_DCIM + File.separator + "p2p-wallet"
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, directory)
+            val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
+            resolver.openOutputStream(uri)
         } else {
             @Suppress("DEPRECATION")
-            val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
             val pathName = directory.toString() + File.separator + "p2p-wallet"
-            File(pathName)
+            FileOutputStream(File(pathName))
         }
 }
