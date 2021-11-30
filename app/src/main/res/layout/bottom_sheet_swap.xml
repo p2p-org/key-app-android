@@ -9,78 +9,68 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragment.dashboard.dialog.swap.SwapBottomSheet">
+        tools:context=".dashboard.ui.dialog.swap.SwapBottomSheet">
 
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgSwap"
-            android:layout_width="@dimen/dp_36"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_exchange_swap" />
+            app:srcCompat="@drawable/ic_swap" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/vTitle"
-            style="@style/Black.17.Bold.SfProDisplay"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_14"
-            android:text="@string/swap"
+            android:layout_marginStart="14dp"
+            android:text="Swap"
             app:layout_constraintBottom_toBottomOf="@id/imgSwap"
             app:layout_constraintStart_toEndOf="@id/imgSwap"
             app:layout_constraintTop_toTopOf="@id/imgSwap" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/settingsImageView"
-            android:layout_width="@dimen/dp_36"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_setting_toggle" />
-
-        <View
-            android:id="@+id/vDividerTitle"
-            style="@style/HorizontalDividerGreyBlue_400_10"
-            android:layout_marginTop="@dimen/dp_20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imgSwap" />
+            app:srcCompat="@drawable/ic_settings" />
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/lSwapFromTo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/bg_already_have_account"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_white_rounded"
             android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="@+id/vDividerTitle">
+            app:layout_constraintTop_toBottomOf="@id/imgSwap">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold.SfProDisplay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/from"
+                    android:text="from"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/availableTextView"
-                    style="@style/CornerFlowerBlue.15.SfProText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
@@ -91,24 +81,22 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginTop="30dp"
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgTokenFrom"
-                    android:layout_width="@dimen/dp_44"
-                    android:layout_height="@dimen/dp_44"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_default_coin" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTokenFrom"
-                    style="@style/Black.15.Bold.SfProDisplay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/dp_6"
+                    android:layout_marginTop="6dp"
                     app:layout_constraintEnd_toEndOf="@id/imgTokenFrom"
                     app:layout_constraintStart_toStartOf="@id/imgTokenFrom"
                     app:layout_constraintTop_toBottomOf="@id/imgTokenFrom"
@@ -118,31 +106,26 @@
                 <!--                Respectively, surrounding margins reduced by 8dp-->
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgArrowDownFrom"
-                    style="@style/Black.17.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_7"
-                    android:padding="@dimen/dp_8"
-                    android:tint="@color/gray_blue_400"
+                    android:layout_marginStart="7dp"
+                    android:padding="8dp"
                     app:layout_constraintBottom_toBottomOf="@id/imgTokenFrom"
                     app:layout_constraintStart_toEndOf="@id/imgTokenFrom"
                     app:layout_constraintTop_toTopOf="@id/imgTokenFrom"
-                    app:srcCompat="@drawable/ic_down_arrow"
-                    app:tint="@color/gray_blue_400" />
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:tint="?colorElementSecondary" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtAmountFrom"
-                    style="@style/Black.27.Bold.SfProDisplay"
-                    android:layout_width="@dimen/dp_0"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_12"
+                    android:layout_marginStart="12dp"
                     android:background="@android:color/transparent"
-                    android:hint="@string/_0_0000"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:textCursorDrawable="@drawable/black_edt_cursor"
                     app:layout_constraintBottom_toBottomOf="@id/imgArrowDownFrom"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/imgArrowDownFrom"
@@ -152,8 +135,7 @@
                 <!--                android:text="@string/around_amount_sol"-->
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/aroundTo"
-                    style="@style/Grey400.15.SfProText"
-                    android:layout_width="@dimen/dp_0"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:ems="3"
@@ -170,41 +152,34 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_8"
-                android:layout_marginBottom="@dimen/dp_15">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="15dp">
 
-                <View
-                    style="@style/HorizontalDividerGreyBlue_400_10"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/currencyTypeImageView"
-                    android:layout_width="@dimen/dp_44"
-                    android:layout_height="@dimen/dp_44"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_exchange_swap" />
+                    app:srcCompat="@drawable/ic_swap" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black.15.Bold.SfProDisplay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/to"
+                    android:text="to"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/balanceTextView"
-                    style="@style/Grey400.15.SfProText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
@@ -215,24 +190,23 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgTokenTo"
-                    android:layout_width="@dimen/dp_44"
-                    android:layout_height="@dimen/dp_44"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_wallet_blue" />
+                    app:srcCompat="@drawable/ic_wallet" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTokenTo"
-                    style="@style/Black.15.Bold.SfProDisplay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="@dimen/dp_6"
+                    android:layout_marginTop="6dp"
                     app:layout_constraintEnd_toEndOf="@id/imgTokenTo"
                     app:layout_constraintStart_toStartOf="@id/imgTokenTo"
                     app:layout_constraintTop_toBottomOf="@id/imgTokenTo"
@@ -240,26 +214,23 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgArrowDownTo"
-                    style="@style/Black.17.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_7"
-                    android:padding="@dimen/dp_8"
-                    android:tint="@color/gray_blue_400"
+                    android:layout_marginStart="7dp"
+                    android:padding="8dp"
                     app:layout_constraintBottom_toBottomOf="@id/imgTokenTo"
                     app:layout_constraintStart_toEndOf="@id/imgTokenTo"
                     app:layout_constraintTop_toTopOf="@id/imgTokenTo"
-                    app:srcCompat="@drawable/ic_down_arrow"
-                    app:tint="@color/gray_blue_400" />
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:tint="?colorElementSecondary" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtAmountTo"
-                    style="@style/Black300.27.Bold.SfProDisplay"
-                    android:layout_width="@dimen/dp_0"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/dp_12"
+                    android:layout_marginStart="12dp"
                     app:layout_constraintBottom_toBottomOf="@id/imgArrowDownTo"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/imgArrowDownTo"
@@ -268,10 +239,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/currencyTextView"
-                    style="@style/Grey400.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/select_currency"
+                    android:text="select currency"
                     app:layout_constraintBottom_toBottomOf="@id/txtTokenTo"
                     app:layout_constraintStart_toStartOf="@id/txtAmountTo"
                     app:layout_constraintTop_toTopOf="@id/txtTokenTo" />
@@ -282,29 +252,24 @@
                 android:id="@+id/priceView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20"
-                android:background="@drawable/bg_light_gray_rect_radius_12"
-                android:paddingStart="@dimen/dp_10"
-                android:paddingTop="@dimen/dp_7"
-                android:paddingEnd="@dimen/dp_10"
-                android:paddingBottom="@dimen/dp_7">
+                android:layout_marginTop="20dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPriceSwap"
-                    style="@style/Grey400.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/price"
+                    android:text="price"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/solTextView"
-                    style="@style/Black300.15.SfProDisplay"
-                    android:layout_width="@dimen/dp_0"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/dp_12"
+                    android:layout_marginEnd="12dp"
                     android:gravity="end"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/imgSwapPrice"
@@ -314,49 +279,38 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgSwapPrice"
-                    android:layout_width="@dimen/dp_18"
-                    android:layout_height="@dimen/dp_18"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_swap_" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <View
-            android:id="@+id/vDividerDetails"
-            style="@style/HorizontalDividerGreyBlue_400_10"
-            android:layout_marginTop="@dimen/dp_30"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lSwapFromTo" />
-
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/lDetails"
-            android:layout_width="@dimen/dp_0"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_30"
-            android:layout_marginTop="@dimen/dp_30"
-            android:layout_marginEnd="@dimen/dp_30"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="30dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vDividerDetails">
+            app:layout_constraintTop_toBottomOf="@id/lSwapFromTo">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black300.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/minimum_receive_" />
+                    android:text="min receive" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black300.15.SfProDisplay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
@@ -367,16 +321,14 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15">
+                android:layout_marginTop="15dp">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black300.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/fee_" />
+                    android:text="fee" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black300.15.SfProDisplay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
@@ -387,16 +339,14 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15">
+                android:layout_marginTop="15dp">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black300.15.SfProText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/slippage_" />
+                    android:text="slippage" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/Black300.15.SfProDisplay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
@@ -409,20 +359,20 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/swapButton"
-            android:layout_width="@dimen/dp_0"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_30"
-            android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginBottom="@dimen/dp_51"
-            android:background="@drawable/bg_swap_button"
-            android:fontFamily="@font/sf_pro_text"
-            android:paddingTop="@dimen/dp_19"
-            android:paddingBottom="@dimen/dp_19"
-            android:text="@string/swap_now"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="51dp"
+            android:background="@drawable/bg_blue_rounded"
+
+            android:paddingTop="19dp"
+            android:paddingBottom="19dp"
+            android:text="Swap_now"
             android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_15"
+            android:textColor="?colorElementPrimary"
+            android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

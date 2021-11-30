@@ -1,0 +1,13 @@
+ext {
+    buildToolsAllVersion = '30.0.2'
+
+    sdkMinVersion = 23
+    sdkTargetVersion = 30
+    sdkCompileVersion = 30
+
+    // https://github.com/shyiko/ktlint
+    ktlintVersion = '0.40.0'
+
+    gradlePluginVersion = '4.1.0'
+    kotlinVersion = '1.5.31'
+}

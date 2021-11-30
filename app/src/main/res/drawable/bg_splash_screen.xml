@@ -1,0 +1,12 @@
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
+
+    <item android:drawable="?colorElementPrimary" />
+
+    <item>
+        <bitmap
+            android:gravity="fill"
+            android:src="@drawable/bg_splash" />
+    </item>
+</layer-list>

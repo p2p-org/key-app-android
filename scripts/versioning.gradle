@@ -1,0 +1,24 @@
+ext.VERSION_NAME = VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_PATCH
+
+ext.VERSION_CODE =
+        1_000_00 * (VERSION_MAJOR as Integer) +
+        1_000 * (VERSION_MINOR as Integer) +
+        1_0 * (VERSION_PATCH as Integer) +
+        (VERSION_HOTFIX as Integer)
+
+task incrementVersionPatch(group: 'versioning', description: 'Increments patch version') {
+    doLast {
+        ant.propertyfile(file: 'gradle.properties') {
+            entry(key: 'VERSION_PATCH', value: (VERSION_PATCH as Integer) + 1)
+        }
+    }
+}
+
+// example './gradlew setVersionBuild -Pversion=10'
+task setVersionBuild(group: 'versioning', description: 'Sets build version') {
+    doLast {
+        ant.propertyfile(file: 'gradle.properties') {
+            entry(key: 'VERSION_BUILD', value: version)
+        }
+    }
+}

@@ -1,108 +1,188 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.appdistribution'
+    id 'com.google.firebase.crashlytics'
 }
 
-android {
-    compileSdkVersion compileVersion
-    buildToolsVersion buildVersion
+apply from: "$project.rootDir/scripts/ktlint.gradle"
+apply from: "$project.rootDir/scripts/versioning.gradle"
 
+android {
+    compileSdkVersion sdkCompileVersion
+    buildToolsVersion buildToolsAllVersion
 
     defaultConfig {
-        applicationId "com.p2p.wowlet"
-        minSdkVersion minVersion
-        targetSdkVersion targetVersion
-        versionCode appVersionCode
-        versionName appVersionName
+        applicationId "org.p2p.wallet"
+        minSdkVersion sdkMinVersion
+        targetSdkVersion sdkTargetVersion
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
 
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [
-                        "androidManifestFile": "$projectDir/src/main/AndroidManifest.xml".toString()
-                ]
+        ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
+
+        def apikeyPropertiesFile = rootProject.file("apikey.properties")
+        def apikeyProperties = new Properties()
+        if (apikeyPropertiesFile.canRead()) {
+            apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+            buildConfigField("String", "rpcPoolApiKey", apikeyProperties['rpcPoolApiKey'])
+        } else {
+            buildConfigField("String", "rpcPoolApiKey", "\"\"")
+        }
+    }
+
+    signingConfigs {
+        release {
+            file("../signing.properties").with { propFile ->
+                if (propFile.canRead()) {
+                    def properties = new Properties()
+                    properties.load(new FileInputStream(propFile))
+
+                    storeFile file(properties['keystorePath'])
+                    storePassword properties['keystorePassword']
+                    keyAlias properties['keyAlias']
+                    keyPassword properties['keyPassword']
+                } else {
+                    println 'Unable to read signing.properties, using defaults'
+                }
             }
         }
     }
 
     buildTypes {
-        release {
+        debug {
+            signingConfig signingConfigs.debug
             minifyEnabled false
+            shrinkResources false
+            versionNameSuffix ".$VERSION_BUILD-debug"
+        }
+
+        feature {
+            debuggable true
+            signingConfig signingConfigs.debug
+            minifyEnabled true
+            shrinkResources true
+            versionNameSuffix ".$VERSION_BUILD-feature"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            firebaseAppDistribution {
+                releaseNotes = featureChangelog()
+                groups = "wallet.feature.test"
+            }
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "p2p_wallet_${variant.name}_${variant.versionName}.apk"
-        }
-    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
+        // https://github.com/InsertKoinIO/koin/issues/939
+        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=org.koin.core.component.KoinApiExtension"
     }
 
     buildFeatures {
-        viewBinding = true
+        viewBinding true
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
+        animationsDisabled = true
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 }
 
 dependencies {
-    implementation project(path: ':entities')
-    implementation project(path: ':data')
-    implementation project(path: ':domain')
-    implementation project(path: ':sdk')
+    implementation project(path: ':solanaj')
 
-    implementation supportDependencies.kotlin
-    implementation supportDependencies.coreKtx
-    implementation supportDependencies.appcompat
-    implementation supportDependencies.material
-    implementation supportDependencies.constraintlayout
-    implementation supportDependencies.legacySupport
+    implementation "androidx.appcompat:appcompat:1.3.1"
+    implementation "androidx.biometric:biometric:1.1.0"
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation "androidx.constraintlayout:constraintlayout:2.1.2"
+    implementation 'androidx.activity:activity-ktx:1.3.1'
+    implementation 'androidx.fragment:fragment-ktx:1.3.6'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation "com.google.android.material:material:1.4.0"
+    implementation 'com.google.android:flexbox:2.0.1'
+    implementation "androidx.browser:browser:1.3.0"
 
-    implementation 'androidx.activity:activity-ktx:1.2.2'
-    implementation 'androidx.fragment:fragment-ktx:1.3.2'
+    def coroutinesVersion = '1.5.2'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
-    testImplementation supportDependencies.junit
-    androidTestImplementation supportDependencies.junitAndroid
-    androidTestImplementation supportDependencies.espressoCore
-    //viewPager2
+    // https://github.com/JakeWharton/timber
+    implementation "com.jakewharton.timber:timber:5.0.1"
+    // https://github.com/dm77/barcodescanner
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    // https://github.com/JakeWharton/ThreeTenABP
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.3.0'
 
-    implementation supportDependencies.viewPager2
-    //coroutine
-    implementation supportDependencies.coroutines
-    implementation supportDependencies.coroutinesAndroid
-    // network call
-    implementation supportDependencies.retrofit
-    implementation supportDependencies.moshiConverter
-    implementation supportDependencies.loggingInterceptor
-    //seed value
-    implementation 'com.github.bitcoinj:bitcoinj:0.15.8'
-    // di koin
-    implementation supportDependencies.koinAndroid
-    implementation supportDependencies.koinViewModel
-    //lifecycle
-    implementation supportDependencies.lifecycleCommon
-    implementation supportDependencies.lifecycleData
-    implementation supportDependencies.lifecycleViewModel
-    // Indicator circle pager
-    implementation supportDependencies.circleIndicator
-    implementation supportDependencies.circleIndicatrLoop
-    // code input
-    implementation supportDependencies.codeinputview
+    def retrofitVersion = '2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+
+    def okHttpVersion = '4.9.2'
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:28.4.2')
+
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics'
+
+    // Debug drawer
+    def debugDrawerVersion = '0.8.0'
+    implementation "io.palaima.debugdrawer:debugdrawer:$debugDrawerVersion"
+    implementation "io.palaima.debugdrawer:debugdrawer-base:$debugDrawerVersion"
+    implementation "io.palaima.debugdrawer:debugdrawer-commons:$debugDrawerVersion"
+    implementation "io.palaima.debugdrawer:debugdrawer-timber:$debugDrawerVersion"
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    kapt 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.caverock:androidsvg-aar:1.4'
+
+    // Room
+    implementation 'androidx.room:room-runtime:2.3.0'
+    implementation 'androidx.room:room-ktx:2.3.0'
+    kapt "androidx.room:room-compiler:2.3.0"
+
+    // seed value
+    implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
+
+    // https://github.com/InsertKoinIO/koin
+    implementation "io.insert-koin:koin-android:3.1.3"
+
     // MPAndroidChart
-    implementation supportDependencies.mpChart
+    implementation "com.github.PhilJay:MPAndroidChart:v3.1.0"
 
-    //fingerprint
-    implementation supportDependencies.biometric
+    // GeeTest
+    implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
 
-    //qrcode
-    implementation supportDependencies.qrcodeLib
-    //glde
-    implementation supportDependencies.glide
-
+    // core
+    testImplementation 'androidx.test:core-ktx:1.4.0'
+    testImplementation 'androidx.test.ext:junit-ktx:1.1.3'
+    // https://github.com/mockk/mockk
+    testImplementation 'io.mockk:mockk:1.12.0'
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation 'junit:junit:4.13.2'
+    // https://github.com/robolectric/robolectric
+    testImplementation "org.robolectric:robolectric:4.5.1"
+    // Coroutines support
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 }

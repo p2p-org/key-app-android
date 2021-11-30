@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/centerGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="@string/auth_almost_done_title"
+            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+
+        <FrameLayout
+            android:id="@+id/biometricView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="28dp"
+            android:background="@drawable/bg_gray_secondary_rounded"
+            app:layout_constraintBottom_toTopOf="@id/centerGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/biometricImageView"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_faceid"
+                tools:ignore="ContentDescription" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/biometricTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
+            android:text="@string/auth_biometric_question"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold24"
+            app:layout_constraintTop_toBottomOf="@id/biometricView" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/enableButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_blue_rounded"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/auth_enable_faceid"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="?colorElementPrimary"
+            app:layout_constraintBottom_toTopOf="@id/laterButton"
+            tools:ignore="UnusedAttribute" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/laterButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_gray_secondary_rounded"
+            android:foreground="?selectableItemBackground"
+            android:text="@string/auth_do_later"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:ignore="UnusedAttribute" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

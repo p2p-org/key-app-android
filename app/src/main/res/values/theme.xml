@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WalletTheme.Launcher" parent="WalletTheme">
+        <item name="android:windowBackground">@drawable/bg_splash_screen</item>
+    </style>
+
+    <style name="WalletTheme" parent="WalletBase.v21" />
+
+    <style name="WalletBase.v21" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+        <item name="android:navigationBarColor">@color/navigationBarColor</item>
+
+        <item name="colorPrimary">@color/accentPrimary</item>
+        <item name="colorPrimaryDark">@color/accentTertiary</item>
+
+        <item name="colorAccentPrimary">@color/accentPrimary</item>
+        <item name="colorAccentSecondary">@color/accentSecondary</item>
+        <item name="colorAccentTertiary">@color/accentTertiary</item>
+        <item name="colorAccentWarning">@color/accentWarning</item>
+        <item name="colorAccentGraph">@color/accentGraph</item>
+
+        <item name="colorElementPrimary">@color/elementPrimary</item>
+        <item name="colorElementSecondary">@color/elementSecondary</item>
+        <item name="colorElementTertiary">@color/elementTertiary</item>
+
+        <item name="colorMessagePrimary">@color/messagePrimary</item>
+        <item name="colorMessageSecondary">@color/messageSecondary</item>
+
+        <item name="colorBackgroundPrimary">@color/backgroundPrimary</item>
+        <item name="colorBackgroundSecondary">@color/backgroundSecondary</item>
+
+        <item name="colorSecondary">@color/elementSecondary</item>
+        <item name="colorControlHighlight">@color/elementSecondary</item>
+
+        <item name="colorAccent">@color/accentPrimary</item>
+        <item name="colorControlActivated">?colorAccent</item>
+        <item name="colorControlNormal">@color/messagePrimary</item>
+        <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">?colorPrimary</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <!-- fix blue text for come Lollipop devices -->
+        <!-- https://stackoverflow.com/questions/45196244/android-textcolor-ignored-in-androidtextappearance-of-the-edittext -->
+        <item name="android:editTextColor">@color/messagePrimary</item>
+        <item name="android:textColor">@color/messagePrimary</item>
+
+        <item name="android:actionMenuTextColor">?colorSecondary</item>
+    </style>
+</resources>

@@ -1,6 +1,3 @@
-include ':sdk'
-include ':entities'
-include ':domain'
-include ':data'
+include ':solanaj'
 include ':app'
-rootProject.name = "Wowlet"
+rootProject.name = "P2P Wallet"

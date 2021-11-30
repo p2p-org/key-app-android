@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_alert_elevation_rounded_top"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+        tools:text="Success" />
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
+        android:textColor="?colorElementSecondary"
+        tools:text="Transaction has been confirmed" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="center_vertical"
+            android:background="?colorElementTertiary" />
+
+        <org.p2p.wallet.common.ui.widget.RoundedImageView
+            android:id="@+id/iconImageView"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_success" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/amountTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
+        tools:text="- 440.0000 SOL" />
+
+    <TextView
+        android:id="@+id/usdAmountTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+        android:textColor="?colorElementSecondary"
+        tools:text="- 1 220,00 $" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="16dp"
+        android:background="?colorElementTertiary" />
+
+    <TextView
+        android:id="@+id/idTitleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/main_send_transaction_id"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
+        android:textColor="?colorElementSecondary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
+
+        <TextView
+            android:id="@+id/idTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            tools:text="MSRMcoVyrFxnSgo5uXwone5SKcGhT1KEJMFEkMEWf9L" />
+
+        <ImageView
+            android:id="@+id/viewImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_copy_link"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        android:background="?colorElementTertiary" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/doneButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_blue_selector"
+        android:foreground="?selectableItemBackground"
+        android:text="@string/common_done"
+        android:textAllCaps="false"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+        android:textColor="?colorElementPrimary"
+        tools:ignore="UnusedAttribute" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+</LinearLayout>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.p2p.wallet.common.ui.recycler.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:draggedItem="@id/contentView"
+    app:rightItem="@id/settingsView"
+    app:swipeDirection="left">
+
+    <LinearLayout
+        android:id="@+id/settingsView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/editImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_gray_secondary_rounded"
+            android:padding="8dp"
+            android:src="@drawable/ic_edit"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/hideImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_gray_secondary_rounded"
+            android:padding="8dp"
+            android:src="@drawable/ic_hide"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contentView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorBackgroundSecondary">
+
+        <org.p2p.wallet.common.ui.widget.RoundedImageView
+            android:id="@+id/tokenImageView"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="20dp"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <ImageView
+            android:id="@+id/wrappedImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_wrapped"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
+            app:layout_constraintEnd_toEndOf="@id/tokenImageView"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="2dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            app:layout_constraintEnd_toStartOf="@id/valueTextView"
+            app:layout_constraintStart_toEndOf="@id/tokenImageView"
+            app:layout_constraintTop_toTopOf="@id/tokenImageView"
+            tools:text="SOL" />
+
+        <TextView
+            android:id="@+id/addressTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
+            app:layout_constraintEnd_toStartOf="@id/totalTextView"
+            app:layout_constraintStart_toEndOf="@id/tokenImageView"
+            app:layout_constraintTop_toBottomOf="@id/nameTextView"
+            app:layout_constraintVertical_bias="1"
+            tools:text="0xG97y...g7R4" />
+
+        <TextView
+            android:id="@+id/valueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            app:layout_constraintEnd_toStartOf="@id/colorView"
+            app:layout_constraintTop_toTopOf="@id/nameTextView"
+            tools:text="3 000.00 $" />
+
+        <TextView
+            android:id="@+id/totalTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/addressTextView"
+            app:layout_constraintEnd_toStartOf="@id/colorView"
+            app:layout_constraintTop_toTopOf="@id/addressTextView"
+            tools:text="1 500.0000 SOL" />
+
+        <View
+            android:id="@+id/colorView"
+            android:layout_width="2dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="16dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@color/chartBTC" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:alpha="0.2"
+            android:background="?colorElementTertiary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</org.p2p.wallet.common.ui.recycler.SwipeLayout>

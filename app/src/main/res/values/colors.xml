@@ -1,47 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="green_30">#4D2DB533</color>
-    <color name="green_500">#17971D</color>
-    <color name="black">#FF000000</color>
-    <color name="black_80">#CC000000</color>
-    <color name="grey_dark">#202020</color>
-    <color name="gray_600">#757575</color>
-    <color name="gray_500">#565656</color>
-    <color name="blue_500">#0A84FF</color>
-    <color name="blue_400">#5887FF </color>
-    <color name="blue_300">#64B5F6</color>
-    <color name="blue_200">#a7befc</color>
-    <color name="gray_blue_400">#A3A5BA</color>
-    <color name="gray_blue_10">#1AA3A5BA</color>
-    <color name="gray_blue_50">#80A3A5BA</color>
-    <color name="gray_400">#C4C4C4</color>
-    <color name="gray_300">#F6F6F8</color>
-    <color name="gray_300_65">#A6F6F6F8</color>
-    <color name="gray_80">#CCDBDBDB</color>
-    <color name="hintColor">#808080</color>
-    <color name="gray_30">#4DD9D9D9</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="red_400">#F43D3D</color>
-    <color name="red_500">#FF0000</color>
-    <color name="background_screens">#1A282828</color>
-    <color name="colorTranslucent">#99000000</color>
-    <color name="darkgray">#33A3A5BA</color>
-    <color name="gray">#A3A5BA</color>
-    <color name="lightgray">#CFCFCF</color>
-    <color name="black_1">#1b1b1b</color>
-    <color name="darkslategray">#2a2a2a</color>
-    <color name="gainsboro">#E3E3E3</color>
-    <color name="limegreen">#2DB533</color>
-    <color name="cornflowerblue">#5887FF</color>
-    <color name="black_300">#202020</color>
-    <color name="lavender">#E9E9E9</color>
-    <color name="whitesmoke">#F7F7F9</color>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="colorProgressBackground">#33FFFFFF</color>
+    <color name="colorGreen">#2DB533</color>
+    <color name="colorGreenTransparent">#802DB533</color>
+    <color name="colorWarning">#FFA631</color>
+    <color name="colorErrorBackground">#FEF5F5</color>
+
+    <color name="accentPrimary">#5887FF</color>
+    <color name="accentSecondary">#96B1F8</color>
+    <color name="accentTertiary">#EFF3FF</color>
+    <color name="accentWarning">#FF5858</color>
+    <color name="accentGraph">#2DB533</color>
+
+    <color name="elementPrimary">#FFFFFFFF</color>
+    <color name="elementSecondary">#A3A5BA</color>
+    <color name="elementTertiary">#F6F6F8</color>
+
+    <color name="messagePrimary">#CC000000</color>
+    <color name="messageSecondary">#202020</color>
+    <color name="backgroundPrimary">#FFFFFF</color>
+    <color name="backgroundSecondary">#F6F6F8</color>
+
+    <color name="colorWhite">#FFFFFFFF</color>
+    <color name="colorStaticDark">#CC000000</color>
+
+    <color name="chartSOL">#6FECB5</color>
+    <color name="chartETH">#677DE3</color>
+    <color name="chartSRM">#7FD4E3</color>
+    <color name="chartBTC">#FEB150</color>
+    <color name="chartFTX">#7FCEE2</color>
+    <color name="chartYFI">#006AE3</color>
+    <color name="chartXRP">#24292E</color>
+    <color name="chartUSDT">#4F9E7E</color>
+    <color name="chartUSDC">#3D73C4</color>
+    <color name="chartSUSHI">#D765A3</color>
+    <color name="chartALEPH">#518BE6</color>
+    <color name="chartSXP">#FA7850</color>
+    <color name="chartHGET">#F0CA5D</color>
+    <color name="chartCREAM">#89DFDB</color>
+    <color name="chartUBXT">#4BA6BA</color>
+    <color name="chartHNT">#57A0F8</color>
+    <color name="chartFRONT">#473733</color>
+    <color name="chartLINK">#3C5CCB</color>
+    <color name="chartAKRO">#B85BF4</color>
+    <color name="chartHXRO">#56B838</color>
+    <color name="chartUNI">#FBEBF5</color>
+    <color name="chartMATH">#000000</color>
+    <color name="chartTOMO">#252829</color>
+    <color name="chartLUA">#F1BE5C</color>
+
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">?colorElementSecondary</color>
 </resources>
