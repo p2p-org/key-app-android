@@ -14,7 +14,6 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.scaleMedium
-import timber.log.Timber
 import java.math.BigDecimal
 
 class UserRemoteRepository(
@@ -67,8 +66,6 @@ class UserRemoteRepository(
         val result = response.accounts
             .mapNotNull {
                 val mintAddress = it.account.data.parsed.info.mint
-                Timber.d("### mint $mintAddress")
-
                 if (mintAddress == Token.REN_BTC_DEVNET_MINT) {
                     return@mapNotNull mapDevnetRenBTC(it)
                 }

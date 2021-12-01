@@ -8,13 +8,11 @@ interface SecurityKeyContract {
     interface View : MvpView {
         fun showKeys(keys: List<String>)
         fun copyToClipboard(keys: List<String>)
-        fun navigateToReserveUsername()
         fun showLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadKeys()
         fun copyKeys()
-        fun createAccount()
     }
 }

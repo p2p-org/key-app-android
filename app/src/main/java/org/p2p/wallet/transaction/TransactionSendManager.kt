@@ -79,5 +79,7 @@ class TransactionSendManager private constructor(
         executors.forEach {
             launch { it.execute() }
         }
+
+        executors.clear()
     }
 }

@@ -69,7 +69,7 @@ class ReserveUsernamePresenter(
             try {
                 interactor.registerUsername(username, result)
                 interactor.lookupUsername(tokenProvider.publicKey)
-                view?.successRegisterName()
+                view?.showSuccess()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while registering username")
                 view?.showErrorMessage(e)

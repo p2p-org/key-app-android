@@ -138,7 +138,7 @@ class ReserveUsernameFragment :
         gt3GeeTestUtils?.showFailedDialog()
     }
 
-    override fun successRegisterName() {
+    override fun showSuccess() {
         finishNavigation()
     }
 
