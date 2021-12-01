@@ -8,6 +8,7 @@ import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.wallet.main.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.fromLamports
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toPowerValue
@@ -35,16 +36,16 @@ object TransactionConverter {
             amountA = response.amountA
                 .toBigInteger()
                 .fromLamports(sourceData.decimals)
-                .scaleMedium(),
+                .scaleLong(),
             amountB = response.amountB
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
-                .scaleMedium(),
+                .scaleLong(),
             amountReceivedInUsd = response.amountB
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
                 .times(destinationRate?.price ?: BigDecimal.ZERO)
-                .scaleMedium(),
+                .scaleLong(),
             sourceSymbol = sourceData.symbol,
             sourceTokenUrl = sourceData.iconUrl.orEmpty(),
             destinationSymbol = destinationData.symbol,
@@ -63,7 +64,7 @@ object TransactionConverter {
         val amount = BigDecimal(response.amount)
             .scaleMedium()
             .times(rate?.price ?: BigDecimal.ZERO)
-            .scaleMedium()
+            .scaleLong()
 
         return HistoryTransaction.BurnOrMint(
             signature = response.signature,
@@ -96,7 +97,7 @@ object TransactionConverter {
         }
         val amount = BigDecimal(response.amount).toBigInteger()
             .fromLamports(response.decimals)
-            .scaleMedium()
+            .scaleLong()
             .times(rate?.price ?: BigDecimal.ZERO)
 
         val date = ZonedDateTime.ofInstant(

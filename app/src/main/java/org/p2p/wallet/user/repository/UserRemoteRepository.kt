@@ -66,6 +66,7 @@ class UserRemoteRepository(
         val result = response.accounts
             .mapNotNull {
                 val mintAddress = it.account.data.parsed.info.mint
+
                 if (mintAddress == Token.REN_BTC_DEVNET_MINT) {
                     return@mapNotNull mapDevnetRenBTC(it)
                 }

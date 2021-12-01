@@ -66,7 +66,7 @@ object SwapModule : InjectionModule {
         factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->
-            OrcaSwapPresenter(token, get(), get(), get(), get(), get())
+            OrcaSwapPresenter(token, get(), get(), get(), get(), get(), get())
         } bind OrcaSwapContract.Presenter::class
     }
 }

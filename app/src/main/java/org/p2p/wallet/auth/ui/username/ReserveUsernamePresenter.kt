@@ -8,13 +8,11 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import timber.log.Timber
 
 class ReserveUsernamePresenter(
     private val context: Context,
-    private val interactor: UsernameInteractor,
-    private val tokenProvider: TokenKeyProvider,
+    private val usernameInteractor: UsernameInteractor,
     private val fileRepository: FileRepository
 ) : BasePresenter<ReserveUsernameContract.View>(),
     ReserveUsernameContract.Presenter {
@@ -37,7 +35,7 @@ class ReserveUsernamePresenter(
                 * */
                 delay(300)
                 view?.showUsernameLoading(true)
-                interactor.checkUsername(username)
+                usernameInteractor.checkUsername(username)
                 view?.showUnavailableName(username)
             } catch (e: CancellationException) {
                 Timber.w(e, "Cancelled request for checking username: $username")
@@ -53,7 +51,7 @@ class ReserveUsernamePresenter(
     override fun checkCaptcha() {
         launch {
             try {
-                val params = interactor.checkCaptcha()
+                val params = usernameInteractor.checkCaptcha()
                 view?.showCaptcha(params)
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while checking captcha")
@@ -67,8 +65,7 @@ class ReserveUsernamePresenter(
         view?.showLoading(true)
         launch {
             try {
-                interactor.registerUsername(username, result)
-                interactor.lookupUsername(tokenProvider.publicKey)
+                usernameInteractor.registerUsername(username, result)
                 view?.showSuccess()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while registering username")

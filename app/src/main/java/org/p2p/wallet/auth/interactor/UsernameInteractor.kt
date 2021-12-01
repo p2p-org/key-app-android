@@ -19,15 +19,16 @@ class UsernameInteractor(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun checkUsername(username: String): String {
-        return usernameRepository.checkUsername(username)
-    }
+    suspend fun checkUsername(username: String): String =
+        usernameRepository.checkUsername(username)
 
     suspend fun checkCaptcha(): JSONObject =
         usernameRepository.checkCaptcha()
 
     suspend fun registerUsername(username: String, result: String) {
-        usernameRepository.registerUsername(tokenKeyProvider.publicKey, username, result)
+        val publicKey = tokenKeyProvider.publicKey
+        usernameRepository.registerUsername(publicKey, username, result)
+        sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }
 
     suspend fun lookupUsername(owner: String) {
