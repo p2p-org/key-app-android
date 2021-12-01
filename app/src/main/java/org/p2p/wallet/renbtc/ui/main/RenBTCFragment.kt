@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
-import org.p2p.wallet.renbtc.model.RenVMStatus
-import org.p2p.wallet.renbtc.ui.statuses.ReceivingStatusesFragment
+import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
@@ -18,7 +18,6 @@ import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
 
 class RenBTCFragment :
     BaseMvpFragment<RenBTCContract.View, RenBTCContract.Presenter>(R.layout.fragment_ren_btc),
@@ -46,7 +45,7 @@ class RenBTCFragment :
                 presenter.startNewSession(requireContext())
             }
             statusView.setOnClickListener {
-                addFragment(ReceivingStatusesFragment.create())
+                addFragment(RenTransactionsFragment.create())
             }
         }
 
@@ -91,16 +90,6 @@ class RenBTCFragment :
 
             attentionTextView.text = attentionText
         }
-    }
-
-    override fun showLatestStatus(status: RenVMStatus?) {
-        if (status == null) {
-            binding.statusView.setBottomText(R.string.receive_no_statuses_yet)
-            return
-        }
-
-        val text = status.getStringResId(requireContext())
-        binding.statusView.setBottomText(text)
     }
 
     override fun showIdleState() {

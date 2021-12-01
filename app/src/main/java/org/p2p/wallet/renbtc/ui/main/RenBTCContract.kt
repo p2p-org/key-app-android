@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.renbtc.model.RenVMStatus
 
 interface RenBTCContract {
 
@@ -13,7 +12,6 @@ interface RenBTCContract {
         fun updateTimer(remaining: String)
 
         fun showIdleState()
-        fun showLatestStatus(status: RenVMStatus?)
 
         fun renderQr(qrBitmap: Bitmap?)
         fun showLoading(isLoading: Boolean)

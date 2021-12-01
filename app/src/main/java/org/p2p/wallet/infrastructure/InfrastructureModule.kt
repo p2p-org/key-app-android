@@ -11,7 +11,6 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_NAME
-import org.p2p.wallet.infrastructure.navigation.NavigationScreenTracker
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
@@ -61,7 +60,5 @@ object InfrastructureModule : InjectionModule {
         }
 
         single { AppNotificationManager(get()) }
-
-        single { NavigationScreenTracker() }
     }
 }

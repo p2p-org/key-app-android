@@ -223,15 +223,15 @@ class OrcaSwapInteractor(
             throw IllegalStateException("feeRelayer is being implemented")
         }
 
-        // when swap from native SOL, a fee for creating it is needed
-        if (fromWalletPubkey == owner.toBase58()) {
+        // when swap from/to native SOL, a fee for creating it is needed
+        if (fromWalletPubkey == owner.toBase58() || bestPoolsPair!!.last().tokenBName == Token.SOL_SYMBOL) {
             transactionFees += lamportsPerSignature
             transactionFees += minRentExempt
         }
 
-        val liquidityProviderFees = if (inputAmount != null && bestPoolsPair != null) {
+        val liquidityProviderFees = if (inputAmount != null) {
             poolInteractor.calculateLiquidityProviderFees(
-                poolsPair = bestPoolsPair,
+                poolsPair = bestPoolsPair!!,
                 inputAmount = inputAmount,
                 slippage = slippage
             )

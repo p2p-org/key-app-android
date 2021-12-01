@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.debugdrawer.KEY_POLLING_ENABLED
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.TokenVisibility
@@ -165,8 +166,13 @@ class MainPresenter(
             try {
                 while (true) {
                     delay(DELAY_MS)
-                    userInteractor.loadUserTokensAndUpdateData()
-                    Timber.d("Successfully updated loaded tokens")
+                    val isPollingEnabled = sharedPreferences.getBoolean(KEY_POLLING_ENABLED, true)
+                    if (isPollingEnabled) {
+                        userInteractor.loadUserTokensAndUpdateData()
+                        Timber.d("Successfully updated loaded tokens")
+                    } else {
+                        Timber.d("Skipping tokens auto-update")
+                    }
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading tokens from remote")

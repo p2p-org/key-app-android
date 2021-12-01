@@ -113,7 +113,7 @@ class SendPresenter(
                 val target = Target(value)
                 when (target.validation) {
                     Target.Validation.USERNAME -> searchByUsername(target.trimmedValue)
-                    Target.Validation.ADDRESS -> searchByAddress(target.value)
+                    Target.Validation.ADDRESS -> searchByNetwork(target.value)
                     Target.Validation.EMPTY -> view?.showIdleTarget()
                     Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
                 }
@@ -314,6 +314,14 @@ class SendPresenter(
 
         val result = usernames.first()
         setTargetResult(result)
+    }
+
+    private suspend fun searchByNetwork(address: String) {
+        when (networkType) {
+            NetworkType.SOLANA -> searchByAddress(address)
+            /* No search for bitcoin network */
+            NetworkType.BITCOIN -> setTargetResult(SearchResult.AddressOnly(address))
+        }
     }
 
     private suspend fun searchByAddress(address: String) {
