@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.swap.interactor.orca.OrcaAmountInteractor
@@ -41,7 +42,8 @@ class OrcaSwapPresenter(
     private val userInteractor: UserInteractor,
     private val swapInteractor: OrcaSwapInteractor,
     private val amountInteractor: OrcaAmountInteractor,
-    private val transactionInteractor: TransactionInteractor
+    private val transactionInteractor: TransactionInteractor,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     companion object {
@@ -73,7 +75,10 @@ class OrcaSwapPresenter(
         launch {
             view?.showFullScreenLoading(true)
             try {
-                val token = initialToken ?: userInteractor.getUserTokens().first { it.isSOL }
+                val token = initialToken ?: userInteractor.getUserTokens().firstOrNull {
+                    it.isSOL && it.publicKey == tokenKeyProvider.publicKey
+                } ?: return@launch
+
                 setSourceToken(token)
                 view?.showSlippage(slippage)
 

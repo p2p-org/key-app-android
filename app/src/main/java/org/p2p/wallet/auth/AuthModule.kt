@@ -24,11 +24,10 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
+import org.p2p.wallet.rpc.RpcModule.RESERVING_USERNAME_QUALIFIER
 import retrofit2.Retrofit
 
 object AuthModule {
-
-    const val RESERVING_USERNAME_QUALIFIER = "https://fee-relayer.solana.p2p.org"
 
     fun create() = module {
         single { BiometricManager.from(get()) }
@@ -43,7 +42,7 @@ object AuthModule {
 
         // reserving username
         factory { UsernameInteractor(get(), get(), get(), get()) }
-        factory { ReserveUsernamePresenter(get(), get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
+        factory { ReserveUsernamePresenter(get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
         factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))

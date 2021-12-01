@@ -20,9 +20,9 @@ class UsernameRemoteRepository(
 
     override suspend fun registerUsername(publicKey: String, username: String, result: String) {
         val jsonObject = JSONObject(result)
-        val geeTestValidate = jsonObject.getString("geetest_validate")
-        val geeTestSecCode = jsonObject.getString("geetest_seccode")
-        val geeTestChallenge = jsonObject.getString("geetest_challenge")
+        val geeTestValidate = jsonObject.optString("geetest_validate")
+        val geeTestSecCode = jsonObject.optString("geetest_seccode")
+        val geeTestChallenge = jsonObject.optString("geetest_challenge")
         val credentials = Credentials(geeTestValidate, geeTestSecCode, geeTestChallenge)
         val body = RegisterNameRequest(publicKey, credentials)
         api.registerUsername(username, body)

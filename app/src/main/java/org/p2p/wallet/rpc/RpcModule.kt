@@ -1,5 +1,6 @@
 package org.p2p.wallet.rpc
 
+import FeeRelayerInterceptor
 import android.content.Context
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -7,7 +8,6 @@ import org.koin.dsl.module
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
@@ -20,6 +20,8 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 import retrofit2.Retrofit
 
 object RpcModule : InjectionModule {
+
+    const val RESERVING_USERNAME_QUALIFIER = "https://fee-relayer.solana.p2p.org"
 
     override fun create() = module {
         single {
@@ -46,13 +48,13 @@ object RpcModule : InjectionModule {
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, rpcpoolRpcApi, testnetRpcApi, get())
         } bind RpcRepository::class
 
-        single(named(AuthModule.RESERVING_USERNAME_QUALIFIER)) {
+        single(named(RESERVING_USERNAME_QUALIFIER)) {
             val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
-            getRetrofit(baseUrl, "FeeRelayer", interceptor = null)
+            getRetrofit(baseUrl, "FeeRelayer", interceptor = FeeRelayerInterceptor(get()))
         }
 
         single {
-            val retrofit = get<Retrofit>(named(AuthModule.RESERVING_USERNAME_QUALIFIER))
+            val retrofit = get<Retrofit>(named(RESERVING_USERNAME_QUALIFIER))
             val api = retrofit.create(FeeRelayerApi::class.java)
             FeeRelayerRemoteRepository(api)
         } bind FeeRelayerRepository::class

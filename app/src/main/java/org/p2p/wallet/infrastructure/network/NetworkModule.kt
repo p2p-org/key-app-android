@@ -50,20 +50,8 @@ object NetworkModule : InjectionModule {
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create(get<Gson>()))
+            .addConverterFactory(GsonConverterFactory.create(get()))
             .client(getClient(tag, interceptor))
-            .build()
-    }
-
-    fun Scope.getClient(tag: String, interceptor: Interceptor? = null): OkHttpClient {
-        return OkHttpClient.Builder()
-            .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .apply {
-                if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
-                if (interceptor != null) addInterceptor(interceptor)
-            }
-            .addNetworkInterceptor(ContentTypeInterceptor())
             .build()
     }
 
@@ -88,5 +76,17 @@ object NetworkModule : InjectionModule {
         return HttpLoggingInterceptor(okHttpLogger).apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
+    }
+
+    private fun Scope.getClient(tag: String, interceptor: Interceptor? = null): OkHttpClient {
+        return OkHttpClient.Builder()
+            .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .apply {
+                if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor(tag))
+                if (interceptor != null) addInterceptor(interceptor)
+            }
+            .addNetworkInterceptor(ContentTypeInterceptor())
+            .build()
     }
 }
