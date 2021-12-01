@@ -47,6 +47,16 @@
         android:textColor="@color/colorGreen"
         android:visibility="gone"
         tools:text="3/3"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/arrowImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_arrow_right"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:ignore="ContentDescription" />
 
 </LinearLayout>

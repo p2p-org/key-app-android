@@ -20,7 +20,7 @@ import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.main.MainModule
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.qr.QrModule
-import org.p2p.wallet.renbtc.di.RenBtcModule
+import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.root.ui.RootActivity

@@ -28,5 +28,15 @@
         android:layout_marginEnd="16dp"
         tools:text="https://mainnet.beta.com" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/enablePollingSwitch"
+        style="@style/WalletTheme.TextAppearance.Regular16"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:checked="true"
+        android:paddingHorizontal="16dp"
+        android:text="Enable auto update"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>
