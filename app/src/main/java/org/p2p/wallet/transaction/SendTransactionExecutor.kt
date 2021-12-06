@@ -17,6 +17,12 @@ class SendTransactionExecutor(private val transaction: AppTransaction) : Transac
         private const val TAG = "SendTransactionExecutor"
     }
 
+    init {
+        Timber
+            .tag(TAG)
+            .d("New executor created: ${transaction.transactionId} / ${transaction.serializedTransaction}")
+    }
+
     private val rpcRepository: RpcRepository by inject()
     private val appNotificationManager: AppNotificationManager by inject()
 
@@ -25,6 +31,9 @@ class SendTransactionExecutor(private val transaction: AppTransaction) : Transac
     override suspend fun execute() {
         val serializedTransaction = transaction.serializedTransaction
         val isSimulation = transaction.isSimulation
+        Timber
+            .tag(TAG)
+            .d("Transaction execution started: ${transaction.transactionId} / $serializedTransaction")
         try {
             currentState.emit(TransactionExecutionState.Executing(transaction.transactionId))
             val signature = if (isSimulation) {
