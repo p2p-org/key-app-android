@@ -20,7 +20,7 @@ class SendTransactionExecutor(private val transaction: AppTransaction) : Transac
     init {
         Timber
             .tag(TAG)
-            .d("New executor created: ${transaction.transactionId} / ${transaction.serializedTransaction}")
+            .d("New executor created: ${transaction.serializedTransaction}")
     }
 
     private val rpcRepository: RpcRepository by inject()
@@ -29,30 +29,34 @@ class SendTransactionExecutor(private val transaction: AppTransaction) : Transac
     private val currentState = MutableStateFlow<TransactionExecutionState>(TransactionExecutionState.Idle)
 
     override suspend fun execute() {
+        if (currentState.value !is TransactionExecutionState.Idle) return
         val serializedTransaction = transaction.serializedTransaction
         val isSimulation = transaction.isSimulation
+
+        Timber.d("### $serializedTransaction")
+
         Timber
             .tag(TAG)
-            .d("Transaction execution started: ${transaction.transactionId} / $serializedTransaction")
+            .d("Transaction execution started: $serializedTransaction")
         try {
-            currentState.emit(TransactionExecutionState.Executing(transaction.transactionId))
+            currentState.emit(TransactionExecutionState.Executing(transaction.serializedTransaction))
             val signature = if (isSimulation) {
                 rpcRepository.simulateTransaction(serializedTransaction)
             } else {
                 rpcRepository.sendTransaction(serializedTransaction)
             }
 
-            Timber.tag(TAG).d("Transaction execution completed: ${transaction.transactionId}")
-            currentState.emit(TransactionExecutionState.Finished(transaction.transactionId, signature))
+            Timber.tag(TAG).d("Transaction execution completed: ${transaction.serializedTransaction}")
+            currentState.emit(TransactionExecutionState.Finished(transaction.serializedTransaction, signature))
             showNotificationIfNeeded(signature)
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Error sending transaction in background")
-            currentState.emit(TransactionExecutionState.Failed(transaction.transactionId, e))
+            currentState.emit(TransactionExecutionState.Failed(transaction.serializedTransaction, e))
             showErrorNotificationIfNeeded(e.message ?: e.localizedMessage)
         }
     }
 
-    override fun getTransactionId(): String = transaction.transactionId
+    override fun getTransactionId(): String = transaction.serializedTransaction
 
     override fun getStateFlow(): MutableStateFlow<TransactionExecutionState> = currentState
 

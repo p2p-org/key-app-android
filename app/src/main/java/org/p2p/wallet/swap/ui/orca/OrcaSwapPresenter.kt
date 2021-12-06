@@ -36,6 +36,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
 
+// TODO: Refactor, make simpler
 class OrcaSwapPresenter(
     private val initialToken: Token.Active?,
     private val appScope: AppScope,

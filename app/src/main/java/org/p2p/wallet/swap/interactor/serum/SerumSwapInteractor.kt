@@ -28,7 +28,6 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.UUID
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -269,9 +268,7 @@ class SerumSwapInteractor(
         )
 
         try {
-            val appTransactionId = UUID.randomUUID().toString()
             val appTransaction = AppTransaction(
-                transactionId = appTransactionId,
                 serializedTransaction = serializedTransaction,
                 sourceSymbol = fromWallet.tokenSymbol,
                 destinationSymbol = toWallet.tokenSymbol,
@@ -729,9 +726,7 @@ class SerumSwapInteractor(
             feePayer = feePayer
         )
 
-        val appTransactionId = UUID.randomUUID().toString()
         val appTransaction = AppTransaction(
-            transactionId = appTransactionId,
             serializedTransaction = serializedTransaction,
             sourceSymbol = from.account.toBase58().cutMiddle(),
             destinationSymbol = to.account.toBase58().cutMiddle(),

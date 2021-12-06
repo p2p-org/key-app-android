@@ -62,9 +62,4 @@ class UserInteractor(
     suspend fun clearMemoryData() {
         mainLocalRepository.setTokens(emptyList())
     }
-
-    suspend fun findAccountAddress(mintAddress: String): Token.Active? =
-        mainLocalRepository.getUserTokens().firstOrNull {
-            it.mintAddress == mintAddress
-        }
 }

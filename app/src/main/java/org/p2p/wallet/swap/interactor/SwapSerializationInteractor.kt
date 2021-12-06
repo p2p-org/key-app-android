@@ -11,7 +11,6 @@ import org.p2p.wallet.transaction.TransactionSendManager
 import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
-import java.util.UUID
 
 class SwapSerializationInteractor(
     private val rpcRepository: RpcRepository,
@@ -37,9 +36,7 @@ class SwapSerializationInteractor(
             signers = signers
         )
 
-        val transactionId = UUID.randomUUID().toString()
         val transaction = AppTransaction(
-            transactionId = transactionId,
             serializedTransaction = serializedTransaction,
             sourceSymbol = sourceSymbol,
             destinationSymbol = destinationSymbol,
@@ -47,7 +44,7 @@ class SwapSerializationInteractor(
         )
         transactionManager.addInQueue(transaction)
 
-        return transactionId
+        return serializedTransaction
     }
 
     suspend fun serializeTransaction(
