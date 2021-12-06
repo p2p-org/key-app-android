@@ -15,6 +15,7 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenComparator
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
+import org.p2p.wallet.swap.model.OrcaInstructionsData
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
@@ -392,7 +393,7 @@ class OrcaSwapInteractor(
             tokens = info.tokens,
             owner = owner,
             fromTokenPubkey = fromWalletPubkey,
-            toTokenPubkey = intermediary.toBase58(),
+            toTokenPubkey = intermediary.account.toBase58(),
             amount = lamports,
             slippage = slippage,
             feeRelayerFeePayer = feeRelayerFeePayer,
@@ -406,22 +407,29 @@ class OrcaSwapInteractor(
             pool = pool1,
             tokens = info.tokens,
             owner = owner,
-            fromTokenPubkey = intermediary.toBase58(),
-            toTokenPubkey = destination.toBase58(),
+            fromTokenPubkey = intermediary.account.toBase58(),
+            toTokenPubkey = destination.account.toBase58(),
             amount = minOutAmount,
             slippage = slippage,
             feeRelayerFeePayer = feeRelayerFeePayer,
             shouldCreateAssociatedTokenAccount = false
         )
 
-        val instructions = pool0AccountInstructions.instructions + pool1AccountInstructions.instructions
+        val instructions = mutableListOf<TransactionInstruction>()
+        instructions += intermediary.instructions
+        instructions += destination.instructions
+        instructions += pool0AccountInstructions.instructions
+        instructions += pool1AccountInstructions.instructions
 
-        val cleanupInstructions =
-            pool0AccountInstructions.cleanupInstructions + pool1AccountInstructions.cleanupInstructions
+        val cleanupInstructions = mutableListOf<TransactionInstruction>()
+        cleanupInstructions += intermediary.closeInstructions
+        cleanupInstructions += destination.closeInstructions
+        cleanupInstructions += pool0AccountInstructions.cleanupInstructions
+        cleanupInstructions += pool1AccountInstructions.cleanupInstructions
 
         val accountInstructions = AccountInstructions(
             account = pool1AccountInstructions.account,
-            instructions = instructions as MutableList<TransactionInstruction>,
+            instructions = instructions,
             cleanupInstructions = cleanupInstructions,
             signers = listOf(owner) + pool0AccountInstructions.signers + pool1AccountInstructions.signers
         )
@@ -492,7 +500,7 @@ class OrcaSwapInteractor(
         toWalletPubkey: String?,
         feeRelayerFeePayer: PublicKey?,
         onConfirmed: () -> Unit
-    ): Pair<PublicKey, PublicKey> {
+    ): List<OrcaInstructionsData> {
 
         val owner = tokenKeyProvider.publicKey.toPublicKey()
         val intermediaryTokenMint = info?.tokens?.get(pool0.tokenBName)?.mint?.toPublicKey()
@@ -501,7 +509,6 @@ class OrcaSwapInteractor(
         if (intermediaryTokenMint == null || destinationMint == null) {
             throw IllegalStateException("Pool mints not found")
         }
-        val transaction = Transaction()
 
         /* building instructions for intermediary token */
         val intermediaryData = orcaInstructionsInteractor.buildDestinationInstructions(
@@ -512,8 +519,6 @@ class OrcaSwapInteractor(
             closeAfterward = true // todo:
         )
 
-        intermediaryData.instructions.forEach { transaction.addInstruction(it) }
-
         /* building instructions for destination token */
         val destinationData = orcaInstructionsInteractor.buildDestinationInstructions(
             owner = owner,
@@ -523,39 +528,14 @@ class OrcaSwapInteractor(
             closeAfterward = false // todo:
         )
 
-        destinationData.instructions.forEach { transaction.addInstruction(it) }
-
         // if token address has already been created, then no need to send any transactions
         if (intermediaryData.instructions.isEmpty() && destinationData.instructions.isEmpty()) {
             onConfirmed()
-            return intermediaryData.account to destinationData.account
+            return listOf(intermediaryData, destinationData)
         }
 
-        // if creating transaction is needed
-        val feePayerPublicKey = feeRelayerFeePayer ?: owner
-        transaction.setFeePayer(feePayerPublicKey)
-
-        val blockhash = rpcRepository.getRecentBlockhash().recentBlockhash
-        transaction.setRecentBlockHash(blockhash)
-
-        val signers = listOf(Account(tokenKeyProvider.secretKey))
-        transaction.sign(signers)
-
-        val serializedMessage = transaction.serialize()
-        val serializedTransaction = Base64Utils.encode(serializedMessage)
-
-        /**
-         * [swapRepository.sendAndWait] sends transaction and connects to the socket client
-         * where transaction confirmation status is awaiting.
-         * Once it came, [transactionInteractor] callback triggers and we proceed
-         * */
-        transactionInteractor.onSignatureReceived = {
-            onConfirmed()
-        }
-
-        swapRepository.sendAndWait(serializedTransaction)
-
-        return intermediaryData.account to destinationData.account
+        onConfirmed()
+        return listOf(intermediaryData, destinationData)
     }
 
     private fun findAllAvailableRoutes(tokens: OrcaTokens, pools: OrcaPools): OrcaRoutes {
