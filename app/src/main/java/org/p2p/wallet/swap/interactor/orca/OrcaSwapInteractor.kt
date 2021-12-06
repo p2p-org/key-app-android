@@ -36,7 +36,6 @@ import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.UUID
 
 class OrcaSwapInteractor(
     private val swapRepository: OrcaSwapRepository,
@@ -52,7 +51,7 @@ class OrcaSwapInteractor(
 
     companion object {
         private const val DELAY_FIVE_SECONDS_MS = 5000L
-        private const val ONE_MINUTE_WAIT_IN_MS = 60000
+        private const val ONE_AND_HALF_MINUTE_WAIT_IN_MS = 1000 * 60 * 1.5
     }
 
     private var info: OrcaSwapInfo? = null
@@ -371,16 +370,18 @@ class OrcaSwapInteractor(
         )
 
         while (!createTransactionConfirmed) {
-            if (waitingTimeInMs > ONE_MINUTE_WAIT_IN_MS) {
+            if (waitingTimeInMs > ONE_AND_HALF_MINUTE_WAIT_IN_MS) {
                 createTransactionConfirmed = true
                 break
             }
 
-            waitingTimeInMs += DELAY_FIVE_SECONDS_MS
-            /* Checking transaction is confirmed every 5 seconds */
             Timber
                 .tag("TransitiveSwap")
                 .d("Account creation is not confirmed, will check in 5 seconds, waiting time: $waitingTimeInMs")
+
+            waitingTimeInMs += DELAY_FIVE_SECONDS_MS
+
+            /* Checking transaction is confirmed every 5 seconds */
             delay(DELAY_FIVE_SECONDS_MS)
         }
 
@@ -440,9 +441,7 @@ class OrcaSwapInteractor(
             val serializedMessage = transaction.serialize()
             val serializedTransaction = Base64Utils.encode(serializedMessage)
 
-            val appTransactionId = UUID.randomUUID().toString()
             val appTransaction = AppTransaction(
-                transactionId = appTransactionId,
                 serializedTransaction = serializedTransaction,
                 sourceSymbol = fromWalletSymbol,
                 destinationSymbol = toWalletSymbol,
@@ -450,7 +449,7 @@ class OrcaSwapInteractor(
             )
 
             serializationInteractor.sendTransaction(appTransaction)
-            return OrcaSwapResult.Executing(appTransactionId)
+            return OrcaSwapResult.Executing(serializedTransaction)
         }
     }
 
@@ -667,13 +666,15 @@ class OrcaSwapInteractor(
 
     private suspend fun mapTokensForDestination(orcaTokens: List<OrcaToken>): List<Token> {
         val userTokens = userInteractor.getUserTokens()
+        val publicKey = tokenKeyProvider.publicKey
         val allTokens = orcaTokens
             .mapNotNull { orcaToken ->
                 val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
-                if (userToken != null) {
-                    return@mapNotNull userToken
-                } else {
-                    return@mapNotNull userInteractor.findTokenData(orcaToken.mint)
+                return@mapNotNull when {
+                    userToken != null ->
+                        if (userToken.isSOL && userToken.publicKey != publicKey) null else userToken
+                    else ->
+                        userInteractor.findTokenData(orcaToken.mint)
                 }
             }
             .sortedWith(TokenComparator())
