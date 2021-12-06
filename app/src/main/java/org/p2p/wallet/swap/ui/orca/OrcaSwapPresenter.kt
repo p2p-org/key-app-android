@@ -15,7 +15,6 @@ import org.p2p.wallet.swap.model.PriceData
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaAmountData
 import org.p2p.wallet.swap.model.orca.OrcaFeeData
-import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getMinimumAmountOut
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
@@ -323,21 +322,18 @@ class OrcaSwapPresenter(
 
     private fun calculateRates(source: Token.Active, destination: Token) {
         val pair = bestPoolPair ?: return
-        /* TODO: Add dynamic fee */
-//        val inputAmount = sourceAmount.toBigDecimalOrNull() ?: return
-        val inputAmount = BigDecimal.ONE
         Timber.tag(SWAP_STATE_TAG).d("Calculating rates")
 
-        val estimatedOutputAmount = pair.getOutputAmount(inputAmount.toLamports(source.decimals)) ?: return
-        Timber.tag(SWAP_STATE_TAG).d("Calculating rates, found min amount for output: $estimatedOutputAmount")
+        val inputAmount = sourceAmount.toBigDecimalOrNull() ?: return
+        val estimatedOutputAmount = pair.getMinimumAmountOut(
+            inputAmount.toLamports(source.decimals),
+            slippage.doubleValue
+        ) ?: return
+
         val finalOutputAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleMedium()
 
-        val estimatedInputAmount = pair.getInputAmount(inputAmount.toLamports(destination.decimals)) ?: return
-        Timber.tag(SWAP_STATE_TAG).d("Calculating rates, found min amount for input: $estimatedInputAmount")
-        val finalInputAmount = estimatedInputAmount.fromLamports(source.decimals).scaleMedium()
-
         val priceData = PriceData(
-            inputPrice = finalInputAmount.toString(),
+            inputPrice = finalOutputAmount.toString(),
             outputPrice = finalOutputAmount.toString(),
             inputSymbol = source.tokenSymbol,
             outputSymbol = destination.tokenSymbol
