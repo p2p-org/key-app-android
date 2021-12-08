@@ -58,7 +58,7 @@ class SearchFragment :
             backImageView.setOnClickListener { popBackStack() }
             clearImageView.setOnClickListener { searchEditText.text.clear() }
             textWatcher = searchEditText.doAfterTextChanged {
-                val value = it?.toString().orEmpty().trim()
+                val value = it?.toString().orEmpty().lowercase().trim()
                 val target = Target(value)
                 presenter.search(target)
 

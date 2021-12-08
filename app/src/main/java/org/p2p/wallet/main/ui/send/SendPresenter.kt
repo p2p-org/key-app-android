@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
 import org.p2p.wallet.main.model.CurrencyMode
@@ -35,7 +36,8 @@ class SendPresenter(
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
-    private val burnBtcInteractor: BurnBtcInteractor
+    private val burnBtcInteractor: BurnBtcInteractor,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -66,7 +68,9 @@ class SendPresenter(
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
-            val source = initialToken ?: userInteractor.getUserTokens().firstOrNull() ?: return@launch
+            val source = initialToken ?: userInteractor.getUserTokens().firstOrNull {
+                it.isSOL && it.publicKey == tokenKeyProvider.publicKey
+            } ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate?.price)
             mode = CurrencyMode.Own(source.tokenSymbol)
@@ -113,7 +117,7 @@ class SendPresenter(
                 val target = Target(value)
                 when (target.validation) {
                     Target.Validation.USERNAME -> searchByUsername(target.trimmedValue)
-                    Target.Validation.ADDRESS -> searchByAddress(target.value)
+                    Target.Validation.ADDRESS -> searchByNetwork(target.value)
                     Target.Validation.EMPTY -> view?.showIdleTarget()
                     Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
                 }
@@ -314,6 +318,14 @@ class SendPresenter(
 
         val result = usernames.first()
         setTargetResult(result)
+    }
+
+    private suspend fun searchByNetwork(address: String) {
+        when (networkType) {
+            NetworkType.SOLANA -> searchByAddress(address)
+            /* No search for bitcoin network */
+            NetworkType.BITCOIN -> setTargetResult(SearchResult.AddressOnly(address))
+        }
     }
 
     private suspend fun searchByAddress(address: String) {

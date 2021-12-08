@@ -117,7 +117,7 @@ class SendFragment :
 
             pasteTextView.setOnClickListener {
                 val nameOrAddress = requireContext().getClipBoardText(trimmed = true)
-                nameOrAddress?.let { presenter.validateTarget(it) }
+                nameOrAddress?.let { presenter.validateTarget(it.lowercase()) }
             }
         }
 

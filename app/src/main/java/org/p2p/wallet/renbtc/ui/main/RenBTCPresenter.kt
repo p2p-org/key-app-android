@@ -40,12 +40,6 @@ class RenBTCPresenter(
                 handleSession(session)
             }
         }
-
-        launch {
-            interactor.getRenVMStatusFlow().collect { statuses ->
-                view?.showLatestStatus(statuses.lastOrNull())
-            }
-        }
     }
 
     override fun startNewSession(context: Context) {

@@ -143,14 +143,10 @@ object TransactionTypeParser {
                     )
                     details.add(closeDetails)
                 }
-                else -> details.add(
-                    UnknownDetails(
-                        signature,
-                        transaction.blockTime,
-                        transaction.slot,
-                        parsedInfo.info
-                    )
-                )
+                else ->
+                    if (parsedInfo != null) {
+                        details.add(UnknownDetails(signature, transaction.blockTime, transaction.slot, parsedInfo.info))
+                    }
             }
         }
     }

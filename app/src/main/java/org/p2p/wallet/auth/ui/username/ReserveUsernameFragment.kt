@@ -138,7 +138,7 @@ class ReserveUsernameFragment :
         gt3GeeTestUtils?.showFailedDialog()
     }
 
-    override fun successRegisterName() {
+    override fun showSuccess() {
         finishNavigation()
     }
 
@@ -180,7 +180,8 @@ class ReserveUsernameFragment :
         gt3ConfigBean?.webviewTimeout = 10000
         gt3ConfigBean?.listener = object : GT3Listener() {
             override fun onDialogResult(result: String) {
-                presenter.registerUsername(binding.usernameEditText.text.toString().lowercase(), result)
+                val username = binding.usernameEditText.text?.toString().orEmpty().lowercase()
+                presenter.registerUsername(username, result)
                 gt3GeeTestUtils?.showSuccessDialog()
             }
 

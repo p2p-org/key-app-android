@@ -15,7 +15,7 @@ interface ReserveUsernameContract {
         fun showCaptcha(params: JSONObject)
         fun showCaptchaSucceeded()
         fun showCaptchaFailed()
-        fun successRegisterName()
+        fun showSuccess()
         fun showLoading(isLoading: Boolean)
         fun showUsernameLoading(isLoading: Boolean)
         fun showFile(file: File)

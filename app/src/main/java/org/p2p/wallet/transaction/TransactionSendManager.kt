@@ -32,23 +32,22 @@ class TransactionSendManager private constructor(
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     )
 
-    private val transactions = mutableListOf<AppTransaction>()
+    private val pendingTransactions = mutableListOf<AppTransaction>()
 
     private val executors = HashSet<TransactionExecutor>()
 
-    @Synchronized
     fun addInQueue(transaction: AppTransaction) {
+        addInQueue(listOf(transaction))
+    }
+
+    @Synchronized
+    fun addInQueue(transactions: List<AppTransaction>) {
         /*
          * Checking if transaction is already added
          * */
-        val isAlreadyAdded = transactions.any {
-            it.transactionId == transaction.transactionId ||
-                it.serializedTransaction == transaction.serializedTransaction
-        }
-        if (isAlreadyAdded) return
-
-        Timber.tag(TAG).w("Adding new transaction to the queue")
-        transactions.add(transaction)
+        Timber.tag(TAG).w("Adding new transactions to the queue")
+        pendingTransactions.clear()
+        pendingTransactions.addAll(transactions)
         executeTransactions()
     }
 
@@ -63,15 +62,11 @@ class TransactionSendManager private constructor(
     }
 
     private fun executeTransactions() {
-        val filtered = transactions.filter { transaction ->
-            executors.none { it.getTransactionId() == transaction.transactionId }
-        }
-
-        filtered.forEach {
+        pendingTransactions.forEach {
             executors.add(SendTransactionExecutor(it))
         }
 
-        Timber.tag(TAG).d("Starting execution, executors count: ${filtered.size}")
+        Timber.tag(TAG).d("Starting execution, executors count: ${pendingTransactions.size}")
 
         /*
         * Each transaction is being executed in separate coroutine

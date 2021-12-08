@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogStatusBottomSheetBinding
+import org.p2p.wallet.utils.showAllowingStateLoss
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -44,7 +45,7 @@ class TransactionStatusBottomSheet(
         ) {
             TransactionStatusBottomSheet(onDismiss)
                 .apply { information = info }
-                .show(fragmentManager, TransactionStatusBottomSheet::javaClass.name)
+                .showAllowingStateLoss(fragmentManager)
         }
     }
 
@@ -58,6 +59,7 @@ class TransactionStatusBottomSheet(
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isCancelable = false
         val info = information ?: return dismissAllowingStateLoss()
         with(binding) {
             statusTextView.text = getString(info.status)

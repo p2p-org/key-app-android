@@ -2,6 +2,7 @@ package org.p2p.wallet.utils
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -91,4 +92,10 @@ fun FragmentActivity.showInfoDialog(throwable: Throwable? = null) {
         actionCallback = null,
         dismissCallback = null
     )
+}
+
+fun DialogFragment.showAllowingStateLoss(fragmentManager: FragmentManager) {
+    val transaction = fragmentManager.beginTransaction()
+    transaction.add(this, this::javaClass.name)
+    transaction.commitAllowingStateLoss()
 }
