@@ -104,7 +104,7 @@ data class OrcaPool(
                     feeRatioNumerator = feeDenominator * ownerTradeFeeDenominator
                     feeRatioDenominator =
                         feeDenominator * ownerTradeFeeDenominator -
-                            (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
+                        (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
                 }
 
                 val inputAmount = inputAmountLessFee * feeRatioNumerator / feeRatioDenominator
