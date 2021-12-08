@@ -150,6 +150,7 @@ class OrcaSwapPresenter(
     }
 
     override fun setSourceAmount(amount: String) {
+        if (!this::sourceToken.isInitialized) return
         sourceAmount = amount
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
