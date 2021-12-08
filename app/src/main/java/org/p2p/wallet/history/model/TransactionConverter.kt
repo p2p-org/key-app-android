@@ -10,6 +10,7 @@ import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
+import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toPowerValue
 import org.threeten.bp.Instant
@@ -45,7 +46,7 @@ object TransactionConverter {
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
                 .times(destinationRate?.price ?: BigDecimal.ZERO)
-                .scaleLong(),
+                .scaleShort(),
             sourceSymbol = sourceData.symbol,
             sourceTokenUrl = sourceData.iconUrl.orEmpty(),
             destinationSymbol = destinationData.symbol,
@@ -64,7 +65,7 @@ object TransactionConverter {
         val amount = BigDecimal(response.amount)
             .scaleMedium()
             .times(rate?.price ?: BigDecimal.ZERO)
-            .scaleLong()
+            .scaleShort()
 
         return HistoryTransaction.BurnOrMint(
             signature = response.signature,

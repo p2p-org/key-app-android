@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.model.orca
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.TokenSwapProgram
 import org.p2p.wallet.swap.model.AccountBalance
+import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toPublicKey
@@ -211,11 +212,7 @@ data class OrcaPool(
             return BigInteger.ZERO
         }
 
-        if (feeDenominator.isZero()) {
-            return BigInteger.ZERO
-        }
-
-        return baseAmount.multiply(feeNumerator).divide(feeDenominator)
+        return baseAmount.multiply(feeNumerator).divideSafe(feeDenominator)
     }
 
     companion object {
@@ -315,7 +312,7 @@ data class OrcaPool(
             val denominator =
                 (a * inputPoolAmount + (b * BigInteger.valueOf(2) * outputPoolAmount + c)) * inputPoolAmount
 
-            return inputAmount * numerator / denominator
+            return inputAmount * numerator.divideSafe(denominator)
         }
 
         // A * sum(x_i) * n**n + D = A * D * n**n + D**(n+1) / (n**n * prod(x_i))

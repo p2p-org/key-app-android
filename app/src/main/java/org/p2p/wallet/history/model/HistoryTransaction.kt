@@ -13,6 +13,7 @@ import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.scaleMedium
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.p2p.wallet.utils.scaleShort
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -81,7 +82,7 @@ sealed class HistoryTransaction(
 
         fun getFormattedTotal(): String = "${total.scaleMedium()} ${tokenData.symbol}"
 
-        fun getFormattedAmount(): String = "${amount.scaleMedium()} $"
+        fun getFormattedAmount(): String = "${amount.scaleShort()} $"
 
         @ColorInt
         fun getTextColor(context: Context) =
