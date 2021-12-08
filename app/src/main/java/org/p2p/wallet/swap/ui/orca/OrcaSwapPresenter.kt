@@ -264,22 +264,22 @@ class OrcaSwapPresenter(
             lamportsPerSignature = lamportsPerSignature,
             minRentExempt = minRentExemption,
         )
-        val networkFee = fees.first.fromLamports().scaleMedium()
+        val networkFee = fees.first.fromLamports().scaleLong()
         val liquidityProviderFees = fees.second
 
         val liquidityProviderFee = if (pair.size == 1 && liquidityProviderFees.isNotEmpty()) {
-            val fee = fees.second[0].fromLamports(destination.decimals).scaleMedium()
+            val fee = fees.second[0].fromLamports(destination.decimals).scaleLong()
             "$fee ${destination.tokenSymbol}"
         } else {
             val intermediaryPool = pair[0]
             val intermediaryTokenSymbol = intermediaryPool.tokenBName
             val intermediaryFee =
-                liquidityProviderFees[0].fromLamports(intermediaryPool.tokenBBalance!!.decimals).scaleMedium()
+                liquidityProviderFees[0].fromLamports(intermediaryPool.tokenBBalance!!.decimals).scaleLong()
 
             val destinationPool = pair[1]
             val destinationTokenSymbol = destinationPool.tokenBName
             val destinationFee =
-                liquidityProviderFees[1].fromLamports(destinationPool.tokenBBalance!!.decimals).scaleMedium()
+                liquidityProviderFees[1].fromLamports(destinationPool.tokenBBalance!!.decimals).scaleLong()
             "$intermediaryFee $intermediaryTokenSymbol + $destinationFee $destinationTokenSymbol"
         }
 
@@ -325,16 +325,16 @@ class OrcaSwapPresenter(
         Timber.tag(SWAP_STATE_TAG).d("Calculating rates")
 
         val inputAmount = sourceAmount.toBigDecimalOrNull() ?: return
-        val estimatedOutputAmount = pair.getMinimumAmountOut(
-            inputAmount.toLamports(source.decimals),
-            slippage.doubleValue
-        ) ?: return
+        val inputAmountBigInteger = inputAmount.toLamports(source.decimals)
+        val estimatedOutputAmount = pair
+            .getOutputAmount(inputAmountBigInteger)
+            ?.fromLamports(destination.decimals) ?: return
 
-        val finalOutputAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleMedium()
-
+        val inputPrice = inputAmount / estimatedOutputAmount
+        val outputPrice = estimatedOutputAmount / inputAmount
         val priceData = PriceData(
-            inputPrice = finalOutputAmount.toString(),
-            outputPrice = finalOutputAmount.toString(),
+            inputPrice = inputPrice.scaleMedium().toString(),
+            outputPrice = outputPrice.scaleMedium().toString(),
             inputSymbol = source.tokenSymbol,
             outputSymbol = destination.tokenSymbol
         )

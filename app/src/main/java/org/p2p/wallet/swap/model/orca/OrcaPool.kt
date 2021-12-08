@@ -210,7 +210,12 @@ data class OrcaPool(
         if (feeNumerator.isZero()) {
             return BigInteger.ZERO
         }
-        return baseAmount * feeNumerator / feeDenominator
+
+        if (feeDenominator.isZero()) {
+            return BigInteger.ZERO
+        }
+
+        return baseAmount.multiply(feeNumerator).divide(feeDenominator)
     }
 
     companion object {
@@ -326,7 +331,7 @@ data class OrcaPool(
             var dPrevious: BigInteger
             var d = sumX
 
-            for (i in 0 until 32) {
+            for (i in 0 until 31) {
                 var dProduct = d
                 dProduct = dProduct * d / amountATimesN
                 dProduct = dProduct * d / amountBTimesN
@@ -352,8 +357,8 @@ data class OrcaPool(
 
             val leverageVal = (leverageMul + dPMul) * initialD
 
-            val leverageSub = initialD * leverage - BigInteger.ONE
-            val nCoinsSum = dProduct * N_COINS.toBigInteger() + BigInteger.ONE
+            val leverageSub = initialD * (leverage - BigInteger.ONE)
+            val nCoinsSum = dProduct * (N_COINS.toBigInteger() + BigInteger.ONE)
 
             val rVal = leverageSub + nCoinsSum
 
