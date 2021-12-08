@@ -22,6 +22,7 @@ import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.transaction.interactor.TransactionInteractor
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isNotZero
@@ -330,8 +331,8 @@ class OrcaSwapPresenter(
             .getOutputAmount(inputAmountBigInteger)
             ?.fromLamports(destination.decimals) ?: return
 
-        val inputPrice = inputAmount / estimatedOutputAmount
-        val outputPrice = estimatedOutputAmount / inputAmount
+        val inputPrice = inputAmount.divideSafe(estimatedOutputAmount)
+        val outputPrice = estimatedOutputAmount.divideSafe(inputAmount)
         val priceData = PriceData(
             inputPrice = inputPrice.scaleMedium().toString(),
             outputPrice = outputPrice.scaleMedium().toString(),
