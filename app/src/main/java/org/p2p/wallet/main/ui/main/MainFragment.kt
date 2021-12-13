@@ -18,6 +18,7 @@ import org.p2p.wallet.history.ui.TokenContainerFragment
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.VisibilityState
+import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaFragment
 import org.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.main.ui.options.TokenOptionsDialog
 import org.p2p.wallet.main.ui.receive.ReceiveFragment
@@ -91,6 +92,10 @@ class MainFragment :
 //            buyButton.setOnClickListener {
 //                replaceFragment(BuyFragment.create(null))
 //            }
+
+            buyButton.setOnClickListener {
+                replaceFragment(BuySolanaFragment.create())
+            }
 
             headerViewContainer.receiveButton.setOnClickListener {
                 replaceFragment(ReceiveFragment.create(null))

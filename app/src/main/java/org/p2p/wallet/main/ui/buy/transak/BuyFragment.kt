@@ -1,4 +1,4 @@
-package org.p2p.wallet.main.ui.buy
+package org.p2p.wallet.main.ui.buy.transak
 
 import android.annotation.SuppressLint
 import android.os.Bundle

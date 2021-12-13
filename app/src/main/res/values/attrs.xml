@@ -19,6 +19,7 @@
 
     <item name="edgetoedge" type="id" />
     <item name="seed_phrase_watcher_tag_id" type="id" />
+    <item name="prefix_watcher_tag_id" type="id" />
 
     <declare-styleable name="NumberKeyboardButtonView">
         <attr name="keyboard_button_text" format="string" />
@@ -70,5 +71,13 @@
         <attr name="buttonBackground" format="reference" />
         <attr name="buttonTextColor" format="color" />
         <attr name="buttonEnabled" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="OptionsTextView">
+        <attr name="optionsLabelText" format="string" />
+        <attr name="optionsText" format="string" />
+        <attr name="optionsValueText" format="string" />
+        <attr name="optionsValueTextColor" format="string" />
+        <attr name="isBoldValue" format="boolean" />
     </declare-styleable>
 </resources>

@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.ui
+package org.p2p.wallet.common.ui.recycler
 
 sealed class PagingState {
     object Idle : PagingState()

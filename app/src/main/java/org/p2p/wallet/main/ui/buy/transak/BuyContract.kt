@@ -1,4 +1,4 @@
-package org.p2p.wallet.main.ui.buy
+package org.p2p.wallet.main.ui.buy.transak
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView

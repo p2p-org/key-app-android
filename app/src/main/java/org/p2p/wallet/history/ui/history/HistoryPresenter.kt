@@ -4,7 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.common.ui.PagingState
+import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.EmptyDataException
@@ -107,7 +107,7 @@ class HistoryPresenter(
                     paginationEnded = true
                 } else {
                     transactions.addAll(history)
-                    view?.showHistory(transactions)
+                    view?.showHistory(history)
                 }
 
                 view?.showPagingState(PagingState.Idle)

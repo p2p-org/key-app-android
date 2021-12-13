@@ -21,7 +21,7 @@ fun String.setTextBold(vararg boldText: String): SpannableString {
     return stringBuilder
 }
 
-infix fun TextView.withTextOrGone(text: String?) {
+infix fun TextView.withTextOrGone(text: CharSequence?) {
     if (text.isNullOrEmpty()) {
         isVisible = false
         this.text = ""
