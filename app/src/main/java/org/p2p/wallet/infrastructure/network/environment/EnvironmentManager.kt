@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.core.content.edit
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.main.model.Token
 import org.p2p.solanaj.rpc.Environment
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
@@ -18,20 +17,17 @@ class EnvironmentManager(
 
     private var onChanged: ((Environment) -> Unit)? = null
 
-    fun getTransakUrl(token: Token.Active): String {
-        val baseUrl = context.getString(R.string.transakBaseUrl)
-        val symbol = if (token.isUSDC) Token.USDC_SYMBOL else Token.SOL_SYMBOL
-        val environment = if (BuildConfig.DEBUG) "staging" else "production"
+    fun getMoonpayUrl(): String {
+        val baseUrl = context.getString(R.string.moonpayBaseUrl)
+        val apiKey = BuildConfig.moonpayKey
+
         return Uri.Builder()
             .scheme("https")
             .authority(baseUrl)
-            .appendQueryParameter("networks", "mainnet")
-            .appendQueryParameter("environment", environment)
-//            .appendQueryParameter("apiKey", apiKey)
-            .appendQueryParameter("defaultCryptoCurrency", symbol)
-            .appendQueryParameter("walletAddress", token.publicKey)
-            .appendQueryParameter("disableWalletAddressForm", "true")
-            .appendQueryParameter("hideMenu", "true")
+            .appendQueryParameter("apiKey", apiKey)
+            .appendQueryParameter("currencyCode", "eth")
+            .appendQueryParameter("baseCurrencyAmount", "100")
+            .appendQueryParameter("lockAmount", "false")
             .build()
             .toString()
     }

@@ -51,7 +51,7 @@ class UserRemoteRepository(
                     list.forEach { symbol ->
                         val tokenObject = json.getAsJsonObject(symbol.uppercase())
                         if (tokenObject != null) {
-                            val price = tokenObject.getAsJsonPrimitive(Token.USD_SYMBOL).asBigDecimal
+                            val price = tokenObject.getAsJsonPrimitive(Token.USD_READABLE_SYMBOL).asBigDecimal
                             result.add(TokenPrice(symbol, price.scaleMedium()))
                         }
                     }

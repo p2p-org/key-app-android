@@ -9,7 +9,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.PagingState
+import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction

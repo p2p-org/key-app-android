@@ -31,8 +31,10 @@ android {
         if (apikeyPropertiesFile.canRead()) {
             apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
             buildConfigField("String", "rpcPoolApiKey", apikeyProperties['rpcPoolApiKey'])
+            buildConfigField("String", "moonpayKey", apikeyProperties['moonpayKey'])
         } else {
             buildConfigField("String", "rpcPoolApiKey", "\"\"")
+            buildConfigField("String", "moonpayKey", "\"\"")
         }
     }
 

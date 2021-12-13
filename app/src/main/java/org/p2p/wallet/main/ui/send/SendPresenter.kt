@@ -13,7 +13,7 @@ import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.Target
 import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.model.Token.Companion.USD_SYMBOL
+import org.p2p.wallet.main.model.Token.Companion.USD_READABLE_SYMBOL
 import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
@@ -280,7 +280,7 @@ class SendPresenter(
                             .stripTrailingZeros()
                     }
                     view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
-                    view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_SYMBOL)
+                    view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_READABLE_SYMBOL)
 
                     updateButtonText(token)
 

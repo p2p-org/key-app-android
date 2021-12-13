@@ -65,8 +65,6 @@ sealed class Token constructor(
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
-        fun getCurrentPricePerItem(): String = "${String.format("%.2f", usdRateOrZero)} per $tokenSymbol"
-
         fun getCurrentPrice(): String? = usdRate?.let { "$ $it" }
 
         fun getFormattedUsdTotal(): String? = totalInUsd?.let { "${totalInUsd.scaleShort()} $" }
@@ -116,7 +114,7 @@ sealed class Token constructor(
 
     companion object {
         const val REN_BTC_SYMBOL = "renBTC"
-        const val USD_SYMBOL = "USD"
+        const val USD_READABLE_SYMBOL = "USD"
         const val SOL_SYMBOL = "SOL"
         const val USDC_SYMBOL = "USDC"
         const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"

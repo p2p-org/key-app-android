@@ -16,7 +16,7 @@ object QrModule : InjectionModule {
             val context = get<Context>()
             QrColors(
                 ContextCompat.getColor(context, R.color.colorStaticDark),
-                ContextCompat.getColor(context, R.color.colorWhite)
+                ContextCompat.getColor(context, R.color.white)
             )
         }
     }
