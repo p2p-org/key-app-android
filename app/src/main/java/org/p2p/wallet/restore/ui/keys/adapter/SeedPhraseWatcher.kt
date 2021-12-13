@@ -58,7 +58,7 @@ class SeedPhraseWatcher(
                 val result = KeyResult.MultipleKeysAdded(keys)
                 seedPhrase = SeedPhrase(result)
             }
-            /* User enters single key here. Checking if he is finished entering space */
+            /* User enters single key here. Checking if he has finished by entering space */
             text.isNotBlank() && text.endsWith(" ") -> {
                 val result = KeyResult.KeyAdded(text.trim())
                 seedPhrase = SeedPhrase(result)

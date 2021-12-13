@@ -49,13 +49,14 @@ class PrefixTextWatcher(
         }
 
         val formattedValue = String.format("%,d", clearedValue.toBigInteger())
-        valueText = "$prefixSymbol$formattedValue"
+        valueText = "$prefixSymbol $formattedValue"
     }
 
     override fun afterTextChanged(edit: Editable?) {
         field.get()?.apply {
             removeTextChangedListener(this@PrefixTextWatcher)
-            edit?.replace(0, edit.length, valueText)
+            edit?.clear()
+            edit?.append(valueText)
             addTextChangedListener(this@PrefixTextWatcher)
         }
     }

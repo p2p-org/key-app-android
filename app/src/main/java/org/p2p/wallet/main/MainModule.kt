@@ -11,8 +11,6 @@ import org.p2p.wallet.main.repository.MainDatabaseRepository
 import org.p2p.wallet.main.repository.MainLocalRepository
 import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaContract
 import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaPresenter
-import org.p2p.wallet.main.ui.buy.transak.BuyContract
-import org.p2p.wallet.main.ui.buy.transak.BuyPresenter
 import org.p2p.wallet.main.ui.main.MainContract
 import org.p2p.wallet.main.ui.main.MainPresenter
 import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaContract
@@ -41,7 +39,6 @@ object MainModule : InjectionModule {
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
-        factory { (token: Token.Active?) -> BuyPresenter(token, get(), get()) } bind BuyContract.Presenter::class
         factory { BuySolanaPresenter(get(), get()) } bind BuySolanaContract.Presenter::class
     }
 }
