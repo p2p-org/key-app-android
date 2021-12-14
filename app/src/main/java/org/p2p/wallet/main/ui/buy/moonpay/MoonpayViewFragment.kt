@@ -21,7 +21,7 @@ import timber.log.Timber
 class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
     companion object {
-        private const val DELAY_IN_MS = 250L
+        private const val DELAY_IN_MS = 150L
         fun create() = MoonpayViewFragment()
     }
 
