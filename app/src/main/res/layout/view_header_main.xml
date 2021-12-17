@@ -39,7 +39,6 @@
 
         <TextView
             android:id="@+id/balanceTextView"
-            tools:ignore="HardcodedText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -48,7 +47,8 @@
             android:text="$ 0.00"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/balanceTitleTextView" />
+            app:layout_constraintTop_toBottomOf="@id/balanceTitleTextView"
+            tools:ignore="HardcodedText" />
 
         <View
             android:id="@+id/actionView"
@@ -57,15 +57,41 @@
             android:background="?colorAccentTertiary"
             app:layout_constraintTop_toBottomOf="@id/mainPieChart" />
 
-        <org.p2p.wallet.common.ui.widget.SimpleActionButton
+        <Button
+            android:id="@+id/buyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="@string/main_buy"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
+            android:textColor="?colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/sendButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/actionView" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="16dp"
+            android:background="?colorElementSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/buyButton"
+            app:layout_constraintEnd_toStartOf="@id/sendButton"
+            app:layout_constraintStart_toEndOf="@id/buyButton"
+            app:layout_constraintTop_toTopOf="@id/buyButton" />
+
+        <Button
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:actionButtonText="@string/main_send"
-            app:actionDrawable="@drawable/ic_send_blue"
+            android:background="@android:color/transparent"
+            android:text="@string/main_send"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
+            android:textColor="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/receiveButton"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/buyButton"
             app:layout_constraintTop_toTopOf="@id/actionView" />
 
         <View
@@ -77,12 +103,15 @@
             app:layout_constraintStart_toEndOf="@id/sendButton"
             app:layout_constraintTop_toTopOf="@id/sendButton" />
 
-        <org.p2p.wallet.common.ui.widget.SimpleActionButton
+        <Button
             android:id="@+id/receiveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:actionButtonText="@string/main_receive"
-            app:actionDrawable="@drawable/ic_receive_blue"
+            android:background="@android:color/transparent"
+            android:text="@string/main_receive"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
+            android:textColor="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/swapButton"
             app:layout_constraintStart_toEndOf="@id/sendButton"
@@ -97,12 +126,15 @@
             app:layout_constraintStart_toEndOf="@id/receiveButton"
             app:layout_constraintTop_toTopOf="@id/sendButton" />
 
-        <org.p2p.wallet.common.ui.widget.SimpleActionButton
+        <Button
             android:id="@+id/swapButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:actionButtonText="@string/main_swap"
-            app:actionDrawable="@drawable/ic_swap_blue"
+            android:background="@android:color/transparent"
+            android:text="@string/main_swap"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
+            android:textColor="?colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/receiveButton"

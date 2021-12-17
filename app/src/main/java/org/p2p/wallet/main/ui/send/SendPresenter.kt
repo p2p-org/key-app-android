@@ -13,11 +13,12 @@ import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.Target
 import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.model.Token.Companion.USD_READABLE_SYMBOL
+import org.p2p.wallet.main.model.Token.Companion.SOL_SYMBOL
 import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
@@ -56,7 +57,7 @@ class SendPresenter(
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
-    private var mode: CurrencyMode = CurrencyMode.Own("")
+    private var mode: CurrencyMode = CurrencyMode.Token("")
 
     private var networkType: NetworkType = NetworkType.SOLANA
 
@@ -73,7 +74,7 @@ class SendPresenter(
             } ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate?.price)
-            mode = CurrencyMode.Own(source.tokenSymbol)
+            mode = CurrencyMode.Token(source.tokenSymbol)
             view?.showNetworkDestination(networkType)
 
             calculateFee()
@@ -133,6 +134,7 @@ class SendPresenter(
         inputAmount = amount
 
         val token = token ?: return
+        calculateFee()
         calculateData(token)
     }
 
@@ -165,7 +167,7 @@ class SendPresenter(
 
         val totalAvailable = when (mode) {
             is CurrencyMode.Usd -> token.totalInUsd
-            is CurrencyMode.Own -> token.total.scaleLong()
+            is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
 
         view?.showInputValue(totalAvailable)
@@ -174,8 +176,8 @@ class SendPresenter(
     override fun switchCurrency() {
         val token = token ?: return
         mode = when (mode) {
-            is CurrencyMode.Own -> CurrencyMode.Usd
-            is CurrencyMode.Usd -> CurrencyMode.Own(token.tokenSymbol)
+            is CurrencyMode.Token -> CurrencyMode.Usd
+            is CurrencyMode.Usd -> CurrencyMode.Token(token.tokenSymbol)
         }
 
         calculateData(token)
@@ -251,48 +253,51 @@ class SendPresenter(
 
         calculationJob = launch {
             when (mode) {
-                is CurrencyMode.Own -> {
-                    tokenAmount = inputAmount.toBigDecimalOrZero()
-                    usdAmount = tokenAmount.multiply(token.usdRateOrZero)
-
-                    val usdAround = tokenAmount.times(token.usdRateOrZero).scaleMedium()
-                    val total = token.total.scaleLong()
-                    view?.showUsdAroundValue(usdAround)
-                    view?.showAvailableValue(total, token.tokenSymbol)
-
-                    updateButtonText(token)
-
-                    setButtonEnabled(tokenAmount, total)
-                }
-                is CurrencyMode.Usd -> {
-                    usdAmount = inputAmount.toBigDecimalOrZero()
-                    tokenAmount = if (token.usdRateOrZero.isZero()) {
-                        BigDecimal.ZERO
-                    } else {
-                        usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN)
-                            .stripTrailingZeros()
-                    }
-
-                    val tokenAround = if (usdAmount.isZero() || token.usdRateOrZero.isZero()) {
-                        BigDecimal.ZERO
-                    } else {
-                        usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN)
-                            .stripTrailingZeros()
-                    }
-                    view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
-                    view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_READABLE_SYMBOL)
-
-                    updateButtonText(token)
-
-                    setButtonEnabled(usdAmount, token.totalInUsd ?: BigDecimal.ZERO)
-                }
+                is CurrencyMode.Token -> calculateByToken(token)
+                is CurrencyMode.Usd -> calculateByUsd(token)
             }
         }
+    }
+
+    private fun calculateByUsd(token: Token.Active) {
+        usdAmount = inputAmount.toBigDecimalOrZero()
+        tokenAmount = if (token.usdRateOrZero.isZero()) {
+            BigDecimal.ZERO
+        } else {
+            usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN)
+                .stripTrailingZeros()
+        }
+
+        val tokenAround = if (usdAmount.isZero() || token.usdRateOrZero.isZero()) {
+            BigDecimal.ZERO
+        } else {
+            usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN)
+                .stripTrailingZeros()
+        }
+        view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
+        view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_READABLE_SYMBOL)
+
+        updateButtonText(token)
+        setButtonEnabled(usdAmount, token.totalInUsd ?: BigDecimal.ZERO)
+    }
+
+    private fun calculateByToken(token: Token.Active) {
+        tokenAmount = inputAmount.toBigDecimalOrZero()
+        usdAmount = tokenAmount.multiply(token.usdRateOrZero)
+
+        val usdAround = tokenAmount.times(token.usdRateOrZero).scaleMedium()
+        val total = token.total.scaleLong()
+        view?.showUsdAroundValue(usdAround)
+        view?.showAvailableValue(total, token.tokenSymbol)
+
+        updateButtonText(token)
+        setButtonEnabled(tokenAmount, total)
     }
 
     private fun calculateFee() {
         if (networkType == NetworkType.SOLANA) {
             view?.showFee(null)
+            view?.showReceiveAtLeastValue(null)
             return
         }
 
@@ -300,7 +305,10 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            view?.showFee("$fee SOL")
+            view?.showFee("$fee $SOL_SYMBOL")
+
+            val inputValue = inputAmount.toBigDecimalOrZero().toString()
+            view?.showReceiveAtLeastValue(inputValue)
         }
     }
 

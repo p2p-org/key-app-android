@@ -174,6 +174,25 @@ class OrcaPoolInteractor(
         }
     }
 
+    suspend fun loadBalances(currentRoutes: List<OrcaRoute>, infoPools: OrcaPools?) {
+        val balanceAccounts = currentRoutes
+            .flatten()
+            .flatMap {
+                listOfNotNull(
+                    infoPools?.get(it)?.tokenAccountA?.toBase58(),
+                    infoPools?.get(it)?.tokenAccountB?.toBase58()
+                )
+            }
+            .distinct()
+            .filterNot {
+                balancesCache.containsKey(it)
+            }
+
+        orcaSwapRepository.loadTokenBalances(balanceAccounts).forEach { (publicKey, balance) ->
+            balancesCache[publicKey] = balance
+        }
+    }
+
     suspend fun getPools(
         infoPools: OrcaPools?,
         route: OrcaRoute,

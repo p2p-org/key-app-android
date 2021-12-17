@@ -11,14 +11,14 @@ import kotlin.properties.Delegates
 class PrefixTextWatcher(
     editText: EditText,
     private val prefixSymbol: String,
-    private val onValueChanged: ((String) -> Unit)? = null
+    private val onValueChanged: ((PrefixData) -> Unit)? = null
 ) : TextWatcher {
 
     companion object {
         fun installOn(
             editText: EditText,
             prefixSymbol: String = Constants.USD_SYMBOL,
-            onValueChanged: ((String) -> Unit)? = null
+            onValueChanged: ((PrefixData) -> Unit)? = null
         ): PrefixTextWatcher {
             val prefixWatcher = PrefixTextWatcher(editText, prefixSymbol, onValueChanged)
             editText.addTextChangedListener(prefixWatcher)
@@ -34,7 +34,7 @@ class PrefixTextWatcher(
 
     private val field = WeakReference(editText)
 
-    private var valueText: String by Delegates.observable("") { _, oldValue, newValue ->
+    private var valueText: PrefixData by Delegates.observable(PrefixData()) { _, oldValue, newValue ->
         if (oldValue != newValue) onValueChanged?.invoke(newValue)
     }
 
@@ -44,19 +44,21 @@ class PrefixTextWatcher(
         val clearedValue = text.toString().filter { it.isDigit() }
 
         if (clearedValue.isEmpty()) {
-            valueText = ""
+            valueText = PrefixData()
             return
         }
 
-        val formattedValue = String.format("%,d", clearedValue.toBigInteger())
-        valueText = "$prefixSymbol $formattedValue"
+        valueText = PrefixData(
+            prefixText = "$prefixSymbol $clearedValue",
+            valueWithoutPrefix = clearedValue
+        )
     }
 
     override fun afterTextChanged(edit: Editable?) {
         field.get()?.apply {
             removeTextChangedListener(this@PrefixTextWatcher)
             edit?.clear()
-            edit?.append(valueText)
+            edit?.append(valueText.prefixText)
             addTextChangedListener(this@PrefixTextWatcher)
         }
     }

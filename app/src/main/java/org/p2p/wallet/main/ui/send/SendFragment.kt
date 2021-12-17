@@ -246,8 +246,13 @@ class SendFragment :
             glideManager.load(sourceImageView, token.logoUrl)
             sourceTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
-            priceTextView.text = token.getCurrentPrice()
+            priceTextView.text = token.getCurrentPrice() ?: getString(R.string.common_na)
         }
+    }
+
+    override fun showReceiveAtLeastValue(value: String?) {
+        val receiveAtLeast = value?.let { getString(R.string.send_receive_at_least, it) }
+        binding.atLeastTextView withTextOrGone receiveAtLeast
     }
 
     override fun showFee(fee: String?) {
