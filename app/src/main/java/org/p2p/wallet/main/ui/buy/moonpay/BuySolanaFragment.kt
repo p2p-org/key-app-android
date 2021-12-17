@@ -51,6 +51,7 @@ class BuySolanaFragment :
 
     override fun showData(data: BuyData) {
         with(binding) {
+            priceView.setValueText(data.priceText)
             getValueTextView.text = data.receiveAmountText
             processingFeeView.setValueText(data.processingFeeText)
             networkFeeView.setValueText(data.networkFeeText)

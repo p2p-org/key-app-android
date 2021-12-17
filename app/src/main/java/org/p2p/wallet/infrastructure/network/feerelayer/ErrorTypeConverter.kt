@@ -13,7 +13,7 @@ object ErrorTypeConverter {
     fun fromMoonpay(errorType: MoonpayErrorType): ErrorCode {
         // TODO: Add implementation
         return when (errorType) {
-            MoonpayErrorType.BadRequestError -> ErrorCode.BAD_REQUEST
+            MoonpayErrorType.BAD_REQUEST_ERROR -> ErrorCode.BAD_REQUEST
             else -> ErrorCode.SERVER_ERROR
         }
     }

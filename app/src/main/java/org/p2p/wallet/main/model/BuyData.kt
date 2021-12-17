@@ -13,6 +13,9 @@ data class BuyData(
     val total: BigDecimal
 ) {
 
+    val priceText: String
+        get() = "${Constants.USD_SYMBOL}$price"
+
     val receiveAmountText: String
         get() = "${Constants.USD_SYMBOL}$receiveAmount"
 

@@ -1,5 +1,7 @@
 package org.p2p.wallet.main.ui.buy.moonpay
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -13,6 +15,7 @@ import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import timber.log.Timber
+import java.math.BigDecimal
 
 private const val DELAY_IN_MS = 250L
 
@@ -21,6 +24,10 @@ class BuySolanaPresenter(
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     private var amount: String = "0"
+
+    private var data: BuyData? = null
+
+    private var calculationJob: Job? = null
 
     override fun loadData() {
         launch {
@@ -43,14 +50,18 @@ class BuySolanaPresenter(
 
     override fun setBuyAmount(amount: String) {
         this.amount = amount
-        calculate()
+        calculate(amount)
     }
 
-    private fun calculate() {
+    private fun calculate(amount: String) {
         val parsedAmount = amount.toBigDecimalOrZero()
-        if (parsedAmount.isZero()) return
+        if (amount.isBlank() || parsedAmount.isZero()) {
+            clear()
+            return
+        }
 
-        launch {
+        calculationJob?.cancel()
+        calculationJob = launch {
             try {
                 delay(DELAY_IN_MS)
                 view?.showLoading(true)
@@ -59,6 +70,8 @@ class BuySolanaPresenter(
                     is MoonpayBuyResult.Success -> handleSuccess(result.data)
                     is MoonpayBuyResult.Error -> view?.showMessage(result.message)
                 }
+            } catch (e: CancellationException) {
+                Timber.w("Cancelled get currency request")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading buy currency data")
                 view?.showErrorMessage(e)
@@ -78,6 +91,19 @@ class BuySolanaPresenter(
             accountCreationCost = null,
             total = info.totalAmount.scaleShort()
         )
-        view?.showData(data)
+        view?.showData(data).also { this.data = data }
+    }
+
+    private fun clear() {
+        val data = data ?: return
+        val clearedData = data.copy(
+            receiveAmount = BigDecimal.ZERO,
+            processingFee = BigDecimal.ZERO,
+            networkFee = BigDecimal.ZERO,
+            extraFee = BigDecimal.ZERO,
+            accountCreationCost = null,
+            total = BigDecimal.ZERO
+        )
+        view?.showData(clearedData)
     }
 }

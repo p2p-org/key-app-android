@@ -6,5 +6,5 @@ data class MoonpayError(
     @SerializedName("message")
     val message: String,
     @SerializedName("type")
-    val type: MoonpayErrorType
+    val type: String
 )
