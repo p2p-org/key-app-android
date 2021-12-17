@@ -1,19 +1,24 @@
 package org.p2p.wallet.infrastructure.network
 
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.BigDecimalTypeAdapter
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.R
+import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
+import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.main.MainModule.MOONPAY_QUALIFIER
+import org.p2p.wallet.main.model.BigDecimalTypeAdapter
 import org.p2p.wallet.updates.ConnectionStateProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -40,6 +45,11 @@ object NetworkModule : InjectionModule {
         }
 
         single { ConnectionStateProvider(get()) }
+
+        single(named(MOONPAY_QUALIFIER)) {
+            val moonPayApiUrl = get<Context>().getString(R.string.moonpayBaseUrl)
+            getRetrofit(moonPayApiUrl, "Moonpay", MoonpayErrorInterceptor(get()))
+        }
     }
 
     fun Scope.getRetrofit(

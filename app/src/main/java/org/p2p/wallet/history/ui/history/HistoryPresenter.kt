@@ -107,7 +107,7 @@ class HistoryPresenter(
                     paginationEnded = true
                 } else {
                     transactions.addAll(history)
-                    view?.showHistory(history)
+                    view?.showHistory(transactions)
                 }
 
                 view?.showPagingState(PagingState.Idle)

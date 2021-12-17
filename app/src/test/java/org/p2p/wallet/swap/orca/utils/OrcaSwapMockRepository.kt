@@ -92,6 +92,10 @@ class OrcaSwapMockRepository : OrcaSwapRepository {
         throw IllegalStateException("No balance found for ${publicKey.toBase58()}")
     }
 
+    override suspend fun loadTokenBalances(publicKeys: List<String>): List<Pair<String, AccountBalance>> {
+        return emptyList()
+    }
+
     override suspend fun sendAndWait(serializedTransaction: String) {
     }
 }

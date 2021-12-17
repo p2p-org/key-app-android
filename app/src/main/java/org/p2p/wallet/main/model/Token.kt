@@ -108,20 +108,15 @@ sealed class Token constructor(
     val isSOL: Boolean
         get() = tokenSymbol == SOL_SYMBOL
 
-    @IgnoredOnParcel
-    val isUSDC: Boolean
-        get() = tokenSymbol == USDC_SYMBOL
-
     companion object {
         const val REN_BTC_SYMBOL = "renBTC"
-        const val USD_READABLE_SYMBOL = "USD"
         const val SOL_SYMBOL = "SOL"
-        const val USDC_SYMBOL = "USDC"
         const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
         const val REN_BTC_DEVNET_MINT = "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD"
         const val REN_BTC_DEVNET_MINT_ALTERNATE = "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5"
-        const val SOL_MINT =
-            "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ" // Arbitrary mint to represent SOL (not wrapped SOL).
+
+        // Arbitrary mint to represent SOL (not wrapped SOL).
+        const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ"
 
         const val SOL_NAME = "Solana"
 

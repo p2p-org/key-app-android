@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="moonpayBaseUrl">https://buy-staging.moonpay.com/</string>
+    <string name="moonpayBaseDomain">https://buy-staging.moonpay.com/</string>
 </resources>

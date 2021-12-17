@@ -17,8 +17,8 @@ class EnvironmentManager(
 
     private var onChanged: ((Environment) -> Unit)? = null
 
-    fun getMoonpayUrl(): String {
-        val baseUrl = context.getString(R.string.moonpayBaseUrl)
+    fun getMoonpayUrl(amount: String): String {
+        val baseUrl = context.getString(R.string.moonpayBaseDomain)
         val apiKey = BuildConfig.moonpayKey
 
         return Uri.Builder()
@@ -26,7 +26,7 @@ class EnvironmentManager(
             .authority(baseUrl)
             .appendQueryParameter("apiKey", apiKey)
             .appendQueryParameter("currencyCode", "eth")
-            .appendQueryParameter("baseCurrencyAmount", "100")
+            .appendQueryParameter("baseCurrencyAmount", amount)
             .appendQueryParameter("lockAmount", "false")
             .build()
             .toString()

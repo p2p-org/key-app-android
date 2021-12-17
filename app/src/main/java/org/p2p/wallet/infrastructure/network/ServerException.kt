@@ -4,8 +4,8 @@ import android.content.Context
 import java.io.IOException
 
 class ServerException(
-    private val errorCode: ErrorCode,
-    fullMessage: String,
+    val errorCode: ErrorCode,
+    private val fullMessage: String,
     private val errorMessage: String?
 ) : IOException("statusCode: $errorCode, errorMessage: $fullMessage") {
 
@@ -14,4 +14,6 @@ class ServerException(
     } else {
         errorMessage
     }
+
+    fun getDirectMessage(): String = errorMessage ?: fullMessage
 }

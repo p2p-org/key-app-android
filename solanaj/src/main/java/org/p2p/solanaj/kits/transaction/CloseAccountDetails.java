@@ -1,18 +1,22 @@
 package org.p2p.solanaj.kits.transaction;
 
-import java.util.Map;
+import org.jetbrains.annotations.Nullable;
 
 public class CloseAccountDetails extends TransactionDetails {
     private String account;
-    private String destination;
-    private String owner;
+    private String mint;
     private int slot;
 
-    public CloseAccountDetails(String signature, long blockTime, int slot, Map<String, Object> rawData) {
+    public CloseAccountDetails(
+            @Nullable String signature,
+            long blockTime,
+            int slot,
+            @Nullable String account,
+            @Nullable String mint) {
         super(signature, blockTime, slot);
-        this.account = (String) rawData.get("account");
-        this.destination = (String) rawData.get("destination");
-        this.owner = (String) rawData.get("owner");
+        this.account = account;
+        this.slot = slot;
+        this.mint = mint;
     }
 
     @Override
@@ -29,12 +33,8 @@ public class CloseAccountDetails extends TransactionDetails {
         return account;
     }
 
-    public String getDestination() {
-        return destination;
-    }
-
-    public String getOwner() {
-        return owner;
+    public String getMint() {
+        return mint;
     }
 
     @Override

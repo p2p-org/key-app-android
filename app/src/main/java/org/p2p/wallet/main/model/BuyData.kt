@@ -5,13 +5,16 @@ import java.math.BigDecimal
 
 data class BuyData(
     val price: BigDecimal,
+    val receiveAmount: BigDecimal,
     val processingFee: BigDecimal,
     val networkFee: BigDecimal,
-    val accountCreationCost: BigDecimal
+    val extraFee: BigDecimal,
+    val accountCreationCost: BigDecimal?,
+    val total: BigDecimal
 ) {
 
-    val priceText: String
-        get() = "${Constants.USD_SYMBOL}$price"
+    val receiveAmountText: String
+        get() = "${Constants.USD_SYMBOL}$receiveAmount"
 
     val processingFeeText: String
         get() = "${Constants.USD_SYMBOL}$processingFee"
@@ -19,9 +22,12 @@ data class BuyData(
     val networkFeeText: String
         get() = "${Constants.USD_SYMBOL}$networkFee"
 
+    val extraFeeText: String
+        get() = "${Constants.USD_SYMBOL}$extraFee"
+
     val accountCreationCostText: String
         get() = "${Constants.USD_SYMBOL}$accountCreationCost"
 
-    val total: String
-        get() = "${Constants.USD_SYMBOL}${processingFee + networkFee + accountCreationCost}"
+    val totalText: String
+        get() = "${Constants.USD_SYMBOL}$total"
 }

@@ -124,8 +124,7 @@ object TransactionConverter {
             signature = response.signature,
             blockNumber = response.slot,
             account = response.account,
-            destination = response.destination,
-            owner = response.owner,
+            mint = response.mint,
             date = ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(response.blockTime),
                 ZoneId.systemDefault()

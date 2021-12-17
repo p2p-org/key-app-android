@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,8 +18,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/buy_solana_on_moonpay"
+            app:title="Buy ETH on Moonpay"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+<!--        app:title="@string/buy_solana_on_moonpay"-->
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminateOnly="true"
+            android:visibility="invisible"
+            tools:visibility="visible" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -95,13 +106,14 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:singleLine="true"
-                    android:text="@string/buy_zero_sol"
+                    android:text="0 ETH"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="?colorElementSecondary"
                     app:drawableEndCompat="@drawable/ic_exchange"
                     app:layout_constraintBottom_toBottomOf="@id/getTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/getTextView" />
+<!--                android:text="@string/buy_zero_sol"-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
@@ -112,8 +124,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="16dp"
-            app:optionsLabelText="@string/buy_sol_price" />
-
+            app:optionsLabelText="ETH price" />
+        <!-- todo: revert back when moonpay is ready for production -->
+        <!--        app:optionsLabelText="@string/buy_sol_price"-->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -127,8 +140,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="12dp"
-            app:optionsLabelText="@string/buy_sol_purchase_cost" />
-
+            app:optionsLabelText="ETH purchase cost" />
+        <!--        app:optionsLabelText="@string/buy_sol_purchase_cost"-->
         <org.p2p.wallet.common.ui.widget.OptionsTextView
             android:id="@+id/processingFeeView"
             android:layout_width="match_parent"
@@ -146,11 +159,20 @@
             app:optionsLabelText="@string/buy_network_fee" />
 
         <org.p2p.wallet.common.ui.widget.OptionsTextView
+            android:id="@+id/extraFeeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="36dp"
+            android:layout_marginVertical="12dp"
+            app:optionsLabelText="@string/buy_extra_fee" />
+
+        <org.p2p.wallet.common.ui.widget.OptionsTextView
             android:id="@+id/accountCreationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="12dp"
+            android:visibility="gone"
             app:optionsLabelText="@string/buy_account_creation"
             app:optionsText="@string/buy_one_time_payment" />
 
