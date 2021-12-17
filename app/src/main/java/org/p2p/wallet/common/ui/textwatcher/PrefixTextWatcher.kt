@@ -49,7 +49,7 @@ class PrefixTextWatcher(
         }
 
         valueText = PrefixData(
-            prefixText = "$prefixSymbol $clearedValue",
+            prefixText = "$prefixSymbol$clearedValue",
             valueWithoutPrefix = clearedValue
         )
     }

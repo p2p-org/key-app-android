@@ -11,8 +11,8 @@ import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.main.model.BuyData
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withTextOrGone
 
 class BuySolanaFragment :
     BaseMvpFragment<BuySolanaContract.View, BuySolanaContract.Presenter>(R.layout.fragment_buy_solana),
@@ -66,8 +66,8 @@ class BuySolanaFragment :
         binding.progressBar.isInvisible = !isLoading
     }
 
-    override fun showMessage(message: String) {
-        toast(message)
+    override fun showMessage(message: String?) {
+        binding.errorTextView withTextOrGone message
     }
 
     override fun navigateToMoonpay(amount: String) {

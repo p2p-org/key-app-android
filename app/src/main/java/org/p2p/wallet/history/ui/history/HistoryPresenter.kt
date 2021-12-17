@@ -32,8 +32,7 @@ class HistoryPresenter(
 
         paginationEnded = false
 
-        pagingJob?.cancel()
-        pagingJob = launch {
+        launch {
             try {
                 view?.showPagingState(PagingState.InitialLoading)
 
@@ -46,8 +45,6 @@ class HistoryPresenter(
                 }
 
                 view?.showPagingState(PagingState.Idle)
-            } catch (e: CancellationException) {
-                Timber.w(e, "Cancelled history load")
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")
                 if (e is EmptyDataException) {

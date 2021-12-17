@@ -10,7 +10,7 @@ interface BuySolanaContract {
         fun showTokenPrice(price: String)
         fun showData(data: BuyData)
         fun showLoading(isLoading: Boolean)
-        fun showMessage(message: String)
+        fun showMessage(message: String?)
         fun navigateToMoonpay(amount: String)
     }
 

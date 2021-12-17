@@ -4,7 +4,7 @@ import org.p2p.wallet.main.api.MoonpayBuyCurrencyResponse
 import java.math.BigDecimal
 
 data class BuyCurrency(
-    val receiveAmount: BigDecimal,
+    val receiveAmount: Double,
     val price: BigDecimal,
     val feeAmount: BigDecimal,
     val extraFeeAmount: BigDecimal,
