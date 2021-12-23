@@ -91,7 +91,11 @@ class HistoryInteractor(
             }
             .distinct()
 
-        val accountsInfo = rpcRepository.getAccountsInfo(accountsInfoIds)
+        val accountsInfo = if (accountsInfoIds.isNotEmpty()) {
+            rpcRepository.getAccountsInfo(accountsInfoIds)
+        } else {
+            emptyList()
+        }
 
         return transactions
             .mapNotNull { details ->

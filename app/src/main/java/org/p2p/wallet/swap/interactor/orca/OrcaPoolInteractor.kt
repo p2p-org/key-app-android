@@ -188,6 +188,8 @@ class OrcaPoolInteractor(
                 balancesCache.containsKey(it)
             }
 
+        if (balanceAccounts.isEmpty()) return
+
         orcaSwapRepository.loadTokenBalances(balanceAccounts).forEach { (publicKey, balance) ->
             balancesCache[publicKey] = balance
         }

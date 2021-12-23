@@ -239,10 +239,14 @@ class OrcaSwapPresenter(
     }
 
     private suspend fun searchTradablePairs(source: Token.Active, destination: Token) {
-        val pairs = swapInteractor.getTradablePoolsPairs(source.mintAddress, destination.mintAddress)
-        Timber.tag(TAG_SWAP_STATE).d("Loaded all tradable pool pairs. Size: ${pairs.size}")
-        poolPairs.clear()
-        poolPairs.addAll(pairs)
+        try {
+            val pairs = swapInteractor.getTradablePoolsPairs(source.mintAddress, destination.mintAddress)
+            Timber.tag(TAG_SWAP_STATE).d("Loaded all tradable pool pairs. Size: ${pairs.size}")
+            poolPairs.clear()
+            poolPairs.addAll(pairs)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error occurred while getting tradable pool pairs")
+        }
     }
 
     private suspend fun calculateFees(source: Token.Active, destination: Token) {
