@@ -32,7 +32,7 @@ class SecretKeyInteractor(
     suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<DerivableAccount> {
         val derivableAccounts = authRepository.getDerivableAccounts(path, keys)
         val balanceAccounts = derivableAccounts.map { it.publicKey.toBase58() }
-        val balances = rpcRepository.getBalances(balanceAccounts)
+        val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
         return derivableAccounts.mapNotNull { account ->
             val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
             val tokenData = userLocalRepository.findTokenDataBySymbol(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null

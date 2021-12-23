@@ -117,7 +117,7 @@ class SendPresenter(
                 view?.showSearchLoading(true)
                 val target = Target(value)
                 when (target.validation) {
-                    Target.Validation.USERNAME -> searchByUsername(target.trimmedValue)
+                    Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
                     Target.Validation.ADDRESS -> searchByNetwork(target.value)
                     Target.Validation.EMPTY -> view?.showIdleTarget()
                     Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
