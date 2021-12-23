@@ -54,7 +54,7 @@ class SecurityKeyFragment :
                 nextButton.isEnabled = isChecked
             }
             nextButton.setOnClickListener {
-                replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE))
+                presenter.createAndSaveAccount()
             }
 
             copyTextView.setOnClickListener {
@@ -69,6 +69,10 @@ class SecurityKeyFragment :
                 }
             }
         }
+    }
+
+    override fun navigateToReserve() {
+        replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE))
     }
 
     override fun showKeys(keys: List<String>) {

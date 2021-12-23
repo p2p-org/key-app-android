@@ -43,7 +43,7 @@ class SecretKeyInteractor(
         }
     }
 
-    suspend fun createAndSaveAccount(path: DerivationPath, keys: List<String>) {
+    suspend fun createAndSaveAccount(path: DerivationPath, keys: List<String>, lookup: Boolean = true) {
         val account = authRepository.createAccount(path, keys)
         val publicKey = account.publicKey.toBase58()
 
@@ -55,7 +55,9 @@ class SecretKeyInteractor(
             putString(KEY_DERIVATION_PATH, path.stringValue)
         }
 
-        usernameInteractor.lookupUsername(publicKey)
+        if (lookup) {
+            usernameInteractor.lookupUsername(publicKey)
+        }
     }
 
     suspend fun generateSecretKeys(): List<String> =

@@ -131,7 +131,7 @@
     <string name="main_close_account">Close Account</string>
     <string name="main_transaction">Transaction</string>
     <string name="main_from">From</string>
-    <string name="main_swap_hint">0.0000</string>
+    <string name="main_swap_hint">0</string>
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
     <string name="main_swap_now">Swap now</string>
@@ -194,7 +194,7 @@
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
-    <string name="main_p2p_username_sol_address">P2P username / SOL address</string>
+    <string name="main_p2p_username_sol_address">Username / address</string>
     <string name="main_reserve_username">Reserve your P2P username now</string>
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>

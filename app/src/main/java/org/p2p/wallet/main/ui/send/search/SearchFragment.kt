@@ -20,6 +20,7 @@ import org.p2p.wallet.main.ui.send.SendFragment.Companion.KEY_REQUEST_SEND
 import org.p2p.wallet.main.ui.send.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -65,10 +66,10 @@ class SearchFragment :
                 clearImageView.isVisible = value.isNotEmpty()
             }
 
-            searchEditText.requestFocus()
-
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.attachAdapter(searchAdapter)
+
+            searchEditText.focusAndShowKeyboard()
         }
 
         presenter.loadInitialData()

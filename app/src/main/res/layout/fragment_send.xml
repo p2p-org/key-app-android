@@ -396,10 +396,12 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:drawablePadding="8dp"
                         android:text="@string/send_free_transaction"
                         android:textAlignment="textEnd"
                         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        android:textColor="@color/colorGreen" />
+                        android:textColor="@color/colorGreen"
+                        app:drawableEndCompat="@drawable/ic_info" />
                 </LinearLayout>
 
                 <Space

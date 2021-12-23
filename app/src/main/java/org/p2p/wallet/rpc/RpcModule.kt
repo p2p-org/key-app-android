@@ -1,6 +1,6 @@
 package org.p2p.wallet.rpc
 
-import FeeRelayerInterceptor
+import org.p2p.wallet.infrastructure.network.feerelayer.FeeRelayerInterceptor
 import android.content.Context
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
