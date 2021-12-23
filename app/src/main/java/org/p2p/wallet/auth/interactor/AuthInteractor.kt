@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.HashingUtils
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.updates.UpdatesManager
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
@@ -36,6 +37,7 @@ class AuthInteractor(
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,
     private val sharedPreferences: SharedPreferences,
+    private val tokenKeyProvider: TokenKeyProvider,
     private val biometricManager: BiometricManager,
     private val mainLocalRepository: MainLocalRepository,
     private val updatesManager: UpdatesManager,
@@ -161,6 +163,7 @@ class AuthInteractor(
     suspend fun logout() {
         updatesManager.stop()
         sharedPreferences.edit { clear() }
+        tokenKeyProvider.clear()
         secureStorage.clear()
         mainLocalRepository.clear()
     }
@@ -169,6 +172,7 @@ class AuthInteractor(
         appScope.launch {
             sharedPreferences.edit { clear() }
             secureStorage.clear()
+            tokenKeyProvider.clear()
             mainLocalRepository.clear()
             updatesManager.stop()
         }

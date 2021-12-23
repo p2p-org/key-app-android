@@ -36,4 +36,9 @@ class TokenKeyProvider(
                     secureStorage.saveString(KEY_SECRET_KEY, result)
                 }
             }
+
+    fun clear() {
+        publicKey = ""
+        secretKey = byteArrayOf()
+    }
 }

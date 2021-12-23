@@ -152,6 +152,8 @@ class MainPresenter(
                 delay(1000L)
                 userInteractor.loadUserTokensAndUpdateData()
                 Timber.d("Successfully loaded tokens")
+            } catch (e: CancellationException) {
+                Timber.w("Cancelled tokens remote update")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading tokens from remote")
             } finally {
@@ -174,8 +176,10 @@ class MainPresenter(
                         Timber.d("Skipping tokens auto-update")
                     }
                 }
+            } catch (e: CancellationException) {
+                Timber.w("Cancelled tokens remote update")
             } catch (e: Throwable) {
-                Timber.e(e, "Error loading tokens from remote")
+                Timber.e(e, "Error refreshing tokens")
             }
         }
     }

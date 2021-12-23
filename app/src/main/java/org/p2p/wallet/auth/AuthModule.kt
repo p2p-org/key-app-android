@@ -32,7 +32,7 @@ object AuthModule {
     fun create() = module {
         single { BiometricManager.from(get()) }
 
-        factory { AuthInteractor(get(), get(), get(), get(), get(), get(), get()) }
+        factory { AuthInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
         factory { FileRepository(get()) }
         factory { SecurityKeyPresenter(get()) } bind SecurityKeyContract.Presenter::class

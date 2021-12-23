@@ -8,6 +8,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 private const val DELAY_IN_MS = 250L
@@ -58,18 +59,23 @@ class DerivableAccountsPresenter(
 
     override fun createAndSaveAccount() {
         launch {
-            view?.showLoading(true)
-            val keys = secretKeys.map { it.text }
-            secretKeyInteractor.createAndSaveAccount(path, keys)
+            try {
+                view?.showLoading(true)
+                val keys = secretKeys.map { it.text }
+                secretKeyInteractor.createAndSaveAccount(path, keys)
 
-            val usernameExists = usernameInteractor.usernameExists()
-            if (usernameExists) {
-                view?.navigateToCreatePin()
-            } else {
-                view?.navigateToReserveUsername()
+                val usernameExists = usernameInteractor.usernameExists()
+                if (usernameExists) {
+                    view?.navigateToCreatePin()
+                } else {
+                    view?.navigateToReserveUsername()
+                }
+
+                view?.showLoading(false)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error while creating account and checking username")
+                view?.showErrorMessage(e)
             }
-
-            view?.showLoading(false)
         }
     }
 
