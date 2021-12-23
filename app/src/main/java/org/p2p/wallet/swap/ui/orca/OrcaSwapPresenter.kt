@@ -245,7 +245,7 @@ class OrcaSwapPresenter(
             poolPairs.clear()
             poolPairs.addAll(pairs)
         } catch (e: Throwable) {
-            Timber.e(e, "Error occured while getting tradable pool pairs")
+            Timber.e(e, "Error occurred while getting tradable pool pairs")
         }
     }
 
