@@ -48,7 +48,7 @@ class OrcaSwapPresenter(
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     companion object {
-        private const val TAG_SWAP_STATE = "SWAP_STATE"
+        private const val TAG_SWAP = "SWAP_STATE"
     }
 
     private val poolPairs = mutableListOf<OrcaPoolsPair>()
@@ -124,7 +124,7 @@ class OrcaSwapPresenter(
 
     override fun setNewDestinationToken(newToken: Token) {
         destinationToken = newToken
-        calculateData(newToken)
+        calculateData(sourceToken, newToken)
     }
 
     override fun setSlippage(slippage: Slippage) {
@@ -181,7 +181,9 @@ class OrcaSwapPresenter(
 
         /* reversing tokens */
         val source = sourceToken
-        sourceToken = destinationToken!! as Token.Active
+        val destination = destinationToken
+
+        sourceToken = destination as Token.Active
         destinationToken = source
         view?.showSourceToken(sourceToken)
 
@@ -189,9 +191,9 @@ class OrcaSwapPresenter(
         sourceAmount = destinationAmount
         destinationAmount = ""
         view?.showCalculations(null)
-
-        /* This trigger recalculation */
         view?.showNewAmount(sourceAmount)
+
+        calculateData(sourceToken, destinationToken!!)
     }
 
     /**
@@ -227,21 +229,22 @@ class OrcaSwapPresenter(
         }
     }
 
-    private fun calculateData(destination: Token) {
+    private fun calculateData(source: Token.Active, destination: Token) {
         launch {
             view?.showButtonText(R.string.swap_searching_swap_pair)
-            searchTradablePairs(sourceToken, destination)
+            searchTradablePairs(source, destination)
             view?.showButtonText(R.string.swap_calculating_fees)
-            calculateAmount(sourceToken, destination)
-            calculateFees(sourceToken, destination)
-            calculateRates(sourceToken, destination)
+            calculateAmount(source, destination)
+            calculateFees(source, destination)
+            calculateRates(source, destination)
         }
     }
 
     private suspend fun searchTradablePairs(source: Token.Active, destination: Token) {
         try {
+            Timber.tag(TAG_SWAP).d("Searching pair for ${source.mintAddress} / ${destination.mintAddress}")
             val pairs = swapInteractor.getTradablePoolsPairs(source.mintAddress, destination.mintAddress)
-            Timber.tag(TAG_SWAP_STATE).d("Loaded all tradable pool pairs. Size: ${pairs.size}")
+            Timber.tag(TAG_SWAP).d("Loaded all tradable pool pairs. Size: ${pairs.size}")
             poolPairs.clear()
             poolPairs.addAll(pairs)
         } catch (e: Throwable) {
@@ -306,7 +309,7 @@ class OrcaSwapPresenter(
 
         val pair = swapInteractor.findBestPoolsPairForInputAmount(inputAmount, poolPairs)
         if (pair.isNullOrEmpty()) {
-            Timber.tag(TAG_SWAP_STATE).d("Best pair is empty")
+            Timber.tag(TAG_SWAP).d("Best pair is empty")
             updateButtonState(source)
             return
         }
@@ -314,7 +317,7 @@ class OrcaSwapPresenter(
         bestPoolPair = pair
 
         val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
-        Timber.tag(TAG_SWAP_STATE).d("Best pair found, deprecation values: $deprecatedValues")
+        Timber.tag(TAG_SWAP).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
         destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleLong().toString()
 
@@ -328,7 +331,7 @@ class OrcaSwapPresenter(
 
     private fun calculateRates(source: Token.Active, destination: Token) {
         val pair = bestPoolPair ?: return
-        Timber.tag(TAG_SWAP_STATE).d("Calculating rates")
+        Timber.tag(TAG_SWAP).d("Calculating rates")
 
         val inputAmount = sourceAmount.toBigDecimalOrNull() ?: return
         val inputAmountBigInteger = inputAmount.toLamports(source.decimals)

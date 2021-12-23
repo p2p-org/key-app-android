@@ -192,8 +192,10 @@ class OrcaSwapFragment :
     }
 
     override fun showNewAmount(amount: String) {
+        binding.amountEditText.removeTextChangedListener(inputTextWatcher)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
+        binding.amountEditText.addTextChangedListener(inputTextWatcher)
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
