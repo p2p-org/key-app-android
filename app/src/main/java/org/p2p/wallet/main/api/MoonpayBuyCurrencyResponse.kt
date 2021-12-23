@@ -13,7 +13,7 @@ data class MoonpayBuyCurrencyResponse(
     @SerializedName("networkFeeAmount")
     val networkFeeAmount: BigDecimal,
     @SerializedName("quoteCurrencyAmount")
-    val quoteCurrencyAmount: BigDecimal,
+    val quoteCurrencyAmount: Double,
     @SerializedName("totalAmount")
     val totalAmount: BigDecimal
 )

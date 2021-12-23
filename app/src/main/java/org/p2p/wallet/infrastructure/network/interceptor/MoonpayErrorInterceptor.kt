@@ -6,6 +6,7 @@ import okhttp3.Response
 import org.p2p.wallet.infrastructure.network.ServerException
 import org.p2p.wallet.infrastructure.network.feerelayer.ErrorTypeConverter
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayError
+import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorType
 import timber.log.Timber
 import java.io.IOException
 
@@ -24,7 +25,8 @@ class MoonpayErrorInterceptor(private val gson: Gson) : Interceptor {
     private fun extractException(responseBody: String): Throwable = try {
         Timber.tag("Moonpay").e("Extracting exception: $responseBody")
         val serverError = gson.fromJson(responseBody, MoonpayError::class.java)
-        val errorCode = ErrorTypeConverter.fromMoonpay(serverError.type)
+        val type = MoonpayErrorType.parse(serverError.type)
+        val errorCode = ErrorTypeConverter.fromMoonpay(type)
         ServerException(
             errorCode = errorCode,
             fullMessage = serverError.message,

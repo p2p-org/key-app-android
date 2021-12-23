@@ -4,8 +4,9 @@ import org.p2p.wallet.utils.Constants
 import java.math.BigDecimal
 
 data class BuyData(
+    val tokenSymbol: String,
     val price: BigDecimal,
-    val receiveAmount: BigDecimal,
+    val receiveAmount: Double,
     val processingFee: BigDecimal,
     val networkFee: BigDecimal,
     val extraFee: BigDecimal,
@@ -13,8 +14,11 @@ data class BuyData(
     val total: BigDecimal
 ) {
 
+    val priceText: String
+        get() = "${Constants.USD_SYMBOL}$price"
+
     val receiveAmountText: String
-        get() = "${Constants.USD_SYMBOL}$receiveAmount"
+        get() = "$receiveAmount $tokenSymbol"
 
     val processingFeeText: String
         get() = "${Constants.USD_SYMBOL}$processingFee"
