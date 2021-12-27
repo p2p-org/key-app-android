@@ -27,7 +27,7 @@ class MoonpayRemoteRepository(
             MoonpayBuyResult.Success(BuyCurrency(response))
         } catch (e: ServerException) {
             if (e.errorCode == ErrorCode.BAD_REQUEST) {
-                MoonpayBuyResult.Error(e.getDirectMessage())
+                MoonpayBuyResult.Error(e.getDirectMessage() ?: e.localizedMessage)
             } else {
                 throw e
             }
