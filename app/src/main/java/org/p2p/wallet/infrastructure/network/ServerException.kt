@@ -5,7 +5,7 @@ import java.io.IOException
 
 class ServerException(
     val errorCode: ErrorCode,
-    private val fullMessage: String,
+    fullMessage: String,
     private val errorMessage: String?
 ) : IOException("statusCode: $errorCode, errorMessage: $fullMessage") {
 
@@ -15,5 +15,5 @@ class ServerException(
         errorMessage
     }
 
-    fun getDirectMessage(): String = errorMessage ?: fullMessage
+    fun getDirectMessage(): String? = errorMessage
 }

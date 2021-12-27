@@ -33,8 +33,6 @@ class SendTransactionExecutor(private val transaction: AppTransaction) : Transac
         val serializedTransaction = transaction.serializedTransaction
         val isSimulation = transaction.isSimulation
 
-        Timber.d("### $serializedTransaction")
-
         Timber
             .tag(TAG)
             .d("Transaction execution started: $serializedTransaction")
