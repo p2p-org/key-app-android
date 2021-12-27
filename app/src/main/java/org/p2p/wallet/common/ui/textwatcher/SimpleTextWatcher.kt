@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.ui
+package org.p2p.wallet.common.ui.textwatcher
 
 import android.text.Editable
 import android.text.TextWatcher

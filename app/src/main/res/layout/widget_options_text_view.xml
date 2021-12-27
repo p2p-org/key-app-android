@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="20dp"
+    android:orientation="horizontal"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/labelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/send_network_destination"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
+
+        <TextView
+            android:id="@+id/optionsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorSecondary"
+            android:visibility="gone"
+            tools:text="One-time payment"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/valueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:singleLine="true"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+        tools:text="Solana" />
+
+</merge>

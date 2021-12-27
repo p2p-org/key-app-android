@@ -72,9 +72,9 @@ class ReserveUsernameFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            youCanSkipTextView.text = buildClickableText()
-            youCanSkipTextView.movementMethod = LinkMovementMethod.getInstance()
-            youCanSkipTextView.highlightColor = Color.TRANSPARENT
+            skipTextView.text = buildClickableText()
+            skipTextView.movementMethod = LinkMovementMethod.getInstance()
+            skipTextView.highlightColor = Color.TRANSPARENT
 
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()

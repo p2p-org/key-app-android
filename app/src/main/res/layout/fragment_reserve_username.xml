@@ -136,7 +136,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
 
                 <TextView
-                    android:id="@+id/youCanSkipTextView"
+                    android:id="@+id/skip_text_view"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"

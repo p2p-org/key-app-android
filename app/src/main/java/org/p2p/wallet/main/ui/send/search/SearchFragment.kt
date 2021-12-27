@@ -20,6 +20,7 @@ import org.p2p.wallet.main.ui.send.SendFragment.Companion.KEY_REQUEST_SEND
 import org.p2p.wallet.main.ui.send.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -58,17 +59,17 @@ class SearchFragment :
             backImageView.setOnClickListener { popBackStack() }
             clearImageView.setOnClickListener { searchEditText.text.clear() }
             textWatcher = searchEditText.doAfterTextChanged {
-                val value = it?.toString().orEmpty().lowercase().trim()
+                val value = it?.toString().orEmpty()
                 val target = Target(value)
                 presenter.search(target)
 
                 clearImageView.isVisible = value.isNotEmpty()
             }
 
-            searchEditText.requestFocus()
-
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.attachAdapter(searchAdapter)
+
+            searchEditText.focusAndShowKeyboard()
         }
 
         presenter.loadInitialData()

@@ -124,8 +124,7 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val blockNumber: Int,
         val account: String,
-        val destination: String,
-        val owner: String,
+        val mint: String,
         val tokenSymbol: String,
     ) : HistoryTransaction(date) {
 

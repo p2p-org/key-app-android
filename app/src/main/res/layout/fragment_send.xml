@@ -192,11 +192,11 @@
                             android:padding="8dp"
                             android:src="@drawable/ic_search"
                             app:cornerRadius="8dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/toTextView" />
 
                         <LinearLayout
+                            android:id="@+id/addressView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="8dp"
@@ -279,6 +279,31 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/toTextView" />
 
+                        <androidx.constraintlayout.widget.Barrier
+                            android:id="@+id/bottomBarrier"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:barrierDirection="top"
+                            app:barrierMargin="8dp"
+                            app:constraint_referenced_ids="atLeastTextView" />
+
+                        <TextView
+                            android:id="@+id/atLeastTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="12dp"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
+                            android:textColor="?colorSecondary"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/targetImageView"
+                            tools:text="Receive at least: 0.02110 renBTC"
+                            tools:visibility="gone" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -371,10 +396,12 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:drawablePadding="8dp"
                         android:text="@string/send_free_transaction"
                         android:textAlignment="textEnd"
                         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        android:textColor="@color/colorGreen" />
+                        android:textColor="@color/colorGreen"
+                        app:drawableEndCompat="@drawable/ic_info" />
                 </LinearLayout>
 
                 <Space

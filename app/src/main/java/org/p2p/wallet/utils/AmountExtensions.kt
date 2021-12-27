@@ -5,7 +5,6 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.math.pow
 
-private const val ZERO_VALUE = 0.0
 private const val POWER_VALUE = 10.0
 private const val DEFAULT_DECIMAL = 9
 
@@ -52,6 +51,8 @@ fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isNotZero() = this.compareTo(BigDecimal.ZERO) != 0
 fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
 fun BigDecimal.isLessThan(value: BigDecimal) = this.compareTo(value) == -1
+
+fun BigDecimal?.orZero() = this ?: BigDecimal.ZERO
 
 fun BigInteger.isZero() = this.compareTo(BigInteger.ZERO) == 0
 fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1

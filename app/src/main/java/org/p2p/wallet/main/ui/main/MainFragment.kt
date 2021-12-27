@@ -9,6 +9,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
@@ -18,6 +19,7 @@ import org.p2p.wallet.history.ui.TokenContainerFragment
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.VisibilityState
+import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaFragment
 import org.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.main.ui.options.TokenOptionsDialog
 import org.p2p.wallet.main.ui.receive.ReceiveFragment
@@ -88,9 +90,13 @@ class MainFragment :
                 presenter.refresh()
             }
 
-//            buyButton.setOnClickListener {
-//                replaceFragment(BuyFragment.create(null))
-//            }
+            // TODO: temporary hiding moonpay for release
+            headerViewContainer.buyButton.isVisible = BuildConfig.DEBUG
+            headerViewContainer.buyDivider.isVisible = BuildConfig.DEBUG
+
+            headerViewContainer.buyButton.setOnClickListener {
+                replaceFragment(BuySolanaFragment.create())
+            }
 
             headerViewContainer.receiveButton.setOnClickListener {
                 replaceFragment(ReceiveFragment.create(null))

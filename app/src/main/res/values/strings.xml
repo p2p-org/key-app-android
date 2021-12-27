@@ -17,6 +17,9 @@
     <string name="common_username_search_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-.</string>
     <string name="common_proceed">Proceed</string>
     <string name="common_proceed_do_not_show">Proceed &amp; don’t show again</string>
+    <string name="common_na">N/A</string>
+    <string name="common_yesterday">Yesterday</string>
+    <string name="common_today">Today</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -128,7 +131,7 @@
     <string name="main_close_account">Close Account</string>
     <string name="main_transaction">Transaction</string>
     <string name="main_from">From</string>
-    <string name="main_swap_hint">0.0000</string>
+    <string name="main_swap_hint">0</string>
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
     <string name="main_swap_now">Swap now</string>
@@ -191,9 +194,10 @@
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
-    <string name="main_p2p_username_sol_address">P2P username / SOL address</string>
+    <string name="main_p2p_username_sol_address">Username / address</string>
     <string name="main_reserve_username">Reserve your P2P username now</string>
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
+    <string name="main_no_tokens_for_swap">No tokens found</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -225,6 +229,10 @@
     <string name="receive_transaction_fee_amount">Estimated fee calculated</string>
     <string name="receive_no_statuses_yet">No statuses yet</string>
     <string name="receive_username_copied">Username copied to clipboard!</string>
+    <string name="receive_renbtc_transaction_format">Receiving %s renBTC</string>
+    <string name="receive_renbtc_transaction">Receiving renBTC</string>
+    <string name="receive_tap_to_read">Tap to read</string>
+    <string name="receive_no_transactions_yet">No transactions yet</string>
 
     <!-- send -->
     <string name="send_enter_address">Enter the recipient\'s address</string>
@@ -245,6 +253,7 @@
     <string name="send_current_price">Current price</string>
     <string name="send_caution_empty_balance">Caution: this address has no funds</string>
     <string name="send_zero_usd">$ 0.0</string>
+    <string name="send_receive_at_least">Receive at least: %s</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -255,12 +264,30 @@
     <string name="swap_funds_not_enough">Don\'t go over the available funds</string>
     <string name="swap_calculating_fees">Calculating fees</string>
     <string name="swap_searching_swap_pair">Searching pairs for swap</string>
+    <string name="swap_cannot_swap_these_tokens">Cannot swap these tokens</string>
     <string name="swap_calculating_rates_and_fees">Calculating rates and fees</string>
     <string name="swap_max_available">Max</string>
     <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
     <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
     <string name="swap_transaction_completed">Swap from %1s to %2s completed!</string>
     <string name="swap_transaction_failed">Swap from %1s to %2s failed. Please try again</string>
+
+    <!-- Buy -->
+    <string name="buy_solana_on_moonpay">Buy Solana on MoonPay</string>
+    <string name="buy_moonpay">Moonpay</string>
+    <string name="buy_you_pay">You pay</string>
+    <string name="buy_you_get">You get</string>
+    <string name="buy_sol_price">SOL price</string>
+    <string name="buy_zero_sol">0 SOL</string>
+    <string name="buy_sol_purchase_cost">SOL purchase cost</string>
+    <string name="buy_processing_fee">Processing fee</string>
+    <string name="buy_network_fee">Network fee</string>
+    <string name="buy_extra_fee">Extra fee</string>
+    <string name="buy_account_creation">SOL account creation</string>
+    <string name="buy_one_time_payment">One time payment</string>
+    <string name="buy_total">Total</string>
+    <string name="buy_continue_on_moonpay">Continue on Moonpay</string>
+    <string name="buy_value_allowed_symbols"> 1234567890.,$</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -282,6 +309,9 @@
     <string name="details_paid_by_p2p">Paid by p2p.org</string>
     <string name="details_show_transaction_details">Show transaction details</string>
     <string name="details_hide_transaction_details">Hide transaction details</string>
+    <string name="details_info">Info</string>
+    <string name="details_history">History</string>
+    <string name="details_show_wallet_address">Show wallet address</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -313,15 +343,4 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
-    <string name="details_info">Info</string>
-    <string name="details_history">History</string>
-    <string name="details_show_wallet_address">Show wallet address</string>
-    <string name="main_no_tokens_for_swap">No tokens found</string>
-    <string name="receive_renbtc_transaction_format">Receiving %s renBTC</string>
-    <string name="receive_renbtc_transaction">Receiving renBTC</string>
-    <string name="receive_tap_to_read">Tap to read</string>
-    <string name="receive_no_transactions_yet">No transactions yet</string>
-    <string name="common_yesterday">Yesterday</string>
-    <string name="common_today">Today</string>
-
 </resources>

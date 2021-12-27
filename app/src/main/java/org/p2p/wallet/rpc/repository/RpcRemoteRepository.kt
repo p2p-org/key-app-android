@@ -129,6 +129,18 @@ class RpcRemoteRepository(
         return BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
     }
 
+    override suspend fun getTokenAccountBalances(accounts: List<String>): List<Pair<String, TokenAccountBalance>> {
+        val requestsBatch = accounts.map {
+            val params = listOf(it)
+            RpcRequest("getTokenAccountBalance", params)
+        }
+
+        return rpcApi.getTokenAccountBalances(requestsBatch)
+            .mapIndexed { index, response ->
+                requestsBatch[index].params!!.first() as String to response.result
+            }
+    }
+
     override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
         val params = listOf(account.toString())
         val rpcRequest = RpcRequest("getTokenAccountBalance", params)

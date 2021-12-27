@@ -11,7 +11,7 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.SimpleTextWatcher
+import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapSerumBinding
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.common.ui.PagingState
+import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.EmptyDataException
@@ -32,8 +32,7 @@ class HistoryPresenter(
 
         paginationEnded = false
 
-        pagingJob?.cancel()
-        pagingJob = launch {
+        launch {
             try {
                 view?.showPagingState(PagingState.InitialLoading)
 
@@ -46,8 +45,6 @@ class HistoryPresenter(
                 }
 
                 view?.showPagingState(PagingState.Idle)
-            } catch (e: CancellationException) {
-                Timber.w(e, "Cancelled history load")
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")
                 if (e is EmptyDataException) {

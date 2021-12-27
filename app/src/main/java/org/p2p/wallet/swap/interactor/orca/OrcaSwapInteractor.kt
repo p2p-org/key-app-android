@@ -119,6 +119,8 @@ class OrcaSwapInteractor(
             return emptyList()
         }
 
+        poolInteractor.loadBalances(currentRoutes, info?.pools)
+
         // retrieve all routes
         val result = currentRoutes.mapNotNull {
             if (it.size > 2) return@mapNotNull null // FIXME: Support more than 2 paths later
@@ -203,6 +205,11 @@ class OrcaSwapInteractor(
             if (!myTokens.contains(intermediaryTokenName) || toWalletPubkey == null) {
                 numberOfTransactions += BigInteger.ONE
             }
+
+            if (intermediaryTokenName == Token.SOL_SYMBOL) {
+                transactionFees += lamportsPerSignature
+                transactionFees += minRentExempt
+            }
         }
 
         // owner's signatures
@@ -217,6 +224,11 @@ class OrcaSwapInteractor(
 
         // when swap from/to native SOL, a fee for creating it is needed
         if (fromWalletPubkey == owner.toBase58() || bestPoolsPair!!.last().tokenBName == Token.SOL_SYMBOL) {
+            transactionFees += lamportsPerSignature
+            transactionFees += minRentExempt
+        }
+
+        if (toWalletPubkey.isNullOrEmpty()) {
             transactionFees += lamportsPerSignature
             transactionFees += minRentExempt
         }

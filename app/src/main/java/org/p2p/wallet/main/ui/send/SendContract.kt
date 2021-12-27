@@ -15,6 +15,7 @@ interface SendContract {
     interface View : MvpView {
         fun setAvailableTextColor(@AttrRes availableColor: Int)
         fun showSourceToken(token: Token.Active)
+        fun showReceiveAtLeastValue(value: String?)
         fun showSuccess(info: TransactionInfo)
         fun showFee(fee: String?)
         fun showWrongWalletError()

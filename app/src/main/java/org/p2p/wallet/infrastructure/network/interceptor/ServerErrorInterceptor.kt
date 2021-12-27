@@ -34,7 +34,7 @@ class ServerErrorInterceptor(
         val responseBody = try {
             response.body!!.string()
         } catch (e: Exception) {
-            throw IOException("Error reading response error body", e)
+            throw IOException("Error parsing response body", e)
         }
 
         if (responseBody.isEmpty()) {
@@ -115,6 +115,6 @@ class ServerErrorInterceptor(
             errorMessage = null
         )
     } catch (e: Throwable) {
-        IOException("Error reading response error body", e)
+        IOException("Error reading response error body: $bodyString", e)
     }
 }

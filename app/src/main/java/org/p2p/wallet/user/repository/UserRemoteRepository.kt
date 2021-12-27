@@ -13,6 +13,7 @@ import org.p2p.wallet.main.model.TokenPrice
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.scaleMedium
 import java.math.BigDecimal
 
@@ -51,7 +52,7 @@ class UserRemoteRepository(
                     list.forEach { symbol ->
                         val tokenObject = json.getAsJsonObject(symbol.uppercase())
                         if (tokenObject != null) {
-                            val price = tokenObject.getAsJsonPrimitive(Token.USD_SYMBOL).asBigDecimal
+                            val price = tokenObject.getAsJsonPrimitive(USD_READABLE_SYMBOL).asBigDecimal
                             result.add(TokenPrice(symbol, price.scaleMedium()))
                         }
                     }

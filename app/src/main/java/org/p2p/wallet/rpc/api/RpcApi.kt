@@ -26,6 +26,12 @@ interface RpcApi {
     ): CommonResponse<TokenAccountBalance>
 
     @POST
+    suspend fun getTokenAccountBalances(
+        @Body rpcRequest: List<RpcRequest>,
+        @Url url: String = ""
+    ): List<CommonResponse<TokenAccountBalance>>
+
+    @POST
     suspend fun getRecentBlockhash(
         @Body rpcRequest: RpcRequest,
         @Url url: String = ""

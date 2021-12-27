@@ -2,7 +2,7 @@ package org.p2p.wallet.main.model
 
 import kotlinx.parcelize.IgnoredOnParcel
 
-data class Target(
+data class Target constructor(
     val value: String
 ) {
 
@@ -24,16 +24,17 @@ data class Target(
      * @sample test.sol -> test
      * */
     @IgnoredOnParcel
-    val trimmedValue: String
+    val trimmedUsername: String
         get() {
-            val dotIndex = value.indexOfFirst { it == '.' }
-            return if (dotIndex != -1) value.substring(0, dotIndex) else value
+            val lowercaseValue = value.lowercase().trim()
+            val dotIndex = lowercaseValue.indexOfFirst { it == '.' }
+            return if (dotIndex != -1) lowercaseValue.substring(0, dotIndex) else lowercaseValue
         }
 
     @IgnoredOnParcel
     val validation: Validation
         get() {
-            val formatted = trimmedValue
+            val formatted = trimmedUsername
             return when {
                 formatted.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
                 formatted.length >= ADDRESS_MIN_LENGTH -> Validation.ADDRESS

@@ -86,13 +86,16 @@ class HistoryInteractor(
                         details.destination,
                         details.alternateDestination
                     )
-                    is CloseAccountDetails -> listOf(details.account)
                     else -> emptyList()
                 }
             }
             .distinct()
 
-        val accountsInfo = rpcRepository.getAccountsInfo(accountsInfoIds)
+        val accountsInfo = if (accountsInfoIds.isNotEmpty()) {
+            rpcRepository.getAccountsInfo(accountsInfoIds)
+        } else {
+            emptyList()
+        }
 
         return transactions
             .mapNotNull { details ->
@@ -100,7 +103,7 @@ class HistoryInteractor(
                     is SwapDetails -> parseOrcaSwapDetails(details, accountsInfo)
                     is BurnOrMintDetails -> parseBurnAndMintDetails(details)
                     is TransferDetails -> parseTransferDetails(details, publicKey, tokenKeyProvider.publicKey)
-                    is CloseAccountDetails -> parseCloseDetails(details, accountsInfo)
+                    is CloseAccountDetails -> parseCloseDetails(details)
                     is UnknownDetails -> TransactionConverter.fromNetwork(details)
                     else -> throw IllegalStateException("Unknown transaction details $details")
                 }
@@ -180,12 +183,9 @@ class HistoryInteractor(
     }
 
     private fun parseCloseDetails(
-        details: CloseAccountDetails,
-        accountsInfo: List<Pair<String, AccountInfo>>
-    ): HistoryTransaction? {
-        val accountInfo = accountsInfo.find { it.first == details.account }?.second ?: return null
-        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
-        val symbol = findSymbol(info?.mint?.toBase58().orEmpty())
+        details: CloseAccountDetails
+    ): HistoryTransaction {
+        val symbol = findSymbol(details.mint)
         return TransactionConverter.fromNetwork(details, symbol)
     }
 

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameAs
 import org.p2p.wallet.common.date.isSameDayAs
-import org.p2p.wallet.common.ui.PagingState
+import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 

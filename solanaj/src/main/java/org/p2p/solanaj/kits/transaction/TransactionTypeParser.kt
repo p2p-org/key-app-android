@@ -111,55 +111,83 @@ object TransactionTypeParser {
         signature: String,
         details: MutableList<TransactionDetails>
     ) {
-        for (parsedInstruction in transaction.transaction.message.instructions) {
+        val instructions = transaction.transaction.message.instructions
+        instructions.forEach { parsedInstruction ->
             val parsedInfo = parsedInstruction.parsed
             when (parsedInfo?.type) {
-                "burnChecked" -> {
-                    val transferDetails = BurnOrMintDetails(
-                        signature,
-                        transaction.blockTime,
-                        transaction.slot,
-                        transaction.meta.fee,
-                        parsedInfo.type,
-                        parsedInfo.info
-                    )
-                    details.add(transferDetails)
-                }
+                "burnChecked" -> parseBurnOrMintTransaction(signature, transaction, parsedInfo, details)
                 "transfer",
-                "transferChecked" -> {
-                    val transferDetails = TransferDetails(
-                        signature,
-                        transaction.blockTime,
-                        transaction.slot,
-                        transaction.meta.fee,
-                        parsedInfo.type,
-                        parsedInfo.info
-                    )
-                    details.add(transferDetails)
-                }
-                "closeAccount" -> if (parsedInstruction.programId.equals(SPL_TOKEN_PROGRAM_ID.toBase58())) {
-                    val closeDetails = CloseAccountDetails(
-                        signature, transaction.blockTime, transaction.slot, parsedInfo.info
-                    )
-                    details.add(closeDetails)
-                }
-                else ->
-                    if (parsedInfo != null) {
-                        details.add(UnknownDetails(signature, transaction.blockTime, transaction.slot, parsedInfo.info))
-                    }
+                "transferChecked" -> parseTransferTransaction(signature, transaction, parsedInfo, details)
+                "closeAccount" -> parseCloseTransaction(parsedInstruction, parsedInfo, transaction, signature, details)
+                else -> parseUnknownTransaction(parsedInfo, details, signature, transaction)
             }
         }
     }
 
-    private fun parseCreateAccount(
-        instruction: InstructionParsed,
-        initializeAccountInstruction: InstructionParsed
+    private fun parseUnknownTransaction(
+        parsedInfo: ConfirmedTransactionParsed.Parsed?,
+        details: MutableList<TransactionDetails>,
+        signature: String,
+        transaction: ConfirmedTransactionParsed
     ) {
-        // todo
+        if (parsedInfo != null) {
+            details.add(UnknownDetails(signature, transaction.blockTime, transaction.slot, parsedInfo.info))
+        }
     }
 
-    private fun parseCloseAccount() {
-        // todo
+    private fun parseCloseTransaction(
+        parsedInstruction: InstructionParsed,
+        parsedInfo: ConfirmedTransactionParsed.Parsed,
+        transaction: ConfirmedTransactionParsed,
+        signature: String,
+        details: MutableList<TransactionDetails>
+    ) {
+        if (parsedInstruction.programId.equals(SPL_TOKEN_PROGRAM_ID.toBase58())) {
+            val closedTokenPublicKey = parsedInfo.info["account"] as String
+            val preBalances = transaction.meta.preTokenBalances?.firstOrNull()?.mint
+            val closeDetails = CloseAccountDetails(
+                signature,
+                transaction.blockTime,
+                transaction.slot,
+                closedTokenPublicKey,
+                preBalances
+            )
+            details.add(closeDetails)
+        }
+    }
+
+    private fun parseTransferTransaction(
+        signature: String,
+        transaction: ConfirmedTransactionParsed,
+        parsedInfo: ConfirmedTransactionParsed.Parsed,
+        details: MutableList<TransactionDetails>
+    ) {
+        val transferDetails = TransferDetails(
+            signature,
+            transaction.blockTime,
+            transaction.slot,
+            transaction.meta.fee,
+            parsedInfo.type,
+            parsedInfo.info
+        )
+        details.add(transferDetails)
+    }
+
+    private fun parseBurnOrMintTransaction(
+        signature: String,
+        transaction: ConfirmedTransactionParsed,
+        parsedInfo: ConfirmedTransactionParsed.Parsed,
+        details: MutableList<TransactionDetails>
+    ) {
+        val transferDetails = BurnOrMintDetails(
+            signature,
+            transaction.blockTime,
+            transaction.slot,
+            transaction.meta.fee,
+            parsedInfo.type,
+            parsedInfo.info
+        )
+        details.add(transferDetails)
     }
 
     private fun parseSerumSwapTransaction(

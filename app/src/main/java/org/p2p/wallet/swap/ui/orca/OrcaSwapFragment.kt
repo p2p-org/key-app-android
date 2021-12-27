@@ -13,7 +13,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.SimpleTextWatcher
+import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
@@ -192,8 +192,10 @@ class OrcaSwapFragment :
     }
 
     override fun showNewAmount(amount: String) {
+        binding.amountEditText.removeTextChangedListener(inputTextWatcher)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
+        binding.amountEditText.addTextChangedListener(inputTextWatcher)
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
