@@ -9,6 +9,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
@@ -88,6 +89,10 @@ class MainFragment :
             swipeRefreshLayout.setOnRefreshListener {
                 presenter.refresh()
             }
+
+            // TODO: temporary hiding moonpay for release
+            headerViewContainer.buyButton.isVisible = BuildConfig.DEBUG
+            headerViewContainer.buyDivider.isVisible = BuildConfig.DEBUG
 
             headerViewContainer.buyButton.setOnClickListener {
                 replaceFragment(BuySolanaFragment.create())

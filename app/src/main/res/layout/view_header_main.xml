@@ -72,6 +72,7 @@
             app:layout_constraintTop_toTopOf="@id/actionView" />
 
         <View
+            android:id="@+id/buyDivider"
             android:layout_width="0.5dp"
             android:layout_height="16dp"
             android:background="?colorElementSecondary"

@@ -3,6 +3,7 @@ package org.p2p.wallet
 import android.app.Application
 import android.content.Intent
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext
@@ -38,6 +39,8 @@ class App : Application() {
         super.onCreate()
         setupTimber()
         setupKoin()
+
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(BuildConfig.CRASHLYTICS_ENABLED)
 
         AppNotificationManager.createNotificationChannels(this)
 
