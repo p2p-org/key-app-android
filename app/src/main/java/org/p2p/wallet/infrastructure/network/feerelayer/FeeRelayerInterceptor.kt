@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.json.JSONObject
-import org.p2p.wallet.infrastructure.network.ServerException
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import java.io.IOException
 
 class FeeRelayerInterceptor(

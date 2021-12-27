@@ -1,7 +1,7 @@
 package org.p2p.wallet.main.repository
 
-import org.p2p.wallet.infrastructure.network.ErrorCode
-import org.p2p.wallet.infrastructure.network.ServerException
+import org.p2p.wallet.infrastructure.network.data.ErrorCode
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.main.api.MoonpayApi
 import org.p2p.wallet.main.model.BuyCurrency
 import org.p2p.wallet.main.model.MoonpayBuyResult

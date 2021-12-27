@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.network
+package org.p2p.wallet.infrastructure.network.data
 
 import android.content.Context
 import java.io.IOException

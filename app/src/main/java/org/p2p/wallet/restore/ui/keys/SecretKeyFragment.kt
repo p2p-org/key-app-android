@@ -62,7 +62,8 @@ class SecretKeyFragment :
             }
         }
 
-        setButtonEnabled(false)
+        val itemsCount = phraseAdapter.itemCount
+        setButtonEnabled(itemsCount != 0)
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {

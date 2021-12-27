@@ -3,7 +3,7 @@ package org.p2p.wallet.infrastructure.network.interceptor
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.Response
-import org.p2p.wallet.infrastructure.network.ServerException
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.feerelayer.ErrorTypeConverter
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayError
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorType

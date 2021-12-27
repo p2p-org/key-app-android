@@ -3,12 +3,10 @@ package org.p2p.wallet.main.ui.main
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.debugdrawer.KEY_POLLING_ENABLED
@@ -84,7 +82,7 @@ class MainPresenter(
         view?.showRefreshing(true)
         launch {
             try {
-                withContext(Dispatchers.Default) { userInteractor.loadTokenPrices(BALANCE_CURRENCY) }
+                fetchRates()
                 userInteractor.loadUserTokensAndUpdateData()
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")
@@ -94,6 +92,15 @@ class MainPresenter(
             } finally {
                 view?.showRefreshing(false)
             }
+        }
+    }
+
+    private suspend fun fetchRates() {
+        try {
+            userInteractor.loadTokenPrices(BALANCE_CURRENCY)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error loading token prices")
+            view?.showSnackbarError(e.message ?: e.localizedMessage)
         }
     }
 
@@ -175,6 +182,8 @@ class MainPresenter(
                     } else {
                         Timber.d("Skipping tokens auto-update")
                     }
+
+                    view?.showRefreshing(false)
                 }
             } catch (e: CancellationException) {
                 Timber.w("Cancelled tokens remote update")

@@ -1,6 +1,6 @@
 package org.p2p.wallet.rpc.api
 
-import org.p2p.wallet.infrastructure.network.CommonResponse
+import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo

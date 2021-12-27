@@ -37,6 +37,7 @@
     <string name="error_invalid_address">Invalid address, please enter correct one</string>
     <string name="error_unable_to_swap_this_pair">Unable to swap this pair this time</string>
     <string name="error_opening_file">Couldn\'t open the file</string>
+    <string name="error_rates_error">Cannot get rates</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">Security key</string>
@@ -343,4 +344,6 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

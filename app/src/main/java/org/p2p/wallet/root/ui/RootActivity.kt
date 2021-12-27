@@ -13,6 +13,7 @@ import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.utils.edgetoedge.applyTranslucentFlag
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toast
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
@@ -42,6 +43,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
     override fun navigateToSignIn() {
         replaceFragment(SignInPinFragment.create())
+    }
+
+    override fun showToast(message: Int) {
+        toast(message)
     }
 
     override fun onBackPressed() {

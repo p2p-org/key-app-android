@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.RenBTCPayment
@@ -24,7 +25,8 @@ private const val SESSION_POLLING_DELAY = 5000L
 class RenTransactionManager(
     private val repository: RenBTCRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: EnvironmentManager,
+    private val appScope: AppScope
 ) {
 
     companion object {
@@ -68,10 +70,11 @@ class RenTransactionManager(
         Timber.tag(REN_TAG).d("Starting blockstream polling")
 
         val environment = environmentManager.loadEnvironment()
+
+        /* Caching value, since it's being called multiple times inside the loop */
         val secretKey = tokenKeyProvider.secretKey
         while (session.isValid) {
-            val data = repository.getPaymentData(environment, session.gatewayAddress)
-            handlePaymentData(data, secretKey)
+            pollPaymentData(environment, session, secretKey)
             delay(SESSION_POLLING_DELAY)
         }
     }
@@ -102,6 +105,22 @@ class RenTransactionManager(
         return executor.getStateFlow().value.lastOrNull()
     }
 
+    private fun pollPaymentData(
+        environment: Environment,
+        session: LockAndMint.Session,
+        secretKey: ByteArray
+    ) {
+        appScope.launch {
+            Timber.tag(REN_TAG).d("Checking payment data by gateway address")
+            try {
+                val data = repository.getPaymentData(environment, session.gatewayAddress)
+                handlePaymentData(data, secretKey)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error checking payment data")
+            }
+        }
+    }
+
     private suspend fun handlePaymentData(
         data: List<RenBTCPayment>,
         secretKey: ByteArray
@@ -119,15 +138,17 @@ class RenTransactionManager(
             )
         }
 
-        if (filtered.isEmpty()) return@withContext
+        if (filtered.isEmpty()) {
+            executors.forEach {
+                launch { it.execute() }
+            }
+            return@withContext
+        }
 
         queuedTransactions.addAll(filtered)
 
         filtered.forEach { transaction ->
-            val isNewPayment = executors.none { it.getTransactionHash() != transaction.transactionId }
-            if (isNewPayment) {
-                executors.add(RenStatusExecutor(lockAndMint, transaction.payment, secretKey))
-            }
+            executors.add(RenStatusExecutor(lockAndMint, transaction.payment, secretKey))
         }
 
         Timber.tag(REN_TAG).d("Starting execution, executors count: ${executors.size}")

@@ -1,6 +1,5 @@
 package org.p2p.wallet.restore.ui.derivable
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -10,8 +9,6 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import timber.log.Timber
 import kotlin.properties.Delegates
-
-private const val DELAY_IN_MS = 250L
 
 class DerivableAccountsPresenter(
     private val secretKeys: List<SecretKey>,
@@ -37,23 +34,15 @@ class DerivableAccountsPresenter(
         val keys = secretKeys.map { it.text }
 
         launch {
-            delay(DELAY_IN_MS)
-            val accounts = secretKeyInteractor.getDerivableAccounts(DerivationPath.BIP44CHANGE, keys)
-            allAccounts.addAll(accounts)
-            view?.showLoading(false)
-            filterAccountsByPath(path)
-        }
-
-        launch {
-            delay(DELAY_IN_MS)
-            val accounts = secretKeyInteractor.getDerivableAccounts(DerivationPath.BIP44, keys)
-            allAccounts.addAll(accounts)
-        }
-
-        launch {
-            delay(DELAY_IN_MS)
-            val accounts = secretKeyInteractor.getDerivableAccounts(DerivationPath.BIP32DEPRECATED, keys)
-            allAccounts.addAll(accounts)
+            try {
+                val accounts = secretKeyInteractor.getDerivableAccounts(keys)
+                allAccounts += accounts
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading derivable accounts")
+            } finally {
+                view?.showLoading(false)
+                filterAccountsByPath(path)
+            }
         }
     }
 

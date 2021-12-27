@@ -2,7 +2,7 @@ package org.p2p.wallet.utils
 
 import android.content.Context
 import org.p2p.wallet.R
-import org.p2p.wallet.infrastructure.network.ServerException
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import java.net.UnknownHostException
 
 fun Throwable?.getErrorMessage(context: Context): String =

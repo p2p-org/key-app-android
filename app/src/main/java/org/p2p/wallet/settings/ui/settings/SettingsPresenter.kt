@@ -1,17 +1,18 @@
 package org.p2p.wallet.settings.ui.settings
 
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.user.interactor.UserInteractor
 
 class SettingsPresenter(
     private val authInteractor: AuthInteractor,
-    private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val appScope: AppScope
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     override fun loadData() {
@@ -30,7 +31,7 @@ class SettingsPresenter(
     override fun logout() {
         launch {
             authInteractor.logout()
-            userInteractor.clearMemoryData()
+            appScope.cancel()
             view?.showAuthorization()
         }
     }
