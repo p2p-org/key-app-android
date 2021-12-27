@@ -7,7 +7,6 @@ import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.renbtc.repository.RenBTCRepository
-import timber.log.Timber
 
 class RenBtcInteractor(
     private val repository: RenBTCRepository,

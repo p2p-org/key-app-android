@@ -7,7 +7,6 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.user.interactor.UserInteractor
 
 class SettingsPresenter(
     private val authInteractor: AuthInteractor,
