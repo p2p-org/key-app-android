@@ -86,6 +86,5 @@ class DerivableAccountsFragment :
     override fun showLoading(isLoading: Boolean) {
         binding.restoreButton.setLoading(isLoading)
         binding.accountsRecyclerView.isEnabled = !isLoading
-        binding.derivationPathTextView.isEnabled = !isLoading
     }
 }

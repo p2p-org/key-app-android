@@ -2,6 +2,7 @@ package org.p2p.wallet.user
 
 import android.content.Context
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -44,7 +45,13 @@ object UserModule : InjectionModule {
 
         single {
             val client = createOkHttpClient()
-                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("SolanaApi")) }
+                .apply {
+                    if (BuildConfig.DEBUG) {
+                        val interceptor = HttpLoggingInterceptor()
+                        interceptor.level = HttpLoggingInterceptor.Level.BASIC
+                        addInterceptor(interceptor)
+                    }
+                }
                 .build()
             Retrofit.Builder()
                 .baseUrl(get<Context>().getString(R.string.solanaTokensBaseUrl))

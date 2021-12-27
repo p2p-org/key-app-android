@@ -1,5 +1,7 @@
 package org.p2p.wallet.settings
 
+import org.koin.dsl.bind
+import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
@@ -13,8 +15,6 @@ import org.p2p.wallet.settings.ui.security.SecurityContract
 import org.p2p.wallet.settings.ui.security.SecurityPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsContract
 import org.p2p.wallet.settings.ui.settings.SettingsPresenter
-import org.koin.dsl.bind
-import org.koin.dsl.module
 
 object SettingsModule : InjectionModule {
 

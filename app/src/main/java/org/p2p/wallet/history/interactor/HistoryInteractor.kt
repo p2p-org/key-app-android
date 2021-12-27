@@ -97,12 +97,14 @@ class HistoryInteractor(
             emptyList()
         }
 
+        val userPublicKey = tokenKeyProvider.publicKey
+
         return transactions
             .mapNotNull { details ->
                 when (details) {
                     is SwapDetails -> parseOrcaSwapDetails(details, accountsInfo)
                     is BurnOrMintDetails -> parseBurnAndMintDetails(details)
-                    is TransferDetails -> parseTransferDetails(details, publicKey, tokenKeyProvider.publicKey)
+                    is TransferDetails -> parseTransferDetails(details, publicKey, userPublicKey)
                     is CloseAccountDetails -> parseCloseDetails(details)
                     is UnknownDetails -> TransactionConverter.fromNetwork(details)
                     else -> throw IllegalStateException("Unknown transaction details $details")
@@ -166,12 +168,12 @@ class HistoryInteractor(
         transfer: TransferDetails,
         directPublicKey: String,
         publicKey: String
-    ): HistoryTransaction {
+    ): HistoryTransaction? {
         val symbol = if (transfer.isSimpleTransfer) Token.SOL_SYMBOL else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
         val mint = if (transfer.isSimpleTransfer) Token.WRAPPED_SOL_MINT else transfer.mint
-        val source = userLocalRepository.findTokenDataBySymbol(mint)!!
+        val source = userLocalRepository.findTokenDataBySymbol(mint) ?: return null
 
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
     }

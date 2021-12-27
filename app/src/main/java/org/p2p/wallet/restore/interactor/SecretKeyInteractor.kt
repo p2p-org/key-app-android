@@ -2,6 +2,9 @@ package org.p2p.wallet.restore.interactor
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -29,18 +32,39 @@ class SecretKeyInteractor(
     private val usernameInteractor: UsernameInteractor,
 ) {
 
-    suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<DerivableAccount> {
-        val derivableAccounts = authRepository.getDerivableAccounts(path, keys)
-        val balanceAccounts = derivableAccounts.map { it.publicKey.toBase58() }
-        val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
-        return derivableAccounts.mapNotNull { account ->
-            val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
-            val tokenData = userLocalRepository.findTokenDataBySymbol(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null
+    suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> =
+        withContext(Dispatchers.IO) {
+            val paths = listOf(DerivationPath.BIP44CHANGE, DerivationPath.BIP44, DerivationPath.BIP32DEPRECATED)
+            val derivableAccounts = mutableMapOf<DerivationPath, List<Account>>()
+            paths.forEach { path ->
+                val data = authRepository.getDerivableAccounts(path, keys)
+                derivableAccounts += data
+            }
+            /* Loading balances */
+            val balanceAccounts = derivableAccounts.values.flatten().map { it.publicKey.toBase58() }
+            val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
 
-            val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol)?.price ?: BigDecimal.ZERO
-            val total = BigDecimal(balance).divide(tokenData.decimals.toPowerValue())
-            DerivableAccount(path, account, total, total.multiply(exchangeRate))
+            /* Map derivable accounts with balances */
+            val result = derivableAccounts.flatMap { (path, accounts) ->
+                mapDerivableAccounts(accounts, balances, path)
+            }
+
+            return@withContext result
         }
+
+    private fun mapDerivableAccounts(
+        accounts: List<Account>,
+        balances: List<Pair<String, Long>>,
+        path: DerivationPath
+    ) = accounts.mapNotNull { account ->
+        val balance =
+            balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
+        val tokenData =
+            userLocalRepository.findTokenDataBySymbol(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null
+
+        val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol)?.price ?: BigDecimal.ZERO
+        val total = BigDecimal(balance).divide(tokenData.decimals.toPowerValue())
+        DerivableAccount(path, account, total, total.multiply(exchangeRate))
     }
 
     suspend fun createAndSaveAccount(path: DerivationPath, keys: List<String>, lookup: Boolean = true) {

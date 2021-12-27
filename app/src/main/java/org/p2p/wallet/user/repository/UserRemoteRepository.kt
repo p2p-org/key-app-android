@@ -49,6 +49,10 @@ class UserRemoteRepository(
                      * therefore we are splitting the tokenlist
                      * */
                     val json = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
+                    val response = json.get("Response")
+                    if (response.asString == "Error") {
+                        throw IllegalStateException("Cannot get rates")
+                    }
                     list.forEach { symbol ->
                         val tokenObject = json.getAsJsonObject(symbol.uppercase())
                         if (tokenObject != null) {

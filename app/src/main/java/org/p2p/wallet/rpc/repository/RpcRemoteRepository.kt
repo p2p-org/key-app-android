@@ -19,7 +19,7 @@ import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.infrastructure.network.EmptyDataException
+import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.rpc.api.RpcApi
 import timber.log.Timber

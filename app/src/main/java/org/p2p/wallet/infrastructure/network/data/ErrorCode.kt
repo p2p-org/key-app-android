@@ -1,4 +1,4 @@
-package org.p2p.wallet.infrastructure.network
+package org.p2p.wallet.infrastructure.network.data
 
 import com.google.gson.annotations.SerializedName
 import org.p2p.wallet.R

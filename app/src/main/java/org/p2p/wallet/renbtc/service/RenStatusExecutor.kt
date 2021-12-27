@@ -30,6 +30,7 @@ class RenStatusExecutor(
     override fun getTransactionHash(): String = payment.transactionHash
 
     override suspend fun execute() {
+        if (state.value.lastOrNull() !is RenTransactionStatus.WaitingDepositConfirm) return
         lockAndMint.getDepositState(payment.transactionHash, payment.txIndex.toString(), payment.amount.toString())
         val txHash = lockAndMint.submitMintTransaction()
         startQueryMintPolling(txHash, secretKey)
@@ -50,6 +51,8 @@ class RenStatusExecutor(
         Timber.tag(REN_TAG)
             .d("Current mint status: $status, will check again in one minute")
 
+        if (!isValidStatus()) return
+
         when (MintStatus.parse(status)) {
             MintStatus.CONFIRMED -> {
                 setStatus(RenTransactionStatus.AwaitingForSignature(payment.transactionHash))
@@ -58,8 +61,6 @@ class RenStatusExecutor(
                 setStatus(RenTransactionStatus.SubmittingToRenVM(payment.transactionHash))
             }
             MintStatus.DONE -> {
-                if (!isValidStatus()) return
-
                 setStatus(RenTransactionStatus.Minting(payment.transactionHash))
                 val signature = lockAndMint.mint(Account(secretKey))
                 Timber.tag(REN_TAG).d("Mint signature received: $signature")

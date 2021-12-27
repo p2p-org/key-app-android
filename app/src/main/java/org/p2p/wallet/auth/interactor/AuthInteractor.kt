@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.HashingUtils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.updates.UpdatesManager
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
@@ -36,6 +37,7 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
 class AuthInteractor(
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,
+    private val renBtcInteractor: RenBtcInteractor,
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider,
     private val biometricManager: BiometricManager,
@@ -166,6 +168,7 @@ class AuthInteractor(
         tokenKeyProvider.clear()
         secureStorage.clear()
         mainLocalRepository.clear()
+        renBtcInteractor.clearSession()
     }
 
     fun clear() {
@@ -175,6 +178,7 @@ class AuthInteractor(
             tokenKeyProvider.clear()
             mainLocalRepository.clear()
             updatesManager.stop()
+            renBtcInteractor.clearSession()
         }
     }
 

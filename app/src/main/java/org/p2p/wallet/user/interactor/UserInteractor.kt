@@ -58,8 +58,4 @@ class UserInteractor(
 
     suspend fun getPriceByToken(sourceSymbol: String, destinationSymbol: String): TokenPrice? =
         userRepository.getRate(sourceSymbol, destinationSymbol)
-
-    suspend fun clearMemoryData() {
-        mainLocalRepository.setTokens(emptyList())
-    }
 }
