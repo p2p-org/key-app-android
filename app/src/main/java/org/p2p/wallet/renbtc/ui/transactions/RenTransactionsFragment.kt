@@ -14,7 +14,6 @@ import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import timber.log.Timber
 
 class RenTransactionsFragment :
     BaseMvpFragment<RenTransactionsContract.View, RenTransactionsContract.Presenter>(
@@ -48,7 +47,6 @@ class RenTransactionsFragment :
     }
 
     override fun showTransactions(transactions: List<RenTransaction>) {
-        Timber.d("### transactions count ${transactions.size}")
         adapter.setItems(transactions)
 
         val isEmpty = transactions.isEmpty()
