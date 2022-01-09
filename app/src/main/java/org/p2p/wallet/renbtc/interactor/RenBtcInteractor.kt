@@ -14,19 +14,20 @@ class RenBtcInteractor(
     private val renTransactionManager: RenTransactionManager
 ) {
 
-    fun getAllTransactions(): List<RenTransaction> = renTransactionManager.getAllTransactions().mapNotNull {
-        val latestStatus = renTransactionManager.getLatestState(it.transactionId) ?: return@mapNotNull null
-        if (latestStatus.isSuccessAndPastMinuteAgo()) return@mapNotNull null
-        it.copy(status = latestStatus)
-    }
+    fun getAllTransactions(): List<RenTransaction> = renTransactionManager.getAllTransactions()
+        .mapNotNull { transaction ->
+            val transactionStatuses = renTransactionManager.getTransactionStatuses(transaction.transactionId)
+            transactionStatuses?.lastOrNull()?.isSuccessAndPastMinuteAgo() ?: return@mapNotNull null
+            transaction
+        }
 
     fun getSessionFlow(): Flow<LockAndMint.Session?> {
         val signer = tokenKeyProvider.publicKey
         return repository.findSessionFlow(signer)
     }
 
-    fun getStateFlow(transactionHash: String): Flow<MutableList<RenTransactionStatus>>? =
-        renTransactionManager.getStateFlow(transactionHash)
+    fun getTransactionStatuses(transactionHash: String): List<RenTransactionStatus>? =
+        renTransactionManager.getTransactionStatuses(transactionHash)
 
     suspend fun findActiveSession(): LockAndMint.Session? {
         val signer = tokenKeyProvider.publicKey
@@ -38,7 +39,10 @@ class RenBtcInteractor(
     }
 
     suspend fun generateSession(): LockAndMint.Session =
-        renTransactionManager.initializeSession()
+        renTransactionManager.initializeSession(null)
+
+    suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session =
+        renTransactionManager.initializeSession(session)
 
     suspend fun startPolling(session: LockAndMint.Session) {
         renTransactionManager.startPolling(session)

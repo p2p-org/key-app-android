@@ -46,8 +46,8 @@ class RenTransactionsAdapter(
                 amountTextView.isVisible = false
                 arrowImageView.isVisible = true
                 titleTextView.text = item.getTransactionTitle(itemView.context)
-                subTitleTextView.text = item.status.getStringResId(itemView.context)
-                val color = if (item.status is RenTransactionStatus.SuccessfullyMinted) {
+                subTitleTextView.text = item.getLatestStatus()?.getStringResId(itemView.context)
+                val color = if (item.getLatestStatus() is RenTransactionStatus.SuccessfullyMinted) {
                     itemView.context.getColor(R.color.colorGreen)
                 } else {
                     itemView.context.colorFromTheme(R.attr.colorElementSecondary)

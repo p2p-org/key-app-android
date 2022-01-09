@@ -1,14 +1,13 @@
 package org.p2p.wallet.renbtc.service
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
-import org.p2p.wallet.main.model.RenBTCPayment
-import org.p2p.wallet.renbtc.RenTransactionManager.Companion.REN_TAG
 import org.p2p.wallet.renbtc.model.MintStatus
+import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
+import org.p2p.wallet.renbtc.model.RenTransactionStatus.WaitingDepositConfirm
 import org.p2p.wallet.renbtc.ui.main.BTC_DECIMALS
 import org.p2p.wallet.utils.fromLamports
 import timber.log.Timber
@@ -17,30 +16,41 @@ private const val ONE_MINUTE_DELAY = 1000L * 60L
 
 class RenStatusExecutor(
     private val lockAndMint: LockAndMint,
-    private val payment: RenBTCPayment,
+    private val transaction: RenTransaction,
     private val secretKey: ByteArray
 ) : RenTransactionExecutor {
 
-    private val state = MutableStateFlow<MutableList<RenTransactionStatus>>(mutableListOf())
-
-    init {
-        setStatus(RenTransactionStatus.WaitingDepositConfirm(payment.transactionHash))
+    companion object {
+        private const val REN_TAG = "renBTCexecutor"
     }
 
-    override fun getTransactionHash(): String = payment.transactionHash
+    init {
+        setStatus(WaitingDepositConfirm(transaction.payment.transactionHash))
+    }
+
+    override fun getTransactionHash(): String = transaction.payment.transactionHash
 
     override suspend fun execute() {
-        if (state.value.lastOrNull() !is RenTransactionStatus.WaitingDepositConfirm) return
-        lockAndMint.getDepositState(payment.transactionHash, payment.txIndex.toString(), payment.amount.toString())
+        if (transaction.isActive()) return
+
+        lockAndMint.getDepositState(
+            transaction.payment.transactionHash,
+            transaction.payment.txIndex.toString(),
+            transaction.payment.amount.toString()
+        )
         val txHash = lockAndMint.submitMintTransaction()
         startQueryMintPolling(txHash, secretKey)
     }
 
-    override fun getStateFlow(): MutableStateFlow<MutableList<RenTransactionStatus>> = state
+    override fun isFinished(): Boolean = transaction.isFinished()
 
     private suspend fun startQueryMintPolling(txHash: String, secretKey: ByteArray) {
         while (true) {
             val response = lockAndMint.lockAndMint(txHash)
+            if (transaction.isFinished()) {
+                break
+            }
+
             handleStatus(response, secretKey)
             delay(ONE_MINUTE_DELAY)
         }
@@ -48,47 +58,39 @@ class RenStatusExecutor(
 
     private fun handleStatus(response: ResponseQueryTxMint, secretKey: ByteArray) {
         val status = response.txStatus
-        Timber.tag(REN_TAG)
-            .d("Current mint status: $status, will check again in one minute")
+        val transactionId = "TransactionId: ${transaction.statuses.lastOrNull()?.transactionId}"
+        Timber
+            .tag(REN_TAG)
+            .d("$transactionId: Current mint status: $status, will check again in one minute")
 
-        if (!isValidStatus()) return
+        val transactionHash = transaction.payment.transactionHash
 
         when (MintStatus.parse(status)) {
-            MintStatus.CONFIRMED -> {
-                setStatus(RenTransactionStatus.AwaitingForSignature(payment.transactionHash))
-            }
-            MintStatus.EXECUTING -> {
-                setStatus(RenTransactionStatus.SubmittingToRenVM(payment.transactionHash))
-            }
-            MintStatus.DONE -> {
-                setStatus(RenTransactionStatus.Minting(payment.transactionHash))
-                val signature = lockAndMint.mint(Account(secretKey))
-                Timber.tag(REN_TAG).d("Mint signature received: $signature")
-                val amount = response.valueOut.amount.toBigInteger().fromLamports(BTC_DECIMALS)
-
-                setStatus(RenTransactionStatus.SuccessfullyMinted(payment.transactionHash, amount))
-            }
+            MintStatus.CONFIRMED -> setStatus(RenTransactionStatus.AwaitingForSignature(transactionHash))
+            MintStatus.EXECUTING -> setStatus(RenTransactionStatus.SubmittingToRenVM(transactionHash))
+            MintStatus.DONE -> handleDoneStatus(transactionHash, secretKey, response)
         }
+    }
+
+    private fun handleDoneStatus(
+        transactionHash: String,
+        secretKey: ByteArray,
+        response: ResponseQueryTxMint
+    ) {
+        setStatus(RenTransactionStatus.Minting(transactionHash))
+        try {
+            val signature = lockAndMint.mint(Account(secretKey))
+            Timber.tag(REN_TAG).d("Mint signature received: $signature")
+        } catch (e: Throwable) {
+            Timber.e(e, "Error minting transaction: $transactionHash")
+        }
+        val amount = response.valueOut.amount.toBigInteger().fromLamports(BTC_DECIMALS)
+        setStatus(RenTransactionStatus.SuccessfullyMinted(transactionHash, amount))
     }
 
     private fun setStatus(status: RenTransactionStatus) {
-        state.value = state.value.toMutableList().also { statuses ->
-            val latestStatus = statuses.lastOrNull()
-            when {
-                latestStatus is RenTransactionStatus.SuccessfullyMinted ->
-                    if (status !is RenTransactionStatus.Minting) statuses.add(status)
-                latestStatus != status ->
-                    statuses.add(status)
-            }
-        }
-    }
-
-    private fun isValidStatus(): Boolean {
-        val latestStatus = state.value.lastOrNull()
-        if (latestStatus is RenTransactionStatus.Minting ||
-            latestStatus is RenTransactionStatus.SuccessfullyMinted
-        ) return false
-
-        return true
+        val latestStatus = transaction.getLatestStatus()
+        if (latestStatus == status) return
+        transaction.statuses += status
     }
 }

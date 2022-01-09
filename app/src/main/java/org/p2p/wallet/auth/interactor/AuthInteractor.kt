@@ -6,6 +6,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.core.content.edit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.utils.crypto.HashingUtils
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
@@ -13,14 +17,12 @@ import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.main.repository.MainLocalRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.utils.crypto.HashingUtils
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.updates.UpdatesManager
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
@@ -35,6 +37,7 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
  * */
 
 class AuthInteractor(
+    private val context: Context,
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,
     private val renBtcInteractor: RenBtcInteractor,
@@ -43,6 +46,7 @@ class AuthInteractor(
     private val biometricManager: BiometricManager,
     private val mainLocalRepository: MainLocalRepository,
     private val updatesManager: UpdatesManager,
+    private val transactionManager: RenTransactionManager,
     private val appScope: AppScope
 ) {
 
@@ -167,8 +171,10 @@ class AuthInteractor(
         sharedPreferences.edit { clear() }
         tokenKeyProvider.clear()
         secureStorage.clear()
+        transactionManager.stop()
         mainLocalRepository.clear()
         renBtcInteractor.clearSession()
+        RenVMService.stopService(context)
     }
 
     fun clear() {
@@ -178,7 +184,9 @@ class AuthInteractor(
             tokenKeyProvider.clear()
             mainLocalRepository.clear()
             updatesManager.stop()
+            transactionManager.stop()
             renBtcInteractor.clearSession()
+            RenVMService.stopService(context)
         }
     }
 

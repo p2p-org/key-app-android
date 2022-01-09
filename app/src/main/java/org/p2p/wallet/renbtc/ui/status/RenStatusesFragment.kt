@@ -47,7 +47,9 @@ class RenStatusesFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getTransactionTitle()
 
-            dateTextView.text = DateTimeUtils.getFormattedDate(transaction.status.date)
+            dateTextView.text = DateTimeUtils.getFormattedDate(
+                transaction.getLatestStatus()?.date ?: System.currentTimeMillis()
+            )
             recyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
                 reverseLayout = true
             }
@@ -71,7 +73,7 @@ class RenStatusesFragment :
     }
 
     private fun getTransactionTitle(): String {
-        val status = transaction.status
+        val status = transaction.getLatestStatus()
         return if (status is RenTransactionStatus.SuccessfullyMinted) {
             getString(R.string.receive_renbtc_transaction_format, status.amount.scaleMedium())
         } else {
