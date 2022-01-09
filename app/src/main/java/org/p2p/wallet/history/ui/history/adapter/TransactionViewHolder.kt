@@ -51,6 +51,7 @@ class TransactionViewHolder(
             is HistoryTransaction.Transfer -> showTransferTransaction(item.transaction)
             is HistoryTransaction.Swap -> showSwapTransaction(item.transaction)
             is HistoryTransaction.BurnOrMint -> showBurnOrMint(item.transaction)
+            is HistoryTransaction.CreateAccount -> showCreateAccountTransaction(item.transaction)
             is HistoryTransaction.CloseAccount -> showCloseTransaction(item.transaction)
             is HistoryTransaction.Unknown -> showUnknownTransaction(item.transaction)
         }
@@ -76,6 +77,17 @@ class TransactionViewHolder(
 
         tokenImageView.setImageResource(R.drawable.ic_no_money)
         typeTextView.setText(R.string.main_transaction)
+        addressTextView.text = transaction.signature.cutMiddle()
+    }
+
+    private fun showCreateAccountTransaction(transaction: HistoryTransaction.CreateAccount) {
+        tokenImageView.isVisible = true
+        swapView.isVisible = false
+        valueTextView.isVisible = false
+        totalTextView.isVisible = false
+
+        tokenImageView.setImageResource(R.drawable.ic_wallet_gray)
+        typeTextView.setText(R.string.main_create_account)
         addressTextView.text = transaction.signature.cutMiddle()
     }
 

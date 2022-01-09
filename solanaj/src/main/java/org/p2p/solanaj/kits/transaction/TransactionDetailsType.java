@@ -1,7 +1,11 @@
 package org.p2p.solanaj.kits.transaction;
 
 public enum TransactionDetailsType {
-    UNKNOWN("unknown"), SWAP("swap"), TRANSFER("transfer"), CLOSE_ACCOUNT("closeAccount");
+    UNKNOWN("unknown"),
+    SWAP("swap"),
+    TRANSFER("transfer"),
+    CREATE_ACCOUNT("create"),
+    CLOSE_ACCOUNT("closeAccount");
 
     private String type;
 

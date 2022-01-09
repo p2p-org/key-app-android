@@ -3,6 +3,7 @@ package org.p2p.wallet.history.interactor
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
+import org.p2p.solanaj.kits.transaction.CreateAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.TransactionTypeParser
@@ -60,6 +61,12 @@ class HistoryInteractor(
                     return@forEach
                 }
 
+                val create = data.firstOrNull { it is CreateAccountDetails }
+                if (create != null) {
+                    transactions.add(create)
+                    return@forEach
+                }
+
                 val close = data.firstOrNull { it is CloseAccountDetails }
                 if (close != null) {
                     transactions.add(close)
@@ -106,6 +113,7 @@ class HistoryInteractor(
                     is BurnOrMintDetails -> parseBurnAndMintDetails(details)
                     is TransferDetails -> parseTransferDetails(details, publicKey, userPublicKey)
                     is CloseAccountDetails -> parseCloseDetails(details)
+                    is CreateAccountDetails -> TransactionConverter.fromNetwork(details)
                     is UnknownDetails -> TransactionConverter.fromNetwork(details)
                     else -> throw IllegalStateException("Unknown transaction details $details")
                 }

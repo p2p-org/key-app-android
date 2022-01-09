@@ -6,13 +6,13 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.scaleMedium
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.utils.scaleShort
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
@@ -117,6 +117,14 @@ sealed class HistoryTransaction(
 
         fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} ${Token.REN_BTC_SYMBOL}"
     }
+
+    @Parcelize
+    data class CreateAccount(
+        override val date: ZonedDateTime,
+        override val signature: String,
+        override val blockNumber: Int,
+        val fee: BigInteger
+    ) : HistoryTransaction(date)
 
     @Parcelize
     data class CloseAccount(

@@ -25,6 +25,7 @@ object TransactionTypeParser {
             return details
         }
 
+        /* Serum Swap */
         val serumSwapInstructionIndex = getSerumSwapInstructionIndex(instructions)
         if (serumSwapInstructionIndex != -1) {
             parseSerumSwapTransaction(transaction, signature)
@@ -119,9 +120,17 @@ object TransactionTypeParser {
                 "transfer",
                 "transferChecked" -> parseTransferTransaction(signature, transaction, parsedInfo, details)
                 "closeAccount" -> parseCloseTransaction(parsedInstruction, parsedInfo, transaction, signature, details)
+                "create" -> parseCreateAccountTransaction(signature, transaction)
                 else -> parseUnknownTransaction(parsedInfo, details, signature, transaction)
             }
         }
+    }
+
+    private fun parseCreateAccountTransaction(
+        signature: String,
+        transaction: ConfirmedTransactionParsed
+    ) {
+        details.add(CreateAccountDetails(signature, transaction.slot, transaction.blockTime, transaction.meta.fee))
     }
 
     private fun parseUnknownTransaction(
