@@ -146,12 +146,15 @@ class OrcaSwapPresenter(
     }
 
     override fun feedAvailableValue() {
-        view?.showNewAmount(sourceToken.total.scaleLong().toString())
+        val amount = sourceToken.total.scaleLong().toString()
+        view?.showNewAmount(amount)
+        sourceAmount = amount
     }
 
     override fun setSourceAmount(amount: String) {
-        if (!this::sourceToken.isInitialized) return
         sourceAmount = amount
+
+        if (!this::sourceToken.isInitialized) return
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
         aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()

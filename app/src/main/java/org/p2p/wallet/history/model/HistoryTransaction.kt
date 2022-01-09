@@ -39,12 +39,14 @@ sealed class HistoryTransaction(
         val fee: BigInteger,
         val amountA: BigDecimal,
         val amountB: BigDecimal,
-        val amountReceivedInUsd: BigDecimal,
+        val amountReceivedInUsd: BigDecimal?,
         val sourceSymbol: String,
         val sourceTokenUrl: String,
         val destinationSymbol: String,
         val destinationTokenUrl: String
     ) : HistoryTransaction(date) {
+
+        fun getUsdAmount(): String? = amountReceivedInUsd?.let { "+ $it $" }
 
         fun getFormattedAmount() = "$amountA $sourceSymbol to $amountB $destinationSymbol"
 
@@ -59,7 +61,7 @@ sealed class HistoryTransaction(
         val type: TransferType,
         val senderAddress: String,
         val tokenData: TokenData,
-        val amount: BigDecimal,
+        val amount: BigDecimal?,
         val total: BigDecimal,
         val destination: String,
         val fee: BigInteger
@@ -76,13 +78,13 @@ sealed class HistoryTransaction(
 
         fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
 
-        fun getValue(): String = "${getSymbol(isSend)} ${getFormattedAmount()}"
+        fun getValue(): String? = amount?.let { "${getSymbol(isSend)} ${getFormattedAmount()}" }
 
         fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
 
         fun getFormattedTotal(): String = "${total.scaleMedium()} ${tokenData.symbol}"
 
-        fun getFormattedAmount(): String = "${amount.scaleShort()} $"
+        fun getFormattedAmount(): String? = amount?.let { "${amount.scaleShort()} $" }
 
         @ColorInt
         fun getTextColor(context: Context) =

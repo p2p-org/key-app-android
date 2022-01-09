@@ -18,6 +18,7 @@ import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.dip
+import org.p2p.wallet.utils.withTextOrGone
 
 class TransactionViewHolder(
     binding: ItemTransactionBinding,
@@ -95,14 +96,12 @@ class TransactionViewHolder(
     private fun showCloseTransaction(transaction: HistoryTransaction.CloseAccount) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
-        valueTextView.isVisible = true
+        valueTextView.isVisible = false
         totalTextView.isVisible = false
 
         tokenImageView.setImageResource(R.drawable.ic_trash)
         typeTextView.setText(R.string.main_close_account)
         addressTextView.text = transaction.getInfo()
-
-        valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
     }
 
     @SuppressLint("SetTextI18n")
@@ -115,7 +114,7 @@ class TransactionViewHolder(
         loadImage(sourceImageView, transaction.sourceTokenUrl)
         loadImage(destinationImageView, transaction.destinationTokenUrl)
         typeTextView.setText(R.string.main_swap)
-        valueTextView.text = "+ ${transaction.amountReceivedInUsd} $"
+        valueTextView withTextOrGone transaction.getUsdAmount()
         totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
         addressTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
         valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
@@ -130,7 +129,7 @@ class TransactionViewHolder(
         tokenImageView.setImageResource(transaction.getIcon())
         typeTextView.setText(transaction.getTitle())
         addressTextView.text = transaction.getAddress()
-        valueTextView.text = transaction.getValue()
+        valueTextView withTextOrGone transaction.getValue()
         totalTextView.text = transaction.getTotal()
         valueTextView.setTextColor(transaction.getTextColor(valueTextView.context))
     }

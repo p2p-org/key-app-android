@@ -27,6 +27,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
 class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_transfer) {
 
@@ -71,7 +72,7 @@ class TransferTransactionFragment : BaseFragment(R.layout.fragment_transaction_t
             }
 
             totalTextView.text = transaction.getTotal()
-            usdAmountTextView.text = transaction.getValue()
+            usdAmountTextView withTextOrGone transaction.getValue()
 
             sourceSymbolTextView.text = transaction.tokenData.symbol
             destinationSymbolTextView.text = transaction.tokenData.symbol

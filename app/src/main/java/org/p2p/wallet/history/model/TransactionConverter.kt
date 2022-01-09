@@ -47,11 +47,13 @@ object TransactionConverter {
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
                 .scaleLong(),
-            amountReceivedInUsd = response.amountB
-                .toBigInteger()
-                .fromLamports(destinationData.decimals)
-                .times(destinationRate?.price ?: BigDecimal.ZERO)
-                .scaleShort(),
+            amountReceivedInUsd = destinationRate?.let {
+                response.amountB
+                    .toBigInteger()
+                    .fromLamports(destinationData.decimals)
+                    .times(it.price)
+                    .scaleShort()
+            },
             sourceSymbol = sourceData.symbol,
             sourceTokenUrl = sourceData.iconUrl.orEmpty(),
             destinationSymbol = destinationData.symbol,
@@ -103,10 +105,12 @@ object TransactionConverter {
         } else {
             response.source
         }
-        val amount = BigDecimal(response.amount).toBigInteger()
-            .fromLamports(response.decimals)
-            .scaleLong()
-            .times(rate?.price ?: BigDecimal.ZERO)
+        val amount = rate?.price?.let {
+            BigDecimal(response.amount).toBigInteger()
+                .fromLamports(response.decimals)
+                .scaleLong()
+                .times(it)
+        }
 
         val date = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(response.getBlockTimeInMillis()),
