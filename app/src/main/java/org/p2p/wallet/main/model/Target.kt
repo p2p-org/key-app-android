@@ -9,6 +9,9 @@ data class Target constructor(
     companion object {
         private const val ADDRESS_MIN_LENGTH = 24
         private const val USERNAME_MAX_LENGTH = 15
+
+        private const val P2P_DOMAIN = ".p2p.sol"
+        private const val SOL_DOMAIN = ".sol"
     }
 
     enum class Validation {
@@ -27,8 +30,10 @@ data class Target constructor(
     val trimmedUsername: String
         get() {
             val lowercaseValue = value.lowercase().trim()
-            val dotIndex = lowercaseValue.indexOfFirst { it == '.' }
-            return if (dotIndex != -1) lowercaseValue.substring(0, dotIndex) else lowercaseValue
+            return when {
+                lowercaseValue.endsWith(P2P_DOMAIN) || lowercaseValue.endsWith(SOL_DOMAIN) -> lowercaseValue
+                else -> lowercaseValue.replace(".", "")
+            }
         }
 
     @IgnoredOnParcel
