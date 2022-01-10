@@ -214,11 +214,6 @@ class OrcaSwapPresenter(
         appScope.launch {
             try {
                 view?.showLoading(true)
-                /*
-                 * Sometimes swap operation finishes too fast and result screen is being showed on destroy
-                 * when user immediately exits
-                 * */
-                delay(DELAY_IN_MS)
                 val data = swapInteractor.swap(
                     fromWalletSymbol = sourceToken.tokenSymbol,
                     toWalletSymbol = destination.tokenSymbol,
@@ -417,7 +412,12 @@ class OrcaSwapPresenter(
         }
     }
 
-    private fun handleFinished(result: TransactionExecutionState.Finished) {
+    private suspend fun handleFinished(result: TransactionExecutionState.Finished) {
+        /*
+         * Sometimes swap operation finishes too fast and result screen is being showed on destroy
+         * when user immediately exits
+         * */
+        delay(DELAY_IN_MS)
         val info = TransactionInfo(
             transactionId = result.signature,
             status = R.string.main_send_success,
