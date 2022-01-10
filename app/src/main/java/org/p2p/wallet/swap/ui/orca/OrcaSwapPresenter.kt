@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap.ui.orca
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
@@ -35,6 +36,8 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
+
+private const val DELAY_IN_MS = 150L
 
 // TODO: Refactor, make simpler
 class OrcaSwapPresenter(
@@ -409,13 +412,18 @@ class OrcaSwapPresenter(
         }
     }
 
-    private fun handleFinished(result: TransactionExecutionState.Finished) {
+    private suspend fun handleFinished(result: TransactionExecutionState.Finished) {
+        /*
+         * Sometimes swap operation finishes too fast and result screen is being showed on destroy
+         * when user immediately exits
+         * */
+        delay(DELAY_IN_MS)
         val info = TransactionInfo(
             transactionId = result.signature,
             status = R.string.main_send_success,
             message = R.string.main_send_transaction_confirmed,
             iconRes = R.drawable.ic_success,
-            // Show usd and token amount from confirmed transaction
+            // TODO: Show usd and token amount from confirmed transaction
             amount = destinationAmount.toBigDecimalOrZero().scaleMedium().toString(),
             usdAmount = sourceToken.usdRateOrZero.multiply(sourceAmount.toBigDecimalOrZero()).scaleMedium().toString(),
             tokenSymbol = requireDestinationToken().tokenSymbol
