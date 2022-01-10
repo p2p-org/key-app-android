@@ -49,9 +49,6 @@ class SecurityFragment :
             pinCodeView.setOnClickListener {
                 replaceFragment(ResetPinFragment.create())
             }
-            biometricSwitch.setOnCheckedChangeListener { _, isChecked ->
-                presenter.setBiometricEnabled(isChecked)
-            }
         }
 
         presenter.loadBiometricType()
@@ -86,7 +83,6 @@ class SecurityFragment :
     }
 
     override fun showBiometricEnabled(isEnabled: Boolean) {
-        binding.biometricSwitch.setOnCheckedChangeListener(null)
         binding.biometricSwitch.isEnabled = isEnabled
     }
 

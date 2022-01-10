@@ -122,7 +122,7 @@ class AuthInteractor(
         val packageManager: PackageManager = context.packageManager
 
         // SDK 29 adds FACE and IRIS authentication
-        if (Build.VERSION.SDK_INT >= 29) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
                 return BiometricType.FACE_ID
             }
