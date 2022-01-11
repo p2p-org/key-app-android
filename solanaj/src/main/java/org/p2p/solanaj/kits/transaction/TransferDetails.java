@@ -1,5 +1,6 @@
 package org.p2p.solanaj.kits.transaction;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 public class TransferDetails extends TransactionDetails {
@@ -28,7 +29,8 @@ public class TransferDetails extends TransactionDetails {
             Double lamports = (Double) rawData.get("lamports");
             String finalAmount;
             if (lamports != null) {
-                finalAmount = lamports.toString();
+                BigInteger formattedLamports = BigInteger.valueOf(lamports.longValue());
+                finalAmount = String.valueOf(formattedLamports);
             } else {
                 finalAmount = (String) rawData.get("amount");
             }

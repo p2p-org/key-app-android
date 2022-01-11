@@ -12,6 +12,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.scaleShort
 import org.threeten.bp.ZonedDateTime
@@ -82,7 +83,7 @@ sealed class HistoryTransaction(
 
         fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
 
-        fun getFormattedTotal(): String = "${total.scaleMedium()} ${tokenData.symbol}"
+        fun getFormattedTotal(): String = "${total.scaleLong().toPlainString()} ${tokenData.symbol}"
 
         fun getFormattedAmount(): String? = amount?.let { "${amount.scaleShort()} $" }
 
