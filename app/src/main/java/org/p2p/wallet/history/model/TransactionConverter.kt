@@ -13,7 +13,6 @@ import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
-import org.p2p.wallet.utils.toPowerValue
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -125,7 +124,7 @@ object TransactionConverter {
             senderAddress = senderAddress,
             tokenData = tokenData,
             amount = amount,
-            total = BigDecimal(response.amount).divide(response.decimals.toPowerValue()),
+            total = response.amount.toBigInteger().fromLamports(response.decimals),
             date = date
         )
     }
