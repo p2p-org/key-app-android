@@ -54,9 +54,7 @@ object InfrastructureModule : InjectionModule {
             SocketUpdatesManager(get(), get(), get(), updateHandlers)
         } bind UpdatesManager::class
         single(named<UpdateHandler>()) {
-            listOf(
-                TransactionSignatureHandler(get())
-            )
+            listOf(TransactionSignatureHandler(get()))
         }
 
         single { AppNotificationManager(get()) }
