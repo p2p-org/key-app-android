@@ -4,7 +4,9 @@ import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.json.JSONObject
+import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import timber.log.Timber
 import java.io.IOException
 
 class FeeRelayerInterceptor(
@@ -17,21 +19,30 @@ class FeeRelayerInterceptor(
         return if (response.isSuccessful) {
             response
         } else {
-            throw extractException(response.body!!.string())
+            throw extractException(response.body!!.string(), response.code)
         }
     }
 
-    private fun extractException(bodyString: String): Throwable = try {
-        val fullMessage = JSONObject(bodyString).toString(1)
+    private fun extractException(bodyString: String, code: Int): Throwable {
+        try {
+            Timber.tag("FeeRelayerInterceptor").e("Error received. Code: $code, error body: $bodyString")
 
-        val serverError = gson.fromJson(bodyString, FeeRelayerServerError::class.java)
-
-        ServerException(
-            errorCode = ErrorTypeConverter.fromFeeRelayer(serverError.data?.type ?: FeeRelayerErrorType.UNKNOWN),
-            fullMessage = fullMessage,
-            errorMessage = serverError.message
-        )
-    } catch (e: Throwable) {
-        IOException("Error reading response error body", e)
+            if (bodyString.isEmpty()) {
+                return ServerException(
+                    errorCode = ErrorCode.SERVER_ERROR,
+                    fullMessage = "No error body",
+                    errorMessage = null
+                )
+            }
+            val fullMessage = JSONObject(bodyString).toString(1)
+            val serverError = gson.fromJson(bodyString, FeeRelayerServerError::class.java)
+            return ServerException(
+                errorCode = ErrorTypeConverter.fromFeeRelayer(serverError.data?.type ?: FeeRelayerErrorType.UNKNOWN),
+                fullMessage = fullMessage,
+                errorMessage = serverError.message
+            )
+        } catch (e: Throwable) {
+            throw IOException("Error reading response error body", e)
+        }
     }
 }

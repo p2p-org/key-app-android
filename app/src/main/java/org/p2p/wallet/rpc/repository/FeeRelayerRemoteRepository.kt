@@ -1,10 +1,16 @@
 package org.p2p.wallet.rpc.repository
 
+import org.p2p.solanaj.core.AccountMeta
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.core.Signature
+import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.wallet.rpc.api.FeeRelayerApi
 import org.p2p.wallet.rpc.api.FeeSolTransferRequest
 import org.p2p.wallet.rpc.api.FeeSplTransferRequest
+import org.p2p.wallet.rpc.api.SendTransactionRequest
+import org.p2p.wallet.rpc.model.FeeRelayerConverter
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.solanaj.core.PublicKey
+import timber.log.Timber
 import java.math.BigInteger
 
 class FeeRelayerRemoteRepository(
@@ -12,6 +18,31 @@ class FeeRelayerRemoteRepository(
 ) : FeeRelayerRepository {
 
     override suspend fun getPublicKey(): PublicKey = api.getPublicKey().toPublicKey()
+
+    override suspend fun send(
+        instructions: List<TransactionInstruction>,
+        signatures: List<Signature>,
+        pubkeys: List<AccountMeta>,
+        blockHash: String
+    ) {
+        val keys = pubkeys.map { it.publicKey.toBase58() }
+        val requestInstructions = instructions.map { FeeRelayerConverter.toNetwork(it, keys) }
+
+        val relayTransactionSignatures = mutableMapOf<Int, String>()
+        signatures.forEach { signature ->
+            val index = pubkeys.indexOfFirst { it.publicKey.toBase58() == signature.publicKey.toBase58() }
+            relayTransactionSignatures[index] = signature.signature
+        }
+
+        val request = SendTransactionRequest(
+            instructions = requestInstructions,
+            signatures = relayTransactionSignatures,
+            pubkeys = keys,
+            blockHash = blockHash,
+        )
+        val response = api.send(request)
+        Timber.d("### response $response")
+    }
 
     override suspend fun sendSolToken(
         senderPubkey: String,

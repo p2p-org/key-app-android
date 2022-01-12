@@ -91,9 +91,19 @@ class SocketUpdatesManager private constructor(
         // TODO: unsubscribe from transaction
     }
 
+    override fun onWebsocketPong() {
+        Timber.tag("SOCKET").d("PONG")
+        launch(Dispatchers.Default) {
+            delay(DELAY_MS)
+            client?.ping()
+            Timber.tag("SOCKET").d("Sending PING")
+        }
+    }
+
     override fun onConnected() {
         Timber.tag("SOCKET").w("Socket client is successfully connected")
         launch { state = UpdatesState.CONNECTED }
+        client?.ping()
     }
 
     override fun onFailed(exception: Exception) {
