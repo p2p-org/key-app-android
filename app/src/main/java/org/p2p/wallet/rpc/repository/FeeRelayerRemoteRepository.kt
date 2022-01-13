@@ -41,7 +41,6 @@ class FeeRelayerRemoteRepository(
             blockHash = blockHash,
         )
         val response = api.send(request)
-        Timber.d("### response $response")
     }
 
     override suspend fun sendSolToken(
