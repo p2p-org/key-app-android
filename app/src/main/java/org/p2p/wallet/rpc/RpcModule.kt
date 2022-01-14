@@ -56,7 +56,7 @@ object RpcModule : InjectionModule {
         single {
             val retrofit = get<Retrofit>(named(FEE_RELAYER_QUALIFIER))
             val api = retrofit.create(FeeRelayerApi::class.java)
-            FeeRelayerRemoteRepository(api)
+            FeeRelayerRemoteRepository(api, get())
         } bind FeeRelayerRepository::class
     }
 }
