@@ -1,7 +1,6 @@
 package org.p2p.wallet.rpc.api
 
 import com.google.gson.JsonArray
-import org.json.JSONArray
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
