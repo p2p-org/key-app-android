@@ -14,7 +14,7 @@ object FeeRelayerConverter {
         return RequestInstruction(
             programIdIndex = pubkeys.indexOfFirst { it == instruction.programId.toBase58() },
             accounts = instruction.keys.map { toNetwork(it, pubkeys) },
-            data = instruction.data
+            data = instruction.getUnsignedBytes()
         )
     }
 

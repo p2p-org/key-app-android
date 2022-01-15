@@ -41,7 +41,7 @@ class SwapInstructionsInteractor(
                 val transferInstruction = SystemProgram.transfer(
                     fromPublicKey = myAccount,
                     toPublickKey = accountInstructions.account,
-                    lamports = initAmount.toLong()
+                    lamports = initAmount
                 )
 
                 accountInstructions.instructions.add(1, transferInstruction)

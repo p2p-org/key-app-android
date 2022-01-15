@@ -4,6 +4,7 @@ import org.bitcoinj.core.Utils
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
+import java.math.BigInteger
 
 object SystemProgram {
     val PROGRAM_ID = PublicKey("11111111111111111111111111111111")
@@ -15,7 +16,7 @@ object SystemProgram {
     fun transfer(
         fromPublicKey: PublicKey,
         toPublickKey: PublicKey,
-        lamports: Long
+        lamports: BigInteger
     ): TransactionInstruction {
         val keys = ArrayList<AccountMeta>()
         keys.add(AccountMeta(fromPublicKey, isSigner = true, isWritable = true))
@@ -24,7 +25,7 @@ object SystemProgram {
         // 4 byte instruction index + 8 bytes lamports
         val data = ByteArray(4 + 8)
         Utils.uint32ToByteArrayLE(PROGRAM_INDEX_TRANSFER.toLong(), data, 0)
-        Utils.int64ToByteArrayLE(lamports, data, 4)
+        Utils.uint32ToByteArrayLE(lamports.toLong(), data, 4)
         return TransactionInstruction(PROGRAM_ID, keys, data)
     }
 

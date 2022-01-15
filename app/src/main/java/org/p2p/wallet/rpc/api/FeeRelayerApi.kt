@@ -1,6 +1,5 @@
 package org.p2p.wallet.rpc.api
 
-import com.google.gson.JsonArray
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -14,10 +13,10 @@ interface FeeRelayerApi {
     suspend fun getPublicKeyV2(): String
 
     @POST("relay_transaction")
-    suspend fun send(@Body request: SendTransactionRequest): JsonArray
+    suspend fun send(@Body request: SendTransactionRequest): List<String>
 
     @POST("v2/relay_transaction")
-    suspend fun sendV2(@Body request: SendTransactionRequest): JsonArray
+    suspend fun sendV2(@Body request: SendTransactionRequest): List<String>
 
     @POST("transfer_sol")
     suspend fun sendSolToken(@Body request: FeeSolTransferRequest): List<String>

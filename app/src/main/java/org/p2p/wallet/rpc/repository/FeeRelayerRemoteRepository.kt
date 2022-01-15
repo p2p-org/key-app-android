@@ -33,7 +33,7 @@ class FeeRelayerRemoteRepository(
         signatures: List<Signature>,
         pubkeys: List<AccountMeta>,
         blockHash: String
-    ) {
+    ): List<String> {
         val keys = pubkeys.map { it.publicKey.toBase58() }
         val requestInstructions = instructions.map { FeeRelayerConverter.toNetwork(it, keys) }
 
@@ -50,12 +50,11 @@ class FeeRelayerRemoteRepository(
             blockHash = blockHash,
         )
         val environment = environmentManager.loadEnvironment()
-        val response = if (environment == Environment.DEVNET) {
+        return if (environment == Environment.DEVNET) {
             api.sendV2(request)
         } else {
             api.send(request)
         }
-        val signatures = response
     }
 
     override suspend fun sendSolToken(

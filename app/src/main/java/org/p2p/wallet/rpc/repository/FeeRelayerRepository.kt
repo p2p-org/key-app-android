@@ -14,7 +14,7 @@ interface FeeRelayerRepository {
         signatures: List<Signature>,
         pubkeys: List<AccountMeta>,
         blockHash: String
-    )
+    ): List<String>
 
     suspend fun sendSolToken(
         senderPubkey: String,
