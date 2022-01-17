@@ -13,8 +13,8 @@ public class Transaction {
 
     public static final int SIGNATURE_LENGTH = 64;
 
-    private Message message;
-    private List<String> signatures;
+    private final Message message;
+    private final List<Signature> signatures;
     private byte[] serializedMessage;
     private PublicKey feePayer;
 
@@ -63,8 +63,13 @@ public class Transaction {
             TweetNaclFast.Signature signatureProvider = new TweetNaclFast.Signature(new byte[0], signer.getSecretKey());
             byte[] signature = signatureProvider.detached(serializedMessage);
 
-            signatures.add(Base58.encode(signature));
+            Signature newSignature = new Signature(signer.getPublicKey(), Base58.encode(signature));
+            signatures.add(newSignature);
         }
+    }
+
+    public List<AccountMeta> getAccountKeys() {
+        return message.getAccountKeys();
     }
 
     public byte[] serialize() {
@@ -76,8 +81,8 @@ public class Transaction {
 
         out.put(signaturesLength);
 
-        for (String signature : signatures) {
-            byte[] rawSignature = Base58.decode(signature);
+        for (Signature signature : signatures) {
+            byte[] rawSignature = Base58.decode(signature.getSignature());
             out.put(rawSignature);
         }
 
@@ -86,11 +91,15 @@ public class Transaction {
         return out.array();
     }
 
-    public String getSignature() {
+    public Signature getSignature() {
         if (signatures.size() > 0) {
             return signatures.get(0);
         }
 
         return null;
+    }
+
+    public List<Signature> getAllSignatures() {
+        return signatures;
     }
 }

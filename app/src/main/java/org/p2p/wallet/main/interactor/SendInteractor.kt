@@ -3,6 +3,7 @@ package org.p2p.wallet.main.interactor
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
+import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
@@ -48,13 +49,15 @@ class SendInteractor(
         val payer = tokenKeyProvider.publicKey.toPublicKey()
 
         val transaction = Transaction()
+        val instructions = mutableListOf<TransactionInstruction>()
 
         val instruction = SystemProgram.transfer(
             fromPublicKey = payer,
             toPublickKey = destinationAddress,
-            lamports = lamports.toLong()
+            lamports = lamports
         )
         transaction.addInstruction(instruction)
+        instructions += instruction
 
         val feePayerPublicKey = feeRelayerRepository.getPublicKey()
         val recentBlockHash = rpcRepository.getRecentBlockhash()
@@ -65,15 +68,12 @@ class SendInteractor(
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val signature = transaction.signature.orEmpty()
-
-        val result = feeRelayerRepository.sendSolToken(
-            senderPubkey = tokenKeyProvider.publicKey,
-            recipientPubkey = destinationAddress.toBase58(),
-            lamports = lamports,
-            signature = signature,
-            blockhash = recentBlockHash.recentBlockhash
-        )
+        val result = feeRelayerRepository.send(
+            instructions = instructions,
+            signatures = transaction.allSignatures,
+            pubkeys = transaction.accountKeys,
+            blockHash = recentBlockHash.recentBlockhash
+        ).firstOrNull().orEmpty()
 
         return TransactionResult.Success(result)
     }
@@ -105,6 +105,7 @@ class SendInteractor(
         val feePayerPubkey = feeRelayerRepository.getPublicKey()
 
         val transaction = Transaction()
+        val instructions = mutableListOf<TransactionInstruction>()
 
         /* If account is not found, create one */
         val accountInfo = rpcRepository.getAccountInfo(address.toBase58())
@@ -123,6 +124,7 @@ class SendInteractor(
             )
 
             transaction.addInstruction(createAccount)
+            instructions += createAccount
         }
 
         val instruction = TokenProgram.createTransferCheckedInstruction(
@@ -136,6 +138,7 @@ class SendInteractor(
         )
 
         transaction.addInstruction(instruction)
+        instructions += instruction
 
         val recentBlockHash = rpcRepository.getRecentBlockhash()
 
@@ -145,8 +148,6 @@ class SendInteractor(
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val signature = transaction.signature.orEmpty()
-
         val recipientPubkey = if (associatedNotNeeded || address.equals(destinationAddress)) {
             address.toBase58()
         } else {
@@ -155,16 +156,12 @@ class SendInteractor(
 
         Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
 
-        val transactionId = feeRelayerRepository.sendSplToken(
-            senderTokenAccountPubkey = token.publicKey,
-            recipientPubkey = recipientPubkey,
-            tokenMintPubkey = token.mintAddress,
-            authorityPubkey = tokenKeyProvider.publicKey,
-            lamports = lamports,
-            decimals = token.decimals,
-            signature = signature,
-            blockhash = recentBlockHash.recentBlockhash
-        )
+        val transactionId = feeRelayerRepository.send(
+            instructions = instructions,
+            signatures = transaction.allSignatures,
+            pubkeys = transaction.accountKeys,
+            blockHash = recentBlockHash.recentBlockhash
+        ).firstOrNull().orEmpty()
 
         return TransactionResult.Success(transactionId)
     }

@@ -9,6 +9,15 @@ interface FeeRelayerApi {
     @GET("fee_payer/pubkey")
     suspend fun getPublicKey(): String
 
+    @GET("v2/fee_payer/pubkey")
+    suspend fun getPublicKeyV2(): String
+
+    @POST("relay_transaction")
+    suspend fun send(@Body request: SendTransactionRequest): List<String>
+
+    @POST("v2/relay_transaction")
+    suspend fun sendV2(@Body request: SendTransactionRequest): List<String>
+
     @POST("transfer_sol")
     suspend fun sendSolToken(@Body request: FeeSolTransferRequest): List<String>
 

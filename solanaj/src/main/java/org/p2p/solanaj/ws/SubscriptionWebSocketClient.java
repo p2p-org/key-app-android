@@ -65,11 +65,14 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
         }
 
         return instance;
-
     }
 
     public SubscriptionWebSocketClient(URI serverURI) {
         super(serverURI);
+    }
+
+    public void ping() {
+        instance.sendPing();
     }
 
     public void accountSubscribe(String key, NotificationEventListener listener) {
@@ -97,15 +100,9 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
     }
 
     @Override
-    public void onWebsocketPing(WebSocket conn, Framedata f) {
-        super.onWebsocketPing(conn, f);
-        Log.d("SOCKET", "PING");
-    }
-
-    @Override
     public void onWebsocketPong(WebSocket conn, Framedata f) {
         super.onWebsocketPong(conn, f);
-        Log.d("SOCKET", "PING");
+        socketStateListener.onWebsocketPong();
     }
 
     @Override
