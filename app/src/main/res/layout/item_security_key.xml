@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:gravity="center"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
         android:textColor="?colorElementSecondary"
         tools:text="3. " />
 
@@ -28,6 +28,6 @@
         android:layout_marginEnd="6dp"
         android:gravity="center"
         android:paddingVertical="4dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
         tools:text="Austin" />
 </LinearLayout>

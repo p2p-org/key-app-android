@@ -44,20 +44,13 @@ class SecurityKeyFragment :
                 nextButton.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
-            toolbar.inflateMenu(R.menu.menu_security_key)
-            toolbar.setOnMenuItemClickListener {
-                presenter.loadKeys()
-                true
-            }
-
-            savedCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                nextButton.isEnabled = isChecked
-            }
             nextButton.setOnClickListener {
                 presenter.createAndSaveAccount()
             }
-
-            copyTextView.setOnClickListener {
+            renewButton.setOnClickListener {
+                presenter.loadKeys()
+            }
+            copyButton.setOnClickListener {
                 presenter.copyKeys()
             }
 
@@ -65,7 +58,7 @@ class SecurityKeyFragment :
                 attachAdapter(keysAdapter)
                 layoutManager = FlexboxLayoutManager(requireContext()).also {
                     it.flexDirection = FlexDirection.ROW
-                    it.justifyContent = JustifyContent.FLEX_START
+                    it.justifyContent = JustifyContent.SPACE_EVENLY
                 }
             }
         }
@@ -87,7 +80,6 @@ class SecurityKeyFragment :
         if (keys.isNotEmpty()) {
             val data = keys.joinToString(separator = " ")
             requireContext().copyToClipBoard(data)
-            binding.copyTextView.setText(R.string.auth_copied)
         }
     }
 }

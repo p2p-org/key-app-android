@@ -40,7 +40,7 @@
     <string name="error_rates_error">Cannot get rates</string>
 
     <!-- auth -->
-    <string name="auth_security_key_title">Security key</string>
+    <string name="auth_security_key_title">New wallet creation</string>
     <string name="auth_onboarding_subtitle">Secure non-custodial bank of future\nSimple finance for everyone</string>
     <string name="auth_decline">Decline</string>
     <string name="auth_accept">Accept</string>
@@ -59,6 +59,7 @@
     <string name="auth_restore">Restore</string>
     <string name="auth_reset_and_try_again">Reset and try again</string>
     <string name="auth_create_new_wallet">Create new wallet</string>
+    <string name="auth_create_new_wallet_message">The following words are security key that  that you must keep in a safe place, written in the correct sequence.\n\nIf lost, no one can restore it.\nKeep it private, even from us</string>
     <string name="auth_reset_pin">Reset PIN with a seed phrase</string>
     <string name="auth_finish_setup">Finish setup</string>
     <string name="auth_enable_faceid">Enable FaceID</string>
@@ -347,4 +348,7 @@
     <string name="settings_app_version">App version</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="auth_show_your_secret_key">Show your security key</string>
+    <string name="renew">Renew</string>
+    <string name="auth_lets_verify">I’ve saved it, let’s verify</string>
 </resources>
