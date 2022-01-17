@@ -204,16 +204,18 @@ class SendPresenter(
             try {
                 view?.showLoading(true)
 
+                val destinationAddress = address.toPublicKey()
+                val lamports = tokenAmount.toLamports(token.decimals)
                 val result = if (token.isSOL) {
                     sendInteractor.sendNativeSolToken(
-                        destinationAddress = address.toPublicKey(),
-                        lamports = tokenAmount.toLamports(token.decimals)
+                        destinationAddress = destinationAddress,
+                        lamports = lamports
                     )
                 } else {
                     sendInteractor.sendSplToken(
-                        destinationAddress = address.toPublicKey(),
+                        destinationAddress = destinationAddress,
                         token = token,
-                        lamports = tokenAmount.toLamports(token.decimals)
+                        lamports = lamports
                     )
                 }
 

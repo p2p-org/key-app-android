@@ -11,5 +11,5 @@ class CreateAccountDetails(
         get() = this
 
     override val type: TransactionDetailsType
-        get() = TransactionDetailsType.CLOSE_ACCOUNT
+        get() = TransactionDetailsType.CREATE_ACCOUNT
 }

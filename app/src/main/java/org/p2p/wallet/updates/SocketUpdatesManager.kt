@@ -105,7 +105,7 @@ class SocketUpdatesManager private constructor(
             while (true) {
                 client?.ping()
                 delay(DELAY_MS)
-                Timber.tag("SOCKET").d("Sending PING")
+                Timber.tag("SOCKET").d("PING")
             }
         }
     }

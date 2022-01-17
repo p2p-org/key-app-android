@@ -15,12 +15,12 @@ object SystemProgram {
 
     fun transfer(
         fromPublicKey: PublicKey,
-        toPublickKey: PublicKey,
+        toPublicKey: PublicKey,
         lamports: BigInteger
     ): TransactionInstruction {
         val keys = ArrayList<AccountMeta>()
         keys.add(AccountMeta(fromPublicKey, isSigner = true, isWritable = true))
-        keys.add(AccountMeta(toPublickKey, isSigner = false, isWritable = true))
+        keys.add(AccountMeta(toPublicKey, isSigner = false, isWritable = true))
 
         // 4 byte instruction index + 8 bytes lamports
         val data = ByteArray(4 + 8)
