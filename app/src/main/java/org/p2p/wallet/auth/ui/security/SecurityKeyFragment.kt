@@ -12,12 +12,13 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
+import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.copyToClipBoard
+import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class SecurityKeyFragment :
@@ -41,7 +42,7 @@ class SecurityKeyFragment :
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
-                nextButton.fitMargin { Edge.BottomArc }
+                termsAndConditionsTextView.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
             nextButton.setOnClickListener {
@@ -80,6 +81,7 @@ class SecurityKeyFragment :
         if (keys.isNotEmpty()) {
             val data = keys.joinToString(separator = " ")
             requireContext().copyToClipBoard(data)
+            toast(R.string.common_copied)
         }
     }
 }
