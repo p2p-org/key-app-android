@@ -40,7 +40,7 @@ class SwapInstructionsInteractor(
             if (isCreatingWSOL && initAmount.compareTo(BigInteger.ZERO) != 0) {
                 val transferInstruction = SystemProgram.transfer(
                     fromPublicKey = myAccount,
-                    toPublickKey = accountInstructions.account,
+                    toPublicKey = accountInstructions.account,
                     lamports = initAmount
                 )
 

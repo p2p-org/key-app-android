@@ -129,8 +129,15 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, data);
     }
 
-    public static TransactionInstruction createTransferCheckedInstruction(PublicKey tokenProgramId, PublicKey source,
-                                                                          PublicKey mint, PublicKey destination, PublicKey owner, BigInteger amount, int decimals) {
+    public static TransactionInstruction createTransferCheckedInstruction(
+            PublicKey tokenProgramId,
+            PublicKey source,
+            PublicKey mint,
+            PublicKey destination,
+            PublicKey owner,
+            BigInteger amount,
+            int decimals
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(source, false, true));
         keys.add(new AccountMeta(mint, false, false));
@@ -151,8 +158,14 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction createAssociatedTokenAccountInstruction(PublicKey associatedProgramId,
-                                                                                 PublicKey tokenProgramId, PublicKey mint, PublicKey associatedAccount, PublicKey owner, PublicKey payer) {
+    public static TransactionInstruction createAssociatedTokenAccountInstruction(
+            PublicKey associatedProgramId,
+            PublicKey tokenProgramId,
+            PublicKey mint,
+            PublicKey associatedAccount,
+            PublicKey owner,
+            PublicKey payer
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(payer, true, true));
         keys.add(new AccountMeta(associatedAccount, false, true));

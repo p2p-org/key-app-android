@@ -53,7 +53,7 @@ class SendInteractor(
 
         val instruction = SystemProgram.transfer(
             fromPublicKey = payer,
-            toPublickKey = destinationAddress,
+            toPublicKey = destinationAddress,
             lamports = lamports
         )
         transaction.addInstruction(instruction)
@@ -101,7 +101,7 @@ class SendInteractor(
             return TransactionResult.Error(R.string.main_send_to_yourself_error)
         }
 
-        val payer = tokenKeyProvider.publicKey.toPublicKey()
+        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
         val feePayerPubkey = feeRelayerRepository.getPublicKey()
 
         val transaction = Transaction()
@@ -120,7 +120,7 @@ class SendInteractor(
                 token.mintAddress.toPublicKey(),
                 address,
                 destinationAddress,
-                feePayerPubkey
+                userPublicKey
             )
 
             transaction.addInstruction(createAccount)
@@ -132,7 +132,7 @@ class SendInteractor(
             token.publicKey.toPublicKey(),
             token.mintAddress.toPublicKey(),
             address,
-            payer,
+            userPublicKey,
             lamports,
             token.decimals
         )
