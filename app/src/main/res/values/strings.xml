@@ -41,6 +41,8 @@
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
+    <string name="auth_verify_security_key_title">Verify your security key</string>
+    <string name="auth_select_word">Select word #%d</string>
     <string name="auth_onboarding_subtitle">Secure non-custodial bank of future\nSimple finance for everyone</string>
     <string name="auth_decline">Decline</string>
     <string name="auth_accept">Accept</string>

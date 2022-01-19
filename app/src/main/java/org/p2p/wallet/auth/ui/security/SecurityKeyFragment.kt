@@ -3,13 +3,10 @@ package org.p2p.wallet.auth.ui.security
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
+import androidx.recyclerview.widget.GridLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.ReserveMode
-import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
+import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import org.p2p.wallet.utils.replaceFragment
@@ -46,7 +43,7 @@ class SecurityKeyFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
             nextButton.setOnClickListener {
-                presenter.createAndSaveAccount()
+                presenter.cacheKeys()
             }
             renewButton.setOnClickListener {
                 presenter.loadKeys()
@@ -57,16 +54,9 @@ class SecurityKeyFragment :
 
             with(keysRecyclerView) {
                 attachAdapter(keysAdapter)
-                layoutManager = FlexboxLayoutManager(requireContext()).also {
-                    it.flexDirection = FlexDirection.ROW
-                    it.justifyContent = JustifyContent.SPACE_EVENLY
-                }
+                layoutManager = GridLayoutManager(requireContext(), 3)
             }
         }
-    }
-
-    override fun navigateToReserve() {
-        replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE))
     }
 
     override fun showKeys(keys: List<String>) {
@@ -75,6 +65,10 @@ class SecurityKeyFragment :
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+    }
+
+    override fun navigateToVerify(keys: List<String>) {
+        replaceFragment(VerifySecurityKeyFragment.create(keys))
     }
 
     override fun copyToClipboard(keys: List<String>) {

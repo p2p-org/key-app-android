@@ -110,3 +110,5 @@ fun RecyclerView.attachAdapter(adapter: RecyclerView.Adapter<*>) {
     doOnAttach { this.adapter = adapter }
     doOnDetach { this.adapter = null }
 }
+
+fun RecyclerView.ViewHolder.requireContext() = itemView.context

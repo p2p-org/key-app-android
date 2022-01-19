@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.ui.security
 
 import kotlinx.coroutines.launch
-import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import kotlin.properties.Delegates
@@ -35,11 +34,10 @@ class SecurityKeyPresenter(
         view?.copyToClipboard(keys)
     }
 
-    override fun createAndSaveAccount() {
+    override fun cacheKeys() {
         launch {
             view?.showLoading(true)
-            secretKeyInteractor.createAndSaveAccount(DerivationPath.BIP44CHANGE, keys, lookup = false)
-            view?.navigateToReserve()
+            view?.navigateToVerify(keys)
             view?.showLoading(false)
         }
     }

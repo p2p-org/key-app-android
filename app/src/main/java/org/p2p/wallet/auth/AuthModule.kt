@@ -7,11 +7,11 @@ import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.repository.UsernameRemoteRepository
+import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.FileRepository
-import org.p2p.wallet.auth.repository.UsernameRemoteRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.biometric.BiometricContract
 import org.p2p.wallet.auth.ui.biometric.BiometricPresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
@@ -24,6 +24,8 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
+import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
+import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.rpc.RpcModule.FEE_RELAYER_QUALIFIER
 import retrofit2.Retrofit
 
@@ -39,6 +41,7 @@ object AuthModule {
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
+        factory { VerifySecurityKeyPresenter(get()) } bind VerifySecurityKeyContract.Presenter::class
 
         // reserving username
         factory { UsernameInteractor(get(), get(), get(), get()) }
