@@ -5,15 +5,18 @@ import android.view.View
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.ReserveMode
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentVerifySecurityKeyBinding
+import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_KEYS = "EXTRA_KEYS"
 
@@ -57,5 +60,13 @@ class VerifySecurityKeyFragment :
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+    }
+
+    override fun navigateToReserve() {
+        replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE))
+    }
+
+    override fun showKeysDoesNotMatchError() {
+        // TODO show dialog alert
     }
 }

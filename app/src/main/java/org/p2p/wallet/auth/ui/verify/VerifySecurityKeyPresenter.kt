@@ -1,5 +1,7 @@
 package org.p2p.wallet.auth.ui.verify
 
+import kotlinx.coroutines.launch
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 
@@ -18,36 +20,43 @@ class VerifySecurityKeyPresenter(
 
     override fun load(selectedKeys: List<String>) {
         phrases.addAll(selectedKeys)
-        repeat(VERIFY_WORDS_COUNT) {
-            val words = HashMap<String, Boolean>()
-            var randomIndex = generateRandomIndex(selectedKeys.size)
+        launch {
+            view?.showLoading(true)
+            repeat(VERIFY_WORDS_COUNT) {
+                val words = HashMap<String, Boolean>()
+                var randomIndex = generateRandomIndex(selectedKeys.size)
 
-            words[selectedKeys[randomIndex]] = false
-
-            repeat(GENERATE_WORD_COUNT) {
-                randomIndex = generateRandomIndex(selectedKeys.size)
                 words[selectedKeys[randomIndex]] = false
+
+                repeat(GENERATE_WORD_COUNT) {
+                    randomIndex = generateRandomIndex(selectedKeys.size)
+                    words[selectedKeys[randomIndex]] = false
+                }
+                generatedPairs[randomIndex] = words
             }
-            generatedPairs[randomIndex] = words
+            val items = generateTuples(generatedPairs)
+            view?.showKeys(keys = items)
+        }.invokeOnCompletion {
+            view?.showLoading(false)
         }
-        val items = generateTuples(generatedPairs)
-        view?.showKeys(items)
     }
 
     override fun onKeySelected(keyIndex: Int, selectedKey: String) {
-        val keysRow = generatedPairs[keyIndex] ?: return
-        val isSelected = keysRow[selectedKey] ?: false
+        launch {
+            val keysRow = generatedPairs[keyIndex] ?: return
+            val isSelected = keysRow[selectedKey] ?: false
 
-        keysRow.keys.forEach { key ->
-            if (key == selectedKey) {
-                keysRow[key] = !isSelected
-            } else {
-                keysRow[key] = false
+            keysRow.keys.forEach { key ->
+                if (key == selectedKey) {
+                    keysRow[key] = !isSelected
+                } else {
+                    keysRow[key] = false
+                }
             }
-        }
 
-        val items = generateTuples(generatedPairs)
-        view?.showKeys(items)
+            val items = generateTuples(generatedPairs)
+            view?.showKeys(items)
+        }
     }
 
     private fun isValid(): Boolean {
@@ -89,5 +98,20 @@ class VerifySecurityKeyPresenter(
     }
 
     override fun validate() {
+        launch {
+            view?.showLoading(isLoading = true)
+            if (isValid()) {
+                secretKeyInteractor.createAndSaveAccount(
+                    path = DerivationPath.BIP44CHANGE,
+                    keys = phrases,
+                    lookup = false
+                )
+                view?.navigateToReserve()
+                return@launch
+            }
+            view?.showKeysDoesNotMatchError()
+        }.invokeOnCompletion {
+            view?.showLoading(isLoading = false)
+        }
     }
 }

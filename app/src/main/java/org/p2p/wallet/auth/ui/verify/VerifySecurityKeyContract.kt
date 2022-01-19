@@ -7,6 +7,8 @@ interface VerifySecurityKeyContract {
     interface View : MvpView {
         fun showKeys(keys: List<SecurityKeyTuple>)
         fun showLoading(isLoading: Boolean)
+        fun navigateToReserve()
+        fun showKeysDoesNotMatchError()
     }
 
     interface Presenter : MvpPresenter<View> {
