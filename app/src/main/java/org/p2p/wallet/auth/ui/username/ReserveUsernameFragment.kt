@@ -1,20 +1,12 @@
 package org.p2p.wallet.auth.ui.username
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.text.style.StyleSpan
 import android.view.View
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
@@ -22,24 +14,20 @@ import com.geetest.sdk.GT3GeetestUtils
 import com.geetest.sdk.GT3Listener
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import org.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.ui.widget.InputTextView
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
-import java.io.File
 
 class ReserveUsernameFragment :
     BaseMvpFragment<ReserveUsernameContract.View,
@@ -65,10 +53,10 @@ class ReserveUsernameFragment :
         super.onViewCreated(view, savedInstanceState)
         initGeetestUtils()
 
-        binding.run {
+        with(binding) {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
-                termsAndConditionsTextView.fitMargin { Edge.BottomArc }
+                usernameButton.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
@@ -76,10 +64,7 @@ class ReserveUsernameFragment :
             skipTextView.movementMethod = LinkMovementMethod.getInstance()
             skipTextView.highlightColor = Color.TRANSPARENT
 
-            termsAndConditionsTextView.text = buildTermsAndPrivacyText()
-            termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
-
-            usernameEditText.doAfterTextChanged {
+            inputTextView.doAfterTextChanged {
                 presenter.checkUsername(it.toString().lowercase())
             }
 
@@ -99,29 +84,22 @@ class ReserveUsernameFragment :
     }
 
     override fun showIdleState() {
-        with(binding) {
-            usernameButton.isEnabled = false
-            usernameButton.setActionText(R.string.auth_enter_your_username)
-            usernameTextView.text = getString(R.string.auth_use_any_latin)
-            usernameTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
-        }
+        binding.inputTextView.setMessageWithState(getString(R.string.auth_use_any_latin), InputTextView.State.Idle)
     }
 
     override fun showUnavailableName(name: String) {
         with(binding) {
-            usernameTextView.text = buildBoldText(getString(R.string.auth_unavailable_name, name), name)
-            usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
             usernameButton.isEnabled = false
-            usernameButton.setActionText(R.string.auth_enter_your_username)
+            val message = getString(R.string.auth_unavailable_name, name)
+            inputTextView.setMessageWithState(message, InputTextView.State.Error)
         }
     }
 
     override fun showAvailableName(name: String) {
         with(binding) {
-            usernameTextView.text = buildBoldText(getString(R.string.auth_available_name, name), name)
-            usernameTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGreen))
             usernameButton.isEnabled = true
-            usernameButton.setActionText(R.string.auth_reserve)
+            val message = getString(R.string.auth_available_name, name)
+            inputTextView.setMessageWithState(message, InputTextView.State.Success)
         }
     }
 
@@ -147,27 +125,8 @@ class ReserveUsernameFragment :
     }
 
     override fun showUsernameLoading(isLoading: Boolean) {
-        binding.usernameProgressBar.isVisible = isLoading
-    }
-
-    override fun showFile(file: File) {
-        val fromFile = FileProvider.getUriForFile(
-            requireContext(),
-            BuildConfig.APPLICATION_ID + ".provider",
-            file
-        )
-
-        val target = Intent(Intent.ACTION_VIEW)
-        target.setDataAndType(fromFile, "application/pdf")
-        target.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-        try {
-            startActivity(target)
-        } catch (e: ActivityNotFoundException) {
-            Timber.e(e, "Cannot open file")
-            toast(R.string.error_opening_file)
-        }
+        val message = getString(R.string.auth_username_searching)
+        binding.inputTextView.setMessageWithState(message, InputTextView.State.Loading)
     }
 
     private fun initGeetestUtils() {
@@ -180,7 +139,7 @@ class ReserveUsernameFragment :
         gt3ConfigBean?.webviewTimeout = 10000
         gt3ConfigBean?.listener = object : GT3Listener() {
             override fun onDialogResult(result: String) {
-                val username = binding.usernameEditText.text?.toString().orEmpty().lowercase()
+                val username = binding.inputTextView.getText().lowercase()
                 presenter.registerUsername(username, result)
                 gt3GeeTestUtils?.showSuccessDialog()
             }
@@ -207,40 +166,6 @@ class ReserveUsernameFragment :
         gt3GeeTestUtils?.init(gt3ConfigBean)
     }
 
-    private fun buildTermsAndPrivacyText(): SpannableString {
-        val message = getString(R.string.auth_agree_terms_and_privacy)
-        val span = SpannableString(message)
-
-        /*
-        * Applying clickable span for terms of use
-        * */
-        val clickableTermsOfUse = object : ClickableSpan() {
-            override fun onClick(widget: View) {
-                presenter.openTermsOfUse()
-            }
-        }
-        val termsOfUse = getString(R.string.auth_terms_of_use)
-        val termsStart = span.indexOf(termsOfUse)
-        val termsEnd = span.indexOf(termsOfUse) + termsOfUse.length
-        span.setSpan(clickableTermsOfUse, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-
-        val privacyPolicy = getString(R.string.auth_privacy_policy)
-
-        /*
-        * Applying clickable span for privacy policy
-        * */
-        val clickablePrivacy = object : ClickableSpan() {
-            override fun onClick(widget: View) {
-                presenter.openPrivacyPolicy()
-            }
-        }
-        val start = span.indexOf(privacyPolicy)
-        val end = span.indexOf(privacyPolicy) + privacyPolicy.length
-        span.setSpan(clickablePrivacy, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-
-        return span
-    }
-
     private fun buildClickableText(): SpannableString {
         val clickableText = getString(R.string.auth_clickable_skip_this_step)
         val message = getString(R.string.auth_skip_this_step)
@@ -261,14 +186,5 @@ class ReserveUsernameFragment :
             ReserveMode.PIN_CODE -> navigateToPinCode()
             ReserveMode.POP -> popBackStack()
         }
-    }
-
-    private fun buildBoldText(text: String, boldText: String): SpannableString {
-        val span = SpannableString(text)
-
-        if (boldText.isBlank()) return span
-
-        span.setSpan(StyleSpan(Typeface.BOLD), 0, boldText.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-        return span
     }
 }

@@ -83,4 +83,10 @@
         <attr name="optionsValueTextColor" format="string" />
         <attr name="isBoldValue" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="InputTextView">
+        <attr name="suffixText" format="string" />
+        <attr name="hint" format="string" />
+        <attr name="android:maxLength" />
+    </declare-styleable>
 </resources>

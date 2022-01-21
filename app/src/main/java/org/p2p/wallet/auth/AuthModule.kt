@@ -37,7 +37,7 @@ object AuthModule {
         factory { AuthInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
         factory { FileRepository(get()) }
-        factory { SecurityKeyPresenter(get()) } bind SecurityKeyContract.Presenter::class
+        factory { SecurityKeyPresenter(get(), get(), get()) } bind SecurityKeyContract.Presenter::class
         factory { BiometricPresenter(get()) } bind BiometricContract.Presenter::class
         factory { CreatePinPresenter(get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get()) } bind SignInPinContract.Presenter::class
@@ -45,7 +45,7 @@ object AuthModule {
 
         // reserving username
         factory { UsernameInteractor(get(), get(), get(), get()) }
-        factory { ReserveUsernamePresenter(get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
+        factory { ReserveUsernamePresenter(get()) } bind ReserveUsernameContract.Presenter::class
         factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
         single {
             val retrofit = get<Retrofit>(named(FEE_RELAYER_QUALIFIER))

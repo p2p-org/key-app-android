@@ -49,5 +49,5 @@
     <color name="chartTOMO">#252829</color>
     <color name="chartLUA">#F1BE5C</color>
 
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">?colorElementSecondary</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/elementSecondary</color>
 </resources>

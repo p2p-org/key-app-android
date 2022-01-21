@@ -27,10 +27,10 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="32dp"
+            android:orientation="vertical"
             android:overScrollMode="never"
             app:layout_constraintBottom_toTopOf="@id/actionContainer"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            android:orientation="vertical"
             tools:itemCount="8"
             tools:listitem="@layout/item_security_key" />
 
@@ -94,19 +94,23 @@
             app:buttonTextColor="?colorElementPrimary"
             app:layout_constraintBottom_toTopOf="@id/termsAndConditionsTextView"
             app:layout_constraintTop_toBottomOf="@id/actionContainer"
-            app:layout_constraintVertical_bias="1"
-            />
+            app:layout_constraintVertical_bias="0.9" />
 
         <TextView
             android:id="@+id/termsAndConditionsTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:padding="16dp"
             android:text="@string/auth_agree_terms_and_privacy"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="?colorElementSecondary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
 
         <org.p2p.wallet.common.ui.widget.ProgressView
             android:id="@+id/progressView"

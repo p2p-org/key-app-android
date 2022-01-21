@@ -1,10 +1,18 @@
 package org.p2p.wallet.auth.ui.security
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -17,6 +25,8 @@ import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import timber.log.Timber
+import java.io.File
 
 class SecurityKeyFragment :
     BaseMvpFragment<SecurityKeyContract.View, SecurityKeyContract.Presenter>(R.layout.fragment_security_key),
@@ -42,6 +52,8 @@ class SecurityKeyFragment :
                 termsAndConditionsTextView.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
+            termsAndConditionsTextView.text = buildTermsAndPrivacyText()
+            termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
             nextButton.setOnClickListener {
                 presenter.cacheKeys()
             }
@@ -59,6 +71,40 @@ class SecurityKeyFragment :
         }
     }
 
+    private fun buildTermsAndPrivacyText(): SpannableString {
+        val message = getString(R.string.auth_agree_terms_and_privacy)
+        val span = SpannableString(message)
+
+        /*
+        * Applying clickable span for terms of use
+        * */
+        val clickableTermsOfUse = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                presenter.openTermsOfUse()
+            }
+        }
+        val termsOfUse = getString(R.string.auth_terms_of_use)
+        val termsStart = span.indexOf(termsOfUse)
+        val termsEnd = span.indexOf(termsOfUse) + termsOfUse.length
+        span.setSpan(clickableTermsOfUse, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+
+        val privacyPolicy = getString(R.string.auth_privacy_policy)
+
+        /*
+        * Applying clickable span for privacy policy
+        * */
+        val clickablePrivacy = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                presenter.openPrivacyPolicy()
+            }
+        }
+        val start = span.indexOf(privacyPolicy)
+        val end = span.indexOf(privacyPolicy) + privacyPolicy.length
+        span.setSpan(clickablePrivacy, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+
+        return span
+    }
+
     override fun showKeys(keys: List<String>) {
         keysAdapter.setItems(keys)
     }
@@ -69,6 +115,26 @@ class SecurityKeyFragment :
 
     override fun navigateToVerify(keys: List<String>) {
         replaceFragment(VerifySecurityKeyFragment.create(keys))
+    }
+
+    override fun showFile(file: File) {
+        val fromFile = FileProvider.getUriForFile(
+            requireContext(),
+            BuildConfig.APPLICATION_ID + ".provider",
+            file
+        )
+
+        val target = Intent(Intent.ACTION_VIEW)
+        target.setDataAndType(fromFile, "application/pdf")
+        target.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        try {
+            startActivity(target)
+        } catch (e: ActivityNotFoundException) {
+            Timber.e(e, "Cannot open file")
+            toast(R.string.error_opening_file)
+        }
     }
 
     override fun copyToClipboard(keys: List<String>) {

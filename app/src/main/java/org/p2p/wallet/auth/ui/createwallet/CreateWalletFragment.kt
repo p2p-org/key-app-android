@@ -3,7 +3,8 @@ package org.p2p.wallet.auth.ui.createwallet
 import android.os.Bundle
 import android.view.View
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
+import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import org.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentCreateWalletBinding
 import org.p2p.wallet.utils.popBackStack
@@ -23,7 +24,7 @@ class CreateWalletFragment : BaseFragment(R.layout.fragment_create_wallet) {
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             progressButton.setOnClickListener {
-                replaceFragment(SecurityKeyFragment.create())
+                replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
             }
         }
     }

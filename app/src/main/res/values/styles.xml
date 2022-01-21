@@ -14,9 +14,15 @@
 
     <style name="WalletTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">?colorAccentPrimary</item>
-        <item name="android:textColorPrimary">?colorElementPrimary</item>
+        <item name="android:textColorPrimary">?colorMessagePrimary</item>
         <item name="android:windowBackground">@drawable/bg_white_rounded</item>
         <item name="android:windowMinWidthMinor">280dp</item>
+        <item name="titleTextStyle">@style/WalletTheme.TextAppearance.SemiBold16</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/WalletTheme.TextAppearance.Regular16</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/WalletTheme.TextAppearance.SemiBold16</item>
+        <item name="buttonBarPositiveButtonStyle">@style/AccentColoredText</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AccentColoredText</item>
+
     </style>
 
     <style name="SwitchStyle" parent="Theme.Design.BottomSheetDialog">
@@ -24,4 +30,9 @@
         <item name="colorSwitchThumbNormal">?colorElementSecondary</item>
         <item name="android:colorForeground">?colorElementSecondary</item>
     </style>
+
+    <style name="AccentColoredText" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/accentPrimary</item>
+    </style>
+
 </resources>

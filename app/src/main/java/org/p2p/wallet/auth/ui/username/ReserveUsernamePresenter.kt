@@ -1,19 +1,15 @@
 package org.p2p.wallet.auth.ui.username
 
-import android.content.Context
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class ReserveUsernamePresenter(
-    private val context: Context,
-    private val usernameInteractor: UsernameInteractor,
-    private val fileRepository: FileRepository
+    private val usernameInteractor: UsernameInteractor
 ) : BasePresenter<ReserveUsernameContract.View>(),
     ReserveUsernameContract.Presenter {
 
@@ -42,8 +38,6 @@ class ReserveUsernamePresenter(
             } catch (e: Throwable) {
                 view?.showAvailableName(username)
                 Timber.e(e, "Error occurred while checking username: $username")
-            } finally {
-                view?.showUsernameLoading(false)
             }
         }
     }
@@ -74,17 +68,5 @@ class ReserveUsernamePresenter(
                 view?.showLoading(false)
             }
         }
-    }
-
-    override fun openTermsOfUse() {
-        val inputStream = context.assets.open("p2p_terms_of_service.pdf")
-        val file = fileRepository.savePdf("p2p_terms_of_service", inputStream.readBytes())
-        view?.showFile(file)
-    }
-
-    override fun openPrivacyPolicy() {
-        val inputStream = context.assets.open("p2p_privacy_policy.pdf")
-        val file = fileRepository.savePdf("p2p_privacy_policy", inputStream.readBytes())
-        view?.showFile(file)
     }
 }

@@ -9,11 +9,14 @@ interface VerifySecurityKeyContract {
         fun showLoading(isLoading: Boolean)
         fun navigateToReserve()
         fun showKeysDoesNotMatchError()
+        fun onCleared()
+        fun showEnabled(isEnable: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun load(selectedKeys: List<String>)
+        fun load(selectedKeys: List<String>, shuffle: Boolean = false)
         fun onKeySelected(keyIndex: Int, selectedKey: String)
         fun validate()
+        fun retry()
     }
 }

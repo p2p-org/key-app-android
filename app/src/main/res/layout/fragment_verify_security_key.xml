@@ -47,7 +47,8 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonDrawableEnd="@drawable/ic_arrow_right"
             app:buttonDrawableTint="?colorElementPrimary"
-            app:buttonText="@string/auth_lets_verify"
+            app:buttonEnabled="false"
+            app:buttonText="@string/auth_save_and_continue"
             app:buttonTextColor="?colorElementPrimary" />
 
 
