@@ -3,6 +3,7 @@ package org.p2p.wallet.root.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -22,12 +23,14 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override val presenter: RootContract.Presenter by inject()
+    private lateinit var container: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         window.applyTranslucentFlag()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root)
+        container = findViewById(R.id.content)
 
         if (savedInstanceState == null) {
             presenter.openRootScreen()

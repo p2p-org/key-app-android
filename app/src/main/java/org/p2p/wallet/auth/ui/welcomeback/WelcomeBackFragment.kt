@@ -5,20 +5,20 @@ import android.view.View
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
-import org.p2p.wallet.databinding.FragmentAuthDoneBinding
+import org.p2p.wallet.databinding.FragmentWelcomeBackBinding
 import org.p2p.wallet.main.ui.main.MainFragment
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class WelcomeBackFragment : BaseFragment(R.layout.fragment_auth_done) {
+class WelcomeBackFragment : BaseFragment(R.layout.fragment_welcome_back) {
 
     companion object {
         fun create() = WelcomeBackFragment()
     }
 
-    private val binding: FragmentAuthDoneBinding by viewBinding()
+    private val binding: FragmentWelcomeBackBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

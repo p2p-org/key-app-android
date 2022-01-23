@@ -55,21 +55,6 @@ class RestoreFragment : BaseFragment(R.layout.fragment_restore) {
                 "kick",
                 "sausage"
             ).joinToString(" ")
-
-//                listOf (
-//                "miracle",
-//            "pizza",
-//            "supply",
-//            "useful",
-//            "steak",
-//            "border",
-//            "same",
-//            "again",
-//            "youth",
-//            "silver",
-//            "access",
-//            "hundred",
-//        ).joinToString(" ")
         )
     }
 }

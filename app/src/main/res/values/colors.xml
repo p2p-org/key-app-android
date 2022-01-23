@@ -14,15 +14,17 @@
 
     <color name="elementPrimary">#FFFFFFFF</color>
     <color name="elementSecondary">#A3A5BA</color>
-    <color name="elementTertiary">#F6F6F8</color>
+    <color name="elementTertiary">#FBFBFD</color>
 
     <color name="messagePrimary">#CC000000</color>
     <color name="messageSecondary">#202020</color>
     <color name="backgroundPrimary">#FFFFFF</color>
     <color name="backgroundSecondary">#F6F6F8</color>
 
+
     <color name="white">#FFFFFFFF</color>
     <color name="colorStaticDark">#CC000000</color>
+    <color name="colorSnackBar">#404040</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>

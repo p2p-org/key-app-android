@@ -51,6 +51,13 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="WalletTheme.TextAppearance.SemiBold32">
+        <item name="android:textColor">?colorMessagePrimary</item>
+        <item name="fontFamily">@font/manrope_semibold</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
     <style name="WalletTheme.TextAppearance.SemiBold24">
         <item name="android:textColor">?colorMessagePrimary</item>
         <item name="fontFamily">@font/manrope_semibold</item>

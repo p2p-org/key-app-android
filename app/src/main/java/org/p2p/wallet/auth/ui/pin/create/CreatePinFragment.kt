@@ -10,16 +10,9 @@ import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.welcomeback.WelcomeBackFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCreatePinBinding
-import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStackTo
-import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.utils.*
 
 class CreatePinFragment :
     BaseMvpFragment<CreatePinContract.View, CreatePinContract.Presenter>(R.layout.fragment_create_pin),
@@ -41,9 +34,7 @@ class CreatePinFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            edgeToEdge {
-                contentView.fitMargin { Edge.Bottom }
-            }
+            toolbar.setNavigationOnClickListener { popBackStack() }
             pinView.onPinCompleted = {
                 presenter.setPinCode(it)
             }
@@ -61,7 +52,7 @@ class CreatePinFragment :
     override fun showCreation() {
         with(binding) {
             pinView.isEnabled = true
-            infoTextView.setText(R.string.auth_create_pin_code)
+            toolbar.title = getString(R.string.auth_setup_wallet_pin)
             pinView.clearPin()
         }
     }
@@ -69,7 +60,7 @@ class CreatePinFragment :
     override fun showConfirmation() {
         with(binding) {
             pinView.isEnabled = true
-            infoTextView.setText(R.string.auth_repeat_new_pin_code)
+            toolbar.title = getString(R.string.auth_confirm_wallet_pin)
             pinView.clearPin()
         }
     }

@@ -15,7 +15,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold32"
         android:textColor="@color/color_keyboard_button"
         tools:text="1" />
 

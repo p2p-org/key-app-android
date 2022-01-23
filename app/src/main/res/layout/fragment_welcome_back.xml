@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contentView"
@@ -9,16 +10,24 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_onboarding">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/centerGuideline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="56dp"
-            app:layout_constraintDimensionRatio="3:2.5"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/bg_auth_done" />
+            app:layout_constraintBottom_toTopOf="@id/centerGuideline"
+            app:srcCompat="@drawable/ic_p2p" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/titleTextView"
@@ -27,11 +36,12 @@
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="24dp"
             android:gravity="center"
-            android:text="@string/auth_welcome_to_p2p"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
+            android:text="@string/app_name"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold32"
+            android:textColor="?colorElementPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageView" />
+            app:layout_constraintTop_toBottomOf="@id/centerGuideline" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/subTitleTextView"
@@ -39,14 +49,16 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="12dp"
+            android:alpha="0.65"
             android:gravity="center"
             android:text="@string/auth_intro_message"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textColor="?colorElementPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
-        <org.p2p.wallet.common.ui.widget.ProgressButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/finishButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -54,10 +66,10 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/bg_blue_rounded"
             android:foreground="?selectableItemBackground"
+            android:text="@string/auth_finish_setup"
+            android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:buttonDrawable="@drawable/ic_light"
-            app:buttonText="@string/auth_finish_setup"
-            app:buttonTextColor="?colorElementPrimary"
+            android:textColor="?colorElementPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="UnusedAttribute" />
     </androidx.constraintlayout.widget.ConstraintLayout>

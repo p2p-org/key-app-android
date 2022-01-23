@@ -4,11 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
@@ -66,6 +69,31 @@ fun View.hideKeyboard() {
         (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
             .hideSoftInputFromWindow(windowToken, 0)
     }
+}
+
+fun View?.findSuitableParent(): ViewGroup? {
+    var view = this
+    var fallback: ViewGroup? = null
+    do {
+        if (view is CoordinatorLayout) {
+            return view
+        } else if (view is FrameLayout) {
+            if (view.id == android.R.id.content) {
+                // If we've hit the decor content view, then we didn't find a CoL in the
+                // hierarchy, so use it.
+                return view
+            } else {
+                fallback = view
+            }
+        }
+
+        if (view != null) {
+            // Else, we will loop and crawl up the view hierarchy and try to find a parent
+            val parent = view.parent
+            view = if (parent is View) parent else null
+        }
+    } while (view != null)
+    return fallback
 }
 
 fun Context.showSoftKeyboard() {
