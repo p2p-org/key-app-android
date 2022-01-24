@@ -30,7 +30,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
             createButton.clipToOutline = true
             createButton.setOnClickListener {
-                replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
+                replaceFragment(CreateWalletFragment.create())
             }
             loginButton.setOnClickListener {
                 replaceFragment(SecretKeyFragment.create())
