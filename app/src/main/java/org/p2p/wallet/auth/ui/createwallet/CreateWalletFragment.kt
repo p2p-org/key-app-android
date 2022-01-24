@@ -3,7 +3,6 @@ package org.p2p.wallet.auth.ui.createwallet
 import android.os.Bundle
 import android.view.View
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentCreateWalletBinding
