@@ -21,8 +21,9 @@ class UserInteractor(
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
-        val tokenData = userLocalRepository.findTokenDataBySymbol(mintAddress)
-        return tokenData?.let { TokenConverter.fromNetwork(tokenData) }
+        val tokenData = userLocalRepository.findTokenData(mintAddress)
+        val price = tokenData?.let { userLocalRepository.getPriceByToken(it.symbol) }
+        return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
     fun getUserTokensFlow(): Flow<List<Token.Active>> =

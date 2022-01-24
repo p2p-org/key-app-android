@@ -212,7 +212,7 @@ class RpcRemoteRepository(
         return rpcApi.getBalance(rpcRequest).result.value
     }
 
-    override suspend fun getBalances(accounts: List<String>): List<Pair<String, Long>> {
+    override suspend fun getBalances(accounts: List<String>): List<Pair<String, BigInteger>> {
         val requestsBatch = accounts.map {
             val params = listOf(it)
             RpcRequest("getBalance", params)
@@ -221,7 +221,7 @@ class RpcRemoteRepository(
         return rpcApi
             .getBalances(requestsBatch)
             .mapIndexed { index, response ->
-                requestsBatch[index].params!!.first() as String to response.result.value
+                requestsBatch[index].params!!.first() as String to response.result.value.toBigInteger()
             }
     }
 

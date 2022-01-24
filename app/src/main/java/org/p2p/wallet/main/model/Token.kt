@@ -22,7 +22,8 @@ sealed class Token constructor(
     @ColorRes open val color: Int,
     open val serumV3Usdc: String?,
     open val serumV3Usdt: String?,
-    open val isWrapped: Boolean
+    open val isWrapped: Boolean,
+    open val usdRate: BigDecimal?
 ) : Parcelable {
 
     @Parcelize
@@ -31,7 +32,7 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
-        val usdRate: BigDecimal?,
+        override val usdRate: BigDecimal?,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -51,7 +52,8 @@ sealed class Token constructor(
         color = color,
         serumV3Usdc = serumV3Usdc,
         serumV3Usdt = serumV3Usdt,
-        isWrapped = isWrapped
+        isWrapped = isWrapped,
+        usdRate = usdRate
     ) {
 
         @IgnoredOnParcel
@@ -90,7 +92,8 @@ sealed class Token constructor(
         @ColorRes override val color: Int,
         override val serumV3Usdc: String?,
         override val serumV3Usdt: String?,
-        override val isWrapped: Boolean
+        override val isWrapped: Boolean,
+        override val usdRate: BigDecimal?
     ) : Token(
         publicKey = null,
         tokenSymbol = tokenSymbol,
@@ -101,7 +104,8 @@ sealed class Token constructor(
         color = color,
         serumV3Usdc = serumV3Usdc,
         serumV3Usdt = serumV3Usdt,
-        isWrapped = isWrapped
+        isWrapped = isWrapped,
+        usdRate = usdRate
     )
 
     @IgnoredOnParcel
@@ -124,7 +128,7 @@ sealed class Token constructor(
             publicKey: String,
             tokenData: TokenData,
             amount: Long,
-            exchangeRate: BigDecimal
+            exchangeRate: BigDecimal?
         ): Active {
             val total: BigDecimal = BigDecimal(amount).divide(tokenData.decimals.toPowerValue())
             return Active(
@@ -134,7 +138,7 @@ sealed class Token constructor(
                 mintAddress = tokenData.mintAddress,
                 tokenName = SOL_NAME,
                 logoUrl = tokenData.iconUrl,
-                totalInUsd = total.multiply(exchangeRate),
+                totalInUsd = exchangeRate?.let { total.multiply(it) },
                 total = total,
                 color = R.color.chartSOL,
                 usdRate = exchangeRate,

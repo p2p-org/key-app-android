@@ -15,7 +15,6 @@ import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.scaleMedium
-import java.math.BigDecimal
 
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
@@ -76,7 +75,7 @@ class UserRemoteRepository(
                     return@mapNotNull mapDevnetRenBTC(it)
                 }
 
-                val token = userLocalRepository.findTokenDataBySymbol(mintAddress) ?: return@mapNotNull null
+                val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
                 val price = userLocalRepository.getPriceByToken(token.symbol)
                 TokenConverter.fromNetwork(it, token, price)
             }
@@ -86,13 +85,13 @@ class UserRemoteRepository(
          * Assuming that SOL is our default token, creating it manually
          * */
         val solBalance = rpcRepository.getBalance(publicKey)
-        val tokenData = userLocalRepository.findTokenDataBySymbol(Token.WRAPPED_SOL_MINT) ?: return@withContext result
+        val tokenData = userLocalRepository.findTokenData(Token.WRAPPED_SOL_MINT) ?: return@withContext result
         val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
         val token = Token.createSOL(
             publicKey = publicKey,
             tokenData = tokenData,
             amount = solBalance,
-            exchangeRate = solPrice?.getScaledValue() ?: BigDecimal.ZERO
+            exchangeRate = solPrice?.getScaledValue()
         )
         result.add(0, token)
         return@withContext result

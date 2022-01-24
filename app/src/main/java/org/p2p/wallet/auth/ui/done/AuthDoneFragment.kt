@@ -35,6 +35,8 @@ class AuthDoneFragment() :
                 popAndReplaceFragment(MainFragment.create(), inclusive = true)
             }
         }
+
+        presenter.load()
     }
 
     override fun showUsername(name: String?) {

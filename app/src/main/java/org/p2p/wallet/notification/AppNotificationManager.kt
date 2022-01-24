@@ -22,8 +22,6 @@ class AppNotificationManager(
 
     companion object {
         fun createNotificationChannels(context: Context) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
             val channels = getNotificationChannels()
             val notificationManager = NotificationManagerCompat.from(context)
             for (channel in channels) {
