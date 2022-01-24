@@ -15,6 +15,7 @@
     <color name="elementPrimary">#FFFFFFFF</color>
     <color name="elementSecondary">#A3A5BA</color>
     <color name="elementTertiary">#FBFBFD</color>
+    <color name="elementSurface">#D2D4E5</color>
 
     <color name="messagePrimary">#CC000000</color>
     <color name="messageSecondary">#202020</color>

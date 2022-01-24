@@ -12,7 +12,13 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCreatePinBinding
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.utils.*
+import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.vibrate
 
 class CreatePinFragment :
     BaseMvpFragment<CreatePinContract.View, CreatePinContract.Presenter>(R.layout.fragment_create_pin),

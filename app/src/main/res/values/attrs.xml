@@ -10,6 +10,7 @@
     <attr name="colorElementPrimary" format="color|reference" />
     <attr name="colorElementSecondary" format="color|reference" />
     <attr name="colorElementTertiary" format="color|reference" />
+    <attr name="colorElementSurface" format="color|reference" />
 
     <attr name="colorMessagePrimary" format="color|reference" />
     <attr name="colorMessageSecondary" format="color|reference" />

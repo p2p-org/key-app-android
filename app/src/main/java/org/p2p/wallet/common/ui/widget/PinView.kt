@@ -61,10 +61,12 @@ class PinView @JvmOverloads constructor(
             messageTextView.text = errorText
             messageTextView.isVisible = true
             pinCodeView.startErrorAnimation(
-                onAnimationFinished = { messageTextView.isInvisible = true }
+                onAnimationFinished = {
+                    messageTextView.isInvisible = true
+                    clearPin()
+                }
             )
         }
-        clearPin()
     }
 
     fun showLockedState(message: String) {

@@ -55,8 +55,6 @@ class ProgressButton @JvmOverloads constructor(
             binding.endImageView.setImageResource(endImageResourceId)
         }
 
-        val buttonDrawableTintId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawableTint, 0)
-
         val textAppearanceId = typedArray.getResourceId(R.styleable.ProgressButton_android_textAppearance, 0)
         if (textAppearanceId != 0) {
             binding.actionTextView.setTextAppearance(textAppearanceId)
@@ -67,6 +65,7 @@ class ProgressButton @JvmOverloads constructor(
         )
         binding.actionTextView.setTextColor(color)
 
+        val buttonDrawableTintId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawableTint, 0)
         if (buttonDrawableTintId != 0) {
             val tintColor = ContextCompat.getColor(context, buttonDrawableTintId)
             binding.startImageView.imageTintList = ColorStateList.valueOf(tintColor)

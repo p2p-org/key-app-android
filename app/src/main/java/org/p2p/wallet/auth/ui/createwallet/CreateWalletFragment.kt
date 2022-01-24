@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
+import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentCreateWalletBinding
 import org.p2p.wallet.utils.popBackStack
@@ -23,7 +24,7 @@ class CreateWalletFragment : BaseFragment(R.layout.fragment_create_wallet) {
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             progressButton.setOnClickListener {
-                replaceFragment(AuthDoneFragment.create())
+                replaceFragment(SecurityKeyFragment.create())
             }
         }
     }
