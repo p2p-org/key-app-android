@@ -2,9 +2,11 @@ package org.p2p.wallet.auth.ui.security
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
@@ -17,6 +19,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
+import org.p2p.wallet.utils.PixelCopy
+import org.p2p.wallet.utils.PixelCopyListener
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.attachAdapter
@@ -24,13 +28,15 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.takeScreenShot
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
 
 class SecurityKeyFragment :
     BaseMvpFragment<SecurityKeyContract.View, SecurityKeyContract.Presenter>(R.layout.fragment_security_key),
-    SecurityKeyContract.View {
+    SecurityKeyContract.View,
+    PixelCopyListener {
 
     companion object {
         fun create() = SecurityKeyFragment()
@@ -63,6 +69,9 @@ class SecurityKeyFragment :
             copyButton.setOnClickListener {
                 presenter.copyKeys()
             }
+            saveButton.setOnClickListener {
+                PixelCopy.getBitmapView(view, requireActivity().window, this@SecurityKeyFragment)
+            }
 
             with(keysRecyclerView) {
                 attachAdapter(keysAdapter)
@@ -82,6 +91,10 @@ class SecurityKeyFragment :
             override fun onClick(widget: View) {
                 presenter.openTermsOfUse()
             }
+
+            override fun updateDrawState(ds: TextPaint) {
+                ds.isUnderlineText = false
+            }
         }
         val termsOfUse = getString(R.string.auth_terms_of_use)
         val termsStart = span.indexOf(termsOfUse)
@@ -98,6 +111,7 @@ class SecurityKeyFragment :
                 presenter.openPrivacyPolicy()
             }
         }
+
         val start = span.indexOf(privacyPolicy)
         val end = span.indexOf(privacyPolicy) + privacyPolicy.length
         span.setSpan(clickablePrivacy, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
@@ -143,5 +157,13 @@ class SecurityKeyFragment :
             requireContext().copyToClipBoard(data)
             toast(R.string.common_copied)
         }
+    }
+
+    override fun onCopySuccess(bitmap: Bitmap) {
+        takeScreenShot(bitmap)
+    }
+
+    override fun onCopyError() {
+        toast(R.string.error_take_screenshot)
     }
 }

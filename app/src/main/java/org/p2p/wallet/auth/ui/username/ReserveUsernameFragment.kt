@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
@@ -171,6 +172,10 @@ class ReserveUsernameFragment :
         val clickableNumber = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 finishNavigation()
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                ds.isUnderlineText = false
             }
         }
         val start = span.indexOf(clickableText)

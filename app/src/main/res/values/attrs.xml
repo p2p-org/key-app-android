@@ -5,7 +5,7 @@
     <attr name="colorAccentSecondary" format="color|reference" />
     <attr name="colorAccentTertiary" format="color|reference" />
     <attr name="colorAccentWarning" format="color|reference" />
-    <attr name="colorAccentGraph" format="color|reference" />
+    <attr name="colorSystemSuccessMain" format="color|reference" />
 
     <attr name="colorElementPrimary" format="color|reference" />
     <attr name="colorElementSecondary" format="color|reference" />
@@ -17,6 +17,10 @@
 
     <attr name="colorBackgroundPrimary" format="color|reference" />
     <attr name="colorBackgroundSecondary" format="color|reference" />
+
+    <attr name="colorTextIconPrimary" format="color|reference" />
+    <attr name="colorBackgroundActivePrimary" format="color|reference" />
+    <attr name="colorTextIconLink" format="color|reference"/>
 
     <item name="edgetoedge" type="id" />
     <item name="seed_phrase_watcher_tag_id" type="id" />

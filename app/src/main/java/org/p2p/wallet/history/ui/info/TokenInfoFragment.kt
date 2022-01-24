@@ -85,7 +85,7 @@ class TokenInfoFragment :
         lineDataSet.lineWidth = 2f
         lineDataSet.setDrawCircles(false)
         lineDataSet.setDrawValues(false)
-        lineDataSet.color = colorFromTheme(R.attr.colorAccentGraph)
+        lineDataSet.color = colorFromTheme(R.attr.colorSystemSuccessMain)
         lineDataSet.setDrawFilled(true)
         lineDataSet.setDrawHorizontalHighlightIndicator(false)
         lineDataSet.isHighlightEnabled = true
@@ -94,7 +94,7 @@ class TokenInfoFragment :
         lineDataSet.fillDrawable = fillGradient
 
         binding.lineChart.apply {
-            setGridBackgroundColor(colorFromTheme(R.attr.colorAccentGraph))
+            setGridBackgroundColor(colorFromTheme(R.attr.colorSystemSuccessMain))
             setViewPortOffsets(0f, 0f, 0f, 0f)
             description = Description().apply { text = "" }
             setDrawBorders(false)

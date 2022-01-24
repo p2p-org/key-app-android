@@ -26,7 +26,7 @@ class InputTextView @JvmOverloads constructor(
     private val colorIdle = colorFromTheme(R.attr.colorElementSecondary)
     private val colorFocused = colorFromTheme(R.attr.colorAccentPrimary)
     private val colorError = colorFromTheme(R.attr.colorAccentWarning)
-    private val colorSuccess = colorFromTheme(R.attr.colorAccentGraph)
+    private val colorSuccess = colorFromTheme(R.attr.colorSystemSuccessMain)
 
     init {
 

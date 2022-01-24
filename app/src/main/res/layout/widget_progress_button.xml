@@ -16,7 +16,7 @@
         android:paddingVertical="16dp"
         tools:ignore="UseCompoundDrawables">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/startImageView"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -33,7 +33,7 @@
             android:textColor="?colorElementPrimary"
             tools:text="Restore" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/endImageView"
             android:layout_width="24dp"
             android:layout_height="24dp"

@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
@@ -84,6 +85,11 @@ class ProgressButton @JvmOverloads constructor(
             actionProgressBar.isVisible = isLoading
             isEnabled = !isLoading
         }
+    }
+
+    fun setDrawableEnd(@DrawableRes resId: Int?) {
+        binding.endImageView.setImageResource(resId ?: 0)
+        binding.endImageView.isVisible = resId != null
     }
 
     fun setActionText(@StringRes textRes: Int) {

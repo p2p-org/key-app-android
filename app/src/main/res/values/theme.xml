@@ -18,7 +18,6 @@
         <item name="colorAccentSecondary">@color/accentSecondary</item>
         <item name="colorAccentTertiary">@color/accentTertiary</item>
         <item name="colorAccentWarning">@color/accentWarning</item>
-        <item name="colorAccentGraph">@color/accentGraph</item>
 
         <item name="colorElementPrimary">@color/elementPrimary</item>
         <item name="colorElementSecondary">@color/elementSecondary</item>
@@ -30,9 +29,15 @@
 
         <item name="colorBackgroundPrimary">@color/backgroundPrimary</item>
         <item name="colorBackgroundSecondary">@color/backgroundSecondary</item>
+        <item name="colorBackgroundActivePrimary">@color/backgroundActivePrimary</item>
+        <item name="colorTextIconLink">@color/textIconLink</item>
+        <item name="colorSystemSuccessMain">@color/systemSuccessMain</item>
+
 
         <item name="colorSecondary">@color/elementSecondary</item>
         <item name="colorControlHighlight">@color/elementSecondary</item>
+
+        <item name="colorTextIconPrimary">@color/textIconPrimary</item>
 
         <item name="colorAccent">@color/accentPrimary</item>
         <item name="colorControlActivated">?colorAccent</item>

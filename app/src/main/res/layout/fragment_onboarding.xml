@@ -6,6 +6,7 @@
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_net"
     android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,7 +48,6 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="12dp"
-            android:alpha="0.65"
             android:gravity="center"
             android:text="@string/auth_onboarding_subtitle"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"

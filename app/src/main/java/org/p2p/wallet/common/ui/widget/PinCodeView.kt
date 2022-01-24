@@ -75,14 +75,14 @@ class PinCodeView @JvmOverloads constructor(
         animation.repeatCount = 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationEnd(animation: Animation?) {
-                setDotsColor(null)
+                setDotsColor(null, null)
                 onAnimationFinished()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {}
 
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(resFromTheme(R.attr.colorAccentWarning))
+                setDotsColor(resFromTheme(R.attr.colorAccentWarning), R.color.colorPinErrorBackground)
             }
         })
         startAnimation(animation)
@@ -95,11 +95,14 @@ class PinCodeView @JvmOverloads constructor(
         animation.repeatCount = 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(resFromTheme(R.attr.colorAccentGraph))
+                setDotsColor(
+                    resFromTheme(R.attr.colorSystemSuccessMain),
+                    R.color.colorPinSuccessBackground
+                )
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-                setDotsColor(null)
+                setDotsColor(null, null)
                 onAnimationFinished()
             }
 
@@ -127,7 +130,7 @@ class PinCodeView @JvmOverloads constructor(
         refresh(0)
     }
 
-    private fun setDotsColor(@ColorRes resourceId: Int?) {
+    private fun setDotsColor(@ColorRes resourceId: Int?, @ColorRes backgroundColor: Int?) {
         roundViews.forEach {
             if (resourceId == null) {
                 it.clearColorFilter()
@@ -136,7 +139,7 @@ class PinCodeView @JvmOverloads constructor(
             }
         }
         val bg = binding.progressView.background.mutate()
-        bg.setTint(ContextCompat.getColor(context, resourceId ?: resFromTheme(R.attr.colorPrimary)))
+        bg.setTint(ContextCompat.getColor(context, backgroundColor ?: resFromTheme(R.attr.colorTextIconLink)))
         binding.progressView.background = bg
     }
 }
