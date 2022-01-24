@@ -68,10 +68,6 @@ class DerivableAccountsPresenter(
         }
     }
 
-    override fun loadCurrentPath() {
-        view?.showPathSelectionDialog(path)
-    }
-
     private fun filterAccountsByPath(path: DerivationPath) {
         launch {
             val accounts = allAccounts.filter { it.path == path }

@@ -8,7 +8,7 @@ class AuthDonePresenter(
 ) : BasePresenter<AuthDoneContract.View>(), AuthDoneContract.Presenter {
 
     override fun load() {
-        val username = usernameInteractor.getUsername()?.username.orEmpty()
+        val username = usernameInteractor.getUsername()?.username
         view?.showUsername(username)
     }
 }

@@ -8,7 +8,7 @@ import androidx.annotation.LayoutRes
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.wallet.R
-import org.p2p.wallet.utils.showInfoDialog
+import org.p2p.wallet.utils.showErrorDialog
 
 abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     @LayoutRes layoutRes: Int
@@ -30,11 +30,11 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     }
 
     override fun showErrorMessage(e: Throwable?) {
-        showInfoDialog(e)
+        showErrorDialog(e)
     }
 
     override fun showErrorMessage(messageRes: Int) {
-        showInfoDialog(messageRes = messageRes)
+        showErrorDialog(messageRes = messageRes)
     }
 
     override fun showSnackbarError(messageRes: Int) {

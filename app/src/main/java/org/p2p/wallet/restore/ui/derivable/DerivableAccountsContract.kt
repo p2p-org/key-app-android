@@ -11,7 +11,6 @@ interface DerivableAccountsContract {
         fun navigateToCreatePin()
         fun navigateToReserveUsername()
         fun showAccounts(path: DerivationPath, accounts: List<DerivableAccount>)
-        fun showPathSelectionDialog(path: DerivationPath)
         fun showLoading(isLoading: Boolean)
     }
 
@@ -19,6 +18,5 @@ interface DerivableAccountsContract {
         fun loadData()
         fun setNewPath(path: DerivationPath)
         fun createAndSaveAccount()
-        fun loadCurrentPath()
     }
 }

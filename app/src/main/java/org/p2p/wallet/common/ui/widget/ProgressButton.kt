@@ -48,11 +48,13 @@ class ProgressButton @JvmOverloads constructor(
         val startImageResourceId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawable, 0)
         if (startImageResourceId != 0) {
             binding.startImageView.setImageResource(startImageResourceId)
+            binding.startImageView.isVisible = true
         }
 
         val endImageResourceId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawableEnd, 0)
         if (endImageResourceId != 0) {
             binding.endImageView.setImageResource(endImageResourceId)
+            binding.endImageView.isVisible = true
         }
 
         val textAppearanceId = typedArray.getResourceId(R.styleable.ProgressButton_android_textAppearance, 0)

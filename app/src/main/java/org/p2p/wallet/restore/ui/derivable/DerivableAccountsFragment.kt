@@ -2,10 +2,15 @@ package org.p2p.wallet.restore.ui.derivable
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.ReserveMode.PIN_CODE
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
-import org.p2p.wallet.auth.ui.pin.create.PinLaunchMode
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
 import org.p2p.wallet.restore.model.DerivableAccount
@@ -13,14 +18,9 @@ import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
-import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.auth.model.ReserveMode.PIN_CODE
-import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
-import org.p2p.wallet.utils.replaceFragment
 
 class DerivableAccountsFragment :
     BaseMvpFragment<DerivableAccountsContract.View, DerivableAccountsContract.Presenter>(
@@ -56,27 +56,35 @@ class DerivableAccountsFragment :
             accountsRecyclerView.adapter = accountsAdapter
 
             /* By default, we should create Bip44Change account */
-            derivationPathTextView.text = DerivationPath.BIP44CHANGE.stringValue
-            derivationPathTextView.setOnClickListener { presenter.loadCurrentPath() }
+            val allPaths = listOf(
+                DerivationPath.BIP32DEPRECATED,
+                DerivationPath.BIP44CHANGE,
+                DerivationPath.BIP44
+            )
+            val pathAdapter = ArrayAdapter(
+                requireContext(), R.layout.item_derivation_path, allPaths.map { it.stringValue }
+            )
+            derivationPathTextView.setAdapter(pathAdapter)
+            pathAdapter.notifyDataSetChanged()
+
+            derivationPathTextView.setText(DerivationPath.BIP44CHANGE.stringValue, false)
+            binding.derivationPathTextView.setOnItemClickListener { _, _, position, _ ->
+                presenter.setNewPath(allPaths[position])
+            }
+
             restoreButton.setOnClickListener { presenter.createAndSaveAccount() }
         }
 
         presenter.loadData()
     }
 
-    override fun showPathSelectionDialog(path: DerivationPath) {
-        SelectDerivationPathDialog.show(childFragmentManager, path) {
-            presenter.setNewPath(it)
-        }
-    }
-
     override fun showAccounts(path: DerivationPath, accounts: List<DerivableAccount>) {
         accountsAdapter.setItems(accounts)
-        binding.derivationPathTextView.text = path.stringValue
+        binding.derivationPathTextView.setText(path.stringValue, false)
     }
 
     override fun navigateToCreatePin() {
-        popAndReplaceFragment(CreatePinFragment.create(PinLaunchMode.RECOVER), inclusive = true)
+        popAndReplaceFragment(CreatePinFragment.create(), inclusive = true)
     }
 
     override fun navigateToReserveUsername() {
@@ -86,5 +94,6 @@ class DerivableAccountsFragment :
     override fun showLoading(isLoading: Boolean) {
         binding.restoreButton.setLoading(isLoading)
         binding.accountsRecyclerView.isEnabled = !isLoading
+        binding.derivationPathInputLayout.isEnabled = !isLoading
     }
 }
