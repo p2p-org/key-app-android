@@ -7,7 +7,6 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.core.widget.doAfterTextChanged
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
@@ -17,7 +16,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
-import org.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.InputTextView
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
@@ -80,7 +78,7 @@ class ReserveUsernameFragment :
     }
 
     override fun navigateToPinCode() {
-        replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
+        replaceFragment(CreatePinFragment.create())
     }
 
     override fun showIdleState() {

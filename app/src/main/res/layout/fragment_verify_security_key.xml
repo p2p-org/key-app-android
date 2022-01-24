@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/auth_security_key_title"
+            app:title="@string/auth_verify_security_key_title"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
         <androidx.recyclerview.widget.RecyclerView

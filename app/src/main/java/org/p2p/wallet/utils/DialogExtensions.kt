@@ -9,25 +9,28 @@ import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.ui.bottomsheet.TextContainer
+import org.p2p.wallet.common.ui.dialogs.InfoDialog
 
-fun FragmentManager.showInfoDialog(
+fun Fragment.showInfoDialog(
     @StringRes titleRes: Int,
     @StringRes messageRes: Int,
-    @DrawableRes iconRes: Int = R.drawable.ic_common_error,
-    actionCallback: (() -> Unit)? = null,
-    dismissCallback: (() -> Unit)? = null
+    @StringRes primaryButtonRes: Int,
+    @StringRes secondaryButtonRes: Int?,
+    primaryCallback: (() -> Unit)? = null,
+    secondaryCallback: (() -> Unit)? = null
 ) {
-    ErrorBottomSheet.show(
-        fragmentManager = this,
-        iconRes = iconRes,
-        title = TextContainer(titleRes),
-        message = TextContainer(messageRes),
-        actionCallback = actionCallback,
-        dismissCallback = dismissCallback
+    InfoDialog.show(
+        fragmentManager = childFragmentManager,
+        titleRes = titleRes,
+        subTitleRes = messageRes,
+        primaryButtonRes = primaryButtonRes,
+        secondaryButtonRes = secondaryButtonRes,
+        onPrimaryButtonClicked = { primaryCallback?.invoke() },
+        onSecondaryButtonClicked = { secondaryCallback?.invoke() }
     )
 }
 
-fun Fragment.showInfoDialog(
+fun Fragment.showErrorDialog(
     @StringRes titleRes: Int = R.string.error_title,
     @StringRes messageRes: Int = R.string.error_general_message,
     @DrawableRes iconRes: Int = R.drawable.ic_common_error,
@@ -44,7 +47,7 @@ fun Fragment.showInfoDialog(
     )
 }
 
-fun FragmentActivity.showInfoDialog(
+fun FragmentActivity.showErrorDialog(
     @StringRes titleRes: Int = R.string.error_general_title,
     @StringRes messageRes: Int = R.string.error_general_message,
     @DrawableRes iconRes: Int = R.drawable.ic_common_error,
@@ -61,7 +64,7 @@ fun FragmentActivity.showInfoDialog(
     )
 }
 
-fun Fragment.showInfoDialog(message: String, dismissCallback: (() -> Unit)? = null) {
+fun Fragment.showErrorDialog(message: String, dismissCallback: (() -> Unit)? = null) {
     ErrorBottomSheet.show(
         fragment = this,
         iconRes = R.drawable.ic_common_error,
@@ -72,7 +75,7 @@ fun Fragment.showInfoDialog(message: String, dismissCallback: (() -> Unit)? = nu
     )
 }
 
-fun Fragment.showInfoDialog(throwable: Throwable? = null) {
+fun Fragment.showErrorDialog(throwable: Throwable? = null) {
     ErrorBottomSheet.show(
         fragment = this,
         iconRes = R.drawable.ic_common_error,
@@ -83,7 +86,7 @@ fun Fragment.showInfoDialog(throwable: Throwable? = null) {
     )
 }
 
-fun FragmentActivity.showInfoDialog(throwable: Throwable? = null) {
+fun FragmentActivity.showErrorDialog(throwable: Throwable? = null) {
     ErrorBottomSheet.show(
         activity = this,
         iconRes = R.drawable.ic_common_error,

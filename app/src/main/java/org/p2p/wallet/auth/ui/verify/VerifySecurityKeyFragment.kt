@@ -2,7 +2,6 @@ package org.p2p.wallet.auth.ui.verify
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -10,14 +9,15 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentVerifySecurityKeyBinding
-import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_KEYS = "EXTRA_KEYS"
 
@@ -68,16 +68,14 @@ class VerifySecurityKeyFragment :
     }
 
     override fun showKeysDoesNotMatchError() {
-        AlertDialog.Builder(requireContext(), R.style.WalletTheme_AlertDialog)
-            .setTitle(R.string.auth_words_does_not_match_title)
-            .setMessage(R.string.auth_words_does_not_match_message)
-            .setNegativeButton(R.string.common_go_back) { _, _ ->
-                popBackStack()
-            }
-            .setPositiveButton(R.string.common_try_again) { _, _ ->
-                presenter.retry()
-            }
-            .show()
+        showInfoDialog(
+            titleRes = R.string.auth_words_does_not_match_title,
+            messageRes = R.string.auth_words_does_not_match_message,
+            primaryButtonRes = R.string.common_try_again,
+            secondaryButtonRes = R.string.common_go_back,
+            primaryCallback = { presenter.retry() },
+            secondaryCallback = { popBackStack() }
+        )
     }
 
     override fun onCleared() {

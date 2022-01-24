@@ -20,7 +20,7 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.showInfoDialog
+import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -72,7 +72,7 @@ class HistoryFragment :
     }
 
     override fun showError(@StringRes resId: Int, argument: String) {
-        showInfoDialog(getString(resId, argument))
+        showErrorDialog(getString(resId, argument))
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

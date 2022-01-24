@@ -8,7 +8,7 @@ import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.R
 import com.google.android.material.snackbar.Snackbar
-import org.p2p.wallet.utils.showInfoDialog
+import org.p2p.wallet.utils.showErrorDialog
 
 abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActivity(), MvpView {
 
@@ -28,11 +28,11 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
     }
 
     override fun showErrorMessage(messageRes: Int) {
-        showInfoDialog(messageRes = messageRes)
+        showErrorDialog(messageRes = messageRes)
     }
 
     override fun showErrorMessage(e: Throwable?) {
-        showInfoDialog(e)
+        showErrorDialog(e)
     }
 
     override fun showSnackbarError(messageRes: Int) {

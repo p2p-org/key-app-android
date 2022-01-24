@@ -5,7 +5,7 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface AuthDoneContract {
     interface View : MvpView {
-        fun showUsername(name: String)
+        fun showUsername(name: String?)
     }
 
     interface Presenter : MvpPresenter<View> {
