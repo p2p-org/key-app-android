@@ -4,7 +4,6 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-import timber.log.Timber
 
 private const val VERIFY_WORDS_COUNT = 4
 private const val GENERATE_WORD_COUNT = 2
@@ -74,7 +73,6 @@ class VerifySecurityKeyPresenter(
 
         var isValid = true
         val selectedKeys = findSelectedKeys()
-        Timber.tag("_____").d(findSelectedKeys().toString())
 
         selectedKeys.forEach { item ->
             val index = item.first
@@ -83,7 +81,6 @@ class VerifySecurityKeyPresenter(
                 isValid = false
             }
         }
-        Timber.tag("_____").d(isValid.toString())
         return isValid
     }
 

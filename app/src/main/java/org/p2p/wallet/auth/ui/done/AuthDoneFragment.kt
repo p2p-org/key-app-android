@@ -38,6 +38,11 @@ class AuthDoneFragment() :
     }
 
     override fun showUsername(name: String) {
-        binding.titleTextView.text = getString(R.string.auth_welcome_to_p2p, name)
+        val name = if (name.isNotEmpty()) {
+            getString(R.string.auth_welcome_to_p2p_user, name)
+        } else {
+            getString(R.string.auth_welcome_to_p2p)
+        }
+        binding.titleTextView.text = name
     }
 }

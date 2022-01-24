@@ -3,7 +3,8 @@ package org.p2p.wallet.auth.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
+import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import org.p2p.wallet.auth.ui.pin.create.PinLaunchMode
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentOnboardingBinding
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
@@ -29,7 +30,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
             createButton.clipToOutline = true
             createButton.setOnClickListener {
-                replaceFragment(CreateWalletFragment.create())
+                replaceFragment(CreatePinFragment.create(PinLaunchMode.CREATE))
             }
             loginButton.setOnClickListener {
                 replaceFragment(SecretKeyFragment.create())

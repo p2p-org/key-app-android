@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:layout_height="64dp"
@@ -7,7 +8,6 @@
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/snack_constraint"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:background="@drawable/bg_blue_rounded"
@@ -26,24 +26,24 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textView"
-            style="@style/WalletTheme.TextAppearance.SemiBold16"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:paddingHorizontal="8dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="?colorElementPrimary"
             app:layout_constraintEnd_toStartOf="@id/actionImageView"
             app:layout_constraintStart_toEndOf="@id/imageView" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/actionTextView"
-            style="@style/WalletTheme.TextAppearance.Regular14"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:paddingHorizontal="16dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
             android:textColor="@color/white"
             android:textSize="12sp"
             android:textStyle="bold"

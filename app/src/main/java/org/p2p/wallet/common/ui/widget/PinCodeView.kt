@@ -14,7 +14,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetPinCodeViewBinding
 import org.p2p.wallet.utils.dip
 import org.p2p.wallet.utils.resFromTheme
-import timber.log.Timber
 
 private const val ANIMATION_DURATION = 400L
 private const val DOT_STROKE_WIDTH = 24
@@ -56,7 +55,6 @@ class PinCodeView @JvmOverloads constructor(
     }
 
     private fun showProgress(length: Int) {
-        Timber.tag("____").d(length.toString())
         val width = when (length) {
             0 -> 0
             1 -> DOT_STROKE_WIDTH
@@ -64,7 +62,6 @@ class PinCodeView @JvmOverloads constructor(
                 DOT_STROKE_WIDTH + (DOT_STROKE_WIDTH + DOT_DELTA) * (length - 1)
             }
         }.toInt()
-        Timber.tag("____").d(width.toString())
         val lp = binding.progressView.layoutParams as LayoutParams
         lp.width = dip(width)
         binding.progressView.layoutParams = lp
@@ -82,12 +79,31 @@ class PinCodeView @JvmOverloads constructor(
                 onAnimationFinished()
             }
 
-            override fun onAnimationRepeat(animation: Animation?) {
-            }
+            override fun onAnimationRepeat(animation: Animation?) {}
 
             override fun onAnimationStart(animation: Animation?) {
                 setDotsColor(resFromTheme(R.attr.colorAccentWarning))
             }
+        })
+        startAnimation(animation)
+    }
+
+    fun startSuccessAnimation(onAnimationFinished: () -> Unit) {
+        val animation = TranslateAnimation(0f, 0f, 0f, 0f)
+        animation.duration = ANIMATION_DURATION
+        animation.repeatMode = Animation.REVERSE
+        animation.repeatCount = 2
+        animation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                setDotsColor(resFromTheme(R.attr.colorAccentGraph))
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                setDotsColor(null)
+                onAnimationFinished()
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {}
         })
         startAnimation(animation)
     }

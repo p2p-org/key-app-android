@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemVerifySecurityKeyBinding
 import org.p2p.wallet.utils.requireContext
-import timber.log.Timber
 
 class VerifySecurityKeyAdapter(private val block: (Int, String) -> Unit) :
     RecyclerView.Adapter<VerifySecurityKeyAdapter.ViewHolder>() {
@@ -17,7 +16,6 @@ class VerifySecurityKeyAdapter(private val block: (Int, String) -> Unit) :
     fun setItems(new: List<SecurityKeyTuple>) {
         data.clear()
         data.addAll(new)
-        Timber.tag("_____").d(data.size.toString())
         notifyDataSetChanged()
     }
 

@@ -72,9 +72,11 @@ class CreatePinFragment :
     }
 
     override fun onAuthFinished() {
-        when (mode) {
-            PinLaunchMode.RECOVER -> popAndReplaceFragment(WelcomeBackFragment.create(), inclusive = true)
-            PinLaunchMode.CREATE -> popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+        binding.pinView.startSuccessAnimation(getString(R.string.auth_create_pin_code_success)) {
+            when (mode) {
+                PinLaunchMode.RECOVER -> popAndReplaceFragment(WelcomeBackFragment.create(), inclusive = true)
+                PinLaunchMode.CREATE -> popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+            }
         }
     }
 
