@@ -23,6 +23,7 @@
         <item name="colorElementPrimary">@color/elementPrimary</item>
         <item name="colorElementSecondary">@color/elementSecondary</item>
         <item name="colorElementTertiary">@color/elementTertiary</item>
+        <item name="colorElementSurface">@color/elementSurface</item>
 
         <item name="colorMessagePrimary">@color/messagePrimary</item>
         <item name="colorMessageSecondary">@color/messageSecondary</item>

@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.security
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import java.io.File
 
 interface SecurityKeyContract {
 
@@ -9,12 +10,15 @@ interface SecurityKeyContract {
         fun showKeys(keys: List<String>)
         fun copyToClipboard(keys: List<String>)
         fun showLoading(isLoading: Boolean)
-        fun navigateToReserve()
+        fun navigateToVerify(keys: List<String>)
+        fun showFile(file: File)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadKeys()
         fun copyKeys()
-        fun createAndSaveAccount()
+        fun cacheKeys()
+        fun openPrivacyPolicy()
+        fun openTermsOfUse()
     }
 }

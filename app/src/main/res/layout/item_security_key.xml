@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="6dp"
     android:layout_marginEnd="4dp"
-    android:background="@drawable/bg_security_key"
+    android:background="@drawable/color_list_security_key_bg"
+    android:gravity="center"
+
     android:orientation="horizontal"
-    android:paddingHorizontal="4dp"
     android:paddingVertical="2dp">
 
     <TextView
@@ -28,6 +29,7 @@
         android:layout_marginEnd="6dp"
         android:gravity="center"
         android:paddingVertical="4dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+        android:textColor="@drawable/color_list_security_key_text"
         tools:text="Austin" />
 </LinearLayout>

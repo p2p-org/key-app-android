@@ -1,12 +1,14 @@
 package org.p2p.wallet.common.ui.widget
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
@@ -43,16 +45,32 @@ class ProgressButton @JvmOverloads constructor(
         val text = typedArray.getText(R.styleable.ProgressButton_buttonText)
         binding.actionTextView.text = text
 
+        val startImageResourceId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawable, 0)
+        if (startImageResourceId != 0) {
+            binding.startImageView.setImageResource(startImageResourceId)
+        }
+
+        val endImageResourceId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawableEnd, 0)
+        if (endImageResourceId != 0) {
+            binding.endImageView.setImageResource(endImageResourceId)
+        }
+
+        val textAppearanceId = typedArray.getResourceId(R.styleable.ProgressButton_android_textAppearance, 0)
+        if (textAppearanceId != 0) {
+            binding.actionTextView.setTextAppearance(textAppearanceId)
+        }
+
         val color = typedArray.getColor(
             R.styleable.ProgressButton_buttonTextColor, colorFromTheme(R.attr.colorElementPrimary)
         )
         binding.actionTextView.setTextColor(color)
 
-        val imageResourceId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawable, 0)
-        if (imageResourceId != 0) {
-            binding.actionImageView.setImageResource(imageResourceId)
+        val buttonDrawableTintId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawableTint, 0)
+        if (buttonDrawableTintId != 0) {
+            val tintColor = ContextCompat.getColor(context, buttonDrawableTintId)
+            binding.startImageView.imageTintList = ColorStateList.valueOf(tintColor)
+            binding.endImageView.imageTintList = ColorStateList.valueOf(tintColor)
         }
-
         val isEnabled = typedArray.getBoolean(R.styleable.ProgressButton_buttonEnabled, true)
         setEnabled(isEnabled)
         typedArray.recycle()

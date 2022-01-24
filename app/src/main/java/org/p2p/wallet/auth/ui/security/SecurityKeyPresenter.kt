@@ -1,13 +1,16 @@
 package org.p2p.wallet.auth.ui.security
 
+import android.content.Context
 import kotlinx.coroutines.launch
-import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import kotlin.properties.Delegates
 
 class SecurityKeyPresenter(
-    private val secretKeyInteractor: SecretKeyInteractor
+    private val context: Context,
+    private val secretKeyInteractor: SecretKeyInteractor,
+    private val fileRepository: FileRepository
 ) : BasePresenter<SecurityKeyContract.View>(), SecurityKeyContract.Presenter {
 
     private var keys: List<String> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
@@ -35,12 +38,22 @@ class SecurityKeyPresenter(
         view?.copyToClipboard(keys)
     }
 
-    override fun createAndSaveAccount() {
+    override fun cacheKeys() {
         launch {
             view?.showLoading(true)
-            secretKeyInteractor.createAndSaveAccount(DerivationPath.BIP44CHANGE, keys, lookup = false)
-            view?.navigateToReserve()
+            view?.navigateToVerify(keys)
             view?.showLoading(false)
         }
+    }
+    override fun openTermsOfUse() {
+        val inputStream = context.assets.open("p2p_terms_of_service.pdf")
+        val file = fileRepository.savePdf("p2p_terms_of_service", inputStream.readBytes())
+        view?.showFile(file)
+    }
+
+    override fun openPrivacyPolicy() {
+        val inputStream = context.assets.open("p2p_privacy_policy.pdf")
+        val file = fileRepository.savePdf("p2p_privacy_policy", inputStream.readBytes())
+        view?.showFile(file)
     }
 }

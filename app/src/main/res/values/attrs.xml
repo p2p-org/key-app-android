@@ -10,6 +10,7 @@
     <attr name="colorElementPrimary" format="color|reference" />
     <attr name="colorElementSecondary" format="color|reference" />
     <attr name="colorElementTertiary" format="color|reference" />
+    <attr name="colorElementSurface" format="color|reference" />
 
     <attr name="colorMessagePrimary" format="color|reference" />
     <attr name="colorMessageSecondary" format="color|reference" />
@@ -69,8 +70,11 @@
         <attr name="buttonText" format="string" />
         <attr name="buttonDrawable" format="reference" />
         <attr name="buttonBackground" format="reference" />
+        <attr name="buttonDrawableTint" format="reference" />
         <attr name="buttonTextColor" format="color" />
         <attr name="buttonEnabled" format="boolean" />
+        <attr name="buttonDrawableEnd" format="reference" />
+        <attr name="android:textAppearance" />
     </declare-styleable>
 
     <declare-styleable name="OptionsTextView">
@@ -79,5 +83,11 @@
         <attr name="optionsValueText" format="string" />
         <attr name="optionsValueTextColor" format="string" />
         <attr name="isBoldValue" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="InputTextView">
+        <attr name="suffixText" format="string" />
+        <attr name="hint" format="string" />
+        <attr name="android:maxLength" />
     </declare-styleable>
 </resources>

@@ -4,7 +4,7 @@ import android.content.Context
 import org.p2p.wallet.R
 
 data class Username(
-    private val username: String
+    val username: String
 ) {
 
     fun getFullUsername(context: Context) = context.getString(R.string.auth_name_p2p_sol, username)
