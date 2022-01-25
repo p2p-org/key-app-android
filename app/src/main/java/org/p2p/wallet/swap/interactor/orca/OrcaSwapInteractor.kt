@@ -13,6 +13,7 @@ import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenComparator
+import org.p2p.wallet.rpc.repository.FeeRelayerRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.model.OrcaInstructionsData
@@ -41,6 +42,7 @@ import java.math.BigInteger
 class OrcaSwapInteractor(
     private val swapRepository: OrcaSwapRepository,
     private val rpcRepository: RpcRepository,
+    private val feeRelayerRepository: FeeRelayerRepository,
     private val internalRepository: OrcaSwapInternalRepository,
     private val poolInteractor: OrcaPoolInteractor,
     private val userInteractor: UserInteractor,
@@ -56,6 +58,8 @@ class OrcaSwapInteractor(
     }
 
     private var info: OrcaSwapInfo? = null
+
+    private var feePaymentToken: String = Token.SOL_SYMBOL
 
     // Prepare all needed infos for swapping
     suspend fun load() = withContext(Dispatchers.IO) {
@@ -154,6 +158,11 @@ class OrcaSwapInteractor(
         }
 
         return bestPools
+    }
+
+    fun getFeePaymentToken(): String = feePaymentToken
+
+    fun setFeePayToken(token: Token.Active) {
     }
 
     // Find best pool to swap from estimated amount

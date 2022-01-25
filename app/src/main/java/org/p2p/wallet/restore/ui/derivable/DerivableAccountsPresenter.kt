@@ -17,8 +17,8 @@ class DerivableAccountsPresenter(
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
-    private var path: DerivationPath by Delegates.observable(DerivationPath.BIP44CHANGE) { _, oldValue, newValue ->
-        if (oldValue != newValue) filterAccountsByPath(newValue)
+    private var path: DerivationPath by Delegates.observable(DerivationPath.BIP44CHANGE) { _, _, newValue ->
+        filterAccountsByPath(newValue)
     }
 
     private val allAccounts = mutableListOf<DerivableAccount>()
@@ -37,11 +37,12 @@ class DerivableAccountsPresenter(
             try {
                 val accounts = secretKeyInteractor.getDerivableAccounts(keys)
                 allAccounts += accounts
+                filterAccountsByPath(path)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading derivable accounts")
+                view?.showErrorMessage(e)
             } finally {
                 view?.showLoading(false)
-                filterAccountsByPath(path)
             }
         }
     }
@@ -59,11 +60,11 @@ class DerivableAccountsPresenter(
                 } else {
                     view?.navigateToReserveUsername()
                 }
-
-                view?.showLoading(false)
             } catch (e: Throwable) {
                 Timber.e(e, "Error while creating account and checking username")
                 view?.showErrorMessage(e)
+            } finally {
+                view?.showLoading(false)
             }
         }
     }
@@ -71,7 +72,7 @@ class DerivableAccountsPresenter(
     private fun filterAccountsByPath(path: DerivationPath) {
         launch {
             val accounts = allAccounts.filter { it.path == path }
-            view?.showAccounts(path, accounts)
+            view?.showAccounts(accounts)
         }
     }
 }

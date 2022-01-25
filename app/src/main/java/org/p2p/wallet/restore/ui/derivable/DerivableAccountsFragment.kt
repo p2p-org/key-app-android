@@ -64,10 +64,11 @@ class DerivableAccountsFragment :
             val pathAdapter = ArrayAdapter(
                 requireContext(), R.layout.item_derivation_path, allPaths.map { it.stringValue }
             )
+            val defaultPath = DerivationPath.BIP44CHANGE
             derivationPathTextView.setAdapter(pathAdapter)
-            pathAdapter.notifyDataSetChanged()
+            derivationPathTextView.setText(defaultPath.stringValue, false)
+            derivationPathTextView.threshold = allPaths.indexOfFirst { defaultPath == it }
 
-            derivationPathTextView.setText(DerivationPath.BIP44CHANGE.stringValue, false)
             binding.derivationPathTextView.setOnItemClickListener { _, _, position, _ ->
                 presenter.setNewPath(allPaths[position])
             }
@@ -78,9 +79,8 @@ class DerivableAccountsFragment :
         presenter.loadData()
     }
 
-    override fun showAccounts(path: DerivationPath, accounts: List<DerivableAccount>) {
+    override fun showAccounts(accounts: List<DerivableAccount>) {
         accountsAdapter.setItems(accounts)
-        binding.derivationPathTextView.setText(path.stringValue, false)
     }
 
     override fun navigateToCreatePin() {

@@ -109,7 +109,7 @@ class SwapPresenter(
         minOrderSize = BigDecimal.ZERO
 
         view?.hideCalculations()
-        view?.showButtonText(R.string.main_select_token)
+        view?.showButtonText(R.string.swap_choose_the_destination)
 
         updateButtonText(newToken)
         setButtonEnabled()
@@ -319,9 +319,9 @@ class SwapPresenter(
         when {
             isMoreThanBalance -> view?.showButtonText(R.string.swap_funds_not_enough)
             decimalAmount.isZero() -> view?.showButtonText(R.string.main_enter_the_amount)
-            destinationToken == null -> view?.showButtonText(R.string.main_select_token)
+            destinationToken == null -> view?.showButtonText(R.string.swap_choose_the_destination)
             minOrderSizeFailed -> view?.showButtonText(R.string.swap_min_order_size_amount, minOrderSize.toString())
-            else -> view?.showButtonText(R.string.main_swap_now)
+            else -> view?.showButtonText(R.string.swap_format, source.tokenSymbol)
         }
     }
 

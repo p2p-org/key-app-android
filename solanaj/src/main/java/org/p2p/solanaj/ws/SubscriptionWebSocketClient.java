@@ -72,7 +72,7 @@ public class SubscriptionWebSocketClient extends WebSocketClient {
     }
 
     public void ping() {
-        instance.sendPing();
+        if (instance.isOpen()) instance.sendPing();
     }
 
     public void accountSubscribe(String key, NotificationEventListener listener) {

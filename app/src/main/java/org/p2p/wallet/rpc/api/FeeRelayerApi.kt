@@ -23,4 +23,7 @@ interface FeeRelayerApi {
 
     @POST("transfer_spl_token")
     suspend fun sendSplToken(@Body request: FeeSplTransferRequest): List<String>
+
+    @POST("relay_swap")
+    suspend fun swap(@Body request: SwapRequest): List<String>
 }

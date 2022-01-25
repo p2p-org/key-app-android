@@ -1,10 +1,7 @@
 package org.p2p.solanaj.core;
 
-import android.os.Build;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -41,32 +38,24 @@ public class AccountKeysList {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uniqueMetas.sort(metaComparator);
-        } else {
-            Collections.sort(uniqueMetas, metaComparator);
-        }
+        uniqueMetas.sort(metaComparator);
 
         return uniqueMetas;
     }
 
-    private static final Comparator<AccountMeta> metaComparator = new Comparator<AccountMeta>() {
+    private static final Comparator<AccountMeta> metaComparator = (am1, am2) -> {
 
-        @Override
-        public int compare(AccountMeta am1, AccountMeta am2) {
-
-            int cmpSigner = am1.isSigner() == am2.isSigner() ? 0 : am1.isSigner() ? -1 : 1;
-            if (cmpSigner != 0) {
-                return cmpSigner;
-            }
-
-            int cmpkWritable = am1.isWritable() == am2.isWritable() ? 0 : am1.isWritable() ? -1 : 1;
-            if (cmpkWritable != 0) {
-                return cmpkWritable;
-            }
-
-            return 0;
+        int cmpSigner = am1.isSigner() == am2.isSigner() ? 0 : am1.isSigner() ? -1 : 1;
+        if (cmpSigner != 0) {
+            return cmpSigner;
         }
+
+        int cmpkWritable = am1.isWritable() == am2.isWritable() ? 0 : am1.isWritable() ? -1 : 1;
+        if (cmpkWritable != 0) {
+            return cmpkWritable;
+        }
+
+        return 0;
     };
 
 }

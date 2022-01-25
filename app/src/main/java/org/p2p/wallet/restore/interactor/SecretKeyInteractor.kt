@@ -16,9 +16,11 @@ import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.model.SeedPhraseResult
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
-import org.p2p.wallet.utils.toPowerValue
+import org.p2p.wallet.utils.scaleLong
 import java.math.BigDecimal
+import java.math.BigInteger
 
 private const val KEY_PHRASES = "KEY_PHRASES"
 private const val KEY_DERIVATION_PATH = "KEY_DERIVATION_PATH"
@@ -54,16 +56,12 @@ class SecretKeyInteractor(
 
     private fun mapDerivableAccounts(
         accounts: List<Account>,
-        balances: List<Pair<String, Long>>,
+        balances: List<Pair<String, BigInteger>>,
         path: DerivationPath
     ) = accounts.mapNotNull { account ->
-        val balance =
-            balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
-        val tokenData =
-            userLocalRepository.findTokenDataBySymbol(Token.WRAPPED_SOL_MINT) ?: return@mapNotNull null
-
-        val exchangeRate = userLocalRepository.getPriceByToken(tokenData.symbol)?.price ?: BigDecimal.ZERO
-        val total = BigDecimal(balance).divide(tokenData.decimals.toPowerValue())
+        val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
+        val exchangeRate = userLocalRepository.getPriceByToken(Token.SOL_SYMBOL)?.price ?: BigDecimal.ZERO
+        val total = balance.fromLamports().scaleLong()
         DerivableAccount(path, account, total, total.multiply(exchangeRate))
     }
 

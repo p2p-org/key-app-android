@@ -60,7 +60,7 @@ class SerumSwapFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.setOnMenuItemClickListener { menu ->
-                if (menu.itemId == R.id.slippageMenuItem) {
+                if (menu.itemId == R.id.settingsMenuItem) {
                     presenter.loadDataForSwapSettings()
                     return@setOnMenuItemClickListener true
                 }
@@ -114,8 +114,8 @@ class SerumSwapFragment :
         binding.availableTextView.text = available
     }
 
-    override fun showButtonText(textRes: Int, value: String?) {
-        if (value.isNullOrEmpty()) {
+    override fun showButtonText(textRes: Int, vararg value: String) {
+        if (value.isEmpty()) {
             binding.swapButton.setText(textRes)
         } else {
             val text = getString(textRes, value)
@@ -159,7 +159,7 @@ class SerumSwapFragment :
     @SuppressLint("SetTextI18n")
     override fun showCalculations(data: SerumAmountData) {
         with(binding) {
-            receiveTextView.text = getString(R.string.main_swap_min_receive, data.estimatedReceiveAmount)
+            receiveTextView.text = getString(R.string.main_swap_min_receive)
             destinationAmountTextView.text = data.destinationAmount
         }
     }

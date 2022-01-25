@@ -125,7 +125,7 @@
     <string name="auth_setup_wallet_pin">Set up a wallet PIN</string>
     <string name="auth_confirm_wallet_pin">Confirm your wallet PIN</string>
     <string name="auth_username_searching">searching…</string>
-    <string name="auth_welcome_to_p2p_user">Welcome to P2P Family,\n%s</string>
+    <string name="auth_welcome_to_p2p_user">Welcome to P2P Family,\n%s!</string>
     <string name="auth_welcome_to_p2p">Welcome to P2P Family</string>
     <string name="auth_create_pin_code_success">You have successfully set your PIN</string>
     <string name="auth_show_your_secret_key">Show your security key</string>
@@ -155,7 +155,6 @@
     <string name="main_swap_hint">0</string>
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
-    <string name="main_swap_now">Swap now</string>
     <string name="main_send_to">Send to</string>
     <string name="main_wallet_address">Wallet address</string>
     <string name="main_send_in_usd">%s USD</string>
@@ -210,7 +209,7 @@
     <string name="main_correct_address_question">Is this address correct? It doesn\’t have funds.</string>
     <string name="main_correct_address">I’m sure, It’s correct</string>
     <string name="main_buy">Buy</string>
-    <string name="main_swap_min_receive">Receive at least: %s</string>
+    <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
@@ -279,7 +278,8 @@
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
     <string name="swap_network_fee">Network fee</string>
-    <string name="swap_pay_network_fee">Pay network fee with</string>
+    <string name="swap_pay_fee">Pay swap fee with</string>
+    <string name="swap_pay_fee_format">Pay swap fee with %s</string>
     <string name="swap_fees">Swap fees</string>
     <string name="swap_settings">Swap settings</string>
     <string name="swap_funds_not_enough">Don\'t go over the available funds</string>
@@ -292,6 +292,12 @@
     <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
     <string name="swap_transaction_completed">Swap from %1s to %2s completed!</string>
     <string name="swap_transaction_failed">Swap from %1s to %2s failed. Please try again</string>
+    <string name="swap_zero_value">$0</string>
+    <string name="swap_details">Swap details</string>
+    <string name="swap_receive_at_least">Receive at least</string>
+    <string name="swap_price_format">1 %s Price</string>
+    <string name="swap_account_creation_format">%s account creation</string>
+    <string name="swap_format">Swap %1s → %2s</string>
 
     <!-- Buy -->
     <string name="buy_solana_on_moonpay">Buy Solana on MoonPay</string>
@@ -327,7 +333,7 @@
     <string name="details_block_number">Block number</string>
     <string name="details_completed">Completed</string>
     <string name="details_value">Value</string>
-    <string name="details_paid_by_p2p">Paid by p2p.org</string>
+    <string name="details_paid_by_p2p">(Paid by p2p.org)</string>
     <string name="details_show_transaction_details">Show transaction details</string>
     <string name="details_hide_transaction_details">Hide transaction details</string>
     <string name="details_info">Info</string>
@@ -364,6 +370,11 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
+    <string name="swap_total_format">Total: %s</string>
+    <string name="swap_total_zero_sol">0 SOL</string>
+    <string name="swap_choose_the_destination">Choose the destination</string>
+    <string name="swap_available_format">%s Available</string>
+    <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
     <string name="error_take_screenshot">Не удалось сделать снимок экрана</string>
     <string name="auth_choose_correct_words">Choose correct words</string>
 </resources>

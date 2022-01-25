@@ -87,6 +87,15 @@ class ProgressButton @JvmOverloads constructor(
         }
     }
 
+    fun setStartIcon(@DrawableRes iconRes: Int?) {
+        if (iconRes != null) {
+            binding.startImageView.setImageResource(iconRes)
+            binding.startImageView.isVisible = true
+        } else {
+            binding.startImageView.isVisible = false
+        }
+    }
+
     fun setDrawableEnd(@DrawableRes resId: Int?) {
         binding.endImageView.setImageResource(resId ?: 0)
         binding.endImageView.isVisible = resId != null
@@ -94,5 +103,9 @@ class ProgressButton @JvmOverloads constructor(
 
     fun setActionText(@StringRes textRes: Int) {
         binding.actionTextView.setText(textRes)
+    }
+
+    fun setActionText(text: String) {
+        binding.actionTextView.text = text
     }
 }

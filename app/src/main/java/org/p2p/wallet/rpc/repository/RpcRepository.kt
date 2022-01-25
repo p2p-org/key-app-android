@@ -35,7 +35,7 @@ interface RpcRepository {
     ): List<ProgramAccount>
 
     suspend fun getBalance(account: String): Long
-    suspend fun getBalances(accounts: List<String>): List<Pair<String, Long>>
+    suspend fun getBalances(accounts: List<String>): List<Pair<String, BigInteger>>
     suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts
     suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo

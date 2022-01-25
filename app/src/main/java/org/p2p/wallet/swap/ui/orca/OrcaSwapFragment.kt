@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.view.View
 import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
@@ -19,17 +20,17 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
-import org.p2p.wallet.swap.model.PriceData
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.swap.model.orca.OrcaAmountData
-import org.p2p.wallet.swap.model.orca.OrcaFeeData
-import org.p2p.wallet.swap.ui.bottomsheet.SwapFeesBottomSheet
+import org.p2p.wallet.swap.model.orca.SwapFee
+import org.p2p.wallet.swap.model.orca.SwapPrice
+import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.swap.ui.bottomsheet.SwapSettingsBottomSheet
-import org.p2p.wallet.swap.ui.bottomsheet.SwapSlippageBottomSheet
+import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
@@ -61,7 +62,7 @@ class OrcaSwapFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.setOnMenuItemClickListener { menu ->
-                if (menu.itemId == R.id.slippageMenuItem) {
+                if (menu.itemId == R.id.settingsMenuItem) {
                     presenter.loadDataForSwapSettings()
                     return@setOnMenuItemClickListener true
                 }
@@ -70,14 +71,15 @@ class OrcaSwapFragment :
             sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
             destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
             destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-            availableTextView.setOnClickListener { presenter.feedAvailableValue() }
-            maxTextView.setOnClickListener { presenter.feedAvailableValue() }
+            availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
+            maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
             amountEditText.addTextChangedListener(inputTextWatcher)
-
             exchangeImageView.setOnClickListener { presenter.reverseTokens() }
-
-            slippageView.setOnClickListener {
-                presenter.loadSlippage()
+            swapDetails.setOnSlippageClickListener {
+                toast("In progress")
+            }
+            swapDetails.setOnPayFeeClickListener {
+                presenter.loadTransactionTokens()
             }
 
             swapButton.setOnClickListener { presenter.swap() }
@@ -90,9 +92,9 @@ class OrcaSwapFragment :
         with(binding) {
             Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
-            maxTextView.isVisible = true
             availableTextView.isVisible = true
             availableTextView.text = token.getFormattedTotal()
+            swapDetails.showTotal(null)
         }
     }
 
@@ -104,7 +106,7 @@ class OrcaSwapFragment :
                 destinationAvailableTextView.isVisible = token is Token.Active
                 if (token is Token.Active) destinationAvailableTextView.text = token.getFormattedTotal()
             } else {
-                destinationImageView.setImageResource(R.drawable.ic_wallet)
+                destinationImageView.setImageResource(R.drawable.ic_question)
                 destinationTextView.setText(R.string.main_select)
                 destinationAvailableTextView.isVisible = false
                 destinationAvailableTextView.text = ""
@@ -112,12 +114,18 @@ class OrcaSwapFragment :
         }
     }
 
-    override fun showButtonText(textRes: Int, value: String?) {
-        if (value.isNullOrEmpty()) {
-            binding.swapButton.setText(textRes)
+    override fun openSwapSettings(tokens: List<Token.Active>, selectedToken: String) {
+        addFragment(SwapSettingsFragment.create(tokens, selectedToken))
+    }
+
+    override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
+        binding.swapButton.setStartIcon(iconRes)
+
+        if (value.isEmpty()) {
+            binding.swapButton.setActionText(textRes)
         } else {
-            val text = getString(textRes, value)
-            binding.swapButton.text = text
+            val text = getString(textRes, *value)
+            binding.swapButton.setActionText(text)
         }
     }
 
@@ -126,69 +134,35 @@ class OrcaSwapFragment :
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showPrice(priceData: PriceData) {
-        with(binding) {
-            priceGroup.isVisible = true
-
-            var isReverse = reverseImageView.tag as? Boolean ?: false
-            exchangeTextView.text = priceData.getPrice(isReverse)
-            reverseImageView.setOnClickListener {
-                isReverse = !isReverse
-                val updated = priceData.getPrice(isReverse)
-                exchangeTextView.text = updated
-                reverseImageView.tag = isReverse
-            }
-        }
-    }
-
-    override fun hidePrice() {
-        binding.priceGroup.isVisible = false
-        binding.exchangeTextView.text = ""
+    override fun showPrice(data: SwapPrice?) {
+        binding.swapDetails.showPrice(data)
     }
 
     @SuppressLint("SetTextI18n")
-    override fun showCalculations(data: OrcaAmountData?) {
+    override fun showTotal(data: SwapTotal?) {
         with(binding) {
+            swapDetails.showTotal(data)
+
             if (data != null) {
-                receiveTextView.text = getString(R.string.main_swap_min_receive, data.minReceiveAmount)
-                destinationAmountTextView.text = data.estimatedDestinationAmount
+                receiveAtLeastLabelTextView.text = getString(R.string.main_swap_min_receive)
+                receiveTextView.text = data.receiveAtLeast
+                receiveUsdTextView.text = data.receiveAtLeastUsd
+                destinationAmountTextView.text = data.destinationAmount
             } else {
+                receiveAtLeastLabelTextView.text = ""
                 receiveTextView.text = ""
+                receiveUsdTextView.text = ""
                 destinationAmountTextView.text = ""
             }
         }
     }
 
-    override fun showFees(data: OrcaFeeData) {
-        binding.feesGroup.isVisible = true
-        binding.feesTextView.setOnClickListener {
-            SwapFeesBottomSheet.show(
-                childFragmentManager,
-                data.liquidityProviderFee,
-                data.networkFee,
-                data.paymentOption
-            )
-        }
-
-        binding.feesImageView.setOnClickListener {
-            SwapFeesBottomSheet.show(
-                childFragmentManager,
-                data.liquidityProviderFee,
-                data.networkFee,
-                data.paymentOption
-            )
-        }
+    override fun showFees(data: SwapFee?) {
+        binding.swapDetails.showFee(data)
     }
 
-    override fun hideCalculations() {
-        binding.receiveTextView.text = ""
-        binding.destinationAmountTextView.text = ""
-        binding.feesGroup.isVisible = false
-    }
-
-    @SuppressLint("SetTextI18n")
     override fun showSlippage(slippage: Slippage) {
-        binding.slippageView.setBottomText(slippage.percentValue)
+        binding.swapDetails.showSlippage(slippage)
     }
 
     override fun showNewAmount(amount: String) {
@@ -206,13 +180,8 @@ class OrcaSwapFragment :
         }
     }
 
-    override fun showError(errorText: Int?) {
-        if (errorText != null) {
-            binding.errorTextView.isVisible = true
-            binding.errorTextView.setText(errorText)
-        } else {
-            binding.errorTextView.isVisible = false
-        }
+    override fun showError(@StringRes errorText: Int?) {
+        binding.swapDetails.showError(errorText)
     }
 
     override fun showAroundValue(aroundValue: BigDecimal) {
@@ -257,12 +226,6 @@ class OrcaSwapFragment :
         }
     }
 
-    override fun openSlippageDialog(currentSlippage: Slippage) {
-        SwapSlippageBottomSheet.show(childFragmentManager, currentSlippage) {
-            presenter.setSlippage(it)
-        }
-    }
-
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
     }
@@ -276,7 +239,6 @@ class OrcaSwapFragment :
         override fun afterTextChanged(text: Editable) {
             val amount = text.toString()
             presenter.setSourceAmount(amount)
-            binding.maxTextView.isVisible = amount.isBlank()
         }
     }
 }

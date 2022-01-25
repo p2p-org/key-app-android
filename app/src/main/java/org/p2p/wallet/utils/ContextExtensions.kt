@@ -16,24 +16,25 @@ import android.text.format.DateFormat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import okio.IOException
+import android.os.VibratorManager
 import org.p2p.wallet.R
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
 
-@SuppressLint("MissingPermission")
 fun Context.vibrate(duration: Long = 500) {
-    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val effect = VibrationEffect.createOneShot(
-            duration,
-            VibrationEffect.DEFAULT_AMPLITUDE
-        )
-        vibrator?.vibrate(effect)
+    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val manager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+        manager?.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
-        vibrator?.vibrate(duration)
+        getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
+    val effect = VibrationEffect.createOneShot(
+        duration,
+        VibrationEffect.DEFAULT_AMPLITUDE
+    )
+    vibrator?.vibrate(effect)
 }
 
 fun Context.copyToClipBoard(content: String) {

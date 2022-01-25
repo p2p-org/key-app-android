@@ -35,6 +35,17 @@
         <attr name="cornerRadius" />
     </declare-styleable>
 
+    <declare-styleable name="ShapeImageView">
+        <attr name="colorFill" format="color" />
+        <attr name="colorStroke" format="color" />
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="paintStyle" format="enum">
+            <enum name="fill" value="0" />
+            <enum name="stroke" value="1" />
+            <enum name="fillAndStroke" value="2" />
+        </attr>
+    </declare-styleable>
+
     <declare-styleable name="EndlessScrollRecyclerView">
         <attr name="emptyLayout" format="reference" />
         <attr name="errorLayout" format="reference" />
