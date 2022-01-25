@@ -227,6 +227,13 @@ class SendFragment :
             accountCardView.isVisible = true
             accountInfoTextView.isVisible = true
 
+            val feeUsd = if (fee.feeUsd != null) {
+                "~${fee.feeUsd}"
+            } else {
+                getString(R.string.common_not_available)
+            }
+            accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
+            accountFeeValueTextView.text = "${fee.fee.toPlainString()} ${fee.feePayerToken.tokenSymbol}"
         }
     }
 

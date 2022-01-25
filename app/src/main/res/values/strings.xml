@@ -378,5 +378,7 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
+    <string name="send_account_creation_fee_format">Account creation fee: %s</string>
+    <string name="common_not_available">N/A</string>
 </resources>
 
