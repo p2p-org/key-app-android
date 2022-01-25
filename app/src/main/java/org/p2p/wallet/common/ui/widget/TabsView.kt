@@ -139,7 +139,7 @@ class TabsView @JvmOverloads constructor(
 
     private fun RadioButton.updateButtonStyleAndLayoutParams() {
         TextViewCompat.setTextAppearance(this, R.style.WalletTheme_TextAppearance_SemiBold14)
-        setTextColor(colorFromTheme(R.attr.colorAccentGraph))
+        setTextColor(colorFromTheme(R.attr.colorSystemSuccessMain))
         setBackgroundResource(R.drawable.bg_chart_rounded_stroke)
 
         measure(

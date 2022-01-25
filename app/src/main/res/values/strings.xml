@@ -63,7 +63,7 @@
     <string name="auth_restore_manually">Restore manually</string>
     <string name="auth_restore">Restore</string>
     <string name="auth_reset_and_try_again">Reset and try again</string>
-    <string name="auth_create_new_wallet">Create new wallet</string>
+    <string name="auth_create_new_wallet">Create a new wallet</string>
     <string name="auth_create_new_wallet_message">The following words are security key that  that you must keep in a safe place, written in the correct sequence.\n\nIf lost, no one can restore it.\nKeep it private, even from us</string>
     <string name="auth_reset_pin">Reset PIN with a seed phrase</string>
     <string name="auth_finish_setup">Start using P2P Wallet</string>
@@ -73,17 +73,17 @@
     <string name="auth_enable_touchid_question">Use your TouchID for quick access?</string>
     <string name="auth_no_biometric_detected">No biometric detected, cannot enable quick access</string>
     <string name="auth_do_later">Do this later</string>
-    <string name="auth_intro_message"> Your P2P Wallet is fully set up.Get ready to explore the Crypto world</string>
+    <string name="auth_intro_message"> Your P2P Wallet is fully set up.\nGet ready to explore the Crypto world</string>
     <string name="auth_refresh">Refresh</string>
     <string name="auth_copied">Copied!</string>
-    <string name="auth_create_pin_code">Create a PIN-code to protect your wallet</string>
+    <string name="auth_create_pin_code">Set up a wallet PIN</string>
     <string name="auth_enter_pin_code">Enter PIN</string>
     <string name="auth_enter_current_pin_code">Enter current PIN</string>
     <string name="auth_repeat_new_pin_code">Confirm PIN-code</string>
     <string name="auth_almost_done_title">Almost done!</string>
     <string name="auth_quick_access">Quick Access</string>
     <string name="auth_biometric_question">Use biometric for quick access?</string>
-    <string name="auth_pin_codes_match_error">PIN-codes do not match</string>
+    <string name="auth_pin_codes_match_error">PIN doesn’t match. Try again</string>
     <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
     <string name="auth_pin_code_wrong">Wrong pin code</string>
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
@@ -104,7 +104,7 @@
     <string name="auth_your_username">Your username</string>
     <string name="auth_enter_your_username">Enter your username</string>
     <string name="auth_reserve">Reserve</string>
-    <string name="auth_use_any_latin">Maximum 15 latin characters and hyphens</string>
+    <string name="auth_use_any_latin">No more than 15 alphanumerical latin lowercase characters and dashes</string>
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>
     <string name="auth_p2p_sol">.p2p.sol</string>
@@ -130,6 +130,7 @@
     <string name="auth_create_pin_code_success">You have successfully set your PIN</string>
     <string name="auth_show_your_secret_key">Show your security key</string>
     <string name="auth_renew">Renew</string>
+    <string name="auth_choose_correct_words">Choose correct words</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">
@@ -155,6 +156,7 @@
     <string name="main_swap_hint">0</string>
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
+    <string name="main_swap_now">Swap now</string>
     <string name="main_send_to">Send to</string>
     <string name="main_wallet_address">Wallet address</string>
     <string name="main_send_in_usd">%s USD</string>
@@ -333,7 +335,7 @@
     <string name="details_block_number">Block number</string>
     <string name="details_completed">Completed</string>
     <string name="details_value">Value</string>
-    <string name="details_paid_by_p2p">(Paid by p2p.org)</string>
+    <string name="details_paid_by_p2p">Paid by p2p.org</string>
     <string name="details_show_transaction_details">Show transaction details</string>
     <string name="details_hide_transaction_details">Hide transaction details</string>
     <string name="details_info">Info</string>
@@ -375,4 +377,5 @@
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
+    <string name="error_take_screenshot">Failed to take a screenshot</string>
 </resources>

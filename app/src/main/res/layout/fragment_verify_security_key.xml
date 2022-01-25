@@ -45,10 +45,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="1"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:buttonDrawableEnd="@drawable/ic_arrow_right"
             app:buttonDrawableTint="?colorElementPrimary"
             app:buttonEnabled="false"
-            app:buttonText="@string/auth_save_and_continue"
+            app:buttonText="@string/auth_choose_correct_words"
             app:buttonTextColor="?colorElementPrimary" />
 
 

@@ -83,6 +83,15 @@ class VerifySecurityKeyFragment :
     }
 
     override fun showEnabled(isEnable: Boolean) {
+        with(binding.progressButton) {
+            if (isEnable) {
+                setActionText(R.string.auth_save_and_continue)
+                setDrawableEnd(R.drawable.ic_next)
+            } else {
+                setActionText(R.string.auth_choose_correct_words)
+                setDrawableEnd(null)
+            }
+        }
         binding.progressButton.isEnabled = isEnable
     }
 }

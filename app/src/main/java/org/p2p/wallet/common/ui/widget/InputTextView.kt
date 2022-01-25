@@ -11,7 +11,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetInputTextViewBinding
-import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.LetterInputFilter
 
 class InputTextView @JvmOverloads constructor(
     context: Context,
@@ -23,10 +23,10 @@ class InputTextView @JvmOverloads constructor(
         LayoutInflater.from(context), this
     )
 
-    private val colorIdle = colorFromTheme(R.attr.colorElementSecondary)
-    private val colorFocused = colorFromTheme(R.attr.colorAccentPrimary)
-    private val colorError = colorFromTheme(R.attr.colorAccentWarning)
-    private val colorSuccess = colorFromTheme(R.attr.colorAccentGraph)
+    private val colorIdle = context.getColor(R.color.elementSecondary)
+    private val colorFocused = context.getColor(R.color.accentPrimary)
+    private val colorError = context.getColor(R.color.accentWarning)
+    private val colorSuccess = context.getColor(R.color.systemSuccessMain)
 
     init {
 
@@ -41,6 +41,11 @@ class InputTextView @JvmOverloads constructor(
         val maxLength = typedArray.getInt(R.styleable.InputTextView_android_maxLength, -1)
         if (maxLength != -1) {
             binding.textInputEditText.filters += InputFilter.LengthFilter(maxLength)
+        }
+
+        val digits = typedArray.getString(R.styleable.InputTextView_android_digits)
+        if (digits != null) {
+            binding.textInputEditText.filters += LetterInputFilter(digits)
         }
         typedArray.recycle()
     }

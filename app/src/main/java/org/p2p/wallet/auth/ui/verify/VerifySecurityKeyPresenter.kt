@@ -140,6 +140,7 @@ class VerifySecurityKeyPresenter(
         generatedIndexes.clear()
         generatedPairs.clear()
         phrases.clear()
+        view?.showEnabled(false)
     }
 
     private fun checkButtonState() {
