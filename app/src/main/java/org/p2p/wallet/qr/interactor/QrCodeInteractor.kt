@@ -7,7 +7,7 @@ import org.p2p.wallet.qr.model.QrColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-const val QR_BITMAP_SIZE = 600
+const val QR_BITMAP_SIZE = 800
 
 class QrCodeInteractor(
     private val qrColors: QrColors

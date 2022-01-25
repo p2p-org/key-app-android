@@ -224,7 +224,7 @@
     <!-- receive -->
     <string name="receive_solana">Solana</string>
     <string name="receive_bitcoin">Bitcoin</string>
-    <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
+    <string name="receive_tokens_info">What tokens can I receive?</string>
     <string name="receive_want_to_receive">I want to receive</string>
     <string name="receive_ren_attention_message">Bitcoin deposit address is only open for 36 hours, but you can send to it multiple times within this session.</string>
     <string name="receive_ren_open_hours">is only open for 36 hours</string>
@@ -378,4 +378,5 @@
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
+    <string name="receive_view_solana_explorer">View in Solana explorer</string>
 </resources>

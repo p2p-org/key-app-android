@@ -116,7 +116,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/swapButton"
             app:layout_constraintStart_toEndOf="@id/sendButton"
-            app:layout_constraintTop_toTopOf="@id/actionView" />
+            app:layout_constraintTop_toTopOf="@id/actionView"
+            app:layout_constraintVertical_bias="1.0" />
 
         <View
             android:layout_width="0.5dp"

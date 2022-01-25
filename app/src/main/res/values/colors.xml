@@ -39,7 +39,7 @@
 
     <color name="textIconSecondary">#8E8E93</color>
     <color name="textIconPrimary">#202020</color>
-
+    <color name="backgroundApp">#FBFBFD</color>
     <color name="backgroundDisabled">#A3A5BA</color>
 
     <color name="chartSOL">#6FECB5</color>
