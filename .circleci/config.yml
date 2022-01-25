@@ -79,7 +79,7 @@ workflows:
             branches:
               only:
                 - develop
-                - /feature/.*/
+                - /(^feature\/.+)/
       - android_lint:
           context: feature
           filters:
@@ -87,7 +87,7 @@ workflows:
               only:
                 - master
                 - develop
-                - /feature/.*/
+                - /(^feature\/.+)/
       - unit_tests:
           requires:
             - android_lint
