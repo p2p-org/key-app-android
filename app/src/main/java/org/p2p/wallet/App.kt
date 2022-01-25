@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.debugdrawer.DebugDrawer
+import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
@@ -67,6 +68,7 @@ class App : Application() {
                     SettingsModule.create(),
                     SwapModule.create(),
                     RpcModule.create(),
+                    FeeRelayerModule.create(),
                     InfrastructureModule.create(),
                     TransactionModule.create(),
                     createAppModule()

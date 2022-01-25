@@ -62,7 +62,7 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginTop="16dp"
                             android:text="@string/main_from"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -71,9 +71,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:drawablePadding="4dp"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                            android:textColor="?colorAccentPrimary"
-                            app:drawableStartCompat="@drawable/ic_wallet_small"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                            android:textColor="@color/textIconSecondary"
+                            app:drawableStartCompat="@drawable/ic_wallet_gray"
                             app:layout_constraintBottom_toBottomOf="@id/fromTextView"
                             app:layout_constraintEnd_toEndOf="@id/amountEditText"
                             app:layout_constraintTop_toTopOf="@id/fromTextView"
@@ -81,25 +81,24 @@
 
                         <org.p2p.wallet.common.ui.widget.RoundedImageView
                             android:id="@+id/sourceImageView"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:layout_marginStart="20dp"
                             android:layout_marginTop="8dp"
+                            android:src="@drawable/ic_wallet"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/fromTextView"
-                            tools:src="@tools:sample/avatars" />
+                            app:layout_constraintTop_toBottomOf="@id/fromTextView" />
 
                         <TextView
                             android:id="@+id/sourceTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="@string/main_from"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold18"
+                            android:text="@string/main_select"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
                             app:layout_constraintBottom_toBottomOf="@id/sourceImageView"
                             app:layout_constraintStart_toEndOf="@id/sourceImageView"
-                            app:layout_constraintTop_toTopOf="@id/sourceImageView"
-                            tools:text="SOL" />
+                            app:layout_constraintTop_toTopOf="@id/sourceImageView" />
 
                         <ImageView
                             android:id="@+id/downImageView"
@@ -125,7 +124,7 @@
                             android:imeOptions="actionDone"
                             android:inputType="numberDecimal"
                             android:singleLine="true"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
                             android:textColorHint="?colorElementSecondary"
                             app:layout_constraintBottom_toBottomOf="@id/downImageView"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -138,22 +137,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:layout_marginBottom="8dp"
                             android:background="@drawable/bg_gray_stroked"
                             android:ellipsize="end"
                             android:gravity="end"
-                            android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="8dp"
                             android:singleLine="true"
-                            android:text="@string/send_zero_usd"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-                            android:textColor="?colorElementSecondary"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:text="@string/swap_zero_value"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                            app:drawableEndCompat="@drawable/ic_arrows"
                             app:layout_constraintEnd_toEndOf="@id/amountEditText"
                             app:layout_constraintHorizontal_bias="1"
                             app:layout_constraintStart_toStartOf="@id/amountEditText"
-                            app:layout_constraintTop_toBottomOf="@id/amountEditText"
-                            tools:text="$ 0.00" />
+                            app:layout_constraintTop_toBottomOf="@id/amountEditText" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -177,14 +174,14 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginTop="16dp"
                             android:text="@string/main_to"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <org.p2p.wallet.common.ui.widget.RoundedImageView
                             android:id="@+id/targetImageView"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:layout_marginStart="20dp"
                             android:layout_marginTop="16dp"
                             android:layout_marginBottom="16dp"
@@ -232,8 +229,8 @@
 
                         <ImageView
                             android:id="@+id/clearImageView"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
                             android:layout_marginEnd="20dp"
                             android:background="@drawable/bg_gray_secondary_rounded_small"
                             android:padding="4dp"
@@ -255,7 +252,7 @@
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
                             android:text="@string/main_scan_qr"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                             android:textColor="?colorAccentPrimary"
                             app:drawableStartCompat="@drawable/ic_scan_qr"
                             app:layout_constraintBottom_toBottomOf="@id/toTextView"
@@ -271,7 +268,7 @@
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
                             android:text="@string/send_paste"
-                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                             android:textColor="@color/color_paste_selector"
                             app:drawableStartCompat="@drawable/ic_paste"
                             app:drawableTint="@color/color_paste_selector"
@@ -302,9 +299,91 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/targetImageView"
+                            app:layout_constraintVertical_bias="0"
                             tools:text="Receive at least: 0.02110 renBTC"
                             tools:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/accountInfoTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_warning_rounded"
+                            android:lineSpacingExtra="4dp"
+                            android:padding="16dp"
+                            android:text="@string/send_account_creation_info"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+                            android:visibility="gone"
+                            app:layout_constraintTop_toBottomOf="@id/bottomBarrier"
+                            tools:visibility="visible" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/accountCardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="1dp"
+                    tools:visibility="visible">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/accountFeeView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <org.p2p.wallet.common.ui.widget.RoundedImageView
+                            android:id="@+id/accountImageView"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_margin="20dp"
+                            android:src="@drawable/ic_wallet"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/accountFeeTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+                            android:textColor="@color/textIconSecondary"
+                            app:layout_constraintBottom_toTopOf="@id/accountFeeValueTextView"
+                            app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+                            app:layout_constraintStart_toEndOf="@id/accountImageView"
+                            app:layout_constraintTop_toTopOf="@id/accountImageView"
+                            tools:text="Account creation fee: ~$0.5" />
+
+                        <TextView
+                            android:id="@+id/accountFeeValueTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+                            app:layout_constraintBottom_toBottomOf="@id/accountImageView"
+                            app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+                            app:layout_constraintStart_toEndOf="@id/accountImageView"
+                            app:layout_constraintTop_toBottomOf="@id/accountFeeTextView"
+                            tools:text="0.509 USDC" />
+
+                        <ImageView
+                            android:id="@+id/arrowImageView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_arrow_right"
+                            app:layout_constraintBottom_toBottomOf="@id/accountImageView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/accountImageView"
+                            tools:ignore="ContentDescription" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout

@@ -1,4 +1,4 @@
-package org.p2p.wallet.rpc.api
+package org.p2p.wallet.feerelayer.api
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal

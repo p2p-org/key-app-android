@@ -1,9 +1,9 @@
-package org.p2p.wallet.rpc.model
+package org.p2p.wallet.feerelayer
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.TransactionInstruction
-import org.p2p.wallet.rpc.api.RequestAccountMeta
-import org.p2p.wallet.rpc.api.RequestInstruction
+import org.p2p.wallet.feerelayer.api.RequestAccountMeta
+import org.p2p.wallet.feerelayer.api.RequestInstruction
 
 object FeeRelayerConverter {
 

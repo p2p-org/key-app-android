@@ -10,8 +10,8 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.swap.api.InternalWebApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaAmountInteractor
+import org.p2p.wallet.swap.interactor.orca.TransactionAddressInteractor
+import org.p2p.wallet.swap.interactor.orca.TransactionAmountInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
@@ -76,8 +76,8 @@ object SwapModule : InjectionModule {
         }
 
         factory { OrcaInstructionsInteractor(get()) }
-        factory { OrcaAddressInteractor(get(), get()) }
-        factory { OrcaAmountInteractor(get()) }
+        factory { TransactionAddressInteractor(get(), get()) }
+        factory { TransactionAmountInteractor(get()) }
         factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->

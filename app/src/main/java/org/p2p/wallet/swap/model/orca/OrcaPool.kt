@@ -58,7 +58,7 @@ data class OrcaPool(
         }
 
     val swapProgramId: PublicKey
-        get() = TokenSwapProgram.getSwapProgramId(if (deprecated) 1 else 2).toPublicKey()
+        get() = TokenSwapProgram.getSwapProgramId(programVersion ?: 1).toPublicKey()
 
     fun getOutputAmount(
         inputAmount: BigInteger

@@ -16,6 +16,7 @@ import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
+import org.p2p.wallet.main.model.SendFee
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
 import org.p2p.wallet.main.ui.send.search.SearchFragment
@@ -166,7 +167,7 @@ class SendFragment :
 
     override fun showWrongAddressTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
+            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
@@ -192,7 +193,7 @@ class SendFragment :
 
     override fun showEmptyBalanceTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
+            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_warning)
             targetTextView.text = address
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
@@ -212,6 +213,20 @@ class SendFragment :
 
             messageTextView.isVisible = false
             clearImageView.isVisible = true
+        }
+    }
+
+    override fun showAccountFeeView(fee: SendFee?) {
+        with(binding) {
+            if (fee == null) {
+                accountCardView.isVisible = false
+                accountInfoTextView.isVisible = false
+                return
+            }
+
+            accountCardView.isVisible = true
+            accountInfoTextView.isVisible = true
+
         }
     }
 

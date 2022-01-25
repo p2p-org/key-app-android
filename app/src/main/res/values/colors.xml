@@ -28,7 +28,10 @@
     
     <!-- new colors below -->
     <color name="systemError">#F43D3D</color>
+    <color name="systemErrorBackground">#FEF5F5</color>
     <color name="systemSuccess">#77DB7C</color>
+    <color name="systemWarningBackground">#FFFBF5</color>
+    <color name="systemWarningMain">#FFA631</color>
 
     <color name="textIconSecondary">#8E8E93</color>
     <color name="textIconPrimary">#202020</color>

@@ -21,7 +21,7 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.wallet.feerelayer.api.RpcApi
 import timber.log.Timber
 import java.math.BigInteger
 

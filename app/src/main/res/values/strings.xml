@@ -375,4 +375,5 @@
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
+    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
 </resources>

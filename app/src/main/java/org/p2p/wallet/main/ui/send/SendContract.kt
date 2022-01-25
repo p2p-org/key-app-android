@@ -6,6 +6,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
+import org.p2p.wallet.main.model.SendFee
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import java.math.BigDecimal
@@ -39,6 +40,8 @@ interface SendContract {
         fun showEmptyBalanceTarget(address: String)
         fun showAddressOnlyTarget(address: String)
         fun showSearchScreen(usernames: List<SearchResult>)
+
+        fun showAccountFeeView(fee: SendFee?)
     }
 
     interface Presenter : MvpPresenter<View> {

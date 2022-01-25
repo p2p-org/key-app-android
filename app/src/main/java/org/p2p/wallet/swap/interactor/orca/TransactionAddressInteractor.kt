@@ -11,7 +11,7 @@ import timber.log.Timber
 
 private const val SWAP_TAG = "OrcaSwap"
 
-class OrcaAddressInteractor(
+class TransactionAddressInteractor(
     private val rpcRepository: RpcRepository,
     private val userLocalRepository: UserLocalRepository
 ) {

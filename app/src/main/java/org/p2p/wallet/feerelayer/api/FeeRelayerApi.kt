@@ -1,4 +1,4 @@
-package org.p2p.wallet.rpc.api
+package org.p2p.wallet.feerelayer.api
 
 import retrofit2.http.Body
 import retrofit2.http.GET

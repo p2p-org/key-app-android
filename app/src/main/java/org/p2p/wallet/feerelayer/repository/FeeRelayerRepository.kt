@@ -1,4 +1,4 @@
-package org.p2p.wallet.rpc.repository
+package org.p2p.wallet.feerelayer.repository
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey

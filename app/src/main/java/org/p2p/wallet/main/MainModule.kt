@@ -41,14 +41,14 @@ object MainModule : InjectionModule {
 
         /* Cached data exists, therefore creating singleton */
         single { MainPresenter(get(), get(), get(), get(), get()) } bind MainContract.Presenter::class
-        factory { SendInteractor(get(), get(), get(), get()) }
+        single { SendInteractor(get(), get(), get(), get()) }
         factory { SearchInteractor(get(), get()) }
 
         factory { (token: Token.Active?) ->
             ReceiveSolanaPresenter(token, get(), get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (token: Token.Active) ->
-            SendPresenter(token, get(), get(), get(), get(), get())
+            SendPresenter(token, get(), get(), get(), get(), get(), get())
         } bind SendContract.Presenter::class
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())

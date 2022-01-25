@@ -23,8 +23,9 @@ data class Target constructor(
 
     /**
      * Removing domain from username if exists.
-     * @sample test.p2p.sol -> test
-     * @sample test.sol -> test
+     * @sample test.p2p.sol -> test.p2p.sol
+     * @sample test.sol -> test.sol
+     * @sample test.something -> testsomething
      * */
     @IgnoredOnParcel
     val trimmedUsername: String

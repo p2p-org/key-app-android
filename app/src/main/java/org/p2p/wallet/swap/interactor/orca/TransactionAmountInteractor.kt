@@ -4,7 +4,7 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.rpc.repository.RpcRepository
 import java.math.BigInteger
 
-class OrcaAmountInteractor(
+class TransactionAmountInteractor(
     private val rpcRepository: RpcRepository
 ) {
 

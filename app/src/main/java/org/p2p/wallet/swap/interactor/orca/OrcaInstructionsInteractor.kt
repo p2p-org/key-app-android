@@ -6,7 +6,7 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.swap.model.OrcaInstructionsData
 
 class OrcaInstructionsInteractor(
-    private val orcaAddressInteractor: OrcaAddressInteractor,
+    private val orcaAddressInteractor: TransactionAddressInteractor,
 ) {
 
     suspend fun buildDestinationInstructions(

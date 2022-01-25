@@ -8,11 +8,12 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.main.model.CheckAddressResult
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TransactionResult
-import org.p2p.wallet.rpc.repository.FeeRelayerRepository
+import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
+import org.p2p.wallet.swap.interactor.orca.TransactionAddressInteractor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
@@ -20,12 +21,127 @@ import java.math.BigInteger
 class SendInteractor(
     private val rpcRepository: RpcRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
-    private val addressInteractor: OrcaAddressInteractor,
+    private val addressInteractor: TransactionAddressInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     companion object {
         private const val SEND_TAG = "SEND"
+    }
+
+    /*
+    * If transaction will need to create a new account,
+    * then the fee for account creation will be paid via this token
+    * */
+    private lateinit var feePayerToken: Token.Active
+
+    /*
+    * Initialize fee payer token
+    * */
+    fun initialize(userTokens: List<Token.Active>) {
+        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
+        feePayerToken = userTokens.first { it.isSOL && userPublicKey.equals(it.publicKey) }
+    }
+
+    fun setFeePayerToken(newToken: Token.Active) {
+        if (!this::feePayerToken.isInitialized) throw IllegalStateException("PayToken is not initialized")
+        if (newToken.publicKey.equals(feePayerToken)) return
+
+        feePayerToken = newToken
+    }
+
+    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult = try {
+        val address = addressInteractor.findAssociatedAddress(destinationAddress, token.mintAddress)
+        if (address.shouldCreateAssociatedInstruction) {
+            CheckAddressResult.NewAccountNeeded(feePayerToken)
+        } else {
+            CheckAddressResult.AccountExists
+        }
+    } catch (e: IllegalStateException) {
+        CheckAddressResult.InvalidAddress
+    }
+
+    suspend fun sendSplToken(
+        destinationAddress: PublicKey,
+        token: Token.Active,
+        lamports: BigInteger
+    ): TransactionResult {
+        val currentUser = tokenKeyProvider.publicKey
+
+        if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
+            return TransactionResult.WrongWallet
+        }
+
+        val address = try {
+            addressInteractor.findAssociatedAddress(destinationAddress, token.mintAddress)
+        } catch (e: IllegalStateException) {
+            return TransactionResult.WrongWallet
+        }
+
+        if (currentUser == address.associatedAddress.toBase58()) {
+            return TransactionResult.Error(R.string.main_send_to_yourself_error)
+        }
+
+        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
+        val feePayerPubkey = feeRelayerRepository.getPublicKey()
+
+        val transaction = Transaction()
+        val instructions = mutableListOf<TransactionInstruction>()
+
+        if (address.shouldCreateAssociatedInstruction) {
+            Timber.tag(SEND_TAG).d("Associated token account creation needed, adding create instruction")
+
+            val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
+                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                TokenProgram.PROGRAM_ID,
+                token.mintAddress.toPublicKey(),
+                address.associatedAddress,
+                destinationAddress,
+                userPublicKey
+            )
+
+            transaction.addInstruction(createAccount)
+            instructions += createAccount
+        }
+
+        val instruction = TokenProgram.createTransferCheckedInstruction(
+            TokenProgram.PROGRAM_ID,
+            token.publicKey.toPublicKey(),
+            token.mintAddress.toPublicKey(),
+            address.associatedAddress,
+            userPublicKey,
+            lamports,
+            token.decimals
+        )
+
+        transaction.addInstruction(instruction)
+        instructions += instruction
+
+        val recentBlockHash = rpcRepository.getRecentBlockhash()
+
+        transaction.setFeePayer(feePayerPubkey)
+        transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
+
+        val signers = listOf(Account(tokenKeyProvider.secretKey))
+        transaction.sign(signers)
+
+        val recipientPubkey =
+            if (!address.shouldCreateAssociatedInstruction || address.associatedAddress.equals(destinationAddress)) {
+                address.associatedAddress.toBase58()
+            } else {
+                destinationAddress.toBase58()
+            }
+
+        Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
+
+        val transactionId = feeRelayerRepository.send(
+            instructions = instructions,
+            signatures = transaction.allSignatures,
+            pubkeys = transaction.accountKeys,
+            blockHash = recentBlockHash.recentBlockhash
+        ).firstOrNull().orEmpty()
+
+        return TransactionResult.Success(transactionId)
     }
 
     suspend fun sendNativeSolToken(
@@ -76,93 +192,5 @@ class SendInteractor(
         ).firstOrNull().orEmpty()
 
         return TransactionResult.Success(result)
-    }
-
-    suspend fun sendSplToken(
-        destinationAddress: PublicKey,
-        token: Token.Active,
-        lamports: BigInteger
-    ): TransactionResult {
-        val currentUser = tokenKeyProvider.publicKey
-
-        if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
-            return TransactionResult.WrongWallet
-        }
-
-        val address = try {
-            Timber.tag(SEND_TAG).d("Searching for SPL token address")
-            addressInteractor.findSplTokenAddress(token.mintAddress, destinationAddress)
-        } catch (e: IllegalStateException) {
-            Timber.tag(SEND_TAG).d("Searching address failed, address is wrong")
-            return TransactionResult.WrongWallet
-        }
-
-        if (currentUser == address.toBase58()) {
-            return TransactionResult.Error(R.string.main_send_to_yourself_error)
-        }
-
-        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-        val feePayerPubkey = feeRelayerRepository.getPublicKey()
-
-        val transaction = Transaction()
-        val instructions = mutableListOf<TransactionInstruction>()
-
-        /* If account is not found, create one */
-        val accountInfo = rpcRepository.getAccountInfo(address.toBase58())
-        val value = accountInfo?.value
-        val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
-        if (!associatedNotNeeded) {
-            Timber.tag(SEND_TAG).d("Associated token account creation needed, adding create instruction")
-
-            val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
-                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-                TokenProgram.PROGRAM_ID,
-                token.mintAddress.toPublicKey(),
-                address,
-                destinationAddress,
-                userPublicKey
-            )
-
-            transaction.addInstruction(createAccount)
-            instructions += createAccount
-        }
-
-        val instruction = TokenProgram.createTransferCheckedInstruction(
-            TokenProgram.PROGRAM_ID,
-            token.publicKey.toPublicKey(),
-            token.mintAddress.toPublicKey(),
-            address,
-            userPublicKey,
-            lamports,
-            token.decimals
-        )
-
-        transaction.addInstruction(instruction)
-        instructions += instruction
-
-        val recentBlockHash = rpcRepository.getRecentBlockhash()
-
-        transaction.setFeePayer(feePayerPubkey)
-        transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
-
-        val signers = listOf(Account(tokenKeyProvider.secretKey))
-        transaction.sign(signers)
-
-        val recipientPubkey = if (associatedNotNeeded || address.equals(destinationAddress)) {
-            address.toBase58()
-        } else {
-            destinationAddress.toBase58()
-        }
-
-        Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
-
-        val transactionId = feeRelayerRepository.send(
-            instructions = instructions,
-            signatures = transaction.allSignatures,
-            pubkeys = transaction.accountKeys,
-            blockHash = recentBlockHash.recentBlockhash
-        ).firstOrNull().orEmpty()
-
-        return TransactionResult.Success(transactionId)
     }
 }

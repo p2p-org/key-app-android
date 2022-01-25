@@ -8,18 +8,22 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
+import org.p2p.wallet.main.model.CheckAddressResult
 import org.p2p.wallet.main.model.CurrencyMode
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
+import org.p2p.wallet.main.model.SendFee
 import org.p2p.wallet.main.model.Target
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.Token.Companion.SOL_SYMBOL
 import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import org.p2p.wallet.swap.interactor.orca.TransactionAmountInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
@@ -29,6 +33,7 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.properties.Delegates
 
@@ -38,6 +43,7 @@ class SendPresenter(
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
+    private val amountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -54,6 +60,8 @@ class SendPresenter(
 
     private var inputAmount: String = "0"
 
+    private var minRentExemption: BigInteger = BigInteger.ZERO
+
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
@@ -69,13 +77,18 @@ class SendPresenter(
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
-            val source = initialToken ?: userInteractor.getUserTokens().firstOrNull {
+            val userTokens = userInteractor.getUserTokens()
+            val source = initialToken ?: userTokens.firstOrNull {
                 it.isSOL && it.publicKey == tokenKeyProvider.publicKey
             } ?: return@launch
             val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
             token = source.copy(usdRate = exchangeRate?.price)
             mode = CurrencyMode.Token(source.tokenSymbol)
             view?.showNetworkDestination(networkType)
+
+            sendInteractor.initialize(userTokens)
+
+            minRentExemption = amountInteractor.getAccountMinForRentExemption()
 
             calculateFee()
 
@@ -100,10 +113,10 @@ class SendPresenter(
         target = result
 
         when (result) {
-            is SearchResult.Full -> view?.showFullTarget(result.address, result.username)
-            is SearchResult.AddressOnly -> view?.showAddressOnlyTarget(result.address)
-            is SearchResult.EmptyBalance -> view?.showEmptyBalanceTarget(result.address.cutEnd())
-            is SearchResult.Wrong -> view?.showWrongAddressTarget(result.address.cutEnd())
+            is SearchResult.Full -> handleFullResult(result)
+            is SearchResult.AddressOnly -> handleAddressOnlyResult(result)
+            is SearchResult.EmptyBalance -> handleEmptyBalanceResult(result)
+            is SearchResult.Wrong -> handleWrongResult(result)
             else -> view?.showIdleTarget()
         }
 
@@ -181,6 +194,51 @@ class SendPresenter(
         }
 
         calculateData(token)
+    }
+
+    private fun handleFullResult(result: SearchResult.Full) {
+        view?.showFullTarget(result.address, result.username)
+
+        val token = token ?: return
+        checkAddress(result.address, token)
+    }
+
+    private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
+        view?.showAddressOnlyTarget(result.address)
+
+        val token = token ?: return
+        checkAddress(result.address, token)
+    }
+
+    private fun handleEmptyBalanceResult(result: SearchResult.EmptyBalance) {
+        view?.showEmptyBalanceTarget(result.address.cutEnd())
+        val token = token ?: return
+        checkAddress(result.address, token)
+    }
+
+    private fun handleWrongResult(result: SearchResult.Wrong) {
+        view?.showWrongAddressTarget(result.address.cutEnd())
+        view?.showAccountFeeView(null)
+    }
+
+    private fun checkAddress(address: String, token: Token.Active) {
+        launch {
+            try {
+                when (val checkAddressResult = sendInteractor.checkAddress(address.toPublicKey(), token)) {
+                    is CheckAddressResult.NewAccountNeeded -> {
+                        val feePayerToken = checkAddressResult.feePayerToken
+                        val feeAmount = minRentExemption.fromLamports(feePayerToken.decimals)
+                        val fee = SendFee(feeAmount, feePayerToken)
+                        view?.showAccountFeeView(fee)
+                    }
+                    is CheckAddressResult.AccountExists,
+                    is CheckAddressResult.InvalidAddress ->
+                        view?.showAccountFeeView(null)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error checking address")
+            }
+        }
     }
 
     private fun sendInBitcoin(token: Token.Active, address: String) {

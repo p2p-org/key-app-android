@@ -1,16 +1,16 @@
-package org.p2p.wallet.rpc.repository
+package org.p2p.wallet.feerelayer.repository
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Signature
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.feerelayer.FeeRelayerConverter
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.rpc.api.FeeRelayerApi
-import org.p2p.wallet.rpc.api.FeeSolTransferRequest
-import org.p2p.wallet.rpc.api.FeeSplTransferRequest
-import org.p2p.wallet.rpc.api.SendTransactionRequest
-import org.p2p.wallet.rpc.model.FeeRelayerConverter
+import org.p2p.wallet.feerelayer.api.FeeRelayerApi
+import org.p2p.wallet.feerelayer.api.FeeSolTransferRequest
+import org.p2p.wallet.feerelayer.api.FeeSplTransferRequest
+import org.p2p.wallet.feerelayer.api.SendTransactionRequest
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
