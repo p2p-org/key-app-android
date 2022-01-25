@@ -33,7 +33,7 @@ jobs:
       - run:
           name: "Generate build version"
           command: |
-            ./gradlew --no-daemon -g /cache setVersionBuild -Pversion=<< pipeline.number >>
+            ./gradlew setVersionBuild -Pversion=<< pipeline.number >>
             echo "Set build version to << pipeline.number >>"
   android_lint:
     <<: *defaults
