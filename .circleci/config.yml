@@ -48,7 +48,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - name: "Running unit tests"
       - android/restore-gradle-cache
       - android/restore-build-cache
       - android/run-tests:
