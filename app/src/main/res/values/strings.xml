@@ -40,6 +40,7 @@
     <string name="error_unable_to_swap_this_pair">Unable to swap this pair this time</string>
     <string name="error_opening_file">Couldn\'t open the file</string>
     <string name="error_rates_error">Cannot get rates</string>
+    <string name="error_take_screenshot">Failed to take a screenshot</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
@@ -275,6 +276,7 @@
     <string name="send_caution_empty_balance">Caution: this address has no funds</string>
     <string name="send_zero_usd">$ 0.0</string>
     <string name="send_receive_at_least">Receive at least: %s</string>
+    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -299,6 +301,11 @@
     <string name="swap_price_format">1 %s Price</string>
     <string name="swap_account_creation_format">%s account creation</string>
     <string name="swap_format">Swap %1s → %2s</string>
+    <string name="swap_total_format">Total: %s</string>
+    <string name="swap_total_zero_sol">0 SOL</string>
+    <string name="swap_choose_the_destination">Choose the destination</string>
+    <string name="swap_available_format">%s Available</string>
+    <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
 
     <!-- Buy -->
     <string name="buy_solana_on_moonpay">Buy Solana on MoonPay</string>
@@ -371,12 +378,5 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
-    <string name="swap_total_format">Total: %s</string>
-    <string name="swap_total_zero_sol">0 SOL</string>
-    <string name="swap_choose_the_destination">Choose the destination</string>
-    <string name="swap_available_format">%s Available</string>
-    <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
-    <string name="error_take_screenshot">Failed to take a screenshot</string>
-    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
 </resources>
 
