@@ -22,7 +22,7 @@ defaults: &defaults
   working_directory: ~/app
   executor:
     name: android/android-machine
-    resource-class: xlarge
+    resource-class: large
     tag: 2021.10.1
 
 jobs:
@@ -46,8 +46,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - android/restore-gradle-cache
-      - android/restore-build-cache
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_test_results
@@ -81,8 +79,15 @@ workflows:
             branches:
               only:
                 - develop
+                - /(^feature\/.+)/
       - android_lint:
           context: feature
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /(^feature\/.+)/
       - unit_tests:
           requires:
             - android_lint
