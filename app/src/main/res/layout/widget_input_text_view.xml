@@ -23,7 +23,6 @@
             android:id="@+id/textInputEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:digits="@string/common_username_allowed_symbols"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:minHeight="48dp"

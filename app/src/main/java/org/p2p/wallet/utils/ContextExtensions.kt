@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -8,8 +9,10 @@ import android.content.Intent
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import androidx.core.content.FileProvider
 import android.os.VibratorManager
 import org.p2p.wallet.R
+import java.io.File
 
 fun Context.vibrate(duration: Long = 500) {
     val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -43,4 +46,19 @@ fun Context.shareText(value: String) {
     shareIntent.type = "text/plain"
     shareIntent.putExtra(Intent.EXTRA_TEXT, value)
     startActivity(Intent.createChooser(shareIntent, "Share Text"))
+}
+
+fun Context.shareScreenShoot(image: File) {
+    val uri = FileProvider.getUriForFile(this, this.packageName + ".provider", image)
+    val intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        type = "image/*"
+        putExtra(android.content.Intent.EXTRA_TEXT, "Save Screenshot")
+        putExtra(Intent.EXTRA_STREAM, uri)
+    }
+    try {
+        startActivity(Intent.createChooser(intent, "Share with"))
+    } catch (e: ActivityNotFoundException) {
+        toast("No App Available")
+    }
 }

@@ -71,7 +71,7 @@ class PinView @JvmOverloads constructor(
 
     fun startSuccessAnimation(text: String, onAnimationFinished: () -> Unit) {
         with(binding) {
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorAccentGraph))
+            messageTextView.setTextColor(colorFromTheme(R.attr.colorSystemSuccessMain))
             messageTextView.text = text
             messageTextView.isVisible = true
             pinCodeView.startSuccessAnimation {

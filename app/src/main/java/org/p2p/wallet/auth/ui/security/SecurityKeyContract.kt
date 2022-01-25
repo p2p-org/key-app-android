@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.security
 
+import android.graphics.Bitmap
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import java.io.File
@@ -12,6 +13,7 @@ interface SecurityKeyContract {
         fun showLoading(isLoading: Boolean)
         fun navigateToVerify(keys: List<String>)
         fun showFile(file: File)
+        fun shareScreenShoot(file: File)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -20,5 +22,6 @@ interface SecurityKeyContract {
         fun cacheKeys()
         fun openPrivacyPolicy()
         fun openTermsOfUse()
+        fun createScreenShootFile(bitmap: Bitmap)
     }
 }

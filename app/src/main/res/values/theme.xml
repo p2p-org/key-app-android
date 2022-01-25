@@ -7,10 +7,9 @@
 
     <style name="WalletTheme" parent="WalletBase.v21" />
 
-    <style name="WalletBase.v21" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="WalletBase.v21" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
-
         <item name="colorPrimary">@color/accentPrimary</item>
         <item name="colorPrimaryDark">@color/accentTertiary</item>
 
@@ -18,7 +17,6 @@
         <item name="colorAccentSecondary">@color/accentSecondary</item>
         <item name="colorAccentTertiary">@color/accentTertiary</item>
         <item name="colorAccentWarning">@color/accentWarning</item>
-        <item name="colorAccentGraph">@color/accentGraph</item>
 
         <item name="colorElementPrimary">@color/elementPrimary</item>
         <item name="colorElementSecondary">@color/elementSecondary</item>
@@ -30,6 +28,7 @@
 
         <item name="colorBackgroundPrimary">@color/backgroundPrimary</item>
         <item name="colorBackgroundSecondary">@color/backgroundSecondary</item>
+        <item name="colorSystemSuccessMain">@color/systemSuccessMain</item>
 
         <item name="colorSecondary">@color/elementSecondary</item>
         <item name="colorControlHighlight">@color/elementSecondary</item>
@@ -46,7 +45,6 @@
         <!-- https://stackoverflow.com/questions/45196244/android-textcolor-ignored-in-androidtextappearance-of-the-edittext -->
         <item name="android:editTextColor">@color/messagePrimary</item>
         <item name="android:textColor">@color/messagePrimary</item>
-
         <item name="android:actionMenuTextColor">?colorSecondary</item>
     </style>
 </resources>

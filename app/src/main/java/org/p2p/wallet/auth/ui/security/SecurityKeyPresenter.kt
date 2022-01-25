@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.ui.security
 
 import android.content.Context
+import android.graphics.Bitmap
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -45,10 +46,20 @@ class SecurityKeyPresenter(
             view?.showLoading(false)
         }
     }
+
     override fun openTermsOfUse() {
         val inputStream = context.assets.open("p2p_terms_of_service.pdf")
         val file = fileRepository.savePdf("p2p_terms_of_service", inputStream.readBytes())
         view?.showFile(file)
+    }
+
+    override fun createScreenShootFile(bitmap: Bitmap) {
+        try {
+            val file = fileRepository.takeScreenShot(bitmap) ?: return
+            view?.shareScreenShoot(file)
+        } catch (e: Exception) {
+            view?.showErrorMessage(e)
+        }
     }
 
     override fun openPrivacyPolicy() {

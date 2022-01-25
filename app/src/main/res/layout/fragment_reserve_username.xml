@@ -52,7 +52,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="8dp"
+                    android:digits="@string/common_username_allowed_symbols"
                     app:hint="@string/auth_your_username"
+
                     app:layout_constraintTop_toBottomOf="@id/receiveTextView"
                     app:suffixText="@string/auth_p2p_sol" />
 

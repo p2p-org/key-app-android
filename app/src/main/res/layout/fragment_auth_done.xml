@@ -15,9 +15,10 @@
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="56dp"
+            app:layout_constraintVertical_bias="0.3"
             app:layout_constraintDimensionRatio="3:2.5"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/finishButton"
             app:srcCompat="@drawable/bg_auth_done" />
 
         <androidx.appcompat.widget.AppCompatTextView

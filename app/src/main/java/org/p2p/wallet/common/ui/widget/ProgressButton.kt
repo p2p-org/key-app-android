@@ -96,6 +96,11 @@ class ProgressButton @JvmOverloads constructor(
         }
     }
 
+    fun setDrawableEnd(@DrawableRes resId: Int?) {
+        binding.endImageView.setImageResource(resId ?: 0)
+        binding.endImageView.isVisible = resId != null
+    }
+
     fun setActionText(@StringRes textRes: Int) {
         binding.actionTextView.setText(textRes)
     }
