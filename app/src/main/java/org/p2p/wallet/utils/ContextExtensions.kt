@@ -1,6 +1,5 @@
 package org.p2p.wallet.utils
 
-import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager

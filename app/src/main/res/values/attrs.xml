@@ -18,9 +18,6 @@
     <attr name="colorBackgroundPrimary" format="color|reference" />
     <attr name="colorBackgroundSecondary" format="color|reference" />
 
-    <attr name="colorTextIconPrimary" format="color|reference" />
-    <attr name="colorBackgroundActivePrimary" format="color|reference" />
-    <attr name="colorTextIconLink" format="color|reference"/>
 
     <item name="edgetoedge" type="id" />
     <item name="seed_phrase_watcher_tag_id" type="id" />
@@ -104,5 +101,6 @@
         <attr name="suffixText" format="string" />
         <attr name="hint" format="string" />
         <attr name="android:maxLength" />
+        <attr name="android:digits" />
     </declare-styleable>
 </resources>

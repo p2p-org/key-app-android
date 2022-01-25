@@ -29,15 +29,10 @@
 
         <item name="colorBackgroundPrimary">@color/backgroundPrimary</item>
         <item name="colorBackgroundSecondary">@color/backgroundSecondary</item>
-        <item name="colorBackgroundActivePrimary">@color/backgroundActivePrimary</item>
-        <item name="colorTextIconLink">@color/textIconLink</item>
         <item name="colorSystemSuccessMain">@color/systemSuccessMain</item>
-
 
         <item name="colorSecondary">@color/elementSecondary</item>
         <item name="colorControlHighlight">@color/elementSecondary</item>
-
-        <item name="colorTextIconPrimary">@color/textIconPrimary</item>
 
         <item name="colorAccent">@color/accentPrimary</item>
         <item name="colorControlActivated">?colorAccent</item>

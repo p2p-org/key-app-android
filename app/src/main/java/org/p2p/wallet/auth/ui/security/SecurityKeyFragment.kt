@@ -95,7 +95,6 @@ class SecurityKeyFragment :
             override fun updateDrawState(ds: TextPaint) {
                 super.updateDrawState(ds)
                 ds.isUnderlineText = false
-
             }
         }
         val termsOfUse = getString(R.string.auth_terms_of_use)

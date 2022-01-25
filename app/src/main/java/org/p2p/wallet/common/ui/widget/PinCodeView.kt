@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.ImageView
-import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
@@ -17,7 +16,6 @@ import org.p2p.wallet.utils.resFromTheme
 
 private const val ANIMATION_DURATION = 400L
 private const val DOT_STROKE_WIDTH = 24
-private const val DOT_STROKE_HEIGHT = 24
 private const val DOT_DELTA = 12
 
 class PinCodeView @JvmOverloads constructor(
@@ -130,7 +128,7 @@ class PinCodeView @JvmOverloads constructor(
         refresh(0)
     }
 
-    private fun setDotsColor(@ColorRes resourceId: Int?, @ColorRes backgroundColor: Int?) {
+    private fun setDotsColor(resourceId: Int?, backgroundColor: Int?) {
         roundViews.forEach {
             if (resourceId == null) {
                 it.clearColorFilter()
@@ -139,7 +137,7 @@ class PinCodeView @JvmOverloads constructor(
             }
         }
         val bg = binding.progressView.background.mutate()
-        bg.setTint(ContextCompat.getColor(context, backgroundColor ?: resFromTheme(R.attr.colorTextIconLink)))
+        bg.setTint(ContextCompat.getColor(context, backgroundColor ?: R.color.textIconLink))
         binding.progressView.background = bg
     }
 }
