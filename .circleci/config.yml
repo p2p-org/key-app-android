@@ -1,12 +1,10 @@
 version: 2.1
 
-orbs:
-  android: circleci/android@1.0.3
-
 jobs:
   ktlint:
-    docker:
-      - image: cimg/base:stable
+    executor:
+      name: android/android-machine
+      resource-class: large
     steps:
       - checkout
       - run:
