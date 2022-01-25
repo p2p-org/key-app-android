@@ -1,0 +1,105 @@
+version: 2.1
+
+orbs:
+  android: circleci/android@2.0
+
+commands:
+  save_test_results:
+    description: "Saves all test results into a single directory"
+    steps:
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
+
+defaults: &defaults
+  working_directory: ~/app
+  executor:
+    name: android/android-machine
+    resource-class: large
+    tag: 2021.10.1
+
+jobs:
+  version_build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: "Generate build version"
+          command: |
+            ./gradlew setVersionBuild -Pversion=<< pipeline.number >>
+            echo "Set build version to << pipeline.number >>"
+  android_lint:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: "Static analysis"
+          command: ./gradlew ktlint -PautoCorrect=0
+  unit_tests:
+    <<: *defaults
+    steps:
+      - checkout
+      - android/run-tests:
+          test-command: ./gradlew testDebug
+      - save_test_results
+      - android/save-gradle-cache
+      - android/save-build-cache
+  build_and_publish:
+    <<: *defaults
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - android/restore-build-cache
+      - run:
+          name: "Assemble Feature Build"
+          command: ./gradlew assembleFeature
+      - store_artifacts:
+          path: "./app/build/outputs/mapping/feature/mapping.txt"
+          destination: artifact-file
+      - run:
+          name: "Distribute to Firebase App Distribution"
+          command: ./gradlew appDistributionUploadFeature
+      - store_artifacts:
+          path: app/build/outputs/apk/feature
+
+workflows:
+  version: 2
+
+  lint_test_and_publish_feature:
+    jobs:
+      - version_build:
+          context: feature
+          filters:
+            branches:
+              only:
+                - develop
+      - android_lint:
+          requires:
+            - version_build
+          context: feature
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /(^feature\/.+)/
+      - unit_tests:
+          requires:
+            - android_lint
+          context: feature
+      - build_and_publish:
+          requires:
+            - unit_tests
+            - version_build
+          context: feature
+          filters:
+            branches:
+              only:
+                - develop
