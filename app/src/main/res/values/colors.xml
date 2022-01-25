@@ -22,10 +22,18 @@
     <color name="backgroundPrimary">#FFFFFF</color>
     <color name="backgroundSecondary">#F6F6F8</color>
 
-
     <color name="white">#FFFFFFFF</color>
     <color name="colorStaticDark">#CC000000</color>
     <color name="colorSnackBar">#404040</color>
+    
+    <!-- new colors below -->
+    <color name="systemError">#F43D3D</color>
+    <color name="systemSuccess">#77DB7C</color>
+
+    <color name="textIconSecondary">#8E8E93</color>
+    <color name="textIconPrimary">#202020</color>
+
+    <color name="backgroundDisabled">#A3A5BA</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>

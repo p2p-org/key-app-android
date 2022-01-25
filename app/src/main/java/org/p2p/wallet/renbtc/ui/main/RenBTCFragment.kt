@@ -10,10 +10,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
+import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.setTextBold
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
@@ -81,11 +81,11 @@ class RenBTCFragment :
 
             val attentionText = buildSpannedString {
                 val onlyBitcoin = getString(R.string.receive_only_bitcoin)
-                val text = getString(R.string.receive_session_info).setTextBold(onlyBitcoin)
-                append(text)
+                val text = getString(R.string.receive_session_info)
+                append(SpanUtils.setTextBold(text, onlyBitcoin))
 
                 val minTransactionText = getString(R.string.receive_session_min_transaction, fee)
-                append(minTransactionText.setTextBold(fee))
+                append(SpanUtils.setTextBold(minTransactionText, fee))
             }
 
             attentionTextView.text = attentionText
@@ -102,13 +102,13 @@ class RenBTCFragment :
             val message = getString(R.string.receive_ren_attention_message)
             val openHoursText = getString(R.string.receive_ren_open_hours)
             val riskLosingText = getString(R.string.receive_ren_risk_losing_deposits)
-            binding.attentionTextView.text = message.setTextBold(openHoursText, riskLosingText)
+            binding.attentionTextView.text = SpanUtils.setTextBold(message, openHoursText, riskLosingText)
         }
     }
 
     override fun updateTimer(remaining: String) {
-        val text = getString(R.string.receive_session_timer_info, remaining).setTextBold(remaining)
-        binding.timerTextView.text = text
+        val text = getString(R.string.receive_session_timer_info, remaining)
+        binding.timerTextView.text = SpanUtils.setTextBold(text, remaining)
         binding.timerTextView.isVisible = true
     }
 

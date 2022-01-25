@@ -51,7 +51,8 @@ object TokenConverter {
     }
 
     fun fromNetwork(
-        data: TokenData
+        data: TokenData,
+        price: TokenPrice?
     ): Token.Other =
         Token.Other(
             tokenName = data.name,
@@ -62,7 +63,8 @@ object TokenConverter {
             color = TokenColors.findColorBySymbol(data.symbol),
             serumV3Usdc = data.serumV3Usdc,
             serumV3Usdt = data.serumV3Usdt,
-            isWrapped = data.isWrapped
+            isWrapped = data.isWrapped,
+            usdRate = price?.price
         )
 
     fun toDatabase(token: Token.Active): TokenEntity =

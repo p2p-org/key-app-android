@@ -29,7 +29,7 @@ interface SerumSwapContract {
         fun showButtonEnabled(isEnabled: Boolean)
         fun showSwapSuccess(info: TransactionInfo)
         fun showSlippage(slippage: Slippage)
-        fun showButtonText(@StringRes textRes: Int, value: String? = null)
+        fun showButtonText(@StringRes textRes: Int, vararg value: String)
         fun setNewAmount(sourceAmount: String)
         fun updateInputValue(available: BigDecimal)
         fun openSourceSelection(tokens: List<Token.Active>)

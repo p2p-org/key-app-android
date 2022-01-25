@@ -9,7 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="48dp"
         android:background="@drawable/bg_blue_rounded"
         android:backgroundTint="@color/colorSnackBar">
 
@@ -52,11 +52,10 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Cancel" />
 
-
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/actionImageView"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

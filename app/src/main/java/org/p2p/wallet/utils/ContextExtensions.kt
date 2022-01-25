@@ -1,6 +1,5 @@
 package org.p2p.wallet.utils
 
-import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -9,21 +8,22 @@ import android.content.Intent
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import org.p2p.wallet.R
 
-@SuppressLint("MissingPermission")
 fun Context.vibrate(duration: Long = 500) {
-    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val effect = VibrationEffect.createOneShot(
-            duration,
-            VibrationEffect.DEFAULT_AMPLITUDE
-        )
-        vibrator?.vibrate(effect)
+    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val manager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+        manager?.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
-        vibrator?.vibrate(duration)
+        getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
+    val effect = VibrationEffect.createOneShot(
+        duration,
+        VibrationEffect.DEFAULT_AMPLITUDE
+    )
+    vibrator?.vibrate(effect)
 }
 
 fun Context.copyToClipBoard(content: String) {

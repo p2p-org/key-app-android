@@ -44,7 +44,7 @@ class OrcaAddressInteractor(
 
         // detect if it is a direct token address
         val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
-        if (info != null && userLocalRepository.findTokenDataBySymbol(info.mint.toBase58()) != null) {
+        if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
             Timber.tag(SWAP_TAG).d("Token by mint was found. Continuing with direct address")
             return destinationAddress
         }

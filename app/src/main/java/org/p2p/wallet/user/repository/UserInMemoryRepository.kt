@@ -32,7 +32,7 @@ class UserInMemoryRepository : UserLocalRepository {
     }
 
     override fun findTokenDataBySymbol(symbol: String): TokenData? {
-        val data = decimalsFlow.value.firstOrNull { it.mintAddress == symbol }
+        val data = decimalsFlow.value.firstOrNull { it.symbol == symbol }
         if (data == null) {
             Timber.w("No data found for $symbol")
         }

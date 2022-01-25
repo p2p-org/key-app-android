@@ -53,7 +53,7 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             symbolTextView.text = Token.SOL_SYMBOL
             nameTextView.text = cutAddress(account.account.publicKey.toBase58())
             valueTextView.text = "${account.totalInUsd.scaleShort()} $"
-            totalTextView.text = "${account.total} ${Token.SOL_SYMBOL}"
+            totalTextView.text = "${account.total.toPlainString()} ${Token.SOL_SYMBOL}"
 
             colorView.isVisible = false
         }
