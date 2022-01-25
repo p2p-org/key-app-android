@@ -33,8 +33,8 @@ jobs:
       - run:
           name: "Generate build version"
           command: |
-            ./gradlew --no-daemon -g /cache setVersionBuild -Pversion=<< pipeline.id >>
-            echo "Set build version to << pipeline.id >>"
+            ./gradlew setVersionBuild -Pversion=<< pipeline.number >>
+            echo "Set build version to << pipeline.number >>"
   android_lint:
     <<: *defaults
     steps:
@@ -54,6 +54,7 @@ jobs:
   build_and_publish:
     <<: *defaults
     steps:
+      - checkout
       - android/restore-gradle-cache
       - android/restore-build-cache
       - run:
@@ -80,6 +81,8 @@ workflows:
               only:
                 - develop
       - android_lint:
+          requires:
+            - version_build
           context: feature
           filters:
             branches:
@@ -94,6 +97,7 @@ workflows:
       - build_and_publish:
           requires:
             - unit_tests
+            - version_build
           context: feature
           filters:
             branches:
