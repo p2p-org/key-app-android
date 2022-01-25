@@ -22,7 +22,7 @@ defaults: &defaults
   working_directory: ~/app
   executor:
     name: android/android-machine
-    resource-class: large
+    resource-class: xlarge
     tag: 2021.10.1
 
 jobs:
