@@ -80,6 +80,7 @@ workflows:
             branches:
               only:
                 - develop
+                - /(^feature\/.+)/
       - android_lint:
           requires:
             - version_build
