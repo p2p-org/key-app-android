@@ -38,12 +38,10 @@ jobs:
   android_lint:
     <<: *defaults
     steps:
+      - checkout
       - run:
           name: "Static analysis"
           command: ./gradlew ktlint -PautoCorrect=0
-      - store_artifacts:
-          path: "./app/build/reports"
-          destination: artifact-reports
   unit_tests:
     <<: *defaults
     steps:
