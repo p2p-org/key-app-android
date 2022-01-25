@@ -14,6 +14,9 @@ jobs:
       - run:
           name: "Static analysis"
           command: ./gradlew ktlint -PautoCorrect=0
+      - run:
+          name: "Run Tests"
+          command: ./gradlew test
 
 workflows:
   static_analysis:
