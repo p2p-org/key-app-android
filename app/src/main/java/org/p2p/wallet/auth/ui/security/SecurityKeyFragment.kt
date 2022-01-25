@@ -28,7 +28,7 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.takeScreenShot
+import org.p2p.wallet.utils.shareScreenShoot
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
@@ -157,6 +157,10 @@ class SecurityKeyFragment :
         }
     }
 
+    override fun shareScreenShoot(file: File) {
+        requireContext().shareScreenShoot(file)
+    }
+
     override fun copyToClipboard(keys: List<String>) {
         if (keys.isNotEmpty()) {
             val data = keys.joinToString(separator = " ")
@@ -166,7 +170,7 @@ class SecurityKeyFragment :
     }
 
     override fun onCopySuccess(bitmap: Bitmap) {
-        takeScreenShot(bitmap)
+        presenter.createScreenShootFile(bitmap)
     }
 
     override fun onCopyError() {
