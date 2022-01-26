@@ -7,13 +7,14 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
+import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.CheckAddressResult
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TransactionResult
-import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.interactor.orca.TransactionAddressInteractor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
@@ -22,6 +23,7 @@ class SendInteractor(
     private val rpcRepository: RpcRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
     private val addressInteractor: TransactionAddressInteractor,
+    private val feeRelayerInteractor: FeeRelayerInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -39,8 +41,7 @@ class SendInteractor(
     * Initialize fee payer token
     * */
     fun initialize(userTokens: List<Token.Active>) {
-        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-        feePayerToken = userTokens.first { it.isSOL && userPublicKey.equals(it.publicKey) }
+        feePayerToken = userTokens.first { it.isSOL }
     }
 
     fun setFeePayerToken(newToken: Token.Active) {
@@ -50,20 +51,41 @@ class SendInteractor(
         feePayerToken = newToken
     }
 
-    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult = try {
-        val address = addressInteractor.findAssociatedAddress(destinationAddress, token.mintAddress)
-        if (address.shouldCreateAssociatedInstruction) {
-            CheckAddressResult.NewAccountNeeded(feePayerToken)
-        } else {
-            CheckAddressResult.AccountExists
+    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult {
+        return try {
+            val address = addressInteractor.findAssociatedAddress(destinationAddress, token.mintAddress)
+            if (address.shouldCreateAssociatedInstruction) {
+                CheckAddressResult.NewAccountNeeded(feePayerToken)
+            } else {
+                CheckAddressResult.AccountExists
+            }
+        } catch (e: IllegalStateException) {
+            CheckAddressResult.InvalidAddress
         }
-    } catch (e: IllegalStateException) {
-        CheckAddressResult.InvalidAddress
     }
 
-    suspend fun sendSplToken(
+    suspend fun sendTransaction(
         destinationAddress: PublicKey,
         token: Token.Active,
+        lamports: BigInteger
+    ): TransactionResult {
+        return if (token.isSOL) {
+            sendNativeSolToken(
+                destinationAddress = destinationAddress,
+                lamports = lamports
+            )
+        } else {
+            sendSplToken(
+                destinationAddress = destinationAddress,
+                sourceToken = token,
+                lamports = lamports
+            )
+        }
+    }
+
+    private suspend fun sendSplToken(
+        destinationAddress: PublicKey,
+        sourceToken: Token.Active,
         lamports: BigInteger
     ): TransactionResult {
         val currentUser = tokenKeyProvider.publicKey
@@ -73,7 +95,7 @@ class SendInteractor(
         }
 
         val address = try {
-            addressInteractor.findAssociatedAddress(destinationAddress, token.mintAddress)
+            addressInteractor.findAssociatedAddress(destinationAddress, sourceToken.mintAddress)
         } catch (e: IllegalStateException) {
             return TransactionResult.WrongWallet
         }
@@ -91,27 +113,32 @@ class SendInteractor(
         if (address.shouldCreateAssociatedInstruction) {
             Timber.tag(SEND_TAG).d("Associated token account creation needed, adding create instruction")
 
-            val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
-                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-                TokenProgram.PROGRAM_ID,
-                token.mintAddress.toPublicKey(),
-                address.associatedAddress,
-                destinationAddress,
-                userPublicKey
-            )
+            if (feePayerToken.isSOL) {
+                val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
+                    TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                    TokenProgram.PROGRAM_ID,
+                    sourceToken.mintAddress.toPublicKey(),
+                    address.associatedAddress,
+                    destinationAddress,
+                    userPublicKey
+                )
 
-            transaction.addInstruction(createAccount)
-            instructions += createAccount
+                transaction.addInstruction(createAccount)
+                instructions += createAccount
+            } else {
+                // todo: top up with swap
+                feeRelayerInteractor.topUpWithSwap()
+            }
         }
 
         val instruction = TokenProgram.createTransferCheckedInstruction(
             TokenProgram.PROGRAM_ID,
-            token.publicKey.toPublicKey(),
-            token.mintAddress.toPublicKey(),
+            sourceToken.publicKey.toPublicKey(),
+            sourceToken.mintAddress.toPublicKey(),
             address.associatedAddress,
             userPublicKey,
             lamports,
-            token.decimals
+            sourceToken.decimals
         )
 
         transaction.addInstruction(instruction)
@@ -134,7 +161,7 @@ class SendInteractor(
 
         Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
 
-        val transactionId = feeRelayerRepository.send(
+        val transactionId = feeRelayerRepository.relayTransaction(
             instructions = instructions,
             signatures = transaction.allSignatures,
             pubkeys = transaction.accountKeys,
@@ -144,7 +171,7 @@ class SendInteractor(
         return TransactionResult.Success(transactionId)
     }
 
-    suspend fun sendNativeSolToken(
+    private suspend fun sendNativeSolToken(
         destinationAddress: PublicKey,
         lamports: BigInteger
     ): TransactionResult {
@@ -184,7 +211,7 @@ class SendInteractor(
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val result = feeRelayerRepository.send(
+        val result = feeRelayerRepository.relayTransaction(
             instructions = instructions,
             signatures = transaction.allSignatures,
             pubkeys = transaction.accountKeys,

@@ -49,7 +49,7 @@ class UserRemoteRepository(
                      * */
                     val json = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
                     val response = json.get("Response")
-                    if (response.asString == "Error") {
+                    if (response?.asString == "Error") {
                         throw IllegalStateException("Cannot get rates")
                     }
                     list.forEach { symbol ->

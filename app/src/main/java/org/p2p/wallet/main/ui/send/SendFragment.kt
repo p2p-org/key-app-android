@@ -3,9 +3,12 @@ package org.p2p.wallet.main.ui.send
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.ColorRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -17,6 +20,7 @@ import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.SendFee
+import org.p2p.wallet.main.model.SendTotal
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
 import org.p2p.wallet.main.ui.send.search.SearchFragment
@@ -32,6 +36,7 @@ import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleLong
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
@@ -91,17 +96,25 @@ class SendFragment :
                 presenter.setNewSourceAmount(it.toString())
             }
 
-            networkView.setOnClickListener {
-                NetworkDestinationBottomSheet.show(childFragmentManager) { presenter.setNetworkDestination(it) }
-            }
+//            networkView.setOnClickListener {
+//                NetworkDestinationBottomSheet.show(childFragmentManager) { presenter.setNetworkDestination(it) }
+//            }
 
             sourceImageView.setOnClickListener {
                 presenter.loadTokensForSelection()
             }
 
-            address?.let { presenter.validateTarget(it) }
+//            address?.let { presenter.validateTarget(it) }
+            lifecycleScope.launchWhenResumed {
+                delay(500L)
+                presenter.validateTarget("9MeTrR3fYGHeBpoQ4FxM8u3YVe8Qwo4256CajF8TWNW2")
+            }
 
             amountEditText.focusAndShowKeyboard()
+
+            accountFeeView.setOnClickListener {
+                presenter.loadFeePayerTokens()
+            }
 
             availableTextView.setOnClickListener {
                 presenter.loadAvailableValue()
@@ -119,6 +132,13 @@ class SendFragment :
             pasteTextView.setOnClickListener {
                 val nameOrAddress = requireContext().getClipBoardText(trimmed = true)
                 nameOrAddress?.let { presenter.validateTarget(it) }
+            }
+
+            sendDetailsView.setOnClickListener {
+                showInfoDialog(
+                    messageRes = R.string.main_free_transactions_info,
+                    primaryButtonRes = R.string.common_understood
+                )
             }
         }
 
@@ -220,25 +240,34 @@ class SendFragment :
         with(binding) {
             if (fee == null) {
                 accountCardView.isVisible = false
-                accountInfoTextView.isVisible = false
                 return
             }
 
             accountCardView.isVisible = true
-            accountInfoTextView.isVisible = true
 
-            val feeUsd = if (fee.feeUsd != null) {
-                "~${fee.feeUsd}"
-            } else {
-                getString(R.string.common_not_available)
-            }
+            val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
             accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
-            accountFeeValueTextView.text = "${fee.fee.toPlainString()} ${fee.feePayerToken.tokenSymbol}"
+            accountFeeValueTextView.text = fee.formattedFee
+            glideManager.load(accountImageView, fee.feePayerToken.logoUrl)
         }
     }
 
     override fun showSearchScreen(usernames: List<SearchResult>) {
         addFragment(SearchFragment.create(usernames))
+    }
+
+    override fun showRelayAccountFeeView(isVisible: Boolean) {
+        binding.accountInfoTextView.isVisible = isVisible
+    }
+
+    override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
+        addFragment(
+            target = SelectTokenFragment.create(feePayerTokens) { presenter.setFeePayerToken(it as Token.Active) },
+            enter = R.anim.slide_up,
+            exit = 0,
+            popExit = R.anim.slide_down,
+            popEnter = 0
+        )
     }
 
     override fun showSuccess(info: TransactionInfo) {
@@ -250,17 +279,17 @@ class SendFragment :
     }
 
     override fun showNetworkDestination(type: NetworkType) {
-        binding.networkTextView.text = type.stringValue
+//        todo
     }
 
     override fun showNetworkSelection() {
-        binding.networkView.isVisible = true
-        binding.networkDivider.isVisible = true
+//        binding.networkView.isVisible = true
+//        binding.networkDivider.isVisible = true
     }
 
     override fun hideNetworkSelection() {
-        binding.networkView.isVisible = false
-        binding.networkDivider.isVisible = false
+//        binding.networkView.isVisible = false
+//        binding.networkDivider.isVisible = false
     }
 
     override fun showSourceToken(token: Token.Active) {
@@ -268,25 +297,11 @@ class SendFragment :
             glideManager.load(sourceImageView, token.logoUrl)
             sourceTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
-            priceTextView.text = token.getCurrentPrice() ?: getString(R.string.common_na)
         }
     }
 
-    override fun showReceiveAtLeastValue(value: String?) {
-        val receiveAtLeast = value?.let { getString(R.string.send_receive_at_least, it) }
-        binding.atLeastTextView withTextOrGone receiveAtLeast
-    }
-
-    override fun showFee(fee: String?) {
-        if (fee.isNullOrEmpty()) {
-            binding.feeTextView.setText(R.string.send_free_transaction)
-            binding.feeTextView.setTextColor(requireContext().getColor(R.color.colorGreen))
-            binding.feeTextView.setOnClickListener { FeeInfoBottomSheet.show(childFragmentManager) }
-        } else {
-            binding.feeTextView.text = fee
-            binding.feeTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
-            binding.feeTextView.setOnClickListener(null)
-        }
+    override fun showTotal(data: SendTotal?) {
+        binding.sendDetailsView.showTotal(data)
     }
 
     override fun showInputValue(value: BigDecimal) {
@@ -309,8 +324,8 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun setAvailableTextColor(availableColor: Int) {
-        binding.availableTextView.setTextColor(colorFromTheme(availableColor))
+    override fun setAvailableTextColor(@ColorRes availableColor: Int) {
+        binding.availableTextView.setTextColor(requireContext().getColor(availableColor))
     }
 
     @SuppressLint("SetTextI18n")

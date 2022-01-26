@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.interactor.orca
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.model.OrcaInstructionsData
 
 class OrcaInstructionsInteractor(

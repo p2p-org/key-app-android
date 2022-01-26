@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
@@ -13,13 +14,13 @@ import org.p2p.wallet.main.model.CurrencyMode
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.SendFee
+import org.p2p.wallet.main.model.SendTotal
 import org.p2p.wallet.main.model.Target
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.Token.Companion.SOL_SYMBOL
 import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
-import org.p2p.wallet.swap.interactor.orca.TransactionAmountInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
@@ -31,9 +32,9 @@ import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
+import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.properties.Delegates
 
@@ -43,7 +44,7 @@ class SendPresenter(
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
-    private val amountInteractor: TransactionAmountInteractor,
+    private val feeRelayerInteractor: FeeRelayerInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -59,8 +60,6 @@ class SendPresenter(
     }
 
     private var inputAmount: String = "0"
-
-    private var minRentExemption: BigInteger = BigInteger.ZERO
 
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
@@ -88,9 +87,7 @@ class SendPresenter(
 
             sendInteractor.initialize(userTokens)
 
-            minRentExemption = amountInteractor.getAccountMinForRentExemption()
-
-            calculateFee()
+            calculateTotal(null)
 
             view?.showFullScreenLoading(false)
         }
@@ -105,7 +102,7 @@ class SendPresenter(
             view?.hideNetworkSelection()
         }
 
-        calculateFee()
+        calculateRenBtcFee()
         calculateData(newToken)
     }
 
@@ -117,7 +114,7 @@ class SendPresenter(
             is SearchResult.AddressOnly -> handleAddressOnlyResult(result)
             is SearchResult.EmptyBalance -> handleEmptyBalanceResult(result)
             is SearchResult.Wrong -> handleWrongResult(result)
-            else -> view?.showIdleTarget()
+            else -> handleIdleTarget()
         }
 
         val sourceToken = token ?: return
@@ -147,14 +144,14 @@ class SendPresenter(
         inputAmount = amount
 
         val token = token ?: return
-        calculateFee()
+        calculateRenBtcFee()
         calculateData(token)
     }
 
     override fun setNetworkDestination(networkType: NetworkType) {
         this.networkType = networkType
         view?.showNetworkDestination(networkType)
-        calculateFee()
+        calculateRenBtcFee()
     }
 
     override fun send() {
@@ -186,6 +183,28 @@ class SendPresenter(
         view?.showInputValue(totalAvailable)
     }
 
+    override fun loadFeePayerTokens() {
+        val token = token ?: return
+        launch {
+            val feePayerTokens = feeRelayerInteractor.getFeeTokenAccounts(token.publicKey)
+            view?.showFeePayerTokenSelector(feePayerTokens)
+        }
+    }
+
+    override fun setFeePayerToken(feePayerToken: Token.Active) {
+        launch {
+            try {
+                sendInteractor.setFeePayerToken(feePayerToken)
+                val accountCreationFee = feeRelayerInteractor.getAccountCreationFee()
+                val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
+                val fee = SendFee(feeAmount, feePayerToken)
+                view?.showAccountFeeView(fee,)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error updating fee payer token")
+            }
+        }
+    }
+
     override fun switchCurrency() {
         val token = token ?: return
         mode = when (mode) {
@@ -198,45 +217,66 @@ class SendPresenter(
 
     private fun handleFullResult(result: SearchResult.Full) {
         view?.showFullTarget(result.address, result.username)
-
-        val token = token ?: return
-        checkAddress(result.address, token)
+        checkRelayAccount()
+        checkAddress(result.address)
     }
 
     private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
         view?.showAddressOnlyTarget(result.address)
-
-        val token = token ?: return
-        checkAddress(result.address, token)
+        checkRelayAccount()
+        checkAddress(result.address)
     }
 
     private fun handleEmptyBalanceResult(result: SearchResult.EmptyBalance) {
         view?.showEmptyBalanceTarget(result.address.cutEnd())
-        val token = token ?: return
-        checkAddress(result.address, token)
+        checkRelayAccount()
+        checkAddress(result.address)
     }
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
         view?.showWrongAddressTarget(result.address.cutEnd())
-        view?.showAccountFeeView(null)
+        view?.showAccountFeeView(null,)
     }
 
-    private fun checkAddress(address: String, token: Token.Active) {
+    private fun handleIdleTarget() {
+        view?.showIdleTarget()
+        view?.showTotal(null)
+        view?.showAccountFeeView(null,)
+        view?.showRelayAccountFeeView(false)
+        calculateTotal(null)
+    }
+
+    private fun checkAddress(address: String) {
+        val token = token ?: return
+
         launch {
             try {
+
                 when (val checkAddressResult = sendInteractor.checkAddress(address.toPublicKey(), token)) {
                     is CheckAddressResult.NewAccountNeeded -> {
                         val feePayerToken = checkAddressResult.feePayerToken
-                        val feeAmount = minRentExemption.fromLamports(feePayerToken.decimals)
+                        val accountCreationFee = feeRelayerInteractor.getAccountCreationFee()
+                        val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
                         val fee = SendFee(feeAmount, feePayerToken)
-                        view?.showAccountFeeView(fee)
+                        view?.showAccountFeeView(fee,)
                     }
                     is CheckAddressResult.AccountExists,
                     is CheckAddressResult.InvalidAddress ->
-                        view?.showAccountFeeView(null)
+                        view?.showAccountFeeView(null,)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error checking address")
+            }
+        }
+    }
+
+    private fun checkRelayAccount() {
+        launch {
+            try {
+                val userRelayAccount = feeRelayerInteractor.getUserRelayAccount()
+                view?.showRelayAccountFeeView(!userRelayAccount.isCreated)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error checking relay account")
             }
         }
     }
@@ -264,18 +304,11 @@ class SendPresenter(
 
                 val destinationAddress = address.toPublicKey()
                 val lamports = tokenAmount.toLamports(token.decimals)
-                val result = if (token.isSOL) {
-                    sendInteractor.sendNativeSolToken(
-                        destinationAddress = destinationAddress,
-                        lamports = lamports
-                    )
-                } else {
-                    sendInteractor.sendSplToken(
-                        destinationAddress = destinationAddress,
-                        token = token,
-                        lamports = lamports
-                    )
-                }
+                val result = sendInteractor.sendTransaction(
+                    destinationAddress = destinationAddress,
+                    token = token,
+                    lamports = lamports
+                )
 
                 handleResult(result)
             } catch (e: Throwable) {
@@ -316,6 +349,8 @@ class SendPresenter(
                 is CurrencyMode.Token -> calculateByToken(token)
                 is CurrencyMode.Usd -> calculateByUsd(token)
             }
+
+            calculateTotal(null)
         }
     }
 
@@ -354,10 +389,27 @@ class SendPresenter(
         setButtonEnabled(tokenAmount, total)
     }
 
-    private fun calculateFee() {
+    private fun calculateTotal(renBtcFee: BigDecimal?) {
+        val sourceToken = token ?: return
+        val inputValue = inputAmount.toBigDecimalOrZero()
+
+        val data = SendTotal(
+            total = "$tokenAmount ${sourceToken.tokenSymbol}",
+            totalUsd = usdAmount.toPlainString(),
+            receive = inputValue.toPlainString(),
+            receiveUsd = inputValue.toUsd(sourceToken)?.toPlainString(),
+            fee = renBtcFee?.let { "$it $SOL_SYMBOL" },
+            feeUsd = renBtcFee?.let { "${it.toUsd(sourceToken)}" },
+            renFee = null,
+            renFeeUsd = null
+        )
+
+        view?.showTotal(data)
+    }
+
+    private fun calculateRenBtcFee() {
         if (networkType == NetworkType.SOLANA) {
-            view?.showFee(null)
-            view?.showReceiveAtLeastValue(null)
+            view?.showTotal(null)
             return
         }
 
@@ -365,10 +417,7 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            view?.showFee("$fee $SOL_SYMBOL")
-
-            val inputValue = inputAmount.toBigDecimalOrZero().toString()
-            view?.showReceiveAtLeastValue(inputValue)
+            calculateTotal(fee)
         }
     }
 
@@ -435,7 +484,7 @@ class SendPresenter(
 
         val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
 
-        val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
+        val availableColor = if (isMoreThanBalance) R.color.systemError else R.color.textIconSecondary
         view?.setAvailableTextColor(availableColor)
         view?.showButtonEnabled(isEnabled)
     }

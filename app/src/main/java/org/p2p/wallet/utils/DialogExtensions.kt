@@ -12,10 +12,10 @@ import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.common.ui.dialogs.InfoDialog
 
 fun Fragment.showInfoDialog(
-    @StringRes titleRes: Int,
+    @StringRes titleRes: Int? = null,
     @StringRes messageRes: Int,
     @StringRes primaryButtonRes: Int,
-    @StringRes secondaryButtonRes: Int?,
+    @StringRes secondaryButtonRes: Int? = null,
     primaryCallback: (() -> Unit)? = null,
     secondaryCallback: (() -> Unit)? = null
 ) {

@@ -22,6 +22,8 @@
     <string name="common_today">Today</string>
     <string name="common_try_again">Try again</string>
     <string name="common_go_back">Go back</string>
+    <string name="common_not_available">N/A</string>
+    <string name="common_understood">Understood</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -220,6 +222,7 @@
     <string name="main_reserve_username">Reserve your P2P username now</string>
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
+    <string name="main_free_transactions_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -379,6 +382,8 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
-    <string name="common_not_available">N/A</string>
+    <string name="send_transaction_details">Transaction details</string>
+    <string name="send_receive_title">Receive</string>
+
 </resources>
 

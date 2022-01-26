@@ -10,4 +10,7 @@ data class SendFee(
 
     val feeUsd: BigDecimal?
         get() = fee.toUsd(feePayerToken)
+
+    val formattedFee: String
+        get() = "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
 }

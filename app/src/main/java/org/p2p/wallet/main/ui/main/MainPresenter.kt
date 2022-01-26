@@ -14,6 +14,7 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.TokenVisibility
 import org.p2p.wallet.main.model.VisibilityState
+import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -30,6 +31,7 @@ class MainPresenter(
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
+    private val amountInteractor: TransactionAmountInteractor,
     private val sharedPreferences: SharedPreferences
 ) : BasePresenter<MainContract.View>(), MainContract.Presenter {
 
@@ -67,6 +69,7 @@ class MainPresenter(
         updatesManager.start()
         loadData()
         checkUsername()
+        loadCommonFees()
     }
 
     override fun collectData() {
@@ -219,4 +222,10 @@ class MainPresenter(
                 }
             }
         }
+
+    private fun loadCommonFees() {
+        launch {
+            amountInteractor.initialize()
+        }
+    }
 }

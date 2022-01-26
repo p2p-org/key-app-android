@@ -4,26 +4,28 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
+/**
+ * For now, V2 endpoints are working for Devnet network
+ * The endpoints without v2 prefix are used for Mainnet network
+ * */
 interface FeeRelayerApi {
 
     @GET("fee_payer/pubkey")
     suspend fun getPublicKey(): String
 
+    @POST("relay_transaction")
+    suspend fun relayTransaction(@Body request: SendTransactionRequest): List<String>
+
+    @POST("relay_top_up_with_swap")
+    suspend fun relayTopUpSwap(@Body request: RelayTopUpSwapRequest): List<String>
+
+    // region devnet endpoints
     @GET("v2/fee_payer/pubkey")
     suspend fun getPublicKeyV2(): String
 
-    @POST("relay_transaction")
-    suspend fun send(@Body request: SendTransactionRequest): List<String>
-
     @POST("v2/relay_transaction")
-    suspend fun sendV2(@Body request: SendTransactionRequest): List<String>
+    suspend fun relayTransactionV2(@Body request: SendTransactionRequest): List<String>
 
-    @POST("transfer_sol")
-    suspend fun sendSolToken(@Body request: FeeSolTransferRequest): List<String>
-
-    @POST("transfer_spl_token")
-    suspend fun sendSplToken(@Body request: FeeSplTransferRequest): List<String>
-
-    @POST("relay_swap")
-    suspend fun swap(@Body request: SwapRequest): List<String>
+    @POST("v2/relay_top_up_with_swap")
+    suspend fun relayTopUpSwapV2(@Body request: RelayTopUpSwapRequest): List<String>
 }

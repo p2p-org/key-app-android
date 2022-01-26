@@ -6,13 +6,14 @@ import org.p2p.solanaj.core.Signature
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.feerelayer.FeeRelayerConverter
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
-import org.p2p.wallet.feerelayer.api.FeeSolTransferRequest
-import org.p2p.wallet.feerelayer.api.FeeSplTransferRequest
+import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
+import org.p2p.wallet.feerelayer.api.TopUpSwapRequest
+import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
+import org.p2p.wallet.feerelayer.model.TopUpSwap
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.utils.toPublicKey
-import java.math.BigInteger
 
 class FeeRelayerRemoteRepository(
     private val api: FeeRelayerApi,
@@ -28,7 +29,32 @@ class FeeRelayerRemoteRepository(
         }
     }
 
-    override suspend fun send(
+    override suspend fun relayTopUpSwap(
+        userSourceTokenAccountPubkey: String,
+        sourceTokenMintPubkey: String,
+        userAuthorityPubkey: String,
+        topUpSwap: TopUpSwap,
+        feeAmount: Long,
+        signatures: SwapTransactionSignatures,
+        blockhash: String
+    ): List<String> {
+
+        return emptyList()
+//        val request = RelayTopUpSwapRequest(
+//            userSourceTokenAccountPubkey = userSourceTokenAccountPubkey,
+//            sourceTokenMintPubkey = sourceTokenMintPubkey,
+//            userAuthorityPubkey = userAuthorityPubkey,
+//        )
+
+//        val environment = environmentManager.loadEnvironment()
+//        return if (environment == Environment.DEVNET) {
+//            api.relayTopUpSwapV2(request)
+//        } else {
+//            api.relayTopUpSwap(request)
+//        }
+    }
+
+    override suspend fun relayTransaction(
         instructions: List<TransactionInstruction>,
         signatures: List<Signature>,
         pubkeys: List<AccountMeta>,
@@ -51,52 +77,9 @@ class FeeRelayerRemoteRepository(
         )
         val environment = environmentManager.loadEnvironment()
         return if (environment == Environment.DEVNET) {
-            api.sendV2(request)
+            api.relayTransactionV2(request)
         } else {
-            api.send(request)
+            api.relayTransaction(request)
         }
-    }
-
-    override suspend fun sendSolToken(
-        senderPubkey: String,
-        recipientPubkey: String,
-        lamports: BigInteger,
-        signature: String,
-        blockhash: String
-    ): String {
-        val request = FeeSolTransferRequest(
-            senderPubkey = senderPubkey,
-            recipientPubkey = recipientPubkey,
-            lamports = lamports,
-            signature = signature,
-            blockhash = blockhash
-        )
-
-        return api.sendSolToken(request).first()
-    }
-
-    override suspend fun sendSplToken(
-        senderTokenAccountPubkey: String,
-        recipientPubkey: String,
-        tokenMintPubkey: String,
-        authorityPubkey: String,
-        lamports: BigInteger,
-        decimals: Int,
-        signature: String,
-        blockhash: String
-    ): String {
-
-        val request = FeeSplTransferRequest(
-            senderTokenAccountPubkey = senderTokenAccountPubkey,
-            recipientPubkey = recipientPubkey,
-            tokenMintPubkey = tokenMintPubkey,
-            authorityPubkey = authorityPubkey,
-            lamports = lamports,
-            decimals = decimals,
-            signature = signature,
-            blockhash = blockhash
-        )
-
-        return api.sendSplToken(request).first()
     }
 }

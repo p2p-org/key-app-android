@@ -7,6 +7,7 @@ import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRemoteRepository
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
@@ -28,5 +29,15 @@ object FeeRelayerModule : InjectionModule {
             val api = retrofit.create(FeeRelayerApi::class.java)
             FeeRelayerRemoteRepository(api, get())
         } bind FeeRelayerRepository::class
+
+        single {
+            FeeRelayerInteractor(
+                rpcRepository = get(),
+                feeRelayerRepository = get(),
+                amountInteractor = get(),
+                userInteractor = get(),
+                tokenKeyProvider = get()
+            )
+        }
     }
 }
