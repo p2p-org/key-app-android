@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,7 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -69,14 +70,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
+                        android:text="@string/send_solana_network"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
                         android:textColor="@color/accentPrimary"
                         app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
                         app:layout_constraintEnd_toStartOf="@id/arrowImageView"
-                        app:layout_constraintTop_toTopOf="@id/arrowImageView"
-                        tools:text="@string/send_solana_network" />
+                        app:layout_constraintTop_toTopOf="@id/arrowImageView" />
 
                     <TextView
+                        android:id="@+id/faqTextView"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_marginHorizontal="24dp"
@@ -105,17 +107,38 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="konstantink.p2p.sol" />
 
-                    <ImageView
-                        android:id="@+id/qrImageView"
-                        android:layout_width="300dp"
-                        android:layout_height="300dp"
-                        android:layout_gravity="center"
-                        android:scaleType="fitXY"
+                    <FrameLayout
+                        android:id="@+id/qrView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/usernameTextView"
-                        tools:ignore="ContentDescription"
-                        tools:src="@tools:sample/avatars" />
+                        app:layout_constraintTop_toBottomOf="@id/usernameTextView">
+
+                        <ImageView
+                            android:id="@+id/qrImageView"
+                            android:layout_width="220dp"
+                            android:layout_height="220dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/bg_circle"
+                            tools:ignore="ContentDescription"
+                            tools:src="@tools:sample/avatars" />
+
+                        <FrameLayout
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/bg_circle">
+
+                            <ImageView
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_sol" />
+                        </FrameLayout>
+                    </FrameLayout>
+
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -123,19 +146,20 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="@id/qrImageView"
-                        app:layout_constraintEnd_toEndOf="@id/qrImageView"
-                        app:layout_constraintStart_toStartOf="@id/qrImageView"
-                        app:layout_constraintTop_toTopOf="@id/qrImageView" />
+                        app:layout_constraintBottom_toBottomOf="@id/qrView"
+                        app:layout_constraintEnd_toEndOf="@id/qrView"
+                        app:layout_constraintStart_toStartOf="@id/qrView"
+                        app:layout_constraintTop_toTopOf="@id/qrView" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/fullAddressTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="36dp"
+                        android:layout_marginTop="24dp"
                         android:gravity="center"
                         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        app:layout_constraintTop_toBottomOf="@id/qrImageView"
+                        app:layout_constraintTop_toBottomOf="@id/qrView"
                         tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -198,20 +222,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonBackground="@color/elementPrimary"
             app:buttonDrawableEnd="@drawable/ic_external"
             app:buttonText="@string/receive_view_solana_explorer"
             app:buttonTextColor="@color/accentPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardView"
-            app:layout_constraintVertical_bias="0.5" />
-
-        <org.p2p.wallet.common.ui.widget.ProgressView
-            android:id="@+id/progressView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:visibility="gone" />
+            app:layout_constraintTop_toBottomOf="@id/cardView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+
+    <org.p2p.wallet.common.ui.widget.ProgressView
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        tools:visibility="gone" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

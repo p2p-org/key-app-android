@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.text.toSpannable
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
@@ -19,8 +20,19 @@ import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.main.model.NetworkType
+import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeFragment
+import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
+import org.p2p.wallet.utils.createBitmap
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.highlightCorners
+import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showUrlInCustomTabs
+import org.p2p.wallet.utils.toast
 
 class ReceiveSolanaFragment :
     BaseMvpFragment<ReceiveSolanaContract.View, ReceiveSolanaContract.Presenter>(R.layout.fragment_receive_solana),
@@ -41,22 +53,40 @@ class ReceiveSolanaFragment :
     }
 
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
+    private val callback: (NetworkType) -> Unit = { type ->
+        if (type == NetworkType.BITCOIN) {
+            popAndReplaceFragment(RenBTCFragment.create())
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
+            toolbar.setNavigationOnClickListener { popBackStack() }
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
                 progressButton.fitMargin { Edge.BottomArc }
             }
+            saveButton.setOnClickListener {
+                val bitmap = qrView.createBitmap()
+                presenter.saveQr(usernameTextView.text.toString(), bitmap)
+            }
+            networkView.setOnClickListener {
+                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA, callback))
+            }
+            progressButton.setOnClickListener {
+                val url = getString(R.string.solanaWalletExplorer, token?.publicKey)
+                showUrlInCustomTabs(url)
+            }
+
         }
         presenter.loadData()
     }
 
     override fun showUserData(userPublicKey: String, username: Username?) {
         with(binding) {
-            fullAddressTextView.text = userPublicKey
+            fullAddressTextView.text = userPublicKey.highlightCorners(requireContext())
             fullAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(userPublicKey)
                 fullAddressTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
@@ -64,6 +94,10 @@ class ReceiveSolanaFragment :
             }
             shareButton.setOnClickListener {
                 requireContext().shareText(userPublicKey)
+            }
+            copyButton.setOnClickListener {
+                requireContext().copyToClipBoard(userPublicKey)
+                toast(R.string.common_copied)
             }
 
             if (username == null) return
@@ -79,32 +113,16 @@ class ReceiveSolanaFragment :
                 usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
                 Toast.makeText(requireContext(), R.string.receive_username_copied, Toast.LENGTH_SHORT).show()
             }
+            binding.faqTextView.setOnClickListener {
+                //TODO show tokens list
+            }
         }
     }
 
     override fun showReceiveToken(token: Token.Active) {
-//        with(binding) {
-//            viewButton.setOnClickListener {
-//                val url = getString(R.string.solanaWalletExplorer, token.publicKey)
-//                showUrlInCustomTabs(url)
-//            }
-//
-//            shareAddressImageView.setOnClickListener {
-//                val url = getString(R.string.solanaWalletExplorer, token.publicKey)
-//                showUrlInCustomTabs(url)
-//            }
-//
-//            shareMintAddressImageView.setOnClickListener {
-//                val url = getString(R.string.solanaWalletExplorer, token.mintAddress)
-//                showUrlInCustomTabs(url)
-//            }
-//
-//            addressTitleTextView.text = getString(R.string.main_receive_address_format, token.tokenSymbol)
-//            addressTextView.text = token.publicKey
-//
-//            mintAddressTitleTextView.text = getString(R.string.main_receive_mint_format, token.tokenSymbol)
-//            mintAddressTextView.text = token.mintAddress
-//        }
+        binding.faqTextView.setOnClickListener {
+            replaceFragment(ReceiveNetworkTypeFragment.create {})
+        }
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
@@ -116,6 +134,10 @@ class ReceiveSolanaFragment :
     override fun showQrLoading(isLoading: Boolean) {
         binding.progressBar.isVisible = isLoading
         binding.qrImageView.isInvisible = isLoading
+    }
+
+    override fun showToastMessage(resId: Int) {
+        toast(resId)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {

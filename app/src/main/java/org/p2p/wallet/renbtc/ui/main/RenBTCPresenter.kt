@@ -14,6 +14,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.renBridge.LockAndMint
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -25,7 +27,8 @@ private const val ONE_SECOND_IN_MILLIS = 1000L
 
 class RenBTCPresenter(
     private val interactor: RenBtcInteractor,
-    private val qrCodeInteractor: QrCodeInteractor
+    private val qrCodeInteractor: QrCodeInteractor,
+    private val usernameInteractor: UsernameInteractor
 ) : BasePresenter<RenBTCContract.View>(), RenBTCContract.Presenter {
 
     private var sessionTimer: CountDownTimer? = null
@@ -56,6 +59,13 @@ class RenBTCPresenter(
         }
     }
 
+    override fun saveQr(name: String, bitmap: Bitmap) {
+        launch {
+            usernameInteractor.saveQr(name, bitmap)
+            view?.showToastMessage(R.string.auth_save)
+        }
+    }
+
     override fun cancelTimer() {
         sessionTimer?.cancel()
         sessionTimer = null
@@ -72,7 +82,7 @@ class RenBTCPresenter(
             startTimer(remaining)
             generateQrCode(session.gatewayAddress)
         } else {
-            view?.showIdleState()
+            // TODO show idle state
         }
     }
 
@@ -108,7 +118,7 @@ class RenBTCPresenter(
             }
 
             override fun onFinish() {
-                view?.showIdleState()
+                // TODO show idle state
             }
         }
 
