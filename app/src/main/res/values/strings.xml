@@ -391,4 +391,5 @@
     <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
     <string name="receive_via_bitcoin_network_info">Make sure you understand the aspects</string>
     <string name="receive_understand">I understand</string>
+    <string name="error_take_screenshot">Failed to take a screenshot</string>
 </resources>
