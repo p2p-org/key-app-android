@@ -51,20 +51,26 @@ class ReceiveNetworkTypeFragment(private val onNetworkSelected: (NetworkType) ->
             btcButton.setOnClickListener {
                 presenter.onNetworkChanged(NetworkType.BITCOIN)
             }
-            solanaRadioButton.isChecked = networkType == NetworkType.SOLANA
-            btcRadioButton.isChecked = networkType == NetworkType.BITCOIN
+            setCheckState(networkType)
         }
     }
 
     override fun showNetworkInfo(type: NetworkType) {
-        binding.solanaRadioButton.isChecked = networkType == NetworkType.SOLANA
         RenBtcInfoBottomSheet.show(childFragmentManager) {
             presenter.confirm(type)
         }
+        setCheckState(type)
     }
 
     override fun navigateToReceive(type: NetworkType) {
         onNetworkSelected.invoke(type)
         popBackStack()
+    }
+
+    private fun setCheckState(type: NetworkType) {
+        with(binding) {
+            solanaRadioButton.isSelected = type == NetworkType.SOLANA
+            btcRadioButton.isSelected = type == NetworkType.BITCOIN
+        }
     }
 }

@@ -19,6 +19,7 @@ import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showUrlInCustomTabs
@@ -50,6 +51,7 @@ class RenBTCFragment :
                 toolbar.fit { Edge.TopArc }
                 progressButton.fitMargin { Edge.BottomArc }
             }
+            toolbar.setNavigationOnClickListener { popBackStack() }
             statusView.setOnClickListener {
                 addFragment(RenTransactionsFragment.create())
             }

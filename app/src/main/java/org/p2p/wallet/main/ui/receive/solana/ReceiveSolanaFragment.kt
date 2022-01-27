@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.text.toSpannable
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
@@ -24,7 +23,6 @@ import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.utils.createBitmap
-import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.highlightCorners
@@ -79,7 +77,6 @@ class ReceiveSolanaFragment :
                 val url = getString(R.string.solanaWalletExplorer, token?.publicKey)
                 showUrlInCustomTabs(url)
             }
-
         }
         presenter.loadData()
     }
@@ -114,7 +111,7 @@ class ReceiveSolanaFragment :
                 Toast.makeText(requireContext(), R.string.receive_username_copied, Toast.LENGTH_SHORT).show()
             }
             binding.faqTextView.setOnClickListener {
-                //TODO show tokens list
+                // TODO show tokens list
             }
         }
     }

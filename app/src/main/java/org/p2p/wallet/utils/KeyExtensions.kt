@@ -35,6 +35,6 @@ fun String.highlightCorners(context: Context): Spannable {
     val outPutColoredText: Spannable = SpannableString(this)
     outPutColoredText.setSpan(ForegroundColorSpan(color), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     val endIndex = length - 4
-    outPutColoredText.setSpan(ForegroundColorSpan(color), endIndex, length , Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    outPutColoredText.setSpan(ForegroundColorSpan(color), endIndex, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     return outPutColoredText
 }

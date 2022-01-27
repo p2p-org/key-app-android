@@ -240,7 +240,8 @@
     <string name="receive_session_min_transaction">•\tMinimum transaction amount of %s BTC.</string>
     <string name="receive_session_timer_info">• %s is the remaining time to safely\n\t\tsend the assets.</string>
     <string name="receive_only_bitcoin">only Bitcoin</string>
-    <string name="receive_btc_min_transaction">0.000112 BTC</string>
+    <string name="receive_btc_min_transaction">0.000112</string>
+    <string name="receive_btc_remain_time">35:59:59</string>
     <string name="receive_statuses">Receiving statuses</string>
     <string name="receive_waiting_for_deposit">Waiting for deposit confirmation</string>
     <string name="receive_submitting_to_renvm">Submitting to RenVM</string>

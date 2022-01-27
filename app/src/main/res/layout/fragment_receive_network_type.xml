@@ -37,21 +37,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingVertical="16dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/solanaButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground"
+                android:padding="16dp">
 
-                <RadioButton
+                <ImageView
                     android:id="@+id/solanaRadioButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
                     android:gravity="center"
+                    android:src="@drawable/ic_radio_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -90,15 +91,17 @@
                 android:id="@+id/btcButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:clipToPadding="false"
-                android:foreground="?selectableItemBackground">
+                android:foreground="?selectableItemBackground"
+                android:padding="16dp">
 
-                <RadioButton
+                <ImageView
                     android:id="@+id/btcRadioButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:src="@drawable/ic_radio_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -137,7 +140,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_margin="16dp"
                 android:background="@drawable/bg_app_rounded"
                 android:orientation="vertical"
                 android:padding="16dp">

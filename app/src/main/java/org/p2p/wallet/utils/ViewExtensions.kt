@@ -5,9 +5,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -150,6 +147,5 @@ fun RecyclerView.attachAdapter(adapter: RecyclerView.Adapter<*>) {
     doOnAttach { this.adapter = adapter }
     doOnDetach { this.adapter = null }
 }
-
 
 fun RecyclerView.ViewHolder.requireContext() = itemView.context
