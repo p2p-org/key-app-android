@@ -20,6 +20,7 @@ import org.p2p.wallet.common.ui.widget.TabItem
 import org.p2p.wallet.databinding.FragmentInfoTokenBinding
 import org.p2p.wallet.history.model.PeriodHistory
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.main.ui.send.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
@@ -59,13 +60,13 @@ class TokenInfoFragment :
             periodPriceTextView withTextOrGone token.getCurrentPrice()
             // todo: periodPercentTextView show percent
 
-//            showAddressButton.setOnClickListener {
-//                replaceFragment(ReceiveFragment.create(token))
-//            }
-//
-//            receiveButton.setOnClickListener {
-//                replaceFragment(ReceiveFragment.create(token))
-//            }
+            showAddressButton.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token))
+            }
+
+            receiveButton.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token))
+            }
 
             sendButton.setOnClickListener {
                 replaceFragment(SendFragment.create(token))

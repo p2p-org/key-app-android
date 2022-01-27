@@ -18,6 +18,7 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.highlightCorners
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -76,7 +77,7 @@ class RenBTCFragment :
 
     override fun showActiveState(address: String, remaining: String, fee: String) {
         with(binding) {
-            fullAddressTextView.text = address
+            fullAddressTextView.text = address.highlightCorners(requireContext())
             fullAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(address)
                 toast(R.string.common_copied)

@@ -117,9 +117,7 @@ class ReceiveSolanaFragment :
     }
 
     override fun showReceiveToken(token: Token.Active) {
-        binding.faqTextView.setOnClickListener {
-            replaceFragment(ReceiveNetworkTypeFragment.create {})
-        }
+        // TODO ?
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {

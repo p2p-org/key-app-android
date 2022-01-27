@@ -17,13 +17,12 @@ class ReceiveNetworkTypePresenter(
                     view?.navigateToReceive(type)
                 }
                 NetworkType.BITCOIN -> {
-                    view?.showNetworkInfo(type)
                     val session = renBtcInteractor.findActiveSession()
-//                    if (session != null && session.isValid) {
-//                        view?.navigateToReceive(type)
-//                    } else {
-//                        view?.showNetworkInfo(type)
-//                    }
+                    if (session != null && session.isValid) {
+                        view?.navigateToReceive(type)
+                    } else {
+                        view?.showNetworkInfo(type)
+                    }
                 }
             }
         }

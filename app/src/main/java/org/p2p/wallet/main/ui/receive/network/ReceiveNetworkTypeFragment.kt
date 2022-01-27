@@ -43,11 +43,9 @@ class ReceiveNetworkTypeFragment(private val onNetworkSelected: (NetworkType) ->
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
             }
-
             solanaButton.setOnClickListener {
                 presenter.onNetworkChanged(NetworkType.SOLANA)
             }
-
             btcButton.setOnClickListener {
                 presenter.onNetworkChanged(NetworkType.BITCOIN)
             }
