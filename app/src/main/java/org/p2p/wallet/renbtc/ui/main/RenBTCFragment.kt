@@ -58,10 +58,6 @@ class RenBTCFragment :
             networkView.setOnClickListener {
                 replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN, callback))
             }
-            saveButton.setOnClickListener {
-                val bitmap = qrView.createBitmap()
-                presenter.saveQr("", bitmap)
-            }
         }
 
         presenter.subscribe()
@@ -86,9 +82,19 @@ class RenBTCFragment :
                 toast(R.string.common_copied)
             }
             shareButton.setOnClickListener { requireContext().shareText(address) }
+
             progressButton.setOnClickListener {
                 val url = getString(R.string.bitcoinExplorer, address)
                 showUrlInCustomTabs(url)
+            }
+            copyButton.setOnClickListener {
+                requireContext().copyToClipBoard(address)
+                toast(R.string.common_copied)
+            }
+            saveButton.setOnClickListener {
+                val bitmap = qrView.createBitmap()
+                // TODO ask which name use here ?
+                presenter.saveQr("", bitmap)
             }
             val infoText = getString(R.string.receive_session_info)
             val onlyBitcoin = getString(R.string.receive_only_bitcoin)

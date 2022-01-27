@@ -292,7 +292,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/receive_session_info"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                     app:layout_constraintTop_toBottomOf="@id/statusView" />
 
                 <TextView
@@ -301,7 +301,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="@string/receive_session_min_transaction"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                     app:layout_constraintTop_toBottomOf="@id/statusView" />
 
                 <TextView
@@ -310,7 +310,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="@string/receive_session_timer_info"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                     app:layout_constraintTop_toBottomOf="@id/statusView" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -325,7 +325,7 @@
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                 app:buttonBackground="@color/elementPrimary"
                 app:buttonDrawableEnd="@drawable/ic_external"
-                app:buttonText="@string/receive_view_solana_explorer"
+                app:buttonText="@string/receive_view_bitcoin_explorer"
                 app:buttonTextColor="@color/accentPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/attentionView"
