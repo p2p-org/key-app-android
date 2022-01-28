@@ -1,4 +1,4 @@
-package org.p2p.wallet.feerelayer.program
+package org.p2p.walval.feerelayer.program
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
@@ -7,6 +7,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.ByteUtils
+import org.p2p.wallet.feerelayer.model.TopUpSwap
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.utils.toPublicKey
 import java.io.ByteArrayOutputStream
@@ -14,6 +15,71 @@ import java.io.IOException
 import java.math.BigInteger
 
 object FeeRelayerProgram {
+
+    fun getProgramId(isMainnet: Boolean) =
+        if (isMainnet) {
+            PublicKey("12YKFL4mnZz6CBEGePrf293mEzueQM3h8VLPUJsKpGs9")
+        } else {
+            PublicKey("6xKJFyuM6UHCT8F5SBxnjGt6ZrZYjsVfnAnAeHPU775k")
+        }
+
+    fun createRelaySwapInstruction(
+        programId: PublicKey,
+        transitiveSwap: TopUpSwap.SplTransitive,
+        userAuthorityAddressPubkey: PublicKey,
+        sourceAddressPubkey: PublicKey,
+        transitTokenAccount: PublicKey,
+        destinationAddressPubkey: PublicKey,
+        feePayerPubkey: PublicKey
+    ): TransactionInstruction {
+        val transferAuthorityPubkey = PublicKey(transitiveSwap.from.transferAuthorityPubkey)
+        val transitTokenMintPubkey = PublicKey(transitiveSwap.transitTokenMintPubkey)
+        val swapFromProgramId = PublicKey(transitiveSwap.from.programId)
+        val swapFromAccount = PublicKey(transitiveSwap.from.accountPubkey)
+        val swapFromAuthority = PublicKey(transitiveSwap.from.authorityPubkey)
+        val swapFromSource = PublicKey(transitiveSwap.from.sourcePubkey)
+        val swapFromDestination = PublicKey(transitiveSwap.from.destinationPubkey)
+        val swapFromTokenMint = PublicKey(transitiveSwap.from.poolTokenMintPubkey)
+        val swapFromPoolFeeAccount = PublicKey(transitiveSwap.from.poolFeeAccountPubkey)
+        val swapToProgramId = PublicKey(transitiveSwap.to.programId)
+        val swapToAccount = PublicKey(transitiveSwap.to.accountPubkey)
+        val swapToAuthority = PublicKey(transitiveSwap.to.authorityPubkey)
+        val swapToSource = PublicKey(transitiveSwap.to.sourcePubkey)
+        val swapToDestination = PublicKey(transitiveSwap.to.destinationPubkey)
+        val swapToPoolTokenMint = PublicKey(transitiveSwap.to.poolTokenMintPubkey)
+        val swapToPoolFeeAccount = PublicKey(transitiveSwap.to.poolFeeAccountPubkey)
+        val amountIn = transitiveSwap.from.amountIn
+        val transitMinimumAmount = transitiveSwap.from.minimumAmountOut
+        val minimumAmountOut = transitiveSwap.to.minimumAmountOut
+
+        return splSwapTransitiveInstruction(
+            programId = programId,
+            feePayer = feePayerPubkey,
+            userAuthority = userAuthorityAddressPubkey,
+            userTransferAuthority = transferAuthorityPubkey,
+            userSourceTokenAccount = sourceAddressPubkey,
+            userTransitTokenAccount = transitTokenAccount,
+            userDestinationTokenAccount = destinationAddressPubkey,
+            transitTokenMint = transitTokenMintPubkey,
+            swapFromProgramId = swapFromProgramId,
+            swapFromAccount = swapFromAccount,
+            swapFromAuthority = swapFromAuthority,
+            swapFromSource = swapFromSource,
+            swapFromDestination = swapFromDestination,
+            swapFromPoolTokenMint = swapFromTokenMint,
+            swapFromPoolFeeAccount = swapFromPoolFeeAccount,
+            swapToProgramId = swapToProgramId,
+            swapToAccount = swapToAccount,
+            swapToAuthority = swapToAuthority,
+            swapToSource = swapToSource,
+            swapToDestination = swapToDestination,
+            swapToPoolTokenMint = swapToPoolTokenMint,
+            swapToPoolFeeAccount = swapToPoolFeeAccount,
+            amountIn = amountIn,
+            transitMinimumAmount = transitMinimumAmount,
+            minimumAmountOut = minimumAmountOut
+        )
+    }
 
     fun createRelayTopUpSwapTransitiveInstruction(
         programId: PublicKey,
@@ -162,7 +228,7 @@ object FeeRelayerProgram {
         return TransactionInstruction(programId, keys, bos.toByteArray())
     }
 
-    fun createTransitTokenAccount(
+    fun createTransitTokenAccountInstruction(
         programId: PublicKey,
         feePayer: PublicKey,
         userAuthority: PublicKey,
@@ -181,6 +247,70 @@ object FeeRelayerProgram {
 
         val bos = ByteArrayOutputStream()
         bos.write(3)
+
+        return TransactionInstruction(programId, keys, bos.toByteArray())
+    }
+
+    private fun splSwapTransitiveInstruction(
+        programId: PublicKey,
+        feePayer: PublicKey,
+        userAuthority: PublicKey,
+        userTransferAuthority: PublicKey,
+        userSourceTokenAccount: PublicKey,
+        userTransitTokenAccount: PublicKey,
+        userDestinationTokenAccount: PublicKey,
+        transitTokenMint: PublicKey,
+        swapFromProgramId: PublicKey,
+        swapFromAccount: PublicKey,
+        swapFromAuthority: PublicKey,
+        swapFromSource: PublicKey,
+        swapFromDestination: PublicKey,
+        swapFromPoolTokenMint: PublicKey,
+        swapFromPoolFeeAccount: PublicKey,
+        swapToProgramId: PublicKey,
+        swapToAccount: PublicKey,
+        swapToAuthority: PublicKey,
+        swapToSource: PublicKey,
+        swapToDestination: PublicKey,
+        swapToPoolTokenMint: PublicKey,
+        swapToPoolFeeAccount: PublicKey,
+        amountIn: BigInteger,
+        transitMinimumAmount: BigInteger,
+        minimumAmountOut: BigInteger
+    ): TransactionInstruction {
+        val keys = listOf(
+            AccountMeta(publicKey = feePayer, isSigner = true, isWritable = true),
+            AccountMeta(publicKey = TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = userTransferAuthority, isSigner = true, isWritable = false),
+            AccountMeta(publicKey = userSourceTokenAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = userTransitTokenAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = userDestinationTokenAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromProgramId, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapFromAccount, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapFromAuthority, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapFromSource, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromDestination, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromPoolTokenMint, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromPoolFeeAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToProgramId, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapToAccount, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapToAuthority, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapToSource, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToDestination, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToPoolTokenMint, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToPoolFeeAccount, isSigner = false, isWritable = true),
+        )
+
+        val bos = ByteArrayOutputStream()
+        bos.write(4)
+
+        try {
+            ByteUtils.uint64ToByteStreamLE(amountIn, bos)
+            ByteUtils.uint64ToByteStreamLE(transitMinimumAmount, bos)
+            ByteUtils.uint64ToByteStreamLE(minimumAmountOut, bos)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
 
         return TransactionInstruction(programId, keys, bos.toByteArray())
     }

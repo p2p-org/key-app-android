@@ -36,11 +36,14 @@
     <color name="systemWarningMain">#FFA631</color>
 
     <color name="textIconSecondary">#8E8E93</color>
+    <color name="textIconButtonPrimary">#FFFFFF</color>
     <color name="textIconPrimary">#202020</color>
     <color name="textIconLink">#82A5FF</color>
+    <color name="textIconActive">#5887FF</color>
 
     <color name="backgroundActivePrimary">#EFF3FF</color>
     <color name="backgroundDisabled">#A3A5BA</color>
+    <color name="backgroundButtonPrimary">#5887FF</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>

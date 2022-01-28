@@ -156,6 +156,10 @@ public class Message {
         this.feePayer = feePayer;
     }
 
+    public int getNumRequiredSignatures() {
+        return messageHeader.numRequiredSignatures;
+    }
+
     public List<AccountMeta> getAccountKeys() {
         List<AccountMeta> keysList = accountKeys.getList();
         int feePayerIndex = AccountMeta.Companion.findAccountIndex(keysList, feePayer);

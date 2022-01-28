@@ -1,5 +1,8 @@
 package org.p2p.wallet.main.interactor
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
@@ -7,6 +10,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -24,12 +28,15 @@ class SendInteractor(
     private val feeRelayerRepository: FeeRelayerRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     companion object {
         private const val SEND_TAG = "SEND"
     }
+
+    private val transactionIdFlow = MutableStateFlow("")
 
     /*
     * If transaction will need to create a new account,
@@ -51,18 +58,20 @@ class SendInteractor(
         feePayerToken = newToken
     }
 
-    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult {
-        return try {
+    fun getTransactionIdFlow(): Flow<String> = transactionIdFlow
+
+    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult =
+        try {
             val address = addressInteractor.findAssociatedAddress(destinationAddress, token.mintAddress)
             if (address.shouldCreateAssociatedInstruction) {
-                CheckAddressResult.NewAccountNeeded(feePayerToken)
+                val userRelayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+                CheckAddressResult.NewAccountNeeded(feePayerToken, userRelayAccount)
             } else {
                 CheckAddressResult.AccountExists
             }
         } catch (e: IllegalStateException) {
             CheckAddressResult.InvalidAddress
         }
-    }
 
     suspend fun sendTransaction(
         destinationAddress: PublicKey,
@@ -105,7 +114,7 @@ class SendInteractor(
         }
 
         val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-        val feePayerPubkey = feeRelayerRepository.getPublicKey()
+        val feePayerPubkey = feeRelayerRepository.getFeePayerPublicKey()
 
         val transaction = Transaction()
         val instructions = mutableListOf<TransactionInstruction>()
@@ -127,7 +136,8 @@ class SendInteractor(
                 instructions += createAccount
             } else {
                 // todo: top up with swap
-                feeRelayerInteractor.topUpWithSwap()
+//                feeRelayerInteractor.topUpWithSwap()
+                return TransactionResult.Error(R.string.common_not_implemented_yet)
             }
         }
 
@@ -152,6 +162,10 @@ class SendInteractor(
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
+        transactionIdFlow.emit(transaction.signature.signature)
+        // temporary
+        delay(1000L)
+
         val recipientPubkey =
             if (!address.shouldCreateAssociatedInstruction || address.associatedAddress.equals(destinationAddress)) {
                 address.associatedAddress.toBase58()
@@ -161,14 +175,14 @@ class SendInteractor(
 
         Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
 
-        val transactionId = feeRelayerRepository.relayTransaction(
+        val signature = feeRelayerRepository.relayTransaction(
             instructions = instructions,
             signatures = transaction.allSignatures,
             pubkeys = transaction.accountKeys,
             blockHash = recentBlockHash.recentBlockhash
         ).firstOrNull().orEmpty()
 
-        return TransactionResult.Success(transactionId)
+        return TransactionResult.Success(signature)
     }
 
     private suspend fun sendNativeSolToken(
@@ -202,22 +216,26 @@ class SendInteractor(
         transaction.addInstruction(instruction)
         instructions += instruction
 
-        val feePayerPublicKey = feeRelayerRepository.getPublicKey()
-        val recentBlockHash = rpcRepository.getRecentBlockhash()
+        val feePayerPublicKey = feeRelayerRepository.getFeePayerPublicKey()
+        val recentBlockhash = rpcRepository.getRecentBlockhash()
 
         transaction.setFeePayer(feePayerPublicKey)
-        transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
+        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val result = feeRelayerRepository.relayTransaction(
+        transactionIdFlow.emit(transaction.signature.signature)
+        // temporary
+        delay(1000L)
+
+        val signature = feeRelayerRepository.relayTransaction(
             instructions = instructions,
             signatures = transaction.allSignatures,
             pubkeys = transaction.accountKeys,
-            blockHash = recentBlockHash.recentBlockhash
+            blockHash = recentBlockhash.recentBlockhash
         ).firstOrNull().orEmpty()
 
-        return TransactionResult.Success(result)
+        return TransactionResult.Success(signature)
     }
 }

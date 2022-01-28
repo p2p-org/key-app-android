@@ -7,6 +7,8 @@ import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerInstructionsInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRemoteRepository
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -31,13 +33,17 @@ object FeeRelayerModule : InjectionModule {
         } bind FeeRelayerRepository::class
 
         single {
-            FeeRelayerInteractor(
+            FeeRelayerAccountInteractor(
                 rpcRepository = get(),
-                feeRelayerRepository = get(),
                 amountInteractor = get(),
                 userInteractor = get(),
-                tokenKeyProvider = get()
+                feeRelayerRepository = get(),
+                tokenKeyProvider = get(),
+                addressInteractor = get()
             )
         }
+
+        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get()) }
+        factory { FeeRelayerInstructionsInteractor(get(), get(), get(), get(), get()) }
     }
 }

@@ -20,7 +20,7 @@ class FeeRelayerRemoteRepository(
     private val environmentManager: EnvironmentManager
 ) : FeeRelayerRepository {
 
-    override suspend fun getPublicKey(): PublicKey {
+    override suspend fun getFeePayerPublicKey(): PublicKey {
         val environment = environmentManager.loadEnvironment()
         return if (environment == Environment.DEVNET) {
             api.getPublicKeyV2().toPublicKey()

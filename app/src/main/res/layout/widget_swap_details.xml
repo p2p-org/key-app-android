@@ -210,7 +210,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:ellipsize="end"
             android:gravity="end|center_vertical"
+            android:singleLine="true"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
             tools:text="0.002778 SOL (~$0.5)" />
     </LinearLayout>

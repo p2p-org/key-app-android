@@ -23,6 +23,7 @@
     <string name="common_try_again">Try again</string>
     <string name="common_go_back">Go back</string>
     <string name="common_not_available">N/A</string>
+    <string name="common_not_implemented_yet">Not implemented yet</string>
     <string name="common_understood">Understood</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
@@ -262,6 +263,7 @@
     <!-- send -->
     <string name="send_enter_address">Enter the recipient\'s address</string>
     <string name="send_now">Send now</string>
+    <string name="send_format">Send %s</string>
     <string name="send_network_destination">Network destination</string>
     <string name="send_select_network_destination">Select network destination</string>
     <string name="send_solana_network">Solana</string>
@@ -384,6 +386,9 @@
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
     <string name="send_transaction_details">Transaction details</string>
     <string name="send_receive_title">Receive</string>
+    <string name="send_transaction_being_processed">The transaction is being processed</string>
+    <string name="send_make_another_transaction">Make another transaction</string>
+    <string name="swap_being_processed">The swap is being processed</string>
 
 </resources>
 

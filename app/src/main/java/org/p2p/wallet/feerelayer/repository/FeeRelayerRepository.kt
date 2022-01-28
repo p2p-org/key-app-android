@@ -8,7 +8,7 @@ import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.feerelayer.model.TopUpSwap
 
 interface FeeRelayerRepository {
-    suspend fun getPublicKey(): PublicKey
+    suspend fun getFeePayerPublicKey(): PublicKey
 
     suspend fun relayTransaction(
         instructions: List<TransactionInstruction>,

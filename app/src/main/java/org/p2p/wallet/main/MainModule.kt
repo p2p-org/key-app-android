@@ -41,7 +41,7 @@ object MainModule : InjectionModule {
 
         /* Cached data exists, therefore creating singleton */
         single { MainPresenter(get(), get(), get(), get(), get(), get()) } bind MainContract.Presenter::class
-        single { SendInteractor(get(), get(), get(), get(), get()) }
+        single { SendInteractor(get(), get(), get(), get(), get(), get()) }
         factory { SearchInteractor(get(), get()) }
 
         factory { (token: Token.Active?) ->

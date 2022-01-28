@@ -16,8 +16,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
+import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
+import org.p2p.wallet.main.ui.send.ProgressBottomSheet
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import org.p2p.wallet.swap.model.Slippage
@@ -30,7 +32,6 @@ import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
@@ -76,7 +77,7 @@ class OrcaSwapFragment :
             amountEditText.addTextChangedListener(inputTextWatcher)
             exchangeImageView.setOnClickListener { presenter.reverseTokens() }
             swapDetails.setOnSlippageClickListener {
-                toast("In progress")
+                presenter.loadDataForSwapSettings()
             }
             swapDetails.setOnPayFeeClickListener {
                 presenter.loadTransactionTokens()
@@ -231,8 +232,15 @@ class OrcaSwapFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.buttonProgressBar.isVisible = isLoading
-        binding.swapButton.isVisible = !isLoading
+        binding.swapButton.setLoading(isLoading)
+    }
+
+    override fun showProgressDialog(data: ShowProgress?) {
+        if (data != null) {
+            ProgressBottomSheet.show(childFragmentManager, data)
+        } else {
+            ProgressBottomSheet.hide(childFragmentManager)
+        }
     }
 
     private val inputTextWatcher = object : SimpleTextWatcher() {

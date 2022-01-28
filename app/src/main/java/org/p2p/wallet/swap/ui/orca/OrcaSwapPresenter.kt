@@ -8,6 +8,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
@@ -23,6 +24,7 @@ import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.transaction.interactor.TransactionInteractor
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
@@ -226,7 +228,14 @@ class OrcaSwapPresenter(
 
         appScope.launch {
             try {
-                view?.showLoading(true)
+                val subTitle =
+                    "$sourceAmount ${sourceToken.tokenSymbol} → $destinationAmount ${destination.tokenSymbol}"
+                val progress = ShowProgress(
+                    title = R.string.swap_being_processed,
+                    subTitle = subTitle,
+                    transactionId = ""
+                )
+                view?.showProgressDialog(progress)
                 val data = swapInteractor.swap(
                     fromWalletSymbol = sourceToken.tokenSymbol,
                     toWalletSymbol = destination.tokenSymbol,
@@ -238,12 +247,21 @@ class OrcaSwapPresenter(
                     isSimulation = false
                 )
 
-                handleResult(data)
+                when (data) {
+                    is TransactionExecutionState.Executing -> {
+//                        view?.showLoading(true)
+                    }
+                    is TransactionExecutionState.Finished -> handleFinished(data)
+                    is TransactionExecutionState.Failed -> handleFailed(data)
+                    is TransactionExecutionState.Idle -> {
+//                        view?.showLoading(false)
+                    }
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error swapping tokens")
                 view?.showErrorMessage(e)
             } finally {
-                view?.showLoading(false)
+                view?.showProgressDialog(null)
             }
         }
     }
@@ -477,11 +495,9 @@ class OrcaSwapPresenter(
             tokenSymbol = requireDestinationToken().tokenSymbol
         )
         view?.showSwapSuccess(info)
-        view?.showLoading(false)
     }
 
     private fun handleFailed(result: TransactionExecutionState.Failed) {
-        view?.showLoading(false)
         view?.showErrorMessage(result.throwable)
     }
 

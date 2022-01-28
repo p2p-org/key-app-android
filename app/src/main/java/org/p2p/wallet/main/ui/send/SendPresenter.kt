@@ -1,11 +1,12 @@
 package org.p2p.wallet.main.ui.send
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
@@ -15,6 +16,7 @@ import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.SendFee
 import org.p2p.wallet.main.model.SendTotal
+import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Target
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.Token.Companion.SOL_SYMBOL
@@ -24,6 +26,7 @@ import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
@@ -44,7 +47,7 @@ class SendPresenter(
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
-    private val feeRelayerInteractor: FeeRelayerInteractor,
+    private val feeRelayerInteractor: FeeRelayerAccountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -72,6 +75,7 @@ class SendPresenter(
 
     private var calculationJob: Job? = null
     private var feeJob: Job? = null
+    private var checkAddressJob: Job? = null
 
     override fun loadInitialData() {
         launch {
@@ -104,6 +108,7 @@ class SendPresenter(
 
         calculateRenBtcFee()
         calculateData(newToken)
+        checkAddress(target?.address)
     }
 
     override fun setTargetResult(result: SearchResult?) {
@@ -195,10 +200,11 @@ class SendPresenter(
         launch {
             try {
                 sendInteractor.setFeePayerToken(feePayerToken)
-                val accountCreationFee = feeRelayerInteractor.getAccountCreationFee()
+                val address = target?.address
+                val accountCreationFee = feeRelayerInteractor.getAccountCreationFee(address, token?.mintAddress)
                 val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
                 val fee = SendFee(feeAmount, feePayerToken)
-                view?.showAccountFeeView(fee,)
+                view?.showAccountFeeView(fee)
             } catch (e: Throwable) {
                 Timber.e(e, "Error updating fee payer token")
             }
@@ -217,66 +223,61 @@ class SendPresenter(
 
     private fun handleFullResult(result: SearchResult.Full) {
         view?.showFullTarget(result.address, result.username)
-        checkRelayAccount()
         checkAddress(result.address)
     }
 
     private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
         view?.showAddressOnlyTarget(result.address)
-        checkRelayAccount()
         checkAddress(result.address)
     }
 
     private fun handleEmptyBalanceResult(result: SearchResult.EmptyBalance) {
         view?.showEmptyBalanceTarget(result.address.cutEnd())
-        checkRelayAccount()
         checkAddress(result.address)
     }
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
         view?.showWrongAddressTarget(result.address.cutEnd())
-        view?.showAccountFeeView(null,)
+        view?.showAccountFeeView(null)
     }
 
     private fun handleIdleTarget() {
         view?.showIdleTarget()
         view?.showTotal(null)
-        view?.showAccountFeeView(null,)
+        view?.showAccountFeeView(null)
         view?.showRelayAccountFeeView(false)
         calculateTotal(null)
     }
 
-    private fun checkAddress(address: String) {
+    private fun checkAddress(address: String?) {
+        if (address.isNullOrEmpty()) return
         val token = token ?: return
 
-        launch {
+        checkAddressJob?.cancel()
+        checkAddressJob = launch {
             try {
-
+                view?.showSearchLoading(true)
                 when (val checkAddressResult = sendInteractor.checkAddress(address.toPublicKey(), token)) {
                     is CheckAddressResult.NewAccountNeeded -> {
+                        val userRelayAccount = checkAddressResult.relayAccount
+                        view?.showRelayAccountFeeView(!userRelayAccount.isCreated)
+
                         val feePayerToken = checkAddressResult.feePayerToken
-                        val accountCreationFee = feeRelayerInteractor.getAccountCreationFee()
+                        val accountCreationFee = feeRelayerInteractor.getAccountCreationFee(address, token.mintAddress)
                         val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
                         val fee = SendFee(feeAmount, feePayerToken)
-                        view?.showAccountFeeView(fee,)
+                        view?.showAccountFeeView(fee)
                     }
                     is CheckAddressResult.AccountExists,
                     is CheckAddressResult.InvalidAddress ->
-                        view?.showAccountFeeView(null,)
+                        view?.showAccountFeeView(null)
                 }
+            } catch (e: CancellationException) {
+                Timber.w("Cancelled check address request")
             } catch (e: Throwable) {
                 Timber.e(e, "Error checking address")
-            }
-        }
-    }
-
-    private fun checkRelayAccount() {
-        launch {
-            try {
-                val userRelayAccount = feeRelayerInteractor.getUserRelayAccount()
-                view?.showRelayAccountFeeView(!userRelayAccount.isCreated)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error checking relay account")
+            } finally {
+                view?.showSearchLoading(false)
             }
         }
     }
@@ -300,10 +301,16 @@ class SendPresenter(
     private fun sendInSolana(token: Token.Active, address: String) {
         launch {
             try {
-                view?.showLoading(true)
-
                 val destinationAddress = address.toPublicKey()
                 val lamports = tokenAmount.toLamports(token.decimals)
+
+                val data = ShowProgress(
+                    title = R.string.send_transaction_being_processed,
+                    subTitle = "$tokenAmount ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
+                    transactionId = ""
+                )
+                view?.showProgressDialog(data)
+
                 val result = sendInteractor.sendTransaction(
                     destinationAddress = destinationAddress,
                     token = token,
@@ -315,7 +322,7 @@ class SendPresenter(
                 Timber.e(e, "Error sending token")
                 view?.showErrorMessage(e)
             } finally {
-                view?.showLoading(false)
+                view?.showProgressDialog(null)
             }
         }
     }
@@ -472,8 +479,10 @@ class SendPresenter(
                 view?.showButtonText(R.string.main_enter_the_amount)
             address.isNullOrBlank() ->
                 view?.showButtonText(R.string.send_enter_address)
-            else ->
-                view?.showButtonText(R.string.send_now)
+            else -> {
+                val amount = "$tokenAmount ${token!!.tokenSymbol}"
+                view?.showButtonText(R.string.send_format, R.drawable.ic_send_simple, amount)
+            }
         }
     }
 

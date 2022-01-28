@@ -279,7 +279,7 @@ class RpcRemoteRepository(
         )
 
         val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
-        return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest).result
+        return rpcpoolRpcApi.getConfirmedSignaturesForAddress2(rpcRequest).result
     }
 
     override suspend fun getConfirmedTransactions(
@@ -292,6 +292,6 @@ class RpcRemoteRepository(
             RpcRequest("getConfirmedTransaction", params)
         }
 
-        return mainnetApi.getConfirmedTransactions(requestsBatch).map { it.result }
+        return rpcpoolRpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
     }
 }

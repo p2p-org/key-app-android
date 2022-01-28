@@ -104,7 +104,7 @@ data class OrcaPool(
                     feeRatioNumerator = feeDenominator * ownerTradeFeeDenominator
                     feeRatioDenominator =
                         feeDenominator * ownerTradeFeeDenominator -
-                        (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
+                            (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
                 }
 
                 val inputAmount = inputAmountLessFee * feeRatioNumerator / feeRatioDenominator
@@ -127,6 +127,16 @@ data class OrcaPool(
         val estimatedOutputAmount = getOutputAmount(inputAmount)
         val amount = BigDecimal(estimatedOutputAmount.toDouble() * (1 - slippage))
         return amount.toBigInteger()
+    }
+
+    fun getInputAmount(
+        minimumReceiveAmount: BigInteger,
+        slippage: Double
+    ): BigInteger? {
+        if (slippage == 1.0) return null
+
+        val estimatedAmount = BigDecimal(minimumReceiveAmount.toDouble() / (1 - slippage))
+        return getInputAmount(estimatedAmount.toBigInteger())
     }
 
     // / baseOutputAmount is the amount the user would receive if fees are included and slippage is excluded.
@@ -238,6 +248,23 @@ data class OrcaPool(
             else {
                 val pool1 = this[1]
                 pool1.getOutputAmount(estimatedAmountOfPool0)
+            }
+        }
+
+        fun OrcaPoolsPair.getInputAmount(
+            minimumAmountOut: BigInteger,
+            slippage: Double
+        ): BigInteger? {
+            if (isEmpty()) return null
+
+            val pool0 = this[0]
+            // direct
+            if (size == 1) {
+                return pool0.getInputAmount(minimumAmountOut, slippage)
+            } else {
+                val pool1 = this[1]
+                val inputAmountPool1 = pool1.getInputAmount(minimumAmountOut, slippage) ?: return null
+                return pool0.getInputAmount(inputAmountPool1, slippage)
             }
         }
 

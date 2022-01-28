@@ -5,6 +5,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.transaction.TransactionSendManager
@@ -15,6 +16,7 @@ import timber.log.Timber
 class SwapSerializationInteractor(
     private val rpcRepository: RpcRepository,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val feeRelayerRepository: FeeRelayerRepository,
     private val transactionManager: TransactionSendManager
 ) {
 

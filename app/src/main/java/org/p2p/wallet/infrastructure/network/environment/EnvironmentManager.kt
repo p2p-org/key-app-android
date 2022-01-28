@@ -18,6 +18,8 @@ class EnvironmentManager(
 
     private var onChanged: ((Environment) -> Unit)? = null
 
+    fun isDevnet(): Boolean = loadEnvironment() == Environment.DEVNET
+
     fun getMoonpayUrl(amount: String): String {
         val baseUrl = context.getString(R.string.moonpayBaseDomain)
         val apiKey = BuildConfig.moonpayKey

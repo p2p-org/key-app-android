@@ -69,7 +69,6 @@ class MainPresenter(
         updatesManager.start()
         loadData()
         checkUsername()
-        loadCommonFees()
     }
 
     override fun collectData() {
@@ -222,10 +221,4 @@ class MainPresenter(
                 }
             }
         }
-
-    private fun loadCommonFees() {
-        launch {
-            amountInteractor.initialize()
-        }
-    }
 }

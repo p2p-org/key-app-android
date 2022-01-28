@@ -7,8 +7,6 @@ import androidx.annotation.ColorRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -21,6 +19,7 @@ import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.SendFee
 import org.p2p.wallet.main.model.SendTotal
+import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
 import org.p2p.wallet.main.ui.send.search.SearchFragment
@@ -104,11 +103,7 @@ class SendFragment :
                 presenter.loadTokensForSelection()
             }
 
-//            address?.let { presenter.validateTarget(it) }
-            lifecycleScope.launchWhenResumed {
-                delay(500L)
-                presenter.validateTarget("9MeTrR3fYGHeBpoQ4FxM8u3YVe8Qwo4256CajF8TWNW2")
-            }
+            address?.let { presenter.validateTarget(it) }
 
             amountEditText.focusAndShowKeyboard()
 
@@ -316,6 +311,14 @@ class SendFragment :
         }
     }
 
+    override fun showProgressDialog(data: ShowProgress?) {
+        if (data != null) {
+            ProgressBottomSheet.show(childFragmentManager, data)
+        } else {
+            ProgressBottomSheet.hide(childFragmentManager)
+        }
+    }
+
     override fun showSearchLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
     }
@@ -333,8 +336,15 @@ class SendFragment :
         binding.availableTextView.text = "${available.scaleLong()} $symbol"
     }
 
-    override fun showButtonText(textRes: Int) {
-        binding.sendButton.setActionText(textRes)
+    override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
+        binding.sendButton.setStartIcon(iconRes)
+
+        if (value.isEmpty()) {
+            binding.sendButton.setActionText(textRes)
+        } else {
+            val text = getString(textRes, *value)
+            binding.sendButton.setActionText(text)
+        }
     }
 
     @SuppressLint("SetTextI18n")

@@ -1,6 +1,7 @@
 package org.p2p.wallet.main.ui.send
 
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -8,6 +9,7 @@ import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.SendFee
 import org.p2p.wallet.main.model.SendTotal
+import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import java.math.BigDecimal
@@ -20,7 +22,7 @@ interface SendContract {
         fun showSuccess(info: TransactionInfo)
         fun showTotal(data: SendTotal?)
         fun showWrongWalletError()
-        fun showButtonText(@StringRes textRes: Int)
+        fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
         fun showInputValue(value: BigDecimal)
         fun showUsdAroundValue(usdValue: BigDecimal)
         fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String)
@@ -28,6 +30,7 @@ interface SendContract {
         fun showButtonEnabled(isEnabled: Boolean)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
+        fun showProgressDialog(data: ShowProgress?)
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelection()
         fun hideNetworkSelection()

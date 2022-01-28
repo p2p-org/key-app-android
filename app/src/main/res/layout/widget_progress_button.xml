@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-            android:textColor="?colorElementPrimary"
+            android:textColor="@color/textIconButtonPrimary"
             tools:text="Restore" />
 
         <androidx.appcompat.widget.AppCompatImageView
