@@ -145,6 +145,7 @@ class VerifySecurityKeyPresenter(
     private fun clear() {
         generatedIndexes.clear()
         generatedPairs.clear()
+        generatedTuples.clear()
         phrases.clear()
         view?.showEnabled(false)
     }
