@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
+import kotlin.random.Random
 
 private const val VERIFY_WORDS_COUNT = 4
 private const val GENERATE_WORD_COUNT = 2
@@ -17,6 +18,7 @@ class VerifySecurityKeyPresenter(
     private var generatedPairs = HashMap<Int, HashMap<String, Boolean>>(KEY_SIZE)
     private var generatedIndexes = mutableListOf<Int>()
     private val phrases = mutableListOf<String>()
+    private val generatedTuples = mutableListOf<SecurityKeyTuple>()
 
     override fun load(selectedKeys: List<String>, shuffle: Boolean) {
 
@@ -37,7 +39,7 @@ class VerifySecurityKeyPresenter(
                 }
                 generatedPairs[randomIndex] = words
             }
-            val items = generateTuples(generatedPairs, shuffle)
+            val items = generateTuples(generatedPairs)
             view?.showKeys(keys = items)
         }.invokeOnCompletion {
             view?.showLoading(false)
@@ -84,24 +86,28 @@ class VerifySecurityKeyPresenter(
         return isValid
     }
 
-    private fun generateTuples(
-        items: Map<Int, Map<String, Boolean>>,
-        shuffle: Boolean = false
-    ): MutableList<SecurityKeyTuple> {
-        val tuples = mutableListOf<SecurityKeyTuple>()
+    private fun generateTuples(items: Map<Int, Map<String, Boolean>>): List<SecurityKeyTuple> {
+        if (generatedTuples.isEmpty()) {
+            items.keys.map { index ->
+                val keys = generatedPairs[index]?.entries?.map { it.toPair() } ?: emptyList()
+                generatedTuples.add(SecurityKeyTuple(index = index, keys = keys))
+            }
+            generatedTuples.shuffle()
+            return generatedTuples
+        }
+        items.keys.map { index ->
+            val keys = generatedPairs[index]?.entries?.map { it.toPair() } ?: emptyList()
+            generatedTuples.first { it.index == index }.keys = keys
+        }
+        return generatedTuples
+
         // Для каждого индекса правильного ключа
         // находим сгенерированые ключи и преобразовываем их в пары
         // Дальше оборачиваем в модельку
-        items.keys.forEach { index ->
-            val keys = generatedPairs[index]?.entries?.map { it.toPair() } ?: emptyList()
-            val tuple = SecurityKeyTuple(index = index, keys = keys)
-            tuples.add(tuple)
-        }
-        return tuples
     }
 
     private fun generateRandomIndex(range: Int): Int {
-        val random = (0 until range).random()
+        val random = Random.nextInt(0, KEY_SIZE)
         return if (random in generatedIndexes) {
             generateRandomIndex(range)
         } else {
