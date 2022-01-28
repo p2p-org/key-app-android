@@ -377,5 +377,19 @@
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
+    <string name="receive_view_solana_explorer">View in Solana explorer</string>
+    <string name="receive_status_received">Status received</string>
+    <string name="receive_choose_network_type">Choose the network</string>
+    <string name="receive_solana_network">Solana network</string>
+    <string name="receive_solana_network_info">Receive any token within the Solana network even if it is not included in your wallet list.</string>
+    <string name="receive_btc_network">Bitcoin network</string>
+    <string name="receive_btc_network_info">This address accepts only Bitcoin. You may lose assets by sending another coin.</string>
+    <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>
+    <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000112 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
+    <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
+    <string name="receive_via_bitcoin_network_info">Make sure you understand the aspects</string>
+    <string name="receive_understand">I understand</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
+    <string name="auth_fingerprint_login">Fingerprint login</string>
+    <string name="auth_fingerprint_login_message">Use your fingerprint for faster easier access to your wallet</string>
 </resources>

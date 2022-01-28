@@ -5,17 +5,18 @@ import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.biometric.BiometricFragment
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCreatePinBinding
+import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
-import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import javax.crypto.Cipher
 
 class CreatePinFragment :
     BaseMvpFragment<CreatePinContract.View, CreatePinContract.Presenter>(R.layout.fragment_create_pin),
@@ -28,6 +29,14 @@ class CreatePinFragment :
     override val presenter: CreatePinContract.Presenter by inject()
 
     private val binding: FragmentCreatePinBinding by viewBinding()
+
+    private val biometricWrapper by lazy {
+        BiometricPromptWrapper(
+            this,
+            onError = { popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true) },
+            onSuccess = { presenter.createPin(it) }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,13 +73,19 @@ class CreatePinFragment :
     }
 
     override fun onAuthFinished() {
-        binding.pinView.startSuccessAnimation(getString(R.string.auth_create_pin_code_success)) {
-            popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
-        }
+        popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
     }
 
-    override fun navigateToBiometric(createdPin: String) {
-        replaceFragment(BiometricFragment.create(createdPin))
+    override fun onPinCreated() {
+        binding.pinView.startSuccessAnimation(getString(R.string.auth_create_pin_code_success)) {
+            showInfoDialog(
+                titleRes = R.string.auth_fingerprint_login,
+                messageRes = R.string.auth_fingerprint_login_message,
+                primaryButtonRes = R.string.common_continue,
+                secondaryButtonRes = R.string.common_cancel,
+                primaryCallback = { presenter.enableBiometric() }
+            )
+        }
     }
 
     override fun showConfirmationError() {
@@ -83,5 +98,9 @@ class CreatePinFragment :
 
     override fun vibrate(duration: Long) {
         requireContext().vibrate(duration)
+    }
+
+    override fun showBiometricDialog(cipher: Cipher) {
+        biometricWrapper.authenticate(cipher)
     }
 }
