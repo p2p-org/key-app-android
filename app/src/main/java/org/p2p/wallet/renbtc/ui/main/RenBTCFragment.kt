@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -13,12 +14,12 @@ import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.highlightCorners
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -38,11 +39,6 @@ class RenBTCFragment :
     override val presenter: RenBTCContract.Presenter by inject()
 
     private val binding: FragmentRenBtcBinding by viewBinding()
-    private val callback: (NetworkType) -> Unit = { type ->
-        if (type == NetworkType.SOLANA) {
-            popAndReplaceFragment(ReceiveSolanaFragment.create(null))
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,7 +53,7 @@ class RenBTCFragment :
                 addFragment(RenTransactionsFragment.create())
             }
             networkView.setOnClickListener {
-                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN, callback))
+                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
             }
         }
 
@@ -77,7 +73,7 @@ class RenBTCFragment :
 
     override fun showActiveState(address: String, remaining: String, fee: String) {
         with(binding) {
-            fullAddressTextView.text = address.highlightCorners(requireContext())
+            fullAddressTextView.text = address.highlightPublicKey(requireContext())
             fullAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(address)
                 toast(R.string.common_copied)
@@ -103,6 +99,13 @@ class RenBTCFragment :
 
             val amountText = getString(R.string.receive_session_min_transaction, fee)
             amountInfoTextView.text = SpanUtils.setTextBold(amountText, fee)
+
+            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
+                if (type == NetworkType.SOLANA) {
+                    popAndReplaceFragment(ReceiveSolanaFragment.create(null))
+                }
+            }
         }
     }
 
@@ -118,5 +121,9 @@ class RenBTCFragment :
 
     override fun showToastMessage(resId: Int) {
         toast(resId)
+    }
+
+    override fun navigateToSolana() {
+        popAndReplaceFragment(ReceiveSolanaFragment.create(null))
     }
 }

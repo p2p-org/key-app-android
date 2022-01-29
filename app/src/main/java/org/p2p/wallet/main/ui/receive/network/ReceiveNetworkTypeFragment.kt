@@ -2,7 +2,9 @@ package org.p2p.wallet.main.ui.receive.network
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveNetworkTypeBinding
@@ -15,24 +17,27 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-typealias IV = ReceiveNetworkTypeContract.View
-typealias IP = ReceiveNetworkTypeContract.Presenter
-
 private const val EXTRA_NETWORK_TYPE = "EXTRA_NETWORK_TYPE"
 
-class ReceiveNetworkTypeFragment(private val onNetworkSelected: (NetworkType) -> Unit) :
-    BaseMvpFragment<IV, IP>(R.layout.fragment_receive_network_type), IV {
+class ReceiveNetworkTypeFragment() :
+    BaseMvpFragment<ReceiveNetworkTypeContract.View, ReceiveNetworkTypeContract.Presenter>
+    (R.layout.fragment_receive_network_type),
+    ReceiveNetworkTypeContract.View {
 
     companion object {
+        const val REQUEST_KEY = "REQUEST_KEY_NETWORK_TYPE"
+        const val BUNDLE_NETWORK_KEY = "BUNDLE_NETWORK_KEY"
+
         fun create(
-            networkType: NetworkType = NetworkType.SOLANA,
-            onNetworkSelected: (NetworkType) -> Unit
-        ) = ReceiveNetworkTypeFragment(onNetworkSelected).withArgs(
+            networkType: NetworkType = NetworkType.SOLANA
+        ) = ReceiveNetworkTypeFragment().withArgs(
             EXTRA_NETWORK_TYPE to networkType
         )
     }
 
-    override val presenter: IP by inject()
+    override val presenter: ReceiveNetworkTypeContract.Presenter by inject {
+        parametersOf(networkType)
+    }
     private val binding: FragmentReceiveNetworkTypeBinding by viewBinding()
     private val networkType: NetworkType by args(EXTRA_NETWORK_TYPE)
 
@@ -49,26 +54,25 @@ class ReceiveNetworkTypeFragment(private val onNetworkSelected: (NetworkType) ->
             btcButton.setOnClickListener {
                 presenter.onNetworkChanged(NetworkType.BITCOIN)
             }
-            setCheckState(networkType)
         }
+        presenter.load()
     }
 
     override fun showNetworkInfo(type: NetworkType) {
         RenBtcInfoBottomSheet.show(childFragmentManager) {
-            presenter.confirm(type)
+            navigateToReceive(type)
         }
-        setCheckState(type)
     }
 
-    override fun navigateToReceive(type: NetworkType) {
-        onNetworkSelected.invoke(type)
-        popBackStack()
-    }
-
-    private fun setCheckState(type: NetworkType) {
+    override fun setCheckState(type: NetworkType) {
         with(binding) {
             solanaRadioButton.isSelected = type == NetworkType.SOLANA
             btcRadioButton.isSelected = type == NetworkType.BITCOIN
         }
+    }
+
+    override fun navigateToReceive(type: NetworkType) {
+        setFragmentResult(REQUEST_KEY, Bundle().apply { putParcelable(BUNDLE_NETWORK_KEY, type) })
+        popBackStack()
     }
 }

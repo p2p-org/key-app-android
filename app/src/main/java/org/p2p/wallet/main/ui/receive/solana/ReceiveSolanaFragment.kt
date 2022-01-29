@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
@@ -22,10 +23,10 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
+import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.highlightCorners
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -51,11 +52,6 @@ class ReceiveSolanaFragment :
     }
 
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
-    private val callback: (NetworkType) -> Unit = { type ->
-        if (type == NetworkType.BITCOIN) {
-            popAndReplaceFragment(RenBTCFragment.create())
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,11 +67,17 @@ class ReceiveSolanaFragment :
                 presenter.saveQr(usernameTextView.text.toString(), bitmap)
             }
             networkView.setOnClickListener {
-                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA, callback))
+                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA))
             }
             progressButton.setOnClickListener {
                 val url = getString(R.string.solanaWalletExplorer, token?.publicKey)
                 showUrlInCustomTabs(url)
+            }
+            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
+                if (type == NetworkType.BITCOIN) {
+                    popAndReplaceFragment(RenBTCFragment.create())
+                }
             }
         }
         presenter.loadData()
@@ -83,7 +85,7 @@ class ReceiveSolanaFragment :
 
     override fun showUserData(userPublicKey: String, username: Username?) {
         with(binding) {
-            fullAddressTextView.text = userPublicKey.highlightCorners(requireContext())
+            fullAddressTextView.text = userPublicKey.highlightPublicKey(requireContext())
             fullAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(userPublicKey)
                 fullAddressTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))

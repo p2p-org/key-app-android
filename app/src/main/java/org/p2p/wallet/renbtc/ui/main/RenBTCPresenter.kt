@@ -82,7 +82,7 @@ class RenBTCPresenter(
             startTimer(remaining)
             generateQrCode(session.gatewayAddress)
         } else {
-            // TODO show idle state
+            view?.navigateToSolana()
         }
     }
 
@@ -118,7 +118,7 @@ class RenBTCPresenter(
             }
 
             override fun onFinish() {
-                // TODO show idle state
+                view?.navigateToSolana()
             }
         }
 

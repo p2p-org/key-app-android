@@ -6,9 +6,14 @@ import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 
 class ReceiveNetworkTypePresenter(
-    private val renBtcInteractor: RenBtcInteractor
+    private val renBtcInteractor: RenBtcInteractor,
+    private val networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
+
+    override fun load() {
+        view?.setCheckState(networkType)
+    }
 
     override fun onNetworkChanged(type: NetworkType) {
         launch {
@@ -26,9 +31,5 @@ class ReceiveNetworkTypePresenter(
                 }
             }
         }
-    }
-
-    override fun confirm(type: NetworkType) {
-        view?.navigateToReceive(type)
     }
 }

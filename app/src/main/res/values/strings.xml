@@ -378,7 +378,6 @@
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
-    <string name="error_take_screenshot">Failed to take a screenshot</string>
     <string name="receive_view_solana_explorer">View in Solana explorer</string>
     <string name="receive_status_received">Status received</string>
     <string name="receive_choose_network_type">Choose the network</string>
