@@ -19,7 +19,7 @@ import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
-import org.p2p.wallet.main.ui.send.ProgressBottomSheet
+import org.p2p.wallet.main.ui.send.dialogs.ProgressBottomSheet
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
 import org.p2p.wallet.swap.model.Slippage

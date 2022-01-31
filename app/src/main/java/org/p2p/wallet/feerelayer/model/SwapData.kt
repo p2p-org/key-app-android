@@ -2,7 +2,7 @@ package org.p2p.wallet.feerelayer.model
 
 import java.math.BigInteger
 
-sealed class TopUpSwap {
+sealed class SwapData {
 
     data class Spl(
         val programId: String,
@@ -15,11 +15,11 @@ sealed class TopUpSwap {
         val poolFeeAccountPubkey: String,
         val amountIn: BigInteger,
         val minimumAmountOut: BigInteger
-    ) : TopUpSwap()
+    ) : SwapData()
 
     data class SplTransitive(
         val from: Spl,
         val to: Spl,
         val transitTokenMintPubkey: String
-    ) :TopUpSwap()
+    ) : SwapData()
 }

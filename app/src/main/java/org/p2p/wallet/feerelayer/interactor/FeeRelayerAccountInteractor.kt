@@ -27,7 +27,7 @@ class FeeRelayerAccountInteractor(
 
     companion object {
         const val RELAY_PROGRAM_ID = "12YKFL4mnZz6CBEGePrf293mEzueQM3h8VLPUJsKpGs9"
-        val RELAY_ACCOUNT_RENT_EXEMPTION = BigInteger.valueOf(890880L)
+        private val RELAY_ACCOUNT_RENT_EXEMPTION = BigInteger.valueOf(890880L)
     }
 
     private var relayAccount: RelayAccount? = null
@@ -37,9 +37,9 @@ class FeeRelayerAccountInteractor(
     suspend fun getRelayInfo(): RelayInfo = withContext(Dispatchers.IO) {
         if (relayInfo == null) {
             // get minimum token account balance
-            val minimumTokenAccountBalance = async { amountInteractor.getAccountMinForRentExemption() }
+            val minimumTokenAccountBalance = async { amountInteractor.getMinBalanceForRentExemption() }
             // get minimum relay account balance
-            val minimumRelayAccountBalance = async { amountInteractor.getAccountMinForRentExemption(0) }
+            val minimumRelayAccountBalance = async { amountInteractor.getMinBalanceForRentExemption(0) }
             // get fee payer address
             val feePayerAddress = async { feeRelayerRepository.getFeePayerPublicKey() }
             // get lamportsPerSignature
@@ -92,10 +92,10 @@ class FeeRelayerAccountInteractor(
     }
 
     suspend fun getAccountCreationFee(address: String?, tokenMint: String?): BigInteger {
-        val isRelayAccountNeeded: Boolean = true // todo: get relay account
+        val relayAccount = relayAccount ?: throw IllegalStateException("Relay account is null")
         var accountCreationFee = BigInteger.ZERO
 
-        if (isRelayAccountNeeded) {
+        if (!relayAccount.isCreated) {
             accountCreationFee += RELAY_ACCOUNT_RENT_EXEMPTION
         }
 
@@ -106,7 +106,7 @@ class FeeRelayerAccountInteractor(
         val associatedAccount = addressInteractor.findAssociatedAddress(address.toPublicKey(), tokenMint)
 
         if (associatedAccount.shouldCreateAssociatedInstruction) {
-            accountCreationFee += amountInteractor.getAccountMinForRentExemption()
+            accountCreationFee += amountInteractor.getMinBalanceForRentExemption()
             accountCreationFee += amountInteractor.getLamportsPerSignature()
         }
 

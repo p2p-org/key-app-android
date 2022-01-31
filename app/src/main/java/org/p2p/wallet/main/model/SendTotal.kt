@@ -26,5 +26,4 @@ class SendTotal(
         get() = fee?.let { "$it $approxFeeUsd" }
 
     val approxFeeUsd: String? get() = feeUsd?.let { "(~$$it)" }
-
 }

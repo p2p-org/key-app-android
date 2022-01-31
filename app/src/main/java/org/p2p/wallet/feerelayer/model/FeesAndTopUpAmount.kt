@@ -1,5 +1,6 @@
 package org.p2p.wallet.feerelayer.model
 
+import org.p2p.solanaj.core.FeeAmount
 import java.math.BigInteger
 
 class FeesAndTopUpAmount(

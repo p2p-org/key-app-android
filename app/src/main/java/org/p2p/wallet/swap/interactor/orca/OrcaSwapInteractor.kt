@@ -15,7 +15,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenComparator
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.model.OrcaInstructionsData
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
@@ -46,7 +45,6 @@ class OrcaSwapInteractor(
     private val internalRepository: OrcaSwapInternalRepository,
     private val poolInteractor: OrcaPoolInteractor,
     private val userInteractor: UserInteractor,
-    private val serializationInteractor: SwapSerializationInteractor,
     private val orcaInstructionsInteractor: OrcaInstructionsInteractor,
     private val transactionInteractor: TransactionInteractor,
     private val tokenKeyProvider: TokenKeyProvider
@@ -352,8 +350,6 @@ class OrcaSwapInteractor(
             transaction.sign(signers)
 
             val signature = transaction.signature
-
-
 
             val transactionId = feeRelayerRepository.relayTransaction(
                 instructions = instructions,

@@ -1,4 +1,4 @@
-package org.p2p.wallet.main.ui.send
+package org.p2p.wallet.main.ui.send.dialogs
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -22,6 +22,7 @@ import org.p2p.wallet.main.model.SendTotal
 import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
+import org.p2p.wallet.main.ui.send.dialogs.ProgressBottomSheet
 import org.p2p.wallet.main.ui.send.search.SearchFragment
 import org.p2p.wallet.main.ui.send.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.main.ui.transaction.TransactionInfo

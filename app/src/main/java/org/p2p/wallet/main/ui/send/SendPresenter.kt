@@ -47,7 +47,7 @@ class SendPresenter(
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
-    private val feeRelayerInteractor: FeeRelayerAccountInteractor,
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -191,7 +191,7 @@ class SendPresenter(
     override fun loadFeePayerTokens() {
         val token = token ?: return
         launch {
-            val feePayerTokens = feeRelayerInteractor.getFeeTokenAccounts(token.publicKey)
+            val feePayerTokens = feeRelayerAccountInteractor.getFeeTokenAccounts(token.publicKey)
             view?.showFeePayerTokenSelector(feePayerTokens)
         }
     }
@@ -201,7 +201,7 @@ class SendPresenter(
             try {
                 sendInteractor.setFeePayerToken(feePayerToken)
                 val address = target?.address
-                val accountCreationFee = feeRelayerInteractor.getAccountCreationFee(address, token?.mintAddress)
+                val accountCreationFee = feeRelayerAccountInteractor.getAccountCreationFee(address, token?.mintAddress)
                 val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
                 val fee = SendFee(feeAmount, feePayerToken)
                 view?.showAccountFeeView(fee)
@@ -263,7 +263,8 @@ class SendPresenter(
                         view?.showRelayAccountFeeView(!userRelayAccount.isCreated)
 
                         val feePayerToken = checkAddressResult.feePayerToken
-                        val accountCreationFee = feeRelayerInteractor.getAccountCreationFee(address, token.mintAddress)
+                        val accountCreationFee =
+                            feeRelayerAccountInteractor.getAccountCreationFee(address, token.mintAddress)
                         val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
                         val fee = SendFee(feeAmount, feePayerToken)
                         view?.showAccountFeeView(fee)

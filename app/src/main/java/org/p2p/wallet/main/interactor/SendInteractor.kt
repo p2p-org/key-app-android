@@ -1,6 +1,5 @@
 package org.p2p.wallet.main.interactor
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.solanaj.core.Account
@@ -12,23 +11,26 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerRequestInteractor
+import org.p2p.wallet.feerelayer.model.SendStrategy
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.CheckAddressResult
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
 
 class SendInteractor(
     private val rpcRepository: RpcRepository,
-    private val feeRelayerRepository: FeeRelayerRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
+    private val feeRelayerRequestInteractor: FeeRelayerRequestInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
+    private val orcaSwapInteractor: OrcaSwapInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -36,6 +38,9 @@ class SendInteractor(
         private const val SEND_TAG = "SEND"
     }
 
+    /*
+    * This one is to show user transaction id when progress dialog is shown
+    * */
     private val transactionIdFlow = MutableStateFlow("")
 
     /*
@@ -47,8 +52,10 @@ class SendInteractor(
     /*
     * Initialize fee payer token
     * */
-    fun initialize(userTokens: List<Token.Active>) {
+    suspend fun initialize(userTokens: List<Token.Active>) {
         feePayerToken = userTokens.first { it.isSOL }
+
+        feeRelayerInteractor.load()
     }
 
     fun setFeePayerToken(newToken: Token.Active) {
@@ -78,18 +85,57 @@ class SendInteractor(
         token: Token.Active,
         lamports: BigInteger
     ): TransactionResult {
-        return if (token.isSOL) {
-            sendNativeSolToken(
+        val strategy = when {
+            feePayerToken.isSOL && token.isSOL -> SendStrategy.SimpleSol
+            feePayerToken.isSOL -> SendStrategy.SimpleSpl
+            else -> SendStrategy.FeeRelay
+        }
+
+        return when (strategy) {
+            is SendStrategy.SimpleSol -> sendNativeSolToken(
                 destinationAddress = destinationAddress,
                 lamports = lamports
             )
-        } else {
-            sendSplToken(
+            is SendStrategy.SimpleSpl -> sendSplToken(
+                destinationAddress = destinationAddress,
+                sourceToken = token,
+                lamports = lamports
+            )
+            is SendStrategy.FeeRelay -> sendByFeeRelayer(
                 destinationAddress = destinationAddress,
                 sourceToken = token,
                 lamports = lamports
             )
         }
+    }
+
+    /**
+     *  Top up and make a transaction
+     *  STEP 1: Prepare all information needed for the transaction
+     *  STEP 2: Calculate fee needed for transaction
+     *  STEP 3: Check if relay account has already had enough balance to cover transaction fee
+     *  STEP 3.1: If relay account has not been created or has not have enough balance, do top up
+     *  STEP 3.1.1: Top up with needed amount
+     *  STEP 4: Make transaction
+     *  STEP 3.2: Else, skip top up
+     *  STEP 3.2.1: Make transaction
+     *
+     *  @return: Array of strings contain transactions' signatures
+     * */
+    private suspend fun sendByFeeRelayer(
+        destinationAddress: PublicKey,
+        sourceToken: Token.Active,
+        lamports: BigInteger
+    ): TransactionResult {
+//        val feesAndTopUpAmount = feeRelayerInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
+//            sourceToken = TokenInfo(sourceToken.publicKey, sourceToken.mintAddress),
+//            destinationAddress = destinationAddress.toBase58(),
+//            destinationTokenMint = sourceToken.mintAddress,
+//            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
+//            swapPools = swapPools
+//        )
+
+        return TransactionResult.WrongWallet
     }
 
     private suspend fun sendSplToken(
@@ -114,7 +160,7 @@ class SendInteractor(
         }
 
         val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-        val feePayerPubkey = feeRelayerRepository.getFeePayerPublicKey()
+        val feePayerPubkey = feeRelayerRequestInteractor.getFeePayerPublicKey()
 
         val transaction = Transaction()
         val instructions = mutableListOf<TransactionInstruction>()
@@ -122,23 +168,17 @@ class SendInteractor(
         if (address.shouldCreateAssociatedInstruction) {
             Timber.tag(SEND_TAG).d("Associated token account creation needed, adding create instruction")
 
-            if (feePayerToken.isSOL) {
-                val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
-                    TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-                    TokenProgram.PROGRAM_ID,
-                    sourceToken.mintAddress.toPublicKey(),
-                    address.associatedAddress,
-                    destinationAddress,
-                    userPublicKey
-                )
+            val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
+                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                TokenProgram.PROGRAM_ID,
+                sourceToken.mintAddress.toPublicKey(),
+                address.associatedAddress,
+                destinationAddress,
+                userPublicKey
+            )
 
-                transaction.addInstruction(createAccount)
-                instructions += createAccount
-            } else {
-                // todo: top up with swap
-//                feeRelayerInteractor.topUpWithSwap()
-                return TransactionResult.Error(R.string.common_not_implemented_yet)
-            }
+            transaction.addInstruction(createAccount)
+            instructions += createAccount
         }
 
         val instruction = TokenProgram.createTransferCheckedInstruction(
@@ -163,8 +203,6 @@ class SendInteractor(
         transaction.sign(signers)
 
         transactionIdFlow.emit(transaction.signature.signature)
-        // temporary
-        delay(1000L)
 
         val recipientPubkey =
             if (!address.shouldCreateAssociatedInstruction || address.associatedAddress.equals(destinationAddress)) {
@@ -175,7 +213,7 @@ class SendInteractor(
 
         Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
 
-        val signature = feeRelayerRepository.relayTransaction(
+        val signature = feeRelayerRequestInteractor.relayTransaction(
             instructions = instructions,
             signatures = transaction.allSignatures,
             pubkeys = transaction.accountKeys,
@@ -216,7 +254,7 @@ class SendInteractor(
         transaction.addInstruction(instruction)
         instructions += instruction
 
-        val feePayerPublicKey = feeRelayerRepository.getFeePayerPublicKey()
+        val feePayerPublicKey = feeRelayerRequestInteractor.getFeePayerPublicKey()
         val recentBlockhash = rpcRepository.getRecentBlockhash()
 
         transaction.setFeePayer(feePayerPublicKey)
@@ -226,10 +264,8 @@ class SendInteractor(
         transaction.sign(signers)
 
         transactionIdFlow.emit(transaction.signature.signature)
-        // temporary
-        delay(1000L)
 
-        val signature = feeRelayerRepository.relayTransaction(
+        val signature = feeRelayerRequestInteractor.relayTransaction(
             instructions = instructions,
             signatures = transaction.allSignatures,
             pubkeys = transaction.accountKeys,

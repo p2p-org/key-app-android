@@ -24,7 +24,6 @@ import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.transaction.interactor.TransactionInteractor
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
@@ -94,7 +93,7 @@ class OrcaSwapPresenter(
                 swapInteractor.load()
 
                 lamportsPerSignature = amountInteractor.getLamportsPerSignature()
-                minRentExemption = amountInteractor.getAccountMinForRentExemption()
+                minRentExemption = amountInteractor.getMinBalanceForRentExemption()
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading all data for swap")
                 view?.showErrorMessage(e)

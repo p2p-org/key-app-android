@@ -2,7 +2,7 @@ package org.p2p.wallet.feerelayer.api
 
 import com.google.gson.annotations.SerializedName
 
-class TopUpSwapRequest(
+class SwapDataRequest(
     @SerializedName("Spl")
     val spl: SwapSplRequest?,
     @SerializedName("SplTransitive")

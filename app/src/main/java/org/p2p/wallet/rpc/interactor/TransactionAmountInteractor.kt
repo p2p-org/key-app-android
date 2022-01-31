@@ -11,7 +11,7 @@ class TransactionAmountInteractor(
     suspend fun getLamportsPerSignature(): BigInteger =
         rpcRepository.getFees(null)
 
-    suspend fun getAccountMinForRentExemption(dataLength: Long = ACCOUNT_INFO_DATA_LENGTH.toLong()): BigInteger =
+    suspend fun getMinBalanceForRentExemption(dataLength: Long = ACCOUNT_INFO_DATA_LENGTH.toLong()): BigInteger =
         rpcRepository
             .getMinimumBalanceForRentExemption(dataLength)
             .toBigInteger()

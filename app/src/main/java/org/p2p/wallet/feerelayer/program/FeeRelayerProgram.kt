@@ -7,7 +7,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.ByteUtils
-import org.p2p.wallet.feerelayer.model.TopUpSwap
+import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.utils.toPublicKey
 import java.io.ByteArrayOutputStream
@@ -25,7 +25,7 @@ object FeeRelayerProgram {
 
     fun createRelaySwapInstruction(
         programId: PublicKey,
-        transitiveSwap: TopUpSwap.SplTransitive,
+        transitiveSwap: SwapData.SplTransitive,
         userAuthorityAddressPubkey: PublicKey,
         sourceAddressPubkey: PublicKey,
         transitTokenAccount: PublicKey,

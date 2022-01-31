@@ -11,9 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSendDetailsBinding
 import org.p2p.wallet.main.model.SendTotal
 import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.withTextOrGone
-import timber.log.Timber
 
 class SendDetailsView @JvmOverloads constructor(
     context: Context,

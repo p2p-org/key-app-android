@@ -5,15 +5,18 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Signature
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.feerelayer.FeeRelayerConverter
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
+import org.p2p.wallet.feerelayer.api.RelaySwapRequest
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
+import org.p2p.wallet.feerelayer.api.RelayTransferRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
-import org.p2p.wallet.feerelayer.api.TopUpSwapRequest
+import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
+import org.p2p.wallet.feerelayer.model.SwapData
+import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
-import org.p2p.wallet.feerelayer.model.TopUpSwap
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.utils.toPublicKey
+import java.math.BigInteger
 
 class FeeRelayerRemoteRepository(
     private val api: FeeRelayerApi,
@@ -27,31 +30,6 @@ class FeeRelayerRemoteRepository(
         } else {
             api.getPublicKey().toPublicKey()
         }
-    }
-
-    override suspend fun relayTopUpSwap(
-        userSourceTokenAccountPubkey: String,
-        sourceTokenMintPubkey: String,
-        userAuthorityPubkey: String,
-        topUpSwap: TopUpSwap,
-        feeAmount: Long,
-        signatures: SwapTransactionSignatures,
-        blockhash: String
-    ): List<String> {
-
-        return emptyList()
-//        val request = RelayTopUpSwapRequest(
-//            userSourceTokenAccountPubkey = userSourceTokenAccountPubkey,
-//            sourceTokenMintPubkey = sourceTokenMintPubkey,
-//            userAuthorityPubkey = userAuthorityPubkey,
-//        )
-
-//        val environment = environmentManager.loadEnvironment()
-//        return if (environment == Environment.DEVNET) {
-//            api.relayTopUpSwapV2(request)
-//        } else {
-//            api.relayTopUpSwap(request)
-//        }
     }
 
     override suspend fun relayTransaction(
@@ -80,6 +58,96 @@ class FeeRelayerRemoteRepository(
             api.relayTransactionV2(request)
         } else {
             api.relayTransaction(request)
+        }
+    }
+
+    override suspend fun relayTopUpSwap(
+        userSourceTokenAccountPubkey: String,
+        sourceTokenMintPubkey: String,
+        userAuthorityPubkey: String,
+        swapData: SwapData,
+        feeAmount: BigInteger,
+        signatures: SwapTransactionSignatures,
+        blockhash: String
+    ): List<String> {
+        val request = RelayTopUpSwapRequest(
+            userSourceTokenAccountPubkey = userSourceTokenAccountPubkey,
+            sourceTokenMintPubkey = sourceTokenMintPubkey,
+            userAuthorityPubkey = userAuthorityPubkey,
+            topUpSwap = SwapDataConverter.toNetwork(swapData),
+            feeAmount = feeAmount.toLong(),
+            signatures = FeeRelayerConverter.toNetwork(signatures),
+            blockhash = blockhash,
+        )
+
+        val environment = environmentManager.loadEnvironment()
+        return if (environment == Environment.DEVNET) {
+            api.relayTopUpSwapV2(request)
+        } else {
+            api.relayTopUpSwap(request)
+        }
+    }
+
+    override suspend fun relaySwap(
+        userSourceTokenAccountPubkey: String,
+        userDestinationPubkey: String,
+        userDestinationAccountOwner: String?,
+        sourceTokenMintPubkey: String,
+        destinationTokenMintPubkey: String,
+        userAuthorityPubkey: String,
+        swapData: SwapData,
+        feeAmount: BigInteger,
+        signatures: SwapTransactionSignatures,
+        blockhash: String
+    ): List<String> {
+        val request = RelaySwapRequest(
+            userSourceTokenAccountPubkey = userSourceTokenAccountPubkey,
+            userDestinationPubkey = userDestinationPubkey,
+            sourceTokenMintPubkey = sourceTokenMintPubkey,
+            destinationTokenMintPubkey = destinationTokenMintPubkey,
+            userAuthorityPubkey = userAuthorityPubkey,
+            userSwap = SwapDataConverter.toNetwork(swapData),
+            feeAmount = feeAmount.toLong(),
+            signatures = FeeRelayerConverter.toNetwork(signatures),
+            blockhash = blockhash,
+        )
+
+        val environment = environmentManager.loadEnvironment()
+        return if (environment == Environment.DEVNET) {
+            api.relaySwap(request)
+        } else {
+            api.relaySwapV2(request)
+        }
+    }
+
+    override suspend fun relayTransferSplToken(
+        senderTokenAccountPubkey: String,
+        recipientPubkey: String,
+        tokenMintPubkey: String,
+        authorityPubkey: String,
+        amount: BigInteger,
+        decimals: Int,
+        feeAmount: BigInteger,
+        authoritySignature: String,
+        blockhash: String
+    ): List<String> {
+        val request = RelayTransferRequest(
+            senderTokenAccountPubkey = senderTokenAccountPubkey,
+            recipientPubkey = recipientPubkey,
+            tokenMintPubkey = tokenMintPubkey,
+            authorityPubkey = authorityPubkey,
+            amount = amount,
+            decimals = decimals,
+            feeAmount = feeAmount,
+            authoritySignature = authoritySignature,
+            blockhash = blockhash,
+        )
+
+        val environment = environmentManager.loadEnvironment()
+        return if (environment == Environment.DEVNET) {
+            api.relayTransferSplToken(request)
+        } else {
+            api.relayTransferSplTokenV2(request)
         }
     }
 }

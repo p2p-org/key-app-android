@@ -60,8 +60,16 @@ public class Message {
         return this;
     }
 
+    public List<TransactionInstruction> getInstructions() {
+        return instructions;
+    }
+
     public void setRecentBlockHash(String recentBlockhash) {
         this.recentBlockhash = recentBlockhash;
+    }
+
+    public String getRecentBlockHash() {
+        return recentBlockhash;
     }
 
     public byte[] serialize() {

@@ -37,8 +37,16 @@ public class Transaction {
         return this;
     }
 
+    public List<TransactionInstruction> getInstructions() {
+        return message.getInstructions();
+    }
+
     public void setRecentBlockHash(String recentBlockhash) {
         message.setRecentBlockHash(recentBlockhash);
+    }
+
+    public String getRecentBlockHash() {
+        return message.getRecentBlockHash();
     }
 
     public void setFeePayer(PublicKey feePayer) {

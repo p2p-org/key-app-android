@@ -13,6 +13,7 @@ import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.SimulateTransactionResponse
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
+import org.p2p.solanaj.model.types.TokenSupply
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Url
@@ -30,6 +31,12 @@ interface RpcApi {
         @Body rpcRequest: List<RpcRequest>,
         @Url url: String = ""
     ): List<CommonResponse<TokenAccountBalance>>
+
+    @POST
+    suspend fun getTokenSupply(
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = ""
+    ): CommonResponse<TokenSupply>
 
     @POST
     suspend fun getRecentBlockhash(
