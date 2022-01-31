@@ -38,15 +38,18 @@ class VerifySecurityKeyAdapter(private val block: (Int, String) -> Unit) :
 
         private val indexTextView = binding.indexTextView
         private val recyclerView = binding.recyclerView
+        val adapter = KeysTupleAdapter()
+
+        init {
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+        }
 
         fun bind(value: SecurityKeyTuple) {
             indexTextView.text = requireContext().getString(R.string.auth_select_word, value.index + 1)
-            val adapter = KeysTupleAdapter { selectedWord ->
-                block.invoke(value.index, selectedWord)
+            adapter.onItemClicked = {
+                block.invoke(value.index, it)
             }
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
-
             adapter.setItems(value.keys)
         }
     }

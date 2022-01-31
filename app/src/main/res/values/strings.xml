@@ -63,7 +63,7 @@
     <string name="auth_restore_manually">Restore manually</string>
     <string name="auth_restore">Restore</string>
     <string name="auth_reset_and_try_again">Reset and try again</string>
-    <string name="auth_create_new_wallet">Create a new wallet</string>
+    <string name="auth_create_new_wallet">Set up a wallet PIN</string>
     <string name="auth_create_new_wallet_message">The following words are security key that  that you must keep in a safe place, written in the correct sequence.\n\nIf lost, no one can restore it.\nKeep it private, even from us</string>
     <string name="auth_reset_pin">Reset PIN with a seed phrase</string>
     <string name="auth_finish_setup">Start using P2P Wallet</string>
@@ -391,4 +391,6 @@
     <string name="receive_via_bitcoin_network_info">Make sure you understand the aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
+    <string name="auth_fingerprint_login">Fingerprint login</string>
+    <string name="auth_fingerprint_login_message">Use your fingerprint for faster easier access to your wallet</string>
 </resources>

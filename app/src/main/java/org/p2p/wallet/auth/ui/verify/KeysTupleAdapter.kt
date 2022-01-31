@@ -6,9 +6,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.databinding.ItemSecurityKeyBinding
 
-class KeysTupleAdapter(private val block: (String) -> Unit) : RecyclerView.Adapter<KeysTupleAdapter.KeyViewHolder>() {
+class KeysTupleAdapter : RecyclerView.Adapter<KeysTupleAdapter.KeyViewHolder>() {
 
     private val data = mutableListOf<Pair<String, Boolean>>()
+    var onItemClicked: ((String) -> Unit)? = null
 
     fun setItems(new: List<Pair<String, Boolean>>) {
         data.clear()
@@ -49,7 +50,7 @@ class KeysTupleAdapter(private val block: (String) -> Unit) : RecyclerView.Adapt
             container.isSelected = isKeySelected
 
             itemView.setOnClickListener {
-                block.invoke(keyName)
+                onItemClicked?.invoke(keyName)
             }
         }
     }
