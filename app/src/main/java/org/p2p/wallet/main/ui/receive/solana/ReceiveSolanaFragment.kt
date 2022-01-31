@@ -124,7 +124,10 @@ class ReceiveSolanaFragment :
     }
 
     override fun showReceiveToken(token: Token.Active) {
-        // TODO ?
+        binding.progressButton.setOnClickListener {
+            val url = getString(R.string.solanaWalletExplorer, token.publicKey)
+            showUrlInCustomTabs(url)
+        }
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
