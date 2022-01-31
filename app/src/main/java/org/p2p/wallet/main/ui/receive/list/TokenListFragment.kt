@@ -49,7 +49,6 @@ class TokenListFragment :
             }
             backImageView.setOnClickListener { popBackStack() }
             searchEditText.doAfterTextChanged { text ->
-
                 presenter.search(text = text)
                 clearImageView.isInvisible = text.isNullOrEmpty()
             }
@@ -59,6 +58,7 @@ class TokenListFragment :
             val info = getString(R.string.receive_token_list_info)
             val alert = getString(R.string.receive_token_list_do_not_recommend)
             infoTextView.text = SpanUtils.setTextBold(info, alert)
+
             searchEditText.focusAndShowKeyboard()
         }
         presenter.load(isRefresh = true)
