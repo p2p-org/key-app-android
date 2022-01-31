@@ -82,7 +82,7 @@ class RenBTCPresenter(
             startTimer(remaining)
             generateQrCode(session.gatewayAddress)
         } else {
-            view?.navigateToSolana()
+            // TODO navigate so solana broke logic
         }
     }
 
