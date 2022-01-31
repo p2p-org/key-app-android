@@ -1,13 +1,15 @@
 package org.p2p.wallet.user.repository
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.main.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
 import timber.log.Timber
 
 class UserInMemoryRepository : UserLocalRepository {
-
+    private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
+    private val tokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
     override fun setTokenPrices(prices: List<TokenPrice>) {
         pricesFlow.value = prices
@@ -22,7 +24,33 @@ class UserInMemoryRepository : UserLocalRepository {
         decimalsFlow.value = data
     }
 
-    override fun getTokenData(): List<TokenData> = decimalsFlow.value
+    override fun fetchTokens(searchText: String, count: Int, refresh: Boolean) {
+        if (refresh) {
+            tokensFlow.value = emptyList()
+        }
+        val items = decimalsFlow.value
+        val offset = tokensFlow.value.size
+
+        if (searchText.isNotEmpty()) {
+            val result = items.filter {
+                it.symbol.startsWith(searchText, ignoreCase = true) ||
+                    it.name.startsWith(searchText, ignoreCase = true)
+            }
+            val indexes = findEdges(items = result, count = count, offset = offset)
+            appendTokens(result.subList(indexes.first, indexes.second))
+        }
+
+        val indexes = findEdges(items = items, count = count, offset = offset)
+        val result = items.subList(indexes.first, indexes.second)
+
+        if (offset == 0 && searchText.isEmpty()) {
+            appendTokens(getPopularDecimals() + result)
+            return
+        }
+        appendTokens(result)
+    }
+
+    override fun getTokenListFlow(): Flow<List<TokenData>> = tokensFlow
 
     override fun findTokenData(mintAddress: String): TokenData? {
         val data = decimalsFlow.value.firstOrNull { it.mintAddress == mintAddress }
@@ -40,5 +68,29 @@ class UserInMemoryRepository : UserLocalRepository {
         }
 
         return data
+    }
+
+    private fun getPopularDecimals(): List<TokenData> {
+        var items = mutableListOf<TokenData>()
+        var tokens = decimalsFlow.value
+        for (symbol in popularItems) {
+            try {
+                val token = tokens.first { it.symbol == symbol }
+                items.add(token)
+            } catch (e: NoSuchElementException) {
+                continue
+            }
+        }
+        return items
+    }
+
+    private fun appendTokens(items: List<TokenData>) {
+        tokensFlow.value = tokensFlow.value + items
+    }
+
+    private fun <T> findEdges(items: List<T>, offset: Int, count: Int): Pair<Int, Int> {
+        val endIndex = if (offset + count > items.size) items.size else offset + count
+        val startIndex = if (offset > items.size) 0 else offset
+        return Pair(startIndex, endIndex)
     }
 }

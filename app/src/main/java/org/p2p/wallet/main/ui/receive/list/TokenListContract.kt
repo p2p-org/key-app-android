@@ -9,10 +9,11 @@ interface TokenListContract {
     interface View : MvpView {
         fun showLoading(isLoading: Boolean)
         fun showItems(items: List<TokenData>)
+        fun reset()
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun load()
+        fun load(isRefresh: Boolean)
         fun search(text: CharSequence?)
     }
 }

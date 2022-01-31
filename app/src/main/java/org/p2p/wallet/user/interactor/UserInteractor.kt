@@ -42,7 +42,11 @@ class UserInteractor(
         userLocalRepository.setTokenData(data)
     }
 
-    fun getAllTokensData() = userLocalRepository.getTokenData()
+    fun fetchTokens(searchText: String = "", count: Int, refresh: Boolean) {
+        userLocalRepository.fetchTokens(searchText, count, refresh)
+    }
+
+    fun getTokenListFlow() = userLocalRepository.getTokenListFlow()
 
     suspend fun loadUserTokensAndUpdateData() {
         val publicKey = tokenKeyProvider.publicKey

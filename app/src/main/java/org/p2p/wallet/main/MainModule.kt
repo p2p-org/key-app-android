@@ -19,6 +19,8 @@ import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaContract
 import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaPresenter
 import org.p2p.wallet.main.ui.main.MainContract
 import org.p2p.wallet.main.ui.main.MainPresenter
+import org.p2p.wallet.main.ui.receive.list.TokenListContract
+import org.p2p.wallet.main.ui.receive.list.TokenListPresenter
 import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaContract
@@ -60,5 +62,6 @@ object MainModule : InjectionModule {
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
         factory { BuySolanaPresenter(get()) } bind BuySolanaContract.Presenter::class
+        factory { TokenListPresenter(get()) } bind TokenListContract.Presenter::class
     }
 }

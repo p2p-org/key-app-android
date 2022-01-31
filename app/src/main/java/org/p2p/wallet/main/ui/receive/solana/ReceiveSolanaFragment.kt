@@ -21,6 +21,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.main.model.NetworkType
+import org.p2p.wallet.main.ui.receive.list.TokenListFragment
 import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
@@ -69,9 +70,8 @@ class ReceiveSolanaFragment :
             networkView.setOnClickListener {
                 replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA))
             }
-            progressButton.setOnClickListener {
-                val url = getString(R.string.solanaWalletExplorer, token?.publicKey)
-                showUrlInCustomTabs(url)
+            faqTextView.setOnClickListener {
+                replaceFragment(TokenListFragment.create())
             }
             setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
                 val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
@@ -116,9 +116,6 @@ class ReceiveSolanaFragment :
                 requireContext().copyToClipBoard(fullUsername)
                 usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
                 Toast.makeText(requireContext(), R.string.receive_username_copied, Toast.LENGTH_SHORT).show()
-            }
-            binding.faqTextView.setOnClickListener {
-                // TODO show tokens list
             }
         }
     }
