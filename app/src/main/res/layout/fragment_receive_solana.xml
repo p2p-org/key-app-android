@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -188,6 +188,12 @@
                         app:buttonText="@string/auth_copy"
                         app:buttonTextColor="@color/accentPrimary" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/strokePrimary" />
+
                     <org.p2p.wallet.common.ui.widget.ProgressButton
                         android:id="@+id/shareButton"
                         android:layout_width="match_parent"
@@ -201,6 +207,11 @@
                         app:buttonText="@string/auth_share"
                         app:buttonTextColor="@color/accentPrimary" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/strokePrimary" />
 
                     <org.p2p.wallet.common.ui.widget.ProgressButton
                         android:id="@+id/saveButton"

@@ -33,7 +33,7 @@ class CreatePinFragment :
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
             this,
-            onError = { popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true) },
+            onError = { presenter.createPin(null) },
             onSuccess = { presenter.createPin(it) }
         )
     }
@@ -77,16 +77,15 @@ class CreatePinFragment :
     }
 
     override fun onPinCreated() {
-        binding.pinView.startSuccessAnimation(getString(R.string.auth_create_pin_code_success)) {
-            showInfoDialog(
-                titleRes = R.string.auth_fingerprint_login,
-                messageRes = R.string.auth_fingerprint_login_message,
-                primaryButtonRes = R.string.common_continue,
-                secondaryButtonRes = R.string.common_cancel,
-                primaryCallback = { presenter.enableBiometric() },
-                secondaryCallback = { onAuthFinished() }
-            )
-        }
+        binding.pinView.startSuccessAnimation(getString(R.string.auth_create_pin_code_success)) {}
+        showInfoDialog(
+            titleRes = R.string.auth_fingerprint_login,
+            messageRes = R.string.auth_fingerprint_login_message,
+            primaryButtonRes = R.string.common_continue,
+            secondaryButtonRes = R.string.common_cancel,
+            primaryCallback = { presenter.enableBiometric() },
+            secondaryCallback = { onAuthFinished() }
+        )
     }
 
     override fun showConfirmationError() {

@@ -99,6 +99,11 @@ class ReceiveSolanaFragment :
                 toast(R.string.common_copied)
             }
 
+            progressButton.setOnClickListener {
+                val url = getString(R.string.solanaWalletExplorer, userPublicKey)
+                showUrlInCustomTabs(url)
+            }
+
             if (username == null) return
             usernameTextView.isVisible = true
 
@@ -119,7 +124,10 @@ class ReceiveSolanaFragment :
     }
 
     override fun showReceiveToken(token: Token.Active) {
-        // TODO ?
+        binding.progressButton.setOnClickListener {
+            val url = getString(R.string.solanaWalletExplorer, token.publicKey)
+            showUrlInCustomTabs(url)
+        }
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
