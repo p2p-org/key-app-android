@@ -39,7 +39,6 @@ class TokenListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-
             with(binding.recyclerView) {
                 layoutManager = linearLayoutManager
                 attachAdapter(this@TokenListFragment.adapter)
