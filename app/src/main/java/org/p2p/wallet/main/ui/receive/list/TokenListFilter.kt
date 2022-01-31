@@ -3,8 +3,7 @@ package org.p2p.wallet.main.ui.receive.list
 import android.widget.Filter
 import org.p2p.wallet.user.model.TokenData
 
-class TokenListFilter(private val items: MutableList<TokenData>, val block: (List<TokenData>) -> Unit): Filter() {
-
+class TokenListFilter(private val items: MutableList<TokenData>, val block: (List<TokenData>) -> Unit) : Filter() {
 
     override fun performFiltering(sequence: CharSequence?): FilterResults {
         var result = mutableListOf<TokenData>()
@@ -20,7 +19,6 @@ class TokenListFilter(private val items: MutableList<TokenData>, val block: (Lis
         val filterResult = FilterResults()
         filterResult.values = result
         return filterResult
-
     }
 
     override fun publishResults(constraint: CharSequence?, results: FilterResults?) {

@@ -2,17 +2,10 @@ package org.p2p.wallet.main.ui.receive.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.verify.KeysTupleAdapter
-import org.p2p.wallet.auth.ui.verify.SecurityKeyTuple
-import org.p2p.wallet.common.glide.GlideApp
 import org.p2p.wallet.databinding.ItemTokenListBinding
-import org.p2p.wallet.databinding.ItemVerifySecurityKeyBinding
 import org.p2p.wallet.user.model.TokenData
-import org.p2p.wallet.utils.requireContext
 
 class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
 

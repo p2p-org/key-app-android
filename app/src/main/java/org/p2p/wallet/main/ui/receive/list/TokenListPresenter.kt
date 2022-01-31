@@ -1,7 +1,6 @@
 package org.p2p.wallet.main.ui.receive.list
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.model.TokenData
