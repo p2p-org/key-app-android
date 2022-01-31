@@ -33,7 +33,7 @@ class CreatePinFragment :
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
             this,
-            onError = { popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true) },
+            onError = { presenter.createPin(null) },
             onSuccess = { presenter.createPin(it) }
         )
     }
