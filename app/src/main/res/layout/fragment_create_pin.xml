@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/auth_create_new_wallet"
+            app:title="@string/auth_setup_wallet_pin"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
             <org.p2p.wallet.common.ui.widget.PinView
