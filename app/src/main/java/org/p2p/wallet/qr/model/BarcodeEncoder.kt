@@ -19,20 +19,24 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 
 object BarcodeEncoder {
 
-    fun encodeBitmap(contents: String, format: BarcodeFormat, width: Int, height: Int, qrColors: QrColors): Bitmap {
+    fun encodeBitmap(contents: String, format: BarcodeFormat, width: Int, height: Int, qrParams: QrParams): Bitmap {
         val matrix = MultiFormatWriter()
             .encode(
                 contents,
                 format,
                 width,
                 height,
-                mapOf(EncodeHintType.CHARACTER_SET to "UTF-8")
+                mapOf(
+                    EncodeHintType.CHARACTER_SET to "UTF-8",
+                    EncodeHintType.MARGIN to 0,
+                    EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.Q
+                )
             )
         val pixels = IntArray(matrix.width * matrix.height)
         for (y in 0 until matrix.height) {
             val offset = y * matrix.width
             for (x in 0 until matrix.width) {
-                pixels[offset + x] = if (matrix.get(x, y)) qrColors.contentColor else qrColors.backgroundColor
+                pixels[offset + x] = if (matrix.get(x, y)) qrParams.contentColor else qrParams.backgroundColor
             }
         }
         val bitmap = Bitmap.createBitmap(matrix.width, matrix.height, Bitmap.Config.ARGB_8888)
@@ -45,7 +49,7 @@ object BarcodeEncoder {
         qrCodeData: String,
         width: Int,
         height: Int,
-        qrColors: QrColors
+        qrParams: QrParams
     ): Bitmap {
         val hintMap = mapOf(EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H)
         // generating qr code in bitmatrix type
@@ -63,7 +67,7 @@ object BarcodeEncoder {
         for (y in 0 until newHeight) {
             val offset = y * newWidth
             for (x in 0 until newWidth) {
-                pixels[offset + x] = if (matrix.get(x, y)) qrColors.contentColor else qrColors.backgroundColor
+                pixels[offset + x] = if (matrix.get(x, y)) qrParams.contentColor else qrParams.backgroundColor
             }
         }
         val bitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)

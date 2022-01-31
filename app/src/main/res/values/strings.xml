@@ -224,7 +224,7 @@
     <!-- receive -->
     <string name="receive_solana">Solana</string>
     <string name="receive_bitcoin">Bitcoin</string>
-    <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
+    <string name="receive_tokens_info">What tokens can I receive?</string>
     <string name="receive_want_to_receive">I want to receive</string>
     <string name="receive_ren_attention_message">Bitcoin deposit address is only open for 36 hours, but you can send to it multiple times within this session.</string>
     <string name="receive_ren_open_hours">is only open for 36 hours</string>
@@ -236,11 +236,12 @@
     <string name="receive_renbtc">renBTC</string>
     <string name="receive_renbtc_format">%s renBTC</string>
     <string name="receive_view_bitcoin_explorer">View in Bitcoin explorer</string>
-    <string name="receive_session_info">• This address accepts only Bitcoin. You may lose assets by sending another coin.\n</string>
-    <string name="receive_session_min_transaction">• Minimum transaction amount of %s BTC.</string>
-    <string name="receive_session_timer_info">• %s is the remaining time to safely send the assets.</string>
+    <string name="receive_session_info">•\tThis address accepts only Bitcoin. You\n\t\tmay lose assets by sending another coin.</string>
+    <string name="receive_session_min_transaction">•\tMinimum transaction amount of %s BTC.</string>
+    <string name="receive_session_timer_info">• %s is the remaining time to safely\n\t\tsend the assets.</string>
     <string name="receive_only_bitcoin">only Bitcoin</string>
-    <string name="receive_btc_min_transaction">0.000112 BTC</string>
+    <string name="receive_btc_min_transaction">0.000112</string>
+    <string name="receive_btc_remain_time">35:59:59</string>
     <string name="receive_statuses">Receiving statuses</string>
     <string name="receive_waiting_for_deposit">Waiting for deposit confirmation</string>
     <string name="receive_submitting_to_renvm">Submitting to RenVM</string>

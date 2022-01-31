@@ -374,7 +374,6 @@ class SendPresenter(
         val isMoreThanBalance = amount.isMoreThan(total)
         val isNotZero = !amount.isZero()
         val isValidAddress = isAddressValid(target?.address)
-
         val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
 
         val availableColor = if (isMoreThanBalance) R.attr.colorAccentWarning else R.attr.colorAccentPrimary
