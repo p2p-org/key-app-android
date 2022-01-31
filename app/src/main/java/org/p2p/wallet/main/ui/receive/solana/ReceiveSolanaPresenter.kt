@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -43,7 +44,6 @@ class ReceiveSolanaPresenter(
             val tokens = userInteractor.getUserTokens()
             val receive = defaultToken ?: tokens.firstOrNull() ?: return@launch
             token = receive
-
             val publicKey = tokenKeyProvider.publicKey
             val username = usernameInteractor.getUsername()
             view?.showUserData(publicKey, username)
@@ -51,6 +51,13 @@ class ReceiveSolanaPresenter(
             generateQrCode(publicKey)
 
             view?.showFullScreenLoading(false)
+        }
+    }
+
+    override fun saveQr(name: String, bitmap: Bitmap) {
+        launch {
+            usernameInteractor.saveQr(name, bitmap)
+            view?.showToastMessage(R.string.auth_save)
         }
     }
 

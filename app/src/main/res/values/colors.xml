@@ -3,7 +3,8 @@
     <color name="colorProgressBackground">#33FFFFFF</color>
     <color name="colorGreen">#2DB533</color>
     <color name="colorGreenTransparent">#802DB533</color>
-    <color name="colorWarning">#FFA631</color>
+    <color name="systemWarning">#FFA631</color>
+    <color name="systemWarningBackground">#FFFBF5</color>
     <color name="colorErrorBackground">#FEF5F5</color>
 
     <color name="accentPrimary">#5887FF</color>
@@ -25,6 +26,7 @@
     <color name="backgroundActivePrimary">#EFF3FF</color>
     <color name="systemErrorMain">#F43D3D</color>
     <color name="textIconLink">#82A5FF</color>
+    <color name="strokePrimary">#D3D4DE</color>
 
     <color name="white">#FFFFFFFF</color>
     <color name="colorStaticDark">#CC000000</color>
@@ -39,7 +41,8 @@
 
     <color name="textIconSecondary">#8E8E93</color>
     <color name="textIconPrimary">#202020</color>
-
+    <color name="backgroundApp">#FBFBFD</color>
+    <color name="backgroundAppStroke">#F2F2F7</color>
     <color name="backgroundDisabled">#A3A5BA</color>
 
     <color name="chartSOL">#6FECB5</color>

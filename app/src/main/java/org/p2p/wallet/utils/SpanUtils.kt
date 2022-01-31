@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
@@ -7,6 +8,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import androidx.annotation.ColorInt
+import org.p2p.wallet.R
 
 object SpanUtils {
 
@@ -33,5 +35,14 @@ object SpanUtils {
         }
 
         return stringBuilder
+    }
+
+    fun String.highlightPublicKey(context: Context): Spannable {
+        val color = context.getColor(R.color.accentPrimary)
+        val outPutColoredText: Spannable = SpannableString(this)
+        outPutColoredText.setSpan(ForegroundColorSpan(color), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val endIndex = length - 4
+        outPutColoredText.setSpan(ForegroundColorSpan(color), endIndex, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return outPutColoredText
     }
 }

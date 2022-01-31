@@ -72,17 +72,9 @@ jobs:
 workflows:
   version: 2
 
-  lint_test_and_publish_feature:
+  lint_and_test:
     jobs:
-      - version_build:
-          context: feature
-          filters:
-            branches:
-              only:
-                - develop
       - android_lint:
-          requires:
-            - version_build
           context: feature
           filters:
             branches:
@@ -94,10 +86,27 @@ workflows:
           requires:
             - android_lint
           context: feature
+
+  lint_test_and_publish_feature:
+    jobs:
+      - version_build:
+          context: feature
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - android_lint:
+          requires:
+            - version_build
+          context: feature
+      - unit_tests:
+          requires:
+            - android_lint
+          context: feature
       - build_and_publish:
           requires:
             - unit_tests
-            - version_build
           context: feature
           filters:
             branches:
