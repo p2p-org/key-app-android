@@ -99,6 +99,11 @@ class ReceiveSolanaFragment :
                 toast(R.string.common_copied)
             }
 
+            progressButton.setOnClickListener {
+                val url = getString(R.string.solanaWalletExplorer, userPublicKey)
+                showUrlInCustomTabs(url)
+            }
+
             if (username == null) return
             usernameTextView.isVisible = true
 
