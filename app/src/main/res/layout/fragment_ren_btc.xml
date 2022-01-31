@@ -33,7 +33,6 @@
         android:scrollbars="none"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -194,6 +193,12 @@
                             app:buttonText="@string/auth_copy"
                             app:buttonTextColor="@color/accentPrimary" />
 
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:background="@color/strokePrimary" />
+
                         <org.p2p.wallet.common.ui.widget.ProgressButton
                             android:id="@+id/shareButton"
                             android:layout_width="match_parent"
@@ -206,6 +211,12 @@
                             app:buttonDrawableTint="@color/accentPrimary"
                             app:buttonText="@string/auth_share"
                             app:buttonTextColor="@color/accentPrimary" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:background="@color/strokePrimary" />
 
 
                         <org.p2p.wallet.common.ui.widget.ProgressButton
@@ -330,14 +341,16 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/attentionView"
                 app:layout_constraintVertical_bias="1" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
 
     <org.p2p.wallet.common.ui.widget.ProgressView
         android:id="@+id/progressView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        tools:visibility="gone" />
+        android:layout_gravity="center" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
