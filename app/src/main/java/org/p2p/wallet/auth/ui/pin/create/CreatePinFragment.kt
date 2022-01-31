@@ -83,7 +83,8 @@ class CreatePinFragment :
                 messageRes = R.string.auth_fingerprint_login_message,
                 primaryButtonRes = R.string.common_continue,
                 secondaryButtonRes = R.string.common_cancel,
-                primaryCallback = { presenter.enableBiometric() }
+                primaryCallback = { presenter.enableBiometric() },
+                secondaryCallback = { onAuthFinished() }
             )
         }
     }

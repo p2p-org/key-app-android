@@ -55,6 +55,12 @@ class RenBTCFragment :
             networkView.setOnClickListener {
                 replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
             }
+            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
+                if (type == NetworkType.SOLANA) {
+                    popAndReplaceFragment(ReceiveSolanaFragment.create(null))
+                }
+            }
         }
 
         presenter.subscribe()
@@ -99,13 +105,6 @@ class RenBTCFragment :
 
             val amountText = getString(R.string.receive_session_min_transaction, fee)
             amountInfoTextView.text = SpanUtils.setTextBold(amountText, fee)
-
-            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
-                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
-                if (type == NetworkType.SOLANA) {
-                    popAndReplaceFragment(ReceiveSolanaFragment.create(null))
-                }
-            }
         }
     }
 
