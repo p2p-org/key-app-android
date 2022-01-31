@@ -17,6 +17,7 @@ class TokenListFragment :
 
     override val presenter: TokenListContract.Presenter by inject()
     private val binding: FragmentReceiveListBinding by viewBinding()
+    private val adapter = TokenListAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -21,14 +21,6 @@ class BiometricPromptWrapper(
     private val biometricCallback = object : BiometricPrompt.AuthenticationCallback() {
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-            if (errorCode == BiometricPrompt.ERROR_CANCELED) {
-                fragment.lifecycleScope.launchWhenStarted {
-                    if (!fragment.isDetached)
-                        authenticateActual()
-                }
-                return
-            }
-
             onError?.invoke(
                 errString.takeIf {
                     errorCode != BiometricPrompt.ERROR_USER_CANCELED &&

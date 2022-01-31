@@ -42,6 +42,8 @@ class UserInteractor(
         userLocalRepository.setTokenData(data)
     }
 
+    fun getAllTokensData() = userLocalRepository.getTokenData()
+
     suspend fun loadUserTokensAndUpdateData() {
         val publicKey = tokenKeyProvider.publicKey
         val newTokens = userRepository.loadTokens(publicKey)

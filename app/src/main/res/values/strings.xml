@@ -256,7 +256,7 @@
     <string name="receive_renbtc_transaction">Receiving renBTC</string>
     <string name="receive_tap_to_read">Tap to read</string>
     <string name="receive_no_transactions_yet">No transactions yet</string>
-
+    <string name="receive_token_list_info">Each token in this list is available for receiving with this address; you can search for a token by typing its name or ticker.\n\nIf a token is not on this list, we do not recommend sending it to this address.</string>
     <!-- send -->
     <string name="send_enter_address">Enter the recipient\'s address</string>
     <string name="send_now">Send now</string>
