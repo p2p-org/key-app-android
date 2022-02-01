@@ -32,4 +32,9 @@ class EndlessScrollListener(
             isLoading = true
         }
     }
+
+    fun reset() {
+        isLoading = false
+        total = 0
+    }
 }

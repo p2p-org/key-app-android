@@ -15,7 +15,6 @@ import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
@@ -50,7 +49,7 @@ class RenBTCFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
             statusView.setOnClickListener {
-                addFragment(RenTransactionsFragment.create())
+                replaceFragment(RenTransactionsFragment.create())
             }
             networkView.setOnClickListener {
                 replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
@@ -103,8 +102,9 @@ class RenBTCFragment :
             val onlyBitcoin = getString(R.string.receive_only_bitcoin)
             sessionInfoTextView.text = SpanUtils.setTextBold(infoText, onlyBitcoin)
 
+            val btcText = getString(R.string.common_btc)
             val amountText = getString(R.string.receive_session_min_transaction, fee)
-            amountInfoTextView.text = SpanUtils.setTextBold(amountText, fee)
+            amountInfoTextView.text = SpanUtils.setTextBold(amountText, fee, btcText)
         }
     }
 
@@ -120,6 +120,11 @@ class RenBTCFragment :
 
     override fun showToastMessage(resId: Int) {
         toast(resId)
+    }
+
+    override fun showTransactionsCount(count: Int) {
+        binding.statusCountTextView.text = count.toString()
+        binding.statusView.isEnabled = count != 0
     }
 
     override fun navigateToSolana() {
