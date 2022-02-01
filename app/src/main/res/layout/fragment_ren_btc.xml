@@ -268,7 +268,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="8dp"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
                     android:textColor="@color/textIconSecondary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

@@ -14,6 +14,7 @@ interface RenBTCContract {
         fun renderQr(qrBitmap: Bitmap?)
         fun showLoading(isLoading: Boolean)
         fun showToastMessage(@StringRes resId: Int)
+        fun showTransactionsCount(count: Int)
         fun navigateToSolana()
     }
 

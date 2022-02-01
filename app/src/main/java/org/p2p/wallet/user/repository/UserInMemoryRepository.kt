@@ -71,15 +71,11 @@ class UserInMemoryRepository : UserLocalRepository {
     }
 
     private fun getPopularDecimals(): List<TokenData> {
-        var items = mutableListOf<TokenData>()
-        var tokens = decimalsFlow.value
+        val items = mutableListOf<TokenData>()
+        val tokens = decimalsFlow.value
         for (symbol in popularItems) {
-            try {
-                val token = tokens.first { it.symbol == symbol }
-                items.add(token)
-            } catch (e: NoSuchElementException) {
-                continue
-            }
+            val token = tokens.firstOrNull { it.symbol == symbol }
+            if (token != null) items.add(token)
         }
         return items
     }

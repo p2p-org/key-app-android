@@ -41,7 +41,8 @@ class RenBtcInfoBottomSheet(private val block: () -> Unit) : NonDraggableBottomS
 
                 val fee = getString(R.string.receive_btc_min_transaction)
                 val minTransactionText = getString(R.string.receive_session_min_transaction, fee)
-                append(SpanUtils.setTextBold(minTransactionText, fee))
+                val btcText = getString(R.string.common_btc)
+                append(SpanUtils.setTextBold(minTransactionText, fee, btcText))
                 append("\n\n")
 
                 val remainTime = getString(R.string.receive_btc_remain_time)
