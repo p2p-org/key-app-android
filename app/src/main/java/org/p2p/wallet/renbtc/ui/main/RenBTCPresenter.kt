@@ -46,8 +46,10 @@ class RenBTCPresenter(
     }
 
     override fun startNewSession(context: Context) {
-        view?.showLoading(true)
-        RenVMService.startWithNewSession(context)
+        launch {
+            view?.showLoading(true)
+            RenVMService.startWithNewSession(context)
+        }
     }
 
     override fun checkActiveSession(context: Context) {
@@ -72,8 +74,6 @@ class RenBTCPresenter(
     }
 
     private fun handleSession(session: LockAndMint.Session?) {
-        view?.showLoading(false)
-
         if (session != null && session.isValid) {
             val remaining = session.expiryTime - System.currentTimeMillis()
             val fee = calculateFee(session)
@@ -81,6 +81,8 @@ class RenBTCPresenter(
 
             startTimer(remaining)
             generateQrCode(session.gatewayAddress)
+            loadTransactionCount()
+            view?.showLoading(false)
         } else {
             // TODO navigate so solana broke logic
         }
@@ -105,6 +107,13 @@ class RenBTCPresenter(
                 Timber.e(e, "Failed to generate qr bitmap")
                 view?.showErrorMessage()
             }
+        }
+    }
+
+    private fun loadTransactionCount() {
+        launch {
+            val transactions = interactor.getAllTransactions()
+            view?.showTransactionsCount(transactions.size)
         }
     }
 
