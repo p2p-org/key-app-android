@@ -12,15 +12,17 @@ class TokenListPresenter(
 ) : BasePresenter<TokenListContract.View>(), TokenListContract.Presenter {
 
     private var searchText = ""
+    private var scrollToUp = false
 
     override fun attach(view: TokenListContract.View) {
         super.attach(view)
         observeTokens()
     }
 
-    override fun load(isRefresh: Boolean) {
+    override fun load(isRefresh: Boolean, scrollToUp: Boolean) {
         launch {
             view?.showLoading(true)
+            this@TokenListPresenter.scrollToUp = scrollToUp
             interactor.fetchTokens(searchText, PAGE_SIZE, isRefresh)
             view?.showLoading(false)
         }
@@ -31,13 +33,13 @@ class TokenListPresenter(
         if (searchText.isEmpty()) {
             view?.reset()
         }
-        load(isRefresh = true)
+        load(isRefresh = true, scrollToUp = true)
     }
 
     private fun observeTokens() {
         launch {
             interactor.getTokenListFlow().collect { tokens ->
-                view?.showItems(tokens)
+                view?.showItems(tokens, scrollToUp)
             }
         }
     }

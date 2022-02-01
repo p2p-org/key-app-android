@@ -28,12 +28,15 @@ class UserInMemoryRepository : UserLocalRepository {
         if (refresh) {
             tokensFlow.value = emptyList()
         }
+        if (tokensFlow.value.size >= decimalsFlow.value.size) {
+            return
+        }
         val items = decimalsFlow.value
         val offset = tokensFlow.value.size
 
         if (searchText.isNotEmpty()) {
             val result = items.filter {
-                it.symbol.startsWith(searchText, ignoreCase = true) ||
+                searchText == it.symbol ||
                     it.name.startsWith(searchText, ignoreCase = true)
             }
             val indexes = findEdges(items = result, count = count, offset = offset)

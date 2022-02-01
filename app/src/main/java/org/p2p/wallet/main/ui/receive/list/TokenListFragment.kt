@@ -67,9 +67,14 @@ class TokenListFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun showItems(items: List<TokenData>) {
+    override fun showItems(items: List<TokenData>, scrollToUp: Boolean) {
         with(binding) {
-            recyclerView.post { adapter.setItems(items) }
+            recyclerView.post {
+                adapter.setItems(items)
+                if (scrollToUp) {
+                    recyclerView.smoothScrollToPosition(0)
+                }
+            }
         }
     }
 
