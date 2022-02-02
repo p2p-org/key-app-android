@@ -59,6 +59,7 @@ class TokenInfoFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             totalTextView.text = token.getFormattedTotal()
             usdTotalTextView.text = token.getFormattedUsdTotal()
+            refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
                 clipToOutline = true
                 onBuyItemClickListener = {
