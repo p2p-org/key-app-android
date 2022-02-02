@@ -65,14 +65,23 @@
         android:orientation="vertical"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <org.p2p.wallet.common.ui.widget.ActionButtonsView
-            android:id="@+id/actionButtonsView"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_buttons"
-            app:layout_constraintTop_toBottomOf="@id/usdTotalTextView" />
+            android:layout_height="wrap_content"
+            android:background="@color/elementPrimary"
+            app:elevation="1dp">
+
+            <org.p2p.wallet.common.ui.widget.ActionButtonsView
+                android:id="@+id/actionButtonsView"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_buttons"
+                app:layout_constraintTop_toBottomOf="@id/usdTotalTextView" />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
