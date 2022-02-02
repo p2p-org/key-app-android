@@ -103,4 +103,9 @@
         <attr name="android:maxLength" />
         <attr name="android:digits" />
     </declare-styleable>
+
+    <declare-styleable name="ActionButtonView">
+        <attr name="android:text"/>
+        <attr name="srcCompat"/>
+    </declare-styleable>
 </resources>

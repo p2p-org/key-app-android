@@ -1,53 +1,124 @@
 package org.p2p.wallet.history.ui.info
 
-import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.wallet.main.model.Token
 import timber.log.Timber
 
 class TokenInfoPresenter(
+    private val token: Token.Active,
     private val historyInteractor: HistoryInteractor
 ) : BasePresenter<TokenInfoContract.View>(), TokenInfoContract.Presenter {
 
     companion object {
         private const val DESTINATION_TOKEN = "USD"
+        private const val PAGE_SIZE = 20
     }
 
-    override fun loadDailyChartData(tokenSymbol: String, days: Int) {
+    private val transactions = mutableListOf<HistoryTransaction>()
+
+    private var pagingJob: Job? = null
+    private var refreshJob: Job? = null
+
+    private var paginationEnded: Boolean = false
+
+    override fun loadHistory() {
+        if (transactions.isNotEmpty()) return
+
+        paginationEnded = false
+
         launch {
             try {
-                view?.showLoading(true)
-                val data = historyInteractor.getDailyPriceHistory(tokenSymbol, DESTINATION_TOKEN, days)
-                val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
-                view?.showChartData(entries)
-            } catch (e: CancellationException) {
-                Timber.w(e, "Cancelled daily chart data loading")
+                view?.showPagingState(PagingState.InitialLoading)
+
+                val history = historyInteractor.getHistory(token.publicKey, null, PAGE_SIZE)
+                if (history.isEmpty()) {
+                    paginationEnded = true
+                } else {
+                    transactions.addAll(history)
+                    view?.showHistory(transactions)
+                }
+
+                view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
-                view?.showError(R.string.error_fetching_data_about_token, tokenSymbol)
-                Timber.e(e, "Error loading token price history")
-            } finally {
-                view?.showLoading(false)
+                Timber.e(e, "Error getting transaction history")
+                if (e is EmptyDataException) {
+                    view?.showPagingState(PagingState.Idle)
+                    if (transactions.isEmpty()) view?.showHistory(emptyList())
+                } else {
+                    view?.showPagingState(PagingState.Error(e))
+                }
             }
         }
     }
 
-    override fun loadHourlyChartData(tokenSymbol: String, hours: Int) {
-        launch {
+    override fun refresh() {
+        paginationEnded = false
+
+        refreshJob?.cancel()
+        refreshJob = launch {
             try {
-                view?.showLoading(true)
-                val data = historyInteractor.getHourlyPriceHistory(tokenSymbol, DESTINATION_TOKEN, hours)
-                val entries = data.mapIndexed { index, price -> Entry(index.toFloat(), price.close.toFloat()) }
-                view?.showChartData(entries)
+                view?.showRefreshing(true)
+
+                val history = historyInteractor.getHistory(token.publicKey, null, PAGE_SIZE)
+                if (history.isEmpty()) {
+                    paginationEnded = true
+                } else {
+                    transactions.addAll(history)
+                    view?.showHistory(transactions)
+                }
+
+                view?.showPagingState(PagingState.Idle)
             } catch (e: CancellationException) {
-                Timber.w(e, "Cancelled hourly chart data loading")
+                Timber.w(e, "Cancelled history refresh")
             } catch (e: Throwable) {
-                view?.showError(R.string.error_fetching_data_about_token, tokenSymbol)
-                Timber.e(e, "Error loading token price history")
+                Timber.e(e, "Error refreshing transaction history")
+                if (e is EmptyDataException) {
+                    view?.showPagingState(PagingState.Idle)
+                    if (transactions.isEmpty()) view?.showHistory(emptyList())
+                } else {
+                    view?.showPagingState(PagingState.Error(e))
+                }
             } finally {
-                view?.showLoading(false)
+                view?.showRefreshing(false)
+            }
+        }
+    }
+
+    override fun fetchNextPage() {
+        if (paginationEnded) return
+
+        pagingJob?.cancel()
+        pagingJob = launch {
+            try {
+                view?.showPagingState(PagingState.Loading)
+
+                val lastSignature = transactions.lastOrNull()?.signature
+                val history = historyInteractor.getHistory(token.publicKey, lastSignature, PAGE_SIZE)
+                if (history.isEmpty()) {
+                    paginationEnded = true
+                } else {
+                    transactions.addAll(history)
+                    view?.showHistory(transactions)
+                }
+
+                view?.showPagingState(PagingState.Idle)
+            } catch (e: CancellationException) {
+                Timber.w(e, "Cancelled history next page load")
+            } catch (e: Throwable) {
+                Timber.e(e, "Error getting transaction history")
+                if (e is EmptyDataException) {
+                    paginationEnded = true
+                    view?.showPagingState(PagingState.Idle)
+                } else {
+                    view?.showPagingState(PagingState.Error(e))
+                }
             }
         }
     }
