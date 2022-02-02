@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.p2p.wallet.databinding.ItemTokenListBinding
+import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.user.model.TokenData
 
 class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
@@ -38,7 +39,12 @@ class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
         private val symbolTextView = binding.symbolTextView
 
         fun bind(value: TokenData) {
-            textView.text = value.name
+            // TODO temporary solution
+            if (value.symbol == "SOL") {
+                textView.text = Token.SOL_NAME
+            } else {
+                textView.text = value.name
+            }
             symbolTextView.text = value.symbol
             Glide.with(imageView).load(value.iconUrl).into(imageView)
         }
