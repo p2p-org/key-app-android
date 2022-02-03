@@ -44,7 +44,6 @@ class TokenInfoPresenter(
                     transactions.addAll(history)
                     view?.showHistory(transactions)
                 }
-
                 view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")
@@ -65,7 +64,6 @@ class TokenInfoPresenter(
         refreshJob = launch {
             try {
                 view?.showRefreshing(true)
-
                 val history = historyInteractor.getHistory(token.publicKey, null, PAGE_SIZE)
                 if (history.isEmpty()) {
                     paginationEnded = true
@@ -73,7 +71,6 @@ class TokenInfoPresenter(
                     transactions.addAll(history)
                     view?.showHistory(transactions)
                 }
-
                 view?.showPagingState(PagingState.Idle)
             } catch (e: CancellationException) {
                 Timber.w(e, "Cancelled history refresh")

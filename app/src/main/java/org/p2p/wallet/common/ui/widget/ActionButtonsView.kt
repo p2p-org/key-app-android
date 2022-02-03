@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
@@ -19,7 +20,7 @@ class ActionButtonsView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val binding = WidgetTokenActionsBinding.inflate(
-        LayoutInflater.from(context), this
+        LayoutInflater.from(context), this, true
     )
     private val adapter = ButtonsAdapter(::onItemClicked)
     var onBuyItemClickListener: (() -> Unit)? = null
@@ -28,17 +29,16 @@ class ActionButtonsView @JvmOverloads constructor(
     var onSwapItemClickListener: (() -> Unit)? = null
 
     init {
-        binding.recyclerView.clipToOutline = true
         binding.recyclerView.adapter = adapter
         adapter.setItems(getItem())
     }
 
-    private fun getItem(): List<Pair<Int, Int>> =
+    private fun getItem(): List<ActionButton> =
         listOf(
-            Pair(R.string.main_buy, R.drawable.ic_plus),
-            Pair(R.string.main_receive, R.drawable.ic_receive_simple),
-            Pair(R.string.main_send, R.drawable.ic_send_simple),
-            Pair(R.string.main_swap, R.drawable.ic_swap_simple)
+            ActionButton(R.string.main_buy, R.drawable.ic_plus),
+            ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
+            ActionButton(R.string.main_send, R.drawable.ic_send_simple),
+            ActionButton(R.string.main_swap, R.drawable.ic_swap_simple)
         )
 
     private fun onItemClicked(@StringRes actionResId: Int) {
@@ -61,13 +61,10 @@ class ActionButtonsView @JvmOverloads constructor(
     private class ButtonsAdapter(private val block: (Int) -> Unit) :
         RecyclerView.Adapter<ButtonsAdapter.ViewHolder>() {
 
-        private val data = mutableListOf<Pair<Int, Int>>()
+        private val data = mutableListOf<ActionButton>()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-            ItemActionButtonBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            ),
-            block
+            ItemActionButtonBinding.inflate(LayoutInflater.from(parent.context), parent, false), block
         )
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -76,7 +73,7 @@ class ActionButtonsView @JvmOverloads constructor(
 
         override fun getItemCount(): Int = data.size
 
-        fun setItems(items: List<Pair<Int, Int>>) {
+        fun setItems(items: List<ActionButton>) {
             data.clear()
             data.addAll(items)
             notifyDataSetChanged()
@@ -84,6 +81,7 @@ class ActionButtonsView @JvmOverloads constructor(
 
         inner class ViewHolder(binding: ItemActionButtonBinding, private val onItemClickListener: (Int) -> Unit) :
             RecyclerView.ViewHolder(binding.root) {
+
             init {
                 itemView.clipToOutline = true
             }
@@ -91,11 +89,13 @@ class ActionButtonsView @JvmOverloads constructor(
             val textView = binding.textView
             val imageView = binding.imageView
 
-            fun bind(item: Pair<Int, Int>) {
-                textView.text = requireContext().getString(item.first)
-                imageView.setImageResource(item.second)
-                itemView.setOnClickListener { onItemClickListener.invoke(item.first) }
+            fun bind(item: ActionButton) {
+                textView.text = requireContext().getString(item.titleResId)
+                imageView.setImageResource(item.iconResId)
+                itemView.setOnClickListener { onItemClickListener.invoke(item.titleResId) }
             }
         }
     }
+
+    data class ActionButton(@StringRes val titleResId: Int, @DrawableRes val iconResId: Int)
 }

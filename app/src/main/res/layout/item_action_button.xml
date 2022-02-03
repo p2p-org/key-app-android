@@ -5,7 +5,6 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:foreground="?selectableItemBackground"
     android:gravity="center"
     android:orientation="vertical"
     tools:parentTag="androidx.appcompat.widget.LinearLayoutCompat">

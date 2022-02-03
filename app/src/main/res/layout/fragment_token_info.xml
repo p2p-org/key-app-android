@@ -9,12 +9,14 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentScrim="@color/accentPrimary"
+            android:elevation="0dp"
+            app:contentScrim="@color/elementPrimary"
             app:expandedTitleGravity="top"
             app:expandedTitleMarginEnd="48dp"
             app:expandedTitleMarginStart="48dp"
@@ -78,10 +80,38 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/bg_buttons"
                 app:layout_constraintTop_toBottomOf="@id/usdTotalTextView" />
 
         </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/emptyView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:src="@drawable/ic_history_empty_placeholder" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/receive_no_transactions_yet"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Bold28" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:text="@string/receive_no_transactions_yet_message"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"

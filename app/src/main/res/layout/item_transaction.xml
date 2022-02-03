@@ -44,7 +44,7 @@
         android:layout_marginVertical="12dp"
         android:layout_marginStart="20dp"
         android:background="@drawable/bg_gray_secondary_rounded"
-        android:padding="8dp"
+        android:padding="12dp"
         android:src="@drawable/ic_transaction_send"
         app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -74,7 +74,7 @@
         app:constraint_referenced_ids="tokenImageView, swapView" />
 
     <TextView
-        android:id="@+id/typeTextView"
+        android:id="@+id/addressTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -86,7 +86,7 @@
         tools:text="Swap" />
 
     <TextView
-        android:id="@+id/addressTextView"
+        android:id="@+id/timeTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -97,35 +97,34 @@
         app:layout_constraintBottom_toBottomOf="@id/bottomImageBarrier"
         app:layout_constraintEnd_toStartOf="@id/totalTextView"
         app:layout_constraintStart_toEndOf="@id/endImageBarrier"
-        app:layout_constraintTop_toBottomOf="@id/typeTextView"
+        app:layout_constraintTop_toBottomOf="@id/addressTextView"
         app:layout_constraintVertical_bias="1"
-        tools:text="to USDC" />
+        tools:text="12 44" />
 
     <TextView
-        android:id="@+id/valueTextView"
+        android:id="@+id/totalTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="20dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/typeTextView"
+        app:layout_constraintTop_toTopOf="@id/addressTextView"
         app:layout_goneMarginEnd="20dp"
         tools:text="- 10.00 $" />
 
     <TextView
-        android:id="@+id/totalTextView"
+        android:id="@+id/valueTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="?colorElementSecondary"
-        app:layout_constraintBottom_toBottomOf="@id/addressTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/addressTextView"
+        app:layout_constraintTop_toBottomOf="@id/totalTextView"
         tools:text="0.0140 SOL" />
 </androidx.constraintlayout.widget.ConstraintLayout>

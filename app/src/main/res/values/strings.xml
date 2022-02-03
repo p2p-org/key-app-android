@@ -396,4 +396,5 @@
     <string name="auth_fingerprint_login">Fingerprint login</string>
     <string name="auth_fingerprint_login_message">Use your fingerprint for faster easier access to your wallet</string>
     <string name="receive_token_list_search">Search for a token</string>
+    <string name="receive_no_transactions_yet_message">After first transaction you\nwill be able to view it here</string>
 </resources>

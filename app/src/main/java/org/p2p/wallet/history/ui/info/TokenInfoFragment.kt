@@ -61,7 +61,6 @@ class TokenInfoFragment :
             usdTotalTextView.text = token.getFormattedUsdTotal()
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
-                clipToOutline = true
                 onBuyItemClickListener = {
                     // TODO open buy screen
                 }
@@ -108,7 +107,7 @@ class TokenInfoFragment :
         historyAdapter.setTransactions(transactions)
 
         val isEmpty = transactions.isEmpty()
-        // binding.emptyView.isVisible = isEmpty
+        binding.emptyView.isVisible = isEmpty
         binding.refreshLayout.isVisible = !isEmpty
     }
 
