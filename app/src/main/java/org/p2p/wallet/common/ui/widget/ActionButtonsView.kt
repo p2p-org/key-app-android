@@ -20,7 +20,7 @@ class ActionButtonsView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val binding = WidgetTokenActionsBinding.inflate(
-        LayoutInflater.from(context), this, true
+        LayoutInflater.from(context), this
     )
     private val adapter = ButtonsAdapter(::onItemClicked)
     var onBuyItemClickListener: (() -> Unit)? = null

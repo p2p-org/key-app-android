@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<merge
     android:id="@+id/container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:background="@drawable/bg_buttons"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     tools:parentTag="android.widget.LinearLayout">
@@ -19,4 +18,4 @@
         app:spanCount="4"
         tools:itemCount="4"
         tools:listitem="@layout/item_action_button" />
-</FrameLayout>
+</merge>
