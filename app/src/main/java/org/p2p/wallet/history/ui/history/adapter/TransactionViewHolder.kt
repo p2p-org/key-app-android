@@ -89,7 +89,6 @@ class TransactionViewHolder(
         totalTextView.isVisible = false
 
         tokenImageView.setImageResource(R.drawable.ic_wallet_gray)
-        // typeTextView.setText(R.string.main_create_account)
         addressTextView.text = transaction.signature.cutMiddle()
     }
 
