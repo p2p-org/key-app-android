@@ -8,7 +8,7 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.ByteUtils
 import org.p2p.wallet.feerelayer.model.SwapData
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -109,7 +109,7 @@ object FeeRelayerProgram {
         minimumAmountOut: BigInteger,
     ): TransactionInstruction {
         val keys = listOf(
-            AccountMeta(publicKey = Token.WRAPPED_SOL_MINT.toPublicKey(), isSigner = false, isWritable = false),
+            AccountMeta(publicKey = WRAPPED_SOL_MINT.toPublicKey(), isSigner = false, isWritable = false),
             AccountMeta(publicKey = feePayer, isSigner = true, isWritable = true),
             AccountMeta(publicKey = userAuthority, isSigner = true, isWritable = false),
             AccountMeta(publicKey = userRelayAccount, isSigner = false, isWritable = true),
@@ -170,7 +170,7 @@ object FeeRelayerProgram {
     ): TransactionInstruction {
 
         val keys = listOf(
-            AccountMeta(publicKey = Token.WRAPPED_SOL_MINT.toPublicKey(), isSigner = false, isWritable = false),
+            AccountMeta(publicKey = WRAPPED_SOL_MINT.toPublicKey(), isSigner = false, isWritable = false),
             AccountMeta(publicKey = feePayer, isSigner = true, isWritable = true),
             AccountMeta(publicKey = userAuthority, isSigner = true, isWritable = false),
             AccountMeta(publicKey = userRelayAccount, isSigner = false, isWritable = true),

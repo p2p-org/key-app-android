@@ -6,7 +6,7 @@ import org.p2p.solanaj.kits.transaction.CreateAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
-import org.p2p.wallet.main.model.TokenPrice
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleLong

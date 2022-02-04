@@ -2,12 +2,12 @@ package org.p2p.wallet.user.interactor
 
 import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.api.TokenColors
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.model.TokenComparator
-import org.p2p.wallet.main.model.TokenConverter
-import org.p2p.wallet.main.model.TokenPrice
-import org.p2p.wallet.main.repository.MainLocalRepository
+import org.p2p.wallet.home.api.TokenColors
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.model.TokenComparator
+import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.home.model.TokenPrice
+import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
@@ -15,7 +15,7 @@ import org.p2p.wallet.user.repository.UserRepository
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
-    private val mainLocalRepository: MainLocalRepository,
+    private val mainLocalRepository: HomeLocalRepository,
     private val rpcRepository: RpcRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {

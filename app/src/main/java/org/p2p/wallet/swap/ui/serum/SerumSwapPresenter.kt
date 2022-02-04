@@ -2,8 +2,8 @@ package org.p2p.wallet.swap.ui.serum
 
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.ui.transaction.TransactionInfo
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.send.ui.transaction.TransactionInfo
 import org.p2p.wallet.swap.model.PriceData
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
@@ -22,6 +22,7 @@ import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -260,7 +261,7 @@ class SwapPresenter(
             } else null
 
             // FIXME: pay network option implementation
-            val feeOption = Token.SOL_SYMBOL
+            val feeOption = SOL_SYMBOL
             view?.showFees(networkFee = networkFee.orEmpty(), liquidityFee = liquidityFee, feeOption)
         } catch (e: Throwable) {
             Timber.e(e, "Error calculating network fees")

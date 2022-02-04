@@ -9,9 +9,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
-import org.p2p.wallet.main.model.NetworkType
-import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeFragment
-import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey

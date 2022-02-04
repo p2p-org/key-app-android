@@ -13,10 +13,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapSerumBinding
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.ui.select.SelectTokenFragment
-import org.p2p.wallet.main.ui.transaction.TransactionInfo
-import org.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.select.SelectTokenFragment
+import org.p2p.wallet.send.ui.transaction.TransactionInfo
+import org.p2p.wallet.send.ui.transaction.TransactionStatusBottomSheet
 import org.p2p.wallet.swap.ui.bottomsheet.SwapFeesBottomSheet
 import org.p2p.wallet.swap.ui.bottomsheet.SwapSettingsBottomSheet
 import org.p2p.wallet.swap.ui.bottomsheet.SwapSlippageBottomSheet

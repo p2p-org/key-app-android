@@ -9,7 +9,7 @@ import org.p2p.wallet.history.repository.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.HistoryRepository
 import org.p2p.wallet.history.ui.info.TokenInfoContract
 import org.p2p.wallet.history.ui.info.TokenInfoPresenter
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.home.model.Token
 
 object HistoryModule : InjectionModule {
 

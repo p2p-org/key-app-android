@@ -16,9 +16,9 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.SwapTransactionFragment
 import org.p2p.wallet.history.ui.details.TransferTransactionFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.main.ui.send.SendFragment
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.send.ui.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter

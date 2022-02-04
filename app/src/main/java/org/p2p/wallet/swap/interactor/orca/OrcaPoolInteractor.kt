@@ -6,7 +6,6 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenSwapProgram
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.swap.model.orca.OrcaPool
@@ -17,6 +16,7 @@ import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
@@ -55,7 +55,7 @@ class OrcaPoolInteractor(
 
         // Create fromTokenAccount when needed
         val sourceAccountInstructions =
-            if (fromMint.toBase58() == Token.WRAPPED_SOL_MINT && owner.publicKey.equals(fromTokenPubkey)) {
+            if (fromMint.toBase58() == WRAPPED_SOL_MINT && owner.publicKey.equals(fromTokenPubkey)) {
                 instructionsInteractor.prepareCreatingWSOLAccountAndCloseWhenDone(
                     from = owner.publicKey,
                     amount = amount,
@@ -67,7 +67,7 @@ class OrcaPoolInteractor(
 
         // If necessary, create a TokenAccount for the output token
         // If destination token is Solana, create WSOL if needed
-        val destinationAccountInstructions = if (toMint.toBase58() == Token.WRAPPED_SOL_MINT) {
+        val destinationAccountInstructions = if (toMint.toBase58() == WRAPPED_SOL_MINT) {
             val toTokenPublicKey = toTokenPubkey?.toPublicKey()
             if (toTokenPublicKey != null && !toTokenPublicKey.equals(owner.publicKey)) {
                 // wrapped sol has already been created, just return it, then close later

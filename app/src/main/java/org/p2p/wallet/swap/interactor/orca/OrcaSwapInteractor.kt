@@ -12,8 +12,8 @@ import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.model.TokenComparator
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.OrcaInstructionsData
 import org.p2p.wallet.swap.model.orca.OrcaPool
@@ -32,6 +32,7 @@ import org.p2p.wallet.transaction.interactor.TransactionInteractor
 import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
@@ -57,7 +58,7 @@ class OrcaSwapInteractor(
 
     private var info: OrcaSwapInfo? = null
 
-    private var feePaymentToken: String = Token.SOL_SYMBOL
+    private var feePaymentToken: String = SOL_SYMBOL
 
     // Prepare all needed infos for swapping
     suspend fun load() = withContext(Dispatchers.IO) {
@@ -213,7 +214,7 @@ class OrcaSwapInteractor(
                 numberOfTransactions += BigInteger.ONE
             }
 
-            if (intermediaryTokenName == Token.SOL_SYMBOL) {
+            if (intermediaryTokenName == SOL_SYMBOL) {
                 transactionFees += lamportsPerSignature
                 transactionFees += minRentExempt
             }
@@ -230,7 +231,7 @@ class OrcaSwapInteractor(
         }
 
         // when swap from/to native SOL, a fee for creating it is needed
-        if (fromWalletPubkey == owner.toBase58() || bestPoolsPair!!.last().tokenBName == Token.SOL_SYMBOL) {
+        if (fromWalletPubkey == owner.toBase58() || bestPoolsPair!!.last().tokenBName == SOL_SYMBOL) {
             transactionFees += lamportsPerSignature
             transactionFees += minRentExempt
         }

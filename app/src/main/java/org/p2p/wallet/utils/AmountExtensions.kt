@@ -1,6 +1,6 @@
 package org.p2p.wallet.utils
 
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.home.model.Token
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode

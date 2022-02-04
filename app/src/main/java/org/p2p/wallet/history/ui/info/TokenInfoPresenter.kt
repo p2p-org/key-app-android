@@ -8,7 +8,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.home.model.Token
 import timber.log.Timber
 
 class TokenInfoPresenter(

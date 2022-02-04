@@ -13,7 +13,7 @@ import org.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEO
 import org.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
 import org.p2p.wallet.infrastructure.network.NetworkModule.createLoggingInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
-import org.p2p.wallet.main.api.CompareApi
+import org.p2p.wallet.home.api.CompareApi
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserInMemoryRepository

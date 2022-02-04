@@ -10,12 +10,12 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.model.SeedPhraseResult
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.scaleLong
@@ -60,7 +60,7 @@ class SecretKeyInteractor(
         path: DerivationPath
     ) = accounts.mapNotNull { account ->
         val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
-        val exchangeRate = userLocalRepository.getPriceByToken(Token.SOL_SYMBOL)?.price ?: BigDecimal.ZERO
+        val exchangeRate = userLocalRepository.getPriceByToken(SOL_SYMBOL)?.price ?: BigDecimal.ZERO
         val total = balance.fromLamports().scaleLong()
         DerivableAccount(path, account, total, total.multiply(exchangeRate))
     }

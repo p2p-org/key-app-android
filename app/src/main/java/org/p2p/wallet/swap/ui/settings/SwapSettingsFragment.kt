@@ -8,7 +8,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack

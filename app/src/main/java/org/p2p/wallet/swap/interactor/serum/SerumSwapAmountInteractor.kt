@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.interactor.serum
 
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor.Companion.BASE_TAKER_FEE_BPS
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor.Companion.FEE_MULTIPLIER
@@ -10,6 +10,7 @@ import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -64,7 +65,7 @@ class SerumSwapAmountInteractor(
 
         // convert fee from SOL to amount in source token
         // TODO: - Check: look for sourceToken/SOL price and send to fee-relayer
-        val fair = serumSwapInteractor.loadFair(sourceToken.mintAddress, Token.WRAPPED_SOL_MINT)
+        val fair = serumSwapInteractor.loadFair(sourceToken.mintAddress, WRAPPED_SOL_MINT)
         val neededAmount = calculateNeededInputAmount(
             forReceivingEstimatedAmount = networkFee.fromLamports(),
             rate = fair.toBigDecimal()

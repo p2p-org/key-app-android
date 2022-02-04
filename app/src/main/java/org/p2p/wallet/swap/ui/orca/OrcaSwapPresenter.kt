@@ -8,9 +8,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.ShowProgress
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.ui.transaction.TransactionInfo
+import org.p2p.wallet.send.model.ShowProgress
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.send.ui.transaction.TransactionInfo
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.Slippage
@@ -24,6 +24,7 @@ import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.transaction.interactor.TransactionInteractor
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
@@ -330,7 +331,7 @@ class OrcaSwapPresenter(
             "$intermediaryFee $intermediaryTokenSymbol + $destinationFee $destinationTokenSymbol"
         }
 
-        val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else Token.SOL_SYMBOL
+        val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
         val fee = liquidityProviderFees[0].fromLamports(destination.decimals)
         val feeUsd = destination.usdRate?.let { fee.multiply(it) }
         val data = SwapFee(

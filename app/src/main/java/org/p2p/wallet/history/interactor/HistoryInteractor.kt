@@ -16,9 +16,10 @@ import org.p2p.wallet.history.model.PriceHistory
 import org.p2p.wallet.history.model.TransactionConverter
 import org.p2p.wallet.history.repository.HistoryRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
@@ -177,10 +178,10 @@ class HistoryInteractor(
         directPublicKey: String,
         publicKey: String
     ): HistoryTransaction? {
-        val symbol = if (transfer.isSimpleTransfer) Token.SOL_SYMBOL else findSymbol(transfer.mint)
+        val symbol = if (transfer.isSimpleTransfer) SOL_SYMBOL else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
-        val mint = if (transfer.isSimpleTransfer) Token.WRAPPED_SOL_MINT else transfer.mint
+        val mint = if (transfer.isSimpleTransfer) WRAPPED_SOL_MINT else transfer.mint
         val source = userLocalRepository.findTokenData(mint) ?: return null
 
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)

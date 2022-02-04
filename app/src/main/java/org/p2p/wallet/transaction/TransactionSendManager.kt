@@ -63,7 +63,7 @@ class TransactionSendManager private constructor(
 
     private fun executeTransactions() {
         pendingTransactions.forEach {
-            executors.add(SendTransactionExecutor(it))
+            executors.add(TransactionSendExecutor(it))
         }
 
         Timber.tag(TAG).d("Starting execution, executors count: ${pendingTransactions.size}")
