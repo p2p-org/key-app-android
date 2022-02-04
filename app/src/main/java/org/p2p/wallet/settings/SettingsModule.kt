@@ -5,6 +5,8 @@ import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
+import org.p2p.wallet.settings.repository.SettingsInMemoryRepository
+import org.p2p.wallet.settings.repository.SettingsLocalRepository
 import org.p2p.wallet.settings.ui.appearance.AppearanceContract
 import org.p2p.wallet.settings.ui.appearance.AppearancePresenter
 import org.p2p.wallet.settings.ui.network.NetworkContract
@@ -19,10 +21,10 @@ import org.p2p.wallet.settings.ui.settings.SettingsPresenter
 object SettingsModule : InjectionModule {
 
     override fun create() = module {
-        factory { SettingsInteractor(get()) }
+        factory { SettingsInteractor(get(),get()) }
         factory { ThemeInteractor(get()) }
-
-        factory { SettingsPresenter(get(), get(), get(), get()) } bind SettingsContract.Presenter::class
+        single { SettingsInMemoryRepository() } bind SettingsLocalRepository::class
+        factory { SettingsPresenter(get(), get(),get()) } bind SettingsContract.Presenter::class
         factory { SecurityPresenter(get(), get()) } bind SecurityContract.Presenter::class
         factory { ResetPinPresenter(get()) } bind ResetPinContract.Presenter::class
         factory { NetworkPresenter(get(), get(), get()) } bind NetworkContract.Presenter::class

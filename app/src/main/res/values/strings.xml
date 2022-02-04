@@ -354,9 +354,9 @@
 
     <!-- settings -->
     <string name="settings_title">Settings</string>
+    <string name="settings_profile">Profile</string>
     <string name="settings_hide_zero_balances">Hide zero balances</string>
     <string name="settings_security">Security</string>
-    <string name="settings_username">Username</string>
     <string name="settings_network">Network</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
@@ -375,6 +375,11 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
+    <string name="settings_username">Username</string>
+    <string name="settings_address_book">Address book</string>
+    <string name="settings_address_book_subtitle">Add, edit and delete addresses</string>
+    <string name="settings_history">History</string>
+    <string name="settings_history_subtitle">View your transaction history</string>
     <string name="swap_total_format">Total: %s</string>
     <string name="swap_total_zero_sol">0 SOL</string>
     <string name="swap_choose_the_destination">Choose the destination</string>

@@ -12,6 +12,7 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
+import org.p2p.wallet.settings.model.SettingItem
 import org.p2p.wallet.settings.ui.appearance.AppearanceFragment
 import org.p2p.wallet.settings.ui.network.NetworkFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
@@ -35,60 +36,31 @@ class SettingsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                popBackStack()
-            }
-            securityTextView.setOnClickListener {
-                replaceFragment(SecurityFragment.create())
-            }
-
-            zeroBalanceView.setOnClickListener {
-                presenter.setZeroBalanceHidden(!hideZeroSwitch.isChecked)
-            }
-
-            networkTextView.setOnClickListener {
-                replaceFragment(NetworkFragment.create())
-            }
-
-            appearanceTextView.setOnClickListener {
-                replaceFragment(AppearanceFragment.create())
-            }
-
-            usernameView.setOnClickListener {
-                presenter.onUsernameClicked()
-            }
-
-            logoutView.clipToOutline = true
-            logoutView.setOnClickListener {
-                presenter.logout()
-            }
-
-            versionTextView.text = BuildConfig.VERSION_NAME
         }
 
         presenter.loadData()
     }
 
-    override fun showHiddenBalance(isHidden: Boolean) {
-        binding.hideZeroSwitch.isChecked = isHidden
+    override fun showProfile(items: List<SettingItem>) {
+        binding.profileSettings.setup(items)
     }
 
-    override fun showAuthorization() {
-        popAndReplaceFragment(
-            target = OnboardingFragment.create(),
-            inclusive = true
-        )
+    override fun showNetwork(items: List<SettingItem>) {
     }
 
-    override fun showUsername(username: Username?) {
-        binding.usernameValueTextView.text = username?.getFullUsername(requireContext())
+    override fun onProfileItemClicked(titleRes: Int) {
     }
 
-    override fun openUsernameScreen() {
-        replaceFragment(UsernameFragment.create())
+    override fun onNetworkItemClicked(titleRes: Int) {
+    }
+}
+
+interface FeeRelayerApi {
+    interface DevApi: FeeRelayerApi {
+
     }
 
-    override fun openReserveUsernameScreen() {
-        replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+    interface Api: FeeRelayerApi {
+
     }
 }

@@ -8,38 +8,19 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 
 class SettingsPresenter(
-    private val authInteractor: AuthInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val appRestarter: AppRestarter
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     override fun loadData() {
-        val isHidden = settingsInteractor.isZerosHidden()
-        view?.showHiddenBalance(isHidden)
-
-        val username = usernameInteractor.getUsername()
-        view?.showUsername(username)
-    }
-
-    override fun setZeroBalanceHidden(isHidden: Boolean) {
-        settingsInteractor.setZeroBalanceHidden(isHidden)
-        view?.showHiddenBalance(isHidden)
-    }
-
-    override fun logout() {
         launch {
-            authInteractor.logout()
-            appRestarter.restartApp()
-        }
-    }
-
-    override fun onUsernameClicked() {
-        val usernameExists = usernameInteractor.usernameExists()
-        if (usernameExists) {
-            view?.openUsernameScreen()
-        } else {
-            view?.openReserveUsernameScreen()
+            val username = usernameInteractor.getUsername()?.username.orEmpty()
+            val profileItems = settingsInteractor.getProfileSettings(username)
+            profileItems.forEach { profileItem ->
+                profileItem.onItemClickListener = { view?.onProfileItemClicked(it.titleRes) }
+            }
+            view?.showProfile(profileItems)
         }
     }
 }
