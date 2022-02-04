@@ -4,8 +4,8 @@ import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Signature
 import org.p2p.solanaj.core.TransactionInstruction
-import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
+import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.api.RelaySwapRequest
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.RelayTransferRequest
@@ -20,13 +20,13 @@ import java.math.BigInteger
 
 class FeeRelayerRemoteRepository(
     private val api: FeeRelayerApi,
+    private val devnetApi: FeeRelayerDevnetApi,
     private val environmentManager: EnvironmentManager
 ) : FeeRelayerRepository {
 
     override suspend fun getFeePayerPublicKey(): PublicKey {
-        val environment = environmentManager.loadEnvironment()
-        return if (environment == Environment.DEVNET) {
-            api.getPublicKeyV2().toPublicKey()
+        return if (environmentManager.isDevnet()) {
+            devnetApi.getPublicKeyV2().toPublicKey()
         } else {
             api.getPublicKey().toPublicKey()
         }
@@ -53,9 +53,8 @@ class FeeRelayerRemoteRepository(
             pubkeys = keys,
             blockHash = blockHash,
         )
-        val environment = environmentManager.loadEnvironment()
-        return if (environment == Environment.DEVNET) {
-            api.relayTransactionV2(request)
+        return if (environmentManager.isDevnet()) {
+            devnetApi.relayTransactionV2(request)
         } else {
             api.relayTransaction(request)
         }
@@ -80,9 +79,8 @@ class FeeRelayerRemoteRepository(
             blockhash = blockhash,
         )
 
-        val environment = environmentManager.loadEnvironment()
-        return if (environment == Environment.DEVNET) {
-            api.relayTopUpSwapV2(request)
+        return if (environmentManager.isDevnet()) {
+            devnetApi.relayTopUpSwapV2(request)
         } else {
             api.relayTopUpSwap(request)
         }
@@ -112,11 +110,10 @@ class FeeRelayerRemoteRepository(
             blockhash = blockhash,
         )
 
-        val environment = environmentManager.loadEnvironment()
-        return if (environment == Environment.DEVNET) {
-            api.relaySwap(request)
+        return if (environmentManager.isDevnet()) {
+            devnetApi.relaySwapV2(request)
         } else {
-            api.relaySwapV2(request)
+            api.relaySwap(request)
         }
     }
 
@@ -143,11 +140,10 @@ class FeeRelayerRemoteRepository(
             blockhash = blockhash,
         )
 
-        val environment = environmentManager.loadEnvironment()
-        return if (environment == Environment.DEVNET) {
-            api.relayTransferSplToken(request)
+        return if (environmentManager.isDevnet()) {
+            devnetApi.relayTransferSplTokenV2(request)
         } else {
-            api.relayTransferSplTokenV2(request)
+            api.relayTransferSplToken(request)
         }
     }
 }
