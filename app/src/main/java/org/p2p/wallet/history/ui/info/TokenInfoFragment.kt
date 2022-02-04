@@ -20,6 +20,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
@@ -61,6 +62,7 @@ class TokenInfoFragment :
             usdTotalTextView.text = token.getFormattedUsdTotal()
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
+                showBuy(token.tokenSymbol == SOL_SYMBOL)
                 onBuyItemClickListener = {
                     // TODO open buy screen
                 }
