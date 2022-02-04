@@ -19,13 +19,13 @@ import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
-import org.p2p.wallet.main.MainModule
+import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.qr.QrModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
 import org.p2p.wallet.root.RootModule
-import org.p2p.wallet.root.ui.RootActivity
+import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.settings.interactor.ThemeInteractor
@@ -60,7 +60,7 @@ class App : Application() {
                     RootModule.create(),
                     BackupModule.create(),
                     UserModule.create(),
-                    MainModule.create(),
+                    HomeModule.create(),
                     RenBtcModule.create(),
                     NetworkModule.create(),
                     QrModule.create(),

@@ -2,7 +2,7 @@ package org.p2p.wallet.swap.ui.settings
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.home.model.Token
 
 interface SwapSettingsContract {
 

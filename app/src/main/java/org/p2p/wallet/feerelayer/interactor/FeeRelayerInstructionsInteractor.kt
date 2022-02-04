@@ -15,13 +15,13 @@ import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token.Companion.WRAPPED_SOL_MINT
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import java.math.BigInteger
 
 class FeeRelayerInstructionsInteractor(

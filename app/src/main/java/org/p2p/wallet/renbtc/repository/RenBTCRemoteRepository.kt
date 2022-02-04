@@ -1,8 +1,8 @@
 package org.p2p.wallet.renbtc.repository
 
-import org.p2p.wallet.main.db.SessionDao
-import org.p2p.wallet.main.db.SessionEntity
-import org.p2p.wallet.main.model.RenBTCPayment
+import org.p2p.wallet.renbtc.db.SessionDao
+import org.p2p.wallet.renbtc.db.SessionEntity
+import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.api.RenBTCApi
 import org.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.flow.Flow

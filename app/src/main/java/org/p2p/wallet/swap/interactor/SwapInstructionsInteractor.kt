@@ -6,9 +6,9 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
@@ -25,7 +25,7 @@ class SwapInstructionsInteractor(
         feePayer: PublicKey,
         closeAfterward: Boolean
     ): AccountInstructions {
-        if (mint.toBase58() == Token.WRAPPED_SOL_MINT) {
+        if (mint.toBase58() == WRAPPED_SOL_MINT) {
             val accountInstructions = prepareSourceAccountAndInstructions(
                 myNativeWallet = myAccount,
                 source = address ?: myAccount,
@@ -102,7 +102,7 @@ class SwapInstructionsInteractor(
                 TokenProgram.initializeAccountInstruction(
                     TokenProgram.PROGRAM_ID,
                     newAccount.publicKey,
-                    Token.WRAPPED_SOL_MINT.toPublicKey(),
+                    WRAPPED_SOL_MINT.toPublicKey(),
                     payer
                 )
             ),

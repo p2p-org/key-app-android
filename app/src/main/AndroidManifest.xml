@@ -26,7 +26,7 @@
         android:theme="@style/WalletTheme">
 
         <activity
-            android:name="org.p2p.wallet.root.ui.RootActivity"
+            android:name="org.p2p.wallet.root.RootActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"

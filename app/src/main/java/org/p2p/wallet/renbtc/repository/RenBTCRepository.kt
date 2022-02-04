@@ -1,6 +1,6 @@
 package org.p2p.wallet.renbtc.repository
 
-import org.p2p.wallet.main.model.RenBTCPayment
+import org.p2p.wallet.renbtc.model.RenBTCPayment
 import kotlinx.coroutines.flow.Flow
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.rpc.Environment

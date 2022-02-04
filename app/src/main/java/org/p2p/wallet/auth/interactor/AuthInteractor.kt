@@ -19,7 +19,7 @@ import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import org.p2p.wallet.main.repository.MainLocalRepository
+import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
@@ -44,7 +44,7 @@ class AuthInteractor(
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider,
     private val biometricManager: BiometricManager,
-    private val mainLocalRepository: MainLocalRepository,
+    private val mainLocalRepository: HomeLocalRepository,
     private val updatesManager: UpdatesManager,
     private val transactionManager: RenTransactionManager,
     private val appScope: AppScope

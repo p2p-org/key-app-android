@@ -9,8 +9,8 @@ import androidx.core.content.ContextCompat
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
@@ -118,7 +118,7 @@ sealed class HistoryTransaction(
 
         fun getValue(): String = "${getSymbol(isBurn)} ${amount.scaleMedium()} $"
 
-        fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} ${Token.REN_BTC_SYMBOL}"
+        fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} $REN_BTC_SYMBOL"
     }
 
     @Parcelize

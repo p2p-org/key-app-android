@@ -17,8 +17,8 @@ import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.MainModule.MOONPAY_QUALIFIER
-import org.p2p.wallet.main.model.BigDecimalTypeAdapter
+import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
+import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.updates.ConnectionStateProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -17,10 +17,12 @@ import org.p2p.solanaj.serumswap.model.SignersAndInstructions
 import org.p2p.solanaj.serumswap.model.SwapParams
 import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.transaction.model.AppTransaction
+import org.p2p.wallet.utils.Constants.SOL_MINT
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.isUsdx
 import org.p2p.wallet.utils.scaleMedium
@@ -117,7 +119,7 @@ class SerumSwapInteractor(
         // if destination wallet is a wrapped sol or not yet created,
         // a fee for creating it is needed, as new address is an associated token address,
         // the signature fee is NOT needed
-        if (toWallet.mintAddress == Token.WRAPPED_SOL_MINT || toWallet is Token.Other) {
+        if (toWallet.mintAddress == WRAPPED_SOL_MINT || toWallet is Token.Other) {
             fee += minRentExemption
         }
 
@@ -156,10 +158,7 @@ class SerumSwapInteractor(
             val market = pair.asks.market // the same market as bids
 
             if (market.baseMintAddress == fromMint ||
-                (
-                    market.baseMintAddress.toBase58() == Token.WRAPPED_SOL_MINT &&
-                        fromMint.toBase58() == Token.SOL_MINT
-                    )
+                (market.baseMintAddress.toBase58() == WRAPPED_SOL_MINT && fromMint.toBase58() == SOL_MINT)
             ) {
                 val bestBids = bbo.bestBids
                 if (bestBids != null && bestBids != 0.0) {
@@ -437,7 +436,7 @@ class SerumSwapInteractor(
             mint = baseMint,
             initAmount = if (fromMintIsUSDx) BigInteger.ZERO else amount,
             feePayer = feePayer ?: owner,
-            closeAfterward = baseMint.toBase58() == Token.WRAPPED_SOL_MINT
+            closeAfterward = baseMint.toBase58() == WRAPPED_SOL_MINT
         )
 
         // prepare destination account, create associated token if destination wallet is native or nil.
@@ -447,7 +446,7 @@ class SerumSwapInteractor(
             mint = quoteMint,
             initAmount = BigInteger.ZERO,
             feePayer = feePayer ?: owner,
-            closeAfterward = quoteMint.toBase58() == Token.WRAPPED_SOL_MINT
+            closeAfterward = quoteMint.toBase58() == WRAPPED_SOL_MINT
         )
 
         // get open order
@@ -539,7 +538,7 @@ class SerumSwapInteractor(
             mint = fromMint,
             initAmount = amount,
             feePayer = feePayer ?: owner,
-            closeAfterward = fromMint.toBase58() == Token.WRAPPED_SOL_MINT
+            closeAfterward = fromMint.toBase58() == WRAPPED_SOL_MINT
         )
 
         val destinationAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
@@ -548,7 +547,7 @@ class SerumSwapInteractor(
             mint = toMint,
             initAmount = BigInteger.ZERO,
             feePayer = feePayer ?: owner,
-            closeAfterward = toMint.toBase58() == Token.WRAPPED_SOL_MINT
+            closeAfterward = toMint.toBase58() == WRAPPED_SOL_MINT
         )
         val pcAccountInstructions = instructionsInteractor.prepareValidAccountAndInstructions(
             myAccount = owner,
@@ -556,7 +555,7 @@ class SerumSwapInteractor(
             mint = pcMint,
             initAmount = BigInteger.ZERO,
             feePayer = feePayer ?: owner,
-            closeAfterward = pcMint.toBase58() == Token.WRAPPED_SOL_MINT
+            closeAfterward = pcMint.toBase58() == WRAPPED_SOL_MINT
         )
 
         val signers = mutableListOf<Account>()

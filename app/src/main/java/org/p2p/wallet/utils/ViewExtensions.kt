@@ -148,4 +148,4 @@ fun RecyclerView.attachAdapter(adapter: RecyclerView.Adapter<*>) {
     doOnDetach { this.adapter = null }
 }
 
-fun RecyclerView.ViewHolder.requireContext() = itemView.context
+fun RecyclerView.ViewHolder.requireContext(): Context = itemView.context
