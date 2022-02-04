@@ -499,7 +499,7 @@
                         android:textAllCaps="false"
                         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                         android:textColor="?colorElementSecondary"
-                        app:layout_constraintTop_toBottomOf="@id/detailsBarrier"
+                        app:layout_constraintTop_toBottomOf="@id/tokensBarrier"
                         tools:ignore="UnusedAttribute" />
 
                 </LinearLayout>

@@ -14,9 +14,11 @@ interface ReceiveSolanaContract {
         fun showUserData(userPublicKey: String, username: Username?)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showQrLoading(isLoading: Boolean)
+        fun showToastMessage(resId: Int)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
+        fun saveQr(name: String, bitmap: Bitmap)
     }
 }

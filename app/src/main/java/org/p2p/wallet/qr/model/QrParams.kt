@@ -2,7 +2,7 @@ package org.p2p.wallet.qr.model
 
 import androidx.annotation.ColorInt
 
-data class QrColors(
+data class QrParams(
     @ColorInt val contentColor: Int,
-    @ColorInt val backgroundColor: Int
+    @ColorInt val backgroundColor: Int,
 )

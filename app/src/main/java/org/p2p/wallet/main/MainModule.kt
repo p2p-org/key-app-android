@@ -8,6 +8,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.main.api.MoonpayApi
 import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
+import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.repository.MainDatabaseRepository
@@ -18,6 +19,10 @@ import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaContract
 import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaPresenter
 import org.p2p.wallet.main.ui.main.MainContract
 import org.p2p.wallet.main.ui.main.MainPresenter
+import org.p2p.wallet.main.ui.receive.list.TokenListContract
+import org.p2p.wallet.main.ui.receive.list.TokenListPresenter
+import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypeContract
+import org.p2p.wallet.main.ui.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaContract
 import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaPresenter
 import org.p2p.wallet.main.ui.send.SendContract
@@ -47,6 +52,9 @@ object MainModule : InjectionModule {
         factory { (token: Token.Active?) ->
             ReceiveSolanaPresenter(token, get(), get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
+        factory { (type: NetworkType) ->
+            ReceiveNetworkTypePresenter(get(), type)
+        } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
             SendPresenter(token, get(), get(), get(), get(), get())
         } bind SendContract.Presenter::class
@@ -54,5 +62,6 @@ object MainModule : InjectionModule {
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
         factory { BuySolanaPresenter(get()) } bind BuySolanaContract.Presenter::class
+        factory { TokenListPresenter(get()) } bind TokenListContract.Presenter::class
     }
 }

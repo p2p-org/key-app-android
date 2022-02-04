@@ -15,6 +15,7 @@ import kotlin.math.ceil
 private val dayMonthFormatter = DateTimeFormatter.ofPattern("dd MMMM")
 private val dayMonthYearFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy HH:mm")
+private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 fun ZonedDateTime.toDateString(context: Context): String {
     val day = withZoneSameInstant(ZoneId.systemDefault()).toLocalDate()
@@ -29,6 +30,11 @@ fun ZonedDateTime.toDateString(context: Context): String {
 fun ZonedDateTime.toDateTimeString(): String {
     val localDateTime = withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
     return dateTimeFormatter.formatWithLocale(localDateTime)
+}
+
+fun ZonedDateTime.toTimeString(): String {
+    val localDateTime = withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
+    return timeFormatter.formatWithLocale(localDateTime)
 }
 
 fun ZonedDateTime.isSameDayAs(other: ZonedDateTime) =

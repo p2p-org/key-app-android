@@ -231,7 +231,7 @@ class SendFragment :
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
-            messageTextView.setTextColor(requireContext().getColor(R.color.colorWarning))
+            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarning))
             clearImageView.isVisible = true
         }
     }

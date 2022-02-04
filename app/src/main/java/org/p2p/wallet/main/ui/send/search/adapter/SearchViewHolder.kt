@@ -43,7 +43,7 @@ class SearchViewHolder(
                 topTextView.text = item.address.cutEnd()
                 val caution = bottomTextView.context.getString(R.string.send_caution_empty_balance)
                 bottomTextView.withTextOrGone(caution)
-                val warningColor = bottomTextView.context.getColor(R.color.colorWarning)
+                val warningColor = bottomTextView.context.getColor(R.color.systemWarning)
                 bottomTextView.setTextColor(warningColor)
             }
             is SearchResult.Wrong -> {

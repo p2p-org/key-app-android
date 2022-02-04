@@ -3,36 +3,33 @@ package org.p2p.wallet.history.ui.info
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.github.mikephil.charting.components.Description
-import com.github.mikephil.charting.components.MarkerView
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.widget.TabItem
-import org.p2p.wallet.databinding.FragmentInfoTokenBinding
-import org.p2p.wallet.history.model.PeriodHistory
+import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
+import org.p2p.wallet.common.ui.recycler.PagingState
+import org.p2p.wallet.databinding.FragmentTokenInfoBinding
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.ui.details.SwapTransactionFragment
+import org.p2p.wallet.history.ui.details.TransferTransactionFragment
+import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.ui.receive.ReceiveFragment
+import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.main.ui.send.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.p2p.wallet.utils.withTextOrGone
 
 class TokenInfoFragment :
-    BaseMvpFragment<TokenInfoContract.View, TokenInfoContract.Presenter>(R.layout.fragment_info_token),
+    BaseMvpFragment<TokenInfoContract.View, TokenInfoContract.Presenter>(R.layout.fragment_token_info),
     TokenInfoContract.View {
 
     companion object {
@@ -42,86 +39,56 @@ class TokenInfoFragment :
         )
     }
 
+    override val presenter: TokenInfoContract.Presenter by inject {
+        parametersOf(token)
+    }
     private val token: Token.Active by args(EXTRA_TOKEN)
+    private val historyAdapter: HistoryAdapter by lazy {
+        HistoryAdapter(
+            onTransactionClicked = { onTransactionClicked(it) },
+            onRetryClicked = { presenter.fetchNextPage() }
+        )
+    }
 
-    override val presenter: TokenInfoContract.Presenter by inject()
-
-    private val glideManager: GlideManager by inject()
-
-    private val binding: FragmentInfoTokenBinding by viewBinding()
+    private val binding: FragmentTokenInfoBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            glideManager.load(tokenImageView, token.logoUrl)
+            toolbar.title = token.tokenName
+            toolbar.setNavigationOnClickListener { popBackStack() }
             totalTextView.text = token.getFormattedTotal()
             usdTotalTextView.text = token.getFormattedUsdTotal()
-
-            periodPriceTextView withTextOrGone token.getCurrentPrice()
-            // todo: periodPercentTextView show percent
-
-            showAddressButton.setOnClickListener {
-                replaceFragment(ReceiveFragment.create(token))
-            }
-
-            receiveButton.setOnClickListener {
-                replaceFragment(ReceiveFragment.create(token))
-            }
-
-            sendButton.setOnClickListener {
-                replaceFragment(SendFragment.create(token))
-            }
-
-            swapButton.setOnClickListener {
-                replaceFragment(OrcaSwapFragment.create(token))
-            }
-
-            setupTabsView()
-        }
-    }
-
-    override fun showChartData(entries: List<Entry>) {
-        val lineDataSet = LineDataSet(entries, null)
-        lineDataSet.lineWidth = 2f
-        lineDataSet.setDrawCircles(false)
-        lineDataSet.setDrawValues(false)
-        lineDataSet.color = colorFromTheme(R.attr.colorSystemSuccessMain)
-        lineDataSet.setDrawFilled(true)
-        lineDataSet.setDrawHorizontalHighlightIndicator(false)
-        lineDataSet.isHighlightEnabled = true
-
-        val fillGradient = ContextCompat.getDrawable(requireContext(), R.drawable.bg_line_chart)
-        lineDataSet.fillDrawable = fillGradient
-
-        binding.lineChart.apply {
-            setGridBackgroundColor(colorFromTheme(R.attr.colorSystemSuccessMain))
-            setViewPortOffsets(0f, 0f, 0f, 0f)
-            description = Description().apply { text = "" }
-            setDrawBorders(false)
-            axisRight.setDrawGridLines(false)
-            axisLeft.setDrawGridLines(false)
-            xAxis.setDrawGridLines(false)
-            axisLeft.setDrawLabels(false)
-            axisRight.setDrawLabels(false)
-            xAxis.setDrawLabels(false)
-            setTouchEnabled(true)
-            legend.isEnabled = false
-            val mv = MarkerView(context, R.layout.view_line_chart_dot)
-            mv.setOffset(
-                (-mv.measuredWidth / 2).toFloat(),
-                (-mv.measuredHeight).toFloat() / 2
-            )
-            marker = mv
-            data = LineData(lineDataSet)
-            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-                override fun onNothingSelected() {}
-                override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    highlightValue(h)
+            refreshLayout.setOnRefreshListener { presenter.refresh() }
+            with(actionButtonsView) {
+                onBuyItemClickListener = {
+                    // TODO open buy screen
                 }
-            })
-            invalidate()
-            animateX(500)
+                onReceiveItemClickListener = {
+                    replaceFragment(ReceiveSolanaFragment.create(token))
+                }
+                onSendClickListener = {
+                    replaceFragment(SendFragment.create(token))
+                }
+                onSwapItemClickListener = {
+                    replaceFragment(OrcaSwapFragment.create(token))
+                }
+            }
+
+            with(binding.historyRecyclerView) {
+                val linearLayoutManager = LinearLayoutManager(requireContext())
+                layoutManager = linearLayoutManager
+                attachAdapter(historyAdapter)
+
+                val scrollListener = EndlessScrollListener(linearLayoutManager) {
+                    presenter.fetchNextPage()
+                }
+
+                clearOnScrollListeners()
+                addOnScrollListener(scrollListener)
+            }
         }
+        presenter.loadHistory()
     }
 
     override fun showError(@StringRes resId: Int, argument: String) {
@@ -132,50 +99,29 @@ class TokenInfoFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    private fun setupTabsView() {
-        with(binding) {
-            val tabs = listOf(
-                TabItem(
-                    PeriodHistory.ONE_HOUR.resourceId,
-                    getString(PeriodHistory.ONE_HOUR.resourceId)
-                ),
-                TabItem(
-                    PeriodHistory.FOUR_HOURS.resourceId,
-                    getString(PeriodHistory.FOUR_HOURS.resourceId)
-                ),
-                TabItem(
-                    PeriodHistory.ONE_DAY.resourceId,
-                    getString(PeriodHistory.ONE_DAY.resourceId)
-                ),
-                TabItem(
-                    PeriodHistory.ONE_WEEK.resourceId,
-                    getString(PeriodHistory.ONE_WEEK.resourceId)
-                ),
-                TabItem(
-                    PeriodHistory.ONE_MONTH.resourceId,
-                    getString(PeriodHistory.ONE_MONTH.resourceId)
-                ),
-            )
+    override fun showRefreshing(isRefreshing: Boolean) {
+        binding.refreshLayout.isRefreshing = isRefreshing
+    }
 
-            tabsView.onTabChanged = { tabId ->
-                when (val period = PeriodHistory.parse(tabId)) {
-                    PeriodHistory.ONE_HOUR,
-                    PeriodHistory.FOUR_HOURS ->
-                        presenter.loadHourlyChartData(token.tokenSymbol, period.value)
-                    PeriodHistory.ONE_DAY,
-                    PeriodHistory.ONE_WEEK,
-                    PeriodHistory.ONE_MONTH ->
-                        presenter.loadDailyChartData(token.tokenSymbol, period.value)
-                }
+    override fun showHistory(transactions: List<HistoryTransaction>) {
+        historyAdapter.setTransactions(transactions)
+
+        val isEmpty = transactions.isEmpty()
+        binding.emptyView.isVisible = isEmpty
+        binding.refreshLayout.isVisible = !isEmpty
+    }
+
+    override fun showPagingState(newState: PagingState) {
+        historyAdapter.setPagingState(newState)
+    }
+
+    private fun onTransactionClicked(transaction: HistoryTransaction) {
+        when (transaction) {
+            is HistoryTransaction.Swap -> replaceFragment(SwapTransactionFragment.create(transaction))
+            is HistoryTransaction.Transfer -> replaceFragment(TransferTransactionFragment.create(transaction))
+            else -> {
+                // todo: add close account and unknown transaction details view
             }
-
-            tabsView.setTabs(
-                tabs = tabs,
-                defaultTab = TabItem(
-                    PeriodHistory.ONE_HOUR.resourceId,
-                    root.context.getString(PeriodHistory.ONE_HOUR.resourceId)
-                )
-            )
         }
     }
 }

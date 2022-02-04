@@ -5,7 +5,9 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import timber.log.Timber
+import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 500L
 
@@ -34,13 +36,22 @@ class CreatePinPresenter(
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
             createPinCode(createdPin)
         } else {
-            view?.navigateToBiometric(createdPin)
+            view?.onPinCreated()
+        }
+    }
+
+    override fun enableBiometric() {
+        try {
+            val cipher = authInteractor.getPinEncodeCipher()
+            view?.showBiometricDialog(cipher.value)
+        } catch (e: Throwable) {
+            Timber.e(e, "Failed to get cipher for biometrics")
+            view?.showErrorMessage(R.string.error_general_message)
         }
     }
 
     private fun createPinCode(pinCode: String) {
         view?.showLoading(true)
-
         launch {
             try {
                 authInteractor.registerComplete(pinCode, null)
@@ -53,6 +64,19 @@ class CreatePinPresenter(
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 view?.showLoading(false)
+            }
+        }
+    }
+
+    override fun createPin(cipher: Cipher?) {
+        launch {
+            try {
+                val encoderCipher = if (cipher != null) EncodeCipher(cipher) else null
+                authInteractor.registerComplete(createdPin, encoderCipher)
+                view?.onAuthFinished()
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to create pin code")
+                view?.showErrorMessage(R.string.error_general_message)
             }
         }
     }

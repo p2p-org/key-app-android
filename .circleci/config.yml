@@ -79,8 +79,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
-                - develop
                 - /(^feature\/.+)/
       - unit_tests:
           requires:

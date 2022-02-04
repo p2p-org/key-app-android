@@ -14,6 +14,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.renBridge.LockAndMint
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -25,7 +27,8 @@ private const val ONE_SECOND_IN_MILLIS = 1000L
 
 class RenBTCPresenter(
     private val interactor: RenBtcInteractor,
-    private val qrCodeInteractor: QrCodeInteractor
+    private val qrCodeInteractor: QrCodeInteractor,
+    private val usernameInteractor: UsernameInteractor
 ) : BasePresenter<RenBTCContract.View>(), RenBTCContract.Presenter {
 
     private var sessionTimer: CountDownTimer? = null
@@ -43,8 +46,10 @@ class RenBTCPresenter(
     }
 
     override fun startNewSession(context: Context) {
-        view?.showLoading(true)
-        RenVMService.startWithNewSession(context)
+        launch {
+            view?.showLoading(true)
+            RenVMService.startWithNewSession(context)
+        }
     }
 
     override fun checkActiveSession(context: Context) {
@@ -56,14 +61,19 @@ class RenBTCPresenter(
         }
     }
 
+    override fun saveQr(name: String, bitmap: Bitmap) {
+        launch {
+            usernameInteractor.saveQr(name, bitmap)
+            view?.showToastMessage(R.string.auth_save)
+        }
+    }
+
     override fun cancelTimer() {
         sessionTimer?.cancel()
         sessionTimer = null
     }
 
     private fun handleSession(session: LockAndMint.Session?) {
-        view?.showLoading(false)
-
         if (session != null && session.isValid) {
             val remaining = session.expiryTime - System.currentTimeMillis()
             val fee = calculateFee(session)
@@ -71,8 +81,10 @@ class RenBTCPresenter(
 
             startTimer(remaining)
             generateQrCode(session.gatewayAddress)
+            loadTransactionCount()
+            view?.showLoading(false)
         } else {
-            view?.showIdleState()
+            // TODO navigate so solana broke logic
         }
     }
 
@@ -98,6 +110,13 @@ class RenBTCPresenter(
         }
     }
 
+    private fun loadTransactionCount() {
+        launch {
+            val transactions = interactor.getAllTransactions()
+            view?.showTransactionsCount(transactions.size)
+        }
+    }
+
     private fun startTimer(time: Long) {
         if (sessionTimer != null) return
 
@@ -108,7 +127,7 @@ class RenBTCPresenter(
             }
 
             override fun onFinish() {
-                view?.showIdleState()
+                view?.navigateToSolana()
             }
         }
 

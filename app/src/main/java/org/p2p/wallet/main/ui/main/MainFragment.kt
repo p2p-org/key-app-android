@@ -15,14 +15,14 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
-import org.p2p.wallet.history.ui.TokenContainerFragment
+import org.p2p.wallet.history.ui.info.TokenInfoFragment
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenItem
 import org.p2p.wallet.main.model.VisibilityState
 import org.p2p.wallet.main.ui.buy.moonpay.BuySolanaFragment
 import org.p2p.wallet.main.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.main.ui.options.TokenOptionsDialog
-import org.p2p.wallet.main.ui.receive.ReceiveFragment
+import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.main.ui.send.SendFragment
 import org.p2p.wallet.main.ui.username.UsernameConfirmationDialog
 import org.p2p.wallet.qr.ui.ScanQrFragment
@@ -99,7 +99,7 @@ class MainFragment :
             }
 
             headerViewContainer.receiveButton.setOnClickListener {
-                replaceFragment(ReceiveFragment.create(null))
+                replaceFragment(ReceiveSolanaFragment.create(null))
             }
 
             headerViewContainer.sendButton.setOnClickListener {
@@ -182,7 +182,7 @@ class MainFragment :
     }
 
     private fun onTokenClicked(token: Token.Active) {
-        replaceFragment(TokenContainerFragment.create(token))
+        replaceFragment(TokenInfoFragment.create(token))
     }
 
     private fun onEditClicked(token: Token.Active) {

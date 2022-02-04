@@ -88,8 +88,8 @@ class PinCodeView @JvmOverloads constructor(
 
     fun startSuccessAnimation(onAnimationFinished: () -> Unit) {
         val animation = TranslateAnimation(0f, 0f, 0f, 0f)
-        animation.duration = ANIMATION_DURATION
-        animation.repeatMode = Animation.REVERSE
+        animation.duration = 1000L
+        animation.repeatMode = Animation.INFINITE
         animation.repeatCount = 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {

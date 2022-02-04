@@ -25,6 +25,7 @@
     <string name="common_not_available">N/A</string>
     <string name="common_not_implemented_yet">Not implemented yet</string>
     <string name="common_understood">Understood</string>
+    <string name="common_btc">BTC</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -135,6 +136,8 @@
     <string name="auth_show_your_secret_key">Show your security key</string>
     <string name="auth_renew">Renew</string>
     <string name="auth_choose_correct_words">Choose correct words</string>
+    <string name="auth_fingerprint_login">Fingerprint login</string>
+    <string name="auth_fingerprint_login_message">Use your fingerprint for faster easier access to your wallet</string>
 
     <!-- Main -->
     <plurals name="hidden_wallets">
@@ -228,7 +231,7 @@
     <!-- receive -->
     <string name="receive_solana">Solana</string>
     <string name="receive_bitcoin">Bitcoin</string>
-    <string name="receive_currencies_info">Which cryptocurrencies can I use?</string>
+    <string name="receive_tokens_info">What tokens can I receive?</string>
     <string name="receive_want_to_receive">I want to receive</string>
     <string name="receive_ren_attention_message">Bitcoin deposit address is only open for 36 hours, but you can send to it multiple times within this session.</string>
     <string name="receive_ren_open_hours">is only open for 36 hours</string>
@@ -240,11 +243,12 @@
     <string name="receive_renbtc">renBTC</string>
     <string name="receive_renbtc_format">%s renBTC</string>
     <string name="receive_view_bitcoin_explorer">View in Bitcoin explorer</string>
-    <string name="receive_session_info">• This address accepts only Bitcoin. You may lose assets by sending another coin.\n</string>
-    <string name="receive_session_min_transaction">• Minimum transaction amount of %s BTC.</string>
-    <string name="receive_session_timer_info">• %s is the remaining time to safely send the assets.</string>
+    <string name="receive_session_info">•\tThis address accepts only Bitcoin. You\n\t\tmay lose assets by sending another coin.</string>
+    <string name="receive_session_min_transaction">•\tMinimum transaction amount of %s\n\t\tBTC.</string>
+    <string name="receive_session_timer_info">• %s is the remaining time to safely\n\t\tsend the assets.</string>
     <string name="receive_only_bitcoin">only Bitcoin</string>
-    <string name="receive_btc_min_transaction">0.000112 BTC</string>
+    <string name="receive_btc_min_transaction">0.000112</string>
+    <string name="receive_btc_remain_time">35:59:59</string>
     <string name="receive_statuses">Receiving statuses</string>
     <string name="receive_waiting_for_deposit">Waiting for deposit confirmation</string>
     <string name="receive_submitting_to_renvm">Submitting to RenVM</string>
@@ -259,6 +263,22 @@
     <string name="receive_renbtc_transaction">Receiving renBTC</string>
     <string name="receive_tap_to_read">Tap to read</string>
     <string name="receive_no_transactions_yet">No transactions yet</string>
+    <string name="receive_token_list_info">Each token in this list is available for receiving with this address; you can search for a token by typing its name or ticker.\n\nIf a token is not on this list, we do not recommend sending it to this address.</string>
+    <string name="receive_token_list_do_not_recommend">we do not recommend sending it to this address.</string>
+    <string name="receive_view_solana_explorer">View in Solana explorer</string>
+    <string name="receive_status_received">Statuses received</string>
+    <string name="receive_choose_network_type">Choose the network</string>
+    <string name="receive_solana_network">Solana network</string>
+    <string name="receive_solana_network_info">Receive <b>any token</b> within the Solana network even if it is not included in your wallet list.</string>
+    <string name="receive_btc_network">Bitcoin network</string>
+    <string name="receive_btc_network_info">This address accepts <b>only Bitcoin.</b> You may lose assets by sending another coin.</string>
+    <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>
+    <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000112 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
+    <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
+    <string name="receive_via_bitcoin_network_info">Make sure you understand the aspects</string>
+    <string name="receive_understand">I understand</string>
+    <string name="receive_token_list_search">Search for a token</string>
+    <string name="receive_no_transactions_yet_message">After first transaction you\nwill be able to view it here</string>
 
     <!-- send -->
     <string name="send_enter_address">Enter the recipient\'s address</string>
@@ -398,4 +418,3 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
 </resources>
-

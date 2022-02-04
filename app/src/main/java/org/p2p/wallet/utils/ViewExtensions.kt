@@ -3,6 +3,8 @@ package org.p2p.wallet.utils
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -58,6 +60,13 @@ fun View.focusAndShowKeyboard() {
 
         doOnDetach { viewTreeObserver.removeOnWindowFocusChangeListener(listener) }
     }
+}
+
+fun View.createBitmap(): Bitmap {
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    draw(canvas)
+    return bitmap
 }
 
 fun Activity.hideKeyboard() {
