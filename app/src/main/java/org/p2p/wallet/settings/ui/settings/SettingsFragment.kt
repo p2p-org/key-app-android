@@ -54,13 +54,3 @@ class SettingsFragment :
     override fun onNetworkItemClicked(titleRes: Int) {
     }
 }
-
-interface FeeRelayerApi {
-    interface DevApi: FeeRelayerApi {
-
-    }
-
-    interface Api: FeeRelayerApi {
-
-    }
-}
