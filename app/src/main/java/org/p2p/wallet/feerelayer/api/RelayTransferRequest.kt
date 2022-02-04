@@ -1,9 +1,9 @@
-package org.p2p.wallet.rpc.api
+package org.p2p.wallet.feerelayer.api
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigInteger
 
-data class FeeSplTransferRequest(
+class RelayTransferRequest(
     @SerializedName("sender_token_account_pubkey")
     val senderTokenAccountPubkey: String,
     @SerializedName("recipient_pubkey")
@@ -13,11 +13,13 @@ data class FeeSplTransferRequest(
     @SerializedName("authority_pubkey")
     val authorityPubkey: String,
     @SerializedName("amount")
-    val lamports: BigInteger,
+    val amount: BigInteger,
     @SerializedName("decimals")
     val decimals: Int,
-    @SerializedName("signature")
-    val signature: String,
+    @SerializedName("fee_amount")
+    val feeAmount: BigInteger,
+    @SerializedName("authority_signature")
+    val authoritySignature: String,
     @SerializedName("blockhash")
     val blockhash: String
 )

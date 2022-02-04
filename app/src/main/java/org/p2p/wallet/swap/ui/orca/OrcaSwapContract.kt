@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
 import org.p2p.wallet.swap.model.Slippage
@@ -20,6 +21,7 @@ interface OrcaSwapContract {
         fun showDestinationToken(token: Token?)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
+        fun showProgressDialog(data: ShowProgress?)
         fun showFees(data: SwapFee?)
         fun showPrice(data: SwapPrice?)
         fun showTotal(data: SwapTotal?)

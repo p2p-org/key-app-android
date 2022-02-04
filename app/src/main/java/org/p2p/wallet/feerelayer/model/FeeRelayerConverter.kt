@@ -1,9 +1,10 @@
-package org.p2p.wallet.rpc.model
+package org.p2p.wallet.feerelayer.model
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.TransactionInstruction
-import org.p2p.wallet.rpc.api.RequestAccountMeta
-import org.p2p.wallet.rpc.api.RequestInstruction
+import org.p2p.wallet.feerelayer.api.RequestAccountMeta
+import org.p2p.wallet.feerelayer.api.RequestInstruction
+import org.p2p.wallet.feerelayer.api.SwapTransactionSignaturesRequest
 
 object FeeRelayerConverter {
 
@@ -17,6 +18,12 @@ object FeeRelayerConverter {
             data = instruction.getUnsignedBytes()
         )
     }
+
+    fun toNetwork(signatures: SwapTransactionSignatures): SwapTransactionSignaturesRequest =
+        SwapTransactionSignaturesRequest(
+            userAuthoritySignature = signatures.userAuthoritySignature,
+            transferAuthoritySignature = signatures.transferAuthoritySignature
+        )
 
     private fun toNetwork(account: AccountMeta, pubkeys: List<String>): RequestAccountMeta =
         RequestAccountMeta(

@@ -274,28 +274,31 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/receiveTextView"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="end"
+                    android:layout_marginStart="8dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    app:layout_constraintEnd_toStartOf="@id/receiveUsdTextView"
+                    app:layout_constraintBottom_toBottomOf="@id/receiveAtLeastLabelTextView"
+                    app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toEndOf="@id/receiveAtLeastLabelTextView"
-                    app:layout_constraintTop_toBottomOf="@id/destinationImageView"
-                    tools:text="4,970751" />
+                    app:layout_constraintTop_toTopOf="@id/receiveAtLeastLabelTextView"
+                    tools:text="4,970751 SRM" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/receiveUsdTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="end"
+                    android:layout_marginStart="8dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     android:textColor="?colorElementSecondary"
+                    app:layout_constraintBottom_toBottomOf="@id/receiveAtLeastLabelTextView"
                     app:layout_constraintEnd_toEndOf="@id/destinationAmountTextView"
                     app:layout_constraintStart_toEndOf="@id/receiveTextView"
-                    app:layout_constraintTop_toBottomOf="@id/destinationImageView"
+                    app:layout_constraintTop_toTopOf="@id/receiveAtLeastLabelTextView"
                     tools:text="~$1,046.81" />
 
                 <Space
@@ -331,32 +334,18 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
 
-        <FrameLayout
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/swapButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ProgressBar
-                android:id="@+id/buttonProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-
-            <org.p2p.wallet.common.ui.widget.ProgressButton
-                android:id="@+id/swapButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:enabled="false"
-                android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                app:buttonText="@string/swap_choose_the_destination"
-                app:buttonTextColor="?colorElementPrimary"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/swapDetails"
-                app:layout_constraintVertical_bias="1"
-                tools:ignore="UnusedAttribute" />
-        </FrameLayout>
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:enabled="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            app:buttonText="@string/swap_choose_the_destination"
+            app:buttonTextColor="?colorElementPrimary"
+            tools:ignore="UnusedAttribute" />
 
     </LinearLayout>
 

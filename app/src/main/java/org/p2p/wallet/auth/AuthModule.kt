@@ -26,7 +26,7 @@ import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
-import org.p2p.wallet.rpc.RpcModule.FEE_RELAYER_QUALIFIER
+import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
 import retrofit2.Retrofit
 
 object AuthModule {

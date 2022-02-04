@@ -11,7 +11,6 @@
     <color name="accentSecondary">#96B1F8</color>
     <color name="accentTertiary">#EFF3FF</color>
     <color name="accentWarning">#FF5858</color>
-    <color name="systemSuccessMain">#2DB533</color>
 
     <color name="elementPrimary">#FFFFFFFF</color>
     <color name="elementSecondary">#A3A5BA</color>
@@ -23,27 +22,34 @@
     <color name="backgroundPrimary">#FFFFFF</color>
     <color name="backgroundSecondary">#F6F6F8</color>
 
-    <color name="backgroundActivePrimary">#EFF3FF</color>
-    <color name="systemErrorMain">#F43D3D</color>
-    <color name="textIconLink">#82A5FF</color>
-    <color name="strokePrimary">#D3D4DE</color>
-
     <color name="white">#FFFFFFFF</color>
     <color name="colorStaticDark">#CC000000</color>
     <color name="colorSnackBar">#404040</color>
 
     <!-- new colors below -->
+    <color name="systemErrorMain">#F43D3D</color>
     <color name="systemError">#F43D3D</color>
+    <color name="systemErrorSecondary">#FD7373</color>
+    <color name="systemErrorBackground">#FEF5F5</color>
     <color name="systemSuccess">#77DB7C</color>
+    <color name="systemSuccessMain">#2DB533</color>
+    <color name="systemSuccessSecondary">#50D756</color>
+    <color name="systemSuccessBackground">#F5FBF5</color>
+    <color name="systemWarningMain">#FFA631</color>
 
-    <color name="colorPinErrorBackground">#FD7373</color>
-    <color name="colorPinSuccessBackground">#50D756</color>
+    <color name="strokePrimary">#D3D4DE</color>
 
     <color name="textIconSecondary">#8E8E93</color>
+    <color name="textIconButtonPrimary">#FFFFFF</color>
     <color name="textIconPrimary">#202020</color>
+    <color name="textIconLink">#82A5FF</color>
+    <color name="textIconActive">#5887FF</color>
+
     <color name="backgroundApp">#FBFBFD</color>
     <color name="backgroundAppStroke">#F2F2F7</color>
+    <color name="backgroundActivePrimary">#EFF3FF</color>
     <color name="backgroundDisabled">#A3A5BA</color>
+    <color name="backgroundButtonPrimary">#5887FF</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>
@@ -69,5 +75,6 @@
     <color name="chartMATH">#000000</color>
     <color name="chartTOMO">#252829</color>
     <color name="chartLUA">#F1BE5C</color>
+
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/elementSecondary</color>
 </resources>

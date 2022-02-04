@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import org.p2p.wallet.main.model.Token
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
@@ -38,6 +39,12 @@ fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
 
 fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
+
+fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
+    usdRate?.let { this.multiply(it).scaleShort() }
+
+fun BigDecimal.toUsd(token: Token.Active): BigDecimal? =
+    token.usdRate?.let { this.multiply(it).scaleShort() }
 
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isNotZero() = this.compareTo(BigDecimal.ZERO) != 0

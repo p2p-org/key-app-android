@@ -1,9 +1,8 @@
-package org.p2p.wallet.rpc.api
+package org.p2p.wallet.feerelayer.api
 
 import com.google.gson.annotations.SerializedName
-import java.math.BigDecimal
 
-data class Spl(
+class SwapSplRequest(
     @SerializedName("program_id")
     val programId: String,
     @SerializedName("account_pubkey")
@@ -21,7 +20,7 @@ data class Spl(
     @SerializedName("pool_fee_account_pubkey")
     val poolFeeAccountPubkey: String,
     @SerializedName("amount_in")
-    val amountIn: BigDecimal,
+    val amountIn: Long,
     @SerializedName("minimum_amount_out")
-    val minimumAmountOut: BigDecimal
+    val minimumAmountOut: Long
 )

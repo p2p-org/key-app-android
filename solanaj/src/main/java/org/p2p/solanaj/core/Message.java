@@ -60,8 +60,16 @@ public class Message {
         return this;
     }
 
+    public List<TransactionInstruction> getInstructions() {
+        return instructions;
+    }
+
     public void setRecentBlockHash(String recentBlockhash) {
         this.recentBlockhash = recentBlockhash;
+    }
+
+    public String getRecentBlockHash() {
+        return recentBlockhash;
     }
 
     public byte[] serialize() {
@@ -72,6 +80,10 @@ public class Message {
 
         if (instructions.size() == 0) {
             throw new IllegalArgumentException("No instructions provided");
+        }
+
+        if (feePayer == null) {
+            throw new IllegalArgumentException("Fee payer not found");
         }
 
         messageHeader = new MessageHeader();
@@ -154,6 +166,10 @@ public class Message {
 
     protected void setFeePayer(PublicKey feePayer) {
         this.feePayer = feePayer;
+    }
+
+    public int getNumRequiredSignatures() {
+        return messageHeader.numRequiredSignatures;
     }
 
     public List<AccountMeta> getAccountKeys() {

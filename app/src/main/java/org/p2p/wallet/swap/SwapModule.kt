@@ -10,8 +10,8 @@ import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.swap.api.InternalWebApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaAmountInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
@@ -54,7 +54,7 @@ object SwapModule : InjectionModule {
 
         factory { SerumMarketInteractor(get()) }
         factory { SerumOpenOrdersInteractor(get()) }
-        factory { SwapSerializationInteractor(get(), get(), get()) }
+        factory { SwapSerializationInteractor(get(), get(), get(), get()) }
         factory { SerumSwapAmountInteractor(get(), get()) }
         factory { SwapInstructionsInteractor(get(), get()) }
         factory { SerumSwapMarketInteractor(get()) }
@@ -68,7 +68,6 @@ object SwapModule : InjectionModule {
                 internalRepository = get(),
                 poolInteractor = get(),
                 userInteractor = get(),
-                serializationInteractor = get(),
                 orcaInstructionsInteractor = get(),
                 transactionInteractor = get(),
                 tokenKeyProvider = get()
@@ -76,8 +75,8 @@ object SwapModule : InjectionModule {
         }
 
         factory { OrcaInstructionsInteractor(get()) }
-        factory { OrcaAddressInteractor(get(), get()) }
-        factory { OrcaAmountInteractor(get()) }
+        factory { TransactionAddressInteractor(get(), get()) }
+        single { TransactionAmountInteractor(get()) }
         factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->

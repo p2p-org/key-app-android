@@ -8,13 +8,13 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class SwapInstructionsInteractor(
     private val rpcRepository: RpcRepository,
-    private val orcaAddressInteractor: OrcaAddressInteractor
+    private val orcaAddressInteractor: TransactionAddressInteractor
 ) {
 
     suspend fun prepareValidAccountAndInstructions(

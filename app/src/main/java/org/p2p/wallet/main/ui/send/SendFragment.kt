@@ -1,8 +1,14 @@
 package org.p2p.wallet.main.ui.send
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface.BOLD
 import android.os.Bundle
+import android.text.Spannable
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -16,8 +22,14 @@ import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.main.model.NetworkType
 import org.p2p.wallet.main.model.SearchResult
+import org.p2p.wallet.main.model.SendFee
+import org.p2p.wallet.main.model.SendTotal
+import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
+import org.p2p.wallet.main.ui.send.dialogs.EXTRA_NETWORK
+import org.p2p.wallet.main.ui.send.dialogs.NetworkSelectionFragment
+import org.p2p.wallet.main.ui.send.dialogs.ProgressBottomSheet
 import org.p2p.wallet.main.ui.send.search.SearchFragment
 import org.p2p.wallet.main.ui.send.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.main.ui.transaction.TransactionInfo
@@ -31,18 +43,21 @@ import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleLong
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 import java.math.BigDecimal
+
+private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
+private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
 class SendFragment :
     BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
     SendContract.View {
 
     companion object {
-        private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
-        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
         const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
         fun create(address: String? = null) = SendFragment().withArgs(
             EXTRA_ADDRESS to address
@@ -91,7 +106,7 @@ class SendFragment :
             }
 
             networkView.setOnClickListener {
-                // NetworkDestinationBottomSheet.show(childFragmentManager) { presenter.setNetworkDestination(it) }
+                presenter.loadCurrentNetwork()
             }
 
             sourceImageView.setOnClickListener {
@@ -101,6 +116,10 @@ class SendFragment :
             address?.let { presenter.validateTarget(it) }
 
             amountEditText.focusAndShowKeyboard()
+
+            accountFeeView.setOnClickListener {
+                presenter.loadFeePayerTokens()
+            }
 
             availableTextView.setOnClickListener {
                 presenter.loadAvailableValue()
@@ -119,27 +138,42 @@ class SendFragment :
                 val nameOrAddress = requireContext().getClipBoardText(trimmed = true)
                 nameOrAddress?.let { presenter.validateTarget(it) }
             }
+
+            sendDetailsView.setOnClickListener {
+                showInfoDialog(
+                    messageRes = R.string.main_free_transactions_info,
+                    primaryButtonRes = R.string.common_understood
+                )
+            }
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND,
-            viewLifecycleOwner,
-            { _, result ->
-                when {
-                    result.containsKey(EXTRA_TOKEN) -> {
-                        val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
-                        if (token != null) presenter.setSourceToken(token)
-                    }
-                    result.containsKey(EXTRA_RESULT) -> {
-                        val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
-                        if (searchResult != null) presenter.setTargetResult(searchResult)
-                    }
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
+                    if (token != null) presenter.setSourceToken(token)
+                }
+                result.containsKey(EXTRA_RESULT) -> {
+                    val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
+                    if (searchResult != null) presenter.setTargetResult(searchResult)
+                }
+                result.containsKey(EXTRA_NETWORK) -> {
+                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
+                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
                 }
             }
-        )
+        }
 
         presenter.loadInitialData()
         checkClipBoard()
+    }
+
+    // TODO: remove add fragment
+    override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
+        addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -166,7 +200,7 @@ class SendFragment :
 
     override fun showWrongAddressTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
+            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
@@ -192,7 +226,7 @@ class SendFragment :
 
     override fun showEmptyBalanceTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_warning_rounded)
+            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_warning)
             targetTextView.text = address
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
@@ -215,8 +249,38 @@ class SendFragment :
         }
     }
 
+    override fun showAccountFeeView(fee: SendFee?) {
+        with(binding) {
+            if (fee == null) {
+                accountCardView.isVisible = false
+                return
+            }
+
+            accountCardView.isVisible = true
+
+            val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
+            accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
+            accountFeeValueTextView.text = fee.formattedFee
+            glideManager.load(accountImageView, fee.feePayerToken.logoUrl)
+        }
+    }
+
     override fun showSearchScreen(usernames: List<SearchResult>) {
         addFragment(SearchFragment.create(usernames))
+    }
+
+    override fun showRelayAccountFeeView(isVisible: Boolean) {
+        binding.accountInfoTextView.isVisible = isVisible
+    }
+
+    override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
+        addFragment(
+            target = SelectTokenFragment.create(feePayerTokens) { presenter.setFeePayerToken(it as Token.Active) },
+            enter = R.anim.slide_up,
+            exit = 0,
+            popExit = R.anim.slide_down,
+            popEnter = 0
+        )
     }
 
     override fun showSuccess(info: TransactionInfo) {
@@ -228,17 +292,48 @@ class SendFragment :
     }
 
     override fun showNetworkDestination(type: NetworkType) {
-        binding.networkTextView.text = type.stringValue
+        when (type) {
+            NetworkType.SOLANA -> {
+                binding.networkImageView.setImageResource(R.drawable.ic_sol)
+                binding.networkNameTextView.setText(R.string.send_solana_network_title)
+
+                val transactionFee = getString(R.string.send_transaction_fee)
+                val zeroUsd = getString(R.string.send_zero_usd)
+                val commonText = "$transactionFee: $zeroUsd"
+
+                val startIndex = commonText.indexOf(zeroUsd)
+                val color = requireContext().getColor(R.color.systemSuccess)
+                val highlightText = buildSpannedString {
+                    append(commonText)
+
+                    setSpan(
+                        ForegroundColorSpan(color),
+                        startIndex,
+                        startIndex + zeroUsd.length,
+                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+
+                    setSpan(
+                        StyleSpan(BOLD),
+                        startIndex,
+                        startIndex + zeroUsd.length,
+                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                }
+
+                binding.networkFeeTextView withTextOrGone highlightText
+            }
+            NetworkType.BITCOIN -> {
+                binding.networkImageView.setImageResource(R.drawable.ic_btc_rounded)
+                binding.networkNameTextView.setText(R.string.send_bitcoin_network_title)
+                // TODO: add renBTC fee
+                binding.networkFeeTextView withTextOrGone null
+            }
+        }
     }
 
-    override fun showNetworkSelection() {
-        binding.networkView.isVisible = true
-        binding.networkDivider.isVisible = true
-    }
-
-    override fun hideNetworkSelection() {
-        binding.networkView.isVisible = false
-        binding.networkDivider.isVisible = false
+    override fun showNetworkSelectionView(isVisible: Boolean) {
+        binding.networkView.isVisible = isVisible
     }
 
     override fun showSourceToken(token: Token.Active) {
@@ -246,25 +341,11 @@ class SendFragment :
             glideManager.load(sourceImageView, token.logoUrl)
             sourceTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
-            priceTextView.text = token.getCurrentPrice() ?: getString(R.string.common_na)
         }
     }
 
-    override fun showReceiveAtLeastValue(value: String?) {
-        val receiveAtLeast = value?.let { getString(R.string.send_receive_at_least, it) }
-        binding.atLeastTextView withTextOrGone receiveAtLeast
-    }
-
-    override fun showFee(fee: String?) {
-        if (fee.isNullOrEmpty()) {
-            binding.feeTextView.setText(R.string.send_free_transaction)
-            binding.feeTextView.setTextColor(requireContext().getColor(R.color.colorGreen))
-            binding.feeTextView.setOnClickListener { FeeInfoBottomSheet.show(childFragmentManager) }
-        } else {
-            binding.feeTextView.text = fee
-            binding.feeTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
-            binding.feeTextView.setOnClickListener(null)
-        }
+    override fun showTotal(data: SendTotal?) {
+        binding.sendDetailsView.showTotal(data)
     }
 
     override fun showInputValue(value: BigDecimal) {
@@ -274,8 +355,14 @@ class SendFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        with(binding) {
-            sendButton.setLoading(isLoading)
+        binding.sendButton.setLoading(isLoading)
+    }
+
+    override fun showProgressDialog(data: ShowProgress?) {
+        if (data != null) {
+            ProgressBottomSheet.show(childFragmentManager, data)
+        } else {
+            ProgressBottomSheet.hide(childFragmentManager)
         }
     }
 
@@ -287,8 +374,8 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun setAvailableTextColor(availableColor: Int) {
-        binding.availableTextView.setTextColor(colorFromTheme(availableColor))
+    override fun setAvailableTextColor(@ColorRes availableColor: Int) {
+        binding.availableTextView.setTextColor(requireContext().getColor(availableColor))
     }
 
     @SuppressLint("SetTextI18n")
@@ -296,8 +383,15 @@ class SendFragment :
         binding.availableTextView.text = "${available.scaleLong()} $symbol"
     }
 
-    override fun showButtonText(textRes: Int) {
-        binding.sendButton.setActionText(textRes)
+    override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
+        binding.sendButton.setStartIcon(iconRes)
+
+        if (value.isEmpty()) {
+            binding.sendButton.setActionText(textRes)
+        } else {
+            val text = getString(textRes, *value)
+            binding.sendButton.setActionText(text)
+        }
     }
 
     @SuppressLint("SetTextI18n")

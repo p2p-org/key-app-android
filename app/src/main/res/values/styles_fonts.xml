@@ -100,6 +100,11 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="WalletTheme.TextAppearance.Medium14">
+        <item name="android:textColor">@color/textIconPrimary</item>
+        <item name="fontFamily">@font/manrope_medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 
     <style name="WalletTheme.TextAppearance.Regular24">
         <item name="android:textColor">@color/textIconPrimary</item>

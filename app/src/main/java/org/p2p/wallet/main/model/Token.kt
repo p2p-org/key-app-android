@@ -112,6 +112,10 @@ sealed class Token constructor(
     val isSOL: Boolean
         get() = tokenSymbol == SOL_SYMBOL
 
+    @IgnoredOnParcel
+    val isRenBTC: Boolean
+        get() = tokenSymbol == REN_BTC_SYMBOL
+
     companion object {
         const val REN_BTC_SYMBOL = "renBTC"
         const val SOL_SYMBOL = "SOL"
