@@ -20,6 +20,13 @@ class EnvironmentManager(
 
     fun isDevnet(): Boolean = loadEnvironment() == Environment.DEVNET
 
+    fun isMainnet(): Boolean =
+        loadEnvironment() in listOf(
+            Environment.MAINNET,
+            Environment.RPC_POOL,
+            Environment.SOLANA
+        )
+
     fun getMoonpayUrl(amount: String): String {
         val baseUrl = context.getString(R.string.moonpayBaseDomain)
         val apiKey = BuildConfig.moonpayKey

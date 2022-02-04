@@ -7,5 +7,5 @@ class FeesAndTopUpAmount(
     val feeInSOL: FeeAmount?,
     val topUpAmountInSOL: BigInteger?,
     val feeInPayingToken: FeeAmount?,
-    val topUpAmountInPayingToen: BigInteger?
+    val topUpAmountInPayingToken: BigInteger?
 )

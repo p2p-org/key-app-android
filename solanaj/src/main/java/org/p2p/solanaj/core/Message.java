@@ -82,6 +82,10 @@ public class Message {
             throw new IllegalArgumentException("No instructions provided");
         }
 
+        if (feePayer == null) {
+            throw new IllegalArgumentException("Fee payer not found");
+        }
+
         messageHeader = new MessageHeader();
 
         for (String programId : programIds) {

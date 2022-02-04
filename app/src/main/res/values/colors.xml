@@ -10,7 +10,6 @@
     <color name="accentSecondary">#96B1F8</color>
     <color name="accentTertiary">#EFF3FF</color>
     <color name="accentWarning">#FF5858</color>
-    <color name="systemSuccessMain">#2DB533</color>
 
     <color name="elementPrimary">#FFFFFFFF</color>
     <color name="elementSecondary">#A3A5BA</color>
@@ -31,7 +30,9 @@
     <color name="systemErrorSecondary">#FD7373</color>
     <color name="systemErrorBackground">#FEF5F5</color>
     <color name="systemSuccess">#77DB7C</color>
+    <color name="systemSuccessMain">#2DB533</color>
     <color name="systemSuccessSecondary">#50D756</color>
+    <color name="systemSuccessBackground">#F5FBF5</color>
     <color name="systemWarningBackground">#FFFBF5</color>
     <color name="systemWarningMain">#FFA631</color>
 

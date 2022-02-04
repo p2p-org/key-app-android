@@ -12,6 +12,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -19,7 +20,8 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.walval.feerelayer.program.FeeRelayerProgram
+import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
+import timber.log.Timber
 import java.math.BigInteger
 
 class FeeRelayerRequestInteractor(
@@ -65,6 +67,10 @@ class FeeRelayerRequestInteractor(
             owner = owner,
             transferAuthorityAccount = topUpTransaction.transferAuthorityAccount
         )
+
+        val serializedMessage = topUpTransaction.transaction.serialize()
+        val serializedTransaction = Base64Utils.encode(serializedMessage)
+        Timber.d("### $serializedTransaction")
 
         return feeRelayerRepository.relayTopUpSwap(
             userSourceTokenAccountPubkey = sourceToken.address,
@@ -334,24 +340,19 @@ class FeeRelayerRequestInteractor(
         transferAuthorityAccount: Account
     ): SwapTransactionSignatures {
 
-        val signers = listOf(owner, transferAuthorityAccount)
+        val signers = listOf(transferAuthorityAccount, owner)
         transaction.sign(signers)
 
-        val ownerSignatureData =
-            transaction.findSignature(owner.publicKey)?.signature
-        val transferAuthoritySignatureData =
-            transaction.findSignature(transferAuthorityAccount.publicKey)?.signature
+        val ownerSignatureData = transaction.findSignature(owner.publicKey)?.signature
+        val transferAuthoritySignatureData = transaction.findSignature(transferAuthorityAccount.publicKey)?.signature
 
         if (ownerSignatureData.isNullOrEmpty() || transferAuthoritySignatureData.isNullOrEmpty()) {
             throw IllegalStateException("Invalid signatures")
         }
 
-        val ownerSignature = Base58Utils.encode(ownerSignatureData.toByteArray())
-        val transferAuthoritySignature = Base58Utils.encode(transferAuthoritySignatureData.toByteArray())
-
         return SwapTransactionSignatures(
-            userAuthoritySignature = ownerSignature,
-            transferAuthoritySignature = transferAuthoritySignature
+            userAuthoritySignature = ownerSignatureData,
+            transferAuthoritySignature = transferAuthoritySignatureData
         )
     }
 }

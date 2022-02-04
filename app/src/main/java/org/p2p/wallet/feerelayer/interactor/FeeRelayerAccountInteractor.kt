@@ -9,26 +9,19 @@ import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
-import java.math.BigInteger
+import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 
 class FeeRelayerAccountInteractor(
     private val rpcRepository: RpcRepository,
     private val amountInteractor: TransactionAmountInteractor,
     private val feeRelayerRepository: FeeRelayerRepository,
     private val userInteractor: UserInteractor,
-    private val addressInteractor: TransactionAddressInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
-
-    companion object {
-        const val RELAY_PROGRAM_ID = "12YKFL4mnZz6CBEGePrf293mEzueQM3h8VLPUJsKpGs9"
-        private val RELAY_ACCOUNT_RENT_EXEMPTION = BigInteger.valueOf(890880L)
-    }
 
     private var relayAccount: RelayAccount? = null
 
@@ -91,28 +84,6 @@ class FeeRelayerAccountInteractor(
         return feeTokenAccounts
     }
 
-    suspend fun getAccountCreationFee(address: String?, tokenMint: String?): BigInteger {
-        val relayAccount = relayAccount ?: throw IllegalStateException("Relay account is null")
-        var accountCreationFee = BigInteger.ZERO
-
-        if (!relayAccount.isCreated) {
-            accountCreationFee += RELAY_ACCOUNT_RENT_EXEMPTION
-        }
-
-        if (address.isNullOrEmpty() || tokenMint.isNullOrEmpty()) {
-            return accountCreationFee
-        }
-
-        val associatedAccount = addressInteractor.findAssociatedAddress(address.toPublicKey(), tokenMint)
-
-        if (associatedAccount.shouldCreateAssociatedInstruction) {
-            accountCreationFee += amountInteractor.getMinBalanceForRentExemption()
-            accountCreationFee += amountInteractor.getLamportsPerSignature()
-        }
-
-        return accountCreationFee
-    }
-
     fun getUserRelayAddress(owner: PublicKey): PublicKey =
         findAddress(owner, "relay")
 
@@ -123,7 +94,7 @@ class FeeRelayerAccountInteractor(
         PublicKey
             .findProgramAddress(
                 seeds = listOf(owner.toByteArray(), key.toByteArray()),
-                programId = RELAY_PROGRAM_ID.toPublicKey()
+                programId = FeeRelayerProgram.getProgramId(isMainnet = true)
             )
             .address
 
@@ -131,7 +102,7 @@ class FeeRelayerAccountInteractor(
         PublicKey
             .findProgramAddress(
                 seeds = listOf(owner.toByteArray(), mint.toByteArray(), "transit".toByteArray()),
-                programId = RELAY_PROGRAM_ID.toPublicKey()
+                programId = FeeRelayerProgram.getProgramId(isMainnet = true)
             )
             .address
 }

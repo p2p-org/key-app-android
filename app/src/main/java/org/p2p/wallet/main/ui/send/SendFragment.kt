@@ -1,9 +1,14 @@
 package org.p2p.wallet.main.ui.send
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface.BOLD
 import android.os.Bundle
+import android.text.Spannable
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.View
 import androidx.annotation.ColorRes
+import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -22,6 +27,8 @@ import org.p2p.wallet.main.model.SendTotal
 import org.p2p.wallet.main.model.ShowProgress
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.ui.select.SelectTokenFragment
+import org.p2p.wallet.main.ui.send.dialogs.EXTRA_NETWORK
+import org.p2p.wallet.main.ui.send.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.main.ui.send.dialogs.ProgressBottomSheet
 import org.p2p.wallet.main.ui.send.search.SearchFragment
 import org.p2p.wallet.main.ui.send.search.SearchFragment.Companion.EXTRA_RESULT
@@ -42,13 +49,15 @@ import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 import java.math.BigDecimal
 
+private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
+private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
 class SendFragment :
     BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
     SendContract.View {
 
     companion object {
-        private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
-        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
         const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
         fun create(address: String? = null) = SendFragment().withArgs(
             EXTRA_ADDRESS to address
@@ -96,9 +105,9 @@ class SendFragment :
                 presenter.setNewSourceAmount(it.toString())
             }
 
-//            networkView.setOnClickListener {
-//                NetworkDestinationBottomSheet.show(childFragmentManager) { presenter.setNetworkDestination(it) }
-//            }
+            networkView.setOnClickListener {
+                presenter.loadCurrentNetwork()
+            }
 
             sourceImageView.setOnClickListener {
                 presenter.loadTokensForSelection()
@@ -140,23 +149,30 @@ class SendFragment :
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND,
-            viewLifecycleOwner,
-            { _, result ->
-                when {
-                    result.containsKey(EXTRA_TOKEN) -> {
-                        val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
-                        if (token != null) presenter.setSourceToken(token)
-                    }
-                    result.containsKey(EXTRA_RESULT) -> {
-                        val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
-                        if (searchResult != null) presenter.setTargetResult(searchResult)
-                    }
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
+                    if (token != null) presenter.setSourceToken(token)
+                }
+                result.containsKey(EXTRA_RESULT) -> {
+                    val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
+                    if (searchResult != null) presenter.setTargetResult(searchResult)
+                }
+                result.containsKey(EXTRA_NETWORK) -> {
+                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
+                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
                 }
             }
-        )
+        }
 
         presenter.loadInitialData()
         checkClipBoard()
+    }
+
+    override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
+        addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
@@ -275,17 +291,48 @@ class SendFragment :
     }
 
     override fun showNetworkDestination(type: NetworkType) {
-//        todo
+        when (type) {
+            NetworkType.SOLANA -> {
+                binding.networkImageView.setImageResource(R.drawable.ic_sol)
+                binding.networkNameTextView.setText(R.string.send_solana_network_title)
+
+                val transactionFee = getString(R.string.send_transaction_fee)
+                val zeroUsd = getString(R.string.send_zero_usd)
+                val commonText = "$transactionFee: $zeroUsd"
+
+                val startIndex = commonText.indexOf(zeroUsd)
+                val color = requireContext().getColor(R.color.systemSuccess)
+                val highlightText = buildSpannedString {
+                    append(commonText)
+
+                    setSpan(
+                        ForegroundColorSpan(color),
+                        startIndex,
+                        startIndex + zeroUsd.length,
+                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+
+                    setSpan(
+                        StyleSpan(BOLD),
+                        startIndex,
+                        startIndex + zeroUsd.length,
+                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                    )
+                }
+
+                binding.networkFeeTextView withTextOrGone highlightText
+            }
+            NetworkType.BITCOIN -> {
+                binding.networkImageView.setImageResource(R.drawable.ic_btc_rounded)
+                binding.networkNameTextView.setText(R.string.send_bitcoin_network_title)
+                // TODO: add renBTC fee
+                binding.networkFeeTextView withTextOrGone null
+            }
+        }
     }
 
-    override fun showNetworkSelection() {
-//        binding.networkView.isVisible = true
-//        binding.networkDivider.isVisible = true
-    }
-
-    override fun hideNetworkSelection() {
-//        binding.networkView.isVisible = false
-//        binding.networkDivider.isVisible = false
+    override fun showNetworkSelectionView(isVisible: Boolean) {
+        binding.networkView.isVisible = isVisible
     }
 
     override fun showSourceToken(token: Token.Active) {
@@ -307,9 +354,7 @@ class SendFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        with(binding) {
-            sendButton.setLoading(isLoading)
-        }
+        binding.sendButton.setLoading(isLoading)
     }
 
     override fun showProgressDialog(data: ShowProgress?) {

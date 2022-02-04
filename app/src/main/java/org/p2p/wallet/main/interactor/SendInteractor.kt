@@ -13,13 +13,20 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerRequestInteractor
 import org.p2p.wallet.feerelayer.model.SendStrategy
+import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.CheckAddressResult
 import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.main.model.Token.Companion.WRAPPED_SOL_MINT
 import org.p2p.wallet.main.model.TransactionResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
@@ -31,6 +38,7 @@ class SendInteractor(
     private val feeRelayerRequestInteractor: FeeRelayerRequestInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaSwapInteractor: OrcaSwapInteractor,
+    private val environmentManager: EnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -56,7 +64,11 @@ class SendInteractor(
         feePayerToken = userTokens.first { it.isSOL }
 
         feeRelayerInteractor.load()
+
+        orcaSwapInteractor.load()
     }
+
+    fun getFeePayerToken(): Token.Active = feePayerToken
 
     fun setFeePayerToken(newToken: Token.Active) {
         if (!this::feePayerToken.isInitialized) throw IllegalStateException("PayToken is not initialized")
@@ -66,6 +78,9 @@ class SendInteractor(
     }
 
     fun getTransactionIdFlow(): Flow<String> = transactionIdFlow
+
+    suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
+        feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
     suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult =
         try {
@@ -79,6 +94,37 @@ class SendInteractor(
         } catch (e: IllegalStateException) {
             CheckAddressResult.InvalidAddress
         }
+
+    suspend fun calculateFeesForFeeRelayer(): FeeRelayerSendFee {
+        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
+
+        var accountCreationFee = BigInteger.ZERO
+
+        if (!relayAccount.isCreated) {
+            accountCreationFee += relayInfo.minimumRelayAccountBalance
+        }
+
+        accountCreationFee += relayInfo.minimumTokenAccountBalance
+        accountCreationFee += relayInfo.lamportsPerSignature
+
+        val feeInSol = accountCreationFee
+        val fee = FeeRelayerSendFee(feeInSol, null)
+
+        val poolsPairs = orcaSwapInteractor.getTradablePoolsPairs(feePayerToken.mintAddress, WRAPPED_SOL_MINT)
+        if (poolsPairs.isNullOrEmpty()) return fee
+
+        val bestPoolPair = orcaSwapInteractor.findBestPoolsPairForEstimatedAmount(feeInSol, poolsPairs)
+        if (bestPoolPair.isNullOrEmpty()) return fee
+
+        val routeValues = bestPoolPair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
+
+        Timber.tag("POOLPAIR").d(routeValues)
+
+        val feeInPayingToken = bestPoolPair.getInputAmount(feeInSol, Slippage.PERCENT.doubleValue) ?: return fee
+
+        return fee.copy(feeInPayingToken = feeInPayingToken)
+    }
 
     suspend fun sendTransaction(
         destinationAddress: PublicKey,
@@ -127,15 +173,18 @@ class SendInteractor(
         sourceToken: Token.Active,
         lamports: BigInteger
     ): TransactionResult {
-//        val feesAndTopUpAmount = feeRelayerInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
-//            sourceToken = TokenInfo(sourceToken.publicKey, sourceToken.mintAddress),
-//            destinationAddress = destinationAddress.toBase58(),
-//            destinationTokenMint = sourceToken.mintAddress,
-//            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
-//            swapPools = swapPools
-//        )
 
-        return TransactionResult.WrongWallet
+        val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
+        val transactionId = feeRelayerInteractor.topUpAndSend(
+            sourceToken = TokenInfo(sourceToken.publicKey, sourceToken.mintAddress),
+            destinationAddress = destinationAddress.toBase58(),
+            tokenMint = sourceToken.mintAddress,
+            inputAmount = lamports,
+            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
+            feeRelayerProgramId = feeRelayerProgramId
+        ).firstOrNull().orEmpty()
+
+        return TransactionResult.Success(transactionId)
     }
 
     private suspend fun sendSplToken(

@@ -50,6 +50,7 @@ public class Transaction {
     }
 
     public void setFeePayer(PublicKey feePayer) {
+        message.setFeePayer(feePayer);
         this.feePayer = feePayer;
     }
 

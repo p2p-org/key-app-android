@@ -102,7 +102,7 @@ class MainPresenter(
             userInteractor.loadTokenPrices(BALANCE_CURRENCY)
         } catch (e: Throwable) {
             Timber.e(e, "Error loading token prices")
-            view?.showSnackbarError(e.message ?: e.localizedMessage)
+            view?.showSnackbarMessage(e.message ?: e.localizedMessage)
         }
     }
 

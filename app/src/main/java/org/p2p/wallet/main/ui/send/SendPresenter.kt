@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.interactor.SearchInteractor
 import org.p2p.wallet.main.interactor.SendInteractor
@@ -47,14 +46,11 @@ class SendPresenter(
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
-    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
         private const val VALID_ADDRESS_LENGTH = 24
-        private const val DESTINATION_USD = "USD"
-        private const val SYMBOL_REN_BTC = "renBTC"
         private const val ROUNDING_VALUE = 6
     }
 
@@ -67,7 +63,7 @@ class SendPresenter(
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
-    private var mode: CurrencyMode = CurrencyMode.Token("")
+    private var mode: CurrencyMode = CurrencyMode.Token(initialToken?.tokenSymbol ?: SOL_SYMBOL)
 
     private var networkType: NetworkType = NetworkType.SOLANA
 
@@ -81,17 +77,13 @@ class SendPresenter(
         launch {
             view?.showFullScreenLoading(true)
             val userTokens = userInteractor.getUserTokens()
-            val source = initialToken ?: userTokens.firstOrNull {
-                it.isSOL && it.publicKey == tokenKeyProvider.publicKey
-            } ?: return@launch
-            val exchangeRate = userInteractor.getPriceByToken(source.tokenSymbol, DESTINATION_USD)
-            token = source.copy(usdRate = exchangeRate?.price)
-            mode = CurrencyMode.Token(source.tokenSymbol)
+            val userPublicKey = tokenKeyProvider.publicKey
+            token = initialToken ?: userTokens.first { it.isSOL && it.publicKey == userPublicKey }
             view?.showNetworkDestination(networkType)
 
             sendInteractor.initialize(userTokens)
 
-            calculateTotal(null)
+            calculateTotal(null, null)
 
             view?.showFullScreenLoading(false)
         }
@@ -99,11 +91,13 @@ class SendPresenter(
 
     override fun setSourceToken(newToken: Token.Active) {
         token = newToken
-
-        if (newToken.tokenSymbol == SYMBOL_REN_BTC) {
-            view?.showNetworkSelection()
+        if (newToken.isRenBTC) {
+            view?.showNetworkSelectionView(true)
         } else {
-            view?.hideNetworkSelection()
+            /* reset to default network and updating UI if source is not renBTC */
+            networkType = NetworkType.SOLANA
+            view?.showNetworkDestination(networkType)
+            view?.showNetworkSelectionView(false)
         }
 
         calculateRenBtcFee()
@@ -188,10 +182,14 @@ class SendPresenter(
         view?.showInputValue(totalAvailable)
     }
 
+    override fun loadCurrentNetwork() {
+        view?.navigateToNetworkSelection(networkType)
+    }
+
     override fun loadFeePayerTokens() {
         val token = token ?: return
         launch {
-            val feePayerTokens = feeRelayerAccountInteractor.getFeeTokenAccounts(token.publicKey)
+            val feePayerTokens = sendInteractor.getFeeTokenAccounts(token.publicKey)
             view?.showFeePayerTokenSelector(feePayerTokens)
         }
     }
@@ -200,11 +198,7 @@ class SendPresenter(
         launch {
             try {
                 sendInteractor.setFeePayerToken(feePayerToken)
-                val address = target?.address
-                val accountCreationFee = feeRelayerAccountInteractor.getAccountCreationFee(address, token?.mintAddress)
-                val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
-                val fee = SendFee(feeAmount, feePayerToken)
-                view?.showAccountFeeView(fee)
+                calculateFeeRelayerFee()
             } catch (e: Throwable) {
                 Timber.e(e, "Error updating fee payer token")
             }
@@ -246,7 +240,7 @@ class SendPresenter(
         view?.showTotal(null)
         view?.showAccountFeeView(null)
         view?.showRelayAccountFeeView(false)
-        calculateTotal(null)
+        calculateTotal(null, null)
     }
 
     private fun checkAddress(address: String?) {
@@ -257,22 +251,8 @@ class SendPresenter(
         checkAddressJob = launch {
             try {
                 view?.showSearchLoading(true)
-                when (val checkAddressResult = sendInteractor.checkAddress(address.toPublicKey(), token)) {
-                    is CheckAddressResult.NewAccountNeeded -> {
-                        val userRelayAccount = checkAddressResult.relayAccount
-                        view?.showRelayAccountFeeView(!userRelayAccount.isCreated)
-
-                        val feePayerToken = checkAddressResult.feePayerToken
-                        val accountCreationFee =
-                            feeRelayerAccountInteractor.getAccountCreationFee(address, token.mintAddress)
-                        val feeAmount = accountCreationFee.fromLamports(feePayerToken.decimals).scaleMedium()
-                        val fee = SendFee(feeAmount, feePayerToken)
-                        view?.showAccountFeeView(fee)
-                    }
-                    is CheckAddressResult.AccountExists,
-                    is CheckAddressResult.InvalidAddress ->
-                        view?.showAccountFeeView(null)
-                }
+                val checkAddressResult = sendInteractor.checkAddress(address.toPublicKey(), token)
+                handleCheckAddressResult(checkAddressResult)
             } catch (e: CancellationException) {
                 Timber.w("Cancelled check address request")
             } catch (e: Throwable) {
@@ -280,6 +260,19 @@ class SendPresenter(
             } finally {
                 view?.showSearchLoading(false)
             }
+        }
+    }
+
+    private suspend fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
+        when (checkAddressResult) {
+            is CheckAddressResult.NewAccountNeeded -> {
+                val userRelayAccount = checkAddressResult.relayAccount
+                view?.showRelayAccountFeeView(!userRelayAccount.isCreated)
+                calculateFeeRelayerFee()
+            }
+            is CheckAddressResult.AccountExists,
+            is CheckAddressResult.InvalidAddress ->
+                view?.showAccountFeeView(null)
         }
     }
 
@@ -358,7 +351,7 @@ class SendPresenter(
                 is CurrencyMode.Usd -> calculateByUsd(token)
             }
 
-            calculateTotal(null)
+            calculateTotal(null, null)
         }
     }
 
@@ -397,9 +390,13 @@ class SendPresenter(
         setButtonEnabled(tokenAmount, total)
     }
 
-    private fun calculateTotal(renBtcFee: BigDecimal?) {
+    private fun calculateTotal(renBtcFee: BigDecimal?, accountCreationFee: BigDecimal?) {
         val sourceToken = token ?: return
-        val inputValue = inputAmount.toBigDecimalOrZero()
+        val inputValue = if (accountCreationFee == null) {
+            inputAmount.toBigDecimalOrZero()
+        } else {
+            inputAmount.toBigDecimalOrZero() + accountCreationFee
+        }
 
         val data = SendTotal(
             total = "$tokenAmount ${sourceToken.tokenSymbol}",
@@ -408,8 +405,8 @@ class SendPresenter(
             receiveUsd = inputValue.toUsd(sourceToken)?.toPlainString(),
             fee = renBtcFee?.let { "$it $SOL_SYMBOL" },
             feeUsd = renBtcFee?.let { "${it.toUsd(sourceToken)}" },
-            renFee = null,
-            renFeeUsd = null
+            accountCreationFee = null,
+            accountCreationFeeUsd = null
         )
 
         view?.showTotal(data)
@@ -425,8 +422,28 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(fee)
+            calculateTotal(fee, null)
         }
+    }
+
+    /*
+    * Assume this to be called only if associated account address creation needed
+    * */
+    private suspend fun calculateFeeRelayerFee() {
+        val feePayerToken = sendInteractor.getFeePayerToken()
+
+        val fees = sendInteractor.calculateFeesForFeeRelayer()
+
+        val feeAmount = if (!feePayerToken.isSOL && fees.feeInPayingToken != null) {
+            fees.feeInPayingToken.fromLamports(feePayerToken.decimals).scaleMedium()
+        } else {
+            fees.feeInSol.fromLamports(feePayerToken.decimals).scaleMedium()
+        }
+
+        val fee = SendFee(feeAmount, feePayerToken)
+        view?.showAccountFeeView(fee)
+
+        calculateTotal(null, feeAmount)
     }
 
     private suspend fun searchByUsername(username: String) {

@@ -1,18 +1,18 @@
 package org.p2p.wallet.feerelayer.interactor
 
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.solanaj.core.FeeAmount
 import org.p2p.wallet.feerelayer.model.PreparedParams
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
-import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.model.SwapData
+import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token.Companion.WRAPPED_SOL_MINT
@@ -21,7 +21,7 @@ import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.walval.feerelayer.program.FeeRelayerProgram
+import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import java.math.BigInteger
 
 class FeeRelayerInstructionsInteractor(
@@ -173,7 +173,7 @@ class FeeRelayerInstructionsInteractor(
 
         // forming transaction and count fees
         var expectedFee = FeeAmount(BigInteger.ZERO, BigInteger.ZERO)
-        var instructions = mutableListOf<TransactionInstruction>()
+        val instructions = mutableListOf<TransactionInstruction>()
 
         // create user relay account
         if (needsCreateUserRelayAccount) {
@@ -262,7 +262,7 @@ class FeeRelayerInstructionsInteractor(
                 val transitTokenMint = topUpSwap.transitTokenMintPubkey.toPublicKey()
                 val transitTokenAccountAddress = feeRelayerAccountInteractor.getTransitTokenAccountAddress(
                     owner = userAuthorityAddress,
-                    mint = topUpSwap.transitTokenMintPubkey.toPublicKey()
+                    mint = transitTokenMint
                 )
 
                 val createTransitInstruction = FeeRelayerProgram.createTransitTokenAccountInstruction(
@@ -270,7 +270,7 @@ class FeeRelayerInstructionsInteractor(
                     feePayer = feePayerAddress.toPublicKey(),
                     userAuthority = userAuthorityAddress,
                     transitTokenAccount = transitTokenAccountAddress,
-                    transitTokenMint = topUpSwap.transitTokenMintPubkey.toPublicKey(),
+                    transitTokenMint = transitTokenMint,
                 )
                 instructions += createTransitInstruction
 
@@ -337,7 +337,7 @@ class FeeRelayerInstructionsInteractor(
         val transaction = Transaction()
         transaction.addInstructions(instructions)
         transaction.setFeePayer(feePayerAddress.toPublicKey())
-        transaction.setRecentBlockHash(blockhash)
+        transaction.recentBlockHash = blockhash
 
         val transactionFee = transaction.calculateTransactionFee(lamportsPerSignature)
         expectedFee = expectedFee.copy(transaction = transactionFee)
@@ -427,7 +427,7 @@ class FeeRelayerInstructionsInteractor(
 
             instructions += instruction
 
-            expectedFee = expectedFee.copy(accountBalances = expectedFee.accountBalances + minimumTokenAccountBalance)
+            expectedFee.accountBalances += expectedFee.accountBalances + minimumTokenAccountBalance
             userDestinationTokenAccountAddress = associatedAccount.toBase58()
         }
 
@@ -537,7 +537,7 @@ class FeeRelayerInstructionsInteractor(
             )
             instructions += transferInstruction
 
-            expectedFee = expectedFee.copy(accountBalances = expectedFee.accountBalances - minimumTokenAccountBalance)
+            expectedFee.accountBalances = expectedFee.accountBalances - minimumTokenAccountBalance
         }
 
         // Relay fee
@@ -572,7 +572,7 @@ class FeeRelayerInstructionsInteractor(
             val interTokenName = pools[0].tokenBName
             // FIXME: find what is rcaSwapClient.getMint() fun
             // transitTokenMintPubkey = PublicKey(orcaSwapClient.getMint(interTokenName))
-            val pubkey = userLocalRepository.findTokenData(interTokenName)?.mintAddress
+            val pubkey = userLocalRepository.findTokenDataBySymbol(interTokenName)?.mintAddress
             transitTokenMintPubkey = pubkey?.let { PublicKey(pubkey) }
         }
         return transitTokenMintPubkey

@@ -31,9 +31,11 @@ interface SendContract {
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
+
         fun showNetworkDestination(type: NetworkType)
-        fun showNetworkSelection()
-        fun hideNetworkSelection()
+        fun showNetworkSelectionView(isVisible: Boolean)
+        fun navigateToNetworkSelection(currentNetworkType: NetworkType)
+
         fun navigateToTokenSelection(tokens: List<Token.Active>)
 
         fun showSearchLoading(isLoading: Boolean)
@@ -54,6 +56,7 @@ interface SendContract {
         fun loadInitialData()
         fun loadTokensForSelection()
         fun loadAvailableValue()
+        fun loadCurrentNetwork()
         fun loadFeePayerTokens()
         fun setSourceToken(newToken: Token.Active)
         fun setTargetResult(result: SearchResult?)

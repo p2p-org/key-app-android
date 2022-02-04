@@ -68,7 +68,6 @@ object SwapModule : InjectionModule {
                 internalRepository = get(),
                 poolInteractor = get(),
                 userInteractor = get(),
-                serializationInteractor = get(),
                 orcaInstructionsInteractor = get(),
                 transactionInteractor = get(),
                 tokenKeyProvider = get()

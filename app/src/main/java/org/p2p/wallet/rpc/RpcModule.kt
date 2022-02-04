@@ -8,6 +8,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.feerelayer.api.RpcApi
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
+import org.p2p.wallet.rpc.interactor.CloseInteractor
 import org.p2p.wallet.rpc.repository.RpcRemoteRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
 
@@ -37,5 +38,7 @@ object RpcModule : InjectionModule {
 
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, rpcpoolRpcApi, testnetRpcApi, get())
         } bind RpcRepository::class
+
+        factory { CloseInteractor(get(), get()) }
     }
 }

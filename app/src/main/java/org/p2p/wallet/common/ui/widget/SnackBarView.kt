@@ -28,11 +28,11 @@ class SnackBarView(
         fun make(
             view: View,
             message: String,
-            iconResId: Int = -1,
+            iconResId: Int? = null,
             duration: Int = Snackbar.LENGTH_SHORT,
             listener: View.OnClickListener? = null,
             actionTitle: String = "",
-            actionImage: Int = -1,
+            actionImage: Int? = null,
         ): SnackBarView? {
             val parent = view.findSuitableParent() ?: throw IllegalArgumentException(
                 "No suitable parent found from the given view. Please provide a valid view."
@@ -53,14 +53,14 @@ class SnackBarView(
                 with(binding) {
                     snackbar.setMessage(message)
 
-                    if (iconResId != -1) {
+                    if (iconResId != null) {
                         snackbar.setIcon(iconResId)
                     }
                     if (actionTitle.isNotEmpty()) {
                         snackbar.setAction(actionTitle) { listener?.onClick(snackbar.getActionTextView()) }
                     }
-                    if (actionImage != -1) {
-                        snackbar.setAction(iconResId) { listener?.onClick(snackbar.getActionImageView()) }
+                    if (actionImage != null) {
+                        snackbar.setAction(actionImage) { listener?.onClick(snackbar.getActionImageView()) }
                     }
                     return SnackBarView(parent, snackbar).setDuration(duration)
                 }

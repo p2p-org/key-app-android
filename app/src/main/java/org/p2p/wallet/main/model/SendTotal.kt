@@ -7,8 +7,8 @@ class SendTotal(
     val receiveUsd: String?,
     val fee: String?,
     val feeUsd: String?,
-    val renFee: String?,
-    val renFeeUsd: String?
+    val accountCreationFee: String?,
+    val accountCreationFeeUsd: String?
 ) {
 
     val fullTotal: String

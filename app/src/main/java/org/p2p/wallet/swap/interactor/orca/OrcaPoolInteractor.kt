@@ -254,6 +254,8 @@ class OrcaPoolInteractor(
 
         val pool = infoPools?.get(path) ?: return null
 
+        if (pool.deprecated) return null
+
         if (path.contains("[stable]")) {
             pool.isStable = true
         }

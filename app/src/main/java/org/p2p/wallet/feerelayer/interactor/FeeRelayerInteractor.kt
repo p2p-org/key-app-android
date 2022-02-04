@@ -4,16 +4,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
-import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.utils.crypto.Base58Utils
 import org.p2p.wallet.feerelayer.model.FeesAndPools
 import org.p2p.wallet.feerelayer.model.FeesAndTopUpAmount
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.model.TopUpAndActionPreparedParams
 import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
-import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token.Companion.WRAPPED_SOL_MINT
 import org.p2p.wallet.rpc.repository.RpcRepository
@@ -26,7 +23,6 @@ import java.math.BigInteger
 
 class FeeRelayerInteractor(
     private val rpcRepository: RpcRepository,
-    private val feeRelayerRepository: FeeRelayerRepository,
     private val feeRelayerRequestInteractor: FeeRelayerRequestInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerInstructionsInteractor: FeeRelayerInstructionsInteractor,
@@ -62,7 +58,7 @@ class FeeRelayerInteractor(
 
     /*
     * STEP 1: Calculate fee needed for transaction
-    * Calculate fee and needed amount for topup and swap
+    * Calculate fee and needed amount for top up and swap
     * Fee calculation is in IN SOL
     * */
     suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
@@ -111,11 +107,11 @@ class FeeRelayerInteractor(
             feeInSOL = feeAmountInSOL,
             topUpAmountInSOL = topUpAmount,
             feeInPayingToken = feeAmountInPayingToken,
-            topUpAmountInPayingToen = topUpAmountInPayingToken
+            topUpAmountInPayingToken = topUpAmountInPayingToken
         )
     }
 
-    // Top up relay account (if needed) and swap
+    /*// Top up relay account (if needed) and swap
     suspend fun topUpAndSwap(
         sourceToken: TokenInfo,
         destinationTokenMint: String,
@@ -200,7 +196,7 @@ class FeeRelayerInteractor(
                 lamportsPerSignature = relayInfo.lamportsPerSignature
             )
         }
-    }
+    }*/
 
     suspend fun prepareForTopUpAndSwap(
         sourceToken: TokenInfo,
@@ -351,21 +347,15 @@ class FeeRelayerInteractor(
         val params = prepareForTopUp(amount, payingFeeToken, relayAccount)
 
         transaction.sign(listOf(account))
-        val authoritySignature = transaction.findSignature(account.publicKey).signature
         val blockhash = transaction.recentBlockHash
         // STEP 2: Check if relay account has already had enough balance to cover swapping fee
         // STEP 2.1: If relay account has enough balance to cover swapping fee
         return if (params.topUpFeesAndPools == null || params.topUpAmount == null) {
-            feeRelayerRequestInteractor.relayTransferSplToken(
-                senderTokenAccountPubkey = sourceToken.address,
-                recipientPubkey = destinationAddress,
-                tokenMintPubkey = tokenMint,
-                authorityPubkey = account.publicKey.toBase58(),
-                amount = inputAmount,
-                feeAmount = amount.total,
-                decimals = tokenSupply.value.decimals,
-                authoritySignature = Base58Utils.encodeFromString(authoritySignature),
-                blockhash = blockhash
+            feeRelayerRequestInteractor.relayTransaction(
+                instructions = transaction.instructions,
+                signatures = transaction.allSignatures,
+                pubkeys = transaction.accountKeys,
+                blockHash = blockhash
             )
         } else {
             // STEP 2.2.1: Top up
@@ -378,20 +368,15 @@ class FeeRelayerInteractor(
                 topUpFee = params.topUpFeesAndPools.fee.total
             )
 
-            feeRelayerRequestInteractor.relayTransferSplToken(
-                senderTokenAccountPubkey = sourceToken.address,
-                recipientPubkey = destinationAddress,
-                tokenMintPubkey = tokenMint,
-                authorityPubkey = account.publicKey.toBase58(),
-                amount = inputAmount,
-                feeAmount = amount.total,
-                decimals = tokenSupply.value.decimals,
-                authoritySignature = Base58Utils.encodeFromString(authoritySignature),
-                blockhash = blockhash
+            feeRelayerRequestInteractor.relayTransaction(
+                instructions = transaction.instructions,
+                signatures = transaction.allSignatures,
+                pubkeys = transaction.accountKeys,
+                blockHash = blockhash
             )
         }
     }
-
+/*
     // Top up relay account (if needed) and relay transaction
     suspend fun topUpAndRelayTransaction(
         preparedTransaction: PreparedTransaction,
@@ -434,7 +419,7 @@ class FeeRelayerInteractor(
                 blockHash = transaction.recentBlockHash
             )
         }
-    }
+    }*/
 
     private suspend fun prepareForTopUp(
         feeAmount: FeeAmount,

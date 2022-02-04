@@ -124,16 +124,16 @@ class OrcaSwapInteractor(
         poolInteractor.loadBalances(currentRoutes, info?.pools)
 
         // retrieve all routes
-        val result = currentRoutes.mapNotNull {
-            if (it.size > 2) return@mapNotNull null // FIXME: Support more than 2 paths later
-            poolInteractor.getPools(
-                infoPools = info?.pools,
-                route = it,
-                fromTokenName = fromTokenName,
-                toTokenName = toTokenName
-            ) as MutableList
-        }
-
+        val result = currentRoutes
+            .mapNotNull {
+                if (it.size > 2) return@mapNotNull null // FIXME: Support more than 2 paths later
+                poolInteractor.getPools(
+                    infoPools = info?.pools,
+                    route = it,
+                    fromTokenName = fromTokenName,
+                    toTokenName = toTokenName
+                ) as MutableList
+            }
         return result
     }
 

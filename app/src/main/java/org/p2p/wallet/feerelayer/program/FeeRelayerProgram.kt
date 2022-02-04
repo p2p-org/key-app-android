@@ -1,4 +1,4 @@
-package org.p2p.walval.feerelayer.program
+package org.p2p.wallet.feerelayer.program
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey

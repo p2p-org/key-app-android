@@ -20,7 +20,7 @@ class TokenSupplyValue(
     @SerializedName("decimals")
     val decimals: Int,
     @SerializedName("uiAmount")
-    val uiAmount: Long,
+    val uiAmount: Double,
     @SerializedName("uiAmountString")
     val uiAmountString: String,
 )
