@@ -5,7 +5,7 @@ import org.koin.dsl.module
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.feerelayer.api.RpcApi
+import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import org.p2p.wallet.rpc.interactor.CloseInteractor

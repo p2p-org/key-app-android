@@ -78,12 +78,12 @@ class SendPresenter(
             view?.showFullScreenLoading(true)
             val userTokens = userInteractor.getUserTokens()
             val userPublicKey = tokenKeyProvider.publicKey
-            token = initialToken ?: userTokens.first { it.isSOL && it.publicKey == userPublicKey }
+            token = initialToken ?: userTokens.find { it.isSOL && it.publicKey == userPublicKey }
             view?.showNetworkDestination(networkType)
 
             sendInteractor.initialize(userTokens)
 
-            calculateTotal(null, null)
+            calculateTotal(renBtcFee = null, accountCreationFee = null)
 
             view?.showFullScreenLoading(false)
         }
@@ -237,10 +237,10 @@ class SendPresenter(
 
     private fun handleIdleTarget() {
         view?.showIdleTarget()
-        view?.showTotal(null)
-        view?.showAccountFeeView(null)
-        view?.showRelayAccountFeeView(false)
-        calculateTotal(null, null)
+        view?.showTotal(data = null)
+        view?.showAccountFeeView(fee = null)
+        view?.showRelayAccountFeeView(isVisible = false)
+        calculateTotal(renBtcFee = null, accountCreationFee = null)
     }
 
     private fun checkAddress(address: String?) {

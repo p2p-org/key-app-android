@@ -27,6 +27,10 @@ class OrcaPoolInteractor(
     private val instructionsInteractor: SwapInstructionsInteractor
 ) {
 
+    companion object {
+        private const val PATH_STABLE = "[stable]"
+    }
+
     private val balancesCache = mutableMapOf<String, AccountBalance>()
 
     // / Construct exchange
@@ -256,9 +260,7 @@ class OrcaPoolInteractor(
 
         if (pool.deprecated) return null
 
-        if (path.contains("[stable]")) {
-            pool.isStable = true
-        }
+        pool.isStable = path.contains(PATH_STABLE)
 
         // get balances
         var tokenABalance = pool.tokenABalance ?: balancesCache[pool.tokenAccountA.toBase58()]

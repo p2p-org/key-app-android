@@ -9,7 +9,7 @@ class TransactionAmountInteractor(
 ) {
 
     suspend fun getLamportsPerSignature(): BigInteger =
-        rpcRepository.getFees(null)
+        rpcRepository.getFees(commitment = null)
 
     suspend fun getMinBalanceForRentExemption(dataLength: Long = ACCOUNT_INFO_DATA_LENGTH.toLong()): BigInteger =
         rpcRepository

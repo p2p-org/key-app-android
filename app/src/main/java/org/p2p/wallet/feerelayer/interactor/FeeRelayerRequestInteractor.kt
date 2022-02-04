@@ -12,16 +12,14 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.crypto.Base58Utils
-import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
-import timber.log.Timber
 import java.math.BigInteger
 
 class FeeRelayerRequestInteractor(
@@ -67,10 +65,6 @@ class FeeRelayerRequestInteractor(
             owner = owner,
             transferAuthorityAccount = topUpTransaction.transferAuthorityAccount
         )
-
-        val serializedMessage = topUpTransaction.transaction.serialize()
-        val serializedTransaction = Base64Utils.encode(serializedMessage)
-        Timber.d("### $serializedTransaction")
 
         return feeRelayerRepository.relayTopUpSwap(
             userSourceTokenAccountPubkey = sourceToken.address,

@@ -14,6 +14,8 @@ import java.math.BigInteger
 typealias OrcaPools = MutableMap<String, OrcaPool> // [poolId: string]: PoolConfig;
 typealias OrcaPoolsPair = MutableList<OrcaPool>
 
+private const val ACTUAL_PROGRAM_ID = 2
+
 data class OrcaPool(
     val account: PublicKey,
     val authority: PublicKey,
@@ -58,7 +60,7 @@ data class OrcaPool(
         }
 
     val swapProgramId: PublicKey
-        get() = TokenSwapProgram.getSwapProgramId(programVersion ?: 1).toPublicKey()
+        get() = TokenSwapProgram.getSwapProgramId(programVersion ?: ACTUAL_PROGRAM_ID).toPublicKey()
 
     fun getOutputAmount(
         inputAmount: BigInteger

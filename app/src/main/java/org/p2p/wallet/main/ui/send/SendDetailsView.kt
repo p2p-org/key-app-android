@@ -95,12 +95,7 @@ class SendDetailsView @JvmOverloads constructor(
     }
 
     private fun buildTotalText(total: SendTotal?): SpannableString {
-        val totalAmount = if (total != null) {
-            if (total.fee.isNullOrEmpty()) total.total else "${total.total} + ${total.fee}"
-        } else {
-            context.getString(R.string.swap_total_zero_sol)
-        }
-
+        val totalAmount = total?.getTotalFee() ?: context.getString(R.string.swap_total_zero_sol)
         val totalDataText = context.getString(R.string.swap_total_format, totalAmount)
         return SpanUtils.setTextBold(totalDataText, totalAmount)
     }

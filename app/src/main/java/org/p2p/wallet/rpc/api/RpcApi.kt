@@ -1,4 +1,4 @@
-package org.p2p.wallet.feerelayer.api
+package org.p2p.wallet.rpc.api
 
 import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import org.p2p.solanaj.kits.MultipleAccountsInfo

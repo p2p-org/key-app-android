@@ -317,7 +317,6 @@ class OrcaSwapInteractor(
         isSimulation: Boolean
     ): TransactionExecutionState {
         val owner = Account(tokenKeyProvider.secretKey)
-//        val info = info ?: return OrcaSwapResult.InvalidInfoOrPair
         val info = info
             ?: return TransactionExecutionState.Failed("", IllegalStateException("Invalid pool pair"))
 
@@ -358,7 +357,6 @@ class OrcaSwapInteractor(
                 blockHash = blockhash
             ).firstOrNull().orEmpty()
 
-//            return OrcaSwapResult.Executing(transactionId)
             return TransactionExecutionState.Finished(transactionId, signature.signature)
         }
     }
@@ -530,7 +528,6 @@ class OrcaSwapInteractor(
                 blockHash = recentBlockhash.recentBlockhash
             ).firstOrNull().orEmpty()
 
-//            return OrcaSwapResult.Executing(transactionId)
             return TransactionExecutionState.Finished(transactionId, signature.signature)
         }
     }

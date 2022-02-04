@@ -20,12 +20,13 @@ import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.model.types.TokenSupply
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.feerelayer.api.RpcApi
+import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import timber.log.Timber
 import java.math.BigInteger
 
+// TODO: Split to domain repositories
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
     private val mainnetApi: RpcApi,

@@ -11,6 +11,9 @@ class SendTotal(
     val accountCreationFeeUsd: String?
 ) {
 
+    fun getTotalFee(): String =
+        if (fee.isNullOrEmpty()) total else "$total + $fee"
+
     val fullTotal: String
         get() = if (approxTotalUsd != null) "$total $approxTotalUsd" else total
 

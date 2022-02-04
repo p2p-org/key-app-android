@@ -24,7 +24,7 @@
 // import org.p2p.wallet.main.repository.MainDatabaseRepository
 // import org.p2p.wallet.main.repository.MainLocalRepository
 // import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-// import org.p2p.wallet.feerelayer.api.RpcApi
+// import org.p2p.wallet.rpc.api.RpcApi
 // import org.p2p.wallet.rpc.repository.RpcRemoteRepository
 // import org.p2p.wallet.rpc.repository.RpcRepository
 // import org.p2p.wallet.swap.api.InternalWebApi

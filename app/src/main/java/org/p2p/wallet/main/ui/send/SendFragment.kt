@@ -171,6 +171,7 @@ class SendFragment :
         checkClipBoard()
     }
 
+    // TODO: remove add fragment
     override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
         addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
