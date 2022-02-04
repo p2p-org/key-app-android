@@ -12,6 +12,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogInfoBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
 private const val EXTRA_TITLE = "EXTRA_TITLE"
 private const val EXTRA_SUBTITLE = "EXTRA_SUBTITLE"
@@ -23,7 +24,7 @@ class InfoDialog : DialogFragment() {
     companion object {
         fun show(
             fragmentManager: FragmentManager,
-            @StringRes titleRes: Int,
+            @StringRes titleRes: Int?,
             @StringRes subTitleRes: Int,
             @StringRes primaryButtonRes: Int,
             @StringRes secondaryButtonRes: Int?,
@@ -45,7 +46,7 @@ class InfoDialog : DialogFragment() {
         }
     }
 
-    private val titleRes: Int by args(EXTRA_TITLE)
+    private val titleRes: Int? by args(EXTRA_TITLE)
     private val subTitleRes: Int by args(EXTRA_SUBTITLE)
     private val primaryButtonRes: Int by args(EXTRA_PRIMARY_BUTTON)
     private val secondaryButtonRes: Int? by args(EXTRA_SECONDARY_BUTTON)
@@ -68,7 +69,8 @@ class InfoDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            titleTextView.setText(titleRes)
+
+            titleTextView withTextOrGone titleRes?.let { getString(it) }
             subTitleTextView.setText(subTitleRes)
             primaryButton.setText(primaryButtonRes)
 

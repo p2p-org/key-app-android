@@ -1,9 +1,12 @@
 package org.p2p.wallet.root.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -24,6 +27,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     override val presenter: RootContract.Presenter by inject()
     private lateinit var container: CoordinatorLayout
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
@@ -35,7 +39,18 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         }
 
         presenter.loadPricesAndBids()
-        if (BuildConfig.DEBUG) DebugDrawer.install(this)
+
+        val devView = findViewById<TextView>(R.id.developTextView)
+
+        if (BuildConfig.DEBUG) {
+            val drawer = DebugDrawer.install(this)
+
+            devView.text = "${BuildConfig.BUILD_TYPE}-${BuildConfig.VERSION_NAME}"
+            devView.isVisible = true
+            devView.setOnClickListener { drawer.openDrawer() }
+        } else {
+            devView.isVisible = false
+        }
     }
 
     override fun navigateToOnboarding() {

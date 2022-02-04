@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.ImageView
+import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetPinCodeViewBinding
 import org.p2p.wallet.utils.dip
-import org.p2p.wallet.utils.resFromTheme
 
 private const val ANIMATION_DURATION = 400L
 private const val DOT_STROKE_WIDTH = 24
@@ -80,7 +80,7 @@ class PinCodeView @JvmOverloads constructor(
             override fun onAnimationRepeat(animation: Animation?) {}
 
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(resFromTheme(R.attr.colorAccentWarning), R.color.colorPinErrorBackground)
+                setDotsColor(R.color.systemError, R.color.systemErrorSecondary)
             }
         })
         startAnimation(animation)
@@ -94,8 +94,8 @@ class PinCodeView @JvmOverloads constructor(
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
                 setDotsColor(
-                    resFromTheme(R.attr.colorSystemSuccessMain),
-                    R.color.colorPinSuccessBackground
+                    R.color.systemSuccess,
+                    R.color.systemSuccessSecondary
                 )
             }
 
@@ -128,7 +128,7 @@ class PinCodeView @JvmOverloads constructor(
         refresh(0)
     }
 
-    private fun setDotsColor(resourceId: Int?, backgroundColor: Int?) {
+    private fun setDotsColor(@ColorRes resourceId: Int?, @ColorRes backgroundColor: Int?) {
         roundViews.forEach {
             if (resourceId == null) {
                 it.clearColorFilter()

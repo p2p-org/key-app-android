@@ -10,12 +10,11 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.main.model.TokenComparator
-import org.p2p.wallet.rpc.repository.FeeRelayerRepository
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.model.OrcaInstructionsData
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
@@ -25,13 +24,13 @@ import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaRoute
 import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
-import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.model.orca.OrcaToken
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.transaction.interactor.TransactionInteractor
 import org.p2p.wallet.transaction.model.AppTransaction
+import org.p2p.wallet.transaction.model.TransactionExecutionState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
@@ -46,7 +45,6 @@ class OrcaSwapInteractor(
     private val internalRepository: OrcaSwapInternalRepository,
     private val poolInteractor: OrcaPoolInteractor,
     private val userInteractor: UserInteractor,
-    private val serializationInteractor: SwapSerializationInteractor,
     private val orcaInstructionsInteractor: OrcaInstructionsInteractor,
     private val transactionInteractor: TransactionInteractor,
     private val tokenKeyProvider: TokenKeyProvider
@@ -126,16 +124,16 @@ class OrcaSwapInteractor(
         poolInteractor.loadBalances(currentRoutes, info?.pools)
 
         // retrieve all routes
-        val result = currentRoutes.mapNotNull {
-            if (it.size > 2) return@mapNotNull null // FIXME: Support more than 2 paths later
-            poolInteractor.getPools(
-                infoPools = info?.pools,
-                route = it,
-                fromTokenName = fromTokenName,
-                toTokenName = toTokenName
-            ) as MutableList
-        }
-
+        val result = currentRoutes
+            .mapNotNull {
+                if (it.size > 2) return@mapNotNull null // FIXME: Support more than 2 paths later
+                poolInteractor.getPools(
+                    infoPools = info?.pools,
+                    route = it,
+                    fromTokenName = fromTokenName,
+                    toTokenName = toTokenName
+                ) as MutableList
+            }
         return result
     }
 
@@ -263,7 +261,7 @@ class OrcaSwapInteractor(
         amount: Double,
         slippage: Double,
         isSimulation: Boolean
-    ): OrcaSwapResult {
+    ): TransactionExecutionState {
         val owner = Account(tokenKeyProvider.secretKey)
 
         if (info == null || bestPoolsPair.isEmpty()) {
@@ -317,9 +315,10 @@ class OrcaSwapInteractor(
         slippage: Double,
         feeRelayerFeePayer: PublicKey?,
         isSimulation: Boolean
-    ): OrcaSwapResult {
+    ): TransactionExecutionState {
         val owner = Account(tokenKeyProvider.secretKey)
-        val info = info ?: return OrcaSwapResult.InvalidInfoOrPair
+        val info = info
+            ?: return TransactionExecutionState.Failed("", IllegalStateException("Invalid pool pair"))
 
         val accountInstructions = poolInteractor.constructExchange(
             pool = pool,
@@ -336,16 +335,29 @@ class OrcaSwapInteractor(
         if (feeRelayerFeePayer != null) {
             throw IllegalStateException("Fee relayer is implementing")
         } else {
-            val transactionId = serializationInteractor.serializeAndSend(
-                instructions = accountInstructions.instructions + accountInstructions.cleanupInstructions,
-                recentBlockhash = null,
-                signers = listOf(owner) + accountInstructions.signers,
-                sourceSymbol = fromWalletSymbol,
-                destinationSymbol = toWalletSymbol,
-                isSimulation = isSimulation
-            )
+            val feePayerPublicKey = feeRelayerRepository.getFeePayerPublicKey()
 
-            return OrcaSwapResult.Executing(transactionId)
+            // serialize transaction
+            val transaction = Transaction()
+            val instructions = accountInstructions.instructions + accountInstructions.cleanupInstructions
+            transaction.addInstructions(instructions)
+            transaction.setFeePayer(feePayerPublicKey)
+
+            val blockhash = rpcRepository.getRecentBlockhash().recentBlockhash
+            transaction.setRecentBlockHash(blockhash)
+            val signers = listOf(owner) + accountInstructions.signers
+            transaction.sign(signers)
+
+            val signature = transaction.signature
+
+            val transactionId = feeRelayerRepository.relayTransaction(
+                instructions = instructions,
+                signatures = transaction.allSignatures,
+                pubkeys = transaction.accountKeys,
+                blockHash = blockhash
+            ).firstOrNull().orEmpty()
+
+            return TransactionExecutionState.Finished(transactionId, signature.signature)
         }
     }
 
@@ -361,7 +373,7 @@ class OrcaSwapInteractor(
         lamports: BigInteger,
         slippage: Double,
         isSimulation: Boolean
-    ): OrcaSwapResult =
+    ): TransactionExecutionState =
         if (toWalletPubkey != null) {
             swapTransitiveSingle(
                 fromWalletSymbol = fromWalletSymbol,
@@ -404,7 +416,7 @@ class OrcaSwapInteractor(
         lamports: BigInteger,
         slippage: Double,
         isSimulation: Boolean
-    ): OrcaSwapResult {
+    ): TransactionExecutionState {
         val pool0 = bestPoolsPair[0]
         val pool1 = bestPoolsPair[1]
 
@@ -491,7 +503,8 @@ class OrcaSwapInteractor(
             transaction.addInstructions(accountInstructions.instructions)
             transaction.addInstructions(accountInstructions.cleanupInstructions)
 
-            transaction.setFeePayer(owner.publicKey)
+            val feePayerPublicKey = feeRelayerRepository.getFeePayerPublicKey()
+            transaction.setFeePayer(feePayerPublicKey)
             val recentBlockhash = rpcRepository.getRecentBlockhash()
             transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
             transaction.sign(accountInstructions.signers)
@@ -506,8 +519,16 @@ class OrcaSwapInteractor(
                 isSimulation = isSimulation
             )
 
-            serializationInteractor.sendTransaction(appTransaction)
-            return OrcaSwapResult.Executing(serializedTransaction)
+            val signature = transaction.signature
+
+            val transactionId = feeRelayerRepository.relayTransaction(
+                instructions = instructions,
+                signatures = transaction.allSignatures,
+                pubkeys = transaction.accountKeys,
+                blockHash = recentBlockhash.recentBlockhash
+            ).firstOrNull().orEmpty()
+
+            return TransactionExecutionState.Finished(transactionId, signature.signature)
         }
     }
 
@@ -523,7 +544,7 @@ class OrcaSwapInteractor(
         lamports: BigInteger,
         slippage: Double,
         isSimulation: Boolean
-    ): OrcaSwapResult {
+    ): TransactionExecutionState {
         val pool0 = bestPoolsPair[0]
         val pool1 = bestPoolsPair[1]
 
@@ -589,7 +610,8 @@ class OrcaSwapInteractor(
             transaction.addInstructions(accountInstructions.instructions)
             transaction.addInstructions(accountInstructions.cleanupInstructions)
 
-            transaction.setFeePayer(owner.publicKey)
+            val feePayer = feeRelayerRepository.getFeePayerPublicKey()
+            transaction.setFeePayer(feePayer)
             val recentBlockhash = rpcRepository.getRecentBlockhash()
             transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
             transaction.sign(accountInstructions.signers)
@@ -604,8 +626,16 @@ class OrcaSwapInteractor(
                 isSimulation = isSimulation
             )
 
-            serializationInteractor.sendTransaction(appTransaction)
-            return OrcaSwapResult.Executing(serializedTransaction)
+            val signature = transaction.signature
+
+            val transactionId = feeRelayerRepository.relayTransaction(
+                instructions = instructions,
+                signatures = transaction.allSignatures,
+                pubkeys = transaction.accountKeys,
+                blockHash = recentBlockhash.recentBlockhash
+            ).firstOrNull().orEmpty()
+//            return OrcaSwapResult.Executing(serializedTransaction)
+            return TransactionExecutionState.Finished(transactionId, signature.signature)
         }
     }
 

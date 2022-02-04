@@ -1,13 +1,15 @@
 package org.p2p.solanaj.core;
 
+import org.bitcoinj.core.Base58;
+import org.p2p.solanaj.serumswap.model.MemoryLayout;
+import org.p2p.solanaj.utils.ShortvecEncoding;
+import org.p2p.solanaj.utils.TweetNaclFast;
+
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.bitcoinj.core.Base58;
-import org.p2p.solanaj.utils.ShortvecEncoding;
-import org.p2p.solanaj.utils.TweetNaclFast;
 
 public class Transaction {
 
@@ -27,6 +29,7 @@ public class Transaction {
         message.addInstruction(instruction);
         return this;
     }
+
     public Transaction addInstructions(List<TransactionInstruction> instructions) {
         for (TransactionInstruction instruction : instructions) {
             message.addInstruction(instruction);
@@ -34,11 +37,20 @@ public class Transaction {
         return this;
     }
 
+    public List<TransactionInstruction> getInstructions() {
+        return message.getInstructions();
+    }
+
     public void setRecentBlockHash(String recentBlockhash) {
         message.setRecentBlockHash(recentBlockhash);
     }
 
+    public String getRecentBlockHash() {
+        return message.getRecentBlockHash();
+    }
+
     public void setFeePayer(PublicKey feePayer) {
+        message.setFeePayer(feePayer);
         this.feePayer = feePayer;
     }
 
@@ -99,7 +111,22 @@ public class Transaction {
         return null;
     }
 
+    public Signature findSignature(PublicKey publicKey) {
+        for (Signature signature : signatures) {
+            if (signature.getPublicKey().equals(publicKey)) {
+                return signature;
+            }
+        }
+
+        return null;
+    }
+
     public List<Signature> getAllSignatures() {
         return signatures;
+    }
+
+    public BigInteger calculateTransactionFee(BigInteger lamportsPerSignatures) {
+        message.serialize();
+        return BigInteger.valueOf((long) message.getNumRequiredSignatures()).multiply(lamportsPerSignatures);
     }
 }

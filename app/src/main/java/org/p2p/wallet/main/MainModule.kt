@@ -45,8 +45,8 @@ object MainModule : InjectionModule {
         factory { MainDatabaseRepository(get()) } bind MainLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { MainPresenter(get(), get(), get(), get(), get()) } bind MainContract.Presenter::class
-        factory { SendInteractor(get(), get(), get(), get()) }
+        single { MainPresenter(get(), get(), get(), get(), get(), get()) } bind MainContract.Presenter::class
+        single { SendInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { SearchInteractor(get(), get()) }
 
         factory { (token: Token.Active?) ->

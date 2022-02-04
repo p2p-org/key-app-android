@@ -2,12 +2,9 @@ package org.p2p.wallet.common.mvp
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.annotation.CallSuper
+import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
-import androidx.core.content.res.ResourcesCompat
-import com.google.android.material.snackbar.Snackbar
-import org.p2p.wallet.R
 import org.p2p.wallet.utils.showErrorDialog
 
 abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
@@ -37,19 +34,11 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
         showErrorDialog(messageRes = messageRes)
     }
 
-    override fun showSnackbarError(messageRes: Int) {
-        showSnackbar(getString(messageRes))
+    override fun showSnackbarMessage(messageRes: Int, @DrawableRes iconRes: Int?) {
+        showSnackbar(getString(messageRes), iconRes)
     }
 
-    override fun showSnackbarError(message: String) {
-        showSnackbar(message)
-    }
-
-    private fun showSnackbar(message: String) {
-        val snackbar = Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT)
-        val view: View = snackbar.view
-        val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-        textView.typeface = ResourcesCompat.getFont(requireContext(), R.font.manrope_medium)
-        snackbar.show()
+    override fun showSnackbarMessage(message: String, iconRes: Int?) {
+        showSnackbar(message, iconRes)
     }
 }

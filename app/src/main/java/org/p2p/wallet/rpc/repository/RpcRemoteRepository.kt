@@ -17,14 +17,16 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
+import org.p2p.solanaj.model.types.TokenSupply
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.rpc.api.RpcApi
 import timber.log.Timber
 import java.math.BigInteger
 
+// TODO: Split to domain repositories
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
     private val mainnetApi: RpcApi,
@@ -139,6 +141,12 @@ class RpcRemoteRepository(
             .mapIndexed { index, response ->
                 requestsBatch[index].params!!.first() as String to response.result
             }
+    }
+
+    override suspend fun getTokenSupply(mint: String): TokenSupply {
+        val params = listOf(mint)
+        val rpcRequest = RpcRequest("getTokenSupply", params)
+        return rpcApi.getTokenSupply(rpcRequest).result
     }
 
     override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
@@ -279,7 +287,7 @@ class RpcRemoteRepository(
         )
 
         val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
-        return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest).result
+        return rpcpoolRpcApi.getConfirmedSignaturesForAddress2(rpcRequest).result
     }
 
     override suspend fun getConfirmedTransactions(
@@ -292,6 +300,6 @@ class RpcRemoteRepository(
             RpcRequest("getConfirmedTransaction", params)
         }
 
-        return mainnetApi.getConfirmedTransactions(requestsBatch).map { it.result }
+        return rpcpoolRpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
     }
 }
