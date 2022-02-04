@@ -179,7 +179,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
-            android:text="@string/details_paid_by_p2p"
+            android:text="@string/details_paid_by_p2p_brackets"
             android:textAlignment="textEnd"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/colorGreen"

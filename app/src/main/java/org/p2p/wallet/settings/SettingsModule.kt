@@ -19,7 +19,7 @@ import org.p2p.wallet.settings.ui.settings.SettingsPresenter
 object SettingsModule : InjectionModule {
 
     override fun create() = module {
-        factory { SettingsInteractor(get()) }
+        factory { SettingsInteractor(get(), get()) }
         factory { ThemeInteractor(get()) }
 
         factory { SettingsPresenter(get(), get(), get(), get()) } bind SettingsContract.Presenter::class

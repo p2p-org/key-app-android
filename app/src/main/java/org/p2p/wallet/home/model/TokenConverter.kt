@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.model
 
+import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.api.TokenColors
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.user.local.TokenResponse
@@ -7,7 +8,6 @@ import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toPowerValue
-import org.p2p.solanaj.model.types.Account
 import java.math.BigDecimal
 
 object TokenConverter {
@@ -38,7 +38,7 @@ object TokenConverter {
             decimals = tokenData.decimals,
             mintAddress = mintAddress,
             tokenName = tokenData.name,
-            logoUrl = tokenData.iconUrl,
+            iconUrl = tokenData.iconUrl,
             totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price) },
             total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
             color = TokenColors.findColorBySymbol(tokenData.symbol),
@@ -59,7 +59,7 @@ object TokenConverter {
             tokenSymbol = data.symbol,
             decimals = data.decimals,
             mintAddress = data.mintAddress,
-            logoUrl = data.iconUrl,
+            iconUrl = data.iconUrl,
             color = TokenColors.findColorBySymbol(data.symbol),
             serumV3Usdc = data.serumV3Usdc,
             serumV3Usdt = data.serumV3Usdt,
@@ -74,7 +74,7 @@ object TokenConverter {
             decimals = token.decimals,
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,
-            iconUrl = token.logoUrl,
+            iconUrl = token.iconUrl,
             totalInUsd = token.totalInUsd,
             total = token.total,
             color = token.color,
@@ -92,7 +92,7 @@ object TokenConverter {
             decimals = entity.decimals,
             mintAddress = entity.mintAddress,
             tokenName = entity.tokenName,
-            logoUrl = entity.iconUrl,
+            iconUrl = entity.iconUrl,
             totalInUsd = entity.totalInUsd,
             total = entity.total,
             color = entity.color,
@@ -101,5 +101,17 @@ object TokenConverter {
             serumV3Usdc = entity.serumV3Usdc,
             serumV3Usdt = entity.serumV3Usdt,
             isWrapped = entity.isWrapped
+        )
+
+    fun toTokenData(token: Token): TokenData =
+        TokenData(
+            mintAddress = token.mintAddress,
+            name = token.tokenName,
+            symbol = token.tokenSymbol,
+            iconUrl = token.iconUrl,
+            decimals = token.decimals,
+            isWrapped = token.isWrapped,
+            serumV3Usdc = token.serumV3Usdc,
+            serumV3Usdt = token.serumV3Usdt,
         )
 }

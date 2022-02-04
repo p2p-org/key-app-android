@@ -52,4 +52,4 @@ fun Long.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(
 )
 
 private fun DateTimeFormatter.formatWithLocale(temporal: TemporalAccessor) =
-    withLocale(Locale.getDefault()).format(temporal)
+    withLocale(Locale.ENGLISH).format(temporal)

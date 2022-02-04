@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_gray_secondary_rounded"
+            android:background="@drawable/bg_secondary_rounded"
             android:lineSpacingExtra="5dp"
             android:padding="16dp"
             android:text="@string/send_choose_network_info"

@@ -38,6 +38,7 @@
     <color name="systemWarningMain">#FFA631</color>
 
     <color name="strokePrimary">#D3D4DE</color>
+    <color name="strokeSecondary">#F6F6F8</color>
 
     <color name="textIconSecondary">#8E8E93</color>
     <color name="textIconButtonPrimary">#FFFFFF</color>

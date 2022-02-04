@@ -11,6 +11,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.core.content.FileProvider
 import android.os.VibratorManager
+import androidx.annotation.ColorRes
+import androidx.fragment.app.Fragment
 import org.p2p.wallet.R
 import java.io.File
 
@@ -53,7 +55,7 @@ fun Context.shareScreenShoot(image: File) {
     val intent = Intent().apply {
         action = Intent.ACTION_SEND
         type = "image/*"
-        putExtra(android.content.Intent.EXTRA_TEXT, "Save Screenshot")
+        putExtra(Intent.EXTRA_TEXT, "Save Screenshot")
         putExtra(Intent.EXTRA_STREAM, uri)
     }
     try {
@@ -62,3 +64,6 @@ fun Context.shareScreenShoot(image: File) {
         toast("No App Available")
     }
 }
+
+fun Fragment.getColor(@ColorRes colorRes: Int): Int =
+    requireContext().getColor(colorRes)

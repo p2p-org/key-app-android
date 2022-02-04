@@ -64,8 +64,8 @@ class TokenHiddenViewHolder(
 
         itemView.isVisible = true
         val data = item.token
-        if (!data.logoUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, data.logoUrl)
+        if (!data.iconUrl.isNullOrEmpty()) {
+            loadImage(tokenImageView, data.iconUrl)
         }
         wrappedImageView.isVisible = data.isWrapped
         nameTextView.text = data.tokenSymbol
