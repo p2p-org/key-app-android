@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,15 +8,31 @@
     android:foreground="?selectableItemBackground"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
+    <View
+        android:id="@+id/topDivider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:visibility="gone"
+        android:background="@color/strokePrimary"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/bottomDivider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/strokePrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_margin="16dp"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:padding="8dp"
         tools:src="@drawable/ic_user" />
 
     <TextView
@@ -39,4 +55,4 @@
         app:layout_constraintTop_toBottomOf="@id/topTextView"
         tools:text="Username" />
 
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>

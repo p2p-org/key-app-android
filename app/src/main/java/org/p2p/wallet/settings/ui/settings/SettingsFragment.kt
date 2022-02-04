@@ -2,23 +2,13 @@ package org.p2p.wallet.settings.ui.settings
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.ReserveMode
-import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
-import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
-import org.p2p.wallet.settings.model.SettingItem
-import org.p2p.wallet.settings.ui.appearance.AppearanceFragment
-import org.p2p.wallet.settings.ui.network.NetworkFragment
-import org.p2p.wallet.settings.ui.security.SecurityFragment
-import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.settings.model.SettingsRow
+import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class SettingsFragment :
@@ -32,25 +22,26 @@ class SettingsFragment :
     override val presenter: SettingsContract.Presenter by inject()
 
     private val binding: FragmentSettingsBinding by viewBinding()
+    private val adapter = SettingsAdapter(::onItemClickListener, ::onLogoutClickListener)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            recyclerView.attachAdapter(adapter)
         }
 
         presenter.loadData()
     }
 
-    override fun showProfile(items: List<SettingItem>) {
-        binding.profileSettings.setup(items)
+    override fun showSettings(item: List<SettingsRow>) {
+        adapter.setData(item)
     }
 
-    override fun showNetwork(items: List<SettingItem>) {
+    private fun onItemClickListener(@StringRes titleResId: Int) {
+        when (titleResId) {
+        }
     }
 
-    override fun onProfileItemClicked(titleRes: Int) {
-    }
-
-    override fun onNetworkItemClicked(titleRes: Int) {
+    private fun onLogoutClickListener() {
     }
 }

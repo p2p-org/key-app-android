@@ -419,9 +419,26 @@
     <string name="settings_address_book_subtitle">Add, edit and delete addresses</string>
     <string name="settings_history">History</string>
     <string name="settings_history_subtitle">View your transaction history</string>
+    <string name="settings_security_and_network"><![CDATA[Security & Network]]></string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_backup_subtitle">Backed up manually</string>
+    <string name="settings_wallet_pin">Wallet PIN</string>
+    <string name="settings_wallet_pin_subtitle">Changing or resetting your PIN</string>
+    <string name="settings_app_security">App security</string>
+    <string name="settings_app_security_subtitle">Every transaction requires biometrics</string>
+    <string name="settings_pay_fees_with">Pay fees with</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_subtitle">System defaults determine the theme</string>
+    <string name="settings_staying_up_in_date">Staying up to date</string>
+    <string name="settings_staying_up_in_date_subtitle">You\'re receiving notifications</string>
+    <string name="settings_default_currency">Default currency</string>
+    <string name="settings_default_currency_subtitle">Showing balances in US Dollar</string>
+    <string name="settings_zero_balances">Zero balances</string>
+    <string name="settings_zero_balances_subtitle">Tokens with zero balances are hidden</string>
+    <string name="settings_logout">Log out now</string>
     <string name="swap_total_format">Total: %s</string>
     <string name="swap_total_zero_sol">0 SOL</string>
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
-    </resources>
+</resources>
