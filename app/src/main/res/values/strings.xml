@@ -286,8 +286,10 @@
     <string name="send_format">Send %s</string>
     <string name="send_network_destination">Network destination</string>
     <string name="send_choose_network">Choose the network</string>
+    <string name="send_solana_network">Solana</string>
     <string name="send_solana_network_title">Solana network</string>
     <string name="send_bitcoin_network_title">Bitcoin network</string>
+    <string name="send_bitcoin_network">Bitcoin</string>
     <string name="send_sol_or_spl">SOL or SPL tokens</string>
     <string name="send_native_bitcoin">Native bitcoin</string>
     <string name="send_free_transaction">Free</string>
