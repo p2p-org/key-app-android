@@ -42,6 +42,10 @@ public class BurnOrMintDetails extends TransactionDetails {
         return authority;
     }
 
+    public String getAccount() {
+        return account;
+    }
+
     public String getMint() {
         return "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5";
     }

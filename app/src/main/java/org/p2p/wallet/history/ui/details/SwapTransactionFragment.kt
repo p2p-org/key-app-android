@@ -58,8 +58,8 @@ class SwapTransactionFragment : BaseFragment(R.layout.fragment_transaction_swap)
 
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.subtitle = transaction.date.toDateTimeString()
-            loadImage(sourceImageView, transaction.sourceTokenUrl)
-            loadImage(destinationImageView, transaction.destinationTokenUrl)
+            loadImage(sourceImageView, transaction.sourceIconUrl)
+            loadImage(destinationImageView, transaction.destinationIconUrl)
             sourceTextView.text = "- ${transaction.amountA}"
             sourceSymbolTextView.text = transaction.sourceSymbol
             destinationTextView.text = "+ ${transaction.amountB}"

@@ -91,7 +91,7 @@ class OrcaSwapFragment :
 
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
-            Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
+            Glide.with(sourceImageView).load(token.iconUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             availableTextView.isVisible = true
             availableTextView.text = token.getFormattedTotal()
@@ -102,7 +102,7 @@ class OrcaSwapFragment :
     override fun showDestinationToken(token: Token?) {
         with(binding) {
             if (token != null) {
-                Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
+                Glide.with(destinationImageView).load(token.iconUrl).into(destinationImageView)
                 destinationTextView.text = token.tokenSymbol
                 destinationAvailableTextView.isVisible = token is Token.Active
                 if (token is Token.Active) destinationAvailableTextView.text = token.getFormattedTotal()

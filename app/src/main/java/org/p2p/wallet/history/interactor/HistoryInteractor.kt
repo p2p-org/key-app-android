@@ -12,9 +12,7 @@ import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.PriceHistory
 import org.p2p.wallet.history.model.TransactionConverter
-import org.p2p.wallet.history.repository.HistoryRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -23,23 +21,23 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
-    private val historyRepository: HistoryRepository,
     private val rpcRepository: RpcRepository,
     private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun getDailyPriceHistory(sourceToken: String, destination: String, days: Int): List<PriceHistory> =
-        historyRepository.getDailyPriceHistory(sourceToken, destination, days)
+    suspend fun getConfirmedTransaction(tokenPublicKey: String, transactionId: String): HistoryTransaction? =
+        parseTransactions(tokenPublicKey, listOf(transactionId)).firstOrNull()
 
-    suspend fun getHourlyPriceHistory(sourceToken: String, destination: String, hours: Int): List<PriceHistory> =
-        historyRepository.getHourlyPriceHistory(sourceToken, destination, hours)
-
-    suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
+    suspend fun getHistory(tokenPublicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
         val signatures = rpcRepository.getConfirmedSignaturesForAddress(
-            publicKey.toPublicKey(), before, limit
+            tokenPublicKey.toPublicKey(), before, limit
         ).map { it.signature }
 
+        return parseTransactions(tokenPublicKey, signatures)
+    }
+
+    private suspend fun parseTransactions(tokenPublicKey: String, signatures: List<String>): List<HistoryTransaction> {
         val transactions = mutableListOf<TransactionDetails>()
         rpcRepository.getConfirmedTransactions(signatures)
             .forEach { response ->
@@ -111,8 +109,8 @@ class HistoryInteractor(
             .mapNotNull { details ->
                 when (details) {
                     is SwapDetails -> parseOrcaSwapDetails(details, accountsInfo)
-                    is BurnOrMintDetails -> parseBurnAndMintDetails(details)
-                    is TransferDetails -> parseTransferDetails(details, publicKey, userPublicKey)
+                    is BurnOrMintDetails -> parseBurnAndMintDetails(details, userPublicKey)
+                    is TransferDetails -> parseTransferDetails(details, tokenPublicKey, userPublicKey)
                     is CloseAccountDetails -> parseCloseDetails(details)
                     is CreateAccountDetails -> TransactionConverter.fromNetwork(details)
                     is UnknownDetails -> TransactionConverter.fromNetwork(details)
@@ -135,8 +133,16 @@ class HistoryInteractor(
         if (sourceData.mintAddress == destinationData.mintAddress) return null
 
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
+        val sourceRate = userLocalRepository.getPriceByToken(sourceData.symbol)
         val source = tokenKeyProvider.publicKey
-        return TransactionConverter.fromNetwork(details, sourceData, destinationData, destinationRate, source)
+        return TransactionConverter.fromNetwork(
+            details,
+            sourceData,
+            destinationData,
+            destinationRate,
+            sourceRate,
+            source
+        )
     }
 
     private fun parseOrcaSource(
@@ -187,10 +193,10 @@ class HistoryInteractor(
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
     }
 
-    private fun parseBurnAndMintDetails(details: BurnOrMintDetails): HistoryTransaction {
+    private fun parseBurnAndMintDetails(details: BurnOrMintDetails, userPublicKey: String): HistoryTransaction {
         val symbol = findSymbol(details.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
-        return TransactionConverter.fromNetwork(details, rate)
+        return TransactionConverter.fromNetwork(details, userPublicKey, rate)
     }
 
     private fun parseCloseDetails(

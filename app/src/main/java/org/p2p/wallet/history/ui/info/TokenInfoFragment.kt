@@ -13,8 +13,7 @@ import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentTokenInfoBinding
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.ui.details.SwapTransactionFragment
-import org.p2p.wallet.history.ui.details.TransferTransactionFragment
+import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -116,12 +115,6 @@ class TokenInfoFragment :
     }
 
     private fun onTransactionClicked(transaction: HistoryTransaction) {
-        when (transaction) {
-            is HistoryTransaction.Swap -> replaceFragment(SwapTransactionFragment.create(transaction))
-            is HistoryTransaction.Transfer -> replaceFragment(TransferTransactionFragment.create(transaction))
-            else -> {
-                // todo: add close account and unknown transaction details view
-            }
-        }
+        replaceFragment(TransactionDetailsFragment.create(transaction))
     }
 }

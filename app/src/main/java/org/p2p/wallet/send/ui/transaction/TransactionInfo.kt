@@ -11,4 +11,7 @@ data class TransactionInfo(
     val amount: String,
     val usdAmount: String,
     val tokenSymbol: String
-)
+) {
+
+    fun getFormattedAmount(): String = "$amount $tokenSymbol"
+}

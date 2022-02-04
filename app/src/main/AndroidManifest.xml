@@ -31,7 +31,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustNothing"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

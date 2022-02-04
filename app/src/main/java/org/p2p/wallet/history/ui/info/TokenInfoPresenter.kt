@@ -7,19 +7,16 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import timber.log.Timber
+
+private const val PAGE_SIZE = 20
 
 class TokenInfoPresenter(
     private val token: Token.Active,
     private val historyInteractor: HistoryInteractor
 ) : BasePresenter<TokenInfoContract.View>(), TokenInfoContract.Presenter {
-
-    companion object {
-        private const val DESTINATION_TOKEN = "USD"
-        private const val PAGE_SIZE = 20
-    }
 
     private val transactions = mutableListOf<HistoryTransaction>()
 

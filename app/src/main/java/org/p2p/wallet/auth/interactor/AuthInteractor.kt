@@ -17,9 +17,9 @@ import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
@@ -190,5 +190,5 @@ class AuthInteractor(
         }
     }
 
-    private fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
+    fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
 }
