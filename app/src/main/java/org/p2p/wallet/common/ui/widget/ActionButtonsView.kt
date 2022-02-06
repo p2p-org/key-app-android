@@ -39,9 +39,6 @@ class ActionButtonsView @JvmOverloads constructor(
         adapter.setItems(items)
     }
 
-    private fun getItem(): List<ActionButton> =
-        listOf()
-
     private fun onItemClicked(@StringRes actionResId: Int) {
         when (actionResId) {
             R.string.main_buy -> {
@@ -78,11 +75,6 @@ class ActionButtonsView @JvmOverloads constructor(
             data.clear()
             data.addAll(items)
             notifyDataSetChanged()
-        }
-
-        fun addItem(item: ActionButton) {
-            data.add(0, item)
-            notifyItemInserted(0)
         }
 
         inner class ViewHolder(binding: ItemActionButtonBinding, private val onItemClickListener: (Int) -> Unit) :
