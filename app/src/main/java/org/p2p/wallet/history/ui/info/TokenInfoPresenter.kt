@@ -3,12 +3,15 @@ package org.p2p.wallet.history.ui.info
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
+import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import timber.log.Timber
 
 class TokenInfoPresenter(
@@ -16,12 +19,28 @@ class TokenInfoPresenter(
     private val historyInteractor: HistoryInteractor
 ) : BasePresenter<TokenInfoContract.View>(), TokenInfoContract.Presenter {
 
+    private val transactions = mutableListOf<HistoryTransaction>()
+    private val actions = mutableListOf(
+        ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
+        ActionButton(R.string.main_send, R.drawable.ic_send_simple),
+        ActionButton(R.string.main_swap, R.drawable.ic_swap_simple)
+    )
+
     companion object {
         private const val DESTINATION_TOKEN = "USD"
         private const val PAGE_SIZE = 20
     }
 
-    private val transactions = mutableListOf<HistoryTransaction>()
+    init {
+        if (token.tokenSymbol == SOL_SYMBOL) {
+            actions.add(0, ActionButton(R.string.main_buy, R.drawable.ic_plus))
+        }
+    }
+
+    override fun attach(view: TokenInfoContract.View) {
+        super.attach(view)
+        view.showActions(actions)
+    }
 
     private var pagingJob: Job? = null
     private var refreshJob: Job? = null

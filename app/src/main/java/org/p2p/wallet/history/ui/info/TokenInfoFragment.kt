@@ -11,6 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
+import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenInfoBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.SwapTransactionFragment
@@ -20,7 +21,6 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
@@ -62,7 +62,6 @@ class TokenInfoFragment :
             usdTotalTextView.text = token.getFormattedUsdTotal()
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
-                showBuy(token.tokenSymbol == SOL_SYMBOL)
                 onBuyItemClickListener = {
                     // TODO open buy screen
                 }
@@ -111,6 +110,10 @@ class TokenInfoFragment :
         val isEmpty = transactions.isEmpty()
         binding.emptyView.isVisible = isEmpty
         binding.refreshLayout.isVisible = !isEmpty
+    }
+
+    override fun showActions(items: List<ActionButton>) {
+        binding.actionButtonsView.setItems(items)
     }
 
     override fun showPagingState(newState: PagingState) {

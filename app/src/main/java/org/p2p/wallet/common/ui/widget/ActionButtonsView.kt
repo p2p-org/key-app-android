@@ -31,23 +31,16 @@ class ActionButtonsView @JvmOverloads constructor(
 
     init {
         binding.recyclerView.adapter = adapter
-        adapter.setItems(getItem())
     }
 
-    fun showBuy(isVisible: Boolean) {
-        if (isVisible) {
-            adapter.addItem(ActionButton(R.string.main_buy, R.drawable.ic_plus))
-        } else {
-            binding.recyclerView.layoutManager = GridLayoutManager(context, 3)
-        }
+    fun setItems(items: List<ActionButton>) {
+        val spanCount = items.size
+        binding.recyclerView.layoutManager = GridLayoutManager(context, spanCount)
+        adapter.setItems(items)
     }
 
     private fun getItem(): List<ActionButton> =
-        listOf(
-            ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
-            ActionButton(R.string.main_send, R.drawable.ic_send_simple),
-            ActionButton(R.string.main_swap, R.drawable.ic_swap_simple)
-        )
+        listOf()
 
     private fun onItemClicked(@StringRes actionResId: Int) {
         when (actionResId) {
