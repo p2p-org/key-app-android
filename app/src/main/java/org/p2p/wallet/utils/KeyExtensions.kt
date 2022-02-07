@@ -12,9 +12,9 @@ fun PublicKey.isUsdx(): Boolean {
 }
 
 @Suppress("MagicNumber")
-fun String.cutMiddle(): String {
-    val firstSix = this.take(6)
-    val lastSix = this.takeLast(6)
+fun String.cutMiddle(cutCount: Int = 4): String {
+    val firstSix = this.take(cutCount)
+    val lastSix = this.takeLast(cutCount)
     return "$firstSix...$lastSix"
 }
 

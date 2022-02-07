@@ -6,7 +6,12 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransferType
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.CheckAddressResult
@@ -17,10 +22,9 @@ import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.ShowProgress
 import org.p2p.wallet.send.model.Target
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.model.TransactionResult
-import org.p2p.wallet.send.ui.transaction.TransactionInfo
-import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import org.p2p.wallet.settings.interactor.SettingsInteractor
+import org.p2p.wallet.transaction.model.ConfirmData
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
@@ -35,8 +39,10 @@ import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.toUsd
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.math.RoundingMode
 import kotlin.properties.Delegates
 
@@ -46,6 +52,7 @@ class SendPresenter(
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
+    private val settingsInteractor: SettingsInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -75,17 +82,22 @@ class SendPresenter(
 
     override fun loadInitialData() {
         launch {
-            view?.showFullScreenLoading(true)
-            val userTokens = userInteractor.getUserTokens()
-            val userPublicKey = tokenKeyProvider.publicKey
-            token = initialToken ?: userTokens.find { it.isSOL && it.publicKey == userPublicKey }
-            view?.showNetworkDestination(networkType)
+            try {
+                view?.showFullScreenLoading(true)
 
-            sendInteractor.initialize(userTokens)
+                val userTokens = userInteractor.getUserTokens()
+                val userPublicKey = tokenKeyProvider.publicKey
+                token = initialToken ?: userTokens.find { it.isSOL && it.publicKey == userPublicKey }
 
-            calculateTotal(renBtcFee = null, accountCreationFee = null)
+                calculateTotal(renBtcFee = null, accountCreationFee = null)
+                view?.showNetworkDestination(networkType)
 
-            view?.showFullScreenLoading(false)
+                sendInteractor.initialize(userTokens)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading initial data")
+            } finally {
+                view?.showFullScreenLoading(false)
+            }
         }
     }
 
@@ -160,6 +172,24 @@ class SendPresenter(
         when (networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
             NetworkType.BITCOIN -> sendInBitcoin(token, address)
+        }
+    }
+
+    override fun sendOrConfirm() {
+        val token = token ?: throw IllegalStateException("Token cannot be null!")
+        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
+
+        val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
+        if (isConfirmationRequired) {
+            val data = ConfirmData(
+                token = token,
+                amount = tokenAmount.toString(),
+                amountUsd = usdAmount.toString(),
+                destination = address
+            )
+            view?.showBiometricConfirmationPrompt(data)
+        } else {
+            send()
         }
     }
 
@@ -324,16 +354,19 @@ class SendPresenter(
     private fun handleResult(result: TransactionResult) {
         when (result) {
             is TransactionResult.Success -> {
-                val info = TransactionInfo(
-                    transactionId = result.transactionId,
-                    status = R.string.main_send_success,
-                    message = R.string.main_send_transaction_confirmed,
-                    iconRes = R.drawable.ic_success,
-                    amount = "-$tokenAmount",
-                    usdAmount = "-${(token!!.usdRate ?: BigDecimal.ZERO).multiply(tokenAmount).scaleMedium()}",
-                    tokenSymbol = token!!.tokenSymbol
+                val transaction = HistoryTransaction.Transfer(
+                    signature = result.transactionId,
+                    date = ZonedDateTime.now(),
+                    blockNumber = 0, // fixme: find block number
+                    type = TransferType.SEND,
+                    senderAddress = tokenKeyProvider.publicKey,
+                    tokenData = TokenConverter.toTokenData(token!!),
+                    amount = usdAmount,
+                    total = tokenAmount,
+                    destination = target!!.address,
+                    fee = BigInteger.ZERO
                 )
-                view?.showSuccess(info)
+                view?.showSuccess(transaction)
             }
             is TransactionResult.WrongWallet ->
                 view?.showWrongWalletError()

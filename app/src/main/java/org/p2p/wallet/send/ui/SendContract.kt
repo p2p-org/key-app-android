@@ -5,13 +5,14 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.ShowProgress
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.ui.transaction.TransactionInfo
+import org.p2p.wallet.transaction.model.ConfirmData
 import java.math.BigDecimal
 
 interface SendContract {
@@ -19,7 +20,7 @@ interface SendContract {
     interface View : MvpView {
         fun setAvailableTextColor(@ColorRes availableColor: Int)
         fun showSourceToken(token: Token.Active)
-        fun showSuccess(info: TransactionInfo)
+        fun showSuccess(transaction: HistoryTransaction)
         fun showTotal(data: SendTotal?)
         fun showWrongWalletError()
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
@@ -49,10 +50,13 @@ interface SendContract {
         fun showRelayAccountFeeView(isVisible: Boolean)
         fun showAccountFeeView(fee: SendFee?)
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
+
+        fun showBiometricConfirmationPrompt(data: ConfirmData)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun send()
+        fun sendOrConfirm()
         fun loadInitialData()
         fun loadTokensForSelection()
         fun loadAvailableValue()

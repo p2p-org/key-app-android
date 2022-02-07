@@ -111,11 +111,11 @@ class TransactionViewHolder(
         valueTextView.isVisible = true
         totalTextView.isVisible = true
 
-        loadImage(sourceImageView, transaction.sourceTokenUrl)
-        loadImage(destinationImageView, transaction.destinationTokenUrl)
+        loadImage(sourceImageView, transaction.sourceIconUrl)
+        loadImage(destinationImageView, transaction.destinationIconUrl)
 
         addressTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
-        valueTextView withTextOrGone transaction.getUsdAmount()
+        valueTextView withTextOrGone transaction.getReceivedUsdAmount()
         totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
         totalTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
         timeTextView.text = transaction.date.toTimeString()

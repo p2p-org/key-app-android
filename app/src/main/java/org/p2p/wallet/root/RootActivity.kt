@@ -27,7 +27,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     override val presenter: RootContract.Presenter by inject()
     private lateinit var container: CoordinatorLayout
 
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
@@ -40,17 +39,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
         presenter.loadPricesAndBids()
 
-        val devView = findViewById<TextView>(R.id.developTextView)
-
-        if (BuildConfig.DEBUG) {
-            val drawer = DebugDrawer.install(this)
-
-            devView.text = "${BuildConfig.BUILD_TYPE}-${BuildConfig.VERSION_NAME}"
-            devView.isVisible = true
-            devView.setOnClickListener { drawer.openDrawer() }
-        } else {
-            devView.isVisible = false
-        }
+        initializeDebugDrawer()
     }
 
     override fun navigateToOnboarding() {
@@ -67,5 +56,29 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
     override fun onBackPressed() {
         popBackStack()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun initializeDebugDrawer() {
+        val devView = findViewById<TextView>(R.id.developTextView)
+
+        if (BuildConfig.DEBUG) {
+            val drawer = DebugDrawer.install(this)
+
+            devView.text = "${BuildConfig.BUILD_TYPE}-${BuildConfig.VERSION_NAME}"
+            devView.isVisible = true
+            devView.setOnClickListener { drawer.openDrawer() }
+            devView.setOnLongClickListener {
+                val currentAlpha = devView.alpha
+                if (currentAlpha == 0f) {
+                    devView.alpha = 1f
+                } else {
+                    devView.alpha = 0f
+                }
+                return@setOnLongClickListener true
+            }
+        } else {
+            devView.isVisible = false
+        }
     }
 }

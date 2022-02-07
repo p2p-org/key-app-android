@@ -25,6 +25,7 @@ object TransactionConverter {
         response: SwapDetails,
         sourceData: TokenData,
         destinationData: TokenData,
+        sourceRate: TokenPrice?,
         destinationRate: TokenPrice?,
         sourcePublicKey: String
     ): HistoryTransaction =
@@ -46,6 +47,13 @@ object TransactionConverter {
                 .toBigInteger()
                 .fromLamports(destinationData.decimals)
                 .scaleLong(),
+            amountSentInUsd = sourceRate?.let {
+                response.amountA
+                    .toBigInteger()
+                    .fromLamports(sourceData.decimals)
+                    .times(it.price)
+                    .scaleShort()
+            },
             amountReceivedInUsd = destinationRate?.let {
                 response.amountB
                     .toBigInteger()
@@ -54,14 +62,15 @@ object TransactionConverter {
                     .scaleShort()
             },
             sourceSymbol = sourceData.symbol,
-            sourceTokenUrl = sourceData.iconUrl.orEmpty(),
+            sourceIconUrl = sourceData.iconUrl.orEmpty(),
             destinationSymbol = destinationData.symbol,
-            destinationTokenUrl = destinationData.iconUrl.orEmpty()
+            destinationIconUrl = destinationData.iconUrl.orEmpty()
         )
 
     /* Burn or mint transaction */
     fun fromNetwork(
         response: BurnOrMintDetails,
+        userPublicKey: String,
         rate: TokenPrice?
     ): HistoryTransaction {
         val date = ZonedDateTime.ofInstant(
@@ -69,14 +78,20 @@ object TransactionConverter {
             ZoneId.systemDefault()
         )
 
-        val amount = BigDecimal(response.amount)
-            .scaleMedium()
-            .times(rate?.price ?: BigDecimal.ZERO)
-            .scaleShort()
+        val amount = rate?.price?.let {
+            BigDecimal(response.amount)
+                .scaleMedium()
+                .times(it)
+                .scaleShort()
+        }
 
+        val destination = if (response.account == userPublicKey) response.authority else response.account
+        val senderAddress = if (response.account == userPublicKey) response.account else response.authority
         return HistoryTransaction.BurnOrMint(
             signature = response.signature,
             blockNumber = response.slot,
+            destination = destination,
+            senderAddress = senderAddress,
             fee = response.fee.toBigInteger(),
             amount = amount,
             total = response.amount.toBigDecimalOrZero(),

@@ -53,8 +53,8 @@ class SelectTokenViewHolder(
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
         }
 
-        if (!item.logoUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, item.logoUrl!!)
+        if (!item.iconUrl.isNullOrEmpty()) {
+            loadImage(tokenImageView, item.iconUrl!!)
         }
 
         nameTextView.text = item.tokenName

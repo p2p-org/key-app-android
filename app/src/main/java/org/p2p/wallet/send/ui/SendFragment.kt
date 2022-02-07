@@ -20,27 +20,31 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.select.SelectTokenFragment
+import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.ShowProgress
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.dialogs.ProgressBottomSheet
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
-import org.p2p.wallet.send.ui.transaction.TransactionInfo
-import org.p2p.wallet.send.ui.transaction.TransactionStatusBottomSheet
-import org.p2p.wallet.qr.ui.ScanQrFragment
+import org.p2p.wallet.transaction.model.ConfirmData
+import org.p2p.wallet.transaction.ui.TransactionConfirmBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.showInfoDialog
@@ -85,7 +89,7 @@ class SendFragment :
 
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            sendButton.setOnClickListener { presenter.send() }
+            sendButton.setOnClickListener { presenter.sendOrConfirm() }
 
             targetTextView.setOnClickListener {
                 addFragment(SearchFragment.create())
@@ -169,6 +173,10 @@ class SendFragment :
 
         presenter.loadInitialData()
         checkClipBoard()
+    }
+
+    override fun showBiometricConfirmationPrompt(data: ConfirmData) {
+        TransactionConfirmBottomSheet.show(this, data) { presenter.send() }
     }
 
     // TODO: remove add fragment
@@ -261,7 +269,7 @@ class SendFragment :
             val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
             accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
             accountFeeValueTextView.text = fee.formattedFee
-            glideManager.load(accountImageView, fee.feePayerToken.logoUrl)
+            glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
         }
     }
 
@@ -283,11 +291,10 @@ class SendFragment :
         )
     }
 
-    override fun showSuccess(info: TransactionInfo) {
-        TransactionStatusBottomSheet.show(
-            fragment = this,
-            info = info,
-            onDismiss = { popBackStack() }
+    override fun showSuccess(transaction: HistoryTransaction) {
+        popAndReplaceFragment(
+            target = TransactionDetailsFragment.create(transaction),
+            popTo = HomeFragment::class
         )
     }
 
@@ -338,7 +345,7 @@ class SendFragment :
 
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
-            glideManager.load(sourceImageView, token.logoUrl)
+            glideManager.load(sourceImageView, token.iconUrl)
             sourceTextView.text = token.tokenSymbol
             availableTextView.text = token.getFormattedTotal()
         }

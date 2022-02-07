@@ -1,6 +1,5 @@
 package org.p2p.wallet.send.ui.transaction
 
-import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -56,7 +55,6 @@ class TransactionStatusBottomSheet(
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_status_bottom_sheet, container, false)
 
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
@@ -65,7 +63,7 @@ class TransactionStatusBottomSheet(
             statusTextView.text = getString(info.status)
             messageTextView.text = getString(info.message)
             iconImageView.setImageResource(info.iconRes)
-            amountTextView.text = "${info.amount} ${info.tokenSymbol}"
+            amountTextView.text = info.getFormattedAmount()
             usdAmountTextView.text = getString(R.string.main_usd_end_format, info.usdAmount)
             idTextView.text = info.transactionId
 

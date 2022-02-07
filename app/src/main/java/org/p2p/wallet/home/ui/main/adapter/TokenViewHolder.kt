@@ -69,8 +69,8 @@ class TokenViewHolder(
 
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 
-        if (!token.logoUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, token.logoUrl)
+        if (!token.iconUrl.isNullOrEmpty()) {
+            loadImage(tokenImageView, token.iconUrl)
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenSymbol
