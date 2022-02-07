@@ -11,6 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
+import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenInfoBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
@@ -108,6 +109,10 @@ class TokenInfoFragment :
         val isEmpty = transactions.isEmpty()
         binding.emptyView.isVisible = isEmpty
         binding.refreshLayout.isVisible = !isEmpty
+    }
+
+    override fun showActions(items: List<ActionButton>) {
+        binding.actionButtonsView.setItems(items)
     }
 
     override fun showPagingState(newState: PagingState) {
