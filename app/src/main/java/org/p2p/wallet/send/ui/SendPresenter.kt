@@ -210,6 +210,7 @@ class SendPresenter(
         } ?: return
 
         view?.showInputValue(totalAvailable)
+        setNewSourceAmount(totalAvailable.toString())
     }
 
     override fun loadCurrentNetwork() {

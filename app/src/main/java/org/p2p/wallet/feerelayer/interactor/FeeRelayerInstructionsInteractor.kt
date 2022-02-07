@@ -13,15 +13,15 @@ import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.toPublicKey
-import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class FeeRelayerInstructionsInteractor(
@@ -193,7 +193,8 @@ class FeeRelayerInstructionsInteractor(
             pools = topUpPools,
             inputAmount = null,
             minAmountOut = amount,
-            slippage = 0.01, transitTokenMintPubkey
+            slippage = 0.01,
+            transitTokenMintPubkey = transitTokenMintPubkey
         )
 
         when (topUpSwap) {
@@ -485,8 +486,6 @@ class FeeRelayerInstructionsInteractor(
                     owner = userAuthority,
                     mint = transitTokenMint
                 )
-                // fixme: move upper
-//                val programId1 = FeeRelayerProgram.getProgramId(!environmentManager.isDevnet())
                 val createTransitInstruction = FeeRelayerProgram.createTransitTokenAccountInstruction(
                     programId = programId,
                     feePayer = feePayerAddress.toPublicKey(),

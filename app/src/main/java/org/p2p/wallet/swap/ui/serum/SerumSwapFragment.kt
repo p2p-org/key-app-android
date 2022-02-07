@@ -33,6 +33,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
 
+// TODO: Don't remove, we can be back reverted to serum swap in the future
 class SerumSwapFragment :
     BaseMvpFragment<SerumSwapContract.View, SerumSwapContract.Presenter>(R.layout.fragment_swap_serum),
     SerumSwapContract.View {

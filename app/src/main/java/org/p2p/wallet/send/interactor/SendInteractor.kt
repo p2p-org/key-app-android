@@ -119,7 +119,7 @@ class SendInteractor(
 
         val routeValues = bestPoolPair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
 
-        Timber.tag(SEND_TAG).d(routeValues)
+        Timber.tag("POOLPAIR").d(routeValues)
 
         val feeInPayingToken = bestPoolPair.getInputAmount(feeInSol, Slippage.PERCENT.doubleValue) ?: return fee
 

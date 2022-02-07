@@ -55,6 +55,8 @@ import java.math.BigDecimal
 
 private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+private const val EXTRA_FEE_PAYER = "EXTRA_FEE_PAYER"
+const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class SendFragment :
     BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
@@ -62,7 +64,6 @@ class SendFragment :
 
     companion object {
 
-        const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
         fun create(address: String? = null) = SendFragment().withArgs(
             EXTRA_ADDRESS to address
         )
@@ -87,6 +88,37 @@ class SendFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupViews()
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
+                    if (token != null) presenter.setSourceToken(token)
+                }
+                result.containsKey(EXTRA_FEE_PAYER) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
+                    if (token != null) presenter.setFeePayerToken(token)
+                }
+                result.containsKey(EXTRA_RESULT) -> {
+                    val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
+                    if (searchResult != null) presenter.setTargetResult(searchResult)
+                }
+                result.containsKey(EXTRA_NETWORK) -> {
+                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
+                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
+                }
+            }
+        }
+
+        presenter.loadInitialData()
+        checkClipBoard()
+    }
+
+    private fun setupViews() {
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             sendButton.setOnClickListener { presenter.sendOrConfirm() }
@@ -150,29 +182,6 @@ class SendFragment :
                 )
             }
         }
-
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_SEND,
-            viewLifecycleOwner
-        ) { _, result ->
-            when {
-                result.containsKey(EXTRA_TOKEN) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
-                    if (token != null) presenter.setSourceToken(token)
-                }
-                result.containsKey(EXTRA_RESULT) -> {
-                    val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
-                    if (searchResult != null) presenter.setTargetResult(searchResult)
-                }
-                result.containsKey(EXTRA_NETWORK) -> {
-                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
-                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
-                }
-            }
-        }
-
-        presenter.loadInitialData()
-        checkClipBoard()
     }
 
     override fun showBiometricConfirmationPrompt(data: ConfirmData) {
@@ -186,7 +195,7 @@ class SendFragment :
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens),
+            target = SelectTokenFragment.create(tokens, EXTRA_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,
@@ -283,7 +292,7 @@ class SendFragment :
 
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(feePayerTokens) { presenter.setFeePayerToken(it as Token.Active) },
+            target = SelectTokenFragment.create(feePayerTokens, EXTRA_FEE_PAYER),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,

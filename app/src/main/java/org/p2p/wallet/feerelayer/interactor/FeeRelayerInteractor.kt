@@ -19,6 +19,7 @@ import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
+import timber.log.Timber
 import java.math.BigInteger
 
 class FeeRelayerInteractor(
@@ -250,7 +251,7 @@ class FeeRelayerInteractor(
                         ?: throw IllegalStateException("Swap pools not found")
 
                 val topUpFee = feeRelayerInstructionsInteractor.calculateTopUpFee(
-                    relayInfo,
+                    info = relayInfo,
                     topUpPools = topUpPools,
                     relayAccountStatus = relayAccountStatus
                 )
@@ -450,6 +451,9 @@ class FeeRelayerInteractor(
             val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
             val topUpFee = feeRelayerInstructionsInteractor.calculateTopUpFee(relayInfo, topUpPools, relayAccountStatus)
             topUpFeesAndPools = FeesAndPools(topUpFee, topUpPools)
+
+            val routeValues = topUpPools.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
+            Timber.tag("POOLPAIR_SEND").d(routeValues)
         }
 
         return TopUpPreparedParams(topUpFeesAndPools, topUpAmount)
