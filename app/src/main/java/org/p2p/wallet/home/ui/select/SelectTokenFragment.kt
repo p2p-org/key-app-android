@@ -10,41 +10,49 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSelectTokenBinding
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.ui.SendFragment.Companion.KEY_REQUEST_SEND
+import org.p2p.wallet.send.ui.KEY_REQUEST_SEND
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
+const val EXTRA_TOKEN = "EXTRA_TOKEN"
+private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+
 class SelectTokenFragment(
     private val onSelected: ((Token) -> Unit)?
 ) : BaseFragment(R.layout.fragment_select_token) {
 
     companion object {
-        const val EXTRA_TOKEN = "EXTRA_TOKEN"
-        private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
-        fun create(tokens: List<Token>) = SelectTokenFragment(null).withArgs(
-            EXTRA_ALL_TOKENS to tokens
-        )
+
+        fun create(tokens: List<Token>, resultKey: String) = SelectTokenFragment(null)
+            .withArgs(
+                EXTRA_ALL_TOKENS to tokens,
+                EXTRA_RESULT_KEY to resultKey
+            )
 
         /**
          * Callback for individual callback catch
          * */
         // FIXME: remove functions add callback listeners, otherwise it'll leak
-        fun create(tokens: List<Token>, onSelected: ((Token) -> Unit)?) = SelectTokenFragment(onSelected).withArgs(
-            EXTRA_ALL_TOKENS to tokens
-        )
+        fun create(tokens: List<Token>, resultKey: String = EXTRA_TOKEN, onSelected: ((Token) -> Unit)?) =
+            SelectTokenFragment(onSelected).withArgs(
+                EXTRA_ALL_TOKENS to tokens,
+                EXTRA_RESULT_KEY to resultKey
+            )
     }
 
     private val tokens: List<Token> by args(EXTRA_ALL_TOKENS)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
 
     private val binding: FragmentSelectTokenBinding by viewBinding()
 
     private val tokenAdapter: SelectTokenAdapter by lazy {
         SelectTokenAdapter {
             onSelected?.invoke(it)
-            setFragmentResult(KEY_REQUEST_SEND, bundleOf(EXTRA_TOKEN to it))
+            setFragmentResult(KEY_REQUEST_SEND, bundleOf(resultKey to it))
             parentFragmentManager.popBackStack()
         }
     }
