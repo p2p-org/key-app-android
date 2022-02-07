@@ -12,5 +12,6 @@ interface SettingsContract {
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
+        fun logout()
     }
 }

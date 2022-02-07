@@ -1,6 +1,7 @@
 package org.p2p.wallet.settings.ui.settings
 
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -9,6 +10,7 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 class SettingsPresenter(
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
+    private val authInteractor: AuthInteractor,
     private val appRestarter: AppRestarter
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
@@ -20,6 +22,13 @@ class SettingsPresenter(
             val appearanceItems = settingsInteractor.getAppearanceSettings()
             val settings = profileItems + networkItems + appearanceItems
             view?.showSettings(settings)
+        }
+    }
+
+    override fun logout() {
+        launch {
+            authInteractor.logout()
+            appRestarter.restartApp()
         }
     }
 }

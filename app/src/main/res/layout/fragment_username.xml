@@ -30,10 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:cardCornerRadius="4dp"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar">
@@ -75,73 +73,69 @@
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/actionContainer"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:background="#F6F6F8"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_app_bottom_rounded"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/keysRecyclerView">
 
-                    <Space
-                        android:layout_width="wrap_content"
+                    <org.p2p.wallet.common.ui.widget.ProgressButton
+                        android:id="@+id/copyButton"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/backgroundApp"
+                        android:foreground="?selectableItemBackground"
+                        app:buttonDrawable="@drawable/ic_copy"
+                        app:buttonDrawableTint="@color/accentPrimary"
+                        app:buttonText="@string/auth_copy"
+                        app:buttonTextColor="@color/accentPrimary" />
 
-                    <TextView
-                        android:id="@+id/copyTextView"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:drawablePadding="10dp"
-                        android:gravity="center"
-                        android:paddingHorizontal="15dp"
-                        android:text="@string/auth_copy"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorAccentPrimary"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        app:drawableStartCompat="@drawable/ic_copy_blue" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/strokePrimary" />
 
-                    <Space
-                        android:layout_width="wrap_content"
+                    <org.p2p.wallet.common.ui.widget.ProgressButton
+                        android:id="@+id/shareButton"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/backgroundApp"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                        app:buttonDrawable="@drawable/ic_share_blue"
+                        app:buttonDrawableTint="@color/accentPrimary"
+                        app:buttonText="@string/auth_share"
+                        app:buttonTextColor="@color/accentPrimary" />
 
-                    <TextView
-                        android:id="@+id/shareTextView"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:drawablePadding="10dp"
-                        android:gravity="center"
-                        android:paddingHorizontal="15dp"
-                        android:text="@string/auth_share"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorAccentPrimary"
-                        android:textStyle="bold"
-                        app:drawableStartCompat="@drawable/ic_share_blue" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/strokePrimary" />
 
-                    <Space
-                        android:layout_width="wrap_content"
+
+                    <org.p2p.wallet.common.ui.widget.ProgressButton
+                        android:id="@+id/saveButton"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/backgroundApp"
+                        android:foreground="?selectableItemBackground"
+                        app:buttonDrawable="@drawable/ic_gallery"
+                        app:buttonText="@string/auth_save"
+                        app:buttonTextColor="@color/accentPrimary" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <TextView
-                        android:id="@+id/saveTextView"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:drawablePadding="10dp"
-                        android:gravity="center"
-                        android:paddingHorizontal="15dp"
-                        android:text="@string/auth_save"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorAccentPrimary"
-                        android:textStyle="bold"
-                        app:drawableStartCompat="@drawable/ic_save_blue" />
-
-                    <Space
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
-                </LinearLayout>
 
             </LinearLayout>
 
@@ -152,16 +146,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="16dp"
+
+            android:layout_margin="16dp"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:gravity="center"
+            android:background="@drawable/bg_app_rounded"
+            android:gravity="start"
+            android:padding="16dp"
             android:text="@string/auth_your_p2p_username"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_view" />
 
     </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/bottomSheetView"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_element_primary_top_rounded">
+
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/progressButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            app:buttonText="@string/receive_tokens_info"
+            app:buttonTextColor="@color/elementPrimary" />
+
+    </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
