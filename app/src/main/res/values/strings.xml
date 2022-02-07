@@ -58,7 +58,7 @@
     <string name="auth_terms_of_use">Terms of Use</string>
     <string name="auth_privacy_policy">Privacy Policy</string>
     <string name="auth_seed_order">Place seed phrases in a correct order to recover your wallet.</string>
-    <string name="auth_enter_seed_phrase">Enter your security key\'s 24 words in the right order.</string>
+    <string name="auth_enter_seed_phrase">To reset your wallet PIN you have to paste in the field above your security key.\n\nWhat is a security key?</string>
     <string name="auth_seed_phrase_limit">Secret phrase can\'t contain more than 12 words</string>
     <string name="auth_security_key_hint">Write down or duplicate these words in the correct order and keep them in a safe place. Copy them manually</string>
     <string name="auth_copy_to_clipboard">Copy to clipboard</string>
@@ -443,4 +443,5 @@
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
+    <string name="settings_resetting_your_PIN">Resetting your PIN</string>
 </resources>

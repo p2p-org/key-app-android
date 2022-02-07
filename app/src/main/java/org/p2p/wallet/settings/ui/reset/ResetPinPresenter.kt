@@ -11,6 +11,7 @@ import timber.log.Timber
 import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 500L
+
 class ResetPinPresenter(
     private val authInteractor: AuthInteractor
 ) : BasePresenter<ResetPinContract.View>(), ResetPinContract.Presenter {
@@ -34,6 +35,10 @@ class ResetPinPresenter(
 
     override fun resetPinWithBiometrics(cipher: Cipher) {
         resetPinActually(cipher)
+    }
+
+    override fun onSeedPhraseValidated(keys: List<String>) {
+        onSignInResult(SignInResult.Success)
     }
 
     private fun verifyPin(pinCode: String) {

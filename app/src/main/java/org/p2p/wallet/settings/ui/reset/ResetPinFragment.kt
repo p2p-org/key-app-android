@@ -6,6 +6,7 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.fragment.app.setFragmentResultListener
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentChangePinBinding
@@ -14,7 +15,9 @@ import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.replaceFragment
 import javax.crypto.Cipher
 
 class ResetPinFragment :
@@ -39,13 +42,13 @@ class ResetPinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         with(binding) {
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             resetTextView.text = buildResetText()
-            resetTextView.setOnClickListener {
-                TODO()
-            }
+        }
+        setFragmentResultListener(ResetSeedPhraseFragment.REQUEST_KEY) {key, bundle ->
+            val keys = bundle.getStringArrayList(ResetSeedPhraseFragment.BUNDLE_SECRET_KEYS)
+            if(keys != null) presenter.onSeedPhraseValidated(keys)
         }
     }
 
@@ -107,7 +110,7 @@ class ResetPinFragment :
 
         val clickableReset = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                TODO()
+                replaceFragment(ResetSeedPhraseFragment.create())
             }
 
             override fun updateDrawState(ds: TextPaint) {

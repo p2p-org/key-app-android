@@ -26,7 +26,6 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             edgeToEdge {
                 loginButton.fitMargin { Edge.BottomArc }
             }
-
             createButton.clipToOutline = true
             createButton.setOnClickListener {
                 replaceFragment(CreateWalletFragment.create())
