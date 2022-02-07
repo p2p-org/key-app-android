@@ -4,9 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -16,9 +13,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.main.ui.receive.list.TokenListFragment
-import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
@@ -56,7 +51,6 @@ class UsernameFragment :
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
                 bottomSheetView.fitMargin { Edge.BottomArc }
-
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 

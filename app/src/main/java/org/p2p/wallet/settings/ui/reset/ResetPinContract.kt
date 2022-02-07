@@ -8,7 +8,7 @@ interface ResetPinContract {
 
     interface View : MvpView {
         fun showLoading(isLoading: Boolean)
-        fun showCurrentPinIncorrectError(attemptsLeft: Int)
+        fun showCurrentPinIncorrectError()
         fun showEnterNewPin()
         fun showConfirmationError()
         fun showConfirmNewPin()

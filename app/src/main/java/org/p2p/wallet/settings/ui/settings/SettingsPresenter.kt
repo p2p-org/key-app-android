@@ -31,4 +31,12 @@ class SettingsPresenter(
             appRestarter.restartApp()
         }
     }
+
+    override fun onUsernameClicked() {
+        if (usernameInteractor.usernameExists()) {
+            view?.showUsername()
+        } else {
+            view?.showReserveUsername()
+        }
+    }
 }

@@ -90,7 +90,7 @@
     <string name="auth_biometric_question">Use biometric for quick access?</string>
     <string name="auth_pin_codes_match_error">PIN doesn’t match. Try again</string>
     <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
-    <string name="auth_pin_code_wrong">Wrong pin code</string>
+    <string name="auth_pin_code_wrong">Wrong PIN. Try again or reset it</string>
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
@@ -404,8 +404,8 @@
     <string name="settings_security_primary_biometric">Will be as a primary secure check</string>
     <string name="settings_security_pin_code">PIN-code</string>
     <string name="settings_security_pin_code_check">Default secure check</string>
-    <string name="settings_security_change_enter_pin">New PIN-code</string>
-    <string name="settings_security_change_confirm_pin">Confirm PIN-code</string>
+    <string name="settings_security_change_enter_pin">Set up a new PIN</string>
+    <string name="settings_security_change_confirm_pin">Confirm your wallet PIN</string>
     <string name="settings_security_change_pin_success">PIN-code changed!</string>
     <string name="settings_security_change_pin_info">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
     <string name="settings_security_go_back">Go back to profile</string>
@@ -436,6 +436,8 @@
     <string name="settings_zero_balances">Zero balances</string>
     <string name="settings_zero_balances_subtitle">Tokens with zero balances are hidden</string>
     <string name="settings_logout">Log out now</string>
+    <string name="settings_forgot_your_pin">Forgot your PIN? Reset it</string>
+    <string name="settings_reset_it">Reset it</string>
     <string name="swap_total_format">Total: %s</string>
     <string name="swap_total_zero_sol">0 SOL</string>
     <string name="swap_choose_the_destination">Choose the destination</string>

@@ -8,10 +8,13 @@ interface SettingsContract {
 
     interface View : MvpView {
         fun showSettings(item: List<SettingsRow>)
+        fun showReserveUsername()
+        fun showUsername()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
         fun logout()
+        fun onUsernameClicked()
     }
 }

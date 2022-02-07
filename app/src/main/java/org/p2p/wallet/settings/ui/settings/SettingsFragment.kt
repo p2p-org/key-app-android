@@ -3,12 +3,16 @@ package org.p2p.wallet.settings.ui.settings
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.ReserveMode
+import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.model.SettingsRow
+import org.p2p.wallet.settings.ui.reset.ResetPinFragment
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -31,7 +35,9 @@ class SettingsFragment :
         with(binding) {
             recyclerView.attachAdapter(adapter)
         }
-
+        setFragmentResultListener(ReserveUsernameFragment.REQUEST_KEY) { key, bundle ->
+            showUsername()
+        }
         presenter.loadData()
     }
 
@@ -39,13 +45,21 @@ class SettingsFragment :
         adapter.setData(item)
     }
 
+    override fun showReserveUsername() {
+        replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+    }
+
+    override fun showUsername() {
+        replaceFragment(UsernameFragment.create())
+    }
+
     private fun onItemClickListener(@StringRes titleResId: Int) {
         when (titleResId) {
-            R.string.settings_username -> replaceFragment(UsernameFragment.create())
+            R.string.settings_username -> presenter.onUsernameClicked()
             R.string.settings_address_book -> TODO()
             R.string.settings_history -> TODO()
             R.string.settings_backup -> TODO()
-            R.string.settings_wallet_pin -> TODO()
+            R.string.settings_wallet_pin -> replaceFragment(ResetPinFragment.create())
             R.string.settings_app_security -> TODO()
             R.string.settings_network -> TODO()
             R.string.settings_pay_fees_with -> TODO()
@@ -54,7 +68,6 @@ class SettingsFragment :
             R.string.settings_appearance -> TODO()
             R.string.settings_zero_balances -> TODO()
             R.string.settings_app_version -> TODO()
-
         }
     }
 

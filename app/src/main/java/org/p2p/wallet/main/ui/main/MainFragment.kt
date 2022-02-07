@@ -32,7 +32,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 
-class  MainFragment :
+class MainFragment :
     BaseMvpFragment<MainContract.View, MainContract.Presenter>(R.layout.fragment_main),
     MainContract.View {
 

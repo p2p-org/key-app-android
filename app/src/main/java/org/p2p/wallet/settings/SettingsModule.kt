@@ -24,7 +24,7 @@ object SettingsModule : InjectionModule {
         factory { SettingsInteractor(get(), get(), get()) }
         factory { ThemeInteractor(get()) }
         single { SettingsInMemoryRepository() } bind SettingsLocalRepository::class
-        factory { SettingsPresenter(get(), get(), get(),get()) } bind SettingsContract.Presenter::class
+        factory { SettingsPresenter(get(), get(), get(), get()) } bind SettingsContract.Presenter::class
         factory { SecurityPresenter(get(), get()) } bind SecurityContract.Presenter::class
         factory { ResetPinPresenter(get()) } bind ResetPinContract.Presenter::class
         factory { NetworkPresenter(get(), get(), get()) } bind NetworkContract.Presenter::class

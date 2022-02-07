@@ -8,6 +8,8 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
@@ -35,6 +37,7 @@ class ReserveUsernameFragment :
 
     companion object {
         private const val EXTRA_MODE: String = "EXTRA_MODE"
+        const val REQUEST_KEY = "RESERVE_USERNAME_REQUEST_KEY"
         fun create(mode: ReserveMode) =
             ReserveUsernameFragment()
                 .withArgs(EXTRA_MODE to mode)
@@ -187,8 +190,13 @@ class ReserveUsernameFragment :
 
     private fun finishNavigation() {
         when (mode) {
-            ReserveMode.PIN_CODE -> navigateToPinCode()
-            ReserveMode.POP -> popBackStack()
+            ReserveMode.PIN_CODE -> {
+                navigateToPinCode()
+            }
+            ReserveMode.POP -> {
+                setFragmentResult(REQUEST_KEY, bundleOf())
+                popBackStack()
+            }
         }
     }
 }
