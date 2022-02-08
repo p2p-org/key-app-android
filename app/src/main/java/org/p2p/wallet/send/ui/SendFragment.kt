@@ -30,13 +30,13 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
-import org.p2p.wallet.send.model.ShowProgress
 import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
-import org.p2p.wallet.send.ui.dialogs.ProgressBottomSheet
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ConfirmData
+import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.transaction.ui.TransactionConfirmBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
@@ -270,9 +270,11 @@ class SendFragment :
         with(binding) {
             if (fee == null) {
                 accountCardView.isVisible = false
+                accountInfoTextView.isVisible = false
                 return
             }
 
+            accountInfoTextView.isVisible = true
             accountCardView.isVisible = true
 
             val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
@@ -286,10 +288,6 @@ class SendFragment :
         addFragment(SearchFragment.create(usernames))
     }
 
-    override fun showRelayAccountFeeView(isVisible: Boolean) {
-        binding.accountInfoTextView.isVisible = isVisible
-    }
-
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
         addFragment(
             target = SelectTokenFragment.create(feePayerTokens, EXTRA_FEE_PAYER),
@@ -300,7 +298,7 @@ class SendFragment :
         )
     }
 
-    override fun showSuccess(transaction: HistoryTransaction) {
+    override fun showTransactionDetails(transaction: HistoryTransaction) {
         popAndReplaceFragment(
             target = TransactionDetailsFragment.create(transaction),
             popTo = HomeFragment::class
@@ -390,7 +388,7 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun setAvailableTextColor(@ColorRes availableColor: Int) {
+    override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
         binding.availableTextView.setTextColor(requireContext().getColor(availableColor))
     }
 
@@ -430,6 +428,11 @@ class SendFragment :
             title = TextContainer(R.string.main_send_wrong_wallet),
             message = TextContainer(R.string.main_send_wrong_wallet_message)
         )
+    }
+
+    override fun showSuccessMessage(amount: String) {
+        val message = getString(R.string.send_successful_format, amount)
+        showSnackbarMessage(message)
     }
 
     private fun checkClipBoard() {

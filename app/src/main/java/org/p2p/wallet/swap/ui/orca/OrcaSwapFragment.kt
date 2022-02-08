@@ -16,10 +16,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
-import org.p2p.wallet.send.model.ShowProgress
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
-import org.p2p.wallet.send.ui.dialogs.ProgressBottomSheet
+import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.send.ui.transaction.TransactionInfo
 import org.p2p.wallet.send.ui.transaction.TransactionStatusBottomSheet
 import org.p2p.wallet.swap.model.Slippage
@@ -36,12 +36,18 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
+const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
+private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
+private const val EXTRA_DESTINATION_TOKEN = "EXTRA_DESTINATION_TOKEN"
+private const val EXTRA_SLIPPAGE = "EXTRA_SLIPPAGE"
+
+private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
 class OrcaSwapFragment :
     BaseMvpFragment<OrcaSwapContract.View, OrcaSwapContract.Presenter>(R.layout.fragment_swap_orca),
     OrcaSwapContract.View {
 
     companion object {
-        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
         fun create() = OrcaSwapFragment()
 
@@ -86,6 +92,26 @@ class OrcaSwapFragment :
             swapButton.setOnClickListener { presenter.swap() }
         }
 
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SWAP,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_SOURCE_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_SOURCE_TOKEN)
+                    if (token != null) presenter.setNewSourceToken(token)
+                }
+                result.containsKey(EXTRA_DESTINATION_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_DESTINATION_TOKEN)
+                    if (token != null) presenter.setNewDestinationToken(token)
+                }
+                result.containsKey(EXTRA_SLIPPAGE) -> {
+                    val slippage = result.getParcelable<Slippage>(EXTRA_SLIPPAGE)
+                    if (slippage != null) presenter.setSlippage(slippage)
+                }
+            }
+        }
+
         presenter.loadInitialData()
     }
 
@@ -116,7 +142,7 @@ class OrcaSwapFragment :
     }
 
     override fun openSwapSettings(tokens: List<Token.Active>, selectedToken: String) {
-        addFragment(SwapSettingsFragment.create(tokens, selectedToken))
+        addFragment(SwapSettingsFragment.create(tokens, selectedToken, EXTRA_SLIPPAGE))
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
@@ -203,7 +229,7 @@ class OrcaSwapFragment :
 
     override fun openSourceSelection(tokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewSourceToken(it as Token.Active) },
+            target = SelectTokenFragment.create(tokens, EXTRA_SOURCE_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,
@@ -213,7 +239,7 @@ class OrcaSwapFragment :
 
     override fun openDestinationSelection(tokens: List<Token>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewDestinationToken(it) },
+            target = SelectTokenFragment.create(tokens, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,

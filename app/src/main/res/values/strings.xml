@@ -342,6 +342,7 @@
     <string name="swap_account_creation_format">%s account creation</string>
     <string name="swap_format">Swap %1s → %2s</string>
     <string name="swap_total_format">Total: %s</string>
+    <string name="swap_total">Total:</string>
     <string name="swap_total_zero_sol">0 SOL</string>
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
@@ -429,4 +430,6 @@
     <string name="send_confirm_warning">Be sure all details are correct before confirming the transaction. Once confirmed, it cannot be reversed. If everything is correct, tap the button below to continue.</string>
     <string name="send_confirm_warning_highlight">Once confirmed, it cannot be reversed.</string>
     <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
+    <string name="send_successful_format">%s is successfully sent!</string>
+    <string name="swap_max_price_slippage">Max price slippage</string>
 </resources>

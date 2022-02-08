@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.ui.info
+package org.p2p.wallet.history.ui.history
 
 import android.os.Bundle
 import android.view.View
@@ -28,18 +28,18 @@ import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-class TokenInfoFragment :
-    BaseMvpFragment<TokenInfoContract.View, TokenInfoContract.Presenter>(R.layout.fragment_token_info),
-    TokenInfoContract.View {
+class HistoryFragment :
+    BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_token_info),
+    HistoryContract.View {
 
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
-        fun create(token: Token.Active) = TokenInfoFragment().withArgs(
+        fun create(token: Token.Active) = HistoryFragment().withArgs(
             EXTRA_TOKEN to token
         )
     }
 
-    override val presenter: TokenInfoContract.Presenter by inject {
+    override val presenter: HistoryContract.Presenter by inject {
         parametersOf(token)
     }
     private val token: Token.Active by args(EXTRA_TOKEN)

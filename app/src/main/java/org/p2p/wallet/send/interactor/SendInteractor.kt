@@ -15,14 +15,14 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerRequestInteractor
 import org.p2p.wallet.feerelayer.model.SendStrategy
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.send.model.CheckAddressResult
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.model.TransactionResult
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.send.model.CheckAddressResult
+import org.p2p.wallet.send.model.TransactionResult
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
@@ -61,7 +61,7 @@ class SendInteractor(
     * Initialize fee payer token
     * */
     suspend fun initialize(userTokens: List<Token.Active>) {
-        feePayerToken = userTokens.first { it.isSOL }
+        feePayerToken = userTokens.firstOrNull { it.isSOL } ?: throw IllegalStateException("SOL account not found")
 
         feeRelayerInteractor.load()
 
@@ -86,8 +86,7 @@ class SendInteractor(
         try {
             val address = addressInteractor.findAssociatedAddress(destinationAddress, token.mintAddress)
             if (address.shouldCreateAssociatedInstruction) {
-                val userRelayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-                CheckAddressResult.NewAccountNeeded(feePayerToken, userRelayAccount)
+                CheckAddressResult.NewAccountNeeded(feePayerToken)
             } else {
                 CheckAddressResult.AccountExists
             }
@@ -133,8 +132,8 @@ class SendInteractor(
     ): TransactionResult {
         val strategy = when {
             feePayerToken.isSOL && token.isSOL -> SendStrategy.SimpleSol
-            feePayerToken.isSOL -> SendStrategy.SimpleSpl
-            else -> SendStrategy.FeeRelay
+            feePayerToken.isSOL -> SendStrategy.Spl
+            else -> SendStrategy.FeeRelayer
         }
 
         return when (strategy) {
@@ -142,12 +141,12 @@ class SendInteractor(
                 destinationAddress = destinationAddress,
                 lamports = lamports
             )
-            is SendStrategy.SimpleSpl -> sendSplToken(
+            is SendStrategy.Spl -> sendSplToken(
                 destinationAddress = destinationAddress,
                 sourceToken = token,
                 lamports = lamports
             )
-            is SendStrategy.FeeRelay -> sendByFeeRelayer(
+            is SendStrategy.FeeRelayer -> sendByFeeRelayer(
                 destinationAddress = destinationAddress,
                 sourceToken = token,
                 lamports = lamports
@@ -246,7 +245,7 @@ class SendInteractor(
         val recentBlockHash = rpcRepository.getRecentBlockhash()
 
         transaction.setFeePayer(feePayerPubkey)
-        transaction.setRecentBlockHash(recentBlockHash.recentBlockhash)
+        transaction.recentBlockHash = recentBlockHash.recentBlockhash
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
@@ -307,7 +306,7 @@ class SendInteractor(
         val recentBlockhash = rpcRepository.getRecentBlockhash()
 
         transaction.setFeePayer(feePayerPublicKey)
-        transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+        transaction.recentBlockHash = recentBlockhash.recentBlockhash
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)

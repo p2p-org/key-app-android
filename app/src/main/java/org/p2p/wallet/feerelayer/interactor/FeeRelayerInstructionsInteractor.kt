@@ -293,7 +293,7 @@ class FeeRelayerInstructionsInteractor(
                     userTransferAuthority = PublicKey(topUpSwap.from.transferAuthorityPubkey),
                     userSourceTokenAccount = userSourceTokenAccountAddress,
                     userDestinationTokenAccount = userTemporarilyWSOLAddress,
-                    userTransitTokenAccount = PublicKey(topUpSwap.transitTokenMintPubkey),
+                    userTransitTokenAccount = transitTokenAccountAddress,
                     swapFromProgramId = PublicKey(topUpSwap.from.programId),
                     swapFromAccount = PublicKey(topUpSwap.from.accountPubkey),
                     swapFromAuthority = PublicKey(topUpSwap.from.authorityPubkey),

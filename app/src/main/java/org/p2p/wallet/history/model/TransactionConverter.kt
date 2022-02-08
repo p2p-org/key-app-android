@@ -93,7 +93,7 @@ object TransactionConverter {
             destination = destination,
             senderAddress = senderAddress,
             fee = response.fee.toBigInteger(),
-            amount = amount,
+            totalInUsd = amount,
             total = response.amount.toBigDecimalOrZero(),
             date = date,
             type = RenBtcType.BURN
@@ -138,7 +138,7 @@ object TransactionConverter {
             type = if (isSend) TransferType.SEND else TransferType.RECEIVE,
             senderAddress = senderAddress,
             tokenData = tokenData,
-            amount = amount,
+            totalInUsd = amount,
             total = response.amount.toBigInteger().fromLamports(response.decimals),
             date = date
         )

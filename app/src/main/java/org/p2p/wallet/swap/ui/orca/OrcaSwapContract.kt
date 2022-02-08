@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.send.model.ShowProgress
+import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.ui.transaction.TransactionInfo
 import org.p2p.wallet.swap.model.Slippage

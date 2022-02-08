@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.model
+package org.p2p.wallet.transaction.model
 
 import android.os.Parcelable
 import androidx.annotation.StringRes

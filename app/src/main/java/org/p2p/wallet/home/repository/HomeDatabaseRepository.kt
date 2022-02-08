@@ -1,12 +1,11 @@
 package org.p2p.wallet.home.repository
 
-import org.p2p.wallet.home.db.TokenDao
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.TokenConverter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.p2p.wallet.home.db.TokenDao
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenComparator
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.home.model.TokenConverter
 
 class HomeDatabaseRepository(
     private val tokenDao: TokenDao
@@ -22,8 +21,8 @@ class HomeDatabaseRepository(
         tokenDao.insertOrUpdate(entities)
     }
 
-    override suspend fun removeTemporarySol(publicKey: String) {
-        tokenDao.removeIfExists(publicKey, SOL_SYMBOL)
+    override suspend fun removeIfExists(publicKey: String, symbol: String) {
+        tokenDao.removeIfExists(publicKey, symbol)
     }
 
     override fun getTokensFlow(): Flow<List<Token.Active>> =
