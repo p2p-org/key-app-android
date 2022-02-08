@@ -74,7 +74,7 @@ sealed class HistoryTransaction(
         val type: TransferType,
         val senderAddress: String,
         val tokenData: TokenData,
-        val amount: BigDecimal?,
+        val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val destination: String,
         val fee: BigInteger
@@ -96,7 +96,7 @@ sealed class HistoryTransaction(
 
         fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
 
-        fun getValue(): String? = amount?.let { "${getSymbol(isSend)} ${getFormattedAmount()}" }
+        fun getValue(): String? = totalInUsd?.let { "${getSymbol(isSend)} $${it.scaleShort()}" }
 
         fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
 
@@ -115,7 +115,7 @@ sealed class HistoryTransaction(
                 "${total.scaleLong().toPlainString()} ${tokenData.symbol}"
             }
 
-        fun getFormattedAmount(): String? = amount?.let { "~$${amount.scaleShort()}" }
+        fun getFormattedAmount(): String? = totalInUsd?.let { "~$${totalInUsd.scaleShort()}" }
     }
 
     @Parcelize
@@ -126,7 +126,7 @@ sealed class HistoryTransaction(
         val destination: String,
         val senderAddress: String,
         val type: RenBtcType,
-        val amount: BigDecimal?,
+        val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val fee: BigInteger
     ) : HistoryTransaction(date) {
@@ -152,7 +152,7 @@ sealed class HistoryTransaction(
                 "${total.scaleLong().toPlainString()} $REN_BTC_SYMBOL"
             }
 
-        fun getFormattedAmount(): String? = amount?.let { "~$${amount.scaleShort()}" }
+        fun getFormattedAmount(): String? = totalInUsd?.let { "~$${totalInUsd.scaleShort()}" }
     }
 
     @Parcelize

@@ -10,8 +10,8 @@ import org.p2p.wallet.history.repository.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.HistoryRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
-import org.p2p.wallet.history.ui.info.TokenInfoContract
-import org.p2p.wallet.history.ui.info.TokenInfoPresenter
+import org.p2p.wallet.history.ui.history.HistoryContract
+import org.p2p.wallet.history.ui.history.TokenInfoPresenter
 import org.p2p.wallet.home.model.Token
 
 object HistoryModule : InjectionModule {
@@ -20,7 +20,7 @@ object HistoryModule : InjectionModule {
 
         factory { HistoryRemoteRepository(get()) } bind HistoryRepository::class
         factory { HistoryInteractor(get(), get(), get()) }
-        factory { (token: Token.Active) -> TokenInfoPresenter(token, get()) } bind TokenInfoContract.Presenter::class
+        factory { (token: Token.Active) -> TokenInfoPresenter(token, get()) } bind HistoryContract.Presenter::class
         factory { (transaction: HistoryTransaction) ->
             TransactionDetailsPresenter(transaction, get(), get())
         } bind TransactionDetailsContract.Presenter::class

@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.ui.info
+package org.p2p.wallet.history.ui.history
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -10,7 +10,6 @@ import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import timber.log.Timber
 
@@ -19,7 +18,7 @@ private const val PAGE_SIZE = 20
 class TokenInfoPresenter(
     private val token: Token.Active,
     private val historyInteractor: HistoryInteractor
-) : BasePresenter<TokenInfoContract.View>(), TokenInfoContract.Presenter {
+) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private val transactions = mutableListOf<HistoryTransaction>()
     private val actions = mutableListOf(
@@ -28,18 +27,13 @@ class TokenInfoPresenter(
         ActionButton(R.string.main_swap, R.drawable.ic_swap_simple)
     )
 
-    companion object {
-        private const val DESTINATION_TOKEN = "USD"
-        private const val PAGE_SIZE = 20
-    }
-
     init {
-        if (token.tokenSymbol == SOL_SYMBOL) {
+        if (token.isSOL) {
             actions.add(0, ActionButton(R.string.main_buy, R.drawable.ic_plus))
         }
     }
 
-    override fun attach(view: TokenInfoContract.View) {
+    override fun attach(view: HistoryContract.View) {
         super.attach(view)
         view.showActions(actions)
     }

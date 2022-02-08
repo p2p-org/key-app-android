@@ -1,21 +1,29 @@
 package org.p2p.wallet.send.model
 
-class SendTotal(
-    val total: String,
-    val totalUsd: String?,
+import java.math.BigDecimal
+
+class SendTotal constructor(
+    val total: BigDecimal,
+    val totalUsd: BigDecimal?,
     val receive: String,
     val receiveUsd: String?,
-    val fee: String?,
-    val feeUsd: String?,
-    val accountCreationFee: String?,
-    val accountCreationFeeUsd: String?
+    val fee: SendFee?,
+    val sourceSymbol: String
 ) {
 
     fun getTotalFee(): String =
-        if (fee.isNullOrEmpty()) total else "$total + $fee"
+        when (fee) {
+            is SendFee.SolanaFee ->
+                if (sourceSymbol == fee.feePayerSymbol) "${total + fee.fee} $sourceSymbol"
+                else "$totalFormatted + ${fee.fee} ${fee.feePayerSymbol}"
+            is SendFee.RenBtcFee ->
+                "$totalFormatted + ${fee.fee} ${fee.feePayerSymbol}"
+            else ->
+                totalFormatted
+        }
 
     val fullTotal: String
-        get() = if (approxTotalUsd != null) "$total $approxTotalUsd" else total
+        get() = if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
 
     val approxTotalUsd: String? get() = totalUsd?.let { "(~$$it)" }
 
@@ -25,8 +33,6 @@ class SendTotal(
     val approxReceive: String?
         get() = receiveUsd?.let { "(~$$it)" }
 
-    val fullFee: String?
-        get() = fee?.let { "$it $approxFeeUsd" }
-
-    val approxFeeUsd: String? get() = feeUsd?.let { "(~$$it)" }
+    private val totalFormatted: String
+        get() = "$total $sourceSymbol"
 }

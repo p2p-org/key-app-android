@@ -15,7 +15,7 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
-import org.p2p.wallet.history.ui.info.TokenInfoFragment
+import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenItem
 import org.p2p.wallet.home.model.VisibilityState
@@ -182,7 +182,7 @@ class HomeFragment :
     }
 
     private fun onTokenClicked(token: Token.Active) {
-        replaceFragment(TokenInfoFragment.create(token))
+        replaceFragment(HistoryFragment.create(token))
     }
 
     private fun onEditClicked(token: Token.Active) {

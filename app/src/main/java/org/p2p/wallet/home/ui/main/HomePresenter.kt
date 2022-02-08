@@ -67,8 +67,8 @@ class MainPresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         updatesManager.start()
-        loadData()
-        checkUsername()
+//        loadData()
+//        checkUsername()
     }
 
     override fun collectData() {

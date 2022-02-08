@@ -10,7 +10,7 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
-import org.p2p.wallet.send.model.ShowProgress
+import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.transaction.model.ConfirmData
 import java.math.BigDecimal
@@ -18,11 +18,11 @@ import java.math.BigDecimal
 interface SendContract {
 
     interface View : MvpView {
-        fun setAvailableTextColor(@ColorRes availableColor: Int)
         fun showSourceToken(token: Token.Active)
-        fun showSuccess(transaction: HistoryTransaction)
+        fun showTransactionDetails(transaction: HistoryTransaction)
         fun showTotal(data: SendTotal?)
         fun showWrongWalletError()
+        fun showSuccessMessage(amount: String)
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
         fun showInputValue(value: BigDecimal)
         fun showUsdAroundValue(usdValue: BigDecimal)
@@ -32,6 +32,7 @@ interface SendContract {
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
+        fun updateAvailableTextColor(@ColorRes availableColor: Int)
 
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelectionView(isVisible: Boolean)
@@ -47,7 +48,6 @@ interface SendContract {
         fun showAddressOnlyTarget(address: String)
         fun showSearchScreen(usernames: List<SearchResult>)
 
-        fun showRelayAccountFeeView(isVisible: Boolean)
         fun showAccountFeeView(fee: SendFee?)
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 

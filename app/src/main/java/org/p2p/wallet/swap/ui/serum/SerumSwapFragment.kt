@@ -9,6 +9,8 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
@@ -17,21 +19,23 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.send.ui.transaction.TransactionInfo
 import org.p2p.wallet.send.ui.transaction.TransactionStatusBottomSheet
-import org.p2p.wallet.swap.ui.bottomsheet.SwapFeesBottomSheet
-import org.p2p.wallet.swap.ui.bottomsheet.SwapSettingsBottomSheet
-import org.p2p.wallet.swap.ui.bottomsheet.SwapSlippageBottomSheet
 import org.p2p.wallet.swap.model.PriceData
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.serum.SerumAmountData
+import org.p2p.wallet.swap.ui.bottomsheet.SwapFeesBottomSheet
+import org.p2p.wallet.swap.ui.bottomsheet.SwapSettingsBottomSheet
+import org.p2p.wallet.swap.ui.bottomsheet.SwapSlippageBottomSheet
+import org.p2p.wallet.swap.ui.orca.KEY_REQUEST_SWAP
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
+
+private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
+private const val EXTRA_DESTINATION_TOKEN = "EXTRA_DESTINATION_TOKEN"
 
 // TODO: Don't remove, we can be back reverted to serum swap in the future
 class SerumSwapFragment :
@@ -81,6 +85,22 @@ class SerumSwapFragment :
             }
 
             swapButton.setOnClickListener { presenter.swap() }
+        }
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SWAP,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_SOURCE_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_SOURCE_TOKEN)
+                    if (token != null) presenter.setNewSourceToken(token)
+                }
+                result.containsKey(EXTRA_DESTINATION_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_DESTINATION_TOKEN)
+                    if (token != null) presenter.setNewDestinationToken(token)
+                }
+            }
         }
 
         presenter.loadInitialData()
@@ -213,7 +233,7 @@ class SerumSwapFragment :
 
     override fun openSourceSelection(tokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewSourceToken(it as Token.Active) },
+            target = SelectTokenFragment.create(tokens, EXTRA_SOURCE_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,
@@ -223,7 +243,7 @@ class SerumSwapFragment :
 
     override fun openDestinationSelection(tokens: List<Token>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewDestinationToken(it) },
+            target = SelectTokenFragment.create(tokens, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,

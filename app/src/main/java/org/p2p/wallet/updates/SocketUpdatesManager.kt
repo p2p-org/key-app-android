@@ -94,7 +94,7 @@ class SocketUpdatesManager private constructor(
     }
 
     override fun onWebsocketPong() {
-        Timber.tag("SOCKET").d("PONG")
+//        Timber.tag("SOCKET").d("PONG")
     }
 
     override fun onConnected() {

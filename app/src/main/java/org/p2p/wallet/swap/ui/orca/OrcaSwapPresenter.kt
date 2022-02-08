@@ -2,13 +2,12 @@ package org.p2p.wallet.swap.ui.orca
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.send.model.ShowProgress
+import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.ui.transaction.TransactionInfo
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor

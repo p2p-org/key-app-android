@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.dialogs
+package org.p2p.wallet.transaction.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,13 +7,12 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.collect
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogTransactionProgressBinding
 import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.send.model.ShowProgress
+import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.showUrlInCustomTabs

@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.ui.info
+package org.p2p.wallet.history.ui.history
 
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
@@ -7,7 +7,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.history.model.HistoryTransaction
 
-interface TokenInfoContract {
+interface HistoryContract {
 
     interface View : MvpView {
         fun showLoading(isLoading: Boolean)

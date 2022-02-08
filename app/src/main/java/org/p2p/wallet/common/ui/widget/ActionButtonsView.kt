@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexDirection.ROW
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent.SPACE_EVENLY
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemActionButtonBinding
 import org.p2p.wallet.databinding.WidgetTokenActionsBinding
@@ -31,11 +33,13 @@ class ActionButtonsView @JvmOverloads constructor(
 
     init {
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = FlexboxLayoutManager(context).apply {
+            flexDirection = ROW
+            justifyContent = SPACE_EVENLY
+        }
     }
 
     fun setItems(items: List<ActionButton>) {
-        val spanCount = items.size
-        binding.recyclerView.layoutManager = GridLayoutManager(context, spanCount)
         adapter.setItems(items)
     }
 
@@ -77,8 +81,10 @@ class ActionButtonsView @JvmOverloads constructor(
             notifyDataSetChanged()
         }
 
-        inner class ViewHolder(binding: ItemActionButtonBinding, private val onItemClickListener: (Int) -> Unit) :
-            RecyclerView.ViewHolder(binding.root) {
+        inner class ViewHolder(
+            binding: ItemActionButtonBinding,
+            private val onItemClickListener: (Int) -> Unit
+        ) : RecyclerView.ViewHolder(binding.root) {
 
             init {
                 itemView.clipToOutline = true
