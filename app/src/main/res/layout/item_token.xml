@@ -17,17 +17,6 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/editImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_secondary_rounded"
-            android:padding="8dp"
-            android:src="@drawable/ic_edit"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
             android:id="@+id/deleteImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,7 +33,7 @@
         android:id="@id/contentView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?colorBackgroundPrimary"
+        android:background="@color/backgroundPrimary"
         android:clickable="true"
         android:focusable="true">
 
@@ -75,52 +64,54 @@
             android:id="@+id/nameTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:layout_constraintEnd_toStartOf="@id/valueTextView"
+            app:layout_constraintEnd_toStartOf="@id/totalTextView"
             app:layout_constraintStart_toEndOf="@id/tokenImageView"
             app:layout_constraintTop_toTopOf="@id/tokenImageView"
-            tools:text="SOL" />
+            tools:text="Solana" />
 
         <TextView
-            android:id="@+id/addressTextView"
+            android:id="@+id/rateTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:ellipsize="end"
             android:singleLine="true"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/textIconSecondary"
             app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
-            app:layout_constraintEnd_toStartOf="@id/totalTextView"
+            app:layout_constraintEnd_toStartOf="@id/valueTextView"
             app:layout_constraintStart_toEndOf="@id/tokenImageView"
             app:layout_constraintTop_toBottomOf="@id/nameTextView"
             app:layout_constraintVertical_bias="1"
-            tools:text="Solana" />
-
-        <TextView
-            android:id="@+id/valueTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:layout_constraintEnd_toStartOf="@id/colorView"
-            app:layout_constraintTop_toTopOf="@id/nameTextView"
-            tools:text="3 000.00 $" />
+            tools:text="$190.91" />
 
         <TextView
             android:id="@+id/totalTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-            android:textColor="?colorElementSecondary"
-            app:layout_constraintBottom_toBottomOf="@id/addressTextView"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
             app:layout_constraintEnd_toStartOf="@id/colorView"
-            app:layout_constraintTop_toTopOf="@id/addressTextView"
-            tools:text="1 500.0000 SOL" />
+            app:layout_constraintTop_toTopOf="@id/nameTextView"
+            tools:text="23.8112 SOL" />
+
+        <TextView
+            android:id="@+id/valueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+            android:textColor="@color/textIconSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/rateTextView"
+            app:layout_constraintEnd_toStartOf="@id/colorView"
+            app:layout_constraintTop_toTopOf="@id/rateTextView"
+            tools:text="$4,545.24" />
 
         <View
             android:id="@+id/colorView"

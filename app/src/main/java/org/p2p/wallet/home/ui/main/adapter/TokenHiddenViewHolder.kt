@@ -13,28 +13,21 @@ import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.databinding.ItemTokenHiddenBinding
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.TokenItem
+import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenHiddenViewHolder(
     binding: ItemTokenHiddenBinding,
-    private val onItemClicked: (Token.Active) -> Unit,
-    private val onEditClicked: (Token.Active) -> Unit,
-    private val onDeleteClicked: (Token.Active) -> Unit
+    private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
     constructor(
         parent: ViewGroup,
-        onItemClicked: (Token.Active) -> Unit,
-        onEditClicked: (Token.Active) -> Unit,
-        onDeleteClicked: (Token.Active) -> Unit
+        listener: OnHomeItemsClickListener
     ) : this(
         binding = ItemTokenHiddenBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-        onItemClicked = onItemClicked,
-        onEditClicked = onEditClicked,
-        onDeleteClicked = onDeleteClicked
+        listener = listener
     )
 
     companion object {
@@ -53,10 +46,9 @@ class TokenHiddenViewHolder(
     private val totalTextView = binding.totalTextView
     private val colorView = binding.colorView
     private val hideImageView = binding.hideImageView
-    private val editImageView = binding.editImageView
     private val contentView = binding.contentView
 
-    fun onBind(item: TokenItem.Hidden, isZerosHidden: Boolean) {
+    fun onBind(item: HomeElementItem.Hidden, isZerosHidden: Boolean) {
         if (item.state is VisibilityState.Hidden) {
             itemView.isVisible = false
             return
@@ -74,9 +66,8 @@ class TokenHiddenViewHolder(
         totalTextView.text = data.getFormattedTotal()
         colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, data.color))
         hideImageView.setImageResource(data.getVisibilityIcon(isZerosHidden))
-        hideImageView.setOnClickListener { onDeleteClicked(data) }
-        editImageView.setOnClickListener { onEditClicked(data) }
-        contentView.setOnClickListener { onItemClicked(data) }
+        hideImageView.setOnClickListener { listener.onHideClicked(data) }
+        contentView.setOnClickListener { listener.onTokenClicked(data) }
     }
 
     private fun loadImage(imageView: ImageView, url: String) {

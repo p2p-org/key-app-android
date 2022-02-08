@@ -6,45 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:draggedItem="@id/contentView"
-    app:rightItem="@id/settingsView"
+    app:rightItem="@id/hideImageView"
     app:swipeDirection="left">
 
-    <LinearLayout
-        android:id="@+id/settingsView"
+    <ImageView
+        android:id="@+id/hideImageView"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/editImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_secondary_rounded"
-            android:padding="8dp"
-            android:src="@drawable/ic_edit"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/hideImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/bg_secondary_rounded"
-            android:padding="8dp"
-            android:src="@drawable/ic_hide"
-            tools:ignore="ContentDescription" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bg_secondary_rounded"
+        android:padding="16dp"
+        android:src="@drawable/ic_hide"
+        tools:ignore="ContentDescription" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/contentView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?colorBackgroundSecondary">
+        android:background="@color/backgroundPrimary">
 
         <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/tokenImageView"
@@ -128,13 +108,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@color/chartBTC" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:alpha="0.2"
-            android:background="?colorElementTertiary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </org.p2p.wallet.common.ui.recycler.SwipeLayout>

@@ -1,40 +1,37 @@
 package org.p2p.wallet.home.ui.main
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.history.ui.history.HistoryFragment
+import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.TokenItem
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
-import org.p2p.wallet.home.ui.main.dialogs.TokenOptionsDialog
-import org.p2p.wallet.home.ui.main.dialogs.UsernameConfirmationDialog
+import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.SendFragment
-import org.p2p.wallet.qr.ui.ScanQrFragment
-import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
+import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_main),
-    HomeContract.View {
+    HomeContract.View,
+    OnHomeItemsClickListener {
 
     companion object {
         fun create() = HomeFragment()
@@ -45,105 +42,65 @@ class HomeFragment :
     private val binding: FragmentMainBinding by viewBinding()
 
     private val mainAdapter: TokenAdapter by lazy {
-        TokenAdapter(
-            onItemClicked = { onTokenClicked(it) },
-            onEditClicked = { onEditClicked(it) },
-            onHideClicked = { onHideClicked(it) },
-            onToggleClicked = { presenter.toggleVisibilityState() }
-        )
+        TokenAdapter(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            val linearLayoutManager = LinearLayoutManager(requireContext())
-            mainRecyclerView.layoutManager = linearLayoutManager
+            val commonTitle = getString(R.string.app_name)
+            val beta = getString(R.string.common_beta)
+            val color = getColor(R.color.textIconSecondary)
+            titleTextView.text = SpanUtils.highlightText("$commonTitle $beta", beta, color)
+
+            mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             mainRecyclerView.adapter = mainAdapter
-            mainRecyclerView.isNestedScrollingEnabled = true
 
-            showPieChart(emptyList())
-
-            bannerViewContainer.bannerImageView.clipToOutline = true
-
-            bannerViewContainer.reserveButton.setOnClickListener {
-                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
-            }
-
-            bannerViewContainer.cancelButton.setOnClickListener {
-                UsernameConfirmationDialog.show(
-                    fm = childFragmentManager,
-                    titleRes = R.string.main_hide_banner_confirm_question,
-                    subTitleRes = R.string.main_hide_banner_confirm_body,
-                    primaryButtonRes = R.string.common_proceed,
-                    secondaryButtonRes = R.string.common_proceed_do_not_show,
-                    onPrimaryButtonClicked = { presenter.hideUsernameBanner() },
-                    onSecondaryButtonClicked = { presenter.hideUsernameBanner(forever = true) }
-                )
-            }
-
-            settingsImageView.setOnClickListener {
-                replaceFragment(SettingsFragment.create())
+            with(actionButtonsView) {
+                onBuyItemClickListener = {
+                    replaceFragment(BuySolanaFragment.create())
+                }
+                onReceiveItemClickListener = {
+                    replaceFragment(ReceiveSolanaFragment.create(null))
+                }
+                onSendClickListener = {
+                    replaceFragment(SendFragment.create())
+                }
+                onSwapItemClickListener = {
+                    replaceFragment(OrcaSwapFragment.create())
+                }
             }
 
             swipeRefreshLayout.setOnRefreshListener {
                 presenter.refresh()
-            }
-
-            // TODO: temporary hiding moonpay for release
-            headerViewContainer.buyButton.isVisible = BuildConfig.DEBUG
-            headerViewContainer.buyDivider.isVisible = BuildConfig.DEBUG
-
-            headerViewContainer.buyButton.setOnClickListener {
-                replaceFragment(BuySolanaFragment.create())
-            }
-
-            headerViewContainer.receiveButton.setOnClickListener {
-                replaceFragment(ReceiveSolanaFragment.create(null))
-            }
-
-            headerViewContainer.sendButton.setOnClickListener {
-                replaceFragment(SendFragment.create())
-            }
-
-            headerViewContainer.swapButton.setOnClickListener {
-                replaceFragment(OrcaSwapFragment.create())
-            }
-
-            scanImageView.setOnClickListener {
-                val target = ScanQrFragment.create(
-                    successCallback = { replaceFragment(SendFragment.create(it)) }
-                )
-                replaceFragment(target)
             }
         }
 
         presenter.collectData()
     }
 
-    override fun showUsernameBanner(isVisible: Boolean) {
-        binding.bannerViewContainer.bannerView.isVisible = isVisible
-    }
-
-    override fun showTokens(tokens: List<TokenItem>, isZerosHidden: Boolean, state: VisibilityState) {
+    override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
         mainAdapter.setItems(tokens, isZerosHidden, state)
     }
 
-    override fun showBalance(balance: BigDecimal) {
-        binding.headerViewContainer.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
-    }
-
-    override fun showChart(tokens: List<Token.Active>) {
-        showPieChart(tokens)
-    }
-
-    override fun showLoading(isLoading: Boolean) {
-//        binding.progressView.isVisible = isLoading
-        binding.swipeRefreshLayout.isRefreshing = isLoading
+    override fun showBalance(balance: BigDecimal, username: Username?) {
+        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
+        if (username == null) {
+            binding.balanceLabelTextView.setText(R.string.main_balance)
+        } else {
+            val commonText = username.getFullUsername(requireContext())
+            val color = getColor(R.color.textIconPrimary)
+            binding.balanceLabelTextView.text = SpanUtils.highlightText(commonText, username.username, color)
+        }
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
+    }
+
+    override fun showActions(items: List<ActionButtonsView.ActionButton>) {
+        binding.actionButtonsView.setItems(items)
     }
 
     override fun onDestroy() {
@@ -152,44 +109,22 @@ class HomeFragment :
         super.onDestroy()
     }
 
-    @Suppress("MagicNumber")
-    private fun showPieChart(tokens: List<Token.Active>) {
-        val pieData = tokens.map { PieEntry(it.totalInUsd?.toFloat() ?: 0f) }
-        val colors = tokens.map { it.color }.toIntArray()
-
-        binding.headerViewContainer.mainPieChart.apply {
-            val dataSet = PieDataSet(pieData, null)
-            dataSet.sliceSpace = 1f
-            dataSet.selectionShift = 15f
-            dataSet.setColors(colors, context)
-
-            val data = PieData(dataSet)
-            data.setDrawValues(false)
-            this.data = data
-
-            setUsePercentValues(true)
-            setTouchEnabled(false)
-            setHoleColor(Color.WHITE)
-            setDrawCenterText(false)
-            animateY(500)
-            setDrawEntryLabels(false)
-            description.isEnabled = false
-            isDrawHoleEnabled = true
-            holeRadius = 70f
-            legend.isEnabled = false
-            invalidate()
+    override fun onBannerClicked(bannerId: Int) {
+        when (bannerId) {
+            R.string.main_username_banner_option -> replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+            R.string.main_feedback_banner_option -> toast("In development")
         }
     }
 
-    private fun onTokenClicked(token: Token.Active) {
+    override fun onToggleClicked() {
+        presenter.toggleVisibilityState()
+    }
+
+    override fun onTokenClicked(token: Token.Active) {
         replaceFragment(HistoryFragment.create(token))
     }
 
-    private fun onEditClicked(token: Token.Active) {
-        TokenOptionsDialog.show(childFragmentManager, token)
-    }
-
-    private fun onHideClicked(token: Token.Active) {
+    override fun onHideClicked(token: Token.Active) {
         presenter.toggleVisibility(token)
     }
 }

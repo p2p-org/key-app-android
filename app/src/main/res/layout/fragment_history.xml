@@ -129,7 +129,6 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-
     <org.p2p.wallet.common.ui.widget.ProgressView
         android:id="@+id/progressView"
         android:layout_width="match_parent"

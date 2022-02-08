@@ -51,6 +51,8 @@
     <color name="backgroundActivePrimary">#EFF3FF</color>
     <color name="backgroundDisabled">#A3A5BA</color>
     <color name="backgroundButtonPrimary">#5887FF</color>
+    <color name="backgroundBanner">#D8F3E2</color>
+    <color name="backgroundBannerSecondary">#D7D1FF</color>
 
     <color name="chartSOL">#6FECB5</color>
     <color name="chartETH">#677DE3</color>

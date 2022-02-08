@@ -5,91 +5,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?colorBackgroundPrimary"
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/transparent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_scrollFlags="scroll">
-
-            <ImageView
-                android:id="@+id/scanImageView"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:padding="16dp"
-                android:src="@drawable/ic_qr_scan"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?colorElementSecondary"
-                tools:ignore="ContentDescription" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/titleTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="16dp"
-                android:text="@string/app_name"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold20" />
-
-            <ImageView
-                android:id="@+id/settingsImageView"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:padding="16dp"
-                android:src="@drawable/ic_settings"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?colorElementSecondary"
-                tools:ignore="ContentDescription" />
-        </LinearLayout>
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            app:contentScrim="@color/elementPrimary"
+            app:expandedTitleGravity="top"
+            app:expandedTitleMarginEnd="48dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/elementPrimary"
                 android:orientation="vertical">
 
-                <include
-                    android:id="@+id/bannerViewContainer"
-                    layout="@layout/view_reserve_username_banner" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/titleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="16dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold20" />
 
-                <include
-                    android:id="@+id/headerViewContainer"
-                    layout="@layout/view_header_main" />
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/balanceLabelTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="@string/main_balance"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                    android:textColor="@color/textIconSecondary" />
+
+                <TextView
+                    android:id="@+id/balanceTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
+                    tools:text="$7,730.98" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mainRecyclerView"
+        <org.p2p.wallet.common.ui.widget.ActionButtonsView
+            android:id="@+id/actionButtonsView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:overScrollMode="never"
-            tools:listitem="@layout/item_token" />
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_buttons" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mainRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                tools:listitem="@layout/item_token" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
