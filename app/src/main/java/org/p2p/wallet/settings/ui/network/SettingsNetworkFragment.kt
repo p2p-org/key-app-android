@@ -6,34 +6,36 @@ import android.widget.RadioGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.FragmentNetworkBinding
 import org.koin.android.ext.android.inject
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.databinding.FragmentSettingsNetworkBinding
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class NetworkDialogFragment :
-    BaseMvpFragment<NetworkContract.View, NetworkContract.Presenter>(R.layout.fragment_network),
+class SettingsNetworkFragment :
+    BaseMvpFragment<SettingsNetworkContract.View, SettingsNetworkContract.Presenter>(
+        R.layout.fragment_settings_network
+    ),
     RadioGroup.OnCheckedChangeListener,
-    NetworkContract.View {
+    SettingsNetworkContract.View {
 
     companion object {
         const val REQUEST_KEY = "REQUEST_KEY_NETWORK_DIALOG"
         const val BUNDLE_KEY_IS_NETWORK_CHANGED = "BUNDLE_KEY_IS_NETWORK_CHANGED"
 
-        fun create() = NetworkDialogFragment()
+        fun create() = SettingsNetworkFragment()
     }
 
-    override val presenter: NetworkContract.Presenter by inject()
+    override val presenter: SettingsNetworkContract.Presenter by inject()
 
-    private val binding: FragmentNetworkBinding by viewBinding()
+    private val binding: FragmentSettingsNetworkBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
         with(binding) {
-            networksGroup.setOnCheckedChangeListener(this@NetworkDialogFragment)
+            networksGroup.setOnCheckedChangeListener(this@SettingsNetworkFragment)
             primaryButton.setOnClickListener {
                 setFragmentResult(REQUEST_KEY, bundleOf(Pair(BUNDLE_KEY_IS_NETWORK_CHANGED, true)))
                 popBackStack()

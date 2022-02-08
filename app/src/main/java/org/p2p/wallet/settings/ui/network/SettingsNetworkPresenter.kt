@@ -10,11 +10,11 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.Environment
 import timber.log.Timber
 
-class NetworkPresenter(
+class SettingsNetworkPresenter(
     private val context: Context,
     private val mainLocalRepository: MainLocalRepository,
     private val environmentManager: EnvironmentManager
-) : BasePresenter<NetworkContract.View>(), NetworkContract.Presenter {
+) : BasePresenter<SettingsNetworkContract.View>(), SettingsNetworkContract.Presenter {
 
     override fun setNewEnvironment(environment: Environment) {
         view?.showLoading(true)

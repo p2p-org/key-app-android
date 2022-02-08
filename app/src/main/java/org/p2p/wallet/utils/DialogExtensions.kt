@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.DialogFragment
@@ -16,6 +17,7 @@ fun Fragment.showInfoDialog(
     @StringRes messageRes: Int,
     @StringRes primaryButtonRes: Int,
     @StringRes secondaryButtonRes: Int? = null,
+    @ColorRes primaryButtonTextColor: Int? = null,
     primaryCallback: (() -> Unit)? = null,
     secondaryCallback: (() -> Unit)? = null
 ) {
@@ -25,6 +27,7 @@ fun Fragment.showInfoDialog(
         subTitleRes = messageRes,
         primaryButtonRes = primaryButtonRes,
         secondaryButtonRes = secondaryButtonRes,
+        primaryButtonTextColor = primaryButtonTextColor,
         onPrimaryButtonClicked = { primaryCallback?.invoke() },
         onSecondaryButtonClicked = { secondaryCallback?.invoke() }
     )

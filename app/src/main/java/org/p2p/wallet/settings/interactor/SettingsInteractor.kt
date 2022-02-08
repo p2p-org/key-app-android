@@ -2,6 +2,7 @@ package org.p2p.wallet.settings.interactor
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.settings.model.SettingsRow
@@ -22,11 +23,8 @@ class SettingsInteractor(
         return localRepository.getNetworkSettings(networkName, tokenName)
     }
 
-    fun getEnvironment() = environmentManager.loadEnvironment()
-
     fun getAppearanceSettings(): List<SettingsRow> {
-        // TODO provide app version
-        return localRepository.getAppearanceSettings("1")
+        return localRepository.getAppearanceSettings(BuildConfig.VERSION_NAME)
     }
 
     fun setZeroBalanceHidden(isHidden: Boolean) {

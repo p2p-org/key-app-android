@@ -6,12 +6,12 @@
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/elementPrimary"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorBackgroundSecondary"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
@@ -23,106 +23,97 @@
             app:title="@string/settings_security"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-        <LinearLayout
-            android:id="@+id/biometricView"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="?colorElementPrimary"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            tools:ignore="UnusedAttribute">
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="32dp"
+            android:text="@string/settings_confirmations"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+            android:textColor="@color/accentPrimary" />
 
-            <ImageView
-                android:id="@+id/biometricImageView"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_gray_secondary_rounded_small"
-                android:padding="12dp"
-                android:src="@drawable/ic_faceid"
-                app:tint="?colorElementSecondary"
-                tools:ignore="ContentDescription" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="16dp">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:paddingHorizontal="8dp">
+            <TextView
+                android:id="@+id/authTopTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_use_confirmations"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/biometricTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="@string/settings_security_face_id"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/settings_auth_transactions"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                android:textColor="@color/textIconSecondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/authTopTextView" />
 
-                <TextView
-                    android:id="@+id/biometricInfoTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="@string/settings_security_primary_biometric"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-                    android:textColor="?colorElementSecondary" />
-            </LinearLayout>
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/confirmationSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="32dp"
+            android:text="@string/settings_biometrics"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+            android:textColor="@color/accentPrimary" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="16dp">
+
+            <TextView
+                android:id="@+id/biometricTopTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_biometrics"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/biometricBottomTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                android:textColor="@color/textIconSecondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/biometricTopTextView"
+                tools:text="Unregistered" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/biometricSwitch"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:checked="true" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/pinCodeView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
-            android:background="?colorElementPrimary"
-            android:foreground="?selectableItemBackground"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            tools:ignore="UnusedAttribute">
-
-            <org.p2p.wallet.common.ui.widget.RoundedImageView
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_gray_secondary_rounded_small"
-                android:padding="8dp"
-                android:src="@drawable/ic_password"
-                tools:ignore="ContentDescription" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:paddingHorizontal="8dp">
-
-                <TextView
-                    android:id="@+id/pinCodeTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="@string/settings_security_pin_code"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
-
-                <TextView
-                    android:id="@+id/pinCodeInfoTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="@string/settings_security_pin_code_check"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-                    android:textColor="?colorElementSecondary" />
-            </LinearLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

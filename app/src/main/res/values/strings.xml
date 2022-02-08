@@ -26,6 +26,9 @@
     <string name="common_not_implemented_yet">Not implemented yet</string>
     <string name="common_understood">Understood</string>
     <string name="common_btc">BTC</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_logout">Log out</string>
+    <string name="common_stay">Stay</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -439,12 +442,28 @@
     <string name="settings_forgot_your_pin">Forgot your PIN? Reset it</string>
     <string name="settings_reset_it">Reset it</string>
     <string name="settings_a_new_wallet_pin_is_set">A new wallet PIN is set!</string>
+    <string name="settings_confirmations">Confirmations</string>
+    <string name="settings_use_confirmations">Use confirmations</string>
+    <string name="settings_auth_transactions">Authenticate transactions</string>
+    <string name="settings_biometrics">Biometrics</string>
+    <string name="settings_registered">Registered</string>
+    <string name="settings_unregistered">Unregistered</string>
+    <string name="settings_resetting_your_PIN">Resetting your PIN</string>
+    <string name="settings_choose_a_network">Choose a network</string>
+    <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
+    <string name="settings_tokens_hidden">HIdden</string>
+    <string name="settings_tokens_shown">Shown</string>
     <string name="swap_total_format">Total: %s</string>
     <string name="swap_total_zero_sol">0 SOL</string>
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
-    <string name="settings_resetting_your_PIN">Resetting your PIN</string>
-    <string name="settings_choose_a_network">Choose a network</string>
-    <string name="common_confirm">Confirm</string>
+    <string name="settings_logout_title">Are you sure you want to log out?</string>
+    <string name="settings_logout_message">If you have no backup, you may never be able to access this account</string>
+    <string name="home_main">Main</string>
+    <string name="home_send">Send</string>
+    <string name="home_feedback">Feedback</string>
+    <string name="home_settings">Settings</string>
+
+
 </resources>
