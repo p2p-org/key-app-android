@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.swap.model.Slippage
@@ -13,7 +14,6 @@ import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
-import org.p2p.wallet.transaction.model.ShowProgress
 import java.math.BigDecimal
 
 interface OrcaSwapContract {

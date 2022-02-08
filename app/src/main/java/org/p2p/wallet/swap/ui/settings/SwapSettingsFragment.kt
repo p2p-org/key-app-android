@@ -111,11 +111,13 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
 
     /* There are couple of elements in the list and it's okay for us to update all list */
     @SuppressLint("NotifyDataSetChanged")
-    private fun onTokenSelected(it: Token.Active) {
-        selectedToken = it
-        showMessage(it.tokenSymbol)
-        tokensAdapter.notifyDataSetChanged()
-        updateSettings()
+    private fun onTokenSelected(token: Token.Active) {
+        binding.tokensRecyclerView.post {
+            selectedToken = token
+            tokensAdapter.notifyDataSetChanged()
+            updateSettings()
+            showMessage(token.tokenSymbol)
+        }
     }
 
     private fun updateSettings() {

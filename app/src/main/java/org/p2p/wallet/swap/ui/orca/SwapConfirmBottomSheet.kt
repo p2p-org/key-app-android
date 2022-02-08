@@ -65,9 +65,9 @@ class SwapConfirmBottomSheet(
             amountTextView.text = data.getFormattedSourceAmount()
             amountUsdTextView.text = data.getFormattedSourceAmountUsd()
 
-            glideManager.load(sourceImageView, data.destinationToken.iconUrl)
-            destinationAmountTextView.text = data.getFormattedSourceAmount()
-            destAmountUsdTextView.text = data.getFormattedSourceAmountUsd()
+            glideManager.load(destinationImageView, data.destinationToken.iconUrl)
+            destinationAmountTextView.text = data.getFormattedDestinationAmount()
+            destAmountUsdTextView.text = data.getFormattedDestinationAmountUsd()
 
             val highlightText = getString(R.string.send_confirm_warning_highlight)
             val commonText = getString(R.string.send_confirm_warning)

@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.ui.orca
 
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
@@ -99,11 +98,6 @@ class OrcaSwapPresenter(
 
                 lamportsPerSignature = amountInteractor.getLamportsPerSignature()
                 minRentExemption = amountInteractor.getMinBalanceForRentExemption()
-
-                delay(2500)
-                setSourceToken(userTokens.first { it.tokenSymbol == "USDT" })
-                setNewDestinationToken(userTokens.first { it.tokenSymbol == "USDC" })
-                setSourceAmount("0.001")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading all data for swap")
                 view?.showErrorMessage(e)
