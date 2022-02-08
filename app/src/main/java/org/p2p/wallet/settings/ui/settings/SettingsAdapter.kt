@@ -2,15 +2,13 @@ package org.p2p.wallet.settings.ui.settings
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.StringRes
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
+import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
-import org.p2p.wallet.utils.requireContext
 
 class SettingsAdapter(
     private val onItemClickListener: (titleResId: Int) -> Unit,
@@ -41,20 +39,34 @@ class SettingsAdapter(
                 onLogoutClickListener
             )
         }
+        R.layout.item_settings_title -> {
+            TitleViewHolder(
+                ItemSettingsTitleBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+        }
         else -> throw IllegalStateException("No view found for type $viewType")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder -> holder.bind(data[position])
+            is ViewHolder -> holder.bind(data[position] as SettingsRow.Section)
+            is TitleViewHolder -> holder.bind(data[position] as SettingsRow.Title)
             is LogoutViewHolder -> holder.bind(data[position])
         }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     override fun getItemViewType(position: Int): Int =
         when (data[position]) {
             is SettingsRow.Section -> R.layout.item_settings_row_item
-            is SettingsRow.Title -> R.layout.item_settings_row_item
+            is SettingsRow.Title -> R.layout.item_settings_title
             is SettingsRow.Logout -> R.layout.item_settings_logout
         }
 
@@ -64,9 +76,6 @@ class SettingsAdapter(
         data.clear()
         data.addAll(items)
         notifyDataSetChanged()
-    }
-
-    fun setSubtitleForSection(@StringRes titleResId: Int, value: String) {
     }
 
     inner class ViewHolder(
@@ -80,16 +89,8 @@ class SettingsAdapter(
         private val topDivider = binding.topDivider
         private val bottomDivider = binding.bottomDivider
 
-        fun bind(item: SettingsRow) {
-            when (item) {
-                is SettingsRow.Section -> bindRow(item)
-                is SettingsRow.Title -> bindTitle(item)
-                else -> throw IllegalStateException("Unreachable state")
-            }
-        }
-
-        private fun bindRow(item: SettingsRow.Section) {
-            titleTextView.setText(item.titleRes)
+        fun bind(item: SettingsRow.Section) {
+            titleTextView.setText(item.titleResId)
             if (item.subtitleRes != -1) {
                 subtitleTextView.setText(item.subtitleRes)
             }
@@ -97,15 +98,8 @@ class SettingsAdapter(
                 subtitleTextView.text = item.subtitle
             }
             imageView.setImageResource(item.iconRes)
-            itemView.setOnClickListener { onItemClickListener.invoke(item.titleRes) }
+            itemView.setOnClickListener { onItemClickListener.invoke(item.titleResId) }
             bottomDivider.isVisible = item.isDivider
-        }
-
-        private fun bindTitle(item: SettingsRow.Title) {
-            imageView.isInvisible = true
-            titleTextView.setText(item.titleResId)
-            titleTextView.setTextColor(requireContext().getColor(R.color.accentPrimary))
-            topDivider.isVisible = item.isDivider
         }
     }
 
@@ -116,6 +110,17 @@ class SettingsAdapter(
 
         fun bind(item: SettingsRow) {
             actionButton.setOnClickListener { block.invoke() }
+        }
+    }
+
+    inner class TitleViewHolder(binding: ItemSettingsTitleBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        private val textView = binding.topTextView
+        private val topDivider = binding.topDivider
+
+        fun bind(item: SettingsRow.Title) {
+            textView.setText(item.titleResId)
+            topDivider.isVisible = item.isDivider
         }
     }
 }

@@ -6,17 +6,20 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentChangePinBinding
 import org.p2p.wallet.utils.BiometricPromptWrapper
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import javax.crypto.Cipher
 
@@ -25,6 +28,8 @@ class ResetPinFragment :
     ResetPinContract.View {
 
     companion object {
+        const val REQUEST_KEY = "REQUEST_KEY_RESET_PIN"
+        const val BUNDLE_IS_PIN_CHANGED_KEY = "BUNDLE_IS_PIN_CHANGED_KEY"
         fun create() = ResetPinFragment()
     }
 
@@ -45,18 +50,21 @@ class ResetPinFragment :
         with(binding) {
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             resetTextView.text = buildResetText()
+            resetTextView.setOnClickListener { replaceFragment(ResetSeedPhraseFragment.create()) }
         }
-        setFragmentResultListener(ResetSeedPhraseFragment.REQUEST_KEY) {key, bundle ->
+        setFragmentResultListener(ResetSeedPhraseFragment.REQUEST_KEY) { key, bundle ->
             val keys = bundle.getStringArrayList(ResetSeedPhraseFragment.BUNDLE_SECRET_KEYS)
-            if(keys != null) presenter.onSeedPhraseValidated(keys)
+            if (keys != null) presenter.onSeedPhraseValidated(keys)
         }
     }
 
     override fun showResetSuccess() {
-        popAndReplaceFragment(ResetSuccessFragment.create())
+        setFragmentResult(REQUEST_KEY, bundleOf(Pair(BUNDLE_IS_PIN_CHANGED_KEY, true)))
+        popBackStack()
     }
 
     override fun showEnterNewPin() {
+        binding.resetTextView.isVisible = false
         binding.toolbar.setTitle(R.string.settings_security_change_enter_pin)
         binding.pinView.clearPin()
     }
@@ -110,7 +118,6 @@ class ResetPinFragment :
 
         val clickableReset = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                replaceFragment(ResetSeedPhraseFragment.create())
             }
 
             override fun updateDrawState(ds: TextPaint) {

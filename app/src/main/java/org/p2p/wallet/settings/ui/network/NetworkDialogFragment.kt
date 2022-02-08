@@ -3,22 +3,26 @@ package org.p2p.wallet.settings.ui.network
 import android.os.Bundle
 import android.view.View
 import android.widget.RadioGroup
-import androidx.core.view.isVisible
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import org.p2p.wallet.R
-import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNetworkBinding
-import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class NetworkFragment :
+class NetworkDialogFragment :
     BaseMvpFragment<NetworkContract.View, NetworkContract.Presenter>(R.layout.fragment_network),
-    NetworkContract.View,
-    RadioGroup.OnCheckedChangeListener {
+    RadioGroup.OnCheckedChangeListener,
+    NetworkContract.View {
 
     companion object {
-        fun create() = NetworkFragment()
+        const val REQUEST_KEY = "REQUEST_KEY_NETWORK_DIALOG"
+        const val BUNDLE_KEY_IS_NETWORK_CHANGED = "BUNDLE_KEY_IS_NETWORK_CHANGED"
+
+        fun create() = NetworkDialogFragment()
     }
 
     override val presenter: NetworkContract.Presenter by inject()
@@ -27,11 +31,17 @@ class NetworkFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter.attach(this)
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
-            networksGroup.setOnCheckedChangeListener(this@NetworkFragment)
+            networksGroup.setOnCheckedChangeListener(this@NetworkDialogFragment)
+            primaryButton.setOnClickListener {
+                setFragmentResult(REQUEST_KEY, bundleOf(Pair(BUNDLE_KEY_IS_NETWORK_CHANGED, true)))
+                popBackStack()
+            }
+            secondaryButton.setOnClickListener {
+                popBackStack()
+            }
         }
-
         presenter.loadData()
     }
 
@@ -60,6 +70,6 @@ class NetworkFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.progressView.isVisible = isLoading
+        // binding.progressView.isVisible = isLoading
     }
 }

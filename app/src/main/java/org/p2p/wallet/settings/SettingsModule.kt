@@ -13,6 +13,8 @@ import org.p2p.wallet.settings.ui.network.NetworkContract
 import org.p2p.wallet.settings.ui.network.NetworkPresenter
 import org.p2p.wallet.settings.ui.reset.ResetPinContract
 import org.p2p.wallet.settings.ui.reset.ResetPinPresenter
+import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseContract
+import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhrasePresenter
 import org.p2p.wallet.settings.ui.security.SecurityContract
 import org.p2p.wallet.settings.ui.security.SecurityPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsContract
@@ -29,5 +31,6 @@ object SettingsModule : InjectionModule {
         factory { ResetPinPresenter(get()) } bind ResetPinContract.Presenter::class
         factory { NetworkPresenter(get(), get(), get()) } bind NetworkContract.Presenter::class
         factory { AppearancePresenter(get()) } bind AppearanceContract.Presenter::class
+        factory { ResetSeedPhrasePresenter(get()) } bind ResetSeedPhraseContract.Presenter::class
     }
 }

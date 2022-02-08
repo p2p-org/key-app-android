@@ -22,6 +22,8 @@ class SettingsInteractor(
         return localRepository.getNetworkSettings(networkName, tokenName)
     }
 
+    fun getEnvironment() = environmentManager.loadEnvironment()
+
     fun getAppearanceSettings(): List<SettingsRow> {
         // TODO provide app version
         return localRepository.getAppearanceSettings("1")

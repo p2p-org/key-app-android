@@ -9,21 +9,21 @@ class SettingsInMemoryRepository : SettingsLocalRepository {
         return listOf(
             SettingsRow.Title(R.string.settings_profile),
             SettingsRow.Section(
-                titleRes = R.string.settings_username,
+                titleResId = R.string.settings_username,
                 subtitle = username,
                 iconRes = R.drawable.ic_settings_user
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_address_book,
+                titleResId = R.string.settings_address_book,
                 subtitleRes = R.string.settings_address_book_subtitle,
                 iconRes = R.drawable.ic_settings_contacts
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_history,
+                titleResId = R.string.settings_history,
                 subtitleRes = R.string.settings_history_subtitle,
                 iconRes = R.drawable.ic_settings_history
             ),
-            SettingsRow.Logout
+            SettingsRow.Logout()
         )
     }
 
@@ -31,27 +31,27 @@ class SettingsInMemoryRepository : SettingsLocalRepository {
         return listOf(
             SettingsRow.Title(R.string.settings_security_and_network, isDivider = true),
             SettingsRow.Section(
-                titleRes = R.string.settings_backup,
+                titleResId = R.string.settings_backup,
                 subtitleRes = R.string.settings_backup_subtitle,
                 iconRes = R.drawable.ic_settings_cloud
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_wallet_pin,
+                titleResId = R.string.settings_wallet_pin,
                 subtitleRes = R.string.settings_wallet_pin_subtitle,
                 iconRes = R.drawable.ic_settings_pin
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_app_security,
+                titleResId = R.string.settings_app_security,
                 subtitleRes = R.string.settings_app_security_subtitle,
                 iconRes = R.drawable.ic_settings_security
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_network,
+                titleResId = R.string.settings_network,
                 subtitle = networkName,
                 iconRes = R.drawable.ic_settings_network
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_pay_fees_with,
+                titleResId = R.string.settings_pay_fees_with,
                 subtitle = feePayerToken,
                 iconRes = R.drawable.ic_settings_fees
             )
@@ -62,28 +62,28 @@ class SettingsInMemoryRepository : SettingsLocalRepository {
         return listOf(
             SettingsRow.Title(R.string.settings_appearance, isDivider = true),
             SettingsRow.Section(
-                titleRes = R.string.settings_staying_up_in_date,
+                titleResId = R.string.settings_staying_up_in_date,
                 subtitleRes = R.string.settings_staying_up_in_date_subtitle,
                 iconRes = R.drawable.ic_settings_notification
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_default_currency,
+                titleResId = R.string.settings_default_currency,
                 subtitleRes = R.string.settings_default_currency_subtitle,
                 iconRes = R.drawable.ic_settings_currency
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_appearance,
+                titleResId = R.string.settings_appearance,
                 subtitleRes = R.string.settings_appearance_subtitle,
                 iconRes = R.drawable.ic_settings_appearance
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_zero_balances,
+                titleResId = R.string.settings_zero_balances,
                 subtitleRes = R.string.settings_zero_balances_subtitle,
                 iconRes = R.drawable.ic_settings_eye,
                 isDivider = true
             ),
             SettingsRow.Section(
-                titleRes = R.string.settings_app_version,
+                titleResId = R.string.settings_app_version,
                 subtitle = appVersion,
                 iconRes = R.drawable.ic_settings_app_version
             )

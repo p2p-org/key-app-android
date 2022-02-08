@@ -438,10 +438,13 @@
     <string name="settings_logout">Log out now</string>
     <string name="settings_forgot_your_pin">Forgot your PIN? Reset it</string>
     <string name="settings_reset_it">Reset it</string>
+    <string name="settings_a_new_wallet_pin_is_set">A new wallet PIN is set!</string>
     <string name="swap_total_format">Total: %s</string>
     <string name="swap_total_zero_sol">0 SOL</string>
     <string name="swap_choose_the_destination">Choose the destination</string>
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
     <string name="settings_resetting_your_PIN">Resetting your PIN</string>
+    <string name="settings_choose_a_network">Choose a network</string>
+    <string name="common_confirm">Confirm</string>
 </resources>

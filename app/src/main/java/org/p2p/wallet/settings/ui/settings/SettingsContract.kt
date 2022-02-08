@@ -16,5 +16,6 @@ interface SettingsContract {
         fun loadData()
         fun logout()
         fun onUsernameClicked()
+        fun onNetworkChanged(isChanged: Boolean)
     }
 }

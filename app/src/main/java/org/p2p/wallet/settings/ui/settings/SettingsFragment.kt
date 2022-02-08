@@ -12,7 +12,9 @@ import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.model.SettingsRow
+import org.p2p.wallet.settings.ui.network.NetworkDialogFragment
 import org.p2p.wallet.settings.ui.reset.ResetPinFragment
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -35,10 +37,27 @@ class SettingsFragment :
         with(binding) {
             recyclerView.attachAdapter(adapter)
         }
+        setListeners()
+        presenter.loadData()
+    }
+
+    private fun setListeners() {
         setFragmentResultListener(ReserveUsernameFragment.REQUEST_KEY) { key, bundle ->
             showUsername()
         }
-        presenter.loadData()
+        setFragmentResultListener(ResetPinFragment.REQUEST_KEY) { key, bundle ->
+            val isPinChanged = bundle.getBoolean(ResetPinFragment.BUNDLE_IS_PIN_CHANGED_KEY)
+            if (isPinChanged) {
+                showSnackbar(
+                    message = getString(R.string.settings_a_new_wallet_pin_is_set),
+                    iconRes = R.drawable.ic_done
+                )
+            }
+        }
+        setFragmentResultListener(NetworkDialogFragment.REQUEST_KEY) { key, bundle ->
+            val isNetworkChanged = bundle.getBoolean(NetworkDialogFragment.BUNDLE_KEY_IS_NETWORK_CHANGED)
+            presenter.onNetworkChanged(isNetworkChanged)
+        }
     }
 
     override fun showSettings(item: List<SettingsRow>) {
@@ -59,9 +78,19 @@ class SettingsFragment :
             R.string.settings_address_book -> TODO()
             R.string.settings_history -> TODO()
             R.string.settings_backup -> TODO()
-            R.string.settings_wallet_pin -> replaceFragment(ResetPinFragment.create())
+            R.string.settings_wallet_pin -> {
+                replaceFragment(ResetPinFragment.create())
+            }
             R.string.settings_app_security -> TODO()
-            R.string.settings_network -> TODO()
+            R.string.settings_network -> {
+                addFragment(
+                    NetworkDialogFragment.create(),
+                    enter = 0,
+                    exit = 0,
+                    popEnter = 0,
+                    popExit = 0
+                )
+            }
             R.string.settings_pay_fees_with -> TODO()
             R.string.settings_staying_up_in_date -> TODO()
             R.string.settings_default_currency -> TODO()

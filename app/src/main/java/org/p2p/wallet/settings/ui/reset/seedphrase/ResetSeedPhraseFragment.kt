@@ -21,9 +21,11 @@ import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class ResetSeedPhraseFragment : BaseMvpFragment<ResetSeedPhraseContract.View, ResetSeedPhraseContract.Presenter>(
-    R.layout.fragment_reset_seed_phrase
-), ResetSeedPhraseContract.View {
+class ResetSeedPhraseFragment :
+    BaseMvpFragment<ResetSeedPhraseContract.View, ResetSeedPhraseContract.Presenter>(
+        R.layout.fragment_reset_seed_phrase
+    ),
+    ResetSeedPhraseContract.View {
     override val presenter: ResetSeedPhraseContract.Presenter by inject()
     private val binding: FragmentResetSeedPhraseBinding by viewBinding()
 

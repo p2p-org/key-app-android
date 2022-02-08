@@ -39,4 +39,9 @@ class SettingsPresenter(
             view?.showReserveUsername()
         }
     }
+
+    override fun onNetworkChanged(isChanged: Boolean) {
+        if (!isChanged) return
+        loadData()
+    }
 }
