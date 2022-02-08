@@ -432,4 +432,5 @@
     <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
     <string name="send_successful_format">%s is successfully sent!</string>
     <string name="swap_max_price_slippage">Max price slippage</string>
+    <string name="swap_transfer_confirm_message">You are going to swap</string>
 </resources>

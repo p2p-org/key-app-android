@@ -21,9 +21,9 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.Target
-import org.p2p.wallet.send.model.TransactionResult
+import org.p2p.wallet.send.model.SendResult
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.transaction.model.ConfirmData
+import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
@@ -89,12 +89,14 @@ class SendPresenter(
 
                 userTokens += userInteractor.getUserTokens()
                 val userPublicKey = tokenKeyProvider.publicKey
-                token = initialToken ?: userTokens.find { it.isSOL && it.publicKey == userPublicKey }
+                val sol = userTokens.find { it.isSOL && it.publicKey == userPublicKey }
+                    ?: throw IllegalStateException("No SOL account found")
+                token = initialToken ?: sol
 
                 calculateTotal(sendFee = null)
                 view?.showNetworkDestination(networkType)
 
-                sendInteractor.initialize(userTokens)
+                sendInteractor.initialize(sol)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading initial data")
             } finally {
@@ -186,7 +188,7 @@ class SendPresenter(
 
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
-            val data = ConfirmData(
+            val data = SendConfirmData(
                 token = token,
                 amount = tokenAmount.toString(),
                 amountUsd = usdAmount.toString(),
@@ -313,7 +315,7 @@ class SendPresenter(
                 val amount = tokenAmount.toLamports(token.decimals)
                 val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
-                handleResult(TransactionResult.Success(transactionId))
+                handleResult(SendResult.Success(transactionId))
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
             } finally {
@@ -352,14 +354,14 @@ class SendPresenter(
         }
     }
 
-    private fun handleResult(result: TransactionResult) {
+    private fun handleResult(result: SendResult) {
         when (result) {
-            is TransactionResult.Success -> {
+            is SendResult.Success -> {
                 buildTransaction(result.transactionId)
                 view?.showSuccessMessage("${tokenAmount.toPlainString()} ${token?.tokenSymbol}")
             }
-            is TransactionResult.WrongWallet -> view?.showWrongWalletError()
-            is TransactionResult.Error -> view?.showErrorMessage(result.messageRes)
+            is SendResult.WrongWallet -> view?.showWrongWalletError()
+            is SendResult.Error -> view?.showErrorMessage(result.messageRes)
         }
     }
 

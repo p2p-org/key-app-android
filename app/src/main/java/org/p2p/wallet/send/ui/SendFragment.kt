@@ -34,10 +34,10 @@ import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
-import org.p2p.wallet.transaction.model.ConfirmData
+import org.p2p.wallet.send.ui.transaction.SendConfirmBottomSheet
+import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.transaction.ui.TransactionConfirmBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.colorFromTheme
@@ -175,7 +175,7 @@ class SendFragment :
                 nameOrAddress?.let { presenter.validateTarget(it) }
             }
 
-            sendDetailsView.setOnClickListener {
+            sendDetailsView.setOnPaidClickListener {
                 showInfoDialog(
                     messageRes = R.string.main_free_transactions_info,
                     primaryButtonRes = R.string.common_understood
@@ -184,8 +184,8 @@ class SendFragment :
         }
     }
 
-    override fun showBiometricConfirmationPrompt(data: ConfirmData) {
-        TransactionConfirmBottomSheet.show(this, data) { presenter.send() }
+    override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
+        SendConfirmBottomSheet.show(this, data) { presenter.send() }
     }
 
     // TODO: remove add fragment
@@ -195,7 +195,7 @@ class SendFragment :
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens, EXTRA_TOKEN),
+            target = SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,
@@ -290,7 +290,7 @@ class SendFragment :
 
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(feePayerTokens, EXTRA_FEE_PAYER),
+            target = SelectTokenFragment.create(feePayerTokens, KEY_REQUEST_SEND, EXTRA_FEE_PAYER),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,

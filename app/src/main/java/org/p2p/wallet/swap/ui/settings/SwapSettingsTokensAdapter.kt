@@ -9,7 +9,7 @@ import org.p2p.wallet.databinding.ItemFeePaymentTokenBinding
 import org.p2p.wallet.home.model.Token
 
 class SwapSettingsTokensAdapter(
-    private val selectedSymbol: String,
+    private val selectedToken: Token.Active,
     private val onTokenSelected: (Token.Active) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -22,7 +22,7 @@ class SwapSettingsTokensAdapter(
         data.clear()
         data.addAll(new)
 
-        selectedIndex = new.indexOfFirst { it.tokenSymbol == selectedSymbol }
+        selectedIndex = new.indexOfFirst { it.tokenSymbol == selectedToken.tokenSymbol }
 
         notifyDataSetChanged()
     }
@@ -32,15 +32,8 @@ class SwapSettingsTokensAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         ViewHolder(parent)
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as ViewHolder).onBind(
-            item = data[position],
-            onTokenSelected = {
-                notifyDataSetChanged()
-                onTokenSelected.invoke(it)
-            }
-        )
+        (holder as ViewHolder).onBind(data[position])
     }
 
     inner class ViewHolder(
@@ -55,7 +48,7 @@ class SwapSettingsTokensAdapter(
         private val titleTextView = binding.titleTextView
         private val subTitleTextView = binding.subTitleTextView
 
-        fun onBind(item: Token.Active, onTokenSelected: (Token.Active) -> Unit) {
+        fun onBind(item: Token.Active) {
             radioButton.post { radioButton.isChecked = adapterPosition == selectedIndex }
             titleTextView.text = item.tokenSymbol
             if (item.isSOL) {

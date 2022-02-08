@@ -5,13 +5,17 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.FeeAmount
+import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Signature
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
+import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.solanaj.programs.TokenSwapProgram
+import org.p2p.wallet.feerelayer.model.RelayInfo
+import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
@@ -19,6 +23,7 @@ import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
@@ -77,9 +82,34 @@ class FeeRelayerRequestInteractor(
         )
     }
 
-    // Submits a signed token swap transaction to the backend for processing
-    suspend fun swap(
-        owner: Account,
+    fun calculateSwappingFee(
+        programId: PublicKey,
+        info: RelayInfo,
+        sourceToken: TokenInfo,
+        destinationToken: TokenInfo,
+        userDestinationAccountOwnerAddress: String?,
+        pools: OrcaPoolsPair,
+        needsCreateDestinationTokenAccount: Boolean
+    ): FeeAmount {
+        return prepareSwapTransaction(
+            programId = programId,
+            sourceToken = sourceToken,
+            destinationToken = destinationToken,
+            userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress,
+            pools = pools,
+            inputAmount = BigInteger.valueOf(10000L), // fake
+            slippage = 0.05, // fake
+            feeAmount = BigInteger.ZERO, // fake
+            blockhash = "FR1GgH83nmcEdoNXyztnpUL2G13KkUv6iwJPwVfnqEgW", // fake
+            minimumTokenAccountBalance = info.minimumTokenAccountBalance,
+            needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount,
+            feePayerAddress = info.feePayerAddress,
+            lamportsPerSignature = info.lamportsPerSignature
+        ).expectedFee
+    }
+
+    fun prepareSwapTransaction(
+        programId: PublicKey,
         sourceToken: TokenInfo,
         destinationToken: TokenInfo,
         userDestinationAccountOwnerAddress: String?,
@@ -89,91 +119,242 @@ class FeeRelayerRequestInteractor(
         slippage: Double,
 
         feeAmount: BigInteger,
+        blockhash: String,
         minimumTokenAccountBalance: BigInteger,
         needsCreateDestinationTokenAccount: Boolean,
-        feePayerAddress: String,
+        feePayerAddress: PublicKey,
         lamportsPerSignature: BigInteger
-    ): List<String> {
-        val blockhash = rpcRepository.getRecentBlockhash()
+    ): PreparedTransaction {
+        val owner = Account(tokenKeyProvider.secretKey)
 
-        val preparedParams = feeRelayerInstructionsInteractor.prepareForSwapping(
-            sourceToken = sourceToken,
-            destinationToken = destinationToken,
-            userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress,
+        val userAuthorityAddress = owner.publicKey
+
+        var userSourceTokenAccountAddress = sourceToken.address.toPublicKey()
+        val sourceTokenMintAddress = sourceToken.mint.toPublicKey()
+        val associatedTokenAddress = TokenTransaction.getAssociatedTokenAddress(
+            mint = sourceTokenMintAddress,
+            owner = feePayerAddress
+        )
+        if (userSourceTokenAccountAddress == associatedTokenAddress) {
+            throw IllegalStateException("Wrong address")
+        }
+        val destinationTokenMintAddress = destinationToken.mint.toPublicKey()
+
+        // forming transaction and count fees
+        var accountCreationFee: BigInteger = BigInteger.ZERO
+        val instructions = mutableListOf<TransactionInstruction>()
+
+        // check source
+        var sourceWSOLNewAccount: Account? = null
+        if (sourceToken.mint == Constants.WRAPPED_SOL_MINT) {
+            sourceWSOLNewAccount = Account()
+            val createAccountInstruction = SystemProgram.createAccount(
+                userAuthorityAddress,
+                sourceWSOLNewAccount.publicKey,
+                (inputAmount + minimumTokenAccountBalance).toLong()
+            )
+
+            instructions += createAccountInstruction
+
+            val initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
+                TokenProgram.PROGRAM_ID,
+                sourceWSOLNewAccount.publicKey,
+                Constants.WRAPPED_SOL_MINT.toPublicKey(),
+                userAuthorityAddress
+            )
+            instructions += initializeAccountInstruction
+
+            accountCreationFee += minimumTokenAccountBalance
+            userSourceTokenAccountAddress = sourceWSOLNewAccount.publicKey
+        }
+
+        // check destination
+        var userDestinationTokenAccountAddress = destinationToken.address
+        if (needsCreateDestinationTokenAccount) {
+            val associatedAccount = TokenTransaction.getAssociatedTokenAddress(
+                mint = destinationTokenMintAddress,
+                owner = destinationToken.address.toPublicKey()
+            )
+
+            val createAccountInstruction = TokenProgram.createAssociatedTokenAccountInstruction(
+                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                TokenProgram.PROGRAM_ID,
+                destinationTokenMintAddress,
+                associatedAccount,
+                PublicKey(destinationToken.address),
+                feePayerAddress
+            )
+            instructions += createAccountInstruction
+
+            accountCreationFee += minimumTokenAccountBalance
+            userDestinationTokenAccountAddress = associatedAccount.toBase58()
+        }
+
+        // swap
+        val transitTokenMintPubkey = feeRelayerInstructionsInteractor.getTransitTokenMintPubkey(pools)
+        val (swapData, transferAuthorityAccount) = feeRelayerInstructionsInteractor.prepareSwapData(
             pools = pools,
             inputAmount = inputAmount,
+            minAmountOut = null,
             slippage = slippage,
-            feeAmount = feeAmount,
-            blockhash = blockhash.recentBlockhash,
-            minimumTokenAccountBalance = minimumTokenAccountBalance,
-            needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount,
-            feePayerAddress = feePayerAddress,
-            lamportsPerSignature = lamportsPerSignature
+            transitTokenMintPubkey = transitTokenMintPubkey
+        )
+        val userTransferAuthority = transferAuthorityAccount?.publicKey
+
+        when (swapData) {
+            is SwapData.Direct -> {
+                val pool = pools.firstOrNull() ?: throw IllegalStateException("Swap pools not found")
+                // approve
+                if (userTransferAuthority != null) {
+                    val approveInstruction = TokenProgram.approveInstruction(
+                        TokenProgram.PROGRAM_ID,
+                        userSourceTokenAccountAddress,
+                        userTransferAuthority,
+                        userAuthorityAddress,
+                        swapData.amountIn
+                    )
+                    instructions += approveInstruction
+                }
+
+                // swap
+                val swapInstruction = TokenSwapProgram.swapInstruction(
+                    pool.account,
+                    pool.authority,
+                    userTransferAuthority ?: userAuthorityAddress,
+                    userSourceTokenAccountAddress,
+                    pool.tokenAccountA,
+                    pool.tokenAccountB,
+                    userDestinationTokenAccountAddress.toPublicKey(),
+                    pool.poolTokenMint,
+                    pool.feeAccount,
+                    pool.hostFeeAccount,
+                    TokenProgram.PROGRAM_ID,
+                    pool.swapProgramId,
+                    swapData.amountIn,
+                    swapData.minimumAmountOut
+                )
+                instructions += swapInstruction
+            }
+            is SwapData.SplTransitive -> {
+                // approve
+                if (userTransferAuthority != null) {
+                    val approveInstruction = TokenProgram.approveInstruction(
+                        TokenProgram.PROGRAM_ID,
+                        userSourceTokenAccountAddress,
+                        userTransferAuthority,
+                        userAuthorityAddress,
+                        swapData.from.amountIn
+                    )
+                    instructions += approveInstruction
+                }
+
+                // create transit token account
+                val transitTokenMint = swapData.transitTokenMintPubkey.toPublicKey()
+                val transitTokenAccountAddress = feeRelayerAccountInteractor.getTransitTokenAccountAddress(
+                    owner = userAuthorityAddress,
+                    mint = transitTokenMint
+                )
+
+                val transitTokenAccountInstruction = FeeRelayerProgram.createTransitTokenAccountInstruction(
+                    programId = programId,
+                    feePayer = feePayerAddress,
+                    userAuthority = userAuthorityAddress,
+                    transitTokenAccount = transitTokenAccountAddress,
+                    transitTokenMint = transitTokenMint
+                )
+                instructions += transitTokenAccountInstruction
+
+                // relay swap
+                val relaySwapInstruction = FeeRelayerProgram.createRelaySwapInstruction(
+                    programId = programId,
+                    transitiveSwap = swapData,
+                    userAuthorityAddressPubkey = userAuthorityAddress,
+                    sourceAddressPubkey = userSourceTokenAccountAddress,
+                    transitTokenAccount = transitTokenAccountAddress,
+                    destinationAddressPubkey = PublicKey(userDestinationTokenAccountAddress),
+                    feePayerPubkey = feePayerAddress
+                )
+
+                instructions += relaySwapInstruction
+
+                // close transit token account
+                val closeAccountInstruction = TokenProgram.closeAccountInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    transitTokenAccountAddress,
+                    feePayerAddress,
+                    feePayerAddress
+                )
+                instructions += closeAccountInstruction
+            }
+        }
+
+        // WSOL close
+        // close source
+        if (sourceWSOLNewAccount != null) {
+            val closeAccountInstruction = TokenProgram.closeAccountInstruction(
+                TokenProgram.PROGRAM_ID,
+                sourceWSOLNewAccount.publicKey,
+                userAuthorityAddress,
+                userAuthorityAddress
+            )
+            instructions += closeAccountInstruction
+
+            accountCreationFee -= minimumTokenAccountBalance
+        }
+
+        // close destination
+        if (destinationTokenMintAddress.toBase58() == Constants.WRAPPED_SOL_MINT &&
+            userDestinationAccountOwnerAddress != null
+        ) {
+            val ownerAddress = userDestinationAccountOwnerAddress.toPublicKey()
+            val closeAccountInstruction = TokenProgram.closeAccountInstruction(
+                TokenProgram.PROGRAM_ID,
+                userDestinationTokenAccountAddress.toPublicKey(),
+                ownerAddress,
+                ownerAddress
+            )
+            instructions += closeAccountInstruction
+
+            val transferInstruction = SystemProgram.transfer(
+                ownerAddress,
+                feePayerAddress,
+                minimumTokenAccountBalance
+            )
+
+            instructions += transferInstruction
+            accountCreationFee -= minimumTokenAccountBalance
+        }
+
+        // Relay fee
+        val transferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
+            programId = programId,
+            userAuthority = userAuthorityAddress,
+            recipient = feePayerAddress,
+            amount = feeAmount,
+            userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
+        )
+        instructions += transferSolInstruction
+
+        val transaction = Transaction()
+        transaction.addInstructions(instructions)
+        transaction.recentBlockHash = blockhash
+        transaction.setFeePayer(feePayerAddress)
+
+        // calculate fee first
+        val expectedFee = FeeAmount(
+            transaction = transaction.calculateTransactionFee(lamportsPerSignature),
+            accountBalances = accountCreationFee
         )
 
-        val signatures = getSignatures(
-            transaction = preparedParams.transaction,
-            owner = owner,
-            transferAuthorityAccount = preparedParams.transferAuthorityAccount
-        )
+        // resign transaction
+        val signers = mutableListOf(owner)
+        if (sourceWSOLNewAccount != null) {
+            signers += sourceWSOLNewAccount
+        }
 
-        return feeRelayerRepository.relaySwap(
-            userSourceTokenAccountPubkey = sourceToken.address,
-            userDestinationPubkey = destinationToken.address,
-            userDestinationAccountOwner = userDestinationAccountOwnerAddress,
-            sourceTokenMintPubkey = sourceToken.mint,
-            destinationTokenMintPubkey = destinationToken.mint,
-            userAuthorityPubkey = owner.publicKey.toBase58(),
-            userSwap = preparedParams.swapData,
-            feeAmount = feeAmount,
-            signatures = signatures,
-            blockhash = blockhash.recentBlockhash
-        )
-    }
+        transaction.sign(signers)
 
-    // Submits a signed transfer token transaction to the backend for processing
-    suspend fun transfer(
-        feeRelayerProgramId: PublicKey,
-        owner: Account,
-        sourceToken: TokenInfo,
-        recipientPubkey: String,
-        tokenMintAddress: String,
-        feePayerAddress: String,
-        minimumTokenAccountBalance: BigInteger,
-        inputAmount: BigInteger,
-        decimals: Int,
-        lamportsPerSignature: BigInteger
-    ): List<String> {
-        val (transaction, feeAmount) = makeTransferTransaction(
-            programId = feeRelayerProgramId,
-            owner = owner,
-            sourceToken = sourceToken,
-            recipientPubkey = recipientPubkey,
-            tokenMintAddress = tokenMintAddress,
-            feePayerAddress = feePayerAddress,
-            lamportsPerSignatures = lamportsPerSignature,
-            minimumTokenAccountBalance = minimumTokenAccountBalance,
-            inputAmount = inputAmount,
-            decimals = decimals
-        )
-
-        val account = Account(tokenKeyProvider.secretKey)
-        transaction.sign(listOf(account))
-
-        val authoritySignature = transaction.findSignature(account.publicKey).signature
-        val blockhash = transaction.recentBlockHash
-
-        return feeRelayerRepository.relayTransferSplToken(
-            senderTokenAccountPubkey = sourceToken.address,
-            recipientPubkey = recipientPubkey,
-            tokenMintPubkey = tokenMintAddress,
-            authorityPubkey = account.publicKey.toBase58(),
-            amount = inputAmount,
-            feeAmount = feeAmount.total,
-            decimals = decimals,
-            authoritySignature = Base58Utils.encodeFromString(authoritySignature),
-            blockhash = blockhash
-        )
+        return PreparedTransaction(transaction, signers, expectedFee)
     }
 
     // Generate transfer transaction
@@ -225,29 +406,6 @@ class FeeRelayerRequestInteractor(
         blockHash: String
     ): List<String> =
         feeRelayerRepository.relayTransaction(instructions, signatures, pubkeys, blockHash)
-
-    suspend fun relayTransferSplToken(
-        senderTokenAccountPubkey: String,
-        recipientPubkey: String,
-        tokenMintPubkey: String,
-        authorityPubkey: String,
-        amount: BigInteger,
-        decimals: Int,
-        feeAmount: BigInteger,
-        authoritySignature: String,
-        blockhash: String,
-    ): List<String> =
-        feeRelayerRepository.relayTransferSplToken(
-            senderTokenAccountPubkey,
-            recipientPubkey,
-            tokenMintPubkey,
-            authorityPubkey,
-            amount,
-            decimals,
-            feeAmount,
-            authoritySignature,
-            blockhash
-        )
 
     suspend fun getFeePayerPublicKey(): PublicKey =
         feeRelayerRepository.getFeePayerPublicKey()
@@ -331,17 +489,28 @@ class FeeRelayerRequestInteractor(
     private fun getSignatures(
         transaction: Transaction,
         owner: Account,
-        transferAuthorityAccount: Account
+        transferAuthorityAccount: Account?
     ): SwapTransactionSignatures {
 
-        val signers = listOf(transferAuthorityAccount, owner)
+        val signers = mutableListOf(owner)
+
+        if (transferAuthorityAccount != null) {
+            // fixme: this may cause presigner error
+            signers.add(0, transferAuthorityAccount)
+        }
+
         transaction.sign(signers)
 
         val ownerSignatureData = transaction.findSignature(owner.publicKey)?.signature
-        val transferAuthoritySignatureData = transaction.findSignature(transferAuthorityAccount.publicKey)?.signature
 
-        if (ownerSignatureData.isNullOrEmpty() || transferAuthoritySignatureData.isNullOrEmpty()) {
-            throw IllegalStateException("Invalid signatures")
+        val transferAuthoritySignatureData = if (transferAuthorityAccount != null) {
+            transaction.findSignature(transferAuthorityAccount.publicKey)?.signature
+        } else {
+            null
+        }
+
+        if (ownerSignatureData.isNullOrEmpty()) {
+            throw IllegalStateException("Invalid owner signature")
         }
 
         return SwapTransactionSignatures(

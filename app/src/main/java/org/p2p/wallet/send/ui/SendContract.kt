@@ -12,7 +12,7 @@ import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.transaction.model.ConfirmData
+import org.p2p.wallet.send.model.SendConfirmData
 import java.math.BigDecimal
 
 interface SendContract {
@@ -51,7 +51,7 @@ interface SendContract {
         fun showAccountFeeView(fee: SendFee?)
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 
-        fun showBiometricConfirmationPrompt(data: ConfirmData)
+        fun showBiometricConfirmationPrompt(data: SendConfirmData)
     }
 
     interface Presenter : MvpPresenter<View> {

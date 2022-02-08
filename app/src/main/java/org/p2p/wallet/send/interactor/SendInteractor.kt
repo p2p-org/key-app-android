@@ -1,7 +1,5 @@
 package org.p2p.wallet.send.interactor
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
@@ -22,7 +20,7 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.send.model.CheckAddressResult
-import org.p2p.wallet.send.model.TransactionResult
+import org.p2p.wallet.send.model.SendResult
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
@@ -47,11 +45,6 @@ class SendInteractor(
     }
 
     /*
-    * This one is to show user transaction id when progress dialog is shown
-    * */
-    private val transactionIdFlow = MutableStateFlow("")
-
-    /*
     * If transaction will need to create a new account,
     * then the fee for account creation will be paid via this token
     * */
@@ -60,9 +53,8 @@ class SendInteractor(
     /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(userTokens: List<Token.Active>) {
-        feePayerToken = userTokens.firstOrNull { it.isSOL } ?: throw IllegalStateException("SOL account not found")
-
+    suspend fun initialize(sol: Token.Active) {
+        feePayerToken = sol
         feeRelayerInteractor.load()
 
         orcaSwapInteractor.load()
@@ -76,8 +68,6 @@ class SendInteractor(
 
         feePayerToken = newToken
     }
-
-    fun getTransactionIdFlow(): Flow<String> = transactionIdFlow
 
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
@@ -129,7 +119,7 @@ class SendInteractor(
         destinationAddress: PublicKey,
         token: Token.Active,
         lamports: BigInteger
-    ): TransactionResult {
+    ): SendResult {
         val strategy = when {
             feePayerToken.isSOL && token.isSOL -> SendStrategy.SimpleSol
             feePayerToken.isSOL -> SendStrategy.Spl
@@ -171,7 +161,7 @@ class SendInteractor(
         destinationAddress: PublicKey,
         sourceToken: Token.Active,
         lamports: BigInteger
-    ): TransactionResult {
+    ): SendResult {
 
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val transactionId = feeRelayerInteractor.topUpAndSend(
@@ -183,28 +173,28 @@ class SendInteractor(
             feeRelayerProgramId = feeRelayerProgramId
         ).firstOrNull().orEmpty()
 
-        return TransactionResult.Success(transactionId)
+        return SendResult.Success(transactionId)
     }
 
     private suspend fun sendSplToken(
         destinationAddress: PublicKey,
         sourceToken: Token.Active,
         lamports: BigInteger
-    ): TransactionResult {
+    ): SendResult {
         val currentUser = tokenKeyProvider.publicKey
 
         if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
-            return TransactionResult.WrongWallet
+            return SendResult.WrongWallet
         }
 
         val address = try {
             addressInteractor.findAssociatedAddress(destinationAddress, sourceToken.mintAddress)
         } catch (e: IllegalStateException) {
-            return TransactionResult.WrongWallet
+            return SendResult.WrongWallet
         }
 
         if (currentUser == address.associatedAddress.toBase58()) {
-            return TransactionResult.Error(R.string.main_send_to_yourself_error)
+            return SendResult.Error(R.string.main_send_to_yourself_error)
         }
 
         val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
@@ -250,8 +240,6 @@ class SendInteractor(
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        transactionIdFlow.emit(transaction.signature.signature)
-
         val recipientPubkey =
             if (!address.shouldCreateAssociatedInstruction || address.associatedAddress.equals(destinationAddress)) {
                 address.associatedAddress.toBase58()
@@ -268,17 +256,17 @@ class SendInteractor(
             blockHash = recentBlockHash.recentBlockhash
         ).firstOrNull().orEmpty()
 
-        return TransactionResult.Success(signature)
+        return SendResult.Success(signature)
     }
 
     private suspend fun sendNativeSolToken(
         destinationAddress: PublicKey,
         lamports: BigInteger
-    ): TransactionResult {
+    ): SendResult {
         val currentUser = tokenKeyProvider.publicKey
 
         if (currentUser == destinationAddress.toBase58()) {
-            return TransactionResult.Error(R.string.main_send_to_yourself_error)
+            return SendResult.Error(R.string.main_send_to_yourself_error)
         }
 
         val accountInfo = rpcRepository.getAccountInfo(destinationAddress.toBase58())
@@ -286,7 +274,7 @@ class SendInteractor(
 
         if (value?.owner == TokenProgram.PROGRAM_ID.toBase58()) {
             Timber.tag(SEND_TAG).d("Owner address matches the program id, returning with error")
-            return TransactionResult.WrongWallet
+            return SendResult.WrongWallet
         }
 
         val payer = tokenKeyProvider.publicKey.toPublicKey()
@@ -311,8 +299,6 @@ class SendInteractor(
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        transactionIdFlow.emit(transaction.signature.signature)
-
         val signature = feeRelayerRequestInteractor.relayTransaction(
             instructions = instructions,
             signatures = transaction.allSignatures,
@@ -320,6 +306,6 @@ class SendInteractor(
             blockHash = recentBlockhash.recentBlockhash
         ).firstOrNull().orEmpty()
 
-        return TransactionResult.Success(signature)
+        return SendResult.Success(signature)
     }
 }

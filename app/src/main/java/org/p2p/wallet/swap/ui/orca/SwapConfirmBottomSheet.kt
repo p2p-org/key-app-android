@@ -1,4 +1,4 @@
-package org.p2p.wallet.transaction.ui
+package org.p2p.wallet.swap.ui.orca
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,11 +10,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
-import org.p2p.wallet.databinding.DialogTransactionConfirmBinding
-import org.p2p.wallet.transaction.model.ConfirmData
+import org.p2p.wallet.databinding.DialogSwapConfirmBinding
+import org.p2p.wallet.swap.model.SwapConfirmData
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -23,21 +22,21 @@ import timber.log.Timber
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 
-class TransactionConfirmBottomSheet(
+class SwapConfirmBottomSheet(
     private val onConfirmed: () -> Unit
 ) : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
-        fun show(fragment: Fragment, data: ConfirmData, onConfirmed: () -> Unit) {
-            TransactionConfirmBottomSheet(onConfirmed)
+        fun show(fragment: Fragment, data: SwapConfirmData, onConfirmed: () -> Unit) {
+            SwapConfirmBottomSheet(onConfirmed)
                 .withArgs(EXTRA_DATA to data)
-                .show(fragment.childFragmentManager, TransactionConfirmBottomSheet::javaClass.name)
+                .show(fragment.childFragmentManager, SwapConfirmBottomSheet::javaClass.name)
         }
     }
 
-    private val binding: DialogTransactionConfirmBinding by viewBinding()
+    private val binding: DialogSwapConfirmBinding by viewBinding()
 
-    private val data: ConfirmData by args(EXTRA_DATA)
+    private val data: SwapConfirmData by args(EXTRA_DATA)
 
     private val glideManager: GlideManager by inject()
 
@@ -57,15 +56,18 @@ class TransactionConfirmBottomSheet(
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.dialog_transaction_confirm, container, false)
+        inflater.inflate(R.layout.dialog_swap_confirm, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            glideManager.load(sourceImageView, data.token.iconUrl)
-            amountTextView.text = data.getFormattedAmount()
-            amountUsdTextView.text = data.getFormattedAmountUsd()
-            destinationTextView.text = data.destination.highlightPublicKey(requireContext())
+            glideManager.load(sourceImageView, data.sourceToken.iconUrl)
+            amountTextView.text = data.getFormattedSourceAmount()
+            amountUsdTextView.text = data.getFormattedSourceAmountUsd()
+
+            glideManager.load(sourceImageView, data.destinationToken.iconUrl)
+            destinationAmountTextView.text = data.getFormattedSourceAmount()
+            destAmountUsdTextView.text = data.getFormattedSourceAmountUsd()
 
             val highlightText = getString(R.string.send_confirm_warning_highlight)
             val commonText = getString(R.string.send_confirm_warning)

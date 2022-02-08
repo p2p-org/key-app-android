@@ -10,15 +10,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSelectTokenBinding
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.ui.KEY_REQUEST_SEND
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class SelectTokenFragment(
@@ -27,32 +26,24 @@ class SelectTokenFragment(
 
     companion object {
 
-        fun create(tokens: List<Token>, resultKey: String) = SelectTokenFragment(null)
+        fun create(tokens: List<Token>, requestKey: String, resultKey: String) = SelectTokenFragment(null)
             .withArgs(
                 EXTRA_ALL_TOKENS to tokens,
-                EXTRA_RESULT_KEY to resultKey
-            )
-
-        /**
-         * Callback for individual callback catch
-         * */
-        // FIXME: remove functions add callback listeners, otherwise it'll leak
-        fun create(tokens: List<Token>, resultKey: String = EXTRA_TOKEN, onSelected: ((Token) -> Unit)?) =
-            SelectTokenFragment(onSelected).withArgs(
-                EXTRA_ALL_TOKENS to tokens,
+                EXTRA_REQUEST_KEY to requestKey,
                 EXTRA_RESULT_KEY to resultKey
             )
     }
 
     private val tokens: List<Token> by args(EXTRA_ALL_TOKENS)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
 
     private val binding: FragmentSelectTokenBinding by viewBinding()
 
     private val tokenAdapter: SelectTokenAdapter by lazy {
         SelectTokenAdapter {
             onSelected?.invoke(it)
-            setFragmentResult(KEY_REQUEST_SEND, bundleOf(resultKey to it))
+            setFragmentResult(requestKey, bundleOf(resultKey to it))
             parentFragmentManager.popBackStack()
         }
     }
