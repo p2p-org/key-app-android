@@ -13,6 +13,10 @@ class SingleBannerViewHolder(
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    companion object {
+        private const val MARGIN_HORIZONTAL = 32
+    }
+
     constructor(
         parent: ViewGroup,
         listener: OnHomeItemsClickListener
@@ -21,10 +25,18 @@ class SingleBannerViewHolder(
         listener = listener
     )
 
+    private val screenWidth: Int
+
+    init {
+        val displayMetrics = binding.root.context.resources.displayMetrics
+        val pxWidth = displayMetrics.widthPixels
+        screenWidth = pxWidth - MARGIN_HORIZONTAL
+    }
+
     fun onBind(item: Banner) {
         with(binding) {
             val width = if (item.isSingle) {
-                root.resources.getDimension(R.dimen.max_banner_width).toInt()
+                screenWidth
             } else {
                 root.resources.getDimension(R.dimen.min_banner_width).toInt()
             }
