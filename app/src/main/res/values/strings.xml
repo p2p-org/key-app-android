@@ -228,6 +228,7 @@
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
     <string name="main_free_transactions_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
+    <string name="main_balance">Balance</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -318,6 +319,13 @@
     <string name="send_choose_network_info">P2P Wallet will automatically match your withdrawal target address to the correct network for most withdrawals. \n\nHowever, before sending your funds, make sure to double-check the selected network.</string>
     <string name="send_network_limit_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
     <string name="send_network_selected_format">%s network selected</string>
+    <string name="send_confirm_transaction">Confirm your transaction</string>
+    <string name="send_transfer_confirm_message">You are going to transfer</string>
+    <string name="send_to_address">To address</string>
+    <string name="send_confirm_warning">Be sure all details are correct before confirming the transaction. Once confirmed, it cannot be reversed. If everything is correct, tap the button below to continue.</string>
+    <string name="send_confirm_warning_highlight">Once confirmed, it cannot be reversed.</string>
+    <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
+    <string name="send_successful_format">%s is successfully sent!</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -349,6 +357,8 @@
     <string name="swap_available_format">%s Available</string>
     <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
     <string name="swap_being_processed">The swap is being processed</string>
+    <string name="swap_max_price_slippage">Max price slippage</string>
+    <string name="swap_transfer_confirm_message">You are going to swap</string>
 
     <!-- Buy -->
     <string name="buy_solana_on_moonpay">Buy Solana on MoonPay</string>
@@ -392,6 +402,8 @@
     <string name="details_history">History</string>
     <string name="details_show_wallet_address">Show wallet address</string>
     <string name="details_transaction_fees">Transaction fees</string>
+    <string name="details_received">Received</string>
+    <string name="details_transfer_format">%1s → %2s</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -423,16 +435,4 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
-    <string name="details_received">Received</string>
-    <string name="details_transfer_format">%1s → %2s</string>
-    <string name="send_confirm_transaction">Confirm your transaction</string>
-    <string name="send_transfer_confirm_message">You are going to transfer</string>
-    <string name="send_to_address">To address</string>
-    <string name="send_confirm_warning">Be sure all details are correct before confirming the transaction. Once confirmed, it cannot be reversed. If everything is correct, tap the button below to continue.</string>
-    <string name="send_confirm_warning_highlight">Once confirmed, it cannot be reversed.</string>
-    <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
-    <string name="send_successful_format">%s is successfully sent!</string>
-    <string name="swap_max_price_slippage">Max price slippage</string>
-    <string name="swap_transfer_confirm_message">You are going to swap</string>
-    <string name="main_balance">Balance</string>
 </resources>
