@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.p2p.wallet.common.di.AppScope
@@ -16,7 +17,7 @@ import java.util.concurrent.Executors
  * This manager is responsible for sending transaction despite what the user is doing during the process
  * Each transaction added in queue is being executed immediately in separate coroutine
  * */
-class TransactionSendManager private constructor(
+class TransactionManager private constructor(
     appScope: AppScope,
     private val initDispatcher: CoroutineDispatcher
 ) : CoroutineScope by (appScope + initDispatcher) {
@@ -31,6 +32,11 @@ class TransactionSendManager private constructor(
         appScope,
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     )
+
+    /*
+   * This one is to show user transaction id when progress dialog is shown
+   * */
+    private val transactionIdFlow = MutableStateFlow("")
 
     private val pendingTransactions = mutableListOf<AppTransaction>()
 
@@ -59,6 +65,12 @@ class TransactionSendManager private constructor(
         }
 
         return executor.getStateFlow()
+    }
+
+    fun getTransactionIdFlow(): Flow<String> = transactionIdFlow
+
+    suspend fun emitTransactionId(transactionId: String) {
+        transactionIdFlow.emit(transactionId)
     }
 
     private fun executeTransactions() {

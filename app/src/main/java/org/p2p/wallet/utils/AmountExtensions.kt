@@ -43,7 +43,7 @@ fun BigDecimal.toLamports(decimals: Int): BigInteger =
 fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
     usdRate?.let { this.multiply(it).scaleShort() }
 
-fun BigDecimal.toUsd(token: Token.Active): BigDecimal? =
+fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.usdRate?.let { this.multiply(it).scaleShort() }
 
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0

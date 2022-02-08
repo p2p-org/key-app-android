@@ -341,10 +341,10 @@
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:enabled="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            app:buttonEnabled="false"
             app:buttonText="@string/swap_choose_the_destination"
-            app:buttonTextColor="?colorElementPrimary"
+            app:buttonTextColor="@color/textIconButtonPrimary"
             tools:ignore="UnusedAttribute" />
 
     </LinearLayout>

@@ -1,11 +1,11 @@
 package org.p2p.wallet.transaction.interactor
 
 import kotlinx.coroutines.flow.Flow
-import org.p2p.wallet.transaction.TransactionSendManager
+import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 
 class TransactionInteractor(
-    private val transactionManager: TransactionSendManager
+    private val transactionManager: TransactionManager
 ) {
 
     var onSignatureReceived: ((String) -> Unit)? = null

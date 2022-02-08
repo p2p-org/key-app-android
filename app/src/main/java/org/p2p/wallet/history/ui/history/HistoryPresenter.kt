@@ -23,8 +23,8 @@ class TokenInfoPresenter(
     private val transactions = mutableListOf<HistoryTransaction>()
     private val actions = mutableListOf(
         ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
-        ActionButton(R.string.main_send, R.drawable.ic_send_simple),
-        ActionButton(R.string.main_swap, R.drawable.ic_swap_simple)
+        ActionButton(R.string.main_send, R.drawable.ic_send_medium),
+        ActionButton(R.string.main_swap, R.drawable.ic_swap_medium)
     )
 
     init {

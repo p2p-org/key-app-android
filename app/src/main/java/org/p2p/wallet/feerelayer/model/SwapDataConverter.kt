@@ -7,7 +7,7 @@ import org.p2p.wallet.feerelayer.api.SwapSplTransitiveRequest
 object SwapDataConverter {
 
     fun toNetwork(data: SwapData): SwapDataRequest = when (data) {
-        is SwapData.Spl -> SwapDataRequest(
+        is SwapData.Direct -> SwapDataRequest(
             spl = toSpl(data),
             splTransitive = null
         )
@@ -21,7 +21,7 @@ object SwapDataConverter {
         )
     }
 
-    private fun toSpl(data: SwapData.Spl): SwapSplRequest =
+    private fun toSpl(data: SwapData.Direct): SwapSplRequest =
         SwapSplRequest(
             programId = data.programId,
             accountPubkey = data.accountPubkey,

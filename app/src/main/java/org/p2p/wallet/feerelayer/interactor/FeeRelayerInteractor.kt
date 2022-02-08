@@ -17,6 +17,7 @@ import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
+import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
@@ -28,6 +29,7 @@ class FeeRelayerInteractor(
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerInstructionsInteractor: FeeRelayerInstructionsInteractor,
     private val orcaSwapInteractor: OrcaSwapInteractor,
+    private val transactionManager: TransactionManager,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -63,6 +65,7 @@ class FeeRelayerInteractor(
     * Fee calculation is in IN SOL
     * */
     suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
+        feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         destinationTokenMint: String,
         destinationAddress: String?,
@@ -72,6 +75,7 @@ class FeeRelayerInteractor(
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
 
         val preparedParams = prepareForTopUpAndSwap(
+            programId = feeRelayerProgramId,
             sourceToken = sourceToken,
             destinationTokenMint = destinationTokenMint,
             destinationAddress = destinationAddress,
@@ -112,8 +116,79 @@ class FeeRelayerInteractor(
         )
     }
 
-    /*// Top up relay account (if needed) and swap
+    /**
+     Transfer an amount of spl token to destination address.
+     * Parameters:
+     * sourceToken: source that contains address of account and mint address.
+     * destinationAddress: pass destination wallet address if spl token doesn't exist in this wallet. Otherwise pass wallet's token address.
+     * tokenMint: the address of mint
+     * inputAmount: the amount that will be transferred
+     * payingFeeToken: the token that will be used to pay as fee
+     * Returns:
+     */
+    suspend fun topUpAndSend(
+        feeRelayerProgramId: PublicKey,
+        sourceToken: TokenInfo,
+        destinationAddress: String,
+        tokenMint: String,
+        inputAmount: BigInteger,
+        payingFeeToken: TokenInfo
+    ): List<String> {
+        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(reuseCache = false)
+        val tokenSupply = rpcRepository.getTokenSupply(tokenMint)
+
+        val account = Account(tokenKeyProvider.secretKey)
+        val info = feeRelayerAccountInteractor.getRelayInfo()
+
+        val (transaction, amount) = feeRelayerRequestInteractor.makeTransferTransaction(
+            programId = feeRelayerProgramId,
+            owner = account,
+            sourceToken = sourceToken,
+            recipientPubkey = destinationAddress,
+            tokenMintAddress = tokenMint,
+            feePayerAddress = info.feePayerAddress.toBase58(),
+            lamportsPerSignatures = info.lamportsPerSignature,
+            minimumTokenAccountBalance = info.minimumTokenAccountBalance,
+            inputAmount = inputAmount,
+            decimals = tokenSupply.value.decimals
+        )
+
+        val params = prepareForTopUp(amount, payingFeeToken, relayAccount)
+
+        transaction.sign(listOf(account))
+        val blockhash = transaction.recentBlockHash
+        // STEP 2: Check if relay account has already had enough balance to cover swapping fee
+        // STEP 2.1: If relay account has enough balance to cover swapping fee
+        return if (params.topUpFeesAndPools == null || params.topUpAmount == null) {
+            feeRelayerRequestInteractor.relayTransaction(
+                instructions = transaction.instructions,
+                signatures = transaction.allSignatures,
+                pubkeys = transaction.accountKeys,
+                blockHash = blockhash
+            )
+        } else {
+            // STEP 2.2.1: Top up
+            feeRelayerRequestInteractor.topUp(
+                owner = account,
+                needsCreateUserRelayAddress = !relayAccount.isCreated,
+                sourceToken = payingFeeToken,
+                amount = params.topUpAmount,
+                topUpPools = params.topUpFeesAndPools.poolsPair,
+                topUpFee = params.topUpFeesAndPools.fee.total
+            )
+
+            feeRelayerRequestInteractor.relayTransaction(
+                instructions = transaction.instructions,
+                signatures = transaction.allSignatures,
+                pubkeys = transaction.accountKeys,
+                blockHash = blockhash
+            )
+        }
+    }
+
+    // Top up relay account (if needed) and swap
     suspend fun topUpAndSwap(
+        feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         destinationTokenMint: String,
         destinationAddress: String?,
@@ -122,18 +197,15 @@ class FeeRelayerInteractor(
         inputAmount: BigInteger,
         slippage: Double
     ): List<String> {
+
         // get owner
         val owner = Account(tokenKeyProvider.secretKey)
-
-        // TODO: Remove later, currently does not support swap from native SOL
-        if (sourceToken.address == owner.publicKey.toBase58()) {
-            throw IllegalStateException("Unsupported swap")
-        }
 
         // get fresh data by ignoring cache
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(false)
 
-        val preparedParams = prepareForTopUpAndSwap(
+        val params = prepareForTopUpAndSwap(
+            programId = feeRelayerProgramId,
             sourceToken = sourceToken,
             destinationTokenMint = destinationTokenMint,
             destinationAddress = destinationAddress,
@@ -143,21 +215,23 @@ class FeeRelayerInteractor(
             reuseCache = false
         )
 
-        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-
         val destination = getFixedDestination(destinationTokenMint, destinationAddress)
+
+        val info = feeRelayerAccountInteractor.getRelayInfo()
+
         val destinationToken = destination.destinationToken
         val userDestinationAccountOwnerAddress = destination.userDestinationAccountOwnerAddress
         val needsCreateDestinationTokenAccount = destination.needsCreateDestinationTokenAccount
 
-        val swapFeesAndPools = preparedParams.actionFeesAndPools
+        val swapFeesAndPools = params.actionFeesAndPools
         val swappingFee = swapFeesAndPools.fee.total
         val swapPools = swapFeesAndPools.poolsPair
 
         // STEP 2: Check if relay account has already had enough balance to cover swapping fee
         // STEP 2.1: If relay account has enough balance to cover swapping fee
-        return if (preparedParams.topUpFeesAndPools == null || preparedParams.topUpAmount == null) {
-            feeRelayerRequestInteractor.swap(
+        return if (params.topUpFeesAndPools == null || params.topUpAmount == null) {
+            swap(
+                feeRelayerProgramId = feeRelayerProgramId,
                 owner = owner,
                 sourceToken = sourceToken,
                 destinationToken = destinationToken,
@@ -166,10 +240,10 @@ class FeeRelayerInteractor(
                 inputAmount = inputAmount,
                 slippage = slippage,
                 feeAmount = swappingFee,
-                minimumTokenAccountBalance = relayInfo.minimumTokenAccountBalance,
+                minimumTokenAccountBalance = info.minimumTokenAccountBalance,
                 needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount,
-                feePayerAddress = relayInfo.feePayerAddress.toBase58(),
-                lamportsPerSignature = relayInfo.lamportsPerSignature
+                feePayerAddress = info.feePayerAddress,
+                lamportsPerSignature = info.lamportsPerSignature
             )
         } else {
             // STEP 2.2.1: Top up
@@ -177,29 +251,78 @@ class FeeRelayerInteractor(
                 owner = owner,
                 needsCreateUserRelayAddress = !relayAccount.isCreated,
                 sourceToken = payingFeeToken,
-                amount = preparedParams.topUpAmount,
-                topUpPools = preparedParams.topUpFeesAndPools.poolsPair,
-                topUpFee = preparedParams.topUpFeesAndPools.fee.total
+                amount = params.topUpAmount,
+                topUpPools = params.topUpFeesAndPools.poolsPair,
+                topUpFee = params.topUpFeesAndPools.fee.total
             )
 
-            feeRelayerRequestInteractor.swap(
+            // STEP 2.2.2: Swap
+            swap(
+                feeRelayerProgramId = feeRelayerProgramId,
                 owner = owner,
                 sourceToken = sourceToken,
                 destinationToken = destinationToken,
                 userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress?.toBase58(),
+
                 pools = swapPools,
                 inputAmount = inputAmount,
                 slippage = slippage,
+
                 feeAmount = swappingFee,
-                minimumTokenAccountBalance = relayInfo.minimumTokenAccountBalance,
+                minimumTokenAccountBalance = info.minimumTokenAccountBalance,
                 needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount,
-                feePayerAddress = relayInfo.feePayerAddress.toBase58(),
-                lamportsPerSignature = relayInfo.lamportsPerSignature
+                feePayerAddress = info.feePayerAddress,
+                lamportsPerSignature = info.lamportsPerSignature
             )
         }
-    }*/
+    }
 
-    suspend fun prepareForTopUpAndSwap(
+    suspend fun swap(
+        feeRelayerProgramId: PublicKey,
+        owner: Account,
+        sourceToken: TokenInfo,
+        destinationToken: TokenInfo,
+        userDestinationAccountOwnerAddress: String?,
+        pools: OrcaPoolsPair,
+        inputAmount: BigInteger,
+        slippage: Double,
+        feeAmount: BigInteger,
+        minimumTokenAccountBalance: BigInteger,
+        needsCreateDestinationTokenAccount: Boolean,
+        feePayerAddress: PublicKey,
+        lamportsPerSignature: BigInteger
+    ): List<String> {
+
+        val recentBlockhash = rpcRepository.getRecentBlockhash()
+
+        val preparedTransaction = feeRelayerRequestInteractor.prepareSwapTransaction(
+            programId = feeRelayerProgramId,
+            sourceToken = sourceToken,
+            destinationToken = destinationToken,
+            userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress,
+            pools = pools,
+            inputAmount = inputAmount,
+            slippage = slippage,
+            feeAmount = feeAmount,
+            blockhash = recentBlockhash.recentBlockhash,
+            minimumTokenAccountBalance = minimumTokenAccountBalance,
+            needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount,
+            feePayerAddress = feePayerAddress,
+            lamportsPerSignature = lamportsPerSignature
+        )
+
+        val transaction = preparedTransaction.transaction
+        transactionManager.emitTransactionId(transaction.signature.signature)
+        return feeRelayerRequestInteractor.relayTransaction(
+            instructions = transaction.instructions,
+            signatures = transaction.allSignatures,
+            pubkeys = transaction.accountKeys,
+            blockHash = recentBlockhash.recentBlockhash
+        )
+    }
+
+    private suspend fun prepareForTopUpAndSwap(
+        programId: PublicKey,
         sourceToken: TokenInfo,
         destinationTokenMint: String,
         destinationAddress: String?,
@@ -225,7 +348,8 @@ class FeeRelayerInteractor(
             val needsCreateDestinationTokenAccount = destination.needsCreateDestinationTokenAccount
 
             val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-            val swappingFee = feeRelayerInstructionsInteractor.calculateSwappingFee(
+            val swappingFee = feeRelayerRequestInteractor.calculateSwappingFee(
+                programId = programId,
                 info = relayInfo,
                 sourceToken = sourceToken,
                 destinationToken = destinationToken,
@@ -307,120 +431,6 @@ class FeeRelayerInteractor(
             needsCreateDestinationTokenAccount
         )
     }
-
-    /**
-     Transfer an amount of spl token to destination address.
-     * Parameters:
-     * sourceToken: source that contains address of account and mint address.
-     * destinationAddress: pass destination wallet address if spl token doesn't exist in this wallet. Otherwise pass wallet's token address.
-     * tokenMint: the address of mint
-     * inputAmount: the amount that will be transferred
-     * payingFeeToken: the token that will be used to pay as fee
-     * Returns:
-     */
-    suspend fun topUpAndSend(
-        feeRelayerProgramId: PublicKey,
-        sourceToken: TokenInfo,
-        destinationAddress: String,
-        tokenMint: String,
-        inputAmount: BigInteger,
-        payingFeeToken: TokenInfo
-    ): List<String> {
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(reuseCache = false)
-        val tokenSupply = rpcRepository.getTokenSupply(tokenMint)
-
-        val account = Account(tokenKeyProvider.secretKey)
-        val info = feeRelayerAccountInteractor.getRelayInfo()
-
-        val (transaction, amount) = feeRelayerRequestInteractor.makeTransferTransaction(
-            programId = feeRelayerProgramId,
-            owner = account,
-            sourceToken = sourceToken,
-            recipientPubkey = destinationAddress,
-            tokenMintAddress = tokenMint,
-            feePayerAddress = info.feePayerAddress.toBase58(),
-            lamportsPerSignatures = info.lamportsPerSignature,
-            minimumTokenAccountBalance = info.minimumTokenAccountBalance,
-            inputAmount = inputAmount,
-            decimals = tokenSupply.value.decimals
-        )
-
-        val params = prepareForTopUp(amount, payingFeeToken, relayAccount)
-
-        transaction.sign(listOf(account))
-        val blockhash = transaction.recentBlockHash
-        // STEP 2: Check if relay account has already had enough balance to cover swapping fee
-        // STEP 2.1: If relay account has enough balance to cover swapping fee
-        return if (params.topUpFeesAndPools == null || params.topUpAmount == null) {
-            feeRelayerRequestInteractor.relayTransaction(
-                instructions = transaction.instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = blockhash
-            )
-        } else {
-            // STEP 2.2.1: Top up
-            feeRelayerRequestInteractor.topUp(
-                owner = account,
-                needsCreateUserRelayAddress = !relayAccount.isCreated,
-                sourceToken = payingFeeToken,
-                amount = params.topUpAmount,
-                topUpPools = params.topUpFeesAndPools.poolsPair,
-                topUpFee = params.topUpFeesAndPools.fee.total
-            )
-
-            feeRelayerRequestInteractor.relayTransaction(
-                instructions = transaction.instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = blockhash
-            )
-        }
-    }
-/*
-    // Top up relay account (if needed) and relay transaction
-    suspend fun topUpAndRelayTransaction(
-        preparedTransaction: PreparedTransaction,
-        payingFeeToken: TokenInfo
-    ): List<String> {
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(reuseCache = false)
-        val params = prepareForTopUp(
-            feeAmount = preparedTransaction.expectedFee,
-            payingFeeToken = payingFeeToken,
-            relayAccountStatus = relayAccount
-        )
-        val owner = Account(tokenKeyProvider.secretKey)
-
-        val transaction = preparedTransaction.transaction
-        val instructions = transaction.instructions
-
-        return if (params.topUpFeesAndPools == null || params.topUpAmount == null) {
-            feeRelayerRequestInteractor.relayTransaction(
-                instructions = instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = transaction.recentBlockHash
-            )
-        } else {
-            // STEP 2.2.1: Top up
-            feeRelayerRequestInteractor.topUp(
-                owner = owner,
-                needsCreateUserRelayAddress = !relayAccount.isCreated,
-                sourceToken = payingFeeToken,
-                amount = params.topUpAmount,
-                topUpPools = params.topUpFeesAndPools.poolsPair,
-                topUpFee = params.topUpFeesAndPools.fee.total
-            )
-
-            // STEP 2.2.2: Swap
-            feeRelayerRequestInteractor.relayTransaction(
-                instructions = instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = transaction.recentBlockHash
-            )
-        }
-    }*/
 
     private suspend fun prepareForTopUp(
         feeAmount: FeeAmount,

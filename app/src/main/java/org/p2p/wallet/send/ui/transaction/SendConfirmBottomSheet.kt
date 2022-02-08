@@ -1,4 +1,4 @@
-package org.p2p.wallet.transaction.ui
+package org.p2p.wallet.send.ui.transaction
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +10,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
-import org.p2p.wallet.databinding.DialogTransactionConfirmBinding
-import org.p2p.wallet.transaction.model.ConfirmData
+import org.p2p.wallet.databinding.DialogSendConfirmBinding
+import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
@@ -23,21 +23,21 @@ import timber.log.Timber
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 
-class TransactionConfirmBottomSheet(
+class SendConfirmBottomSheet(
     private val onConfirmed: () -> Unit
 ) : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
-        fun show(fragment: Fragment, data: ConfirmData, onConfirmed: () -> Unit) {
-            TransactionConfirmBottomSheet(onConfirmed)
+        fun show(fragment: Fragment, data: SendConfirmData, onConfirmed: () -> Unit) {
+            SendConfirmBottomSheet(onConfirmed)
                 .withArgs(EXTRA_DATA to data)
-                .show(fragment.childFragmentManager, TransactionConfirmBottomSheet::javaClass.name)
+                .show(fragment.childFragmentManager, SendConfirmBottomSheet::javaClass.name)
         }
     }
 
-    private val binding: DialogTransactionConfirmBinding by viewBinding()
+    private val binding: DialogSendConfirmBinding by viewBinding()
 
-    private val data: ConfirmData by args(EXTRA_DATA)
+    private val data: SendConfirmData by args(EXTRA_DATA)
 
     private val glideManager: GlideManager by inject()
 
@@ -57,7 +57,7 @@ class TransactionConfirmBottomSheet(
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.dialog_transaction_confirm, container, false)
+        inflater.inflate(R.layout.dialog_send_confirm, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

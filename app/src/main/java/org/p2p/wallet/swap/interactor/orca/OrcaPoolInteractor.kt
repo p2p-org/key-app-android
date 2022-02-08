@@ -6,6 +6,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenSwapProgram
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.swap.model.orca.OrcaPool
@@ -24,7 +25,8 @@ import java.math.BigInteger
 
 class OrcaPoolInteractor(
     private val orcaSwapRepository: OrcaSwapRepository,
-    private val instructionsInteractor: SwapInstructionsInteractor
+    private val instructionsInteractor: SwapInstructionsInteractor,
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) {
 
     companion object {
@@ -33,7 +35,7 @@ class OrcaPoolInteractor(
 
     private val balancesCache = mutableMapOf<String, AccountBalance>()
 
-    // / Construct exchange
+    // Construct exchange
     suspend fun constructExchange(
         pool: OrcaPool,
         tokens: OrcaTokens,
@@ -157,25 +159,17 @@ class OrcaPoolInteractor(
 
         instructions += swapInstruction
 
-        // send to proxy
-        if (feeRelayerFeePayer != null) {
-            throw IllegalStateException("Fee Relayer is implementing")
-        }
+        val signers = mutableListOf<Account>()
+        signers += sourceAccountInstructions.signers
+        signers += destinationAccountInstructions.signers
+        signers.add(userTransferAuthority)
 
-        // send without proxy
-        else {
-            val signers = mutableListOf<Account>()
-            signers += sourceAccountInstructions.signers
-            signers += destinationAccountInstructions.signers
-            signers.add(userTransferAuthority)
-
-            return AccountInstructions(
-                destinationAccountInstructions.account,
-                instructions,
-                cleanupInstructions,
-                signers
-            )
-        }
+        return AccountInstructions(
+            destinationAccountInstructions.account,
+            instructions,
+            cleanupInstructions,
+            signers
+        )
     }
 
     suspend fun loadBalances(currentRoutes: List<OrcaRoute>, infoPools: OrcaPools?) {

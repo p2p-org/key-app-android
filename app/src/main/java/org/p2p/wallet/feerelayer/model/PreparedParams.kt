@@ -8,5 +8,5 @@ class PreparedParams(
     val swapData: SwapData,
     val transaction: Transaction,
     val feeAmount: FeeAmount,
-    val transferAuthorityAccount: Account
+    val transferAuthorityAccount: Account?
 )

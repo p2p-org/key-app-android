@@ -6,7 +6,6 @@ import org.p2p.solanaj.core.Signature
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
-import org.p2p.wallet.feerelayer.api.RelaySwapRequest
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.RelayTransferRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
@@ -83,37 +82,6 @@ class FeeRelayerRemoteRepository(
             devnetApi.relayTopUpSwapV2(request)
         } else {
             api.relayTopUpSwap(request)
-        }
-    }
-
-    override suspend fun relaySwap(
-        userSourceTokenAccountPubkey: String,
-        userDestinationPubkey: String,
-        userDestinationAccountOwner: String?,
-        sourceTokenMintPubkey: String,
-        destinationTokenMintPubkey: String,
-        userAuthorityPubkey: String,
-        swapData: SwapData,
-        feeAmount: BigInteger,
-        signatures: SwapTransactionSignatures,
-        blockhash: String
-    ): List<String> {
-        val request = RelaySwapRequest(
-            userSourceTokenAccountPubkey = userSourceTokenAccountPubkey,
-            userDestinationPubkey = userDestinationPubkey,
-            sourceTokenMintPubkey = sourceTokenMintPubkey,
-            destinationTokenMintPubkey = destinationTokenMintPubkey,
-            userAuthorityPubkey = userAuthorityPubkey,
-            userSwap = SwapDataConverter.toNetwork(swapData),
-            feeAmount = feeAmount.toLong(),
-            signatures = FeeRelayerConverter.toNetwork(signatures),
-            blockhash = blockhash,
-        )
-
-        return if (environmentManager.isDevnet()) {
-            devnetApi.relaySwapV2(request)
-        } else {
-            api.relaySwap(request)
         }
     }
 

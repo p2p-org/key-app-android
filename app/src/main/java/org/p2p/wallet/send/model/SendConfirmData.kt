@@ -1,11 +1,11 @@
-package org.p2p.wallet.transaction.model
+package org.p2p.wallet.send.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.home.model.Token
 
 @Parcelize
-class ConfirmData(
+class SendConfirmData(
     val token: Token.Active,
     val amount: String,
     val amountUsd: String,

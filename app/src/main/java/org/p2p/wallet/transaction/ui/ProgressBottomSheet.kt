@@ -11,7 +11,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogTransactionProgressBinding
-import org.p2p.wallet.send.interactor.SendInteractor
+import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutEnd
@@ -37,7 +37,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         }
     }
 
-    private val sendInteractor: SendInteractor by inject()
+    private val transactionManager: TransactionManager by inject()
 
     private val binding: DialogTransactionProgressBinding by viewBinding()
 
@@ -50,7 +50,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             lifecycleScope.launchWhenResumed {
-                sendInteractor.getTransactionIdFlow().collect {
+                transactionManager.getTransactionIdFlow().collect {
                     transactionIdGroup.isVisible = true
                     transactionIdTextView.text = it.cutEnd()
                 }
