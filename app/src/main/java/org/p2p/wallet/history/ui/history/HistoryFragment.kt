@@ -12,7 +12,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
-import org.p2p.wallet.databinding.FragmentTokenInfoBinding
+import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
@@ -29,7 +29,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 class HistoryFragment :
-    BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_token_info),
+    BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
     HistoryContract.View {
 
     companion object {
@@ -50,7 +50,7 @@ class HistoryFragment :
         )
     }
 
-    private val binding: FragmentTokenInfoBinding by viewBinding()
+    private val binding: FragmentHistoryBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

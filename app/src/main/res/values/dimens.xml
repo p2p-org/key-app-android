@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="max_keyboard_width">280dp</dimen>
+    <dimen name="min_banner_width">300dp</dimen>
+    <dimen name="max_banner_width">350dp</dimen>
 </resources>

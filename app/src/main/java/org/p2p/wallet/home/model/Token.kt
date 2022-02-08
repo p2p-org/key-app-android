@@ -70,9 +70,9 @@ sealed class Token constructor(
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
-        fun getCurrentPrice(): String? = usdRate?.let { "$ $it" }
+        fun getCurrentRate(): String? = usdRate?.let { "$$it" }
 
-        fun getFormattedUsdTotal(): String? = totalInUsd?.let { "${totalInUsd.scaleShort()} $" }
+        fun getFormattedUsdTotal(): String? = totalInUsd?.let { "$${totalInUsd.scaleShort()}" }
 
         fun getFormattedTotal(): String = "${total.scaleLong()} $tokenSymbol"
 

@@ -9,10 +9,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import androidx.core.content.FileProvider
 import android.os.VibratorManager
-import androidx.annotation.ColorRes
-import androidx.fragment.app.Fragment
+import androidx.core.content.FileProvider
 import org.p2p.wallet.R
 import java.io.File
 
@@ -64,6 +62,3 @@ fun Context.shareScreenShoot(image: File) {
         toast("No App Available")
     }
 }
-
-fun Fragment.getColor(@ColorRes colorRes: Int): Int =
-    requireContext().getColor(colorRes)

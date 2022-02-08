@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -149,3 +150,12 @@ fun RecyclerView.attachAdapter(adapter: RecyclerView.Adapter<*>) {
 }
 
 fun RecyclerView.ViewHolder.requireContext(): Context = itemView.context
+
+fun View.getString(@StringRes resourceId: Int): String =
+    context.getString(resourceId)
+
+fun View.getColor(@ColorRes colorRes: Int): Int =
+    context.getColor(colorRes)
+
+fun Fragment.getColor(@ColorRes colorRes: Int): Int =
+    requireContext().getColor(colorRes)

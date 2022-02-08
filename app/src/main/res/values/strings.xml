@@ -2,6 +2,7 @@
     <string name="app_name">P2P Wallet</string>
 
     <!-- Common -->
+    <string name="common_beta">beta</string>
     <string name="common_ok">OK</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_retry">Retry</string>
@@ -15,8 +16,6 @@
     <string name="common_continue">Continue</string>
     <string name="common_username_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-</string>
     <string name="common_username_search_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-.</string>
-    <string name="common_proceed">Proceed</string>
-    <string name="common_proceed_do_not_show">Proceed &amp; don’t show again</string>
     <string name="common_na">N/A</string>
     <string name="common_yesterday">Yesterday</string>
     <string name="common_today">Today</string>
@@ -145,8 +144,10 @@
         <item quantity="other">%d hidden wallets</item>
     </plurals>
 
-    <string name="main_hide_banner_confirm_question">Proceed without a username?</string>
-    <string name="main_hide_banner_confirm_body">Anytime you want, you can easily reserve a username by going to the settings</string>
+    <string name="main_username_banner_option">Get your own short crypto address</string>
+    <string name="main_username_banner_action">Reserve your username</string>
+    <string name="main_feedback_banner_option">Suggest ways to improve P2P wallet</string>
+    <string name="main_feedback_banner_action">Leave feedback</string>
     <string name="main_combined_token_value">Combined token value</string>
     <string name="main_receive">Receive</string>
     <string name="main_send">Send</string>
@@ -180,7 +181,7 @@
     <string name="main_send_wrong_wallet_message">Check entered wallet address and try again.</string>
     <string name="main_receive_public_address">Your public %s address</string>
     <string name="main_receive_mint_address">%s mint address</string>
-    <string name="main_hidden_wallets">%d hidden wallets</string>
+    <string name="main_hidden_tokens">Hidden tokens</string>
     <string name="main_hide">Hide</string>
     <string name="main_price">Current price</string>
     <string name="main_max_price_slippage">Max price slippage</string>
@@ -433,4 +434,5 @@
     <string name="send_successful_format">%s is successfully sent!</string>
     <string name="swap_max_price_slippage">Max price slippage</string>
     <string name="swap_transfer_confirm_message">You are going to swap</string>
+    <string name="main_balance">Balance</string>
 </resources>
