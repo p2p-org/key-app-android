@@ -15,9 +15,6 @@ interface FeeRelayerApi {
     @POST("relay_top_up_with_swap")
     suspend fun relayTopUpSwap(@Body request: RelayTopUpSwapRequest): List<String>
 
-    @POST("relay_swap")
-    suspend fun relaySwap(@Body request: RelaySwapRequest): List<String>
-
     @POST("relay_transfer_spl_token")
     suspend fun relayTransferSplToken(@Body request: RelayTransferRequest): List<String>
 }

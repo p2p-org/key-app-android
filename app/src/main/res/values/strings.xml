@@ -2,6 +2,7 @@
     <string name="app_name">P2P Wallet</string>
 
     <!-- Common -->
+    <string name="common_beta">beta</string>
     <string name="common_ok">OK</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_retry">Retry</string>
@@ -15,8 +16,6 @@
     <string name="common_continue">Continue</string>
     <string name="common_username_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-</string>
     <string name="common_username_search_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-.</string>
-    <string name="common_proceed">Proceed</string>
-    <string name="common_proceed_do_not_show">Proceed &amp; don’t show again</string>
     <string name="common_na">N/A</string>
     <string name="common_yesterday">Yesterday</string>
     <string name="common_today">Today</string>
@@ -148,8 +147,10 @@
         <item quantity="other">%d hidden wallets</item>
     </plurals>
 
-    <string name="main_hide_banner_confirm_question">Proceed without a username?</string>
-    <string name="main_hide_banner_confirm_body">Anytime you want, you can easily reserve a username by going to the settings</string>
+    <string name="main_username_banner_option">Get your own short crypto address</string>
+    <string name="main_username_banner_action">Reserve your username</string>
+    <string name="main_feedback_banner_option">Suggest ways to improve P2P wallet</string>
+    <string name="main_feedback_banner_action">Leave feedback</string>
     <string name="main_combined_token_value">Combined token value</string>
     <string name="main_receive">Receive</string>
     <string name="main_send">Send</string>
@@ -183,7 +184,7 @@
     <string name="main_send_wrong_wallet_message">Check entered wallet address and try again.</string>
     <string name="main_receive_public_address">Your public %s address</string>
     <string name="main_receive_mint_address">%s mint address</string>
-    <string name="main_hidden_wallets">%d hidden wallets</string>
+    <string name="main_hidden_tokens">Hidden tokens</string>
     <string name="main_hide">Hide</string>
     <string name="main_price">Current price</string>
     <string name="main_max_price_slippage">Max price slippage</string>
@@ -230,6 +231,7 @@
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
     <string name="main_free_transactions_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
+    <string name="main_balance">Balance</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -320,6 +322,13 @@
     <string name="send_choose_network_info">P2P Wallet will automatically match your withdrawal target address to the correct network for most withdrawals. \n\nHowever, before sending your funds, make sure to double-check the selected network.</string>
     <string name="send_network_limit_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
     <string name="send_network_selected_format">%s network selected</string>
+    <string name="send_confirm_transaction">Confirm your transaction</string>
+    <string name="send_transfer_confirm_message">You are going to transfer</string>
+    <string name="send_to_address">To address</string>
+    <string name="send_confirm_warning">Be sure all details are correct before confirming the transaction. Once confirmed, it cannot be reversed. If everything is correct, tap the button below to continue.</string>
+    <string name="send_confirm_warning_highlight">Once confirmed, it cannot be reversed.</string>
+    <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
+    <string name="send_successful_format">%s is successfully sent!</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -344,7 +353,15 @@
     <string name="swap_price_format">1 %s Price</string>
     <string name="swap_account_creation_format">%s account creation</string>
     <string name="swap_format">Swap %1s → %2s</string>
+    <string name="swap_total_format">Total: %s</string>
+    <string name="swap_total">Total:</string>
+    <string name="swap_total_zero_sol">0 SOL</string>
+    <string name="swap_choose_the_destination">Choose the destination</string>
+    <string name="swap_available_format">%s Available</string>
+    <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
     <string name="swap_being_processed">The swap is being processed</string>
+    <string name="swap_max_price_slippage">Max price slippage</string>
+    <string name="swap_transfer_confirm_message">You are going to swap</string>
 
     <!-- Buy -->
     <string name="buy_solana_on_moonpay">Buy Solana on MoonPay</string>
@@ -380,12 +397,16 @@
     <string name="details_block_number">Block number</string>
     <string name="details_completed">Completed</string>
     <string name="details_value">Value</string>
-    <string name="details_paid_by_p2p">(Paid by p2p.org)</string>
+    <string name="details_paid_by_p2p">Paid by p2p.org</string>
+    <string name="details_paid_by_p2p_brackets">(Paid by p2p.org)</string>
     <string name="details_show_transaction_details">Show transaction details</string>
     <string name="details_hide_transaction_details">Hide transaction details</string>
     <string name="details_info">Info</string>
     <string name="details_history">History</string>
     <string name="details_show_wallet_address">Show wallet address</string>
+    <string name="details_transaction_fees">Transaction fees</string>
+    <string name="details_received">Received</string>
+    <string name="details_transfer_format">%1s → %2s</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -453,11 +474,6 @@
     <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
     <string name="settings_tokens_hidden">HIdden</string>
     <string name="settings_tokens_shown">Shown</string>
-    <string name="swap_total_format">Total: %s</string>
-    <string name="swap_total_zero_sol">0 SOL</string>
-    <string name="swap_choose_the_destination">Choose the destination</string>
-    <string name="swap_available_format">%s Available</string>
-    <string name="swap_outcomes_from_the_transaction">Outcomes from the transaction</string>
     <string name="settings_logout_title">Are you sure you want to log out?</string>
     <string name="settings_logout_message">If you have no backup, you may never be able to access this account</string>
     <string name="home_main">Main</string>

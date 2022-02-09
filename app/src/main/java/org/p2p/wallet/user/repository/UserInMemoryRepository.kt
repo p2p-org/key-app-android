@@ -2,7 +2,7 @@ package org.p2p.wallet.user.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.p2p.wallet.main.model.TokenPrice
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
 import timber.log.Timber
 

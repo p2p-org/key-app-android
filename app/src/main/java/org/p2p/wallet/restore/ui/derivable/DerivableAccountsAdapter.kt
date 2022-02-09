@@ -7,8 +7,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.restore.model.DerivableAccount
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.scaleShort
 
 class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -50,10 +50,10 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         @SuppressLint("SetTextI18n")
         fun onBind(account: DerivableAccount) {
             tokenImageView.setImageResource(R.drawable.ic_sol)
-            symbolTextView.text = Token.SOL_SYMBOL
+            symbolTextView.text = SOL_SYMBOL
             nameTextView.text = cutAddress(account.account.publicKey.toBase58())
             valueTextView.text = "${account.totalInUsd.scaleShort()} $"
-            totalTextView.text = "${account.total.toPlainString()} ${Token.SOL_SYMBOL}"
+            totalTextView.text = "${account.total.toPlainString()} $SOL_SYMBOL"
 
             colorView.isVisible = false
         }

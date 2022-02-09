@@ -8,6 +8,9 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexDirection.ROW
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent.SPACE_EVENLY
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemActionButtonBinding
 import org.p2p.wallet.databinding.WidgetTokenActionsBinding
@@ -30,16 +33,15 @@ class ActionButtonsView @JvmOverloads constructor(
 
     init {
         binding.recyclerView.adapter = adapter
-        adapter.setItems(getItem())
+        binding.recyclerView.layoutManager = FlexboxLayoutManager(context).apply {
+            flexDirection = ROW
+            justifyContent = SPACE_EVENLY
+        }
     }
 
-    private fun getItem(): List<ActionButton> =
-        listOf(
-            ActionButton(R.string.main_buy, R.drawable.ic_plus),
-            ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
-            ActionButton(R.string.main_send, R.drawable.ic_send_simple),
-            ActionButton(R.string.main_swap, R.drawable.ic_swap_simple)
-        )
+    fun setItems(items: List<ActionButton>) {
+        adapter.setItems(items)
+    }
 
     private fun onItemClicked(@StringRes actionResId: Int) {
         when (actionResId) {
@@ -79,8 +81,10 @@ class ActionButtonsView @JvmOverloads constructor(
             notifyDataSetChanged()
         }
 
-        inner class ViewHolder(binding: ItemActionButtonBinding, private val onItemClickListener: (Int) -> Unit) :
-            RecyclerView.ViewHolder(binding.root) {
+        inner class ViewHolder(
+            binding: ItemActionButtonBinding,
+            private val onItemClickListener: (Int) -> Unit
+        ) : RecyclerView.ViewHolder(binding.root) {
 
             init {
                 itemView.clipToOutline = true

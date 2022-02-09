@@ -6,14 +6,14 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
+import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 
 class FeeRelayerAccountInteractor(
     private val rpcRepository: RpcRepository,
@@ -49,7 +49,7 @@ class FeeRelayerAccountInteractor(
         return@withContext relayInfo!!
     }
 
-    suspend fun getUserRelayAccount(reuseCache: Boolean = true): RelayAccount {
+    suspend fun getUserRelayAccount(reuseCache: Boolean = true): RelayAccount = withContext(Dispatchers.IO) {
         if (relayAccount == null || !reuseCache) {
             val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
             val userRelayAddress = getUserRelayAddress(userPublicKey)
@@ -62,7 +62,7 @@ class FeeRelayerAccountInteractor(
             )
         }
 
-        return relayAccount!!
+        return@withContext relayAccount!!
     }
 
     suspend fun getFeeTokenAccounts(

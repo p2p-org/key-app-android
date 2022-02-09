@@ -9,7 +9,7 @@ import org.p2p.wallet.R
 import javax.crypto.Cipher
 
 class BiometricPromptWrapper(
-    private val fragment: Fragment,
+    fragment: Fragment,
     @StringRes private val titleRes: Int = R.string.auth_quick_access,
     @StringRes private val descriptionRes: Int = R.string.auth_biometric_question,
     @StringRes private val negativeRes: Int = R.string.common_cancel,

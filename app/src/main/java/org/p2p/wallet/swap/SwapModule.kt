@@ -5,13 +5,14 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.swap.api.InternalWebApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaExecuteInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
@@ -26,8 +27,6 @@ import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
-import org.p2p.wallet.swap.ui.settings.SwapSettingsContract
-import org.p2p.wallet.swap.ui.settings.SwapSettingsPresenter
 
 object SwapModule : InjectionModule {
 
@@ -59,7 +58,7 @@ object SwapModule : InjectionModule {
         factory { SwapInstructionsInteractor(get(), get()) }
         factory { SerumSwapMarketInteractor(get()) }
 
-        single { OrcaPoolInteractor(get(), get()) }
+        single { OrcaPoolInteractor(get(), get(), get()) }
         single {
             OrcaSwapInteractor(
                 swapRepository = get(),
@@ -70,9 +69,11 @@ object SwapModule : InjectionModule {
                 userInteractor = get(),
                 orcaInstructionsInteractor = get(),
                 transactionInteractor = get(),
+                transactionManager = get(),
                 tokenKeyProvider = get()
             )
         }
+        factory { OrcaExecuteInteractor(get(), get()) }
 
         factory { OrcaInstructionsInteractor(get()) }
         factory { TransactionAddressInteractor(get(), get()) }
@@ -80,9 +81,7 @@ object SwapModule : InjectionModule {
         factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->
-            OrcaSwapPresenter(token, get(), get(), get(), get(), get(), get())
+            OrcaSwapPresenter(token, get(), get(), get(), get(), get(), get(), get())
         } bind OrcaSwapContract.Presenter::class
-
-        factory { SwapSettingsPresenter(get()) } bind SwapSettingsContract.Presenter::class
     }
 }

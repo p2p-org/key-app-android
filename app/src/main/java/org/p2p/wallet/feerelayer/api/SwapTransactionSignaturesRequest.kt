@@ -6,5 +6,5 @@ class SwapTransactionSignaturesRequest(
     @SerializedName("user_authority_signature")
     val userAuthoritySignature: String,
     @SerializedName("transfer_authority_signature")
-    val transferAuthoritySignature: String
+    val transferAuthoritySignature: String?
 )

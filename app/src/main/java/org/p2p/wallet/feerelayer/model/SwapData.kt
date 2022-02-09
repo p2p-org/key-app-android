@@ -4,7 +4,7 @@ import java.math.BigInteger
 
 sealed class SwapData {
 
-    data class Spl(
+    data class Direct(
         val programId: String,
         val accountPubkey: String,
         val authorityPubkey: String,
@@ -18,8 +18,8 @@ sealed class SwapData {
     ) : SwapData()
 
     data class SplTransitive(
-        val from: Spl,
-        val to: Spl,
+        val from: Direct,
+        val to: Direct,
         val transitTokenMintPubkey: String
     ) : SwapData()
 }

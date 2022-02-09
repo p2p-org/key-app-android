@@ -14,7 +14,6 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetProgressButtonBinding
-import org.p2p.wallet.utils.colorFromTheme
 
 class ProgressButton @JvmOverloads constructor(
     context: Context,
@@ -58,17 +57,23 @@ class ProgressButton @JvmOverloads constructor(
             binding.endImageView.isVisible = true
         }
 
-        val textAppearanceId = typedArray.getResourceId(R.styleable.ProgressButton_android_textAppearance, 0)
+        val textAppearanceId = typedArray.getResourceId(
+            R.styleable.ProgressButton_android_textAppearance,
+            R.style.WalletTheme_TextAppearance_SemiBold16
+        )
         if (textAppearanceId != 0) {
             binding.actionTextView.setTextAppearance(textAppearanceId)
         }
 
         val color = typedArray.getColor(
-            R.styleable.ProgressButton_buttonTextColor, colorFromTheme(R.attr.colorElementPrimary)
+            R.styleable.ProgressButton_buttonTextColor, context.getColor(R.color.textIconButtonPrimary)
         )
         binding.actionTextView.setTextColor(color)
 
-        val buttonDrawableTintId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawableTint, 0)
+        val buttonDrawableTintId = typedArray.getResourceId(
+            R.styleable.ProgressButton_buttonDrawableTint,
+            R.color.textIconButtonPrimary
+        )
         if (buttonDrawableTintId != 0) {
             val tintColor = ContextCompat.getColor(context, buttonDrawableTintId)
             binding.startImageView.imageTintList = ColorStateList.valueOf(tintColor)

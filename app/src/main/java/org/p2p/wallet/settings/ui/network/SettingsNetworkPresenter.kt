@@ -3,7 +3,7 @@ package org.p2p.wallet.settings.ui.network
 import android.content.Context
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.main.repository.MainLocalRepository
+import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.renbtc.service.RenVMService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ import timber.log.Timber
 
 class SettingsNetworkPresenter(
     private val context: Context,
-    private val mainLocalRepository: MainLocalRepository,
+    private val mainLocalRepository: HomeLocalRepository,
     private val environmentManager: EnvironmentManager
 ) : BasePresenter<SettingsNetworkContract.View>(), SettingsNetworkContract.Presenter {
 

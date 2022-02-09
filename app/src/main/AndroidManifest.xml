@@ -26,12 +26,12 @@
         android:theme="@style/WalletTheme">
 
         <activity
-            android:name="org.p2p.wallet.root.ui.RootActivity"
+            android:name="org.p2p.wallet.root.RootActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustNothing"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

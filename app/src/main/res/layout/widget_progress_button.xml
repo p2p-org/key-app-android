@@ -21,7 +21,9 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:visibility="gone"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_send_simple"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/actionTextView"

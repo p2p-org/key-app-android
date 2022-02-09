@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/send_transaction_details"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
 
             <TextView
                 android:id="@+id/totalTextView"
@@ -111,7 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
-            android:text="@string/details_paid_by_p2p"
+            android:text="@string/details_paid_by_p2p_brackets"
             android:textAlignment="textEnd"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/systemSuccessMain"
@@ -134,7 +134,7 @@
             android:gravity="center"
             android:text="@string/send_account_creation_fee"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"/>
+            android:textColor="?colorElementSecondary" />
 
         <TextView
             android:id="@+id/accountCreationTokenTextView"
@@ -183,7 +183,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="end|center_vertical"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
             tools:text="1,050.67 USDC (~$1,049.98)" />
 
     </LinearLayout>
@@ -194,7 +194,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="end|center_vertical"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
         android:visibility="gone"
         tools:text="0.002778 SOL (~$0.5)"
         tools:visibility="visible" />

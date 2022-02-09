@@ -16,32 +16,41 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
-import org.p2p.wallet.main.model.ShowProgress
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.main.ui.select.SelectTokenFragment
-import org.p2p.wallet.main.ui.send.dialogs.ProgressBottomSheet
-import org.p2p.wallet.main.ui.transaction.TransactionInfo
-import org.p2p.wallet.main.ui.transaction.TransactionStatusBottomSheet
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.SwapConfirmData
+import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
-import org.p2p.wallet.swap.ui.bottomsheet.SwapSettingsBottomSheet
 import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
+import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.getColor
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
+
+const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
+private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
+private const val EXTRA_DESTINATION_TOKEN = "EXTRA_DESTINATION_TOKEN"
+private const val EXTRA_SETTINGS = "EXTRA_SETTINGS"
+
+private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
 class OrcaSwapFragment :
     BaseMvpFragment<OrcaSwapContract.View, OrcaSwapContract.Presenter>(R.layout.fragment_swap_orca),
     OrcaSwapContract.View {
 
     companion object {
-        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
         fun create() = OrcaSwapFragment()
 
@@ -64,7 +73,7 @@ class OrcaSwapFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.setOnMenuItemClickListener { menu ->
                 if (menu.itemId == R.id.settingsMenuItem) {
-                    presenter.loadDataForSwapSettings()
+                    presenter.loadDataForSettings()
                     return@setOnMenuItemClickListener true
                 }
                 return@setOnMenuItemClickListener false
@@ -77,13 +86,33 @@ class OrcaSwapFragment :
             amountEditText.addTextChangedListener(inputTextWatcher)
             exchangeImageView.setOnClickListener { presenter.reverseTokens() }
             swapDetails.setOnSlippageClickListener {
-                presenter.loadDataForSwapSettings()
+                presenter.loadDataForSettings()
             }
             swapDetails.setOnPayFeeClickListener {
-                presenter.loadTransactionTokens()
+                presenter.loadDataForSettings()
             }
 
-            swapButton.setOnClickListener { presenter.swap() }
+            swapButton.setOnClickListener { presenter.swapOrConfirm() }
+        }
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SWAP,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_SOURCE_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_SOURCE_TOKEN)
+                    if (token != null) presenter.setNewSourceToken(token)
+                }
+                result.containsKey(EXTRA_DESTINATION_TOKEN) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_DESTINATION_TOKEN)
+                    if (token != null) presenter.setNewDestinationToken(token)
+                }
+                result.containsKey(EXTRA_SETTINGS) -> {
+                    val settingsResult = result.getParcelable<OrcaSettingsResult>(EXTRA_SETTINGS)
+                    if (settingsResult != null) presenter.setNewSettings(settingsResult)
+                }
+            }
         }
 
         presenter.loadInitialData()
@@ -91,7 +120,7 @@ class OrcaSwapFragment :
 
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
-            Glide.with(sourceImageView).load(token.logoUrl).into(sourceImageView)
+            Glide.with(sourceImageView).load(token.iconUrl).into(sourceImageView)
             sourceTextView.text = token.tokenSymbol
             availableTextView.isVisible = true
             availableTextView.text = token.getFormattedTotal()
@@ -102,7 +131,7 @@ class OrcaSwapFragment :
     override fun showDestinationToken(token: Token?) {
         with(binding) {
             if (token != null) {
-                Glide.with(destinationImageView).load(token.logoUrl).into(destinationImageView)
+                Glide.with(destinationImageView).load(token.iconUrl).into(destinationImageView)
                 destinationTextView.text = token.tokenSymbol
                 destinationAvailableTextView.isVisible = token is Token.Active
                 if (token is Token.Active) destinationAvailableTextView.text = token.getFormattedTotal()
@@ -113,10 +142,6 @@ class OrcaSwapFragment :
                 destinationAvailableTextView.text = ""
             }
         }
-    }
-
-    override fun openSwapSettings(tokens: List<Token.Active>, selectedToken: String) {
-        addFragment(SwapSettingsFragment.create(tokens, selectedToken))
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
@@ -162,8 +187,16 @@ class OrcaSwapFragment :
         binding.swapDetails.showFee(data)
     }
 
+    override fun showFeePayerToken(feePayerTokenSymbol: String) {
+        binding.swapDetails.showFeePayerToken(feePayerTokenSymbol)
+    }
+
     override fun showSlippage(slippage: Slippage) {
         binding.swapDetails.showSlippage(slippage)
+    }
+
+    override fun showBiometricConfirmationPrompt(data: SwapConfirmData) {
+        SwapConfirmBottomSheet.show(this, data) { presenter.swap() }
     }
 
     override fun showNewAmount(amount: String) {
@@ -174,7 +207,7 @@ class OrcaSwapFragment :
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
-        val colorFromTheme = colorFromTheme(availableColor)
+        val colorFromTheme = getColor(availableColor)
         binding.availableTextView.setTextColor(colorFromTheme)
         binding.availableTextView.compoundDrawables.filterNotNull().forEach {
             it.colorFilter = PorterDuffColorFilter(colorFromTheme, PorterDuff.Mode.SRC_IN)
@@ -193,17 +226,16 @@ class OrcaSwapFragment :
         binding.swapButton.isEnabled = isEnabled
     }
 
-    override fun showSwapSuccess(info: TransactionInfo) {
-        TransactionStatusBottomSheet.show(
-            fragment = this,
-            info = info,
-            onDismiss = { popBackStack() }
+    override fun showTransactionDetails(transaction: HistoryTransaction) {
+        popAndReplaceFragment(
+            target = TransactionDetailsFragment.create(transaction),
+            popTo = HomeFragment::class
         )
     }
 
     override fun openSourceSelection(tokens: List<Token.Active>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewSourceToken(it as Token.Active) },
+            target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_SOURCE_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,
@@ -213,7 +245,7 @@ class OrcaSwapFragment :
 
     override fun openDestinationSelection(tokens: List<Token>) {
         addFragment(
-            target = SelectTokenFragment.create(tokens) { presenter.setNewDestinationToken(it) },
+            target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,
@@ -221,10 +253,13 @@ class OrcaSwapFragment :
         )
     }
 
-    override fun openSwapSettings(currentSlippage: Slippage) {
-        SwapSettingsBottomSheet.show(childFragmentManager, currentSlippage) {
-            presenter.setSlippage(it)
-        }
+    override fun showSwapSettings(
+        currentSlippage: Slippage,
+        tokens: List<Token.Active>,
+        currentFeePayerToken: Token.Active
+    ) {
+        val target = SwapSettingsFragment.create(currentSlippage, tokens, currentFeePayerToken, EXTRA_SETTINGS)
+        addFragment(target)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {

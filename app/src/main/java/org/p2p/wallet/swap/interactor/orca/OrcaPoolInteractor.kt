@@ -6,7 +6,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenSwapProgram
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.swap.model.orca.OrcaPool
@@ -17,6 +17,7 @@ import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
@@ -24,7 +25,8 @@ import java.math.BigInteger
 
 class OrcaPoolInteractor(
     private val orcaSwapRepository: OrcaSwapRepository,
-    private val instructionsInteractor: SwapInstructionsInteractor
+    private val instructionsInteractor: SwapInstructionsInteractor,
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) {
 
     companion object {
@@ -33,7 +35,7 @@ class OrcaPoolInteractor(
 
     private val balancesCache = mutableMapOf<String, AccountBalance>()
 
-    // / Construct exchange
+    // Construct exchange
     suspend fun constructExchange(
         pool: OrcaPool,
         tokens: OrcaTokens,
@@ -55,7 +57,7 @@ class OrcaPoolInteractor(
 
         // Create fromTokenAccount when needed
         val sourceAccountInstructions =
-            if (fromMint.toBase58() == Token.WRAPPED_SOL_MINT && owner.publicKey.equals(fromTokenPubkey)) {
+            if (fromMint.toBase58() == WRAPPED_SOL_MINT && owner.publicKey.equals(fromTokenPubkey)) {
                 instructionsInteractor.prepareCreatingWSOLAccountAndCloseWhenDone(
                     from = owner.publicKey,
                     amount = amount,
@@ -67,7 +69,7 @@ class OrcaPoolInteractor(
 
         // If necessary, create a TokenAccount for the output token
         // If destination token is Solana, create WSOL if needed
-        val destinationAccountInstructions = if (toMint.toBase58() == Token.WRAPPED_SOL_MINT) {
+        val destinationAccountInstructions = if (toMint.toBase58() == WRAPPED_SOL_MINT) {
             val toTokenPublicKey = toTokenPubkey?.toPublicKey()
             if (toTokenPublicKey != null && !toTokenPublicKey.equals(owner.publicKey)) {
                 // wrapped sol has already been created, just return it, then close later
@@ -157,25 +159,17 @@ class OrcaPoolInteractor(
 
         instructions += swapInstruction
 
-        // send to proxy
-        if (feeRelayerFeePayer != null) {
-            throw IllegalStateException("Fee Relayer is implementing")
-        }
+        val signers = mutableListOf<Account>()
+        signers += sourceAccountInstructions.signers
+        signers += destinationAccountInstructions.signers
+        signers.add(userTransferAuthority)
 
-        // send without proxy
-        else {
-            val signers = mutableListOf<Account>()
-            signers += sourceAccountInstructions.signers
-            signers += destinationAccountInstructions.signers
-            signers.add(userTransferAuthority)
-
-            return AccountInstructions(
-                destinationAccountInstructions.account,
-                instructions,
-                cleanupInstructions,
-                signers
-            )
-        }
+        return AccountInstructions(
+            destinationAccountInstructions.account,
+            instructions,
+            cleanupInstructions,
+            signers
+        )
     }
 
     suspend fun loadBalances(currentRoutes: List<OrcaRoute>, infoPools: OrcaPools?) {
@@ -257,8 +251,6 @@ class OrcaPoolInteractor(
     ): OrcaPool? {
 
         val pool = infoPools?.get(path) ?: return null
-
-        if (pool.deprecated) return null
 
         pool.isStable = path.contains(PATH_STABLE)
 

@@ -9,9 +9,10 @@ import androidx.core.content.ContextCompat
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.scaleShort
@@ -30,6 +31,8 @@ sealed class HistoryTransaction(
 
     protected fun getSymbol(isSend: Boolean) = if (isSend) "-" else "+"
 
+    fun getBlockNumber(): String = "#$blockNumber"
+
     @Parcelize
     data class Swap(
         override val signature: String,
@@ -40,18 +43,27 @@ sealed class HistoryTransaction(
         val fee: BigInteger,
         val amountA: BigDecimal,
         val amountB: BigDecimal,
+        val amountSentInUsd: BigDecimal?,
         val amountReceivedInUsd: BigDecimal?,
         val sourceSymbol: String,
-        val sourceTokenUrl: String,
+        val sourceIconUrl: String,
         val destinationSymbol: String,
-        val destinationTokenUrl: String
+        val destinationIconUrl: String
     ) : HistoryTransaction(date) {
 
-        fun getUsdAmount(): String? = amountReceivedInUsd?.let { "+ $it $" }
+        fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
+
+        fun getReceivedUsdAmount(): String? = amountReceivedInUsd?.let { "+$$it" }
+
+        fun getSentUsdAmount(): String? = amountSentInUsd?.let { "~$$it" }
 
         fun getFormattedAmount() = "$amountA $sourceSymbol to $amountB $destinationSymbol"
 
         fun getFormattedFee() = "$fee lamports"
+
+        fun getSourceTotal(): String = "$amountA $sourceSymbol"
+
+        fun getDestinationTotal(): String = "$amountB $destinationSymbol"
     }
 
     @Parcelize
@@ -62,38 +74,48 @@ sealed class HistoryTransaction(
         val type: TransferType,
         val senderAddress: String,
         val tokenData: TokenData,
-        val amount: BigDecimal?,
+        val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val destination: String,
         val fee: BigInteger
     ) : HistoryTransaction(date) {
 
         @IgnoredOnParcel
-        private val isSend = type == TransferType.SEND
+        val isSend: Boolean
+            get() = type == TransferType.SEND
 
         @DrawableRes
         fun getIcon(): Int = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
 
-        @StringRes
-        fun getTitle(): Int = if (isSend) R.string.main_transfer else R.string.main_receive
+        fun getTitle(context: Context): String =
+            if (isSend) {
+                context.getString(R.string.details_transfer_format, tokenData.symbol, destination.cutMiddle())
+            } else {
+                context.getString(R.string.details_transfer_format, destination.cutMiddle(), tokenData.symbol)
+            }
 
         fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
 
-        fun getValue(): String? = amount?.let { "${getSymbol(isSend)} ${getFormattedAmount()}" }
+        fun getValue(): String? = totalInUsd?.let { "${getSymbol(isSend)} $${it.scaleShort()}" }
 
         fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
-
-        fun getFormattedTotal(): String = "${total.scaleLong().toPlainString()} ${tokenData.symbol}"
-
-        fun getFormattedAmount(): String? = amount?.let { "${amount.scaleShort()} $" }
 
         @ColorInt
         fun getTextColor(context: Context) =
             if (isSend) {
                 context.colorFromTheme(R.attr.colorMessagePrimary)
             } else {
-                ContextCompat.getColor(context, R.color.colorGreen)
+                ContextCompat.getColor(context, R.color.systemSuccessMain)
             }
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String =
+            if (scaleMedium) {
+                "${total.scaleMedium().toPlainString()} ${tokenData.symbol}"
+            } else {
+                "${total.scaleLong().toPlainString()} ${tokenData.symbol}"
+            }
+
+        fun getFormattedAmount(): String? = totalInUsd?.let { "~$${totalInUsd.scaleShort()}" }
     }
 
     @Parcelize
@@ -101,14 +123,17 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val date: ZonedDateTime,
         override val blockNumber: Int,
+        val destination: String,
+        val senderAddress: String,
         val type: RenBtcType,
-        val amount: BigDecimal,
+        val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val fee: BigInteger
     ) : HistoryTransaction(date) {
 
         @IgnoredOnParcel
-        private val isBurn = type == RenBtcType.BURN
+        val isBurn: Boolean
+            get() = type == RenBtcType.BURN
 
         @StringRes
         fun getTitle(): Int = if (isBurn) R.string.main_burn_renbtc else R.string.main_mint_renbtc
@@ -116,9 +141,18 @@ sealed class HistoryTransaction(
         @DrawableRes
         fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
 
-        fun getValue(): String = "${getSymbol(isBurn)} ${amount.scaleMedium()} $"
+        fun getValue(): String = "${getSymbol(isBurn)} ${getFormattedAmount()} $"
 
-        fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} ${Token.REN_BTC_SYMBOL}"
+        fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} $REN_BTC_SYMBOL"
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String =
+            if (scaleMedium) {
+                "${total.scaleMedium().toPlainString()} $REN_BTC_SYMBOL"
+            } else {
+                "${total.scaleLong().toPlainString()} $REN_BTC_SYMBOL"
+            }
+
+        fun getFormattedAmount(): String? = totalInUsd?.let { "~$${totalInUsd.scaleShort()}" }
     }
 
     @Parcelize

@@ -1,6 +1,6 @@
 package org.p2p.wallet.history.repository
 
-import org.p2p.wallet.main.api.CompareApi
+import org.p2p.wallet.home.api.CompareApi
 import org.p2p.wallet.history.model.PriceHistory
 
 class HistoryRemoteRepository(

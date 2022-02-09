@@ -11,7 +11,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 
-typealias OrcaPools = MutableMap<String, OrcaPool> // [poolId: string]: PoolConfig;
+typealias OrcaPools = MutableMap<String, OrcaPool> // [poolId: string]: PoolConfig
 typealias OrcaPoolsPair = MutableList<OrcaPool>
 
 private const val ACTUAL_PROGRAM_ID = 2

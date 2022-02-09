@@ -215,7 +215,7 @@
                     android:layout_height="44dp"
                     android:layout_marginStart="36dp"
                     android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_gray_secondary_rounded"
+                    android:background="@drawable/bg_secondary_rounded"
                     android:padding="6dp"
                     android:src="@drawable/ic_question"
                     app:layout_constraintStart_toStartOf="parent"
@@ -341,10 +341,10 @@
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:enabled="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+            app:buttonEnabled="false"
             app:buttonText="@string/swap_choose_the_destination"
-            app:buttonTextColor="?colorElementPrimary"
+            app:buttonTextColor="@color/textIconButtonPrimary"
             tools:ignore="UnusedAttribute" />
 
     </LinearLayout>

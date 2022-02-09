@@ -73,7 +73,6 @@ class SwapDetailsView @JvmOverloads constructor(
             }
 
             accountCreationFeeView.isVisible = isExpanded
-            feeTokenTextView.text = data.currentFeePayToken
             val accountCreationToken = data.accountCreationToken
 
             val fee = data.commonFee
@@ -92,6 +91,10 @@ class SwapDetailsView @JvmOverloads constructor(
                 accountCreationFeeView.isVisible = false
             }
         }
+    }
+
+    fun showFeePayerToken(feePayerToken: String) {
+        binding.feeTokenTextView.text = feePayerToken
     }
 
     fun showSlippage(slippage: Slippage) {
