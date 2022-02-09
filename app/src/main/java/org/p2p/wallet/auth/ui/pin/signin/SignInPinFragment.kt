@@ -15,7 +15,7 @@ import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.home.HomeFragment
+import org.p2p.wallet.home.MainHomeFragment
 import javax.crypto.Cipher
 
 class SignInPinFragment :
@@ -69,7 +69,7 @@ class SignInPinFragment :
     }
 
     override fun onSignInSuccess() {
-        popAndReplaceFragment(HomeFragment.create(), inclusive = true)
+        popAndReplaceFragment(MainHomeFragment.create(), inclusive = true)
     }
 
     override fun onLogout() {

@@ -20,12 +20,12 @@ import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class MainHomeFragment : Fragment(R.layout.fragment_home) {
     private val binding: FragmentHomeBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
 
     companion object {
-        fun create(): HomeFragment = HomeFragment()
+        fun create(): MainHomeFragment = MainHomeFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
