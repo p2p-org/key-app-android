@@ -7,6 +7,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.repository.SettingsLocalRepository
+import org.p2p.wallet.utils.Constants
 
 private const val KEY_HIDDEN_ZERO_BALANCE = "KEY_HIDDEN_ZERO_BALANCE"
 private const val KEY_CONFIRMATION_REQUIRED = "KEY_CONFIRMATION_REQUIRED"

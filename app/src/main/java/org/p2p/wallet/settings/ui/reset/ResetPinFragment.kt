@@ -48,6 +48,7 @@ class ResetPinFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            toolbar.setNavigationOnClickListener { popBackStack() }
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             resetTextView.text = buildResetText()
             resetTextView.setOnClickListener { replaceFragment(ResetSeedPhraseFragment.create()) }

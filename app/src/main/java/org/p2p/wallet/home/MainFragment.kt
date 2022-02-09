@@ -12,20 +12,20 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.FragmentHomeBinding
-import org.p2p.wallet.main.ui.main.MainFragment
-import org.p2p.wallet.main.ui.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.main.ui.send.SendFragment
+import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.send.ui.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class MainHomeFragment : Fragment(R.layout.fragment_home) {
+class MainFragment : Fragment(R.layout.fragment_home) {
     private val binding: FragmentHomeBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
 
     companion object {
-        fun create(): MainHomeFragment = MainHomeFragment()
+        fun create(): MainFragment = MainFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +56,7 @@ class MainHomeFragment : Fragment(R.layout.fragment_home) {
         if (fragments.isEmpty) {
             childFragmentManager.fragments.forEach { fragment ->
                 when (fragment) {
-                    is MainFragment -> fragments.put(R.id.itemHome, fragment)
+                    is HomeFragment -> fragments.put(R.id.itemHome, fragment)
                     is SendFragment -> fragments.put(R.id.itemSend, fragment)
                     is ReceiveSolanaFragment -> fragments.put(R.id.itemFeedback, fragment)
                     is SettingsFragment -> fragments.put(R.id.itemSettings, fragment)
@@ -69,7 +69,7 @@ class MainHomeFragment : Fragment(R.layout.fragment_home) {
     private fun navigate(itemId: Int) {
         if (!fragments.containsKey(itemId)) {
             val fragment = when (Tabs.fromTabId(itemId)) {
-                Tabs.HOME -> MainFragment.create()
+                Tabs.HOME -> HomeFragment.create()
                 Tabs.SEND -> SendFragment.create()
                 Tabs.FEEDBACK -> ReceiveSolanaFragment.create(null)
                 Tabs.SETTINGS -> SettingsFragment.create()
@@ -92,7 +92,7 @@ class MainHomeFragment : Fragment(R.layout.fragment_home) {
                 if (fragments[itemId]!!.isAdded) {
                     return
                 }
-                add(R.id.container, fragments[itemId]!!, nextFragmentTag)
+                add(R.id.fragmentContainer, fragments[itemId]!!, nextFragmentTag)
             } else {
                 if (!fragments[itemId]!!.isAdded) {
                     // После смены языка (activity.recreate()) фрагмент как бы есть в childFragmentManager,
@@ -101,7 +101,7 @@ class MainHomeFragment : Fragment(R.layout.fragment_home) {
                     if (fragments[itemId]!!.isAdded) {
                         return
                     }
-                    add(R.id.container, fragments[itemId]!!, nextFragmentTag)
+                    add(R.id.fragmentContainer, fragments[itemId]!!, nextFragmentTag)
                 } else {
                     show(fragments[itemId]!!)
                     setMaxLifecycle(fragments[itemId]!!, Lifecycle.State.RESUMED)

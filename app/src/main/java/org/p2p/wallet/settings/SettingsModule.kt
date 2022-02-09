@@ -25,7 +25,7 @@ import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalancesPresenter
 object SettingsModule : InjectionModule {
 
     override fun create() = module {
-        factory { SettingsInteractor(get(), get(), get()) }
+        factory { SettingsInteractor(get(), get(), get(), get()) }
         factory { ThemeInteractor(get()) }
         single { SettingsInMemoryRepository() } bind SettingsLocalRepository::class
         factory { SettingsPresenter(get(), get(), get(), get()) } bind SettingsContract.Presenter::class
