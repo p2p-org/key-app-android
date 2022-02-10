@@ -44,13 +44,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             webView.settings.javaScriptEnabled = true
 
-            webView.webChromeClient = object : WebChromeClient() {
-                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    super.onProgressChanged(view, newProgress)
-                    progressBar.isInvisible = newProgress == 100
-                }
-            }
-
+            webView.webChromeClient = WebChromeClient()
             webView.webViewClient = WebViewClient()
 
             lifecycleScope.launchWhenResumed {

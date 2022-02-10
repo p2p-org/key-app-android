@@ -17,6 +17,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.SendFragment
@@ -112,7 +113,7 @@ class HomeFragment :
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
             R.string.main_username_banner_option -> replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
-            R.string.main_feedback_banner_option -> toast("In development")
+            R.string.main_feedback_banner_option -> IntercomService.showMessenger()
         }
     }
 
