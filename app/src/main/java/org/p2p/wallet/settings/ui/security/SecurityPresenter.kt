@@ -1,5 +1,6 @@
 package org.p2p.wallet.settings.ui.security
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
@@ -35,12 +36,18 @@ class SecurityPresenter(
     }
 
     override fun setBiometricEnabled(isEnabled: Boolean) {
-        if (isEnabled) {
-            val cipher = authInteractor.getPinEncodeCipher()
-            view?.confirmBiometrics(cipher.value)
-        } else {
-            authInteractor.disableBiometricSignIn()
+        launch {
+            try {
+                if (isEnabled) {
+                    val cipher = authInteractor.getPinEncodeCipher()
+                    view?.confirmBiometrics(cipher.value)
+                } else {
+                    authInteractor.disableBiometricSignIn()
+                }
+                view?.showConfirmationEnabled(isEnabled)
+            } catch (e: Exception) {
+                view?.showErrorMessage(e)
+            }
         }
-        view?.showConfirmationEnabled(isEnabled)
     }
 }
