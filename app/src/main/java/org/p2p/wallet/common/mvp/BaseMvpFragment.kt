@@ -1,7 +1,9 @@
 package org.p2p.wallet.common.mvp
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
@@ -12,6 +14,13 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
 ) : BaseFragment(layoutRes), MvpView {
 
     abstract val presenter: P
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        view?.isClickable = true
+        view?.isFocusableInTouchMode = true
+        return view
+    }
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

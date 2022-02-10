@@ -23,6 +23,7 @@ import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -35,6 +36,7 @@ class ReserveUsernameFragment :
 
     companion object {
         private const val EXTRA_MODE: String = "EXTRA_MODE"
+        const val REQUEST_KEY = "RESERVE_USERNAME_REQUEST_KEY"
         fun create(mode: ReserveMode) =
             ReserveUsernameFragment()
                 .withArgs(EXTRA_MODE to mode)
@@ -80,6 +82,10 @@ class ReserveUsernameFragment :
 
     override fun navigateToPinCode() {
         replaceFragment(CreatePinFragment.create())
+    }
+
+    override fun navigateToUsername() {
+        popAndReplaceFragment(UsernameFragment.create())
     }
 
     override fun showIdleState() {
@@ -187,8 +193,12 @@ class ReserveUsernameFragment :
 
     private fun finishNavigation() {
         when (mode) {
-            ReserveMode.PIN_CODE -> navigateToPinCode()
-            ReserveMode.POP -> popBackStack()
+            ReserveMode.PIN_CODE -> {
+                navigateToPinCode()
+            }
+            ReserveMode.POP -> {
+                navigateToUsername()
+            }
         }
     }
 }

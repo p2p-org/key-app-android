@@ -4,9 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -15,11 +12,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
-import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.receive.list.TokenListFragment
+import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -51,14 +50,17 @@ class UsernameFragment :
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
+                bottomSheetView.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            saveTextView.setOnClickListener {
+            saveButton.setOnClickListener {
                 checkPermission()
             }
+            progressButton.setOnClickListener {
+                replaceFragment(TokenListFragment.create())
+            }
         }
-
         presenter.loadData()
     }
 
@@ -66,12 +68,12 @@ class UsernameFragment :
         val fullUsername = username.getFullUsername(requireContext())
         binding.nameTextView.text = fullUsername
 
-        binding.copyTextView.setOnClickListener {
+        binding.copyButton.setOnClickListener {
             requireContext().copyToClipBoard(fullUsername)
             toast(R.string.common_copied)
         }
 
-        binding.shareTextView.setOnClickListener {
+        binding.shareButton.setOnClickListener {
             requireContext().shareText(fullUsername)
         }
     }
@@ -81,18 +83,11 @@ class UsernameFragment :
     }
 
     override fun showAddress(address: String) {
-        binding.addressTextView.text = buildPartTextColor(address, colorFromTheme(R.attr.colorAccent))
+        binding.addressTextView.text = address.highlightPublicKey(requireContext())
     }
 
     override fun showToastMessage(messageRes: Int) {
         toast(messageRes)
-    }
-
-    private fun buildPartTextColor(text: String, color: Int): SpannableString {
-        val span = SpannableString(text)
-        span.setSpan(ForegroundColorSpan(color), 0, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-        span.setSpan(ForegroundColorSpan(color), text.length - 4, text.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-        return span
     }
 
     private fun checkPermission() {

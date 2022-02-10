@@ -18,7 +18,7 @@ private const val TIMER_MILLIS = 10000L
 private const val TIMER_INTERVAL = 1000L
 
 class SignInPinPresenter(
-    private val authInteractor: AuthInteractor,
+    private val authInteractor: AuthInteractor
 ) : BasePresenter<SignInPinContract.View>(), SignInPinContract.Presenter {
 
     private var wrongPinCounter = 0

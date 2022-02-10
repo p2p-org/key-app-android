@@ -7,7 +7,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
-import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.edgetoedge.Edge
@@ -16,6 +15,7 @@ import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.home.MainFragment
 import javax.crypto.Cipher
 
 class SignInPinFragment :
@@ -69,7 +69,7 @@ class SignInPinFragment :
     }
 
     override fun onSignInSuccess() {
-        popAndReplaceFragment(HomeFragment.create(), inclusive = true)
+        popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 
     override fun onLogout() {

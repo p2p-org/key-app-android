@@ -22,4 +22,10 @@ class SettingsInteractor(
         val isConfirmationRequired = sharedPreferences.getBoolean(KEY_CONFIRMATION_REQUIRED, true)
         return authInteractor.isFingerprintEnabled() && isConfirmationRequired
     }
+
+    fun setBiometricsConfirmationEnabled(isEnable: Boolean) {
+        sharedPreferences.edit {
+            putBoolean(KEY_CONFIRMATION_REQUIRED, isEnable)
+        }
+    }
 }

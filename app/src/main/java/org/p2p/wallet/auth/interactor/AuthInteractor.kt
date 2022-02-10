@@ -20,6 +20,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
@@ -174,6 +175,7 @@ class AuthInteractor(
         transactionManager.stop()
         mainLocalRepository.clear()
         renBtcInteractor.clearSession()
+        IntercomService.logout()
         RenVMService.stopService(context)
     }
 
