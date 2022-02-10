@@ -117,7 +117,6 @@ class AuthInteractor(
                 BiometricStatus.NO_REGISTERED_BIOMETRIC
 
             else -> BiometricStatus.NO_HARDWARE
-
         }
 
     fun getBiometricType(context: Context): BiometricType {

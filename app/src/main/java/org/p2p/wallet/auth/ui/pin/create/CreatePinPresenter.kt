@@ -11,7 +11,7 @@ import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 500L
 
-class   CreatePinPresenter(
+class CreatePinPresenter(
     private val authInteractor: AuthInteractor
 ) : BasePresenter<CreatePinContract.View>(),
     CreatePinContract.Presenter {

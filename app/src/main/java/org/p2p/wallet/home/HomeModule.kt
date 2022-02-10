@@ -45,7 +45,7 @@ object HomeModule : InjectionModule {
         factory { HomeDatabaseRepository(get()) } bind HomeLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { HomePresenter(get(), get(), get(), get(), get(),get()) } bind HomeContract.Presenter::class
+        single { HomePresenter(get(), get(), get(), get(), get(), get()) } bind HomeContract.Presenter::class
         single { SendInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { SearchInteractor(get(), get()) }
 

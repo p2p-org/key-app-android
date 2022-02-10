@@ -18,7 +18,6 @@ import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor

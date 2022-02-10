@@ -1,6 +1,5 @@
 package org.p2p.wallet.root
 
-import android.content.Context
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.user.interactor.UserInteractor
