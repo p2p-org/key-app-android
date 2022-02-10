@@ -25,7 +25,7 @@ object SettingsModule : InjectionModule {
     override fun create() = module {
         factory { SettingsInteractor(get(), get()) }
         factory { ThemeInteractor(get()) }
-        factory { SettingsPresenter(get(), get(), get(), get()) } bind SettingsContract.Presenter::class
+        factory { SettingsPresenter(get(), get(), get(), get(), get()) } bind SettingsContract.Presenter::class
         factory { SecurityPresenter(get(), get()) } bind SecurityContract.Presenter::class
         factory { ResetPinPresenter(get()) } bind ResetPinContract.Presenter::class
         factory { AppearancePresenter(get()) } bind AppearanceContract.Presenter::class
