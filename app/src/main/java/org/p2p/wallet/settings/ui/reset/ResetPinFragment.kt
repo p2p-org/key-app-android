@@ -9,7 +9,6 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentChangePinBinding
@@ -25,7 +24,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.withArgs
 import javax.crypto.Cipher
 
-private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_REQUEST_KEY = "EXTRA_RESET_PIN_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ResetPinFragment :
@@ -59,11 +58,25 @@ class ResetPinFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             resetTextView.text = buildResetText()
-            resetTextView.setOnClickListener { replaceFragment(ResetSeedPhraseFragment.create()) }
+            resetTextView.setOnClickListener {
+                replaceFragment(
+                    ResetSeedPhraseFragment.create(
+                        EXTRA_REQUEST_KEY,
+                        EXTRA_RESULT_KEY
+                    )
+                )
+            }
         }
-        setFragmentResultListener(ResetSeedPhraseFragment.REQUEST_KEY) { key, bundle ->
-            val keys = bundle.getStringArrayList(ResetSeedPhraseFragment.BUNDLE_SECRET_KEYS)
-            if (keys != null) presenter.onSeedPhraseValidated(keys)
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            EXTRA_REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_RESULT_KEY) -> {
+                    val keys = result.getStringArrayList(EXTRA_RESULT_KEY)
+                    if (keys != null) presenter.onSeedPhraseValidated(keys)
+                }
+            }
         }
     }
 

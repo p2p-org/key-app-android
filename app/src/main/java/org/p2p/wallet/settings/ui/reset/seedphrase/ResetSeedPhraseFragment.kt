@@ -9,30 +9,38 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentResetSeedPhraseBinding
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ResetSeedPhraseFragment :
     BaseMvpFragment<ResetSeedPhraseContract.View, ResetSeedPhraseContract.Presenter>(
         R.layout.fragment_reset_seed_phrase
     ),
     ResetSeedPhraseContract.View {
+
     override val presenter: ResetSeedPhraseContract.Presenter by inject()
     private val binding: FragmentResetSeedPhraseBinding by viewBinding()
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
 
     companion object {
-        const val REQUEST_KEY = "REQUEST_KEY_RESET_SEED_PHRASE"
-        const val BUNDLE_SECRET_KEYS = "BUNDLE_KEY_SECRET_KEYS"
-        fun create() = ResetSeedPhraseFragment()
+        fun create(requestKey: String, resultKey: String) = ResetSeedPhraseFragment()
+            .withArgs(
+                EXTRA_REQUEST_KEY to requestKey,
+                EXTRA_RESULT_KEY to resultKey
+            )
     }
 
     private val phraseAdapter: SecretPhraseAdapter by lazy {
@@ -69,11 +77,10 @@ class ResetSeedPhraseFragment :
 
         val itemsCount = phraseAdapter.itemCount
         setButtonEnabled(itemsCount != 0)
-        copyPhrase()
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
-        setFragmentResult(REQUEST_KEY, bundleOf(Pair(BUNDLE_SECRET_KEYS, secretKeys)))
+        setFragmentResult(requestKey, bundleOf(Pair(resultKey, secretKeys)))
         popBackStack()
     }
 
@@ -89,25 +96,5 @@ class ResetSeedPhraseFragment :
     private fun clearError() {
         binding.errorTextView.text = ""
         binding.messageTextView.isVisible = true
-    }
-
-    private fun copyPhrase() {
-        if (!BuildConfig.DEBUG) return
-        requireContext().copyToClipBoard(
-            listOf(
-                "oval",
-                "you",
-                "token",
-                "plug",
-                "copper",
-                "visa",
-                "employ",
-                "link",
-                "sell",
-                "asset",
-                "kick",
-                "sausage"
-            ).joinToString(" ")
-        )
     }
 }

@@ -26,7 +26,9 @@ class RootPresenter(
         val userId = tokenKeyProvider.publicKey
         if (userId.isNotEmpty()) {
             IntercomService.signIn(userId) { newMessagesCount ->
-                view?.showToast(context.getString(R.string.home_support_new_messages_count, newMessagesCount))
+                if (newMessagesCount > 0) {
+                    view?.showToast(context.getString(R.string.home_support_new_messages_count, newMessagesCount))
+                }
             }
         }
     }

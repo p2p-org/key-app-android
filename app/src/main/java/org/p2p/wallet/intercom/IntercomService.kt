@@ -9,7 +9,7 @@ object IntercomService {
     fun setup(app: Application, apiKey: String, appId: String) {
         Intercom.initialize(app, apiKey, appId)
         // Hide in app messages
-        Intercom.client().setInAppMessageVisibility(Intercom.Visibility.VISIBLE)
+        Intercom.client().setInAppMessageVisibility(Intercom.Visibility.GONE)
     }
 
     fun signIn(userId: String, onMessageReceived: (count: Int) -> Unit) {

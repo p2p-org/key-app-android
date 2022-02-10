@@ -3,7 +3,6 @@ package org.p2p.wallet.settings.ui.settings
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
