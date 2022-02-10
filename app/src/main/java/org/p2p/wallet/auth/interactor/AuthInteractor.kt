@@ -106,17 +106,18 @@ class AuthInteractor(
 
     fun getBiometricStatus(): BiometricStatus =
         when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
-                BiometricStatus.NO_HARDWARE
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
-                BiometricStatus.NO_REGISTERED_BIOMETRIC
-            else ->
+            BiometricManager.BIOMETRIC_SUCCESS -> {
                 if (secureStorage.contains(KEY_PIN_CODE_BIOMETRIC_HASH)) {
                     BiometricStatus.ENABLED
                 } else {
                     BiometricStatus.AVAILABLE
                 }
+            }
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
+                BiometricStatus.NO_REGISTERED_BIOMETRIC
+
+            else -> BiometricStatus.NO_HARDWARE
+
         }
 
     fun getBiometricType(context: Context): BiometricType {
