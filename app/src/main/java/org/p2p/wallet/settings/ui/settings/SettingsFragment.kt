@@ -11,11 +11,6 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
-import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.ResetPinFragment
@@ -30,6 +25,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_NETWORK_NAME = "EXTRA_NETWORK_NAME"
 private const val EXTRA_IS_PIN_CHANGED = "EXTRA_IS_PIN_CHANGED"
+
 class SettingsFragment :
     BaseMvpFragment<SettingsContract.View, SettingsContract.Presenter>(R.layout.fragment_settings),
     SettingsContract.View {
@@ -65,16 +61,10 @@ class SettingsFragment :
                     }
                 }
                 result.containsKey(EXTRA_NETWORK_NAME) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
-                    if (token != null) presenter.setFeePayerToken(token)
-                }
-                result.containsKey(SearchFragment.EXTRA_RESULT) -> {
-                    val searchResult = result.getParcelable<SearchResult>(SearchFragment.EXTRA_RESULT)
-                    if (searchResult != null) presenter.setTargetResult(searchResult)
-                }
-                result.containsKey(EXTRA_NETWORK) -> {
-                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
-                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
+                    val networkName = result.getString(EXTRA_NETWORK_NAME)
+                    if (!networkName.isNullOrEmpty()) {
+                        presenter.onNetworkChanged(newName = networkName)
+                    }
                 }
             }
         }
@@ -98,14 +88,14 @@ class SettingsFragment :
             R.string.settings_username -> presenter.onUsernameClicked()
 
             R.string.settings_wallet_pin -> {
-                replaceFragment(ResetPinFragment.create())
+                replaceFragment(ResetPinFragment.create(EXTRA_REQUEST_KEY, EXTRA_IS_PIN_CHANGED))
             }
             R.string.settings_app_security -> {
                 replaceFragment(SecurityFragment.create())
             }
             R.string.settings_network -> {
                 addFragment(
-                    SettingsNetworkFragment.create(),
+                    SettingsNetworkFragment.create(EXTRA_REQUEST_KEY, EXTRA_NETWORK_NAME),
                     enter = 0,
                     exit = 0,
                     popEnter = 0,
