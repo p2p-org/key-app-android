@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebChromeClient
-import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject

@@ -25,7 +25,6 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 
