@@ -19,23 +19,31 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.withArgs
 import javax.crypto.Cipher
+
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ResetPinFragment :
     BaseMvpFragment<ResetPinContract.View, ResetPinContract.Presenter>(R.layout.fragment_change_pin),
     ResetPinContract.View {
 
     companion object {
-        const val REQUEST_KEY = "REQUEST_KEY_RESET_PIN"
-        const val BUNDLE_IS_PIN_CHANGED_KEY = "BUNDLE_IS_PIN_CHANGED_KEY"
-        fun create() = ResetPinFragment()
+        fun create(requestKey: String, resultKey: String) = ResetPinFragment().withArgs(
+            EXTRA_REQUEST_KEY to requestKey,
+            EXTRA_RESULT_KEY to resultKey
+        )
     }
 
     override val presenter: ResetPinContract.Presenter by inject()
 
     private val binding: FragmentChangePinBinding by viewBinding()
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
 
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
@@ -48,6 +56,7 @@ class ResetPinFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            toolbar.setNavigationOnClickListener { popBackStack() }
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             resetTextView.text = buildResetText()
             resetTextView.setOnClickListener { replaceFragment(ResetSeedPhraseFragment.create()) }
@@ -59,7 +68,10 @@ class ResetPinFragment :
     }
 
     override fun showResetSuccess() {
-        setFragmentResult(REQUEST_KEY, bundleOf(Pair(BUNDLE_IS_PIN_CHANGED_KEY, true)))
+        setFragmentResult(
+            requestKey,
+            bundleOf(Pair(resultKey, true))
+        )
         popBackStack()
     }
 

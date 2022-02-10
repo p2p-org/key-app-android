@@ -20,6 +20,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
@@ -29,7 +30,6 @@ private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
 private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
 private const val KEY_PIN_CODE_SALT = "KEY_PIN_CODE_SALT"
 private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON_SIGN_IN"
-private const val KEY_ENABLE_FINGERPRINT_ON_OPERATION = "KEY_ENABLE_FINGERPRINT_ON_OPERATION"
 
 /**
  * The secure storage now includes the hash which is encrypted in two ways
@@ -159,13 +159,6 @@ class AuthInteractor(
         secureStorage.remove(KEY_PIN_CODE_BIOMETRIC_HASH)
     }
 
-    fun setOperationBiometricEnable(isEnabled: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_ENABLE_FINGERPRINT_ON_OPERATION, isEnabled) }
-    }
-
-    fun isOperationBiometricEnabled() =
-        sharedPreferences.getBoolean(KEY_ENABLE_FINGERPRINT_ON_OPERATION, false)
-
     fun isAuthorized() = with(sharedPreferences) {
         contains(KEY_PIN_CODE_SALT)
     }
@@ -182,6 +175,7 @@ class AuthInteractor(
         transactionManager.stop()
         mainLocalRepository.clear()
         renBtcInteractor.clearSession()
+        IntercomService.logout()
         RenVMService.stopService(context)
     }
 

@@ -10,9 +10,13 @@ import org.koin.android.ext.android.inject
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsNetworkBinding
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
 
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 class SettingsNetworkFragment :
     BaseMvpFragment<SettingsNetworkContract.View, SettingsNetworkContract.Presenter>(
         R.layout.fragment_settings_network
@@ -21,10 +25,10 @@ class SettingsNetworkFragment :
     SettingsNetworkContract.View {
 
     companion object {
-        const val REQUEST_KEY = "REQUEST_KEY_NETWORK_DIALOG"
-        const val BUNDLE_KEY_IS_NETWORK_CHANGED = "BUNDLE_KEY_IS_NETWORK_CHANGED"
-
-        fun create() = SettingsNetworkFragment()
+        fun create(requestKey: String, resultKey: String) = SettingsNetworkFragment().withArgs(
+            EXTRA_REQUEST_KEY to requestKey,
+            EXTRA_RESULT_KEY to resultKey
+        )
     }
 
     override val presenter: SettingsNetworkContract.Presenter by inject()
@@ -36,10 +40,11 @@ class SettingsNetworkFragment :
         presenter.attach(this)
         with(binding) {
             networksGroup.setOnCheckedChangeListener(this@SettingsNetworkFragment)
+
             primaryButton.setOnClickListener {
-                setFragmentResult(REQUEST_KEY, bundleOf(Pair(BUNDLE_KEY_IS_NETWORK_CHANGED, true)))
-                popBackStack()
+                presenter.save()
             }
+
             secondaryButton.setOnClickListener {
                 popBackStack()
             }
@@ -71,7 +76,11 @@ class SettingsNetworkFragment :
         binding.networksGroup.setOnCheckedChangeListener(this)
     }
 
-    override fun showLoading(isLoading: Boolean) {
-        // binding.progressView.isVisible = isLoading
+    override fun onNetworkChanged(newName: String) {
+        setFragmentResult(
+            REQUEST_KEY,
+            bundleOf(Pair(SettingsFragment.BUNDLE_KEY_NETWORK_NAME, newName))
+        )
+        popBackStack()
     }
 }

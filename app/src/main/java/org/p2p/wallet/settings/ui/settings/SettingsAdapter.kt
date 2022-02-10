@@ -20,33 +20,13 @@ class SettingsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
         R.layout.item_settings_row_item -> {
-            ViewHolder(
-                ItemSettingsRowItemBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                ),
-                onItemClickListener
-            )
+            ViewHolder(parent, onItemClickListener)
         }
         R.layout.item_settings_logout -> {
-            LogoutViewHolder(
-                ItemSettingsLogoutBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                ),
-                onLogoutClickListener
-            )
+            LogoutViewHolder(parent, onLogoutClickListener)
         }
         R.layout.item_settings_title -> {
-            TitleViewHolder(
-                ItemSettingsTitleBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-            )
+            TitleViewHolder(parent)
         }
         else -> throw IllegalStateException("No view found for type $viewType")
     }
@@ -80,13 +60,20 @@ class SettingsAdapter(
 
     inner class ViewHolder(
         binding: ItemSettingsRowItemBinding,
-        private val onItemClickListener: (titleResId: Int) -> Unit
+        private val listener: (titleResId: Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        constructor(
+            parent: ViewGroup,
+            listener: (Int) -> Unit
+        ) : this(
+            binding = ItemSettingsRowItemBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            listener = listener
+        )
 
         private val titleTextView = binding.topTextView
         private val subtitleTextView = binding.bottomTextView
         private val imageView = binding.imageView
-        private val topDivider = binding.topDivider
         private val bottomDivider = binding.bottomDivider
 
         fun bind(item: SettingsRow.Section) {
@@ -98,22 +85,35 @@ class SettingsAdapter(
                 subtitleTextView.text = item.subtitle
             }
             imageView.setImageResource(item.iconRes)
-            itemView.setOnClickListener { onItemClickListener.invoke(item.titleResId) }
+            itemView.setOnClickListener { listener.invoke(item.titleResId) }
             bottomDivider.isVisible = item.isDivider
         }
     }
 
-    inner class LogoutViewHolder(binding: ItemSettingsLogoutBinding, private val block: () -> Unit) :
+    inner class LogoutViewHolder(binding: ItemSettingsLogoutBinding, private val listener: () -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
+
+        constructor(parent: ViewGroup, listener: () -> Unit) : this(
+            binding = ItemSettingsLogoutBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            listener = listener
+        )
 
         private val actionButton = binding.actionButton
 
         fun bind(item: SettingsRow) {
-            actionButton.setOnClickListener { block.invoke() }
+            actionButton.setOnClickListener { listener.invoke() }
         }
     }
 
     inner class TitleViewHolder(binding: ItemSettingsTitleBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        constructor(parent: ViewGroup) : this(
+            ItemSettingsTitleBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
 
         private val textView = binding.topTextView
         private val topDivider = binding.topDivider

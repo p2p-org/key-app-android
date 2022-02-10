@@ -32,10 +32,14 @@ android {
             buildConfigField("String", "rpcPoolApiKey", apikeyProperties['rpcPoolApiKey'])
             buildConfigField("String", "moonpayKey", apikeyProperties['moonpayKey'])
             buildConfigField("String", "comparePublicKey", apikeyProperties['comparePublicKey'])
+            buildConfigField("String", "intercomApiKey", apikeyProperties['intercomApiKey'])
+            buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
         } else {
             buildConfigField("String", "rpcPoolApiKey", "\"\"")
             buildConfigField("String", "moonpayKey", "\"\"")
             buildConfigField("String", "comparePublicKey", "\"\"")
+            buildConfigField("String", "intercomApiKey", "\"\"")
+            buildConfigField("String", "intercomAppId", "\"\"")
         }
     }
 
@@ -122,7 +126,7 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "com.google.android.material:material:1.5.0"
-    implementation 'com.google.android:flexbox:2.0.1'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation "androidx.browser:browser:1.4.0"
 
     def coroutinesVersion = '1.6.0'
@@ -152,12 +156,15 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
 
+    implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
+
     // Debug drawer
     def debugDrawerVersion = '0.8.0'
     implementation "io.palaima.debugdrawer:debugdrawer:$debugDrawerVersion"
     implementation "io.palaima.debugdrawer:debugdrawer-base:$debugDrawerVersion"
     implementation "io.palaima.debugdrawer:debugdrawer-commons:$debugDrawerVersion"
     implementation "io.palaima.debugdrawer:debugdrawer-timber:$debugDrawerVersion"
+
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.12.0'

@@ -8,8 +8,6 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
@@ -25,6 +23,7 @@ import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -83,6 +82,10 @@ class ReserveUsernameFragment :
 
     override fun navigateToPinCode() {
         replaceFragment(CreatePinFragment.create())
+    }
+
+    override fun navigateToUsername() {
+        popAndReplaceFragment(UsernameFragment.create())
     }
 
     override fun showIdleState() {
@@ -194,8 +197,7 @@ class ReserveUsernameFragment :
                 navigateToPinCode()
             }
             ReserveMode.POP -> {
-                setFragmentResult(REQUEST_KEY, bundleOf())
-                popBackStack()
+                navigateToUsername()
             }
         }
     }

@@ -6,12 +6,12 @@
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/elementPrimary"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/backgroundPrimary"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar

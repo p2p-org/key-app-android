@@ -8,11 +8,12 @@ interface SettingsNetworkContract {
 
     interface View : MvpView {
         fun showEnvironment(environment: Environment)
-        fun showLoading(isLoading: Boolean)
+        fun onNetworkChanged(newName: String)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
+        fun save()
         fun setNewEnvironment(environment: Environment)
     }
 }

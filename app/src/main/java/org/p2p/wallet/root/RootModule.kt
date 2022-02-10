@@ -7,6 +7,6 @@ import org.koin.dsl.module
 object RootModule : InjectionModule {
 
     override fun create() = module {
-        factory { RootPresenter(get(), get()) } bind RootContract.Presenter::class
+        factory { RootPresenter(get(), get(), get(), get()) } bind RootContract.Presenter::class
     }
 }

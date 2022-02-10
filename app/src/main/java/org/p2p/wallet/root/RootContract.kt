@@ -10,6 +10,7 @@ interface RootContract {
         fun navigateToOnboarding()
         fun navigateToSignIn()
         fun showToast(@StringRes message: Int)
+        fun showToast(message: String)
     }
 
     interface Presenter : MvpPresenter<View> {

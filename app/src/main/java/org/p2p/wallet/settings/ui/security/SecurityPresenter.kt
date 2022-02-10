@@ -4,9 +4,13 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.settings.interactor.SettingsInteractor
 import javax.crypto.Cipher
 
-class SecurityPresenter(private val authInteractor: AuthInteractor) :
+class SecurityPresenter(
+    private val authInteractor: AuthInteractor,
+    private val settingsInteractor: SettingsInteractor
+) :
     BasePresenter<SecurityContract.View>(),
     SecurityContract.Presenter {
 
@@ -19,7 +23,7 @@ class SecurityPresenter(private val authInteractor: AuthInteractor) :
             BiometricStatus.NO_REGISTERED_BIOMETRIC
         )
         view?.showBiometricEnabled(status !in notAvailableStates)
-        view?.showConfirmationActive(authInteractor.isOperationBiometricEnabled())
+        view?.showConfirmationActive(settingsInteractor.isBiometricsConfirmationEnabled())
     }
 
     override fun onBiometricsConfirmed(cipher: Cipher) {
@@ -27,7 +31,7 @@ class SecurityPresenter(private val authInteractor: AuthInteractor) :
     }
 
     override fun onConfirmationStateChanged(isEnabled: Boolean) {
-        authInteractor.setOperationBiometricEnable(isEnabled)
+        settingsInteractor.setBiometricsConfirmationEnabled(isEnabled)
     }
 
     override fun setBiometricEnabled(isEnabled: Boolean) {

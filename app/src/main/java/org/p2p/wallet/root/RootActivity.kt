@@ -38,7 +38,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         }
 
         presenter.loadPricesAndBids()
-
         initializeDebugDrawer()
     }
 
@@ -51,6 +50,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override fun showToast(message: Int) {
+        toast(message)
+    }
+
+    override fun showToast(message: String) {
         toast(message)
     }
 

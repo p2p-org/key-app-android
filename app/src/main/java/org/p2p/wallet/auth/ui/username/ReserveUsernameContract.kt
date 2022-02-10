@@ -8,6 +8,7 @@ interface ReserveUsernameContract {
 
     interface View : MvpView {
         fun navigateToPinCode()
+        fun navigateToUsername()
         fun showIdleState()
         fun showUnavailableName(name: String)
         fun showAvailableName(name: String)

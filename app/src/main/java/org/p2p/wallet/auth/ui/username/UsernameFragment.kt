@@ -12,7 +12,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
-import org.p2p.wallet.main.ui.receive.list.TokenListFragment
+import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.edgetoedge.Edge

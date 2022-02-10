@@ -11,6 +11,11 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
+import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.ResetPinFragment
@@ -22,11 +27,15 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_NETWORK_NAME = "EXTRA_NETWORK_NAME"
+private const val EXTRA_IS_PIN_CHANGED = "EXTRA_IS_PIN_CHANGED"
 class SettingsFragment :
     BaseMvpFragment<SettingsContract.View, SettingsContract.Presenter>(R.layout.fragment_settings),
     SettingsContract.View {
 
     companion object {
+
         fun create() = SettingsFragment()
     }
 
@@ -40,24 +49,36 @@ class SettingsFragment :
         with(binding) {
             recyclerView.attachAdapter(adapter)
         }
-        setListeners()
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            EXTRA_REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(EXTRA_IS_PIN_CHANGED) -> {
+                    val isPinChanged = result.getBoolean(EXTRA_IS_PIN_CHANGED)
+                    if (isPinChanged) {
+                        showSnackbar(
+                            message = getString(R.string.settings_a_new_wallet_pin_is_set),
+                            iconRes = R.drawable.ic_done
+                        )
+                    }
+                }
+                result.containsKey(EXTRA_NETWORK_NAME) -> {
+                    val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
+                    if (token != null) presenter.setFeePayerToken(token)
+                }
+                result.containsKey(SearchFragment.EXTRA_RESULT) -> {
+                    val searchResult = result.getParcelable<SearchResult>(SearchFragment.EXTRA_RESULT)
+                    if (searchResult != null) presenter.setTargetResult(searchResult)
+                }
+                result.containsKey(EXTRA_NETWORK) -> {
+                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
+                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
+                }
+            }
+        }
         presenter.loadData()
-    }
-
-    private fun setListeners() {
-        setFragmentResultListener(ReserveUsernameFragment.REQUEST_KEY) { key, bundle ->
-            showUsername()
-        }
-        setFragmentResultListener(ResetPinFragment.REQUEST_KEY) { key, bundle ->
-            val isPinChanged = bundle.getBoolean(ResetPinFragment.BUNDLE_IS_PIN_CHANGED_KEY)
-            if (!isPinChanged) return@setFragmentResultListener
-            showSnackbar(message = getString(R.string.settings_a_new_wallet_pin_is_set), iconRes = R.drawable.ic_done)
-        }
-
-        setFragmentResultListener(SettingsNetworkFragment.REQUEST_KEY) { key, bundle ->
-            val isNetworkChanged = bundle.getBoolean(SettingsNetworkFragment.BUNDLE_KEY_IS_NETWORK_CHANGED)
-            presenter.onNetworkChanged(isNetworkChanged)
-        }
     }
 
     override fun showSettings(item: List<SettingsRow>) {
@@ -99,22 +120,6 @@ class SettingsFragment :
                     popEnter = 0,
                     popExit = 0
                 )
-            }
-            R.string.settings_pay_fees_with -> {
-            }
-            R.string.settings_staying_up_in_date -> {
-            }
-            R.string.settings_default_currency -> {
-            }
-            R.string.settings_appearance -> {
-            }
-            R.string.settings_address_book -> {
-            }
-            R.string.settings_history -> {
-            }
-            R.string.settings_backup -> {
-            }
-            R.string.settings_app_version -> {
             }
         }
     }

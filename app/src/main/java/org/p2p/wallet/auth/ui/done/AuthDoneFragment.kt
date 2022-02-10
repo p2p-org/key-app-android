@@ -6,7 +6,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentAuthDoneBinding
-import org.p2p.wallet.home.MainHomeFragment
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -32,7 +32,7 @@ class AuthDoneFragment() :
 
             finishButton.clipToOutline = true
             finishButton.setOnClickListener {
-                popAndReplaceFragment(MainHomeFragment.create(), inclusive = true)
+                popAndReplaceFragment(MainFragment.create(), inclusive = true)
             }
         }
 
