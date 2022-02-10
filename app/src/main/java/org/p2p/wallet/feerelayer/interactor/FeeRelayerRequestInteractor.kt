@@ -24,6 +24,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
@@ -83,29 +84,50 @@ class FeeRelayerRequestInteractor(
     }
 
     fun calculateSwappingFee(
-        programId: PublicKey,
         info: RelayInfo,
         sourceToken: TokenInfo,
         destinationToken: TokenInfo,
-        userDestinationAccountOwnerAddress: String?,
-        pools: OrcaPoolsPair,
         needsCreateDestinationTokenAccount: Boolean
     ): FeeAmount {
-        return prepareSwapTransaction(
-            programId = programId,
-            sourceToken = sourceToken,
-            destinationToken = destinationToken,
-            userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress,
-            pools = pools,
-            inputAmount = BigInteger.valueOf(10000L), // fake
-            slippage = 0.05, // fake
-            feeAmount = BigInteger.ZERO, // fake
-            blockhash = "FR1GgH83nmcEdoNXyztnpUL2G13KkUv6iwJPwVfnqEgW", // fake
-            minimumTokenAccountBalance = info.minimumTokenAccountBalance,
-            needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount,
-            feePayerAddress = info.feePayerAddress,
-            lamportsPerSignature = info.lamportsPerSignature
-        ).expectedFee
+        val expectedFee = FeeAmount()
+
+        // fee for payer's signature
+        expectedFee.transaction += info.lamportsPerSignature
+
+        // fee for owner's signature
+        expectedFee.transaction += info.lamportsPerSignature
+
+        // when source token is native SOL
+        if (sourceToken.mint == WRAPPED_SOL_MINT) {
+            // WSOL's signature
+            expectedFee.transaction += info.lamportsPerSignature
+
+            // TODO: - Account creation fee?
+            expectedFee.accountBalances += info.minimumTokenAccountBalance
+        }
+
+        // when needed to create destination
+        if (needsCreateDestinationTokenAccount && destinationToken.mint != WRAPPED_SOL_MINT) {
+            expectedFee.accountBalances += info.minimumTokenAccountBalance
+        }
+
+        // when destination is native SOL
+        if (destinationToken.mint == WRAPPED_SOL_MINT) {
+            expectedFee.transaction += info.lamportsPerSignature
+        }
+
+        return expectedFee
+    }
+
+    // Calculate fee for given transaction
+    suspend fun calculateFee(preparedTransaction: PreparedTransaction): FeeAmount {
+        val fee = preparedTransaction.expectedFee
+        val userRelayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        val userRelayInfo = feeRelayerAccountInteractor.getRelayInfo()
+        if (!userRelayAccount.isCreated) {
+            fee.transaction += userRelayInfo.lamportsPerSignature // TODO: - accountBalances or transaction?
+        }
+        return fee
     }
 
     fun prepareSwapTransaction(
