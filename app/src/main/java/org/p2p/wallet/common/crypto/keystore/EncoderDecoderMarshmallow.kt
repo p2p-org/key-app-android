@@ -75,7 +75,7 @@ class EncoderDecoderMarshmallow(
         if (keyStore.containsAlias(keyAlias)) {
             throw IllegalStateException("Key store already contains key for alias $keyAlias")
         }
-        generateKey(keyAlias, true)
+        generateKey(keyAlias, false)
     }
 
     override fun getCipher(keyAlias: String, cipherMode: Int): Cipher {

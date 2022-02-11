@@ -13,8 +13,12 @@ object IntercomService {
     }
 
     fun signIn(userId: String, onMessageReceived: (count: Int) -> Unit) {
-        val registration = Registration.create().withUserId(userId)
-        Intercom.client().registerIdentifiedUser(registration)
+        if (userId.isNotEmpty()) {
+            val registration = Registration.create().withUserId(userId)
+            Intercom.client().registerIdentifiedUser(registration)
+        } else {
+            Intercom.client().registerUnidentifiedUser()
+        }
         Intercom.client().addUnreadConversationCountListener { count ->
             onMessageReceived.invoke(count)
         }

@@ -1,5 +1,6 @@
 package org.p2p.wallet.settings.ui.settings
 
+import android.content.Context
 import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -14,14 +15,15 @@ class SettingsPresenter(
     private val usernameInteractor: UsernameInteractor,
     private val authInteractor: AuthInteractor,
     private val environmentManager: EnvironmentManager,
-    private val appRestarter: AppRestarter
+    private val appRestarter: AppRestarter,
+    private val context: Context
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     var networkName = environmentManager.loadEnvironment().name
 
     override fun loadData() {
         launch {
-            val username = usernameInteractor.getUsername()?.username.orEmpty()
+            val username = usernameInteractor.getUsername()?.getFullUsername(context).orEmpty()
             val settings =
                 getProfileSettings(username) + getNetworkSettings() + getAppearanceSettings()
             view?.showSettings(settings)

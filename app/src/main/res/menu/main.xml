@@ -16,5 +16,4 @@
         android:id="@+id/itemSettings"
         android:icon="@drawable/ic_home_settings"
         android:title="@string/home_settings" />
-
 </menu>

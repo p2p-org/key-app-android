@@ -33,7 +33,7 @@ object NetworkModule : InjectionModule {
 
     override fun create() = module {
         single { EnvironmentManager(get(), get()) }
-        single { TokenKeyProvider(get()) }
+        factory { TokenKeyProvider(get()) }
 
         single {
             GsonBuilder()
