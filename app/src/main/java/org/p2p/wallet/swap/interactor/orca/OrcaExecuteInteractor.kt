@@ -31,7 +31,7 @@ class OrcaExecuteInteractor(
         val lamports = BigDecimal(amount).toLamports(fromDecimals)
 
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
-        val transactionId = feeRelayerInteractor.topUpAndSwap(
+        val preparedTransaction = feeRelayerInteractor.topUpAndSwap(
             feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = TokenInfo(fromToken.publicKey, fromToken.mintAddress),
             destinationAddress = toToken.publicKey,
@@ -40,6 +40,12 @@ class OrcaExecuteInteractor(
             destinationTokenMint = toToken.mintAddress,
             swapPools = bestPoolsPair,
             slippage = slippage
+        )
+
+        val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
+            feeRelayerProgramId = feeRelayerProgramId,
+            preparedTransaction = preparedTransaction,
+            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
         ).firstOrNull().orEmpty()
 
         // fixme: find address

@@ -54,6 +54,10 @@ public class Transaction {
         this.feePayer = feePayer;
     }
 
+    public PublicKey getFeePayer() {
+        return feePayer;
+    }
+
     public void sign(Account signer) {
         sign(Arrays.asList(signer));
     }

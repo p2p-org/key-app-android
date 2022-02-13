@@ -2,13 +2,13 @@ package org.p2p.wallet.feerelayer.interactor
 
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
+import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.feerelayer.model.PreparedParams
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.SwapData
@@ -137,14 +137,14 @@ class FeeRelayerInstructionsInteractor(
             userRelayAddress = "EfS3E3jBF6iio6zQDVWswj3mtoHMGEq57iqpPRgTBVUt".toPublicKey(), // fake
             topUpPools = topUpPools,
             amount = BigInteger.valueOf(10000L), // fake
-            feeAmount = BigInteger.ZERO, // fake
+            feeAmount = FeeAmount(), // fake
             blockhash = "FR1GgH83nmcEdoNXyztnpUL2G13KkUv6iwJPwVfnqEgW", // fake
             minimumRelayAccountBalance = info.minimumRelayAccountBalance,
             minimumTokenAccountBalance = info.minimumTokenAccountBalance,
             needsCreateUserRelayAccount = !relayAccountStatus.isCreated,
             feePayerAddress = "FG4Y3yX4AAchp1HvNZ7LfzFTewF2f6nDoMDCohTFrdpT", // fake
             lamportsPerSignature = info.lamportsPerSignature
-        ).feeAmount
+        ).second.expectedFee
         return fee
     }
 
@@ -157,14 +157,14 @@ class FeeRelayerInstructionsInteractor(
         userRelayAddress: PublicKey,
         topUpPools: OrcaPoolsPair,
         amount: BigInteger,
-        feeAmount: BigInteger,
+        feeAmount: FeeAmount,
         blockhash: String,
         minimumRelayAccountBalance: BigInteger,
         minimumTokenAccountBalance: BigInteger,
         needsCreateUserRelayAccount: Boolean,
         feePayerAddress: String,
         lamportsPerSignature: BigInteger
-    ): PreparedParams {
+    ): Pair<SwapData, PreparedTransaction> {
         val programId = FeeRelayerProgram.getProgramId(!environmentManager.isDevnet())
         val userSourceTokenAccountAddress = PublicKey(sourceToken.address)
         val sourceTokenMintAddress = PublicKey(sourceToken.mint)
@@ -178,7 +178,7 @@ class FeeRelayerInstructionsInteractor(
         }
 
         // forming transaction and count fees
-        var expectedFee = FeeAmount(BigInteger.ZERO, BigInteger.ZERO)
+        var accountCreationFee: BigInteger = BigInteger.ZERO
         val instructions = mutableListOf<TransactionInstruction>()
 
         // create user relay account
@@ -190,7 +190,7 @@ class FeeRelayerInstructionsInteractor(
             )
             instructions += transferInstruction
 
-            expectedFee.accountBalances += minimumRelayAccountBalance
+            accountCreationFee += minimumRelayAccountBalance
         }
 
         // top up swap
@@ -205,7 +205,7 @@ class FeeRelayerInstructionsInteractor(
 
         when (topUpSwap) {
             is SwapData.Direct -> {
-                expectedFee.accountBalances += minimumTokenAccountBalance
+                accountCreationFee += minimumTokenAccountBalance
 
                 // approve
                 val approveInstruction = TokenProgram.approveInstruction(
@@ -243,16 +243,6 @@ class FeeRelayerInstructionsInteractor(
                     minimumAmountOut = topUpSwap.minimumAmountOut,
                 )
                 instructions += topUpSwapInstruction
-
-                // transfer
-                val transferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
-                    programId = programId,
-                    userAuthority = userAuthorityAddress,
-                    userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress),
-                    recipient = feePayerAddress.toPublicKey(),
-                    amount = feeAmount
-                )
-                instructions += transferSolInstruction
             }
             is SwapData.SplTransitive -> {
                 // approve
@@ -282,7 +272,7 @@ class FeeRelayerInstructionsInteractor(
                 instructions += createTransitInstruction
 
                 // Destination WSOL account funding
-                expectedFee.accountBalances += minimumTokenAccountBalance
+                accountCreationFee += minimumTokenAccountBalance
 
                 // top up
                 val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(
@@ -328,33 +318,40 @@ class FeeRelayerInstructionsInteractor(
                     feePayerAddress.toPublicKey(),
                 )
                 instructions += closeAccountInstruction
-
-                // transfer
-                val transferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
-                    programId = programId,
-                    userAuthority = userAuthorityAddress,
-                    userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress),
-                    recipient = feePayerAddress.toPublicKey(),
-                    amount = feeAmount
-                )
-                instructions += transferSolInstruction
             }
         }
+
+        // transfer
+        val transferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
+            programId = programId,
+            userAuthority = userAuthorityAddress,
+            userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress),
+            recipient = feePayerAddress.toPublicKey(),
+            amount = feeAmount.accountBalances
+        )
+        instructions += transferSolInstruction
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
         transaction.setFeePayer(feePayerAddress.toPublicKey())
         transaction.recentBlockHash = blockhash
 
-        val transactionFee = transaction.calculateTransactionFee(lamportsPerSignature)
-        expectedFee = expectedFee.copy(transaction = transactionFee)
-
-        return PreparedParams(
-            swapData = topUpSwap,
-            transaction = transaction,
-            feeAmount = expectedFee,
-            transferAuthorityAccount = transferAuthority
+        // calculate fee first
+        val expectedFee = FeeAmount(
+            transaction = transaction.calculateTransactionFee(lamportsPerSignature),
+            accountBalances = accountCreationFee
         )
+
+        // resign transaction
+
+        val owner = Account(tokenKeyProvider.secretKey)
+        val signers = mutableListOf(owner)
+
+        if (transferAuthority != null) {
+            signers.add(0, transferAuthority)
+        }
+
+        return topUpSwap to PreparedTransaction(transaction, signers, expectedFee)
     }
 
     fun getTransitTokenMintPubkey(pools: OrcaPoolsPair): PublicKey? {
