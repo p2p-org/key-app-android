@@ -14,7 +14,6 @@ import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
@@ -25,8 +24,7 @@ import java.math.BigInteger
 class FeeRelayerInstructionsInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val userLocalRepository: UserLocalRepository,
-    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val environmentManager: EnvironmentManager
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) {
 
     /*
@@ -38,9 +36,10 @@ class FeeRelayerInstructionsInteractor(
         minAmountOut: BigInteger?,
         slippage: Double,
         transitTokenMintPubkey: PublicKey? = null,
-        newTransferAuthority: Boolean = false
+        newTransferAuthority: Boolean = true,
+        userAuthorityAddress: PublicKey
     ): Pair<SwapData, Account?> {
-        val owner = tokenKeyProvider.publicKey
+        val owner = tokenKeyProvider.publicKey.toPublicKey()
         // preconditions
         if (pools.size == 0 || pools.size > 2) {
             throw IllegalStateException("Swap pools not found")
@@ -54,11 +53,6 @@ class FeeRelayerInstructionsInteractor(
         val transferAuthority = Account()
 
         // form topUp params
-        val transferAuthorityPubkey = if (newTransferAuthority) {
-            transferAuthority.publicKey
-        } else {
-            owner.toPublicKey()
-        }
         if (pools.size == 1) {
             val pool = pools[0]
 
@@ -70,13 +64,12 @@ class FeeRelayerInstructionsInteractor(
             }
 
             val directSwapData = pool.getSwapData(
-                transferAuthorityPubkey = transferAuthorityPubkey,
+                transferAuthorityPubkey = if (newTransferAuthority) transferAuthority.publicKey else owner,
                 amountIn = amountIn,
                 minAmountOut = minAmountOut
             )
 
-            val transferAuthorityAddress = if (newTransferAuthority) transferAuthority else null
-            return directSwapData to transferAuthorityAddress
+            return directSwapData to if (newTransferAuthority) transferAuthority else null
         } else {
             val firstPool = pools[0]
             val secondPool = pools[1]
@@ -104,16 +97,20 @@ class FeeRelayerInstructionsInteractor(
 
             val transitiveSwapData = SwapData.SplTransitive(
                 from = firstPool.getSwapData(
-                    transferAuthorityPubkey = transferAuthorityPubkey,
+                    transferAuthorityPubkey = if (newTransferAuthority) transferAuthority.publicKey else owner,
                     amountIn = firstPoolAmountIn,
                     minAmountOut = secondPoolAmountIn
                 ),
                 to = secondPool.getSwapData(
-                    transferAuthorityPubkey = transferAuthorityPubkey,
+                    transferAuthorityPubkey = if (newTransferAuthority) transferAuthority.publicKey else owner,
                     amountIn = secondPoolAmountIn,
                     minAmountOut = secondPoolAmountOut
                 ),
-                transitTokenMintPubkey = transitTokenMintPubkey.toBase58()
+                transitTokenMintPubkey = transitTokenMintPubkey.toBase58(),
+                transitTokenAccountAddress = feeRelayerAccountInteractor.getTransitTokenAccountAddress(
+                    owner = userAuthorityAddress,
+                    mint = transitTokenMintPubkey
+                )
             )
 
             return transitiveSwapData to if (newTransferAuthority) transferAuthority else null
@@ -124,11 +121,13 @@ class FeeRelayerInstructionsInteractor(
     * Calculate needed fee for topup transaction by forming fake transaction
     * */
     fun calculateTopUpFee(
+        feeRelayerProgramId: PublicKey,
         info: RelayInfo,
         topUpPools: OrcaPoolsPair,
         relayAccountStatus: RelayAccount
     ): FeeAmount {
         val fee = prepareForTopUp(
+            feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = TokenInfo(
                 address = "C5B13tQA4pq1zEVSVkWbWni51xdWB16C2QsC72URq9AJ", // fake
                 mint = "2Kc38rfQ49DFaKHQaWbijkE7fcymUMLY5guUiUsDmFfn" // fake
@@ -152,6 +151,7 @@ class FeeRelayerInstructionsInteractor(
     * Prepare transaction and expected fee for a given relay transaction
     * */
     fun prepareForTopUp(
+        feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         userAuthorityAddress: PublicKey,
         userRelayAddress: PublicKey,
@@ -165,7 +165,8 @@ class FeeRelayerInstructionsInteractor(
         feePayerAddress: String,
         lamportsPerSignature: BigInteger
     ): Pair<SwapData, PreparedTransaction> {
-        val programId = FeeRelayerProgram.getProgramId(!environmentManager.isDevnet())
+
+        // assertion
         val userSourceTokenAccountAddress = PublicKey(sourceToken.address)
         val sourceTokenMintAddress = PublicKey(sourceToken.mint)
         val feePayerAddressPublicKey = PublicKey(feePayerAddress)
@@ -195,65 +196,58 @@ class FeeRelayerInstructionsInteractor(
 
         // top up swap
         val transitTokenMintPubkey = getTransitTokenMintPubkey(topUpPools)
-        val (topUpSwap, transferAuthority) = prepareSwapData(
+        val (topUpSwap, transferAuthorityAccount) = prepareSwapData(
             pools = topUpPools,
             inputAmount = null,
             minAmountOut = amount,
             slippage = 0.01,
-            transitTokenMintPubkey = transitTokenMintPubkey
+            transitTokenMintPubkey = transitTokenMintPubkey,
+            userAuthorityAddress = userAuthorityAddress,
         )
+        val userTransferAuthority = transferAuthorityAccount?.publicKey
 
+        val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(userAuthorityAddress)
+        val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
         when (topUpSwap) {
             is SwapData.Direct -> {
                 accountCreationFee += minimumTokenAccountBalance
 
-                // approve
-                val approveInstruction = TokenProgram.approveInstruction(
-                    TokenProgram.PROGRAM_ID,
-                    userSourceTokenAccountAddress,
-                    PublicKey(topUpSwap.transferAuthorityPubkey),
-                    userAuthorityAddress,
-                    topUpSwap.amountIn
-                )
-                instructions += approveInstruction
+                if (userTransferAuthority != null) {
+                    // approve
+                    val approveInstruction = TokenProgram.approveInstruction(
+                        TokenProgram.PROGRAM_ID,
+                        userSourceTokenAccountAddress,
+                        userTransferAuthority,
+                        userAuthorityAddress,
+                        topUpSwap.amountIn
+                    )
+                    instructions += approveInstruction
+                }
 
                 // top up
-                val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(
-                    userAuthorityAddress
-                )
-                // overriding
-                val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
-
-                val topUpSwapInstruction = FeeRelayerProgram.topUpSwapDirectInstruction(
-                    programId = programId,
-                    feePayer = feePayerAddress.toPublicKey(),
-                    userAuthority = userAuthorityAddress,
-                    userRelayAccount = userRelayAddress,
-                    userTransferAuthority = PublicKey(topUpSwap.transferAuthorityPubkey),
-                    userSourceTokenAccount = userSourceTokenAccountAddress,
-                    userTemporaryWsolAccount = userTemporarilyWSOLAddress,
-                    swapProgramId = PublicKey(topUpSwap.programId),
-                    swapAccount = PublicKey(topUpSwap.accountPubkey),
-                    swapAuthority = PublicKey(topUpSwap.authorityPubkey),
-                    swapSource = PublicKey(topUpSwap.sourcePubkey),
-                    swapDestination = PublicKey(topUpSwap.destinationPubkey),
-                    poolTokenMint = PublicKey(topUpSwap.poolTokenMintPubkey),
-                    poolFeeAccount = PublicKey(topUpSwap.poolFeeAccountPubkey),
-                    amountIn = topUpSwap.amountIn,
-                    minimumAmountOut = topUpSwap.minimumAmountOut,
+                val topUpSwapInstruction = FeeRelayerProgram.topUpSwapInstruction(
+                    feeRelayerProgramId = feeRelayerProgramId,
+                    userRelayAddress = userRelayAddress,
+                    userTemporarilyWSOLAddress = userTemporarilyWSOLAddress,
+                    topUpSwap = topUpSwap,
+                    userAuthorityAddress = userAuthorityAddress,
+                    userSourceTokenAccountAddress = userSourceTokenAccountAddress,
+                    feePayerAddress = feePayerAddress.toPublicKey(),
                 )
                 instructions += topUpSwapInstruction
             }
             is SwapData.SplTransitive -> {
                 // approve
-                val approveInstruction = TokenProgram.approveInstruction(
-                    TokenProgram.PROGRAM_ID,
-                    userSourceTokenAccountAddress,
-                    topUpSwap.from.transferAuthorityPubkey.toPublicKey(),
-                    userAuthorityAddress,
-                    topUpSwap.from.amountIn
-                )
-                instructions += approveInstruction
+                if (userTransferAuthority != null) {
+                    val approveInstruction = TokenProgram.approveInstruction(
+                        TokenProgram.PROGRAM_ID,
+                        userSourceTokenAccountAddress,
+                        topUpSwap.from.transferAuthorityPubkey.toPublicKey(),
+                        userAuthorityAddress,
+                        topUpSwap.from.amountIn
+                    )
+                    instructions += approveInstruction
+                }
 
                 // create transit token account
                 val transitTokenMint = topUpSwap.transitTokenMintPubkey.toPublicKey()
@@ -263,7 +257,7 @@ class FeeRelayerInstructionsInteractor(
                 )
 
                 val createTransitInstruction = FeeRelayerProgram.createTransitTokenAccountInstruction(
-                    programId = programId,
+                    programId = feeRelayerProgramId,
                     feePayer = feePayerAddress.toPublicKey(),
                     userAuthority = userAuthorityAddress,
                     transitTokenAccount = transitTokenAccountAddress,
@@ -274,39 +268,14 @@ class FeeRelayerInstructionsInteractor(
                 // Destination WSOL account funding
                 accountCreationFee += minimumTokenAccountBalance
 
-                // top up
-                val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(
-                    userAuthorityAddress
-                )
-                // overriding
-                val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
-
-                val topUpSwapInstruction = FeeRelayerProgram.createRelayTopUpSwapTransitiveInstruction(
-                    programId = programId,
-                    feePayer = feePayerAddress.toPublicKey(),
-                    userAuthority = userAuthorityAddress,
-                    userRelayAccount = userRelayAddress,
-                    userTransferAuthority = PublicKey(topUpSwap.from.transferAuthorityPubkey),
-                    userSourceTokenAccount = userSourceTokenAccountAddress,
-                    userDestinationTokenAccount = userTemporarilyWSOLAddress,
-                    userTransitTokenAccount = transitTokenAccountAddress,
-                    swapFromProgramId = PublicKey(topUpSwap.from.programId),
-                    swapFromAccount = PublicKey(topUpSwap.from.accountPubkey),
-                    swapFromAuthority = PublicKey(topUpSwap.from.authorityPubkey),
-                    swapFromSource = PublicKey(topUpSwap.from.sourcePubkey),
-                    swapFromDestination = PublicKey(topUpSwap.from.destinationPubkey),
-                    swapFromPoolTokenMint = PublicKey(topUpSwap.from.poolTokenMintPubkey),
-                    swapFromPoolFeeAccount = PublicKey(topUpSwap.from.poolFeeAccountPubkey),
-                    swapToProgramId = PublicKey(topUpSwap.to.programId),
-                    swapToAccount = PublicKey(topUpSwap.to.accountPubkey),
-                    swapToAuthority = PublicKey(topUpSwap.to.authorityPubkey),
-                    swapToSource = PublicKey(topUpSwap.to.sourcePubkey),
-                    swapToDestination = PublicKey(topUpSwap.to.destinationPubkey),
-                    swapToPoolTokenMint = PublicKey(topUpSwap.to.poolTokenMintPubkey),
-                    swapToPoolFeeAccount = PublicKey(topUpSwap.to.poolFeeAccountPubkey),
-                    amountIn = topUpSwap.from.amountIn,
-                    transitMinimumAmount = topUpSwap.from.minimumAmountOut,
-                    minimumAmountOut = topUpSwap.to.minimumAmountOut,
+                val topUpSwapInstruction = FeeRelayerProgram.topUpSwapInstruction(
+                    feeRelayerProgramId = feeRelayerProgramId,
+                    userRelayAddress = userRelayAddress,
+                    userTemporarilyWSOLAddress = userTemporarilyWSOLAddress,
+                    topUpSwap = topUpSwap,
+                    userAuthorityAddress = userAuthorityAddress,
+                    userSourceTokenAccountAddress = userSourceTokenAccountAddress,
+                    feePayerAddress = feePayerAddress.toPublicKey(),
                 )
                 instructions += topUpSwapInstruction
 
@@ -323,7 +292,7 @@ class FeeRelayerInstructionsInteractor(
 
         // transfer
         val transferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
-            programId = programId,
+            programId = feeRelayerProgramId,
             userAuthority = userAuthorityAddress,
             userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress),
             recipient = feePayerAddress.toPublicKey(),
@@ -333,7 +302,7 @@ class FeeRelayerInstructionsInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.setFeePayer(feePayerAddress.toPublicKey())
+        transaction.feePayer = feePayerAddress.toPublicKey()
         transaction.recentBlockHash = blockhash
 
         // calculate fee first
@@ -343,13 +312,14 @@ class FeeRelayerInstructionsInteractor(
         )
 
         // resign transaction
-
         val owner = Account(tokenKeyProvider.secretKey)
         val signers = mutableListOf(owner)
 
-        if (transferAuthority != null) {
-            signers.add(0, transferAuthority)
+        if (transferAuthorityAccount != null) {
+            signers.add(0, transferAuthorityAccount)
         }
+
+        transaction.sign(signers)
 
         return topUpSwap to PreparedTransaction(transaction, signers, expectedFee)
     }

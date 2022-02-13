@@ -1,5 +1,6 @@
 package org.p2p.wallet.feerelayer.model
 
+import org.p2p.solanaj.core.PublicKey
 import java.math.BigInteger
 
 sealed class SwapData {
@@ -20,6 +21,7 @@ sealed class SwapData {
     data class SplTransitive(
         val from: Direct,
         val to: Direct,
-        val transitTokenMintPubkey: String
+        val transitTokenMintPubkey: String,
+        val transitTokenAccountAddress: PublicKey
     ) : SwapData()
 }

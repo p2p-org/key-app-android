@@ -68,6 +68,7 @@ class FeeRelayerInteractor(
     * Fee calculation is in IN SOL
     * */
     suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
+        feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         destinationTokenMint: String,
         destinationAddress: String?,
@@ -78,6 +79,7 @@ class FeeRelayerInteractor(
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
 
         val preparedParams = prepareForTopUpAndSwap(
+            feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = sourceToken,
             destinationTokenMint = destinationTokenMint,
             destinationAddress = destinationAddress,
@@ -141,6 +143,7 @@ class FeeRelayerInteractor(
 
         // prepare for topup
         val params = prepareForTopUp(
+            feeRelayerProgramId = feeRelayerProgramId,
             feeAmount = preparedTransaction.expectedFee,
             payingFeeToken = payingFeeToken,
             relayAccountStatus = relayAccount
@@ -194,6 +197,7 @@ class FeeRelayerInteractor(
         } else {
             // STEP 2.2.1: Top up
             feeRelayerRequestInteractor.topUp(
+                feeRelayerProgramId = feeRelayerProgramId,
                 owner = owner,
                 needsCreateUserRelayAddress = !relayAccount.isCreated,
                 sourceToken = payingFeeToken,
@@ -248,7 +252,7 @@ class FeeRelayerInteractor(
             decimals = tokenSupply.value.decimals
         )
 
-        val params = prepareForTopUp(amount, payingFeeToken, relayAccount)
+        val params = prepareForTopUp(feeRelayerProgramId, amount, payingFeeToken, relayAccount)
 
         transaction.sign(listOf(account))
         val blockhash = transaction.recentBlockHash
@@ -264,6 +268,7 @@ class FeeRelayerInteractor(
         } else {
             // STEP 2.2.1: Top up
             feeRelayerRequestInteractor.topUp(
+                feeRelayerProgramId = feeRelayerProgramId,
                 owner = account,
                 needsCreateUserRelayAddress = !relayAccount.isCreated,
                 sourceToken = payingFeeToken,
@@ -296,6 +301,7 @@ class FeeRelayerInteractor(
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(false)
 
         val params = prepareForTopUpAndSwap(
+            feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = sourceToken,
             destinationTokenMint = destinationTokenMint,
             destinationAddress = destinationAddress,
@@ -320,7 +326,7 @@ class FeeRelayerInteractor(
         val swapPools = swapFeesAndPools.poolsPair
 
         return feeRelayerRequestInteractor.prepareSwapTransaction(
-            programId = feeRelayerProgramId,
+            feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = sourceToken,
             destinationToken = destinationToken,
             userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress?.toBase58(),
@@ -355,7 +361,7 @@ class FeeRelayerInteractor(
         val recentBlockhash = rpcRepository.getRecentBlockhash()
 
         val preparedTransaction = feeRelayerRequestInteractor.prepareSwapTransaction(
-            programId = feeRelayerProgramId,
+            feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = sourceToken,
             destinationToken = destinationToken,
             userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress,
@@ -386,6 +392,7 @@ class FeeRelayerInteractor(
     }
 
     private suspend fun prepareForTopUpAndSwap(
+        feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         destinationTokenMint: String,
         destinationAddress: String?,
@@ -437,6 +444,7 @@ class FeeRelayerInteractor(
                         ?: throw IllegalStateException("Swap pools not found")
 
                 val topUpFee = feeRelayerInstructionsInteractor.calculateTopUpFee(
+                    feeRelayerProgramId = feeRelayerProgramId,
                     info = relayInfo,
                     topUpPools = topUpPools,
                     relayAccountStatus = relayAccountStatus
@@ -495,6 +503,7 @@ class FeeRelayerInteractor(
     }
 
     private suspend fun prepareForTopUp(
+        feeRelayerProgramId: PublicKey,
         feeAmount: FeeAmount,
         payingFeeToken: TokenInfo,
         relayAccountStatus: RelayAccount
@@ -521,7 +530,12 @@ class FeeRelayerInteractor(
             }
 
             val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-            val topUpFee = feeRelayerInstructionsInteractor.calculateTopUpFee(relayInfo, topUpPools, relayAccountStatus)
+            val topUpFee = feeRelayerInstructionsInteractor.calculateTopUpFee(
+                feeRelayerProgramId,
+                relayInfo,
+                topUpPools,
+                relayAccountStatus
+            )
             topUpFeesAndPools = FeesAndPools(topUpFee, topUpPools)
 
             val routeValues = topUpPools.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
