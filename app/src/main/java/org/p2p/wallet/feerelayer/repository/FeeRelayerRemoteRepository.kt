@@ -10,6 +10,7 @@ import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.RelayTransferRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
 import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
@@ -29,6 +30,21 @@ class FeeRelayerRemoteRepository(
         } else {
             api.getPublicKey().toPublicKey()
         }
+    }
+
+    override suspend fun getFreeFeeLimits(owner: String): FreeTransactionFeeLimit {
+        val response = if (environmentManager.isDevnet()) {
+            devnetApi.getFreeFeeLimits(owner)
+        } else {
+            api.getFreeFeeLimits(owner)
+        }
+
+        return FreeTransactionFeeLimit(
+            maxUsage = response.limits.maxCount,
+            currentUsage = response.processedFee.count,
+            maxAmount = response.limits.maxAmount,
+            amountUsed = response.processedFee.totalAmount
+        )
     }
 
     override suspend fun relayTransaction(

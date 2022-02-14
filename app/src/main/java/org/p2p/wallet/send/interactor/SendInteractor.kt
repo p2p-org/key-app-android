@@ -1,6 +1,7 @@
 package org.p2p.wallet.send.interactor
 
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
@@ -9,14 +10,12 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerRequestInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.SendStrategy
-import org.p2p.wallet.feerelayer.model.TokenInfo
-import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.send.model.CheckAddressResult
@@ -33,10 +32,10 @@ class SendInteractor(
     private val rpcRepository: RpcRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
-    private val feeRelayerRequestInteractor: FeeRelayerRequestInteractor,
+    private val feeRelayerRequestInteractor: FeeRelayerTopUpInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaSwapInteractor: OrcaSwapInteractor,
-    private val environmentManager: EnvironmentManager,
+    private val amountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -163,17 +162,7 @@ class SendInteractor(
         lamports: BigInteger
     ): SendResult {
 
-        val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
-        val transactionId = feeRelayerInteractor.topUpAndSend(
-            sourceToken = TokenInfo(sourceToken.publicKey, sourceToken.mintAddress),
-            destinationAddress = destinationAddress.toBase58(),
-            tokenMint = sourceToken.mintAddress,
-            inputAmount = lamports,
-            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
-            feeRelayerProgramId = feeRelayerProgramId
-        ).firstOrNull().orEmpty()
-
-        return SendResult.Success(transactionId)
+        return SendResult.Success("transactionId")
     }
 
     private suspend fun sendSplToken(
@@ -308,4 +297,94 @@ class SendInteractor(
 
         return SendResult.Success(signature)
     }
+
+//    private suspend fun prepareSendingSPLTokens(
+//        mintAddress: String,
+//        decimals: Int,
+//        fromPublicKey: String,
+//        destinationAddress: String,
+//        amount: BigInteger,
+//        feePayer: PublicKey? = null,
+//        transferChecked: Boolean = false,
+//        recentBlockhash: String? = null,
+//        lamportsPerSignature: BigInteger? = null,
+//        minRentExemption: BigInteger? = null
+//    ): Pair<PreparedTransaction, String> {
+//        val account = Account(tokenKeyProvider.secretKey)
+//
+//        val feePayer = feePayer ?: account.publicKey
+//        val minRentExempt = minRentExemption ?: amountInteractor.getMinBalanceForRentExemption()
+//
+//        val splDestinationAddress = addressInteractor.findAssociatedAddress(
+//            destinationAddress.toPublicKey(),
+//            mintAddress
+//        )
+//
+//        val toPublicKey = splDestinationAddress.associatedAddress
+//
+//        if (fromPublicKey == toPublicKey.toBase58()) {
+//            throw IllegalStateException("You can not send tokens to yourself")
+//        }
+//
+//        val instructions = mutableListOf<TransactionInstruction>()
+//
+//        // create associated token address
+//        var accountsCreationFee: BigInteger = BigInteger.ZERO
+//        if (splDestinationAddress.shouldCreateAssociatedInstruction) {
+//            val mint = mintAddress.toPublicKey()
+//            val owner = destinationAddress.toPublicKey()
+//
+//            val createATokenInstruction = TokenProgram.createAssociatedTokenAccountInstruction(
+//                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+//                TokenProgram.PROGRAM_ID,
+//                mint,
+//                toPublicKey,
+//                owner,
+//                feePayer
+//            )
+//            instructions += createATokenInstruction
+//            accountsCreationFee += minRentExempt
+//        }
+//
+//        // send instruction
+//        // use transfer checked transaction for proxy, otherwise use normal transfer transaction
+//        val sendInstruction = if (transferChecked) {
+//            // transfer checked transaction
+//            TokenProgram.createTransferCheckedInstruction(
+//                TokenProgram.PROGRAM_ID,
+//                fromPublicKey.toPublicKey(),
+//                mintAddress.toPublicKey(),
+//                splDestinationAddress.associatedAddress,
+//                account.publicKey,
+//                amount,
+//                decimals
+//            )
+//        } else {
+//            // transfer transaction
+//            TokenProgram.transferInstruction(
+//                TokenProgram.PROGRAM_ID,
+//                fromPublicKey.toPublicKey(),
+//                toPublicKey,
+//                account.publicKey,
+//                amount
+//            )
+//        }
+//
+//        instructions += sendInstruction
+//
+//        var realDestination = destinationAddress
+//        if (!splDestinationAddress.shouldCreateAssociatedInstruction) {
+//            realDestination = splDestinationAddress.associatedAddress.toBase58()
+//        }
+//
+//        // if not, serialize and send instructions normally
+////        return prepareTransaction(
+////            instructions: instructions,
+////            signers: [account],
+////        feePayer: feePayer,
+////        accountsCreationFee: accountsCreationFee,
+////        recentBlockhash: recentBlockhash,
+////        lamportsPerSignature: lamportsPerSignature
+////        )
+//    }
 }
