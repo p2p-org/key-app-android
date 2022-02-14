@@ -25,6 +25,9 @@
     <string name="common_not_implemented_yet">Not implemented yet</string>
     <string name="common_understood">Understood</string>
     <string name="common_btc">BTC</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_logout">Log out</string>
+    <string name="common_stay">Stay</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -57,7 +60,7 @@
     <string name="auth_terms_of_use">Terms of Use</string>
     <string name="auth_privacy_policy">Privacy Policy</string>
     <string name="auth_seed_order">Place seed phrases in a correct order to recover your wallet.</string>
-    <string name="auth_enter_seed_phrase">Enter your security key\'s 24 words in the right order.</string>
+    <string name="auth_enter_seed_phrase">To reset your wallet PIN you have to paste in the field above your security key.\n\nWhat is a security key?</string>
     <string name="auth_seed_phrase_limit">Secret phrase can\'t contain more than 12 words</string>
     <string name="auth_security_key_hint">Write down or duplicate these words in the correct order and keep them in a safe place. Copy them manually</string>
     <string name="auth_copy_to_clipboard">Copy to clipboard</string>
@@ -89,7 +92,7 @@
     <string name="auth_biometric_question">Use biometric for quick access?</string>
     <string name="auth_pin_codes_match_error">PIN doesn’t match. Try again</string>
     <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
-    <string name="auth_pin_code_wrong">Wrong pin code</string>
+    <string name="auth_pin_code_wrong">Wrong PIN. Try again or reset it</string>
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
@@ -115,7 +118,7 @@
     <string name="auth_name_p2p_sol">%s.p2p.sol</string>
     <string name="auth_available_name">%1$s is available</string>
     <string name="auth_unavailable_name">%1$s is unavailable</string>
-    <string name="auth_username">Username</string>
+    <string name="auth_username">Your username</string>
     <string name="auth_your_p2p_username">Your P2P username allows you to receive any token within the Solana network even if it is not included in your wallet list.</string>
     <string name="auth_copy">Copy</string>
     <string name="auth_share">Share</string>
@@ -414,9 +417,9 @@
 
     <!-- settings -->
     <string name="settings_title">Settings</string>
+    <string name="settings_profile">Profile</string>
     <string name="settings_hide_zero_balances">Hide zero balances</string>
     <string name="settings_security">Security</string>
-    <string name="settings_username">Username</string>
     <string name="settings_network">Network</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
@@ -425,8 +428,8 @@
     <string name="settings_security_primary_biometric">Will be as a primary secure check</string>
     <string name="settings_security_pin_code">PIN-code</string>
     <string name="settings_security_pin_code_check">Default secure check</string>
-    <string name="settings_security_change_enter_pin">New PIN-code</string>
-    <string name="settings_security_change_confirm_pin">Confirm PIN-code</string>
+    <string name="settings_security_change_enter_pin">Set up a new PIN</string>
+    <string name="settings_security_change_confirm_pin">Confirm your wallet PIN</string>
     <string name="settings_security_change_pin_success">PIN-code changed!</string>
     <string name="settings_security_change_pin_info">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
     <string name="settings_security_go_back">Go back to profile</string>
@@ -435,4 +438,49 @@
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_app_version">App version</string>
+    <string name="settings_username">Username</string>
+    <string name="settings_address_book">Address book</string>
+    <string name="settings_address_book_subtitle">Add, edit and delete addresses</string>
+    <string name="settings_history">History</string>
+    <string name="settings_history_subtitle">View your transaction history</string>
+    <string name="settings_security_and_network"><![CDATA[Security & Network]]></string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_backup_subtitle">Backed up manually</string>
+    <string name="settings_wallet_pin">Wallet PIN</string>
+    <string name="settings_wallet_pin_subtitle">Changing or resetting your PIN</string>
+    <string name="settings_app_security">App security</string>
+    <string name="settings_app_security_subtitle">Every transaction requires biometrics</string>
+    <string name="settings_pay_fees_with">Pay fees with</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_subtitle">System defaults determine the theme</string>
+    <string name="settings_staying_up_in_date">Staying up to date</string>
+    <string name="settings_staying_up_in_date_subtitle">You\'re receiving notifications</string>
+    <string name="settings_default_currency">Default currency</string>
+    <string name="settings_default_currency_subtitle">Showing balances in US Dollar</string>
+    <string name="settings_zero_balances">Zero balances</string>
+    <string name="settings_zero_balances_subtitle">Tokens with zero balances are hidden</string>
+    <string name="settings_logout">Log out now</string>
+    <string name="settings_forgot_your_pin">Forgot your PIN? Reset it</string>
+    <string name="settings_reset_it">Reset it</string>
+    <string name="settings_a_new_wallet_pin_is_set">A new wallet PIN is set!</string>
+    <string name="settings_confirmations">Confirmations</string>
+    <string name="settings_use_confirmations">Use confirmations</string>
+    <string name="settings_auth_transactions">Authenticate transactions</string>
+    <string name="settings_biometrics">Biometrics</string>
+    <string name="settings_registered">Registered</string>
+    <string name="settings_unregistered">Unregistered</string>
+    <string name="settings_resetting_your_PIN">Resetting your PIN</string>
+    <string name="settings_choose_a_network">Choose a network</string>
+    <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
+    <string name="settings_tokens_hidden">HIdden</string>
+    <string name="settings_tokens_shown">Shown</string>
+    <string name="settings_logout_title">Are you sure you want to log out?</string>
+    <string name="settings_logout_message">If you have no backup, you may never be able to access this account</string>
+    <string name="home_main">Main</string>
+    <string name="home_send">Send</string>
+    <string name="home_feedback">Feedback</string>
+    <string name="home_settings">Settings</string>
+    <string name="home_support_new_messages_count">you have %d new messages from support</string>
+
+
 </resources>

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
@@ -18,7 +19,7 @@ private const val EXTRA_TITLE = "EXTRA_TITLE"
 private const val EXTRA_SUBTITLE = "EXTRA_SUBTITLE"
 private const val EXTRA_PRIMARY_BUTTON = "EXTRA_PRIMARY_BUTTON"
 private const val EXTRA_SECONDARY_BUTTON = "EXTRA_SECONDARY_BUTTON"
-
+private const val EXTRA_PRIMARY_BUTTON_COLOR = "EXTRA_PRIMARY_BUTTON_COLOR"
 class InfoDialog : DialogFragment() {
 
     companion object {
@@ -28,6 +29,7 @@ class InfoDialog : DialogFragment() {
             @StringRes subTitleRes: Int,
             @StringRes primaryButtonRes: Int,
             @StringRes secondaryButtonRes: Int?,
+            @ColorRes primaryButtonTextColor: Int? = null,
             onPrimaryButtonClicked: () -> Unit,
             onSecondaryButtonClicked: () -> Unit,
         ) {
@@ -37,6 +39,7 @@ class InfoDialog : DialogFragment() {
                     EXTRA_SUBTITLE to subTitleRes,
                     EXTRA_PRIMARY_BUTTON to primaryButtonRes,
                     EXTRA_SECONDARY_BUTTON to secondaryButtonRes,
+                    EXTRA_PRIMARY_BUTTON_COLOR to primaryButtonTextColor
                 )
                 .apply {
                     this.onPrimaryButtonClicked = onPrimaryButtonClicked
@@ -50,6 +53,7 @@ class InfoDialog : DialogFragment() {
     private val subTitleRes: Int by args(EXTRA_SUBTITLE)
     private val primaryButtonRes: Int by args(EXTRA_PRIMARY_BUTTON)
     private val secondaryButtonRes: Int? by args(EXTRA_SECONDARY_BUTTON)
+    private val primaryButtonTextColor: Int? by args(EXTRA_PRIMARY_BUTTON_COLOR)
 
     var onPrimaryButtonClicked: (() -> Unit)? = null
     var onSecondaryButtonClicked: (() -> Unit)? = null
@@ -77,6 +81,9 @@ class InfoDialog : DialogFragment() {
             secondaryButtonRes?.let {
                 secondaryButton.isVisible = true
                 secondaryButton.setText(it)
+            }
+            primaryButtonTextColor?.let {
+                primaryButton.setTextColor(requireContext().getColor(it))
             }
 
             primaryButton.setOnClickListener {

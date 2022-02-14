@@ -20,6 +20,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
@@ -105,17 +106,17 @@ class AuthInteractor(
 
     fun getBiometricStatus(): BiometricStatus =
         when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
-                BiometricStatus.NO_HARDWARE
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
-                BiometricStatus.NO_REGISTERED_BIOMETRIC
-            else ->
+            BiometricManager.BIOMETRIC_SUCCESS -> {
                 if (secureStorage.contains(KEY_PIN_CODE_BIOMETRIC_HASH)) {
                     BiometricStatus.ENABLED
                 } else {
                     BiometricStatus.AVAILABLE
                 }
+            }
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
+                BiometricStatus.NO_REGISTERED_BIOMETRIC
+
+            else -> BiometricStatus.NO_HARDWARE
         }
 
     fun getBiometricType(context: Context): BiometricType {
@@ -174,6 +175,7 @@ class AuthInteractor(
         transactionManager.stop()
         mainLocalRepository.clear()
         renBtcInteractor.clearSession()
+        IntercomService.logout()
         RenVMService.stopService(context)
     }
 

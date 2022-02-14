@@ -16,7 +16,8 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -27,13 +28,14 @@ import java.math.BigDecimal
 private const val DELAY_MS = 10000L
 private const val BANNER_START_INDEX = 2
 
-class MainPresenter(
+class HomePresenter(
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val amountInteractor: TransactionAmountInteractor,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val tokenKeyProvider: TokenKeyProvider
+
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     companion object {
@@ -58,11 +60,10 @@ class MainPresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
         view.showActions(actions)
-
         updatesManager.start()
         loadData()
-
         username = usernameInteractor.getUsername()
+        IntercomService.signIn(tokenKeyProvider.publicKey) {}
     }
 
     override fun collectData() {

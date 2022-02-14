@@ -8,7 +8,7 @@ interface ResetPinContract {
 
     interface View : MvpView {
         fun showLoading(isLoading: Boolean)
-        fun showCurrentPinIncorrectError(attemptsLeft: Int)
+        fun showCurrentPinIncorrectError()
         fun showEnterNewPin()
         fun showConfirmationError()
         fun showConfirmNewPin()
@@ -24,5 +24,6 @@ interface ResetPinContract {
         fun setPinCode(pinCode: String)
         fun resetPinWithoutBiometrics()
         fun resetPinWithBiometrics(cipher: Cipher)
+        fun onSeedPhraseValidated(keys: List<String>)
     }
 }

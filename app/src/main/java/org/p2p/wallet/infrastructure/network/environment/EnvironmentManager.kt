@@ -28,7 +28,7 @@ class EnvironmentManager(
         )
 
     fun getMoonpayUrl(amount: String): String {
-        val baseUrl = context.getString(R.string.moonpayBaseDomain)
+        val baseUrl = context.getString(R.string.moonpayWalletDomain)
         val apiKey = BuildConfig.moonpayKey
 
         return Uri.Builder()

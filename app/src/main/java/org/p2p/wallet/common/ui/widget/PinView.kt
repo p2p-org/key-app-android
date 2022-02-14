@@ -46,11 +46,6 @@ class PinView @JvmOverloads constructor(
             onBiometricClicked?.invoke()
         }
 
-        binding.resetButton.clipToOutline = true
-        binding.resetButton.setOnClickListener {
-            onResetClicked?.invoke()
-        }
-
         binding.keyboardView.onRightButtonClicked = {
             pinCode = pinCode.dropLast(1)
             updateDots()
@@ -90,7 +85,6 @@ class PinView @JvmOverloads constructor(
 
             messageTextView.isVisible = true
             messageTextView.text = message
-            resetButton.isVisible = true
         }
     }
 
@@ -102,7 +96,6 @@ class PinView @JvmOverloads constructor(
 
             messageTextView.isVisible = false
             messageTextView.text = ""
-            resetButton.isVisible = false
         }
     }
 

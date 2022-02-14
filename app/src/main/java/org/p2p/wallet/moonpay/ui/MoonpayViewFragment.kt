@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebChromeClient
-import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
@@ -44,13 +42,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             webView.settings.javaScriptEnabled = true
 
-            webView.webChromeClient = object : WebChromeClient() {
-                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    super.onProgressChanged(view, newProgress)
-                    progressBar.isInvisible = newProgress == 100
-                }
-            }
-
+            webView.webChromeClient = WebChromeClient()
             webView.webViewClient = WebViewClient()
 
             lifecycleScope.launchWhenResumed {

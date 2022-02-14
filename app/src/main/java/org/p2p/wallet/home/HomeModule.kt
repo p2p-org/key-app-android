@@ -18,7 +18,7 @@ import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.moonpay.ui.BuySolanaContract
 import org.p2p.wallet.moonpay.ui.BuySolanaPresenter
 import org.p2p.wallet.home.ui.main.HomeContract
-import org.p2p.wallet.home.ui.main.MainPresenter
+import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
@@ -45,7 +45,7 @@ object HomeModule : InjectionModule {
         factory { HomeDatabaseRepository(get()) } bind HomeLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { MainPresenter(get(), get(), get(), get(), get(), get()) } bind HomeContract.Presenter::class
+        single { HomePresenter(get(), get(), get(), get(), get(), get()) } bind HomeContract.Presenter::class
         single { SendInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { SearchInteractor(get(), get()) }
 

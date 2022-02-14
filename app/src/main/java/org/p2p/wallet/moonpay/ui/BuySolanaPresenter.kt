@@ -49,7 +49,7 @@ class BuySolanaPresenter(
     }
 
     override fun onContinueClicked() {
-        view?.navigateToMoonpay(amount)
+        data?.let { view?.navigateToMoonpay(it.total.toString()) }
     }
 
     override fun setBuyAmount(amount: String) {

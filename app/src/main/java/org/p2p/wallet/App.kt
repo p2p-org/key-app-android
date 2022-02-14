@@ -20,6 +20,7 @@ import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.qr.QrModule
 import org.p2p.wallet.renbtc.RenBtcModule
@@ -44,7 +45,7 @@ class App : Application() {
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(BuildConfig.CRASHLYTICS_ENABLED)
 
         AppNotificationManager.createNotificationChannels(this)
-
+        IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
         AndroidThreeTen.init(this)
         DebugDrawer.init(this)
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
