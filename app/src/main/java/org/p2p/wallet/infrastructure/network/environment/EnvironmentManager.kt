@@ -16,6 +16,10 @@ class EnvironmentManager(
     private val sharedPreferences: SharedPreferences
 ) {
 
+    companion object {
+        private const val FAKE_ETH_ADDRESS = "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"
+    }
+
     private var onChanged: ((Environment) -> Unit)? = null
 
     fun isDevnet(): Boolean = loadEnvironment() == Environment.DEVNET
@@ -39,7 +43,8 @@ class EnvironmentManager(
             .appendQueryParameter("baseCurrencyAmount", amount)
             .appendQueryParameter("baseCurrencyCode", USD_READABLE_SYMBOL.lowercase())
             .appendQueryParameter("lockAmount", "false")
-            .appendQueryParameter("walletAddress", "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae")
+            // FIXME: fake address will be replaced by real token address, this is for testing
+            .appendQueryParameter("walletAddress", FAKE_ETH_ADDRESS)
             .build()
             .toString()
     }
