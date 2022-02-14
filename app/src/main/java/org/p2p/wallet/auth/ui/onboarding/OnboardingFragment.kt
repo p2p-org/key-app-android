@@ -84,6 +84,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
         }
     }
 
+    //TODO P2PW-583 support dark theme to load assets for dark theme mode
     private fun getVideoUriFromResources(@RawRes animRes: Int): Uri = Uri.parse(
         "android.resource://"
             + requireContext().packageName.toString()
