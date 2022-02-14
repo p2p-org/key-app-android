@@ -39,6 +39,7 @@ class EnvironmentManager(
             .appendQueryParameter("baseCurrencyAmount", amount)
             .appendQueryParameter("baseCurrencyCode", USD_READABLE_SYMBOL.lowercase())
             .appendQueryParameter("lockAmount", "false")
+            .appendQueryParameter("walletAddress", "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae")
             .build()
             .toString()
     }
