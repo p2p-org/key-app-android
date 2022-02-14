@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager

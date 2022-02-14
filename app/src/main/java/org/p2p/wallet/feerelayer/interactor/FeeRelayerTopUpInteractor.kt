@@ -1,7 +1,5 @@
 package org.p2p.wallet.feerelayer.interactor
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.FeeAmount
@@ -13,7 +11,6 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.feerelayer.model.FeesAndPools
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
@@ -30,7 +27,6 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
 import java.math.BigInteger
 
 class FeeRelayerTopUpInteractor(
@@ -52,7 +48,6 @@ class FeeRelayerTopUpInteractor(
         expectedFee: BigInteger
     ): List<String> {
         val blockhash = rpcRepository.getRecentBlockhash()
-        val freeTransactionFeeLimit =  feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
         val owner = Account(tokenKeyProvider.secretKey)
@@ -112,7 +107,7 @@ class FeeRelayerTopUpInteractor(
 
         val tradableTopUpPoolsPair = orcaSwapInteractor.getTradablePoolsPairs(payingFeeToken.mint, WRAPPED_SOL_MINT)
         // TOP UP
-        if (checkIfBalanceHaveEnoughAmount && (relayAccount.balance == null || relayAccount.balance < targetAmount)) {
+        if (checkIfBalanceHaveEnoughAmount && (relayAccount.balance != null && relayAccount.balance >= targetAmount)) {
             return null
         } else {
             // STEP 2.2: Else
@@ -390,48 +385,6 @@ class FeeRelayerTopUpInteractor(
         return topUpSwap to PreparedTransaction(transaction, signers, expectedFee)
     }
 
-    // Generate transfer transaction
-    suspend fun makeTransferTransaction(
-        programId: PublicKey,
-        owner: Account,
-        sourceToken: TokenInfo,
-        recipientPubkey: String,
-        tokenMintAddress: String,
-        feePayerAddress: String,
-        lamportsPerSignatures: BigInteger,
-        minimumTokenAccountBalance: BigInteger,
-        inputAmount: BigInteger,
-        decimals: Int
-    ): Pair<Transaction, FeeAmount> {
-        val (_, feeAmount) = createTransferTransaction(
-            programId = programId,
-            owner = owner,
-            sourceToken = sourceToken,
-            recipientPubkey = recipientPubkey,
-            tokenMintAddress = tokenMintAddress,
-            feePayerAddress = feePayerAddress,
-            feeAmount = BigInteger.ZERO,
-            lamportsPerSignatures = lamportsPerSignatures,
-            minimumTokenAccountBalance = minimumTokenAccountBalance,
-            inputAmount = inputAmount,
-            decimals = decimals
-        )
-
-        return createTransferTransaction(
-            programId = programId,
-            owner = owner,
-            sourceToken = sourceToken,
-            recipientPubkey = recipientPubkey,
-            tokenMintAddress = tokenMintAddress,
-            feePayerAddress = feePayerAddress,
-            feeAmount = feeAmount.total,
-            lamportsPerSignatures = lamportsPerSignatures,
-            minimumTokenAccountBalance = minimumTokenAccountBalance,
-            inputAmount = inputAmount,
-            decimals = decimals
-        )
-    }
-
     suspend fun relayTransaction(
         instructions: List<TransactionInstruction>,
         signatures: List<Signature>,
@@ -439,113 +392,4 @@ class FeeRelayerTopUpInteractor(
         blockHash: String
     ): List<String> =
         feeRelayerRepository.relayTransaction(instructions, signatures, pubkeys, blockHash)
-
-    suspend fun getFeePayerPublicKey(): PublicKey =
-        feeRelayerRepository.getFeePayerPublicKey()
-
-    // Get signature from transaction
-    private fun getSignatures(
-        transaction: Transaction,
-        owner: Account,
-        transferAuthorityAccount: Account?
-    ): SwapTransactionSignatures {
-        val signers = mutableListOf(owner)
-
-        if (transferAuthorityAccount != null) {
-            // fixme: this may cause presigner error
-            signers.add(0, transferAuthorityAccount)
-        }
-
-        transaction.sign(signers)
-
-        val ownerSignatureData = transaction.findSignature(owner.publicKey)?.signature
-
-        val transferAuthoritySignatureData = if (transferAuthorityAccount != null) {
-            transaction.findSignature(transferAuthorityAccount.publicKey)?.signature
-        } else {
-            null
-        }
-
-        if (ownerSignatureData.isNullOrEmpty()) {
-            throw IllegalStateException("Invalid owner signature")
-        }
-
-        return SwapTransactionSignatures(
-            userAuthoritySignature = ownerSignatureData,
-            transferAuthoritySignature = transferAuthoritySignatureData
-        )
-    }
-
-    private suspend fun createTransferTransaction(
-        programId: PublicKey,
-        owner: Account,
-        sourceToken: TokenInfo,
-        recipientPubkey: String,
-        tokenMintAddress: String,
-        feePayerAddress: String,
-        feeAmount: BigInteger,
-        lamportsPerSignatures: BigInteger,
-        minimumTokenAccountBalance: BigInteger,
-        inputAmount: BigInteger,
-        decimals: Int
-    ): Pair<Transaction, FeeAmount> = withContext(Dispatchers.IO) {
-
-        val accountInfo = rpcRepository.getAccountInfo(recipientPubkey)
-
-        val value = accountInfo?.value
-        val shouldCreateRecipientTokenAccount = value?.owner != TokenProgram.PROGRAM_ID.toBase58()
-
-        // Calculate fee
-        val expectedFee = FeeAmount()
-        val instructions = mutableListOf<TransactionInstruction>()
-
-        val recipientTokenAccountAddress = if (shouldCreateRecipientTokenAccount) {
-            val associatedAccount = TokenTransaction.getAssociatedTokenAddress(
-                mint = tokenMintAddress.toPublicKey(),
-                owner = recipientPubkey.toPublicKey()
-            )
-            val instruction = TokenProgram.createAssociatedTokenAccountInstruction(
-                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-                TokenProgram.PROGRAM_ID,
-                tokenMintAddress.toPublicKey(),
-                associatedAccount,
-                recipientPubkey.toPublicKey(),
-                feePayerAddress.toPublicKey()
-            )
-            instructions += instruction
-            expectedFee.accountBalances += minimumTokenAccountBalance
-            associatedAccount.toBase58()
-        } else {
-            recipientPubkey
-        }
-
-        val transferCheckedInstruction = TokenProgram.createTransferCheckedInstruction(
-            TokenProgram.PROGRAM_ID,
-            sourceToken.address.toPublicKey(),
-            tokenMintAddress.toPublicKey(),
-            recipientTokenAccountAddress.toPublicKey(),
-            owner.publicKey,
-            inputAmount,
-            decimals
-        )
-        instructions += transferCheckedInstruction
-
-        val transferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
-            programId = programId,
-            userAuthority = owner.publicKey,
-            userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(owner.publicKey),
-            recipient = feePayerAddress.toPublicKey(),
-            amount = feeAmount
-        )
-        instructions += transferSolInstruction
-
-        val transaction = Transaction()
-        transaction.addInstructions(instructions)
-        transaction.setFeePayer(feePayerAddress.toPublicKey())
-        val blockhash = rpcRepository.getRecentBlockhash()
-        transaction.recentBlockHash = blockhash.recentBlockhash
-
-        expectedFee.transaction += transaction.calculateTransactionFee(lamportsPerSignatures)
-        return@withContext transaction to expectedFee
-    }
 }

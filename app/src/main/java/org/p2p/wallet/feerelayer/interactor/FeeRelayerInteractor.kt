@@ -5,14 +5,11 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
-import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import java.math.BigInteger
 
 class FeeRelayerInteractor(
@@ -119,19 +116,20 @@ class FeeRelayerInteractor(
 
         // transfer sol back to feerelayer's feePayer
         val owner = Account(tokenKeyProvider.secretKey)
+        val transaction = preparedTransaction.transaction
         if (paybackFee > BigInteger.ZERO) {
-            preparedTransaction.transaction.instructions += FeeRelayerProgram.createRelayTransferSolInstruction(
+            val createRelayTransferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
                 programId = feeRelayerProgramId,
                 userAuthority = owner.publicKey,
                 userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(owner.publicKey),
                 recipient = feePayer,
                 amount = paybackFee
             )
+            transaction.addInstruction(createRelayTransferSolInstruction)
         }
 
         // resign transaction
-        preparedTransaction.transaction.sign(preparedTransaction.signers)
-        val transaction = preparedTransaction.transaction
+        transaction.sign(preparedTransaction.signers)
 
         // check if top up is needed
         return if (params == null || payingFeeToken == null) {

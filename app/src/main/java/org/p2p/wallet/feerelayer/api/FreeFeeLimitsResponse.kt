@@ -8,7 +8,7 @@ class FreeFeeLimitsResponse(
     val authority: ByteArray,
     @SerializedName("limits")
     val limits: LimitsResponse,
-    @SerializedName("processedFee")
+    @SerializedName("processed_fee")
     val processedFee: ProcessedFeeResponse
 )
 
