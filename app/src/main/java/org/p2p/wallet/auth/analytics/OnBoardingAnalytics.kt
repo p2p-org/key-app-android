@@ -63,6 +63,42 @@ class OnBoardingAnalytics(
         tracker.logEvent("Bio_Rejected")
     }
 
+    fun logWalletCreated(lastScreenName: String) {
+        tracker.logEvent(
+            "Wallet_Created",
+            arrayOf(
+                Pair("Last_Screen", lastScreenName)
+            )
+        )
+    }
+
+    fun logWalletRestored(lastScreenName: String) {
+        tracker.logEvent(
+            "Wallet_Restored",
+            arrayOf(
+                Pair("Last_Screen", lastScreenName)
+            )
+        )
+    }
+
+    fun logManyWalletFound(lastScreenName: String) {
+        tracker.logEvent(
+            "Many_Wallets_Found",
+            arrayOf(
+                Pair("Last_Screen", lastScreenName)
+            )
+        )
+    }
+
+    fun logNoWalletFound(lastScreenName: String) {
+        tracker.logEvent(
+            "No_Wallet_Found",
+            arrayOf(
+                Pair("No_Wallet_Found", lastScreenName)
+            )
+        )
+    }
+
     fun logBioApproved(lastScreenName: String) {
         tracker.logEvent(
             "Bio_Approved",
@@ -96,6 +132,10 @@ class OnBoardingAnalytics(
                 Pair("Last_Screen", lastScreenName)
             )
         )
+    }
+
+    fun logUsernameReserved() {
+        tracker.logEvent("Username_Reserved")
     }
 
     enum class UsernameField(val title: String) {

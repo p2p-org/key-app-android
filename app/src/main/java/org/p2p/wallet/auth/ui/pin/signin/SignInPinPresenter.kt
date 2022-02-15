@@ -88,7 +88,6 @@ class SignInPinPresenter(
         } else {
             AuthAnalytics.AuthType.PIN
         }
-        authAnalytics.logAuthViewed(authType = authType, lastScreenName = eventInteractor.getLastScreenName())
     }
 
     private inline fun signInActual(

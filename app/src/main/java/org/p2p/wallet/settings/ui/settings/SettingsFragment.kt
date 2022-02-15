@@ -134,8 +134,5 @@ class SettingsFragment :
             secondaryButtonRes = R.string.common_stay,
             primaryButtonTextColor = R.color.systemErrorMain
         )
-        adminAnalytics.logSignOut(
-            lastScreen = eventInteractor.getLastScreenName()
-        )
     }
 }

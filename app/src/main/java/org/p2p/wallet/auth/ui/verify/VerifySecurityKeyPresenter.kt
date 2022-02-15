@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.verify
 
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import kotlin.random.Random
@@ -11,7 +12,8 @@ private const val GENERATE_WORD_COUNT = 2
 private const val KEY_SIZE = 24
 
 class VerifySecurityKeyPresenter(
-    private val secretKeyInteractor: SecretKeyInteractor
+    private val secretKeyInteractor: SecretKeyInteractor,
+    private val onBoardingAnalytics: OnBoardingAnalytics
 ) : BasePresenter<VerifySecurityKeyContract.View>(),
     VerifySecurityKeyContract.Presenter {
 
