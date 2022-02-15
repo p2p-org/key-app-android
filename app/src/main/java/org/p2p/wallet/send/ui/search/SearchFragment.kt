@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSearchBinding
 import org.p2p.wallet.send.model.SearchResult
@@ -37,13 +39,11 @@ class SearchFragment :
     }
 
     private val usernames: List<SearchResult>? by args(EXTRA_USERNAMES)
-
     override val presenter: SearchContract.Presenter by inject {
         parametersOf(usernames)
     }
-
     private val binding: FragmentSearchBinding by viewBinding()
-
+    private val eventInteractor: EventInteractor by inject()
     private lateinit var textWatcher: TextWatcher
 
     private val searchAdapter: SearchAdapter by lazy {
@@ -55,6 +55,7 @@ class SearchFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        eventInteractor.logScreenOpenEvent(EventsName.Send.RECIPIENT_ADDRESS)
         with(binding) {
             backImageView.setOnClickListener { popBackStack() }
             clearImageView.setOnClickListener { searchEditText.text.clear() }

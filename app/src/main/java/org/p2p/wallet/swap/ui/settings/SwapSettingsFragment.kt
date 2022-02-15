@@ -7,7 +7,10 @@ import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
@@ -54,9 +57,11 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
     }
 
     private val binding: FragmentSwapSettingsBinding by viewBinding()
+    private val eventInteractor: EventInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        eventInteractor.logScreenOpenEvent(EventsName.Swap.SETTINGS)
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 updateSettings()

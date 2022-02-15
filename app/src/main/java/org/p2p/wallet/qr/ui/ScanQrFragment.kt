@@ -18,6 +18,9 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+import org.koin.android.ext.android.inject
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
 
 class ScanQrFragment :
     Fragment(R.layout.fragment_scan_qr),
@@ -32,9 +35,8 @@ class ScanQrFragment :
     }
 
     private var successCallback: ((String) -> Unit)? = null
-
     private val binding: FragmentScanQrBinding by viewBinding()
-
+    private val eventInteractor: EventInteractor by inject()
     private var isPermissionsRequested = false
     private var isCameraStarted = false
 
@@ -52,7 +54,7 @@ class ScanQrFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        eventInteractor.logScreenOpenEvent(EventsName.Send.QR_CAMERA)
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
             closeImageView.setOnClickListener { popBackStack() }

@@ -7,11 +7,15 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.utils.popBackStack
@@ -25,7 +29,9 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override val presenter: RootContract.Presenter by inject()
+    private val adminAnalytics: AdminAnalytics by inject()
     private lateinit var container: CoordinatorLayout
+    private val eventInteractor: EventInteractor by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
@@ -39,6 +45,14 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
         presenter.loadPricesAndBids()
         initializeDebugDrawer()
+        adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            val fragment = supportFragmentManager.findFragmentById(R.id.content) as? BaseFragment
+            if (fragment != null) {
+                eventInteractor.onScreenChanged(fragment.getAnalyticsName())
+            }
+        }
     }
 
     override fun navigateToOnboarding() {
@@ -83,5 +97,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         } else {
             devView.isVisible = false
         }
+    }
+
+    override fun onDestroy() {
+        adminAnalytics.logAppClosed(eventInteractor.getLastScreenName())
+        super.onDestroy()
     }
 }

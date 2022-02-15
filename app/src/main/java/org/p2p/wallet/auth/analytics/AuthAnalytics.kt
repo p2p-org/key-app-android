@@ -4,11 +4,11 @@ import org.p2p.wallet.common.analytics.TrackerContract
 
 class AuthAnalytics(private val tracker: TrackerContract) {
 
-    fun logAuthViewed(screenName: String, authType: AuthType) {
+    fun logAuthViewed(lastScreenName: String, authType: AuthType) {
         tracker.logEvent(
             "Auth_Viewed",
             arrayOf(
-                Pair("Auth_Source", screenName),
+                Pair("Auth_Source", lastScreenName),
                 Pair("Auth_Type", authType.title)
             )
         )

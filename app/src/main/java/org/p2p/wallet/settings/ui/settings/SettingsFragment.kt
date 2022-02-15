@@ -5,9 +5,12 @@ import android.view.View
 import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.model.SettingsRow
@@ -38,6 +41,8 @@ class SettingsFragment :
 
     private val binding: FragmentSettingsBinding by viewBinding()
     private val adapter = SettingsAdapter(::onItemClickListener, ::onLogoutClickListener)
+    private val adminAnalytics: AdminAnalytics by inject()
+    private val eventInteractor: EventInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,6 +80,7 @@ class SettingsFragment :
     }
 
     override fun showReserveUsername() {
+        eventInteractor.logScreenOpenEvent(EventsName.Settings.USERNAME_RESERVE)
         replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
     }
 
@@ -90,9 +96,11 @@ class SettingsFragment :
                 replaceFragment(ResetPinFragment.create(EXTRA_REQUEST_KEY, EXTRA_IS_PIN_CHANGED))
             }
             R.string.settings_app_security -> {
+                eventInteractor.logScreenOpenEvent(EventsName.Settings.SECURITY)
                 replaceFragment(SecurityFragment.create())
             }
             R.string.settings_network -> {
+                eventInteractor.logScreenOpenEvent(EventsName.Settings.NETWORK)
                 addFragment(
                     SettingsNetworkFragment.create(EXTRA_REQUEST_KEY, EXTRA_NETWORK_NAME),
                     enter = 0,
@@ -102,6 +110,7 @@ class SettingsFragment :
                 )
             }
             R.string.settings_zero_balances -> {
+                eventInteractor.logScreenOpenEvent(EventsName.Settings.ZERO_BALANCES)
                 addFragment(
                     SettingsZeroBalanceFragment.create(),
                     enter = 0,
@@ -118,10 +127,15 @@ class SettingsFragment :
             titleRes = R.string.settings_logout_title,
             messageRes = R.string.settings_logout_message,
             primaryButtonRes = R.string.common_logout,
-            primaryCallback = { presenter.logout() },
+            primaryCallback = {
+                adminAnalytics.logSignedOut()
+                presenter.logout()
+            },
             secondaryButtonRes = R.string.common_stay,
-            secondaryCallback = { },
             primaryButtonTextColor = R.color.systemErrorMain
+        )
+        adminAnalytics.logSignOut(
+            lastScreen = eventInteractor.getLastScreenName()
         )
     }
 }

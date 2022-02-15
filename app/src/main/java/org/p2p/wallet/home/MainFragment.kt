@@ -10,7 +10,11 @@ import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
@@ -19,10 +23,13 @@ import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import timber.log.Timber
 
-class MainFragment : Fragment(R.layout.fragment_home) {
+class MainFragment : BaseFragment(R.layout.fragment_home) {
+
     private val binding: FragmentHomeBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
+    private val eventInteractor: EventInteractor by inject()
 
     companion object {
         fun create(): MainFragment = MainFragment()
@@ -47,8 +54,10 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 contentView.fitPadding { Edge.All }
             }
             bottomNavigation.setOnItemSelectedListener {
+                Timber.tag("____").d(it.title.toString())
                 if (it.itemId == R.id.itemFeedback) {
                     IntercomService.showMessenger()
+                    eventInteractor.logScreenOpenEvent(EventsName.Main.MAIN_FEEDBACK)
                     return@setOnItemSelectedListener false
                 }
                 navigate(it.itemId)
@@ -71,9 +80,18 @@ class MainFragment : Fragment(R.layout.fragment_home) {
     private fun navigate(itemId: Int) {
         if (!fragments.containsKey(itemId)) {
             val fragment = when (Tabs.fromTabId(itemId)) {
-                Tabs.HOME -> HomeFragment.create()
-                Tabs.SEND -> SendFragment.create()
-                Tabs.SETTINGS -> SettingsFragment.create()
+                Tabs.HOME -> {
+                    eventInteractor.logScreenOpenEvent(EventsName.Main.MAIN_COINS)
+                    HomeFragment.create()
+                }
+                Tabs.SEND -> {
+                    eventInteractor.logScreenOpenEvent(EventsName.Send.MAIN)
+                    SendFragment.create()
+                }
+                Tabs.SETTINGS -> {
+                    eventInteractor.logScreenOpenEvent(EventsName.Settings.MAIN)
+                    SettingsFragment.create()
+                }
             }
             fragments[itemId] = fragment
         }

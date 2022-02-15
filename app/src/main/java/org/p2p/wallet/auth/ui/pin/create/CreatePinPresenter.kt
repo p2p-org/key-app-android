@@ -5,6 +5,7 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -12,7 +13,8 @@ import javax.crypto.Cipher
 private const val VIBRATE_DURATION = 500L
 
 class CreatePinPresenter(
-    private val authInteractor: AuthInteractor
+    private val authInteractor: AuthInteractor,
+    private val adminAnalytics: AdminAnalytics
 ) : BasePresenter<CreatePinContract.View>(),
     CreatePinContract.Presenter {
 
@@ -54,7 +56,7 @@ class CreatePinPresenter(
         view?.showLoading(true)
         launch {
             try {
-                authInteractor.registerComplete(pinCode, null)
+                registerComplete(pinCode, null)
                 view?.onAuthFinished()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
@@ -72,12 +74,18 @@ class CreatePinPresenter(
         launch {
             try {
                 val encoderCipher = if (cipher != null) EncodeCipher(cipher) else null
-                authInteractor.registerComplete(createdPin, encoderCipher)
+                registerComplete(createdPin, encoderCipher)
                 view?.onAuthFinished()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
                 view?.showErrorMessage(R.string.error_general_message)
             }
         }
+    }
+
+    private fun registerComplete(pinCode: String, cipher: EncodeCipher?) {
+        authInteractor.registerComplete(pinCode, cipher)
+        // TODO determine pin complexity
+        adminAnalytics.logPinCreated(isPinComplex = false)
     }
 }

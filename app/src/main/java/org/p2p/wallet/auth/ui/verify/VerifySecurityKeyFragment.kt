@@ -7,6 +7,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentVerifySecurityKeyBinding
 import org.p2p.wallet.utils.args
@@ -35,12 +37,15 @@ class VerifySecurityKeyFragment :
 
     override val presenter: VerifySecurityKeyPresenter by inject()
     private val binding: FragmentVerifySecurityKeyBinding by viewBinding()
+    private val eventInteractor: EventInteractor by inject()
     private val adapter = VerifySecurityKeyAdapter { keyIndex, key ->
         presenter.onKeySelected(keyIndex, key)
     }
     private val keys: List<String> by args(EXTRA_KEYS)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.SEED_VERIFY)
         with(binding) {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }

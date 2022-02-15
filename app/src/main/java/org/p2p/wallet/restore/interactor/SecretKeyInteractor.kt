@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -32,6 +33,7 @@ class SecretKeyInteractor(
     private val tokenProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences,
     private val usernameInteractor: UsernameInteractor,
+    private val adminAnalytics: AdminAnalytics
 ) {
 
     suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> =
@@ -80,6 +82,7 @@ class SecretKeyInteractor(
         if (lookup) {
             usernameInteractor.lookupUsername(publicKey)
         }
+        adminAnalytics.logPasswordCreated()
     }
 
     suspend fun generateSecretKeys(): List<String> =

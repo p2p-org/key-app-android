@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentAuthDoneBinding
 import org.p2p.wallet.home.MainFragment
@@ -22,9 +24,11 @@ class AuthDoneFragment() :
 
     override val presenter: AuthDoneContract.Presenter by inject()
     private val binding: FragmentAuthDoneBinding by viewBinding()
+    private val eventInteractor: EventInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.WELCOME_NEW)
         with(binding) {
             edgeToEdge {
                 finishButton.fitMargin { Edge.BottomArc }

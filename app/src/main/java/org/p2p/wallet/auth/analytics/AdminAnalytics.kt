@@ -41,6 +41,10 @@ class AdminAnalytics(
         tracker.logEvent("Pin_Created", arrayOf(Pair("Pin_Complexity", isPinComplex)))
     }
 
+    fun logPinRejected() {
+        tracker.logEvent("Pin_Rejected")
+    }
+
     fun logPasswordCreated() {
         tracker.logEvent("Password_Created")
     }

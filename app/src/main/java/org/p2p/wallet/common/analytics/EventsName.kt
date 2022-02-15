@@ -31,6 +31,7 @@ object EventsName {
     }
 
     object Settings {
+        const val MAIN = "Settings"
         const val USERNAME_RESERVE = "Settings_Username_Reserve"
         const val USERCARD = "Settings_Usercard"
         const val SEED = "Settings_Seed"
@@ -42,6 +43,7 @@ object EventsName {
         const val PIN_CREATE = "Settings_PIN_Create"
         const val PIN_CONFIRM = "Settings_PIN_Confirm"
         const val PIN_RESET = "Settings_PIN_Reset"
+        const val ZERO_BALANCES = "Settings_Zero_Balances"
     }
 
     object Send {

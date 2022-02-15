@@ -7,6 +7,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
 import org.p2p.wallet.send.model.NetworkType
@@ -36,12 +38,12 @@ class RenBTCFragment :
     }
 
     override val presenter: RenBTCContract.Presenter by inject()
-
     private val binding: FragmentRenBtcBinding by viewBinding()
+    private val eventInteractor: EventInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        eventInteractor.logScreenOpenEvent(EventsName.Receive.BITCOIN)
         with(binding) {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }

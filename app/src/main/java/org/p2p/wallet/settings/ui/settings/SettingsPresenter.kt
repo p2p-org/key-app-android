@@ -3,6 +3,7 @@ package org.p2p.wallet.settings.ui.settings
 import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
@@ -14,7 +15,8 @@ class SettingsPresenter(
     private val usernameInteractor: UsernameInteractor,
     private val authInteractor: AuthInteractor,
     private val environmentManager: EnvironmentManager,
-    private val appRestarter: AppRestarter
+    private val appRestarter: AppRestarter,
+    private val adminAnalytics: AdminAnalytics
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     var networkName = environmentManager.loadEnvironment().name
