@@ -43,6 +43,8 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.edgetoedge.Edge
+import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -121,6 +123,11 @@ class SendFragment :
 
     private fun setupViews() {
         with(binding) {
+            edgeToEdge {
+                toolbar.fit { Edge.TopArc }
+                scrollView.fit { Edge.BottomArc }
+            }
+
             if (backStackEntryCount() > 1) {
                 toolbar.setNavigationIcon(R.drawable.ic_back)
                 toolbar.setNavigationOnClickListener { popBackStack() }

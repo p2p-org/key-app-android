@@ -1,7 +1,7 @@
 package org.p2p.wallet.rpc.interactor
 
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.model.orca.OrcaAddressData
+import org.p2p.wallet.swap.model.orca.TransactionAddressData
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.PublicKey
@@ -19,7 +19,7 @@ class TransactionAddressInteractor(
     suspend fun findAssociatedAddress(
         ownerAddress: PublicKey,
         destinationMint: String
-    ): OrcaAddressData {
+    ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
             findSplTokenAddress(destinationMint, ownerAddress)
@@ -32,7 +32,7 @@ class TransactionAddressInteractor(
         val accountInfo = rpcRepository.getAccountInfo(associatedAddress.toBase58())
         val value = accountInfo?.value
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
-        return OrcaAddressData(
+        return TransactionAddressData(
             associatedAddress = associatedAddress,
             shouldCreateAssociatedInstruction = !associatedNotNeeded
         )

@@ -150,8 +150,68 @@ object FeeRelayerProgram {
         return TransactionInstruction(programId, keys, bos.toByteArray())
     }
 
+    fun topUpSwapInstruction(
+        feeRelayerProgramId: PublicKey,
+        userRelayAddress: PublicKey,
+        userTemporarilyWSOLAddress: PublicKey,
+        topUpSwap: SwapData,
+        userAuthorityAddress: PublicKey,
+        userSourceTokenAccountAddress: PublicKey,
+        feePayerAddress: PublicKey
+    ): TransactionInstruction {
+        return when (topUpSwap) {
+            is SwapData.Direct ->
+                topUpSwapDirectInstruction(
+                    feeRelayerProgramId = feeRelayerProgramId,
+                    feePayer = feePayerAddress,
+                    userAuthority = userAuthorityAddress,
+                    userRelayAccount = userRelayAddress,
+                    userTransferAuthority = PublicKey(topUpSwap.transferAuthorityPubkey),
+                    userSourceTokenAccount = userSourceTokenAccountAddress,
+                    userTemporaryWsolAccount = userTemporarilyWSOLAddress,
+                    swapProgramId = PublicKey(topUpSwap.programId),
+                    swapAccount = PublicKey(topUpSwap.accountPubkey),
+                    swapAuthority = PublicKey(topUpSwap.authorityPubkey),
+                    swapSource = PublicKey(topUpSwap.sourcePubkey),
+                    swapDestination = PublicKey(topUpSwap.destinationPubkey),
+                    poolTokenMint = PublicKey(topUpSwap.poolTokenMintPubkey),
+                    poolFeeAccount = PublicKey(topUpSwap.poolFeeAccountPubkey),
+                    amountIn = topUpSwap.amountIn,
+                    minimumAmountOut = topUpSwap.minimumAmountOut,
+                )
+            is SwapData.SplTransitive ->
+                topUpWithSPLSwapTransitiveInstruction(
+                    feeRelayerProgramId = feeRelayerProgramId,
+                    feePayer = feePayerAddress,
+                    userAuthority = userAuthorityAddress,
+                    userRelayAccount = userRelayAddress,
+                    userTransferAuthority = PublicKey(topUpSwap.from.transferAuthorityPubkey),
+                    userSourceTokenAccount = userSourceTokenAccountAddress,
+                    userDestinationTokenAccount = userTemporarilyWSOLAddress,
+                    transitTokenAccountAddress = topUpSwap.transitTokenAccountAddress,
+                    swapFromProgramId = PublicKey(topUpSwap.from.programId),
+                    swapFromAccount = PublicKey(topUpSwap.from.accountPubkey),
+                    swapFromAuthority = PublicKey(topUpSwap.from.authorityPubkey),
+                    swapFromSource = PublicKey(topUpSwap.from.sourcePubkey),
+                    swapFromDestination = PublicKey(topUpSwap.from.destinationPubkey),
+                    swapFromPoolTokenMint = PublicKey(topUpSwap.from.poolTokenMintPubkey),
+                    swapFromPoolFeeAccount = PublicKey(topUpSwap.from.poolFeeAccountPubkey),
+                    swapToProgramId = PublicKey(topUpSwap.to.programId),
+                    swapToAccount = PublicKey(topUpSwap.to.accountPubkey),
+                    swapToAuthority = PublicKey(topUpSwap.to.authorityPubkey),
+                    swapToSource = PublicKey(topUpSwap.to.sourcePubkey),
+                    swapToDestination = PublicKey(topUpSwap.to.destinationPubkey),
+                    swapToPoolTokenMint = PublicKey(topUpSwap.to.poolTokenMintPubkey),
+                    swapToPoolFeeAccount = PublicKey(topUpSwap.to.poolFeeAccountPubkey),
+                    amountIn = topUpSwap.from.amountIn,
+                    transitMinimumAmount = topUpSwap.from.minimumAmountOut,
+                    minimumAmountOut = topUpSwap.to.minimumAmountOut
+                )
+        }
+    }
+
     fun topUpSwapDirectInstruction(
-        programId: PublicKey,
+        feeRelayerProgramId: PublicKey,
         feePayer: PublicKey,
         userAuthority: PublicKey,
         userRelayAccount: PublicKey,
@@ -199,7 +259,77 @@ object FeeRelayerProgram {
             throw RuntimeException(e)
         }
 
-        return TransactionInstruction(programId, keys, bos.toByteArray())
+        return TransactionInstruction(feeRelayerProgramId, keys, bos.toByteArray())
+    }
+
+    fun topUpWithSPLSwapTransitiveInstruction(
+        feeRelayerProgramId: PublicKey,
+        feePayer: PublicKey,
+        userAuthority: PublicKey,
+        userRelayAccount: PublicKey,
+        userTransferAuthority: PublicKey,
+        userSourceTokenAccount: PublicKey,
+        userDestinationTokenAccount: PublicKey,
+        transitTokenAccountAddress: PublicKey,
+        swapFromProgramId: PublicKey,
+        swapFromAccount: PublicKey,
+        swapFromAuthority: PublicKey,
+        swapFromSource: PublicKey,
+        swapFromDestination: PublicKey,
+        swapFromPoolTokenMint: PublicKey,
+        swapFromPoolFeeAccount: PublicKey,
+        swapToProgramId: PublicKey,
+        swapToAccount: PublicKey,
+        swapToAuthority: PublicKey,
+        swapToSource: PublicKey,
+        swapToDestination: PublicKey,
+        swapToPoolTokenMint: PublicKey,
+        swapToPoolFeeAccount: PublicKey,
+        amountIn: BigInteger,
+        transitMinimumAmount: BigInteger,
+        minimumAmountOut: BigInteger,
+    ): TransactionInstruction {
+
+        val keys = listOf(
+            AccountMeta(publicKey = WRAPPED_SOL_MINT.toPublicKey(), isSigner = false, isWritable = false),
+            AccountMeta(publicKey = feePayer, isSigner = true, isWritable = true),
+            AccountMeta(publicKey = userAuthority, isSigner = true, isWritable = false),
+            AccountMeta(publicKey = userRelayAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = TokenProgram.PROGRAM_ID, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = userTransferAuthority, isSigner = true, isWritable = false),
+            AccountMeta(publicKey = userSourceTokenAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = transitTokenAccountAddress, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = userDestinationTokenAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromProgramId, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapFromAccount, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapFromAuthority, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapFromSource, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromDestination, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromPoolTokenMint, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapFromPoolFeeAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToProgramId, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapToAccount, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapToAuthority, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = swapToSource, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToDestination, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToPoolTokenMint, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = swapToPoolFeeAccount, isSigner = false, isWritable = true),
+            AccountMeta(publicKey = Sysvar.SYSVAR_RENT_ADDRESS, isSigner = false, isWritable = false),
+            AccountMeta(publicKey = SystemProgram.PROGRAM_ID, isSigner = false, isWritable = false)
+        )
+
+        val bos = ByteArrayOutputStream()
+        bos.write(1)
+
+        try {
+            ByteUtils.uint64ToByteStreamLE(amountIn, bos)
+            ByteUtils.uint64ToByteStreamLE(transitMinimumAmount, bos)
+            ByteUtils.uint64ToByteStreamLE(minimumAmountOut, bos)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+
+        return TransactionInstruction(feeRelayerProgramId, keys, bos.toByteArray())
     }
 
     fun createRelayTransferSolInstruction(
