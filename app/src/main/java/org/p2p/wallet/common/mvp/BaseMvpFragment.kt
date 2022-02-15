@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
+import org.p2p.wallet.utils.hideKeyboard
+import org.p2p.wallet.utils.keyboardIsVisible
 import org.p2p.wallet.utils.showErrorDialog
 
 abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
@@ -16,9 +18,9 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     abstract val presenter: P
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = super.onCreateView(inflater, container, savedInstanceState)
-        view?.isClickable = true
-        view?.isFocusableInTouchMode = true
+        val view = super.onCreateView(inflater, container, savedInstanceState)?.apply {
+            setOnClickListener { if (keyboardIsVisible) hideKeyboard() }
+        }
         return view
     }
 
