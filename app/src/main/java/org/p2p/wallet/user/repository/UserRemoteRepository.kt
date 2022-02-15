@@ -70,6 +70,7 @@ class UserRemoteRepository(
     override suspend fun loadTokens(publicKey: String): List<Token.Active> = withContext(Dispatchers.IO) {
         val response = rpcRepository.getTokenAccountsByOwner(publicKey)
 
+        // TODO: 15.02.2022 append SOL to account tokens and save locally
         val result = response.accounts
             .mapNotNull {
                 val mintAddress = it.account.data.parsed.info.mint
