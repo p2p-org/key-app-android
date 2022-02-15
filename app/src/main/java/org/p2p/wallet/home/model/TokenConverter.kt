@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.model
 
 import org.p2p.solanaj.model.types.Account
-import org.p2p.wallet.home.api.TokenColors
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.user.local.TokenResponse
 import org.p2p.wallet.user.model.TokenData
@@ -41,7 +40,6 @@ object TokenConverter {
             iconUrl = tokenData.iconUrl,
             totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price) },
             total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
-            color = TokenColors.findColorBySymbol(tokenData.symbol),
             usdRate = price?.price,
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = tokenData.serumV3Usdc,
@@ -60,7 +58,6 @@ object TokenConverter {
             decimals = data.decimals,
             mintAddress = data.mintAddress,
             iconUrl = data.iconUrl,
-            color = TokenColors.findColorBySymbol(data.symbol),
             serumV3Usdc = data.serumV3Usdc,
             serumV3Usdt = data.serumV3Usdt,
             isWrapped = data.isWrapped,
@@ -77,7 +74,6 @@ object TokenConverter {
             iconUrl = token.iconUrl,
             totalInUsd = token.totalInUsd,
             total = token.total,
-            color = token.color,
             exchangeRate = token.usdRate?.toString(),
             visibility = token.visibility.stringValue,
             serumV3Usdc = token.serumV3Usdc,
@@ -95,7 +91,6 @@ object TokenConverter {
             iconUrl = entity.iconUrl,
             totalInUsd = entity.totalInUsd,
             total = entity.total,
-            color = entity.color,
             usdRate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             serumV3Usdc = entity.serumV3Usdc,
