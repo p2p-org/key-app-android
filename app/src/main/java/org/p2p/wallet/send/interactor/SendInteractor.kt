@@ -35,7 +35,7 @@ class SendInteractor(
     private val rpcRepository: RpcRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
-    private val feeRelayerRequestInteractor: FeeRelayerTopUpInteractor,
+    private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaSwapInteractor: OrcaSwapInteractor,
     private val amountInteractor: TransactionAmountInteractor,
@@ -228,18 +228,13 @@ class SendInteractor(
         val feePayerPublicKey = feeRelayerAccountInteractor.getRelayInfo().feePayerAddress
         val recentBlockhash = rpcRepository.getRecentBlockhash()
 
-        transaction.setFeePayer(feePayerPublicKey)
+        transaction.feePayer = feePayerPublicKey
         transaction.recentBlockHash = recentBlockhash.recentBlockhash
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val signature = feeRelayerRequestInteractor.relayTransaction(
-            instructions = instructions,
-            signatures = transaction.allSignatures,
-            pubkeys = transaction.accountKeys,
-            blockHash = recentBlockhash.recentBlockhash
-        ).firstOrNull().orEmpty()
+        val signature = feeRelayerTopUpInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
 
         return SendResult.Success(signature)
     }
@@ -273,12 +268,7 @@ class SendInteractor(
         )
 
         val transaction = preparedTransaction.transaction
-        val signature = feeRelayerRequestInteractor.relayTransaction(
-            instructions = transaction.instructions,
-            signatures = transaction.allSignatures,
-            pubkeys = transaction.accountKeys,
-            blockHash = transaction.recentBlockHash
-        ).firstOrNull().orEmpty()
+        val signature = feeRelayerTopUpInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
 
         return SendResult.Success(signature)
     }

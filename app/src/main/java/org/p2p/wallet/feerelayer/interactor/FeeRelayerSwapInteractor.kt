@@ -120,7 +120,7 @@ class FeeRelayerSwapInteractor(
             throw IllegalStateException("Swap pools not found")
         }
 
-        return topUpPools.getInputAmount(feeInSOL, 0.01)
+        return topUpPools.getInputAmount(feeInSOL, Slippage.PERCENT.doubleValue)
     }
 
     // Prepare swap transaction for relay
@@ -290,7 +290,7 @@ class FeeRelayerSwapInteractor(
 
         // swap
         val transitTokenMintPubkey = feeRelayerInstructionsInteractor.getTransitTokenMintPubkey(pools)
-        val (swapData, transferAuthorityAccount) = feeRelayerInstructionsInteractor.prepareSwapData(
+        val swapData = feeRelayerInstructionsInteractor.prepareSwapData(
             pools = pools,
             inputAmount = inputAmount,
             minAmountOut = null,
@@ -298,24 +298,12 @@ class FeeRelayerSwapInteractor(
             transitTokenMintPubkey = transitTokenMintPubkey,
             userAuthorityAddress = userAuthorityAddress
         )
-        val userTransferAuthority = transferAuthorityAccount?.publicKey
+        val userTransferAuthority = Account(tokenKeyProvider.secretKey)
 
         val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(userAuthorityAddress)
         val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
         when (swapData) {
             is SwapData.Direct -> {
-                // approve
-                if (userTransferAuthority != null) {
-                    val approveInstruction = TokenProgram.approveInstruction(
-                        TokenProgram.PROGRAM_ID,
-                        userSourceTokenAccountAddress,
-                        userTransferAuthority,
-                        userAuthorityAddress,
-                        swapData.amountIn
-                    )
-                    instructions += approveInstruction
-                }
-
                 // top up
                 val topUpSwapDirectInstruction = FeeRelayerProgram.topUpSwapDirectInstruction(
                     feeRelayerProgramId = feeRelayerProgramId,
@@ -339,18 +327,6 @@ class FeeRelayerSwapInteractor(
                 instructions += topUpSwapDirectInstruction
             }
             is SwapData.SplTransitive -> {
-                // approve
-                if (userTransferAuthority != null) {
-                    val approveInstruction = TokenProgram.approveInstruction(
-                        TokenProgram.PROGRAM_ID,
-                        userSourceTokenAccountAddress,
-                        userTransferAuthority,
-                        userAuthorityAddress,
-                        swapData.from.amountIn
-                    )
-                    instructions += approveInstruction
-                }
-
                 // create transit token account
                 val transitTokenMint = swapData.transitTokenMintPubkey.toPublicKey()
                 val transitTokenAccountAddress = feeRelayerAccountInteractor.getTransitTokenAccountAddress(

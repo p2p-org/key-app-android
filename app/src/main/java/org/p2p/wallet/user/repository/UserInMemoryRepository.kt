@@ -21,7 +21,7 @@ class UserInMemoryRepository : UserLocalRepository {
     private val decimalsFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
     override fun setTokenData(data: List<TokenData>) {
-        decimalsFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER, { it.name }))
+        decimalsFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
 
     override fun fetchTokens(searchText: String, count: Int, refresh: Boolean) {

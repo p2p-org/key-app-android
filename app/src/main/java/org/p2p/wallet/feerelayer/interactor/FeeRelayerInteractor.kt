@@ -133,12 +133,7 @@ class FeeRelayerInteractor(
 
         // check if top up is needed
         return if (params == null || payingFeeToken == null) {
-            feeRelayerTopUpInteractor.relayTransaction(
-                instructions = transaction.instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = transaction.recentBlockHash
-            )
+            feeRelayerTopUpInteractor.relayTransaction(transaction)
         } else {
             // STEP 2.2.1: Top up
             feeRelayerTopUpInteractor.topUp(
@@ -150,12 +145,7 @@ class FeeRelayerInteractor(
                 expectedFee = params.expectedFee
             )
 
-            feeRelayerTopUpInteractor.relayTransaction(
-                instructions = transaction.instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = transaction.recentBlockHash
-            )
+            feeRelayerTopUpInteractor.relayTransaction(transaction)
         }
     }
 }

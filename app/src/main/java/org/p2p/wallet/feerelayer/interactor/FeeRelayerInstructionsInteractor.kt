@@ -1,6 +1,5 @@
 package org.p2p.wallet.feerelayer.interactor
 
-import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -25,9 +24,8 @@ class FeeRelayerInstructionsInteractor(
         minAmountOut: BigInteger?,
         slippage: Double,
         transitTokenMintPubkey: PublicKey? = null,
-        newTransferAuthority: Boolean = true,
         userAuthorityAddress: PublicKey
-    ): Pair<SwapData, Account?> {
+    ): SwapData {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
         // preconditions
         if (pools.size == 0 || pools.size > 2) {
@@ -37,9 +35,6 @@ class FeeRelayerInstructionsInteractor(
         if (inputAmount == null && minAmountOut == null) {
             throw IllegalStateException("Invalid amount")
         }
-
-        // create transferAuthority
-        val transferAuthority = Account()
 
         // form topUp params
         if (pools.size == 1) {
@@ -52,13 +47,11 @@ class FeeRelayerInstructionsInteractor(
                 throw IllegalStateException("Invalid amount")
             }
 
-            val directSwapData = pool.getSwapData(
-                transferAuthorityPubkey = if (newTransferAuthority) transferAuthority.publicKey else owner,
+            return pool.getSwapData(
+                transferAuthorityPubkey = owner,
                 amountIn = amountIn,
                 minAmountOut = minAmountOut
             )
-
-            return directSwapData to if (newTransferAuthority) transferAuthority else null
         } else {
             val firstPool = pools[0]
             val secondPool = pools[1]
@@ -84,14 +77,14 @@ class FeeRelayerInstructionsInteractor(
                 throw IllegalStateException("Invalid amount")
             }
 
-            val transitiveSwapData = SwapData.SplTransitive(
+            return SwapData.SplTransitive(
                 from = firstPool.getSwapData(
-                    transferAuthorityPubkey = if (newTransferAuthority) transferAuthority.publicKey else owner,
+                    transferAuthorityPubkey = owner,
                     amountIn = firstPoolAmountIn,
                     minAmountOut = secondPoolAmountIn
                 ),
                 to = secondPool.getSwapData(
-                    transferAuthorityPubkey = if (newTransferAuthority) transferAuthority.publicKey else owner,
+                    transferAuthorityPubkey = owner,
                     amountIn = secondPoolAmountIn,
                     minAmountOut = secondPoolAmountOut
                 ),
@@ -101,8 +94,6 @@ class FeeRelayerInstructionsInteractor(
                     mint = transitTokenMintPubkey
                 )
             )
-
-            return transitiveSwapData to if (newTransferAuthority) transferAuthority else null
         }
     }
 

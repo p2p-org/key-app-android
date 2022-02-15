@@ -1,11 +1,9 @@
 package org.p2p.wallet.feerelayer.interactor
 
 import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.Signature
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
@@ -79,7 +77,8 @@ class FeeRelayerTopUpInteractor(
         val ownerSignature = signatures[1].signature
 
         // the third signature (optional) is the transferAuthority's signature
-        val transferAuthoritySignature = signatures.getOrNull(2)?.signature
+//        val transferAuthoritySignature = signatures.getOrNull(2)?.signature
+        val transferAuthoritySignature = ownerSignature
 
         val topUpSignatures = SwapTransactionSignatures(
             userAuthoritySignature = ownerSignature,
@@ -257,7 +256,7 @@ class FeeRelayerTopUpInteractor(
 
         // top up swap
         val transitTokenMintPubkey = feeRelayerInstructionsInteractor.getTransitTokenMintPubkey(topUpPools)
-        val (topUpSwap, transferAuthorityAccount) = feeRelayerInstructionsInteractor.prepareSwapData(
+        val topUpSwap = feeRelayerInstructionsInteractor.prepareSwapData(
             pools = topUpPools,
             inputAmount = null,
             minAmountOut = targetAmount,
@@ -265,25 +264,16 @@ class FeeRelayerTopUpInteractor(
             transitTokenMintPubkey = transitTokenMintPubkey,
             userAuthorityAddress = userAuthorityAddress,
         )
-        val userTransferAuthority = transferAuthorityAccount?.publicKey
+        // TODO: temporary removing user transfer authority account and approve instructions
+        // since it causes too large transactiob error
+//        val userTransferAuthority = transferAuthorityAccount?.publicKey
+        val transferAuthorityAccount = Account(tokenKeyProvider.secretKey)
 
         val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(userAuthorityAddress)
         val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
         when (topUpSwap) {
             is SwapData.Direct -> {
                 accountCreationFee += minimumTokenAccountBalance
-
-                if (userTransferAuthority != null) {
-                    // approve
-                    val approveInstruction = TokenProgram.approveInstruction(
-                        TokenProgram.PROGRAM_ID,
-                        userSourceTokenAccountAddress,
-                        userTransferAuthority,
-                        userAuthorityAddress,
-                        topUpSwap.amountIn
-                    )
-                    instructions += approveInstruction
-                }
 
                 // top up
                 val topUpSwapInstruction = FeeRelayerProgram.topUpSwapInstruction(
@@ -298,17 +288,6 @@ class FeeRelayerTopUpInteractor(
                 instructions += topUpSwapInstruction
             }
             is SwapData.SplTransitive -> {
-                // approve
-                if (userTransferAuthority != null) {
-                    val approveInstruction = TokenProgram.approveInstruction(
-                        TokenProgram.PROGRAM_ID,
-                        userSourceTokenAccountAddress,
-                        topUpSwap.from.transferAuthorityPubkey.toPublicKey(),
-                        userAuthorityAddress,
-                        topUpSwap.from.amountIn
-                    )
-                    instructions += approveInstruction
-                }
 
                 // create transit token account
                 val transitTokenMint = topUpSwap.transitTokenMintPubkey.toPublicKey()
@@ -374,22 +353,13 @@ class FeeRelayerTopUpInteractor(
 
         // resign transaction
         val owner = Account(tokenKeyProvider.secretKey)
-        val signers = mutableListOf(owner)
-
-        if (transferAuthorityAccount != null) {
-            signers.add(0, transferAuthorityAccount)
-        }
+        val signers = mutableListOf(owner, transferAuthorityAccount)
 
         transaction.sign(signers)
 
         return topUpSwap to PreparedTransaction(transaction, signers, expectedFee)
     }
 
-    suspend fun relayTransaction(
-        instructions: List<TransactionInstruction>,
-        signatures: List<Signature>,
-        pubkeys: List<AccountMeta>,
-        blockHash: String
-    ): List<String> =
-        feeRelayerRepository.relayTransaction(instructions, signatures, pubkeys, blockHash)
+    suspend fun relayTransaction(transaction: Transaction): List<String> =
+        feeRelayerRepository.relayTransaction(transaction)
 }

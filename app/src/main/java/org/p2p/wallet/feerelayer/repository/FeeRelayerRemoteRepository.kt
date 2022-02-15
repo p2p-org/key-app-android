@@ -1,9 +1,7 @@
 package org.p2p.wallet.feerelayer.repository
 
-import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.Signature
-import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
@@ -47,12 +45,12 @@ class FeeRelayerRemoteRepository(
         )
     }
 
-    override suspend fun relayTransaction(
-        instructions: List<TransactionInstruction>,
-        signatures: List<Signature>,
-        pubkeys: List<AccountMeta>,
-        blockHash: String
-    ): List<String> {
+    override suspend fun relayTransaction(transaction: Transaction): List<String> {
+        val instructions = transaction.instructions
+        val signatures = transaction.allSignatures
+        val pubkeys = transaction.accountKeys
+        val blockHash = transaction.recentBlockHash
+
         val keys = pubkeys.map { it.publicKey.toBase58() }
         val requestInstructions = instructions.map { FeeRelayerConverter.toNetwork(it, keys) }
 
