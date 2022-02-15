@@ -38,10 +38,10 @@ class PrefixTextWatcher(
         if (oldValue != newValue) onValueChanged?.invoke(newValue)
     }
 
-    override fun beforeTextChanged(text: CharSequence?, start: Int, count: Int, after: Int) {}
+    override fun beforeTextChanged(text: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
     override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-        val clearedValue = text.toString().filter { it.isDigit() }
+        val clearedValue = text.toString().removePrefix(prefixSymbol).replace(',','.')
 
         if (clearedValue.isEmpty()) {
             valueText = PrefixData()
