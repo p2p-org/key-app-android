@@ -4,8 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.RawRes
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.common.mvp.BaseFragment
@@ -25,22 +23,6 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     private val binding: FragmentOnboardingBinding by viewBinding()
 
     private var isFinalAnimationWorking = false
-    private val animationLifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onResume(owner: LifecycleOwner) {
-            super.onResume(owner)
-            binding.animationVideoView.start()
-        }
-
-        override fun onPause(owner: LifecycleOwner) {
-            super.onPause(owner)
-            binding.animationVideoView.pause()
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        lifecycle.addObserver(animationLifecycleObserver)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,6 +45,16 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
                 runAfterAnimation { replaceFragment(SecretKeyFragment.create()) }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.animationVideoView.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.animationVideoView.start()
     }
 
     private fun runAfterAnimation(transaction: () -> Unit) {
