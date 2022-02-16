@@ -25,6 +25,7 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.setVisible
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 
@@ -101,6 +102,13 @@ class HomeFragment :
 
     override fun showActions(items: List<ActionButtonsView.ActionButton>) {
         binding.actionButtonsView.setItems(items)
+    }
+
+    override fun showEmptyState(isEmpty: Boolean) = with(binding) {
+        emptyStateLayout.setVisible(isEmpty)
+        swipeRefreshLayout.setVisible(!isEmpty)
+        balanceTextView.setVisible(!isEmpty)
+        balanceLabelTextView.setVisible(!isEmpty)
     }
 
     override fun onDestroy() {

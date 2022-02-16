@@ -16,6 +16,7 @@ interface HomeContract {
         fun showBalance(balance: BigDecimal, username: Username?)
         fun showActions(items: List<ActionButtonsView.ActionButton>)
         fun showRefreshing(isRefreshing: Boolean)
+        fun showEmptyState(isEmpty: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -70,6 +70,13 @@ fun View.createBitmap(): Bitmap {
     return bitmap
 }
 
+fun View.setVisible(isVisible: Boolean) {
+    visibility = when {
+        isVisible -> View.VISIBLE
+        else -> View.GONE
+    }
+}
+
 fun Activity.hideKeyboard() {
     currentFocus?.hideKeyboard()
 }
