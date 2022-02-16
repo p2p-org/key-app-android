@@ -79,7 +79,7 @@ workflows:
           filters:
             branches:
               only:
-                - ~/(^feature\/.+)/
+                - /(^feature\/.+)/
       - unit_tests:
           requires:
             - android_lint
