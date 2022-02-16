@@ -26,6 +26,10 @@ defaults: &defaults
     tag: 2021.10.1
 
 jobs:
+  commit:
+    <<: *defaults
+    steps:
+      - run: echo $CIRCLE_BUILD_NUM
   version_build:
     <<: *defaults
     steps:
@@ -88,7 +92,7 @@ workflows:
 
   lint_test_and_publish_feature:
     jobs:
-      - version_build:
+      - commit:
           context: feature
           filters:
             branches:
