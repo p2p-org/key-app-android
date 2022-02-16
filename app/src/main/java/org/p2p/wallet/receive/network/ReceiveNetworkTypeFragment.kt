@@ -8,14 +8,17 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveNetworkTypeBinding
+import org.p2p.wallet.renbtc.ui.info.RenBtcBuyBottomSheet
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.renbtc.ui.main.RenBtcInfoBottomSheet
+import org.p2p.wallet.renbtc.ui.info.RenBtcInfoBottomSheet
+import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val EXTRA_NETWORK_TYPE = "EXTRA_NETWORK_TYPE"
 
@@ -73,6 +76,27 @@ class ReceiveNetworkTypeFragment() :
 
     override fun navigateToReceive(type: NetworkType) {
         setFragmentResult(REQUEST_KEY, Bundle().apply { putParcelable(BUNDLE_NETWORK_KEY, type) })
+        popBackStack()
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+    }
+
+    override fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?) {
+        RenBtcBuyBottomSheet.show(childFragmentManager, priceInSol, priceInUsd) {
+            navigateToReceive()
+        }
+    }
+
+    override fun showTopup() {
+        RenBtcTopupBottomSheet.show(childFragmentManager, ::onTopupClicked, ::onUseSolanaClicked)
+    }
+
+    private fun onTopupClicked() {
+        // TODO implement topup feature
+    }
+
+    private fun onUseSolanaClicked() {
         popBackStack()
     }
 }

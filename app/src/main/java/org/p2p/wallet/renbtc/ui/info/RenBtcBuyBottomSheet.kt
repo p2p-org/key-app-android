@@ -1,4 +1,4 @@
-package org.p2p.wallet.renbtc.ui.main
+package org.p2p.wallet.renbtc.ui.info
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,18 +8,32 @@ import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
-import org.p2p.wallet.databinding.DialogBtcNetworkInfoBinding
+import org.p2p.wallet.databinding.DialogBtcBuyInfoBinding
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
-class RenBtcInfoBottomSheet(private val block: () -> Unit) : NonDraggableBottomSheetDialogFragment() {
+class RenBtcBuyBottomSheet(private val block: () -> Unit) : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
-        fun show(fm: FragmentManager, block: () -> Unit) =
-            RenBtcInfoBottomSheet(block).show(fm, RenBtcInfoBottomSheet::javaClass.name)
+        private const val EXTRA_PRICE_IN_SOL = "EXTRA_PRICE_IN_SOL"
+        private const val EXTRA_PRICE_IN_USD = "EXTRA_PRICE_IN_USD"
+        fun show(
+            fm: FragmentManager,
+            priceInSol: BigDecimal,
+            priceInUsd: BigDecimal?,
+            block: () -> Unit
+        ) = RenBtcBuyBottomSheet(block).withArgs(
+            EXTRA_PRICE_IN_SOL to priceInSol,
+            EXTRA_PRICE_IN_USD to priceInUsd
+        ).show(fm, RenBtcBuyBottomSheet::javaClass.name)
     }
 
-    private val binding: DialogBtcNetworkInfoBinding by viewBinding()
+    private val binding: DialogBtcBuyInfoBinding by viewBinding()
+    private val priceInSol: BigDecimal by args(EXTRA_PRICE_IN_SOL)
+    private val priceInUsd: BigDecimal? by args(EXTRA_PRICE_IN_USD)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_btc_network_info, container, false)
@@ -32,6 +46,10 @@ class RenBtcInfoBottomSheet(private val block: () -> Unit) : NonDraggableBottomS
                 block.invoke()
                 dismissAllowingStateLoss()
             }
+
+            val feeUsd = if (priceInUsd != null) "~$$priceInUsd" else getString(R.string.common_not_available)
+            topTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
+            amountTextView.text = priceInSol.toString()
 
             val attentionText = buildSpannedString {
                 val onlyBitcoin = getString(R.string.receive_only_bitcoin)

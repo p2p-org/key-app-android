@@ -53,7 +53,7 @@ object HomeModule : InjectionModule {
             ReceiveSolanaPresenter(token, get(), get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (type: NetworkType) ->
-            ReceiveNetworkTypePresenter(get(), type)
+            ReceiveNetworkTypePresenter(get(), get(), get(), get(), type)
         } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
             SendPresenter(token, get(), get(), get(), get(), get(), get())
