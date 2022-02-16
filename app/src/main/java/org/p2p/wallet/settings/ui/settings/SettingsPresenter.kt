@@ -55,8 +55,9 @@ class SettingsPresenter(
             SettingsRow.Title(R.string.settings_profile),
             SettingsRow.Section(
                 titleResId = R.string.settings_username,
-                subtitle = username,
-                iconRes = R.drawable.ic_settings_user
+                subtitle = username.ifEmpty { context.getString(R.string.auth_not_yet_reserved) },
+                iconRes = R.drawable.ic_settings_user,
+                subtitleTextColorRes = if (username.isEmpty()) R.color.systemErrorMain else -1
             ),
             SettingsRow.Logout()
         )

@@ -1,5 +1,6 @@
 package org.p2p.wallet.settings.model
 
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
@@ -12,7 +13,8 @@ sealed class SettingsRow(open val isDivider: Boolean = false) {
         override val isDivider: Boolean = false,
         @StringRes val subtitleRes: Int = -1,
         @DrawableRes val iconRes: Int,
-        val subtitle: String? = null
+        val subtitle: String? = null,
+        @ColorRes val subtitleTextColorRes: Int = -1,
     ) : SettingsRow(isDivider)
 
     data class Title(

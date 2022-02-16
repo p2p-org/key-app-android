@@ -75,7 +75,7 @@ class SettingsFragment :
     }
 
     override fun showReserveUsername() {
-        replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
     }
 
     override fun showUsername() {

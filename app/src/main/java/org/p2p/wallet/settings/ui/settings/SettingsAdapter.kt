@@ -9,6 +9,7 @@ import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
+import org.p2p.wallet.utils.requireContext
 
 class SettingsAdapter(
     private val onItemClickListener: (titleResId: Int) -> Unit,
@@ -83,6 +84,9 @@ class SettingsAdapter(
             }
             if (item.subtitle != null) {
                 subtitleTextView.text = item.subtitle
+            }
+            if (item.subtitleTextColorRes != -1) {
+                subtitleTextView.setTextColor(requireContext().getColor(item.subtitleTextColorRes))
             }
             imageView.setImageResource(item.iconRes)
             itemView.setOnClickListener { listener.invoke(item.titleResId) }

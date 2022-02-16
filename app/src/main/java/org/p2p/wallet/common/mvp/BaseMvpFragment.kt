@@ -16,10 +16,7 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     abstract val presenter: P
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = super.onCreateView(inflater, container, savedInstanceState)
-        view?.isClickable = true
-        view?.isFocusableInTouchMode = true
-        return view
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     @CallSuper

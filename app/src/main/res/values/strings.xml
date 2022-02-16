@@ -111,6 +111,7 @@
     <string name="auth_your_username">Your username</string>
     <string name="auth_enter_your_username">Enter your username</string>
     <string name="auth_reserve">Reserve</string>
+    <string name="auth_not_yet_reserved">Not yet reserved</string>
     <string name="auth_use_any_latin">No more than 15 alphanumerical latin lowercase characters and dashes</string>
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>
@@ -472,7 +473,7 @@
     <string name="settings_resetting_your_PIN">Resetting your PIN</string>
     <string name="settings_choose_a_network">Choose a network</string>
     <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
-    <string name="settings_tokens_hidden">HIdden</string>
+    <string name="settings_tokens_hidden">Hidden</string>
     <string name="settings_tokens_shown">Shown</string>
     <string name="settings_logout_title">Are you sure you want to log out?</string>
     <string name="settings_logout_message">If you have no backup, you may never be able to access this account</string>
