@@ -59,6 +59,13 @@ class OnBoardingAnalytics(
         tracker.logEvent("Backing_Up_Renewing")
     }
 
+    fun logBackingUpManually() {
+        tracker.logEvent("Backing_Up_Manually")
+    }
+
+    fun logBackingUpError() {
+    }
+
     fun logBioRejected() {
         tracker.logEvent("Bio_Rejected")
     }
@@ -140,6 +147,12 @@ class OnBoardingAnalytics(
 
     enum class UsernameField(val title: String) {
         FILLED("Filled"),
-        NOT_FILLED("Not_Filled")
+        NOT_FILLED("Not_Filled");
+
+        companion object {
+            fun getValueOf(username: String): UsernameField {
+                return if (username.isEmpty()) FILLED else NOT_FILLED
+            }
+        }
     }
 }

@@ -18,11 +18,13 @@ interface ReserveUsernameContract {
         fun showSuccess()
         fun showLoading(isLoading: Boolean)
         fun showUsernameLoading(isLoading: Boolean)
+        fun finishNavigation()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun checkUsername(username: String)
         fun checkCaptcha()
         fun registerUsername(username: String, result: String)
+        fun onSkipClicked()
     }
 }

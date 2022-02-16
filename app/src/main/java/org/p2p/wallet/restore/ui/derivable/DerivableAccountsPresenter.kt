@@ -2,7 +2,9 @@ package org.p2p.wallet.restore.ui.derivable
 
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
@@ -13,7 +15,8 @@ import kotlin.properties.Delegates
 class DerivableAccountsPresenter(
     private val secretKeys: List<SecretKey>,
     private val secretKeyInteractor: SecretKeyInteractor,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val analytics: OnBoardingAnalytics
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
@@ -38,6 +41,9 @@ class DerivableAccountsPresenter(
                 val accounts = secretKeyInteractor.getDerivableAccounts(keys)
                 allAccounts += accounts
                 filterAccountsByPath(path)
+                if (allAccounts.size > 1) {
+                    analytics.logManyWalletFound(EventsName.OnBoarding.IMPORT_MANUAL)
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading derivable accounts")
                 view?.showErrorMessage(e)
@@ -53,7 +59,7 @@ class DerivableAccountsPresenter(
                 view?.showLoading(true)
                 val keys = secretKeys.map { it.text }
                 secretKeyInteractor.createAndSaveAccount(path, keys)
-
+                analytics.logWalletRestored(EventsName.OnBoarding.IMPORT_MANUAL)
                 val usernameExists = usernameInteractor.usernameExists()
                 if (usernameExists) {
                     view?.navigateToCreatePin()

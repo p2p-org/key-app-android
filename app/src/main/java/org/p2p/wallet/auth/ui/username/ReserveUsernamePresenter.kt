@@ -4,20 +4,23 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class ReserveUsernamePresenter(
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val analytics: OnBoardingAnalytics
 ) : BasePresenter<ReserveUsernameContract.View>(),
     ReserveUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
+    private var lastUsername: String = ""
 
     override fun checkUsername(username: String) {
+        lastUsername = username
         checkUsernameJob?.cancel()
-
         if (username.isEmpty()) {
             view?.showIdleState()
             return
@@ -60,6 +63,7 @@ class ReserveUsernamePresenter(
         launch {
             try {
                 usernameInteractor.registerUsername(username, result)
+                // analytics.logUsernameSaved()
                 view?.showSuccess()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while registering username")
@@ -68,5 +72,9 @@ class ReserveUsernamePresenter(
                 view?.showLoading(false)
             }
         }
+    }
+
+    override fun onSkipClicked() {
+        analytics.logUsernameSkipped(OnBoardingAnalytics.UsernameField.getValueOf(lastUsername))
     }
 }

@@ -73,7 +73,7 @@ class SecurityKeyFragment :
                 presenter.copyKeys()
             }
             saveButton.setOnClickListener {
-                PixelCopy.getBitmapView(view, requireActivity().window, this@SecurityKeyFragment)
+                presenter.saveKeys()
             }
 
             with(keysRecyclerView) {
@@ -139,6 +139,10 @@ class SecurityKeyFragment :
 
     override fun navigateToVerify(keys: List<String>) {
         replaceFragment(VerifySecurityKeyFragment.create(keys))
+    }
+
+    override fun captureKeys() {
+        PixelCopy.getBitmapView(binding.root, requireActivity().window, this@SecurityKeyFragment)
     }
 
     override fun showFile(file: File) {

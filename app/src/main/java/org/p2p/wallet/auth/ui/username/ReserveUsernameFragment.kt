@@ -181,7 +181,7 @@ class ReserveUsernameFragment :
         val span = SpannableString(message)
         val clickableNumber = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                finishNavigation()
+                presenter.onSkipClicked()
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -195,7 +195,7 @@ class ReserveUsernameFragment :
         return span
     }
 
-    private fun finishNavigation() {
+    override fun finishNavigation() {
         when (mode) {
             ReserveMode.PIN_CODE -> {
                 navigateToPinCode()

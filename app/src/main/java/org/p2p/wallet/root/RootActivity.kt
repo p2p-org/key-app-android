@@ -25,10 +25,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     companion object {
         fun createIntent(context: Context) = Intent(context, RootActivity::class.java)
     }
+
     override val presenter: RootContract.Presenter by inject()
     private lateinit var container: FrameLayout
     private val adminAnalytics: AdminAnalytics by inject()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
