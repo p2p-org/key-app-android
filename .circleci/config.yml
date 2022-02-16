@@ -26,18 +26,14 @@ defaults: &defaults
     tag: 2021.10.1
 
 jobs:
-  commit:
-    <<: *defaults
-    steps:
-      - run: echo $CIRCLE_BUILD_NUM
   version_build:
     <<: *defaults
     steps:
       - run:
           name: "Generate build version"
           command: |
-            ./gradlew setVersionBuild -Pversion=<< pipeline.number >>
-            echo "Set build version to << pipeline.number >>"
+            ./gradlew setVersionBuild -Pversion=$CIRCLE_BUILD_NUM
+            echo "Set build version to $CIRCLE_BUILD_NUM"
       - store_artifacts:
           path: app/gradle.properties
   android_lint:
@@ -92,11 +88,26 @@ workflows:
 
   lint_test_and_publish_feature:
     jobs:
-      - commit:
+      - version_build:
           context: feature
           filters:
             branches:
               only:
-                - /(^feature\/.+)/
                 - master
+                - develop
+      - android_lint:
+          requires:
+            - version_build
+          context: feature
+      - unit_tests:
+          requires:
+            - android_lint
+          context: feature
+      - build_and_publish:
+          requires:
+            - unit_tests
+          context: feature
+          filters:
+            branches:
+              only:
                 - develop
