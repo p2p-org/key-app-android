@@ -29,7 +29,6 @@ jobs:
   version_build:
     <<: *defaults
     steps:
-      - checkout
       - run:
           name: "Generate build version"
           command: |
