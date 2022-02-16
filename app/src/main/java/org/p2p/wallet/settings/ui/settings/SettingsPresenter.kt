@@ -4,7 +4,6 @@ import android.content.Context
 import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
@@ -16,7 +15,6 @@ class SettingsPresenter(
     private val usernameInteractor: UsernameInteractor,
     private val authInteractor: AuthInteractor,
     private val environmentManager: EnvironmentManager,
-    private val adminAnalytics: AdminAnalytics
     private val appRestarter: AppRestarter,
     private val context: Context
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {

@@ -8,7 +8,7 @@ import org.p2p.wallet.auth.analytics.AdminAnalytics
 object RootModule : InjectionModule {
 
     override fun create() = module {
-        factory { RootPresenter(get(), get(), get(), get()) } bind RootContract.Presenter::class
+        factory { RootPresenter(get(), get()) } bind RootContract.Presenter::class
         single { AdminAnalytics(get()) }
     }
 }
