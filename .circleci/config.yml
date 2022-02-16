@@ -29,13 +29,12 @@ jobs:
   version_build:
     <<: *defaults
     steps:
+      - checkout
       - run:
           name: "Generate build version"
           command: |
             ./gradlew setVersionBuild -Pversion=$CIRCLE_BUILD_NUM
             echo "Set build version to $CIRCLE_BUILD_NUM"
-      - store_artifacts:
-          path: app/gradle.properties
   android_lint:
     <<: *defaults
     steps:
