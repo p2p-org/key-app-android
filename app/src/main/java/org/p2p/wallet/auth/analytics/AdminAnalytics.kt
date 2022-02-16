@@ -22,12 +22,11 @@ class AdminAnalytics(
         tracker.logEvent("Snackbar_Received", arrayOf(Pair("Snackbar_Type", message)))
     }
 
-    fun logSignOut(backupState: BackupState = BackupState.OFF, lastScreen: String) {
+    fun logSignOut(backupState: BackupState = BackupState.OFF) {
         tracker.logEvent(
             "Sign_Out",
             arrayOf(
-                Pair("Backup_State", backupState.title),
-                Pair("Last_Screen", lastScreen)
+                Pair("Backup_State", backupState.title)
             )
         )
     }
@@ -37,12 +36,23 @@ class AdminAnalytics(
     }
 
     // TODO determine about pin complex calculation
-    fun logPinCreated(isPinComplex: Boolean = false) {
-        tracker.logEvent("Pin_Created", arrayOf(Pair("Pin_Complexity", isPinComplex)))
+    fun logPinCreated(isPinComplex: Boolean = false, currentScreenName: String) {
+        tracker.logEvent(
+            "Pin_Created",
+            arrayOf(
+                Pair("Pin_Complexity", isPinComplex),
+                Pair("Current_Screen", currentScreenName)
+            )
+        )
     }
 
-    fun logPinRejected() {
-        tracker.logEvent("Pin_Rejected")
+    fun logPinRejected(currentScreenName: String) {
+        tracker.logEvent(
+            "Pin_Rejected",
+            arrayOf(
+                Pair("Current_Screen", currentScreenName)
+            )
+        )
     }
 
     fun logPasswordCreated() {

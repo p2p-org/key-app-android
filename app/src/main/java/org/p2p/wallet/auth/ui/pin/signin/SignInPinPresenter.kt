@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -24,7 +24,7 @@ class SignInPinPresenter(
     private val authInteractor: AuthInteractor,
     private val adminAnalytics: AdminAnalytics,
     private val authAnalytics: AuthAnalytics,
-    private val eventInteractor: EventInteractor
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<SignInPinContract.View>(), SignInPinContract.Presenter {
 
     private var wrongPinCounter = 0
@@ -126,7 +126,7 @@ class SignInPinPresenter(
                 view?.vibrate(VIBRATE_DURATION)
 
                 authResult = AuthAnalytics.AuthResult.ERROR
-                adminAnalytics.logPinRejected()
+                adminAnalytics.logPinRejected(analyticsInteractor.getCurrentScreenName())
             }
             is SignInResult.Success -> {
                 timer?.cancel()

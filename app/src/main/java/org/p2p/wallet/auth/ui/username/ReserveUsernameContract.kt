@@ -19,6 +19,7 @@ interface ReserveUsernameContract {
         fun showLoading(isLoading: Boolean)
         fun showUsernameLoading(isLoading: Boolean)
         fun finishNavigation()
+        fun showCustomFlow()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -26,5 +27,6 @@ interface ReserveUsernameContract {
         fun checkCaptcha()
         fun registerUsername(username: String, result: String)
         fun onSkipClicked()
+        fun save()
     }
 }

@@ -9,7 +9,7 @@ import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
@@ -33,7 +33,7 @@ class SecretKeyFragment :
 
     override val presenter: SecretKeyContract.Presenter by inject()
     private val binding: FragmentSecretKeyBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     private val phraseAdapter: SecretPhraseAdapter by lazy {
         SecretPhraseAdapter {
@@ -44,7 +44,7 @@ class SecretKeyFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.IMPORT_MANUAL)
+        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.IMPORT_MANUAL)
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 popBackStack()

@@ -20,7 +20,15 @@ object HistoryModule : InjectionModule {
 
         factory { HistoryRemoteRepository(get()) } bind HistoryRepository::class
         factory { HistoryInteractor(get(), get(), get()) }
-        factory { (token: Token.Active) -> TokenInfoPresenter(token, get()) } bind HistoryContract.Presenter::class
+        factory { (token: Token.Active) ->
+            TokenInfoPresenter(
+                token,
+                get(),
+                get(),
+                get(),
+                get()
+            )
+        } bind HistoryContract.Presenter::class
         factory { (transaction: HistoryTransaction) ->
             TransactionDetailsPresenter(transaction, get(), get())
         } bind TransactionDetailsContract.Presenter::class

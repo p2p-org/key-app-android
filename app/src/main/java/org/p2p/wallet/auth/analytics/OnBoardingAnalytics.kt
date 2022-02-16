@@ -64,6 +64,7 @@ class OnBoardingAnalytics(
     }
 
     fun logBackingUpError() {
+        tracker.logEvent("Backing_Up_Error")
     }
 
     fun logBioRejected() {
@@ -106,13 +107,8 @@ class OnBoardingAnalytics(
         )
     }
 
-    fun logBioApproved(lastScreenName: String) {
-        tracker.logEvent(
-            "Bio_Approved",
-            arrayOf(
-                Pair("Last_Screen", lastScreenName)
-            )
-        )
+    fun logBioApproved() {
+        tracker.logEvent("Bio_Approved")
     }
 
     fun logPushRejected() {

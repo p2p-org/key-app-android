@@ -9,7 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMoonpayViewBinding
@@ -33,13 +33,13 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
     private val environmentManager: EnvironmentManager by inject()
     private val binding: FragmentMoonpayViewBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val amount: String by args(EXTRA_AMOUNT)
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.Buy.EXTERNAL)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Buy.EXTERNAL)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             webView.settings.javaScriptEnabled = true

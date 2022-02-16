@@ -17,7 +17,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.InputTextView
@@ -45,9 +45,8 @@ class ReserveUsernameFragment :
     }
 
     override val presenter: ReserveUsernameContract.Presenter by inject()
-
     private val binding: FragmentReserveUsernameBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private var gt3GeeTestUtils: GT3GeetestUtils? = null
     private var gt3ConfigBean: GT3ConfigBean? = null
 
@@ -55,7 +54,7 @@ class ReserveUsernameFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.USERNAME_RESERVE)
+        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.USERNAME_RESERVE)
         initGeetestUtils()
 
         with(binding) {
@@ -74,7 +73,7 @@ class ReserveUsernameFragment :
             }
 
             usernameButton.setOnClickListener {
-                gt3GeeTestUtils?.startCustomFlow()
+                presenter.save()
             }
         }
     }
@@ -136,6 +135,10 @@ class ReserveUsernameFragment :
     override fun showUsernameLoading(isLoading: Boolean) {
         val message = getString(R.string.auth_username_searching)
         binding.inputTextView.setMessageWithState(message, InputTextView.State.Loading)
+    }
+
+    override fun showCustomFlow() {
+        gt3GeeTestUtils?.startCustomFlow()
     }
 
     private fun initGeetestUtils() {

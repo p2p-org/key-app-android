@@ -6,12 +6,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class ReserveUsernamePresenter(
     private val usernameInteractor: UsernameInteractor,
-    private val analytics: OnBoardingAnalytics
+    private val analytics: OnBoardingAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<ReserveUsernameContract.View>(),
     ReserveUsernameContract.Presenter {
 
@@ -63,7 +65,7 @@ class ReserveUsernamePresenter(
         launch {
             try {
                 usernameInteractor.registerUsername(username, result)
-                // analytics.logUsernameSaved()
+                analytics.logUsernameReserved()
                 view?.showSuccess()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while registering username")
@@ -76,5 +78,10 @@ class ReserveUsernamePresenter(
 
     override fun onSkipClicked() {
         analytics.logUsernameSkipped(OnBoardingAnalytics.UsernameField.getValueOf(lastUsername))
+    }
+
+    override fun save() {
+        analytics.logUsernameSaved(analyticsInteractor.getPreviousScreenName())
+        view?.showCustomFlow()
     }
 }

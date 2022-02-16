@@ -17,7 +17,7 @@ import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseFragment
 import org.p2p.wallet.utils.SpanUtils
@@ -43,7 +43,7 @@ class ResetPinFragment :
 
     override val presenter: ResetPinContract.Presenter by inject()
     private val binding: FragmentChangePinBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val authAnalytics: AuthAnalytics by inject()
@@ -58,7 +58,7 @@ class ResetPinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.Settings.PIN_ENTER)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Settings.PIN_ENTER)
         with(binding) {
             requireContext()
             toolbar.setNavigationOnClickListener { popBackStack() }
@@ -93,7 +93,7 @@ class ResetPinFragment :
         binding.resetTextView.isVisible = false
         binding.toolbar.setTitle(R.string.settings_security_change_enter_pin)
         binding.pinView.clearPin()
-        eventInteractor.logScreenOpenEvent(EventsName.Settings.PIN_CREATE)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Settings.PIN_CREATE)
     }
 
     override fun showConfirmationError() {
@@ -114,7 +114,7 @@ class ResetPinFragment :
     override fun showConfirmNewPin() {
         binding.toolbar.setTitle(R.string.settings_security_change_confirm_pin)
         binding.pinView.clearPin()
-        eventInteractor.logScreenOpenEvent(EventsName.Settings.PIN_CONFIRM)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Settings.PIN_CONFIRM)
     }
 
     override fun showWalletLocked(seconds: Long) {

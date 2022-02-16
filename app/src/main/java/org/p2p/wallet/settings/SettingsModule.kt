@@ -25,12 +25,22 @@ object SettingsModule : InjectionModule {
     override fun create() = module {
         factory { SettingsInteractor(get(), get()) }
         factory { ThemeInteractor(get()) }
-        factory { SettingsPresenter(get(), get(), get(), get(), get()) } bind SettingsContract.Presenter::class
+        factory {
+            SettingsPresenter(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get()
+            )
+        } bind SettingsContract.Presenter::class
         factory { SecurityPresenter(get(), get()) } bind SecurityContract.Presenter::class
-        factory { ResetPinPresenter(get()) } bind ResetPinContract.Presenter::class
+        factory { ResetPinPresenter(get(), get(), get()) } bind ResetPinContract.Presenter::class
         factory { AppearancePresenter(get()) } bind AppearanceContract.Presenter::class
         factory { ResetSeedPhrasePresenter(get(), get()) } bind ResetSeedPhraseContract.Presenter::class
-        factory { SettingsNetworkPresenter(get(), get(), get()) } bind SettingsNetworkContract.Presenter::class
+        factory { SettingsNetworkPresenter(get(), get(), get(), get()) } bind SettingsNetworkContract.Presenter::class
         factory { SettingsZeroBalancesPresenter(get()) } bind SettingsZeroBalanceContract.Presenter::class
     }
 }

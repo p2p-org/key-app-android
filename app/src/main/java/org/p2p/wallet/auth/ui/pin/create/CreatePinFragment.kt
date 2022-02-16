@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCreatePinBinding
@@ -31,7 +31,7 @@ class CreatePinFragment :
     override val presenter: CreatePinContract.Presenter by inject()
 
     private val binding: FragmentCreatePinBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
@@ -65,7 +65,7 @@ class CreatePinFragment :
             toolbar.title = getString(R.string.auth_setup_wallet_pin)
             pinView.clearPin()
         }
-        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.PIN_CREATE)
+        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.PIN_CREATE)
     }
 
     override fun showConfirmation() {
@@ -74,7 +74,7 @@ class CreatePinFragment :
             toolbar.title = getString(R.string.auth_confirm_wallet_pin)
             pinView.clearPin()
         }
-        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.PIN_CONFIRM)
+        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.PIN_CONFIRM)
     }
 
     override fun onAuthFinished() {

@@ -203,7 +203,14 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
 
     enum class FeeSource(val title: String) {
         SOL("SOL"),
-        OTHER("Other")
+        UNKNOWN("Unknown"),
+        OTHER("Other");
+
+        companion object {
+            fun getValueOf(tokenSymbol: String): FeeSource {
+                return if (tokenSymbol == "SOL") SOL else OTHER
+            }
+        }
     }
 
     enum class SwapSettingsSource(val title: String) {

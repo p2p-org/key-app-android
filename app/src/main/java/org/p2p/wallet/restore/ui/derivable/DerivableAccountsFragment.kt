@@ -11,7 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode.PIN_CODE
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
@@ -45,11 +45,11 @@ class DerivableAccountsFragment :
         DerivableAccountsAdapter()
     }
     private val binding: FragmentDerivableAccountsBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.DERIVATION)
+        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.DERIVATION)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             accountsRecyclerView.layoutManager = LinearLayoutManager(requireContext())

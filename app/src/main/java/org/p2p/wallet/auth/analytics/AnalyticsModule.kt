@@ -1,8 +1,11 @@
 package org.p2p.wallet.auth.analytics
 
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.auth.analytics.repository.AnalyticsInMemoryRepository
+import org.p2p.wallet.auth.analytics.repository.AnalyticsLocalRepository
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
@@ -16,6 +19,7 @@ object AnalyticsModule : InjectionModule {
         factory { ReceiveAnalytics(get()) }
         factory { BuyAnalytics(get()) }
         factory { SwapAnalytics(get()) }
-        factory { EventInteractor(get()) }
+        factory { AnalyticsInteractor(get(), get()) }
+        single { AnalyticsInMemoryRepository() } bind AnalyticsLocalRepository::class
     }
 }

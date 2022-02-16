@@ -6,7 +6,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixTextWatcher
@@ -27,11 +27,11 @@ class BuySolanaFragment :
 
     override val presenter: BuySolanaContract.Presenter by inject()
     private val binding: FragmentBuySolanaBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.Buy.SOL)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Buy.SOL)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
 

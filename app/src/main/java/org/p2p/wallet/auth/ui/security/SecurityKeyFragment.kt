@@ -17,7 +17,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
@@ -47,14 +47,14 @@ class SecurityKeyFragment :
     override val presenter: SecurityKeyContract.Presenter by inject()
 
     private val binding: FragmentSecurityKeyBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val keysAdapter: KeysAdapter by lazy {
         KeysAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.CREATE_MANUAL)
+        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.CREATE_MANUAL)
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
@@ -93,7 +93,7 @@ class SecurityKeyFragment :
         val clickableTermsOfUse = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 presenter.openTermsOfUse()
-                eventInteractor.logScreenOpenEvent(EventsName.OnBoarding.TERMS_OF_USE)
+                analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.TERMS_OF_USE)
             }
 
             override fun updateDrawState(ds: TextPaint) {

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
@@ -40,7 +40,7 @@ class SwapConfirmBottomSheet(
     private val data: SwapConfirmData by args(EXTRA_DATA)
     private val glideManager: GlideManager by inject()
     private val authInteractor: AuthInteractor by inject()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
@@ -60,7 +60,7 @@ class SwapConfirmBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.Swap.CONFIRMATION)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.CONFIRMATION)
         with(binding) {
             glideManager.load(sourceImageView, data.sourceToken.iconUrl)
             amountTextView.text = data.getFormattedSourceAmount()

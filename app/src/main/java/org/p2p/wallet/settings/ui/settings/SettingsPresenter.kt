@@ -4,11 +4,13 @@ import android.content.Context
 import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.settings.model.SettingsRow
 
 class SettingsPresenter(
@@ -16,7 +18,9 @@ class SettingsPresenter(
     private val authInteractor: AuthInteractor,
     private val environmentManager: EnvironmentManager,
     private val appRestarter: AppRestarter,
-    private val context: Context
+    private val analytics: ReceiveAnalytics,
+    private val adminAnalytics: AdminAnalytics,
+    private val context: Context,
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     var networkName = environmentManager.loadEnvironment().name
@@ -33,21 +37,29 @@ class SettingsPresenter(
     override fun logout() {
         launch {
             authInteractor.logout()
+            adminAnalytics.logSignedOut()
             appRestarter.restartApp()
         }
     }
 
     override fun onUsernameClicked() {
-        if (usernameInteractor.usernameExists()) {
+        val isUsernameExists = usernameInteractor.usernameExists()
+        if (isUsernameExists) {
             view?.showUsername()
         } else {
             view?.showReserveUsername()
         }
+        analytics.logSettingsUsernameViewed(isUsernameExists)
     }
 
     override fun onNetworkChanged(newName: String) {
         this.networkName = newName
         loadData()
+    }
+
+    override fun onLogoutClicked() {
+        adminAnalytics.logSignOut()
+        view?.showLogoutConfirm()
     }
 
     private fun getProfileSettings(username: String): List<SettingsRow> {

@@ -5,11 +5,10 @@ import android.view.View
 import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
@@ -41,8 +40,7 @@ class SettingsFragment :
 
     private val binding: FragmentSettingsBinding by viewBinding()
     private val adapter = SettingsAdapter(::onItemClickListener, ::onLogoutClickListener)
-    private val adminAnalytics: AdminAnalytics by inject()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -80,12 +78,25 @@ class SettingsFragment :
     }
 
     override fun showReserveUsername() {
-        eventInteractor.logScreenOpenEvent(EventsName.Settings.USERNAME_RESERVE)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Settings.USERNAME_RESERVE)
         replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
     }
 
     override fun showUsername() {
         replaceFragment(UsernameFragment.create())
+    }
+
+    override fun showLogoutConfirm() {
+        showInfoDialog(
+            titleRes = R.string.settings_logout_title,
+            messageRes = R.string.settings_logout_message,
+            primaryButtonRes = R.string.common_logout,
+            primaryCallback = {
+                presenter.logout()
+            },
+            secondaryButtonRes = R.string.common_stay,
+            primaryButtonTextColor = R.color.systemErrorMain
+        )
     }
 
     private fun onItemClickListener(@StringRes titleResId: Int) {
@@ -96,11 +107,11 @@ class SettingsFragment :
                 replaceFragment(ResetPinFragment.create(EXTRA_REQUEST_KEY, EXTRA_IS_PIN_CHANGED))
             }
             R.string.settings_app_security -> {
-                eventInteractor.logScreenOpenEvent(EventsName.Settings.SECURITY)
+                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.SECURITY)
                 replaceFragment(SecurityFragment.create())
             }
             R.string.settings_network -> {
-                eventInteractor.logScreenOpenEvent(EventsName.Settings.NETWORK)
+                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.NETWORK)
                 addFragment(
                     SettingsNetworkFragment.create(EXTRA_REQUEST_KEY, EXTRA_NETWORK_NAME),
                     enter = 0,
@@ -110,7 +121,7 @@ class SettingsFragment :
                 )
             }
             R.string.settings_zero_balances -> {
-                eventInteractor.logScreenOpenEvent(EventsName.Settings.ZERO_BALANCES)
+                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.ZERO_BALANCES)
                 addFragment(
                     SettingsZeroBalanceFragment.create(),
                     enter = 0,
@@ -123,16 +134,6 @@ class SettingsFragment :
     }
 
     private fun onLogoutClickListener() {
-        showInfoDialog(
-            titleRes = R.string.settings_logout_title,
-            messageRes = R.string.settings_logout_message,
-            primaryButtonRes = R.string.common_logout,
-            primaryCallback = {
-                adminAnalytics.logSignedOut()
-                presenter.logout()
-            },
-            secondaryButtonRes = R.string.common_stay,
-            primaryButtonTextColor = R.color.systemErrorMain
-        )
+        presenter.onLogoutClicked()
     }
 }

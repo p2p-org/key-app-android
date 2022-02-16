@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.EventInteractor
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
@@ -67,11 +67,11 @@ class OrcaSwapFragment :
         parametersOf(token)
     }
     private val binding: FragmentSwapOrcaBinding by viewBinding()
-    private val eventInteractor: EventInteractor by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventInteractor.logScreenOpenEvent(EventsName.Swap.MAIN)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.MAIN)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.setOnMenuItemClickListener { menu ->
@@ -217,7 +217,7 @@ class OrcaSwapFragment :
     }
 
     override fun showError(@StringRes errorText: Int?) {
-        eventInteractor.logScreenOpenEvent(EventsName.Swap.ERROR)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.ERROR)
         binding.swapDetails.showError(errorText)
     }
 
@@ -230,7 +230,7 @@ class OrcaSwapFragment :
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {
-        eventInteractor.logScreenOpenEvent(EventsName.Swap.TRANSACTION_INFO)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.TRANSACTION_INFO)
         popAndReplaceFragment(
             target = TransactionDetailsFragment.create(transaction),
             popTo = HomeFragment::class
@@ -238,7 +238,7 @@ class OrcaSwapFragment :
     }
 
     override fun openSourceSelection(tokens: List<Token.Active>) {
-        eventInteractor.logScreenOpenEvent(EventsName.Swap.CURRENCY_A)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.CURRENCY_A)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_SOURCE_TOKEN),
             enter = R.anim.slide_up,
@@ -249,7 +249,7 @@ class OrcaSwapFragment :
     }
 
     override fun openDestinationSelection(tokens: List<Token>) {
-        eventInteractor.logScreenOpenEvent(EventsName.Swap.CURRENCY_B)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.CURRENCY_B)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,
@@ -278,7 +278,7 @@ class OrcaSwapFragment :
 
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
-            eventInteractor.logScreenOpenEvent(EventsName.Swap.PROCESSING)
+            analyticsInteractor.logScreenOpenEvent(EventsName.Swap.PROCESSING)
             ProgressBottomSheet.show(childFragmentManager, data)
         } else {
             ProgressBottomSheet.hide(childFragmentManager)
