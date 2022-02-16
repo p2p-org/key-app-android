@@ -3,6 +3,7 @@ package org.p2p.wallet.moonpay.ui
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.EventInteractor
@@ -36,7 +37,7 @@ class BuySolanaFragment :
 
             PrefixTextWatcher.installOn(payEditText) { data ->
                 purchaseCostView.setValueText(data.prefixText)
-                continueButton.isEnabled = data.prefixText.isNotEmpty()
+                continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError()
                 presenter.setBuyAmount(data.valueWithoutPrefix)
             }
 
@@ -70,10 +71,15 @@ class BuySolanaFragment :
     }
 
     override fun showMessage(message: String?) {
-        binding.errorTextView withTextOrGone message
+        binding.apply {
+            errorTextView withTextOrGone message
+            continueButton.isEnabled = !hasInputError()
+        }
     }
 
     override fun navigateToMoonpay(amount: String) {
         replaceFragment(MoonpayViewFragment.create(amount))
     }
+
+    private fun hasInputError(): Boolean = binding.errorTextView.isVisible
 }

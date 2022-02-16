@@ -20,8 +20,6 @@ import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.send.ui.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 
@@ -50,9 +48,6 @@ class MainFragment : BaseFragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            edgeToEdge {
-                contentView.fitPadding { Edge.All }
-            }
             bottomNavigation.setOnItemSelectedListener {
                 Timber.tag("____").d(it.title.toString())
                 if (it.itemId == R.id.itemFeedback) {

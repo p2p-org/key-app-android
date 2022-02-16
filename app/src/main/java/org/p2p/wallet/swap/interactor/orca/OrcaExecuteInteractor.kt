@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
@@ -31,18 +30,24 @@ class OrcaExecuteInteractor(
         val lamports = BigDecimal(amount).toLamports(fromDecimals)
 
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
-        val transactionId = feeRelayerInteractor.topUpAndSwap(
-            feeRelayerProgramId = feeRelayerProgramId,
-            sourceToken = TokenInfo(fromToken.publicKey, fromToken.mintAddress),
-            destinationAddress = toToken.publicKey,
-            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
-            inputAmount = lamports,
-            destinationTokenMint = toToken.mintAddress,
-            swapPools = bestPoolsPair,
-            slippage = slippage
-        ).firstOrNull().orEmpty()
+//        val preparedTransaction = feeRelayerInteractor.topUpAndSwap(
+//            feeRelayerProgramId = feeRelayerProgramId,
+//            sourceToken = TokenInfo(fromToken.publicKey, fromToken.mintAddress),
+//            destinationAddress = toToken.publicKey,
+//            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
+//            inputAmount = lamports,
+//            destinationTokenMint = toToken.mintAddress,
+//            swapPools = bestPoolsPair,
+//            slippage = slippage
+//        )
+//
+//        val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
+//            feeRelayerProgramId = feeRelayerProgramId,
+//            preparedTransaction = preparedTransaction,
+//            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
+//        ).firstOrNull().orEmpty()
 
         // fixme: find address
-        return OrcaSwapResult.Finished(transactionId, toToken.publicKey.orEmpty())
+        return OrcaSwapResult.Finished("transactionId", toToken.publicKey.orEmpty())
     }
 }

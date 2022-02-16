@@ -1,6 +1,8 @@
 package org.p2p.wallet.send.interactor
 
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.FeeAmount
+import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
@@ -9,14 +11,13 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerRequestInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.SendStrategy
 import org.p2p.wallet.feerelayer.model.TokenInfo
-import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.send.model.CheckAddressResult
@@ -24,6 +25,7 @@ import org.p2p.wallet.send.model.SendResult
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
+import org.p2p.wallet.swap.model.orca.TransactionAddressData
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
@@ -33,10 +35,10 @@ class SendInteractor(
     private val rpcRepository: RpcRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
-    private val feeRelayerRequestInteractor: FeeRelayerRequestInteractor,
+    private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaSwapInteractor: OrcaSwapInteractor,
-    private val environmentManager: EnvironmentManager,
+    private val amountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -95,7 +97,6 @@ class SendInteractor(
         }
 
         accountCreationFee += relayInfo.minimumTokenAccountBalance
-        accountCreationFee += relayInfo.lamportsPerSignature
 
         val feeInSol = accountCreationFee
         val fee = FeeRelayerSendFee(feeInSol, null)
@@ -162,25 +163,6 @@ class SendInteractor(
         sourceToken: Token.Active,
         lamports: BigInteger
     ): SendResult {
-
-        val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
-        val transactionId = feeRelayerInteractor.topUpAndSend(
-            sourceToken = TokenInfo(sourceToken.publicKey, sourceToken.mintAddress),
-            destinationAddress = destinationAddress.toBase58(),
-            tokenMint = sourceToken.mintAddress,
-            inputAmount = lamports,
-            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
-            feeRelayerProgramId = feeRelayerProgramId
-        ).firstOrNull().orEmpty()
-
-        return SendResult.Success(transactionId)
-    }
-
-    private suspend fun sendSplToken(
-        destinationAddress: PublicKey,
-        sourceToken: Token.Active,
-        lamports: BigInteger
-    ): SendResult {
         val currentUser = tokenKeyProvider.publicKey
 
         if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
@@ -197,66 +179,19 @@ class SendInteractor(
             return SendResult.Error(R.string.main_send_to_yourself_error)
         }
 
-        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-        val feePayerPubkey = feeRelayerRequestInteractor.getFeePayerPublicKey()
-
-        val transaction = Transaction()
-        val instructions = mutableListOf<TransactionInstruction>()
-
-        if (address.shouldCreateAssociatedInstruction) {
-            Timber.tag(SEND_TAG).d("Associated token account creation needed, adding create instruction")
-
-            val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
-                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-                TokenProgram.PROGRAM_ID,
-                sourceToken.mintAddress.toPublicKey(),
-                address.associatedAddress,
-                destinationAddress,
-                userPublicKey
-            )
-
-            transaction.addInstruction(createAccount)
-            instructions += createAccount
-        }
-
-        val instruction = TokenProgram.createTransferCheckedInstruction(
-            TokenProgram.PROGRAM_ID,
-            sourceToken.publicKey.toPublicKey(),
-            sourceToken.mintAddress.toPublicKey(),
-            address.associatedAddress,
-            userPublicKey,
-            lamports,
-            sourceToken.decimals
+        val preparedTransaction = buildTransaction(
+            address = address,
+            sourceToken = sourceToken,
+            destinationAddress = destinationAddress,
+            lamports = lamports
         )
 
-        transaction.addInstruction(instruction)
-        instructions += instruction
-
-        val recentBlockHash = rpcRepository.getRecentBlockhash()
-
-        transaction.setFeePayer(feePayerPubkey)
-        transaction.recentBlockHash = recentBlockHash.recentBlockhash
-
-        val signers = listOf(Account(tokenKeyProvider.secretKey))
-        transaction.sign(signers)
-
-        val recipientPubkey =
-            if (!address.shouldCreateAssociatedInstruction || address.associatedAddress.equals(destinationAddress)) {
-                address.associatedAddress.toBase58()
-            } else {
-                destinationAddress.toBase58()
-            }
-
-        Timber.tag(SEND_TAG).d("Recipient's address is $recipientPubkey")
-
-        val signature = feeRelayerRequestInteractor.relayTransaction(
-            instructions = instructions,
-            signatures = transaction.allSignatures,
-            pubkeys = transaction.accountKeys,
-            blockHash = recentBlockHash.recentBlockhash
+        val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
+            preparedTransaction = preparedTransaction,
+            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
         ).firstOrNull().orEmpty()
 
-        return SendResult.Success(signature)
+        return SendResult.Success(transactionId)
     }
 
     private suspend fun sendNativeSolToken(
@@ -290,22 +225,112 @@ class SendInteractor(
         transaction.addInstruction(instruction)
         instructions += instruction
 
-        val feePayerPublicKey = feeRelayerRequestInteractor.getFeePayerPublicKey()
+        val feePayerPublicKey = feeRelayerAccountInteractor.getRelayInfo().feePayerAddress
         val recentBlockhash = rpcRepository.getRecentBlockhash()
 
-        transaction.setFeePayer(feePayerPublicKey)
+        transaction.feePayer = feePayerPublicKey
         transaction.recentBlockHash = recentBlockhash.recentBlockhash
 
         val signers = listOf(Account(tokenKeyProvider.secretKey))
         transaction.sign(signers)
 
-        val signature = feeRelayerRequestInteractor.relayTransaction(
-            instructions = instructions,
-            signatures = transaction.allSignatures,
-            pubkeys = transaction.accountKeys,
-            blockHash = recentBlockhash.recentBlockhash
-        ).firstOrNull().orEmpty()
+        val signature = feeRelayerTopUpInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
 
         return SendResult.Success(signature)
+    }
+
+    private suspend fun sendSplToken(
+        destinationAddress: PublicKey,
+        sourceToken: Token.Active,
+        lamports: BigInteger
+    ): SendResult {
+        val currentUser = tokenKeyProvider.publicKey
+
+        if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
+            return SendResult.WrongWallet
+        }
+
+        val address = try {
+            addressInteractor.findAssociatedAddress(destinationAddress, sourceToken.mintAddress)
+        } catch (e: IllegalStateException) {
+            return SendResult.WrongWallet
+        }
+
+        if (currentUser == address.associatedAddress.toBase58()) {
+            return SendResult.Error(R.string.main_send_to_yourself_error)
+        }
+
+        val preparedTransaction = buildTransaction(
+            address = address,
+            sourceToken = sourceToken,
+            destinationAddress = destinationAddress,
+            lamports = lamports
+        )
+
+        val transaction = preparedTransaction.transaction
+        val signature = feeRelayerTopUpInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
+
+        return SendResult.Success(signature)
+    }
+
+    private suspend fun buildTransaction(
+        address: TransactionAddressData,
+        sourceToken: Token.Active,
+        destinationAddress: PublicKey,
+        lamports: BigInteger
+    ): PreparedTransaction {
+        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
+        val feePayerPubkey = feeRelayerAccountInteractor.getRelayInfo().feePayerAddress
+
+        val transaction = Transaction()
+
+        var accountsCreationFee: BigInteger = BigInteger.ZERO
+
+        if (address.shouldCreateAssociatedInstruction) {
+            Timber.tag(SEND_TAG).d("Associated token account creation needed, adding create instruction")
+
+            val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
+                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                TokenProgram.PROGRAM_ID,
+                sourceToken.mintAddress.toPublicKey(),
+                address.associatedAddress,
+                destinationAddress,
+                userPublicKey
+            )
+
+            transaction.addInstruction(createAccount)
+            accountsCreationFee += amountInteractor.getMinBalanceForRentExemption()
+        }
+
+        val instruction = TokenProgram.createTransferCheckedInstruction(
+            TokenProgram.PROGRAM_ID,
+            sourceToken.publicKey.toPublicKey(),
+            sourceToken.mintAddress.toPublicKey(),
+            address.associatedAddress,
+            userPublicKey,
+            lamports,
+            sourceToken.decimals
+        )
+
+        transaction.addInstruction(instruction)
+
+        val recentBlockHash = rpcRepository.getRecentBlockhash()
+
+        transaction.feePayer = feePayerPubkey
+        transaction.recentBlockHash = recentBlockHash.recentBlockhash
+
+        // calculate fee first
+        val expectedFee = FeeAmount(
+            transaction = transaction.calculateTransactionFee(amountInteractor.getLamportsPerSignature()),
+            accountBalances = accountsCreationFee
+        )
+
+        val signers = listOf(Account(tokenKeyProvider.secretKey))
+        transaction.sign(signers)
+        return PreparedTransaction(
+            transaction = transaction,
+            signers = signers,
+            expectedFee = expectedFee
+        )
     }
 }

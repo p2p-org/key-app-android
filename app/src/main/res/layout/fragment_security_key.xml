@@ -81,10 +81,10 @@
                 android:backgroundTint="?colorBackgroundPrimary"
                 android:foreground="?selectableItemBackground"
                 app:buttonDrawable="@drawable/ic_gallery"
+                app:buttonDrawableTint="?colorAccentPrimary"
                 app:buttonText="@string/auth_save"
                 app:buttonTextColor="?colorAccentPrimary" />
         </androidx.appcompat.widget.LinearLayoutCompat>
-
 
         <org.p2p.wallet.common.ui.widget.ProgressButton
             android:id="@+id/nextButton"

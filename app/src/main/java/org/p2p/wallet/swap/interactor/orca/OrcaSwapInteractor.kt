@@ -31,7 +31,6 @@ import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.interactor.TransactionInteractor
-import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.toPublicKey
@@ -237,21 +236,14 @@ class OrcaSwapInteractor(
             val transaction = Transaction()
             val instructions = accountInstructions.instructions + accountInstructions.cleanupInstructions
             transaction.addInstructions(instructions)
-            transaction.setFeePayer(feePayerPublicKey)
+            transaction.feePayer = feePayerPublicKey
 
             val blockhash = rpcRepository.getRecentBlockhash().recentBlockhash
-            transaction.setRecentBlockHash(blockhash)
+            transaction.recentBlockHash = blockhash
             val signers = listOf(owner) + accountInstructions.signers
             transaction.sign(signers)
 
-            val signature = transaction.signature
-
-            val transactionId = feeRelayerRepository.relayTransaction(
-                instructions = instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = blockhash
-            ).firstOrNull().orEmpty()
+            val transactionId = feeRelayerRepository.relayTransaction(transaction).firstOrNull().orEmpty()
 
             // fixme: find correct address
             return OrcaSwapResult.Finished(transactionId, toTokenPubkey.orEmpty())
@@ -401,29 +393,17 @@ class OrcaSwapInteractor(
             transaction.addInstructions(accountInstructions.cleanupInstructions)
 
             val feePayerPublicKey = feeRelayerRepository.getFeePayerPublicKey()
-            transaction.setFeePayer(feePayerPublicKey)
+            transaction.feePayer = feePayerPublicKey
             val recentBlockhash = rpcRepository.getRecentBlockhash()
-            transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+            transaction.recentBlockHash = recentBlockhash.recentBlockhash
             transaction.sign(accountInstructions.signers)
 
             val serializedMessage = transaction.serialize()
             val serializedTransaction = Base64Utils.encode(serializedMessage)
 
-            val appTransaction = AppTransaction(
-                serializedTransaction = serializedTransaction,
-                sourceSymbol = fromWalletSymbol,
-                destinationSymbol = toWalletSymbol,
-                isSimulation = isSimulation
-            )
-
             val signature = transaction.signature
 
-            val transactionId = feeRelayerRepository.relayTransaction(
-                instructions = instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = recentBlockhash.recentBlockhash
-            ).firstOrNull().orEmpty()
+            val transactionId = feeRelayerRepository.relayTransaction(transaction).firstOrNull().orEmpty()
 
             return OrcaSwapResult.Finished(transactionId, signature.signature)
         }
@@ -508,29 +488,17 @@ class OrcaSwapInteractor(
             transaction.addInstructions(accountInstructions.cleanupInstructions)
 
             val feePayer = feeRelayerRepository.getFeePayerPublicKey()
-            transaction.setFeePayer(feePayer)
+            transaction.feePayer = feePayer
             val recentBlockhash = rpcRepository.getRecentBlockhash()
-            transaction.setRecentBlockHash(recentBlockhash.recentBlockhash)
+            transaction.recentBlockHash = recentBlockhash.recentBlockhash
             transaction.sign(accountInstructions.signers)
 
             val serializedMessage = transaction.serialize()
             val serializedTransaction = Base64Utils.encode(serializedMessage)
 
-            val appTransaction = AppTransaction(
-                serializedTransaction = serializedTransaction,
-                sourceSymbol = fromWalletSymbol,
-                destinationSymbol = toWalletSymbol,
-                isSimulation = isSimulation
-            )
-
             val signature = transaction.signature
 
-            val transactionId = feeRelayerRepository.relayTransaction(
-                instructions = instructions,
-                signatures = transaction.allSignatures,
-                pubkeys = transaction.accountKeys,
-                blockHash = recentBlockhash.recentBlockhash
-            ).firstOrNull().orEmpty()
+            val transactionId = feeRelayerRepository.relayTransaction(transaction).firstOrNull().orEmpty()
             return OrcaSwapResult.Finished(transactionId, signature.signature)
         }
     }

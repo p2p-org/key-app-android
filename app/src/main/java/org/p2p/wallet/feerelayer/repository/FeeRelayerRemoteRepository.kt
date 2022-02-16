@@ -1,15 +1,14 @@
 package org.p2p.wallet.feerelayer.repository
 
-import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.core.Signature
-import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.RelayTransferRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
 import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
@@ -31,12 +30,27 @@ class FeeRelayerRemoteRepository(
         }
     }
 
-    override suspend fun relayTransaction(
-        instructions: List<TransactionInstruction>,
-        signatures: List<Signature>,
-        pubkeys: List<AccountMeta>,
-        blockHash: String
-    ): List<String> {
+    override suspend fun getFreeFeeLimits(owner: String): FreeTransactionFeeLimit {
+        val response = if (environmentManager.isDevnet()) {
+            devnetApi.getFreeFeeLimits(owner)
+        } else {
+            api.getFreeFeeLimits(owner)
+        }
+
+        return FreeTransactionFeeLimit(
+            maxUsage = response.limits.maxCount,
+            currentUsage = response.processedFee.count,
+            maxAmount = response.limits.maxAmount,
+            amountUsed = response.processedFee.totalAmount
+        )
+    }
+
+    override suspend fun relayTransaction(transaction: Transaction): List<String> {
+        val instructions = transaction.instructions
+        val signatures = transaction.allSignatures
+        val pubkeys = transaction.accountKeys
+        val blockHash = transaction.recentBlockHash
+
         val keys = pubkeys.map { it.publicKey.toBase58() }
         val requestInstructions = instructions.map { FeeRelayerConverter.toNetwork(it, keys) }
 

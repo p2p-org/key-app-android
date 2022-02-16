@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -26,8 +26,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         fun createIntent(context: Context) = Intent(context, RootActivity::class.java)
     }
     override val presenter: RootContract.Presenter by inject()
+    private lateinit var container: FrameLayout
     private val adminAnalytics: AdminAnalytics by inject()
-    private lateinit var container: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)

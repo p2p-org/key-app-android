@@ -61,8 +61,13 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, data);
     }
 
-    public static TransactionInstruction transferInstruction(PublicKey tokenProgramId, PublicKey source,
-                                                             PublicKey destination, PublicKey owner, BigInteger amount) {
+    public static TransactionInstruction transferInstruction(
+            PublicKey tokenProgramId,
+            PublicKey source,
+            PublicKey destination,
+            PublicKey owner,
+            BigInteger amount
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(source, false, true));
         keys.add(new AccountMeta(destination, false, true));

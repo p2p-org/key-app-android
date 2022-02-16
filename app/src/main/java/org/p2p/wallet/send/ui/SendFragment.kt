@@ -30,6 +30,7 @@ import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
@@ -37,13 +38,15 @@ import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.send.ui.transaction.SendConfirmBottomSheet
-import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.edgetoedge.Edge
+import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -119,7 +122,15 @@ class SendFragment :
 
     private fun setupViews() {
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            edgeToEdge {
+                toolbar.fit { Edge.TopArc }
+                scrollView.fit { Edge.BottomArc }
+            }
+
+            if (backStackEntryCount() > 1) {
+                toolbar.setNavigationIcon(R.drawable.ic_back)
+                toolbar.setNavigationOnClickListener { popBackStack() }
+            }
             sendButton.setOnClickListener { presenter.sendOrConfirm() }
 
             targetTextView.setOnClickListener {

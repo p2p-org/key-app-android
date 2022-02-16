@@ -8,11 +8,15 @@ class TransactionAmountInteractor(
     private val rpcRepository: RpcRepository
 ) {
 
+    private var lamportsPerSignature: BigInteger? = null
+    private var minBalanceForRentExemption: BigInteger? = null
+
     suspend fun getLamportsPerSignature(): BigInteger =
-        rpcRepository.getFees(commitment = null)
+        lamportsPerSignature ?: rpcRepository.getFees(commitment = null).also { lamportsPerSignature = it }
 
     suspend fun getMinBalanceForRentExemption(dataLength: Long = ACCOUNT_INFO_DATA_LENGTH.toLong()): BigInteger =
-        rpcRepository
+        minBalanceForRentExemption ?: rpcRepository
             .getMinimumBalanceForRentExemption(dataLength)
             .toBigInteger()
+            .also { minBalanceForRentExemption = it }
 }

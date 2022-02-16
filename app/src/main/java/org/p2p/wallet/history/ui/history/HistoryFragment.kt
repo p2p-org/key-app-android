@@ -17,6 +17,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
@@ -62,7 +63,7 @@ class HistoryFragment :
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
                 onBuyItemClickListener = {
-                    // TODO open buy screen
+                    replaceFragment(BuySolanaFragment.create())
                 }
                 onReceiveItemClickListener = {
                     replaceFragment(ReceiveSolanaFragment.create(token))
