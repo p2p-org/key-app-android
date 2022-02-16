@@ -165,7 +165,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         sendStatus: SendStatus,
         lastScreenName: String,
         tokenName: String,
-        sendNetwork: String,
+        sendNetwork: SendNetwork,
         sendSum: BigDecimal,
         sendUSD: BigDecimal
     ) {
@@ -175,7 +175,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
                 Pair("Send_Status", sendStatus.title),
                 Pair("Last_Screen", lastScreenName),
                 Pair("Token_Name", tokenName),
-                Pair("Send_Network", sendNetwork),
+                Pair("Send_Network", sendNetwork.title),
                 Pair("Send_Sum", sendSum),
                 Pair("Send_USD", sendUSD)
             )
@@ -198,5 +198,10 @@ class SendAnalytics(private val tracker: TrackerContract) {
         SUCCESS("Success"),
         PENDING("Pending"),
         ERROR("Error")
+    }
+
+    enum class SendNetwork(val title: String) {
+        SOLANA("Solana"),
+        BITCOIN("Bitcoin")
     }
 }

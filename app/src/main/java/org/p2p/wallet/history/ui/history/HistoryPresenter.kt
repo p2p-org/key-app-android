@@ -13,6 +13,8 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
@@ -24,7 +26,9 @@ class TokenInfoPresenter(
     private val historyInteractor: HistoryInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: AnalyticsInteractor,
+    private val sendAnalytics: SendAnalytics,
+    private val renBtcInteractor: RenBtcInteractor
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private val transactions = mutableListOf<HistoryTransaction>()
@@ -143,20 +147,53 @@ class TokenInfoPresenter(
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {
-        when (transaction) {
-            is HistoryTransaction.Swap -> {
-                swapAnalytics.logSwapShowingDetails(
-                    swapStatus = SwapAnalytics.SwapStatus.SUCCESS,
-                    lastScreenName = analyticsInteractor.getPreviousScreenName(),
-                    tokenAName = transaction.sourceSymbol,
-                    tokenBName = transaction.destinationSymbol,
-                    swapSum = transaction.amountA,
-                    swapUSD = transaction.amountSentInUsd ?: BigDecimal.ZERO,
-                    feesSource = SwapAnalytics.FeeSource.UNKNOWN
-                )
-            }
-            is HistoryTransaction.Transfer -> {
-                if (transaction.isSend) {
+        launch {
+            when (transaction) {
+                is HistoryTransaction.Swap -> {
+                    swapAnalytics.logSwapShowingDetails(
+                        swapStatus = SwapAnalytics.SwapStatus.SUCCESS,
+                        lastScreenName = analyticsInteractor.getPreviousScreenName(),
+                        tokenAName = transaction.sourceSymbol,
+                        tokenBName = transaction.destinationSymbol,
+                        swapSum = transaction.amountA,
+                        swapUSD = transaction.amountSentInUsd ?: BigDecimal.ZERO,
+                        feesSource = SwapAnalytics.FeeSource.UNKNOWN
+                    )
+                }
+                is HistoryTransaction.Transfer -> {
+                    val renBtcSession = renBtcInteractor.findActiveSession()
+                    val isRenBtcSessionActive = renBtcSession != null && renBtcSession.isValid
+
+                    if (transaction.isSend) {
+                        val sendNetwork =
+                            if (isRenBtcSessionActive) {
+                                SendAnalytics.SendNetwork.BITCOIN
+                            } else {
+                                SendAnalytics.SendNetwork.SOLANA
+                            }
+                        sendAnalytics.logSendShowingDetails(
+                            sendStatus = SendAnalytics.SendStatus.SUCCESS,
+                            lastScreenName = analyticsInteractor.getPreviousScreenName(),
+                            tokenName = transaction.tokenData.symbol,
+                            sendNetwork = sendNetwork,
+                            sendSum = transaction.total,
+                            sendUSD = transaction.totalInUsd ?: BigDecimal.ZERO
+                        )
+                    } else {
+                        val receiveNetwork =
+                            if (isRenBtcSessionActive) {
+                                ReceiveAnalytics.ReceiveNetwork.BITCOIN
+                            } else {
+                                ReceiveAnalytics.ReceiveNetwork.SOLANA
+                            }
+                        receiveAnalytics.logReceiveShowingDetails(
+                            receiveSum = transaction.total,
+                            receiveUSD = transaction.totalInUsd ?: BigDecimal.ZERO,
+                            tokenName = transaction.tokenData.symbol,
+                            receiveNetwork = receiveNetwork
+
+                        )
+                    }
                 }
             }
         }

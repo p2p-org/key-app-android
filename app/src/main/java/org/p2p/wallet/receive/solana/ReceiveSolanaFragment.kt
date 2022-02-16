@@ -22,6 +22,7 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
@@ -54,6 +55,7 @@ class ReceiveSolanaFragment :
     }
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(EventsName.Receive.SOLANA)
@@ -94,10 +96,12 @@ class ReceiveSolanaFragment :
             }
             shareButton.setOnClickListener {
                 requireContext().shareText(userPublicKey)
+                receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
             }
             copyButton.setOnClickListener {
                 requireContext().copyToClipBoard(userPublicKey)
                 toast(R.string.common_copied)
+                receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
             }
 
             progressButton.setOnClickListener {
