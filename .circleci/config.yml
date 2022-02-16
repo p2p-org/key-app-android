@@ -35,6 +35,8 @@ jobs:
           command: |
             ./gradlew setVersionBuild -Pversion=<< pipeline.number >>
             echo "Set build version to << pipeline.number >>"
+      - store_artifacts:
+          path: app/build/outputs/apk/feature
   android_lint:
     <<: *defaults
     steps:
@@ -72,6 +74,10 @@ jobs:
 workflows:
   version: 2
 
+  test:
+    jobs:
+      - version_build
+
   lint_and_test:
     jobs:
       - android_lint:
@@ -79,7 +85,7 @@ workflows:
           filters:
             branches:
               only:
-                - /(^feature\/.+)/
+                - ~/(^feature\/.+)/
       - unit_tests:
           requires:
             - android_lint
