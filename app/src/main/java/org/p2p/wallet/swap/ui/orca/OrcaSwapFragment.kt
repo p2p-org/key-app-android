@@ -105,7 +105,7 @@ class OrcaSwapFragment :
                     if (token != null) presenter.setNewSourceToken(token)
                 }
                 result.containsKey(EXTRA_DESTINATION_TOKEN) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_DESTINATION_TOKEN)
+                    val token = result.getParcelable<Token>(EXTRA_DESTINATION_TOKEN)
                     if (token != null) presenter.setNewDestinationToken(token)
                 }
                 result.containsKey(EXTRA_SETTINGS) -> {

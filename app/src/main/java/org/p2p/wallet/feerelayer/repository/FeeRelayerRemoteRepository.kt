@@ -5,7 +5,6 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
-import org.p2p.wallet.feerelayer.api.RelayTransferRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
 import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
@@ -96,36 +95,6 @@ class FeeRelayerRemoteRepository(
             devnetApi.relayTopUpSwapV2(request)
         } else {
             api.relayTopUpSwap(request)
-        }
-    }
-
-    override suspend fun relayTransferSplToken(
-        senderTokenAccountPubkey: String,
-        recipientPubkey: String,
-        tokenMintPubkey: String,
-        authorityPubkey: String,
-        amount: BigInteger,
-        decimals: Int,
-        feeAmount: BigInteger,
-        authoritySignature: String,
-        blockhash: String
-    ): List<String> {
-        val request = RelayTransferRequest(
-            senderTokenAccountPubkey = senderTokenAccountPubkey,
-            recipientPubkey = recipientPubkey,
-            tokenMintPubkey = tokenMintPubkey,
-            authorityPubkey = authorityPubkey,
-            amount = amount,
-            decimals = decimals,
-            feeAmount = feeAmount,
-            authoritySignature = authoritySignature,
-            blockhash = blockhash,
-        )
-
-        return if (environmentManager.isDevnet()) {
-            devnetApi.relayTransferSplTokenV2(request)
-        } else {
-            api.relayTransferSplToken(request)
         }
     }
 }

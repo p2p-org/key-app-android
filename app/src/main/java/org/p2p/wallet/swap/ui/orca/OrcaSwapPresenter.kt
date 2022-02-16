@@ -7,10 +7,8 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaExecuteInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.SwapConfirmData
@@ -47,11 +45,9 @@ class OrcaSwapPresenter(
     private val initialToken: Token.Active?,
     private val appScope: AppScope,
     private val userInteractor: UserInteractor,
-    private val swapExecuteInteractor: OrcaExecuteInteractor,
     private val swapInteractor: OrcaSwapInteractor,
-    private val amountInteractor: TransactionAmountInteractor,
-    private val settingsInteractor: SettingsInteractor,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val orcaPoolInteractor: OrcaPoolInteractor,
+    private val settingsInteractor: SettingsInteractor
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     companion object {
@@ -71,9 +67,6 @@ class OrcaSwapPresenter(
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
-    private var lamportsPerSignature: BigInteger = BigInteger.ZERO
-    private var minRentExemption: BigInteger = BigInteger.ZERO
-
     private var fees: Pair<BigInteger, List<BigInteger>>? = null
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
@@ -86,8 +79,7 @@ class OrcaSwapPresenter(
             view?.showFullScreenLoading(true)
             try {
                 val userTokens = userInteractor.getUserTokens()
-                val sol = userTokens.firstOrNull { it.isSOL && it.publicKey == tokenKeyProvider.publicKey }
-                    ?: throw IllegalStateException("No SOL account found")
+                val sol = userTokens.firstOrNull { it.isSOL } ?: throw IllegalStateException("No SOL account found")
 
                 val token = initialToken ?: sol
 
@@ -95,9 +87,6 @@ class OrcaSwapPresenter(
                 view?.showSlippage(slippage)
 
                 swapInteractor.initialize(sol)
-
-                lamportsPerSignature = amountInteractor.getLamportsPerSignature()
-                minRentExemption = amountInteractor.getMinBalanceForRentExemption()
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading all data for swap")
                 view?.showErrorMessage(e)
@@ -118,7 +107,7 @@ class OrcaSwapPresenter(
     override fun loadTokensForDestinationSelection() {
         launch {
             try {
-                val orcaTokens = swapInteractor.findPossibleDestinations(sourceToken.mintAddress)
+                val orcaTokens = orcaPoolInteractor.findPossibleDestinations(sourceToken.mintAddress)
                 view?.openDestinationSelection(orcaTokens)
             } catch (e: Throwable) {
                 Timber.e(e, "Error searching possible destinations")
@@ -188,12 +177,7 @@ class OrcaSwapPresenter(
     override fun loadDataForSettings() {
         launch {
             val sol = userInteractor.getUserTokens().find { it.isSOL } ?: return@launch
-            val destination = destinationToken
-            val tokens = if (destination is Token.Active) {
-                listOf(sol, destination)
-            } else {
-                listOf(sol)
-            }
+            val tokens = listOf(sol, sourceToken)
 
             view?.showSwapSettings(slippage, tokens, swapInteractor.getFeePayerToken())
         }
@@ -255,8 +239,7 @@ class OrcaSwapPresenter(
                     transactionId = ""
                 )
                 view?.showProgressDialog(progress)
-                val data = swapExecuteInteractor.swap(
-                    feePayerToken = swapInteractor.getFeePayerToken(),
+                val data = swapInteractor.swap(
                     fromToken = sourceToken,
                     toToken = destination,
                     bestPoolsPair = pair,
@@ -294,7 +277,7 @@ class OrcaSwapPresenter(
     private suspend fun searchTradablePairs(source: Token.Active, destination: Token) {
         try {
             Timber.tag(TAG_SWAP).d("Searching pair for ${source.mintAddress} / ${destination.mintAddress}")
-            val pairs = swapInteractor.getTradablePoolsPairs(source.mintAddress, destination.mintAddress)
+            val pairs = orcaPoolInteractor.getTradablePoolsPairs(source.mintAddress, destination.mintAddress)
             Timber.tag(TAG_SWAP).d("Loaded all tradable pool pairs. Size: ${pairs.size}")
             poolPairs.clear()
             poolPairs.addAll(pairs)
@@ -320,9 +303,7 @@ class OrcaSwapPresenter(
             feeRelayerFeePayerPubkey = null,
             bestPoolsPair = pair,
             inputAmount = enteredAmount,
-            slippage = slippage.doubleValue,
-            lamportsPerSignature = lamportsPerSignature,
-            minRentExempt = minRentExemption,
+            slippage = slippage.doubleValue
         )
 
         val fees = fees!!
@@ -360,7 +341,7 @@ class OrcaSwapPresenter(
     private fun calculateAmount(source: Token.Active, destination: Token) {
         val inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
 
-        val pair = swapInteractor.findBestPoolsPairForInputAmount(inputAmount, poolPairs)
+        val pair = orcaPoolInteractor.findBestPoolsPairForInputAmount(inputAmount, poolPairs)
         if (pair.isNullOrEmpty()) {
             Timber.tag(TAG_SWAP).d("Best pair is empty")
             updateButtonState(source)
