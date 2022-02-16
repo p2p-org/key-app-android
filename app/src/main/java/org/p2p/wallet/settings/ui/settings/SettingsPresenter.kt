@@ -57,7 +57,7 @@ class SettingsPresenter(
                 titleResId = R.string.settings_username,
                 subtitle = username.ifEmpty { context.getString(R.string.auth_not_yet_reserved) },
                 iconRes = R.drawable.ic_settings_user,
-                subtitleTextColorRes = if (username.isEmpty()) R.color.systemErrorMain else -1
+                subtitleTextColorRes = if (username.isEmpty()) R.color.systemErrorMain else null
             ),
             SettingsRow.Logout()
         )

@@ -11,10 +11,10 @@ sealed class SettingsRow(open val isDivider: Boolean = false) {
     data class Section(
         @StringRes override val titleResId: Int,
         override val isDivider: Boolean = false,
-        @StringRes val subtitleRes: Int = -1,
+        @StringRes val subtitleRes: Int? = null,
         @DrawableRes val iconRes: Int,
         val subtitle: String? = null,
-        @ColorRes val subtitleTextColorRes: Int = -1,
+        @ColorRes val subtitleTextColorRes: Int? = null,
     ) : SettingsRow(isDivider)
 
     data class Title(

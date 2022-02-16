@@ -79,14 +79,14 @@ class SettingsAdapter(
 
         fun bind(item: SettingsRow.Section) {
             titleTextView.setText(item.titleResId)
-            if (item.subtitleRes != -1) {
-                subtitleTextView.setText(item.subtitleRes)
+            item.subtitleRes?.let {
+                subtitleTextView.setText(it)
             }
-            if (item.subtitle != null) {
-                subtitleTextView.text = item.subtitle
+            item.subtitle?.let {
+                subtitleTextView.text = it
             }
-            if (item.subtitleTextColorRes != -1) {
-                subtitleTextView.setTextColor(requireContext().getColor(item.subtitleTextColorRes))
+            item.subtitleTextColorRes?.let {
+                subtitleTextView.setTextColor(requireContext().getColor(it))
             }
             imageView.setImageResource(item.iconRes)
             itemView.setOnClickListener { listener.invoke(item.titleResId) }

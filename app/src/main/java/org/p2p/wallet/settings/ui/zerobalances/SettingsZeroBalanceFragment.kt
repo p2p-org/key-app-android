@@ -45,6 +45,7 @@ class SettingsZeroBalanceFragment :
     }
 
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
-        presenter.setZeroBalancesVisibility(isHidden = checkedId != R.id.shownButton)
+        val isHidden = checkedId != R.id.showButton
+        presenter.setZeroBalancesVisibility(isHidden)
     }
 }
