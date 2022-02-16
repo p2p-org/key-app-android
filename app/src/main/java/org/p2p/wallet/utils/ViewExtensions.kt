@@ -15,6 +15,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
@@ -73,6 +74,11 @@ fun View.createBitmap(): Bitmap {
 fun Activity.hideKeyboard() {
     currentFocus?.hideKeyboard()
 }
+
+val View.keyboardIsVisible: Boolean
+    get() = WindowInsetsCompat
+        .toWindowInsetsCompat(rootWindowInsets)
+        .isVisible(WindowInsetsCompat.Type.ime())
 
 fun View.hideKeyboard() {
     post {
