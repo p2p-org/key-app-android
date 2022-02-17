@@ -251,7 +251,7 @@ class OrcaSwapFragment :
         )
     }
 
-    override fun openDestinationSelection(tokens: List<Token>) {
+    override fun showDestinationSelection(tokens: List<Token>) {
         analyticsInteractor.logScreenOpenEvent(EventsName.Swap.CURRENCY_B)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_DESTINATION_TOKEN),
