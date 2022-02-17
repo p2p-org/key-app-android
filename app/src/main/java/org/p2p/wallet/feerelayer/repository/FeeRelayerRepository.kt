@@ -23,16 +23,4 @@ interface FeeRelayerRepository {
         signatures: SwapTransactionSignatures,
         blockhash: String
     ): List<String>
-
-    suspend fun relayTransferSplToken(
-        senderTokenAccountPubkey: String,
-        recipientPubkey: String,
-        tokenMintPubkey: String,
-        authorityPubkey: String,
-        amount: BigInteger,
-        decimals: Int,
-        feeAmount: BigInteger,
-        authoritySignature: String,
-        blockhash: String,
-    ): List<String>
 }

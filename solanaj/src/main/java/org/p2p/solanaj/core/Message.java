@@ -1,5 +1,7 @@
 package org.p2p.solanaj.core;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;

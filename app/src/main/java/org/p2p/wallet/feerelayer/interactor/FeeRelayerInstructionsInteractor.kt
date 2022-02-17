@@ -3,6 +3,7 @@ package org.p2p.wallet.feerelayer.interactor
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -12,18 +13,19 @@ import java.math.BigInteger
 class FeeRelayerInstructionsInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val userLocalRepository: UserLocalRepository,
-    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
+    private val addressInteractor: TransactionAddressInteractor
 ) {
 
     /*
     * Prepare swap data from swap pools
     * */
-    fun prepareSwapData(
+    suspend fun prepareSwapData(
         pools: OrcaPoolsPair,
         inputAmount: BigInteger?,
         minAmountOut: BigInteger?,
         slippage: Double,
-        transitTokenMintPubkey: PublicKey? = null,
+        transitTokenMintPubkey: PublicKey?,
         userAuthorityAddress: PublicKey
     ): SwapData {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
@@ -56,10 +58,6 @@ class FeeRelayerInstructionsInteractor(
             val firstPool = pools[0]
             val secondPool = pools[1]
 
-            if (transitTokenMintPubkey == null) {
-                throw IllegalStateException("Transit token mint not found")
-            }
-
             // if input amount is provided
             var firstPoolAmountIn = inputAmount
             var secondPoolAmountIn: BigInteger? = null
@@ -77,6 +75,18 @@ class FeeRelayerInstructionsInteractor(
                 throw IllegalStateException("Invalid amount")
             }
 
+            if (transitTokenMintPubkey == null) throw IllegalStateException("Transit token mint is null")
+
+            val transitTokenAccountAddressData = feeRelayerAccountInteractor.getTransitTokenAccountAddress(
+                owner = userAuthorityAddress,
+                mint = transitTokenMintPubkey
+            )
+
+            val transitTokenAccountAddressAccount = addressInteractor.findAssociatedAddress(
+                ownerAddress = transitTokenAccountAddressData,
+                destinationMint = transitTokenMintPubkey.toBase58()
+            )
+
             return SwapData.SplTransitive(
                 from = firstPool.getSwapData(
                     transferAuthorityPubkey = owner,
@@ -89,10 +99,8 @@ class FeeRelayerInstructionsInteractor(
                     minAmountOut = secondPoolAmountOut
                 ),
                 transitTokenMintPubkey = transitTokenMintPubkey.toBase58(),
-                transitTokenAccountAddress = feeRelayerAccountInteractor.getTransitTokenAccountAddress(
-                    owner = userAuthorityAddress,
-                    mint = transitTokenMintPubkey
-                )
+                transitTokenAccountAddress = transitTokenAccountAddressData,
+                needsCreateTransitTokenAccount = transitTokenAccountAddressAccount.shouldCreateAssociatedInstruction
             )
         }
     }

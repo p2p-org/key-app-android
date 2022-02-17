@@ -156,7 +156,7 @@
         tools:visibility="visible">
 
         <TextView
-            android:id="@+id/transactionFeeTextView"
+            android:id="@+id/transactionFeeTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -165,7 +165,7 @@
             android:textColor="?colorElementSecondary" />
 
         <TextView
-            android:id="@+id/freeTextView"
+            android:id="@+id/transactionFeeTextView"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="8dp"
