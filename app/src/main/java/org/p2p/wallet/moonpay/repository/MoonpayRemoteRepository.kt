@@ -13,7 +13,8 @@ class MoonpayRemoteRepository(
 ) : MoonpayRepository {
 
     override suspend fun getCurrency(
-        baseCurrencyAmount: String,
+        baseCurrencyAmount: String?,
+        quoteCurrencyAmount: String?,
         quoteCurrencyCode: String,
         baseCurrencyCode: String
     ): MoonpayBuyResult =
@@ -22,6 +23,7 @@ class MoonpayRemoteRepository(
                 quoteCurrencyCode = quoteCurrencyCode,
                 apiKey = apiKey,
                 baseCurrencyAmount = baseCurrencyAmount,
+                quoteCurrencyAmount = quoteCurrencyAmount,
                 baseCurrencyCode = baseCurrencyCode
             )
             MoonpayBuyResult.Success(BuyCurrency(response))
