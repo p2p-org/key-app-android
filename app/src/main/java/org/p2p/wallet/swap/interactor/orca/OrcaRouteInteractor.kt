@@ -42,7 +42,8 @@ class OrcaRouteInteractor(
         toTokenPubkey: String?,
         feeRelayerFeePayer: PublicKey?,
         amount: BigInteger,
-        slippage: Double
+        slippage: Double,
+        freeTransactionFeeAvailable: Boolean
     ): AccountInstructions {
         val fromMint = tokens[pool.tokenAName]?.mint?.toPublicKey()
         val toMint = tokens[pool.tokenBName]?.mint?.toPublicKey()
@@ -117,24 +118,28 @@ class OrcaRouteInteractor(
 
         // userTransferAuthorityPubkey
         // fixme: this may fail for direct request to blockchain
-        val userTransferAuthority = owner
-        val userTransferAuthorityPubkey = userTransferAuthority.publicKey
-//        val userTransferAuthority = Account()
-//        var userTransferAuthorityPubkey = userTransferAuthority.publicKey
-//
-//        if (feeRelayerFeePayer == null) {
-//            // approve (if send without feeRelayer)
-//            val approveTransaction = TokenProgram.approveInstruction(
-//                TokenProgram.PROGRAM_ID,
-//                sourceAccountInstructions.account,
-//                userTransferAuthorityPubkey,
-//                owner.publicKey,
-//                amount
-//            )
-//            instructions += approveTransaction
-//        } else {
-//            userTransferAuthorityPubkey = owner.publicKey
-//        }
+        val (userTransferAuthority, userTransferAuthorityPubkey) = if (freeTransactionFeeAvailable) {
+            owner to owner.publicKey
+        } else {
+            val userTransferAuthority = Account()
+            var userTransferAuthorityPubkey = userTransferAuthority.publicKey
+
+            if (feeRelayerFeePayer == null) {
+                // approve (if send without feeRelayer)
+                val approveTransaction = TokenProgram.approveInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    sourceAccountInstructions.account,
+                    userTransferAuthorityPubkey,
+                    owner.publicKey,
+                    amount
+                )
+                instructions += approveTransaction
+            } else {
+                userTransferAuthorityPubkey = owner.publicKey
+            }
+
+            userTransferAuthority to userTransferAuthorityPubkey
+        }
 
         // swap
         val minAmountOut = pool.getMinimumAmountOut(amount, slippage)

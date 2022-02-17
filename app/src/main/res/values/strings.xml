@@ -345,8 +345,8 @@
     <string name="swap_max_available">Max</string>
     <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
     <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
-    <string name="swap_transaction_completed">Swap from %1s to %2s completed!</string>
-    <string name="swap_transaction_failed">Swap from %1s to %2s failed. Please try again</string>
+    <string name="swap_transaction_completed">%1s → %2s swap completed!</string>
+    <string name="swap_transaction_failed">%1s → %2s swap didn\'t complete!</string>
     <string name="swap_zero_value">$0</string>
     <string name="swap_details">Swap details</string>
     <string name="swap_receive_at_least">Receive at least</string>

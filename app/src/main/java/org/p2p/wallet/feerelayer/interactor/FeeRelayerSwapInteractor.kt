@@ -44,12 +44,11 @@ class FeeRelayerSwapInteractor(
     private var preparedParams: TopUpAndActionPreparedParams? = null
 
     /*
-   * STEP 1: Calculate fee needed for transaction
-   * Calculate fee and needed amount for top up and swap
-   * Fee calculation is in IN SOL
-   * */
+     * STEP 1: Calculate fee needed for transaction
+     * Calculate fee and needed amount for top up and swap
+     * Fee calculation is in IN SOL
+     * */
     suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
-        feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         destinationTokenMint: String,
         destinationAddress: String?,

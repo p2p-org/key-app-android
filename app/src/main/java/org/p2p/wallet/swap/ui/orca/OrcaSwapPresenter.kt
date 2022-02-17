@@ -22,7 +22,6 @@ import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
@@ -67,7 +66,7 @@ class OrcaSwapPresenter(
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
-    private var fees: Pair<BigInteger, List<BigInteger>>? = null
+    private var fees: SwapFee? = null
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
     private var slippage: Slippage = Slippage.MEDIUM
@@ -100,7 +99,7 @@ class OrcaSwapPresenter(
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filter { token -> !token.isZero }
-            view?.openSourceSelection(result)
+            view?.showSourceSelection(result)
         }
     }
 
@@ -108,10 +107,10 @@ class OrcaSwapPresenter(
         launch {
             try {
                 val orcaTokens = orcaPoolInteractor.findPossibleDestinations(sourceToken.mintAddress)
-                view?.openDestinationSelection(orcaTokens)
+                view?.showDestinationSelection(orcaTokens)
             } catch (e: Throwable) {
                 Timber.e(e, "Error searching possible destinations")
-                view?.openDestinationSelection(emptyList())
+                view?.showDestinationSelection(emptyList())
             }
         }
     }
@@ -295,47 +294,13 @@ class OrcaSwapPresenter(
 
         val pair = bestPoolPair ?: return
 
-        val myWalletsMints = userInteractor.getUserTokens().map { it.mintAddress }
-        fees = swapInteractor.getFees(
-            myWalletsMints = myWalletsMints,
-            fromWalletPubkey = source.publicKey,
-            toWalletPubkey = destination.publicKey,
-            feeRelayerFeePayerPubkey = null,
-            bestPoolsPair = pair,
-            inputAmount = enteredAmount,
-            slippage = slippage.doubleValue
+        fees = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
+            sourceToken = source,
+            destination = destination,
+            swapPools = pair
         )
 
-        val fees = fees!!
-        // fixme: now it's free but let's leave it, maybe useful in the future
-        val networkFee = fees.first.fromLamports().scaleLong()
-        val liquidityProviderFees = fees.second
-
-        val liquidityProviderFee = if (pair.size == 1 && liquidityProviderFees.isNotEmpty()) {
-            val fee = liquidityProviderFees[0].fromLamports(destination.decimals).scaleLong()
-            "$fee ${destination.tokenSymbol}"
-        } else {
-            val intermediaryPool = pair[0]
-            val intermediaryTokenSymbol = intermediaryPool.tokenBName
-            val intermediaryFee =
-                liquidityProviderFees[0].fromLamports(intermediaryPool.tokenBBalance!!.decimals).scaleLong()
-
-            val destinationPool = pair[1]
-            val destinationTokenSymbol = destinationPool.tokenBName
-            val destinationFee =
-                liquidityProviderFees[1].fromLamports(destinationPool.tokenBBalance!!.decimals).scaleLong()
-            "$intermediaryFee $intermediaryTokenSymbol + $destinationFee $destinationTokenSymbol"
-        }
-
-        val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
-        val fee = liquidityProviderFees[0].fromLamports(destination.decimals)
-        val feeUsd = destination.usdRate?.let { fee.multiply(it) }
-        val data = SwapFee(
-            accountCreationToken = accountCreationToken,
-            accountCreationFee = liquidityProviderFee,
-            accountCreationFeeUsd = feeUsd?.scaleShort()?.toPlainString()
-        )
-        view?.showFees(data)
+        view?.showFees(fees)
     }
 
     private fun calculateAmount(source: Token.Active, destination: Token) {
@@ -360,15 +325,6 @@ class OrcaSwapPresenter(
 
         val totalUsd = sourceAmount.toBigDecimalOrZero().multiply(source.usdRateOrZero)
 
-        val fees = fees?.let { (_, liquidityProviderFees) ->
-            if (liquidityProviderFees.isEmpty()) return@let null
-            val fee = liquidityProviderFees[0].fromLamports(destination.decimals).scaleLong()
-            "$fee ${destination.tokenSymbol}"
-        }
-        val feesUsd = if (fees != null && destination.usdRate != null) {
-            fees.toBigDecimalOrZero().multiply(destination.usdRate).scaleShort().toPlainString()
-        } else null
-
         val receiveAtLeast = "${minReceiveResult.toPlainString()} ${destination.tokenSymbol}"
         val receiveAtLeastUsd = destination.usdRate?.let { minReceiveResult.multiply(it) }
 
@@ -376,8 +332,8 @@ class OrcaSwapPresenter(
             destinationAmount = destinationAmount,
             total = "$sourceAmount ${source.tokenSymbol}",
             totalUsd = totalUsd.scaleShort().toPlainString(),
-            fee = fees,
-            feeUsd = feesUsd,
+            fee = fees?.accountCreationFee,
+            approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
             receiveAtLeast = receiveAtLeast,
             receiveAtLeastUsd = receiveAtLeastUsd?.toPlainString()
         )
@@ -387,24 +343,6 @@ class OrcaSwapPresenter(
         view?.showFeePayerToken(feePayerToken.tokenSymbol)
         updateButtonState(source)
     }
-
-    /*
-    * Assume this to be called only if associated account address creation needed
-    * */
-//    private suspend fun calculateFeeRelayerFee(feePayerToken: Token.Active?) {
-//        val feePayer = feePayerToken ?: swapInteractor.getFeePayerToken()
-//
-//        val fees = swapInteractor.calculateFeesForFeeRelayer()
-//
-//        val feeAmount = if (!feePayer.isSOL && fees.feeInPayingToken != null) {
-//            fees.feeInPayingToken.fromLamports(feePayer.decimals).scaleMedium()
-//        } else {
-//            fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
-//        }
-//
-//        val fee = SendFee.SolanaFee(feeAmount, feePayer)
-//        view?.showFeePayerToken(feePayer.tokenSymbol)
-//    }
 
     private fun calculateRates(source: Token.Active, destination: Token) {
         val pair = bestPoolPair ?: return
@@ -495,5 +433,8 @@ class OrcaSwapPresenter(
             destinationIconUrl = destinationToken.iconUrl.orEmpty()
         )
         view?.showTransactionDetails(transaction)
+        val fromSymbol = transaction.sourceSymbol
+        val toSymbol = transaction.destinationSymbol
+        view?.showTransactionStatusMessage(fromSymbol, toSymbol, isSuccess = true)
     }
 }

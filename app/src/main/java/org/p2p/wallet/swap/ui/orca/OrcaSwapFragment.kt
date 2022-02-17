@@ -19,7 +19,6 @@ import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.SwapConfirmData
@@ -226,14 +225,20 @@ class OrcaSwapFragment :
         binding.swapButton.isEnabled = isEnabled
     }
 
-    override fun showTransactionDetails(transaction: HistoryTransaction) {
-        popAndReplaceFragment(
-            target = TransactionDetailsFragment.create(transaction),
-            popTo = HomeFragment::class
-        )
+    override fun showTransactionStatusMessage(fromSymbol: String, toSymbol: String, isSuccess: Boolean) {
+        val (message, iconRes) = if (isSuccess) {
+            getString(R.string.swap_transaction_completed, fromSymbol, toSymbol) to R.drawable.ic_done
+        } else {
+            getString(R.string.swap_transaction_failed, fromSymbol, toSymbol) to R.drawable.ic_close_red
+        }
+        showSnackbar(message, iconRes)
     }
 
-    override fun openSourceSelection(tokens: List<Token.Active>) {
+    override fun showTransactionDetails(transaction: HistoryTransaction) {
+        popAndReplaceFragment(TransactionDetailsFragment.create(transaction))
+    }
+
+    override fun showSourceSelection(tokens: List<Token.Active>) {
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_SOURCE_TOKEN),
             enter = R.anim.slide_up,
@@ -243,7 +248,7 @@ class OrcaSwapFragment :
         )
     }
 
-    override fun openDestinationSelection(tokens: List<Token>) {
+    override fun showDestinationSelection(tokens: List<Token>) {
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,

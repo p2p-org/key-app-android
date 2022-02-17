@@ -15,8 +15,10 @@ import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
+// todo: too complex functions, make it simpler
 class SwapDetailsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -73,11 +75,25 @@ class SwapDetailsView @JvmOverloads constructor(
             }
 
             accountCreationFeeView.isVisible = isExpanded
+
+            if (data.isFreeTransactionAvailable) {
+                transactionFeeTextView.setText(R.string.send_free_transaction)
+                paidByTextView.isVisible = true
+            } else {
+                val spannedFee = SpanUtils.highlightText(
+                    data.commonTransactionFee.orEmpty(),
+                    data.approxTransactionFeeUsd.orEmpty(),
+                    getColor(R.color.textIconSecondary)
+                )
+                transactionFeeTextView.text = spannedFee
+                paidByTextView.isVisible = false
+            }
+
             val accountCreationToken = data.accountCreationToken
 
             val fee = data.commonFee
             val approxFeeUsd = data.approxFeeUsd
-            if (accountCreationToken != null && fee != null && approxFeeUsd != null) {
+            if (accountCreationToken != null && fee != null) {
                 accountCreationFeeView.isVisible = isExpanded
 
                 val account = context.getString(R.string.swap_account_creation_format, accountCreationToken)
@@ -130,12 +146,11 @@ class SwapDetailsView @JvmOverloads constructor(
             )
 
             val fullFee = data.fullFee
-            val approxFeeUsd = data.approxFeeUsd
-            if (fullFee != null && approxFeeUsd != null) {
+            if (fullFee != null) {
                 totalFeeTextView.isVisible = isExpanded
 
                 totalFeeTextView.text = SpanUtils.highlightText(
-                    fullFee, approxFeeUsd, colorFromTheme(R.attr.colorElementSecondary)
+                    fullFee, data.approxFeeUsd, getColor(R.color.textIconSecondary)
                 )
             } else {
                 totalFeeTextView.isVisible = false

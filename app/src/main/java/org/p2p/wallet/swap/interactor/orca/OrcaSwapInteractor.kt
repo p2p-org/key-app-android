@@ -22,12 +22,16 @@ import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
+import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.interactor.TransactionStatusInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.fromLamports
+import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
+import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -97,6 +101,11 @@ class OrcaSwapInteractor(
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
 
+        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
+        val freeTransactionLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
+        val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature // feePayer, owner
+        val freeTransactionFeeAvailable = freeTransactionLimit.isFreeTransactionFeeAvailable(transactionNetworkFee)
+
         when {
             feePayerToken.isSOL ->
                 return if (bestPoolsPair.size == 1) {
@@ -105,7 +114,8 @@ class OrcaSwapInteractor(
                         fromTokenPubkey = fromToken.publicKey,
                         toTokenPubkey = toToken.publicKey,
                         amount = lamports,
-                        slippage = slippage
+                        slippage = slippage,
+                        freeTransactionFeeAvailable = freeTransactionFeeAvailable
                     )
                 } else {
                     swapTransitive(
@@ -116,7 +126,8 @@ class OrcaSwapInteractor(
                         info = info,
                         owner = Account(tokenKeyProvider.secretKey),
                         lamports = lamports,
-                        slippage = slippage
+                        slippage = slippage,
+                        freeTransactionFeeAvailable = freeTransactionFeeAvailable
                     )
                 }
             else -> {
@@ -149,7 +160,8 @@ class OrcaSwapInteractor(
         fromTokenPubkey: String,
         toTokenPubkey: String?,
         amount: BigInteger,
-        slippage: Double
+        slippage: Double,
+        freeTransactionFeeAvailable: Boolean
     ): OrcaSwapResult {
         val owner = Account(tokenKeyProvider.secretKey)
         val info = orcaInfoInteractor.getInfo() ?: return OrcaSwapResult.InvalidInfoOrPair
@@ -162,7 +174,8 @@ class OrcaSwapInteractor(
             toTokenPubkey = toTokenPubkey,
             feeRelayerFeePayer = null,
             amount = amount,
-            slippage = slippage
+            slippage = slippage,
+            freeTransactionFeeAvailable = freeTransactionFeeAvailable
         )
 
         // serialize transaction
@@ -172,10 +185,6 @@ class OrcaSwapInteractor(
         val blockhash = rpcRepository.getRecentBlockhash().recentBlockhash
         transaction.recentBlockHash = blockhash
 
-        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-        val freeTransactionLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature // feePayer, owner
-        val freeTransactionFeeAvailable = freeTransactionLimit.isFreeTransactionFeeAvailable(transactionNetworkFee)
         if (freeTransactionFeeAvailable) {
             val feeRelayerFeePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
             transaction.feePayer = feeRelayerFeePayer
@@ -185,10 +194,6 @@ class OrcaSwapInteractor(
 
         val signers = listOf(owner) + accountInstructions.signers
         transaction.sign(signers)
-
-//            val sm = transaction.serialize()
-//            val st = Base64Utils.encode(sm)
-//            Timber.tag("###").d(st)
 
         val transactionId = if (freeTransactionFeeAvailable) {
             feeRelayerInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
@@ -208,7 +213,8 @@ class OrcaSwapInteractor(
         info: OrcaSwapInfo,
         owner: Account,
         lamports: BigInteger,
-        slippage: Double
+        slippage: Double,
+        freeTransactionFeeAvailable: Boolean
     ): OrcaSwapResult =
         if (toWalletPubkey != null) {
             swapTransitiveSingle(
@@ -219,7 +225,8 @@ class OrcaSwapInteractor(
                 owner = owner,
                 fromWalletPubkey = fromWalletPubkey,
                 lamports = lamports,
-                slippage = slippage
+                slippage = slippage,
+                freeTransactionFeeAvailable = freeTransactionFeeAvailable
             )
         } else {
             swapTransitiveSeparated(
@@ -230,7 +237,8 @@ class OrcaSwapInteractor(
                 owner = owner,
                 fromWalletPubkey = fromWalletPubkey,
                 lamports = lamports,
-                slippage = slippage
+                slippage = slippage,
+                freeTransactionFeeAvailable = freeTransactionFeeAvailable
             )
         }
 
@@ -242,7 +250,8 @@ class OrcaSwapInteractor(
         owner: Account,
         fromWalletPubkey: String,
         lamports: BigInteger,
-        slippage: Double
+        slippage: Double,
+        freeTransactionFeeAvailable: Boolean
     ): OrcaSwapResult {
         val pool0 = bestPoolsPair[0]
         val pool1 = bestPoolsPair[1]
@@ -291,7 +300,8 @@ class OrcaSwapInteractor(
             toTokenPubkey = intermediary.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = lamports,
-            slippage = slippage
+            slippage = slippage,
+            freeTransactionFeeAvailable = freeTransactionFeeAvailable
         )
 
         val minOutAmount = pool0.getMinimumAmountOut(lamports, slippage)
@@ -305,7 +315,8 @@ class OrcaSwapInteractor(
             toTokenPubkey = destination.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = minOutAmount,
-            slippage = slippage
+            slippage = slippage,
+            freeTransactionFeeAvailable = freeTransactionFeeAvailable
         )
 
         val instructions =
@@ -348,7 +359,8 @@ class OrcaSwapInteractor(
         owner: Account,
         fromWalletPubkey: String,
         lamports: BigInteger,
-        slippage: Double
+        slippage: Double,
+        freeTransactionFeeAvailable: Boolean
     ): OrcaSwapResult {
         val pool0 = bestPoolsPair[0]
         val pool1 = bestPoolsPair[1]
@@ -369,7 +381,8 @@ class OrcaSwapInteractor(
             toTokenPubkey = intermediary.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = lamports,
-            slippage = slippage
+            slippage = slippage,
+            freeTransactionFeeAvailable = freeTransactionFeeAvailable
         )
 
         val minOutAmount = pool0.getMinimumAmountOut(lamports, slippage)
@@ -383,7 +396,8 @@ class OrcaSwapInteractor(
             toTokenPubkey = destination.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = minOutAmount,
-            slippage = slippage
+            slippage = slippage,
+            freeTransactionFeeAvailable = freeTransactionFeeAvailable
         )
 
         val instructions = mutableListOf<TransactionInstruction>()
@@ -421,6 +435,45 @@ class OrcaSwapInteractor(
 
         val transactionId = feeRelayerInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
         return OrcaSwapResult.Finished(transactionId, signature.signature)
+    }
+
+    suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
+        sourceToken: Token.Active,
+        destination: Token,
+        swapPools: OrcaPoolsPair
+    ): SwapFee {
+        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
+        val freeTransactionLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        val fee = feeRelayerSwapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
+            sourceToken = TokenInfo(sourceToken.publicKey, sourceToken.mintAddress),
+            destinationTokenMint = destination.mintAddress,
+            destinationAddress = destination.publicKey,
+            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
+            swapPools = swapPools
+        )
+
+        val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
+        val accountCreationFee = if (!feePayerToken.isSOL && fee.feeInPayingToken != null) {
+            fee.feeInPayingToken.total.fromLamports(feePayerToken.decimals).scaleMedium()
+        } else {
+            fee.feeInSOL.total.fromLamports(feePayerToken.decimals).scaleMedium()
+        }
+        val accountCreationFeeUsd = accountCreationFee.toUsd(feePayerToken.usdRate)
+
+        val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature
+        val isFreeTransactionAvailable = freeTransactionLimits.isFreeTransactionFeeAvailable(transactionNetworkFee)
+
+        val transactionFee = transactionNetworkFee.fromLamports(feePayerToken.decimals).scaleMedium()
+        val transactionFeeUsd = transactionFee.toUsd(feePayerToken.usdRate)
+
+        return SwapFee(
+            isFreeTransactionAvailable = isFreeTransactionAvailable,
+            accountCreationToken = accountCreationToken,
+            accountCreationFee = "$accountCreationFee ${feePayerToken.tokenSymbol}",
+            accountCreationFeeUsd = accountCreationFeeUsd,
+            transactionFee = "$transactionFee ${feePayerToken.tokenSymbol}",
+            transactionFeeUsd = transactionFeeUsd,
+        )
     }
 
     // Get fees from current context
