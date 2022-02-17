@@ -33,7 +33,7 @@ class UserInteractor(
     suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
 
     suspend fun loadTokenPrices(targetCurrency: String) {
-        // TODO: 15.02.2022 replace TokenSymbols with user tokens stored locally
+        // TODO: 15.02.2022 replace TokenSymbols with user tokens from local storage [P2PW-1315]
         val tokens = TokenSymbols.tokenSymbols()
         val prices = userRepository.loadTokensPrices(tokens, targetCurrency)
         userLocalRepository.setTokenPrices(prices)

@@ -4,11 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.home.api.CompareApi
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
@@ -67,10 +67,9 @@ class UserRemoteRepository(
             return@withContext result
         }
 
+    // TODO: 17.02.2022 save user tokens to local storage [P2PW-1315]
     override suspend fun loadTokens(publicKey: String): List<Token.Active> = withContext(Dispatchers.IO) {
         val response = rpcRepository.getTokenAccountsByOwner(publicKey)
-
-        // TODO: 15.02.2022 append SOL to account tokens and save locally
         val result = response.accounts
             .mapNotNull {
                 val mintAddress = it.account.data.parsed.info.mint
