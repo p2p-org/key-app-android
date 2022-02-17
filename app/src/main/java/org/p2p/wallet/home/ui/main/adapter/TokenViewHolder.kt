@@ -15,7 +15,6 @@ import org.p2p.wallet.common.ui.recycler.SwipeLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.dip
-import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenViewHolder(
@@ -46,7 +45,6 @@ class TokenViewHolder(
     private val rateTextView = binding.rateTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
-    private val colorView = binding.colorView
     private val deleteImageView = binding.deleteImageView
     private val contentView = binding.contentView
 
@@ -69,8 +67,6 @@ class TokenViewHolder(
         rateTextView withTextOrGone token.getCurrentRate()
         valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getFormattedTotal()
-
-        colorView.setBackgroundColor(colorView.getColor(token.color))
 
         deleteImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
         deleteImageView.setOnClickListener { listener.onHideClicked(token) }

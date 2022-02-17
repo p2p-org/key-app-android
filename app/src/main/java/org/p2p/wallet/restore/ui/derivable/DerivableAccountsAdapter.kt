@@ -3,7 +3,6 @@ package org.p2p.wallet.restore.ui.derivable
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
@@ -45,7 +44,6 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         private val nameTextView = binding.nameTextView
         private val valueTextView = binding.valueTextView
         private val totalTextView = binding.totalTextView
-        private val colorView = binding.colorView
 
         @SuppressLint("SetTextI18n")
         fun onBind(account: DerivableAccount) {
@@ -54,8 +52,6 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             nameTextView.text = cutAddress(account.account.publicKey.toBase58())
             valueTextView.text = "${account.totalInUsd.scaleShort()} $"
             totalTextView.text = "${account.total.toPlainString()} $SOL_SYMBOL"
-
-            colorView.isVisible = false
         }
 
         @Suppress("MagicNumber")

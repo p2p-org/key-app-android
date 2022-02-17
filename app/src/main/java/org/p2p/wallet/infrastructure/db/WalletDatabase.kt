@@ -21,7 +21,7 @@ import org.p2p.wallet.home.db.TokenEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 3
         const val DATABASE_NAME = "p2p.wallet"
     }
 

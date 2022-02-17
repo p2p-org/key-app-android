@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.model
 
 import android.os.Parcelable
-import androidx.annotation.ColorRes
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
@@ -22,7 +21,6 @@ sealed class Token constructor(
     open val mintAddress: String,
     open val tokenName: String,
     open val iconUrl: String?,
-    @ColorRes open val color: Int,
     open val serumV3Usdc: String?,
     open val serumV3Usdt: String?,
     open val isWrapped: Boolean,
@@ -41,7 +39,6 @@ sealed class Token constructor(
         override val mintAddress: String,
         override val tokenName: String,
         override val iconUrl: String?,
-        @ColorRes override val color: Int,
         override val serumV3Usdc: String?,
         override val serumV3Usdt: String?,
         override val isWrapped: Boolean
@@ -52,7 +49,6 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        color = color,
         serumV3Usdc = serumV3Usdc,
         serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
@@ -92,7 +88,6 @@ sealed class Token constructor(
         override val mintAddress: String,
         override val tokenName: String,
         override val iconUrl: String?,
-        @ColorRes override val color: Int,
         override val serumV3Usdc: String?,
         override val serumV3Usdt: String?,
         override val isWrapped: Boolean,
@@ -104,7 +99,6 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        color = color,
         serumV3Usdc = serumV3Usdc,
         serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
@@ -136,7 +130,6 @@ sealed class Token constructor(
                 iconUrl = tokenData.iconUrl,
                 totalInUsd = exchangeRate?.let { total.multiply(it) },
                 total = total,
-                color = R.color.chartSOL,
                 usdRate = exchangeRate,
                 visibility = TokenVisibility.SHOWN,
                 serumV3Usdc = tokenData.serumV3Usdc,
