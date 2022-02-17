@@ -2,6 +2,7 @@ package org.p2p.wallet.home.ui.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -25,7 +26,6 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.setVisible
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 
@@ -105,10 +105,10 @@ class HomeFragment :
     }
 
     override fun showEmptyState(isEmpty: Boolean) = with(binding) {
-        emptyStateLayout.setVisible(isEmpty)
-        swipeRefreshLayout.setVisible(!isEmpty)
-        balanceTextView.setVisible(!isEmpty)
-        balanceLabelTextView.setVisible(!isEmpty)
+        emptyStateLayout.isVisible = isEmpty
+        swipeRefreshLayout.isVisible = !isEmpty
+        balanceTextView.isVisible = !isEmpty
+        balanceLabelTextView.isVisible = !isEmpty
     }
 
     override fun onDestroy() {
