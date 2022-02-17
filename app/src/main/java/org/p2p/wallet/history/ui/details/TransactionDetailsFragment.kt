@@ -21,7 +21,7 @@ import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.p2p.wallet.utils.withTextOrGone
+import org.p2p.wallet.utils.withTextOrInvisible
 
 private const val EXTRA_TRANSACTION = "EXTRA_TRANSACTION"
 
@@ -62,7 +62,7 @@ class TransactionDetailsFragment :
         with(binding) {
             iconContainer.applyTo(sourceImageView)
             sourceTextView.text = primaryInfo
-            sourceSecondaryTextView withTextOrGone secondaryInfo
+            sourceSecondaryTextView withTextOrInvisible secondaryInfo
         }
     }
 
@@ -70,7 +70,7 @@ class TransactionDetailsFragment :
         with(binding) {
             iconContainer.applyTo(destinationImageView)
             destinationTextView.text = primaryInfo
-            destinationSecondaryTextView withTextOrGone secondaryInfo
+            destinationSecondaryTextView withTextOrInvisible secondaryInfo
         }
     }
 

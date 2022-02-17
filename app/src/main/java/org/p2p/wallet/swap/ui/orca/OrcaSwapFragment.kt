@@ -21,7 +21,6 @@ import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.SwapConfirmData
@@ -107,7 +106,7 @@ class OrcaSwapFragment :
                     if (token != null) presenter.setNewSourceToken(token)
                 }
                 result.containsKey(EXTRA_DESTINATION_TOKEN) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_DESTINATION_TOKEN)
+                    val token = result.getParcelable<Token>(EXTRA_DESTINATION_TOKEN)
                     if (token != null) presenter.setNewDestinationToken(token)
                 }
                 result.containsKey(EXTRA_SETTINGS) -> {
@@ -229,16 +228,20 @@ class OrcaSwapFragment :
         binding.swapButton.isEnabled = isEnabled
     }
 
-    override fun showTransactionDetails(transaction: HistoryTransaction) {
-        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.TRANSACTION_INFO)
-        popAndReplaceFragment(
-            target = TransactionDetailsFragment.create(transaction),
-            popTo = HomeFragment::class
-        )
+    override fun showTransactionStatusMessage(fromSymbol: String, toSymbol: String, isSuccess: Boolean) {
+        val (message, iconRes) = if (isSuccess) {
+            getString(R.string.swap_transaction_completed, fromSymbol, toSymbol) to R.drawable.ic_done
+        } else {
+            getString(R.string.swap_transaction_failed, fromSymbol, toSymbol) to R.drawable.ic_close_red
+        }
+        showSnackbar(message, iconRes)
     }
 
-    override fun openSourceSelection(tokens: List<Token.Active>) {
-        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.CURRENCY_A)
+    override fun showTransactionDetails(transaction: HistoryTransaction) {
+        popAndReplaceFragment(TransactionDetailsFragment.create(transaction))
+    }
+
+    override fun showSourceSelection(tokens: List<Token.Active>) {
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_SOURCE_TOKEN),
             enter = R.anim.slide_up,

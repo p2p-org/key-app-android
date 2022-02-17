@@ -36,9 +36,6 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_TOTAL)
     val total: BigDecimal,
 
-    @ColumnInfo(name = COLUMN_COLOR)
-    val color: Int,
-
     @ColumnInfo(name = COLUMN_EXCHANGE_RATE)
     val exchangeRate: String?,
 

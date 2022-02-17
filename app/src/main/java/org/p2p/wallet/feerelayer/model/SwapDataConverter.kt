@@ -16,7 +16,8 @@ object SwapDataConverter {
             splTransitive = SwapSplTransitiveRequest(
                 from = toSpl(data.from),
                 to = toSpl(data.to),
-                transitTokenMintPubkey = data.transitTokenMintPubkey
+                transitTokenMintPubkey = data.transitTokenMintPubkey,
+                needsCreateTransitTokenAccount = data.needsCreateTransitTokenAccount
             ),
         )
     }

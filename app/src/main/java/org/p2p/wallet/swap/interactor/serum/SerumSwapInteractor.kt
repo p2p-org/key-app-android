@@ -18,12 +18,10 @@ import org.p2p.solanaj.serumswap.model.SwapParams
 import org.p2p.solanaj.serumswap.utils.SerumSwapUtils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
-import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.utils.Constants.SOL_MINT
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.isUsdx
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toLamports
@@ -38,7 +36,7 @@ class SerumSwapInteractor(
     private val openOrdersInteractor: SerumOpenOrdersInteractor,
     private val marketInteractor: SerumMarketInteractor,
     private val swapMarketInteractor: SerumSwapMarketInteractor,
-    private val serializationInteractor: SwapSerializationInteractor,
+    private val transactionInteractor: TransactionInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -259,21 +257,21 @@ class SerumSwapInteractor(
         signers.add(0, Account(tokenKeyProvider.secretKey))
 
         // serialize transaction
-        val serializedTransaction = serializationInteractor.serializeTransaction(
-            instructions = instructions,
-            recentBlockhash = null,
-            signers = signers,
-            feePayer = null // TODO: modify for fee relayer
-        )
+//        val serializedTransaction = transactionInstruction.serializeTransaction(
+//            instructions = instructions,
+//            recentBlockhash = null,
+//            signers = signers,
+//            feePayer = null // TODO: modify for fee relayer
+//        )
 
         try {
-            val appTransaction = AppTransaction(
-                serializedTransaction = serializedTransaction,
-                sourceSymbol = fromWallet.tokenSymbol,
-                destinationSymbol = toWallet.tokenSymbol,
-                isSimulation = isSimulation
-            )
-            serializationInteractor.sendTransaction(appTransaction)
+//            val appTransaction = AppTransaction(
+//                serializedTransaction = serializedTransaction,
+//                sourceSymbol = fromWallet.tokenSymbol,
+//                destinationSymbol = toWallet.tokenSymbol,
+//                isSimulation = isSimulation
+//            )
+//            transactionInteractor.sendTransaction(appTransaction)
             return ""
         } catch (e: Throwable) {
             throw e
@@ -718,20 +716,20 @@ class SerumSwapInteractor(
             signers.add(0, Account(tokenKeyProvider.secretKey))
         }
 
-        val serializedTransaction = serializationInteractor.serializeTransaction(
-            instructions = instructions,
-            recentBlockhash = null,
-            signers = signers,
-            feePayer = feePayer
-        )
-
-        val appTransaction = AppTransaction(
-            serializedTransaction = serializedTransaction,
-            sourceSymbol = from.account.toBase58().cutMiddle(),
-            destinationSymbol = to.account.toBase58().cutMiddle(),
-            isSimulation = isSimulation
-        )
-        serializationInteractor.sendTransaction(appTransaction)
+//        val serializedTransaction = serializationInteractor.serializeTransaction(
+//            instructions = instructions,
+//            recentBlockhash = null,
+//            signers = signers,
+//            feePayer = feePayer
+//        )
+//
+//        val appTransaction = AppTransaction(
+//            serializedTransaction = serializedTransaction,
+//            sourceSymbol = from.account.toBase58().cutMiddle(),
+//            destinationSymbol = to.account.toBase58().cutMiddle(),
+//            isSimulation = isSimulation
+//        )
+//        serializationInteractor.sendTransaction(appTransaction)
         return Triple(from.account, to.account, from.cleanupInstructions + to.cleanupInstructions)
     }
 

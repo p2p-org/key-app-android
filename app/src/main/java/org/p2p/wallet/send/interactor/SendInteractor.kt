@@ -22,10 +22,12 @@ import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.SendResult
-import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
+import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
@@ -37,8 +39,10 @@ class SendInteractor(
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val orcaSwapInteractor: OrcaSwapInteractor,
+    private val orcaPoolInteractor: OrcaPoolInteractor,
+    private val orcaInfoInteractor: OrcaInfoInteractor,
     private val amountInteractor: TransactionAmountInteractor,
+    private val transactionManager: TransactionManager,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -58,8 +62,7 @@ class SendInteractor(
     suspend fun initialize(sol: Token.Active) {
         feePayerToken = sol
         feeRelayerInteractor.load()
-
-        orcaSwapInteractor.load()
+        orcaInfoInteractor.load()
     }
 
     fun getFeePayerToken(): Token.Active = feePayerToken
@@ -101,10 +104,10 @@ class SendInteractor(
         val feeInSol = accountCreationFee
         val fee = FeeRelayerSendFee(feeInSol, null)
 
-        val poolsPairs = orcaSwapInteractor.getTradablePoolsPairs(feePayerToken.mintAddress, WRAPPED_SOL_MINT)
+        val poolsPairs = orcaPoolInteractor.getTradablePoolsPairs(feePayerToken.mintAddress, WRAPPED_SOL_MINT)
         if (poolsPairs.isNullOrEmpty()) return fee
 
-        val bestPoolPair = orcaSwapInteractor.findBestPoolsPairForEstimatedAmount(feeInSol, poolsPairs)
+        val bestPoolPair = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(feeInSol, poolsPairs)
         if (bestPoolPair.isNullOrEmpty()) return fee
 
         val routeValues = bestPoolPair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
@@ -179,12 +182,19 @@ class SendInteractor(
             return SendResult.Error(R.string.main_send_to_yourself_error)
         }
 
+        val feePayerPubkey = feeRelayerAccountInteractor.getFeePayerPublicKey()
+
         val preparedTransaction = buildTransaction(
             address = address,
             sourceToken = sourceToken,
             destinationAddress = destinationAddress,
-            lamports = lamports
+            lamports = lamports,
+            accountCreationPayer = feePayerPubkey,
+            feePayerPubkey = feePayerPubkey
         )
+
+        val signature = preparedTransaction.transaction.signature.signature
+        transactionManager.emitTransactionId(signature)
 
         val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
             preparedTransaction = preparedTransaction,
@@ -244,7 +254,7 @@ class SendInteractor(
         sourceToken: Token.Active,
         lamports: BigInteger
     ): SendResult {
-        val currentUser = tokenKeyProvider.publicKey
+        val currentUser = tokenKeyProvider.publicKey.toPublicKey()
 
         if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
             return SendResult.WrongWallet
@@ -256,15 +266,19 @@ class SendInteractor(
             return SendResult.WrongWallet
         }
 
-        if (currentUser == address.associatedAddress.toBase58()) {
+        if (currentUser.toBase58() == address.associatedAddress.toBase58()) {
             return SendResult.Error(R.string.main_send_to_yourself_error)
         }
+
+        val feePayerPubkey = feeRelayerAccountInteractor.getFeePayerPublicKey()
 
         val preparedTransaction = buildTransaction(
             address = address,
             sourceToken = sourceToken,
             destinationAddress = destinationAddress,
-            lamports = lamports
+            lamports = lamports,
+            accountCreationPayer = currentUser,
+            feePayerPubkey = feePayerPubkey
         )
 
         val transaction = preparedTransaction.transaction
@@ -277,10 +291,11 @@ class SendInteractor(
         address: TransactionAddressData,
         sourceToken: Token.Active,
         destinationAddress: PublicKey,
-        lamports: BigInteger
+        lamports: BigInteger,
+        accountCreationPayer: PublicKey,
+        feePayerPubkey: PublicKey
     ): PreparedTransaction {
         val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
-        val feePayerPubkey = feeRelayerAccountInteractor.getRelayInfo().feePayerAddress
 
         val transaction = Transaction()
 
@@ -295,7 +310,7 @@ class SendInteractor(
                 sourceToken.mintAddress.toPublicKey(),
                 address.associatedAddress,
                 destinationAddress,
-                userPublicKey
+                accountCreationPayer
             )
 
             transaction.addInstruction(createAccount)

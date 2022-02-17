@@ -91,7 +91,7 @@
 //
 //    private lateinit var orcaSwapRepository: OrcaSwapRepository
 //    private lateinit var orcaSwapInternalRepository: OrcaSwapInternalRepository
-//    private lateinit var orcaPoolInteractor: OrcaPoolInteractor
+//    private lateinit var orcaRouteInteractor: OrcaPoolInteractor
 //    private lateinit var instructionsInteractor: OrcaInstructionsInteractor
 //    private lateinit var addressInteractor: OrcaAddressInteractor
 //    private lateinit var serializationInteractor: SwapSerializationInteractor
@@ -196,7 +196,7 @@
 //
 //        swapInstructionsInteractor = SwapInstructionsInteractor(rpcRepository, addressInteractor)
 //
-//        orcaPoolInteractor = OrcaPoolInteractor(
+//        orcaRouteInteractor = OrcaPoolInteractor(
 //            orcaSwapRepository = orcaSwapRepository,
 //            instructionsInteractor = swapInstructionsInteractor
 //        )
@@ -209,7 +209,7 @@
 //            swapRepository = orcaSwapRepository,
 //            rpcRepository = rpcRepository,
 //            internalRepository = orcaSwapInternalRepository,
-//            poolInteractor = orcaPoolInteractor,
+//            poolInteractor = orcaRouteInteractor,
 //            userInteractor = userInteractor,
 //            orcaInstructionsInteractor = instructionsInteractor,
 //            tokenKeyProvider = tokenKeyProvider,

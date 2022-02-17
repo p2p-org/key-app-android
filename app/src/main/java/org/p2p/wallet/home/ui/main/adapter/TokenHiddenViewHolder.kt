@@ -5,7 +5,6 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -44,7 +43,6 @@ class TokenHiddenViewHolder(
     private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
-    private val colorView = binding.colorView
     private val hideImageView = binding.hideImageView
     private val contentView = binding.contentView
 
@@ -64,7 +62,6 @@ class TokenHiddenViewHolder(
         addressTextView.text = data.tokenName
         valueTextView withTextOrGone data.getFormattedUsdTotal()
         totalTextView.text = data.getFormattedTotal()
-        colorView.setBackgroundColor(ContextCompat.getColor(colorView.context, data.color))
         hideImageView.setImageResource(data.getVisibilityIcon(isZerosHidden))
         hideImageView.setOnClickListener { listener.onHideClicked(data) }
         contentView.setOnClickListener { listener.onTokenClicked(data) }

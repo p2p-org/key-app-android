@@ -55,3 +55,6 @@ fun BigDecimal?.orZero() = this ?: BigDecimal.ZERO
 
 fun BigInteger.isZero() = this.compareTo(BigInteger.ZERO) == 0
 fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
+
+fun BigDecimal.asUsd(): String = "$$this"
+fun BigDecimal.asApproximateUsd(): String = "~($$this)"

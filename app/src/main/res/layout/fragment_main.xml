@@ -70,6 +70,42 @@
         android:orientation="vertical"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+        <LinearLayout
+            android:id="@+id/emptyStateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="40dp"
+            android:paddingTop="50dp"
+            android:paddingEnd="40dp"
+            android:paddingBottom="16dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="283dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_rocket_front" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center_horizontal"
+                android:text="@string/main_empty_title"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Bold28" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_horizontal"
+                android:text="@string/main_empty_subtitle"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Medium16" />
+
+        </LinearLayout>
+
         <org.p2p.wallet.common.ui.widget.ActionButtonsView
             android:id="@+id/actionButtonsView"
             android:layout_width="match_parent"

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.TransactionExecutionState
 
-class TransactionInteractor(
+class TransactionStatusInteractor(
     private val transactionManager: TransactionManager
 ) {
 

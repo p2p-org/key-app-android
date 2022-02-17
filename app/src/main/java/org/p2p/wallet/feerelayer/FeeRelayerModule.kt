@@ -11,6 +11,7 @@ import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInstructionsInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRemoteRepository
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -47,6 +48,7 @@ object FeeRelayerModule : InjectionModule {
 
         factory { FeeRelayerInteractor(get(), get(), get(), get()) }
         factory { FeeRelayerTopUpInteractor(get(), get(), get(), get(), get(), get()) }
-        factory { FeeRelayerInstructionsInteractor(get(), get(), get()) }
+        factory { FeeRelayerInstructionsInteractor(get(), get(), get(), get()) }
+        single { FeeRelayerSwapInteractor(get(), get(), get(), get(), get(), get(), get()) }
     }
 }

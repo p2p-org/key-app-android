@@ -2,6 +2,7 @@ package org.p2p.wallet.home.ui.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -101,6 +102,13 @@ class HomeFragment :
 
     override fun showActions(items: List<ActionButtonsView.ActionButton>) {
         binding.actionButtonsView.setItems(items)
+    }
+
+    override fun showEmptyState(isEmpty: Boolean) = with(binding) {
+        emptyStateLayout.isVisible = isEmpty
+        swipeRefreshLayout.isVisible = !isEmpty
+        balanceTextView.isVisible = !isEmpty
+        balanceLabelTextView.isVisible = !isEmpty
     }
 
     override fun onDestroy() {
