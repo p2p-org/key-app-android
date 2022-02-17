@@ -70,10 +70,17 @@ class HomePresenter(
         collectJob?.cancel()
         collectJob = launch {
             userInteractor.getUserTokensFlow().collect { updatedTokens ->
-                if (updatedTokens.isNotEmpty()) {
-                    tokens.clear()
-                    tokens += updatedTokens
-                    showTokens(updatedTokens.toMutableList())
+                when {
+                    isEmptyAccount(updatedTokens) -> {
+                        view?.showEmptyState(true)
+                    }
+
+                    updatedTokens.isNotEmpty() -> {
+                        view?.showEmptyState(false)
+                        tokens.clear()
+                        tokens += updatedTokens
+                        showTokens(updatedTokens.toMutableList())
+                    }
                 }
             }
         }
@@ -255,4 +262,7 @@ class HomePresenter(
             listOf(usernameBanner, feedbackBanner)
         }
     }
+
+    private fun isEmptyAccount(updatedTokens: List<Token.Active>) =
+        updatedTokens.size == 1 && updatedTokens.first().isSOL && updatedTokens.first().isZero
 }

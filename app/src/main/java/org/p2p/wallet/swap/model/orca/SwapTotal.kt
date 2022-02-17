@@ -5,7 +5,7 @@ data class SwapTotal(
     val total: String,
     val totalUsd: String?,
     val fee: String?,
-    val feeUsd: String?,
+    val approxFeeUsd: String,
     val receiveAtLeast: String,
     val receiveAtLeastUsd: String?
 ) {
@@ -17,8 +17,6 @@ data class SwapTotal(
 
     val fullFee: String?
         get() = fee?.let { "$it $approxFeeUsd" }
-
-    val approxFeeUsd: String? get() = feeUsd?.let { "(~$it)" }
 
     val fullReceiveAtLeast: String
         get() = if (approxReceiveAtLeast != null) "$receiveAtLeast $approxReceiveAtLeast" else receiveAtLeast

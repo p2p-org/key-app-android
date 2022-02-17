@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
+import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
@@ -47,7 +48,7 @@ class FeeRelayerInteractor(
     suspend fun calculateFee(preparedTransaction: PreparedTransaction): FeeAmount {
         val fee = preparedTransaction.expectedFee
         // TODO: - Check if free transaction available
-        val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = true)
         val userRelayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
         val userRelayInfo = feeRelayerAccountInteractor.getRelayInfo()
         if (feeLimits.isFreeTransactionFeeAvailable(fee.transaction)) {
@@ -64,7 +65,7 @@ class FeeRelayerInteractor(
     }
 
     /*
-    *  Generic function for sending transaction to fee relayer's relay
+    * Generic function for sending transaction to fee relayer's relay
     * */
     suspend fun topUpAndRelayTransaction(
         preparedTransaction: PreparedTransaction,
@@ -148,4 +149,7 @@ class FeeRelayerInteractor(
             feeRelayerTopUpInteractor.relayTransaction(transaction)
         }
     }
+
+    suspend fun relayTransaction(transaction: Transaction): List<String> =
+        feeRelayerTopUpInteractor.relayTransaction(transaction)
 }

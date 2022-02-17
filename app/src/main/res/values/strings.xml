@@ -233,6 +233,8 @@
     <string name="main_no_tokens_for_swap">No tokens found</string>
     <string name="main_free_transactions_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
     <string name="main_balance">Balance</string>
+    <string name="main_empty_title">Top up your account to get started</string>
+    <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -346,8 +348,8 @@
     <string name="swap_max_available">Max</string>
     <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
     <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
-    <string name="swap_transaction_completed">Swap from %1s to %2s completed!</string>
-    <string name="swap_transaction_failed">Swap from %1s to %2s failed. Please try again</string>
+    <string name="swap_transaction_completed">%1s → %2s swap completed!</string>
+    <string name="swap_transaction_failed">%1s → %2s swap didn\'t complete!</string>
     <string name="swap_zero_value">$0</string>
     <string name="swap_details">Swap details</string>
     <string name="swap_receive_at_least">Receive at least</string>
