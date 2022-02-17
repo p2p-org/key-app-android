@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.RawRes
+import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.common.mvp.BaseFragment
@@ -30,6 +31,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             animationVideoView.apply {
                 setVideoURI(getVideoUriFromResources(R.raw.anim1_white))
                 setOnPreparedListener { mediaPlayer ->
+                    animationVideoViewPlaceHolder.isVisible = false
                     mediaPlayer.isLooping = true
                 }
                 start()
