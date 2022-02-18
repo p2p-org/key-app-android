@@ -60,6 +60,11 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
         binding.animationVideoView.pause()
     }
 
+    override fun onStop() {
+        super.onStop()
+        binding.animationVideoViewPlaceHolder.isVisible = true
+    }
+
     override fun onResume() {
         super.onResume()
         binding.animationVideoView.start()
@@ -82,11 +87,6 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
                 }
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        binding.animationVideoViewPlaceHolder.isVisible = true
     }
 
     // TODO P2PW-583 support dark theme to load assets for dark theme mode
