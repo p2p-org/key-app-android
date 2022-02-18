@@ -43,6 +43,8 @@ class DerivableAccountsPresenter(
                 filterAccountsByPath(path)
                 if (allAccounts.size > 1) {
                     analytics.logManyWalletFound(EventsName.OnBoarding.IMPORT_MANUAL)
+                } else {
+                    analytics.logNoWalletFound(EventsName.OnBoarding.IMPORT_MANUAL)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading derivable accounts")

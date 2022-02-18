@@ -91,11 +91,11 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
         tracker.logEvent("Banner_Backup_Pressed")
     }
 
-    fun logNotificationsPressed() {
+    fun logBannerNotificationsPressed() {
         tracker.logEvent("Banner_Notifications_Pressed")
     }
 
-    fun logFeedbackPressed() {
+    fun logBannerFeedbackPressed() {
         tracker.logEvent("Banner_Feedback_Pressed")
     }
 

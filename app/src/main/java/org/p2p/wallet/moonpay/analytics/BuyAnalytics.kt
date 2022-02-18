@@ -5,6 +5,9 @@ import java.math.BigDecimal
 
 class BuyAnalytics(private val tracker: TrackerContract) {
 
+    fun logBuyViewed() {
+        tracker.logEvent("BuyViewed")
+    }
     fun logBuyListViewed() {
         tracker.logEvent("Buy_List_Viewed")
     }

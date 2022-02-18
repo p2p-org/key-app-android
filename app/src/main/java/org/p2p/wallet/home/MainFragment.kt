@@ -21,7 +21,6 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.send.ui.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import timber.log.Timber
 
 class MainFragment : BaseFragment(R.layout.fragment_home) {
 
@@ -49,7 +48,6 @@ class MainFragment : BaseFragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             bottomNavigation.setOnItemSelectedListener {
-                Timber.tag("____").d(it.title.toString())
                 if (it.itemId == R.id.itemFeedback) {
                     IntercomService.showMessenger()
                     analyticsInteractor.logScreenOpenEvent(EventsName.Main.MAIN_FEEDBACK)

@@ -46,6 +46,7 @@ class BuySolanaPresenter(
                 Timber.e(e, "Error loading currency ask price")
                 view?.showErrorMessage(e)
             } finally {
+                buyAnalytics.logBuyViewed()
                 view?.showLoading(false)
             }
         }
