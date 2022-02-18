@@ -5,7 +5,7 @@
     android:id="@id/contentView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?colorElementPrimary"
+    android:background="@color/elementPrimary"
     android:paddingStart="20dp"
     android:paddingEnd="20dp">
 

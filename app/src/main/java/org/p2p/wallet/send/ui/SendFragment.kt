@@ -8,6 +8,7 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
 import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -234,7 +235,7 @@ class SendFragment :
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
+            messageTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.systemErrorMain))
             clearImageView.isVisible = true
         }
     }
@@ -260,7 +261,7 @@ class SendFragment :
             targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
-            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarning))
+            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
             clearImageView.isVisible = true
         }
     }

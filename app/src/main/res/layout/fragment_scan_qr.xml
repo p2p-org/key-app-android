@@ -23,7 +23,7 @@
             android:src="@drawable/ic_close"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="?colorElementPrimary"
+            app:tint="@color/elementPrimary"
             tools:ignore="ContentDescription" />
 
         <me.dm7.barcodescanner.zxing.ZXingScannerView

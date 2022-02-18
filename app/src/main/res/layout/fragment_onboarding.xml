@@ -92,7 +92,7 @@
             app:buttonBackground="@drawable/bg_blue_stroke_rounded"
             app:buttonDrawable="@drawable/ic_user"
             app:buttonText="@string/auth_have_wallet"
-            app:buttonTextColor="@color/accentPrimary"
+            app:buttonTextColor="@color/backgroundButtonPrimary"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

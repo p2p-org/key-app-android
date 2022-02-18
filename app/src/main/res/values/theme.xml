@@ -10,15 +10,9 @@
     <style name="WalletBase.v21" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
-        <item name="colorPrimary">@color/accentPrimary</item>
-        <item name="colorPrimaryDark">@color/accentTertiary</item>
+        <item name="colorPrimary">@color/backgroundButtonPrimary</item>
+        <item name="colorPrimaryDark">@color/backgroundActivePrimary</item>
 
-        <item name="colorAccentPrimary">@color/accentPrimary</item>
-        <item name="colorAccentSecondary">@color/accentSecondary</item>
-        <item name="colorAccentTertiary">@color/accentTertiary</item>
-        <item name="colorAccentWarning">@color/accentWarning</item>
-
-        <item name="colorElementPrimary">@color/elementPrimary</item>
         <item name="colorElementSecondary">@color/elementSecondary</item>
         <item name="colorElementTertiary">@color/elementTertiary</item>
         <item name="colorElementSurface">@color/elementSurface</item>
@@ -28,13 +22,12 @@
 
         <item name="colorBackgroundPrimary">@color/backgroundPrimary</item>
         <item name="colorBackgroundSecondary">@color/backgroundSecondary</item>
-        <item name="colorSystemSuccessMain">@color/systemSuccessMain</item>
 
         <item name="colorSecondary">@color/elementSecondary</item>
         <item name="colorControlHighlight">@color/elementSecondary</item>
 
-        <item name="colorAccent">@color/accentPrimary</item>
-        <item name="colorControlActivated">?colorAccent</item>
+        <item name="colorAccent">@color/backgroundButtonPrimary</item>
+        <item name="colorControlActivated">@color/backgroundButtonPrimary</item>
         <item name="colorControlNormal">@color/messagePrimary</item>
         <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>
 

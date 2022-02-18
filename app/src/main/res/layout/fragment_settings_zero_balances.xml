@@ -73,7 +73,7 @@
                 android:paddingVertical="8dp"
                 android:text="@string/common_cancel"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
-                android:textColor="@color/accentPrimary" />
+                android:textColor="@color/backgroundButtonPrimary" />
 
             <TextView
                 android:id="@+id/primaryButton"
@@ -86,7 +86,7 @@
                 android:paddingVertical="8dp"
                 android:text="@string/common_confirm"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
-                android:textColor="@color/accentPrimary" />
+                android:textColor="@color/backgroundButtonPrimary" />
 
         </LinearLayout>
     </LinearLayout>

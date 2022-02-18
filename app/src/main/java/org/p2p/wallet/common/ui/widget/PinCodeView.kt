@@ -80,7 +80,7 @@ class PinCodeView @JvmOverloads constructor(
             override fun onAnimationRepeat(animation: Animation?) {}
 
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(R.color.systemError, R.color.systemErrorSecondary)
+                setDotsColor(R.color.systemErrorMain, R.color.systemErrorSecondary)
             }
         })
         startAnimation(animation)

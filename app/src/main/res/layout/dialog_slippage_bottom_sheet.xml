@@ -20,7 +20,6 @@
             android:background="?selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/ic_back"
-            app:tint="@color/colorStaticDark"
             tools:ignore="ContentDescription" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -68,6 +67,6 @@
         android:text="@string/common_done"
         android:textAllCaps="false"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="?colorElementPrimary"
+        android:textColor="@color/elementPrimary"
         tools:ignore="UnusedAttribute" />
 </LinearLayout>

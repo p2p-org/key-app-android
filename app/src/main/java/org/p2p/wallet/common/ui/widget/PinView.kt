@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.core.os.postDelayed
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -54,7 +55,7 @@ class PinView @JvmOverloads constructor(
 
     fun startErrorAnimation(errorText: String) {
         with(binding) {
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
+            messageTextView.setTextColor(ContextCompat.getColor(context, R.color.systemErrorMain))
             messageTextView.text = errorText
             messageTextView.isVisible = true
             pinCodeView.startErrorAnimation {
@@ -66,7 +67,7 @@ class PinView @JvmOverloads constructor(
 
     fun startSuccessAnimation(text: String, onAnimationFinished: () -> Unit) {
         with(binding) {
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorSystemSuccessMain))
+            messageTextView.setTextColor(context.getColor(R.color.systemSuccessMain))
             messageTextView.text = text
             messageTextView.isVisible = true
             pinCodeView.startSuccessAnimation {

@@ -48,6 +48,6 @@
         android:text="@string/common_great"
         android:textAllCaps="false"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="?colorElementPrimary"
+        android:textColor="@color/elementPrimary"
         tools:ignore="UnusedAttribute" />
 </LinearLayout>

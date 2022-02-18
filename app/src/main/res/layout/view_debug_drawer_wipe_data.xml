@@ -27,7 +27,7 @@
         android:background="@drawable/bg_debug_drawer_rounded"
         android:enabled="true"
         android:text="Wipe data"
-        android:textColor="?colorElementPrimary"
+        android:textColor="@color/elementPrimary"
         tools:ignore="HardcodedText" />
 
 </LinearLayout>

@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="@id/subtitleTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/titleTextView"
-        app:tint="@color/accentPrimary" />
+        app:tint="@color/backgroundButtonPrimary" />
 
     <TextView
         android:id="@+id/titleTextView"

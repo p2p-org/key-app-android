@@ -205,7 +205,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="@color/systemError"
+        android:textColor="@color/systemErrorMain"
         android:visibility="gone"
         tools:text="Insufficient balance to make transaction"
         tools:visibility="visible" />

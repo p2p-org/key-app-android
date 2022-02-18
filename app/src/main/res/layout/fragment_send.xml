@@ -257,7 +257,7 @@
                             android:paddingVertical="4dp"
                             android:text="@string/main_scan_qr"
                             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                            android:textColor="?colorAccentPrimary"
+                            android:textColor="@color/backgroundButtonPrimary"
                             app:drawableStartCompat="@drawable/ic_scan_qr"
                             app:layout_constraintBottom_toBottomOf="@id/toTextView"
                             app:layout_constraintEnd_toStartOf="@id/pasteTextView"

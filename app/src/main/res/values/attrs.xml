@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="colorAccentPrimary" format="color|reference" />
-    <attr name="colorAccentSecondary" format="color|reference" />
-    <attr name="colorAccentTertiary" format="color|reference" />
-    <attr name="colorAccentWarning" format="color|reference" />
-    <attr name="colorSystemSuccessMain" format="color|reference" />
-
-    <attr name="colorElementPrimary" format="color|reference" />
     <attr name="colorElementSecondary" format="color|reference" />
     <attr name="colorElementTertiary" format="color|reference" />
     <attr name="colorElementSurface" format="color|reference" />
@@ -17,7 +10,6 @@
 
     <attr name="colorBackgroundPrimary" format="color|reference" />
     <attr name="colorBackgroundSecondary" format="color|reference" />
-
 
     <item name="edgetoedge" type="id" />
     <item name="seed_phrase_watcher_tag_id" type="id" />

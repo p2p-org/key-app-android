@@ -371,7 +371,7 @@
             android:paddingBottom="19dp"
             android:text="Swap_now"
             android:textAllCaps="false"
-            android:textColor="?colorElementPrimary"
+            android:textColor="@color/elementPrimary"
             android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
