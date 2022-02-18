@@ -12,7 +12,6 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetPinViewBinding
-import org.p2p.wallet.utils.colorFromTheme
 
 private const val PIN_CODE_LENGTH = 6
 private const val DELAY_MS = 50L

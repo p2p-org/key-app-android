@@ -15,7 +15,6 @@ import androidx.core.view.children
 import androidx.core.widget.TextViewCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetTabRadiogroupBinding
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.dip
 import kotlin.math.max
 

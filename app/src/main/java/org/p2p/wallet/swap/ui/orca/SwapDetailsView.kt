@@ -14,7 +14,6 @@ import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 

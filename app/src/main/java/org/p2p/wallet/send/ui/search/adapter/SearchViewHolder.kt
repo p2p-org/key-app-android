@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber

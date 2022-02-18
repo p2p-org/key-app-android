@@ -11,7 +11,6 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium

@@ -16,7 +16,6 @@ import org.koin.core.component.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.edgetoedge.isInsetConsumed
 import org.p2p.wallet.utils.edgetoedge.navigationBarInset
 import org.p2p.wallet.utils.edgetoedge.redispatchWindowInsetsToAllChildren

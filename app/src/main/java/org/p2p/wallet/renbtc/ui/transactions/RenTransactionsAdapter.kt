@@ -11,7 +11,6 @@ import org.p2p.wallet.common.ui.recycler.adapter.BaseViewHolder
 import org.p2p.wallet.databinding.ItemRenTransactionBinding
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
-import org.p2p.wallet.utils.colorFromTheme
 
 class RenTransactionsAdapter(
     private val onTransactionClicked: (RenTransaction) -> Unit
