@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="colorMessageSecondary" format="color|reference" />
 
-    <attr name="colorBackgroundPrimary" format="color|reference" />
     <attr name="colorBackgroundSecondary" format="color|reference" />
 
     <declare-styleable name="NumberKeyboardButtonView">

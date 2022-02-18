@@ -52,7 +52,7 @@ object DebugDrawer : KoinComponent {
         }
         val drawerContent = activity.findViewById<ViewGroup>(R.id.dd_debug_view)
 
-        drawerContent.setBackgroundColor(activity.colorFromTheme(R.attr.colorBackgroundPrimary))
+        drawerContent.setBackgroundColor(activity.getColor(R.color.backgroundPrimary))
 
         ViewCompat.setOnApplyWindowInsetsListener(drawerContent) { v, insets ->
             if (insets.isInsetConsumed()) {
