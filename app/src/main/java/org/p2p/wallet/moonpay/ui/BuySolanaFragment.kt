@@ -1,6 +1,5 @@
 package org.p2p.wallet.moonpay.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -33,15 +32,11 @@ class BuySolanaFragment :
     private val analyticsInteractor: AnalyticsInteractor by inject()
     private var backPressedCallback: OnBackPressedCallback? = null
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(EventsName.Buy.SOL)
         with(binding) {
             toolbar.setNavigationOnClickListener { presenter.onBackPressed() }

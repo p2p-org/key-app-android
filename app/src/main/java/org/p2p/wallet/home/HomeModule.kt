@@ -74,7 +74,7 @@ object HomeModule : InjectionModule {
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
-        factory { BuySolanaPresenter(get(), get()) } bind BuySolanaContract.Presenter::class
+        factory { BuySolanaPresenter(get(), get(), get()) } bind BuySolanaContract.Presenter::class
         factory { TokenListPresenter(get(), get()) } bind TokenListContract.Presenter::class
     }
 }

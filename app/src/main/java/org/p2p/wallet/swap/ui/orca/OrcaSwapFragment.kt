@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
@@ -72,16 +71,11 @@ class OrcaSwapFragment :
     private val analyticsInteractor: AnalyticsInteractor by inject()
     private var onBackPressedCallback: OnBackPressedCallback? = null
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
             presenter.onBackPressed()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         with(binding) {
             toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
             toolbar.setOnMenuItemClickListener { menu ->

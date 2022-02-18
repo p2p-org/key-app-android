@@ -1,7 +1,6 @@
 package org.p2p.wallet.qr.ui
 
 import android.Manifest
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -58,15 +57,11 @@ class ScanQrFragment :
             }
         }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
             onBackPressed()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(EventsName.Send.QR_CAMERA)
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
