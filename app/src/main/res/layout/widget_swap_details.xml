@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck"
             tools:text="1 BTC Price" />
 
@@ -91,7 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck"
             tools:text="1 USDC Price" />
 
@@ -131,7 +131,7 @@
             android:gravity="center"
             android:text="@string/swap_pay_fee"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck" />
 
         <TextView
@@ -162,7 +162,7 @@
             android:gravity="center"
             android:text="@string/details_transaction_fee"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary" />
+            android:textColor="@color/elementPrimary" />
 
         <TextView
             android:id="@+id/transactionFeeTextView"
@@ -202,7 +202,7 @@
             android:gravity="center"
             android:text="@string/swap_pay_fee"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:text="BTC account creation" />
 
         <TextView
@@ -242,7 +242,7 @@
             android:gravity="center"
             android:text="@string/main_max_price_slippage"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck" />
 
         <TextView
@@ -273,7 +273,7 @@
             android:gravity="center"
             android:text="@string/swap_receive_at_least"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck" />
 
         <TextView
@@ -312,7 +312,7 @@
             android:gravity="center"
             android:text="@string/buy_total"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck" />
 
         <TextView

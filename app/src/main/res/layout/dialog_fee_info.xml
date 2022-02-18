@@ -35,7 +35,7 @@
         android:paddingVertical="24dp"
         android:text="@string/main_zero_fee_info"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary" />
+        android:textColor="@color/elementPrimary" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/doneButton"

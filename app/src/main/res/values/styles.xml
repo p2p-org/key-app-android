@@ -27,8 +27,8 @@
 
     <style name="SwitchStyle" parent="Theme.Design.BottomSheetDialog">
         <item name="colorControlActivated">@color/backgroundButtonPrimary</item>
-        <item name="colorSwitchThumbNormal">?colorElementSecondary</item>
-        <item name="android:colorForeground">?colorElementSecondary</item>
+        <item name="colorSwitchThumbNormal">@color/elementPrimary</item>
+        <item name="android:colorForeground">@color/elementPrimary</item>
     </style>
 
     <style name="AccentColoredText" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">

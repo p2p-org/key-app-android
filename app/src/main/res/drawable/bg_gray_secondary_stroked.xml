@@ -6,5 +6,5 @@
     <solid android:color="?colorElementTertiary" />
     <stroke
         android:width="0.5dp"
-        android:color="?colorElementSecondary" />
+        android:color="@color/elementPrimary" />
 </shape>

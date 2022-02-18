@@ -64,7 +64,7 @@
             android:gravity="center"
             android:text="@string/send_receive_title"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck" />
 
         <TextView
@@ -94,7 +94,7 @@
             android:gravity="center"
             android:text="@string/details_transaction_fee"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary" />
+            android:textColor="@color/elementPrimary" />
 
         <TextView
             android:id="@+id/freeTextView"
@@ -134,7 +134,7 @@
             android:gravity="center"
             android:text="@string/send_account_creation_fee"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary" />
+            android:textColor="@color/elementPrimary" />
 
         <TextView
             android:id="@+id/accountCreationTokenTextView"
@@ -174,7 +174,7 @@
             android:gravity="center"
             android:text="@string/buy_total"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:ignore="TextContrastCheck" />
 
         <TextView

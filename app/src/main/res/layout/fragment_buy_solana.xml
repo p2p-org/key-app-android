@@ -122,7 +122,7 @@
                     android:singleLine="true"
                     android:text="0 ETH"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/elementPrimary"
                     app:drawableEndCompat="@drawable/ic_exchange"
                     app:layout_constraintBottom_toBottomOf="@id/getTextView"
                     app:layout_constraintEnd_toEndOf="parent"

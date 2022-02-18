@@ -31,7 +31,7 @@
             android:padding="16dp"
             android:text="@string/auth_derivable_info"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary" />
+            android:textColor="@color/elementPrimary" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/derivationPathInputLayout"

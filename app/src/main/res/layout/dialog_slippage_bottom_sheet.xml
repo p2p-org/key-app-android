@@ -37,7 +37,7 @@
         android:id="@+id/dividerView"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="?colorElementSecondary" />
+        android:background="@color/elementPrimary" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/descriptionTextView"
@@ -47,7 +47,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/main_slippage_description"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary" />
+        android:textColor="@color/elementPrimary" />
 
     <org.p2p.wallet.common.ui.widget.SlippageRadioView
         android:id="@+id/slippageRadioView"

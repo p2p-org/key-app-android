@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/elementPrimary"
                     app:layout_constraintEnd_toEndOf="@id/sourceTextView"
                     app:layout_constraintStart_toStartOf="@id/sourceTextView"
                     app:layout_constraintTop_toBottomOf="@id/sourceTextView"
@@ -109,7 +109,7 @@
                     app:layout_constraintEnd_toEndOf="@id/centerGuideline"
                     app:layout_constraintStart_toStartOf="@id/centerGuideline"
                     app:layout_constraintTop_toTopOf="@id/sourceImageView"
-                    app:tint="?colorElementSecondary"
+                    app:tint="@color/elementPrimary"
                     tools:ignore="ContentDescription" />
 
                 <org.p2p.wallet.common.ui.widget.RoundedImageView
@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/elementPrimary"
                     app:layout_constraintEnd_toEndOf="@id/destinationTextView"
                     app:layout_constraintStart_toStartOf="@id/destinationTextView"
                     app:layout_constraintTop_toBottomOf="@id/destinationTextView"
@@ -210,7 +210,7 @@
                         android:layout_marginTop="12dp"
                         android:text="@string/main_from"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorElementSecondary"
+                        android:textColor="@color/elementPrimary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -243,7 +243,7 @@
                         android:layout_marginTop="12dp"
                         android:text="@string/main_to"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorElementSecondary"
+                        android:textColor="@color/elementPrimary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -276,7 +276,7 @@
                         android:layout_marginTop="12dp"
                         android:text="@string/details_amount"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorElementSecondary"
+                        android:textColor="@color/elementPrimary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -309,7 +309,7 @@
                         android:layout_marginTop="12dp"
                         android:text="@string/details_transaction_fee"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorElementSecondary"
+                        android:textColor="@color/elementPrimary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -342,7 +342,7 @@
                         android:layout_marginTop="12dp"
                         android:text="@string/details_block_number"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorElementSecondary"
+                        android:textColor="@color/elementPrimary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -375,7 +375,7 @@
                         android:layout_marginTop="12dp"
                         android:text="@string/main_send_transaction_id"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                        android:textColor="?colorElementSecondary" />
+                        android:textColor="@color/elementPrimary" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -423,7 +423,7 @@
                         android:text="@string/details_show_transaction_details"
                         android:textAllCaps="false"
                         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                        android:textColor="?colorElementSecondary"
+                        android:textColor="@color/elementPrimary"
                         app:layout_constraintTop_toBottomOf="@id/tokensBarrier"
                         tools:ignore="UnusedAttribute" />
 

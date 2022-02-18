@@ -124,7 +124,7 @@
                             android:inputType="numberDecimal"
                             android:singleLine="true"
                             android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
-                            android:textColorHint="?colorElementSecondary"
+                            android:textColorHint="@color/elementPrimary"
                             app:layout_constraintBottom_toBottomOf="@id/downImageView"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/downImageView"

@@ -25,7 +25,7 @@
         android:layout_marginTop="4dp"
         android:gravity="center"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-        android:textColor="?colorElementSecondary"
+        android:textColor="@color/elementPrimary"
         tools:text="Transaction has been confirmed" />
 
     <FrameLayout
@@ -65,7 +65,7 @@
         android:layout_marginTop="4dp"
         android:gravity="center"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        android:textColor="?colorElementSecondary"
+        android:textColor="@color/elementPrimary"
         tools:text="- 1 220,00 $" />
 
     <View
@@ -83,7 +83,7 @@
         android:layout_marginTop="20dp"
         android:text="@string/main_send_transaction_id"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular12"
-        android:textColor="?colorElementSecondary" />
+        android:textColor="@color/elementPrimary" />
 
     <LinearLayout
         android:layout_width="match_parent"
