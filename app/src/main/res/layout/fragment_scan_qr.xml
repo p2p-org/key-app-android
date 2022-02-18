@@ -66,7 +66,7 @@
             android:padding="8dp"
             android:text="@string/qr_give_camera_permission"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            android:textColor="?colorElementTertiary"
+            android:textColor="@color/elementTertiary"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

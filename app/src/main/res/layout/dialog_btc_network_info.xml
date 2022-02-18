@@ -47,7 +47,7 @@
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="36dp"
-        android:background="?colorElementTertiary"
+        android:background="@color/elementTertiary"
         android:backgroundTint="@color/strokePrimary"
         app:layout_constraintTop_toBottomOf="@id/subtitleTextView" />
 

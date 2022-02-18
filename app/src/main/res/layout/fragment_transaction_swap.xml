@@ -46,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_gravity="center_vertical"
-                    android:background="?colorElementTertiary"
+                    android:background="@color/elementTertiary"
                     app:layout_constraintBottom_toBottomOf="@id/transactionImageView"
                     app:layout_constraintTop_toTopOf="@id/transactionImageView" />
 
@@ -200,7 +200,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_gravity="center_vertical"
-                        android:background="?colorElementTertiary" />
+                        android:background="@color/elementTertiary" />
 
                     <TextView
                         android:id="@+id/fromTitleTextView"
@@ -231,7 +231,7 @@
                         android:layout_height="1dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="12dp"
-                        android:background="?colorElementTertiary"
+                        android:background="@color/elementTertiary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -264,7 +264,7 @@
                         android:layout_height="1dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="12dp"
-                        android:background="?colorElementTertiary"
+                        android:background="@color/elementTertiary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -297,7 +297,7 @@
                         android:layout_height="1dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="12dp"
-                        android:background="?colorElementTertiary"
+                        android:background="@color/elementTertiary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -330,7 +330,7 @@
                         android:layout_height="1dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="12dp"
-                        android:background="?colorElementTertiary"
+                        android:background="@color/elementTertiary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -363,7 +363,7 @@
                         android:layout_height="1dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="12dp"
-                        android:background="?colorElementTertiary"
+                        android:background="@color/elementTertiary"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -410,7 +410,7 @@
                         android:layout_height="1dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginTop="12dp"
-                        android:background="?colorElementTertiary" />
+                        android:background="@color/elementTertiary" />
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/detailsButton"

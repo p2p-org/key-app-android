@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="center_vertical"
-            android:background="?colorElementTertiary" />
+            android:background="@color/elementTertiary" />
 
         <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/iconImageView"
@@ -73,7 +73,7 @@
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="16dp"
-        android:background="?colorElementTertiary" />
+        android:background="@color/elementTertiary" />
 
     <TextView
         android:id="@+id/idTitleTextView"
@@ -120,7 +120,7 @@
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="20dp"
-        android:background="?colorElementTertiary" />
+        android:background="@color/elementTertiary" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/doneButton"
