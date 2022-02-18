@@ -282,7 +282,7 @@
     <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>
     <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000112 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
     <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
-    <string name="receive_via_bitcoin_network_info">Make sure you understand the aspects</string>
+    <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
     <string name="receive_no_transactions_yet_message">After first transaction you\nwill be able to view it here</string>
@@ -315,7 +315,7 @@
     <string name="send_receive_at_least">Receive at least: %s</string>
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
     <string name="send_account_creation_fee">Account creation fee</string>
-    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
+    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay a one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
     <string name="send_transaction_details">Transaction details</string>
     <string name="send_receive_title">Receive</string>
     <string name="send_transaction_being_processed">The transaction is being processed</string>
