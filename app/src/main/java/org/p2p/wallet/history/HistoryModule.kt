@@ -26,6 +26,8 @@ object HistoryModule : InjectionModule {
                 get(),
                 get(),
                 get(),
+                get(),
+                get(),
                 get()
             )
         } bind HistoryContract.Presenter::class

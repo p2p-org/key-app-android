@@ -3,9 +3,11 @@ package org.p2p.wallet.swap.ui.orca
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -46,7 +48,9 @@ class OrcaSwapPresenter(
     private val userInteractor: UserInteractor,
     private val swapInteractor: OrcaSwapInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
-    private val settingsInteractor: SettingsInteractor
+    private val settingsInteractor: SettingsInteractor,
+    private val browseAnalytics: BrowseAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     companion object {
@@ -99,6 +103,10 @@ class OrcaSwapPresenter(
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filter { token -> !token.isZero }
+            browseAnalytics.logTokenListViewed(
+                lastScreenName = analyticsInteractor.getPreviousScreenName(),
+                tokenListLocation = BrowseAnalytics.TokenListLocation.TOKEN_A
+            )
             view?.showSourceSelection(result)
         }
     }
@@ -107,6 +115,10 @@ class OrcaSwapPresenter(
         launch {
             try {
                 val orcaTokens = orcaPoolInteractor.findPossibleDestinations(sourceToken.mintAddress)
+                browseAnalytics.logTokenListViewed(
+                    lastScreenName = analyticsInteractor.getPreviousScreenName(),
+                    tokenListLocation = BrowseAnalytics.TokenListLocation.TOKEN_B
+                )
                 view?.showDestinationSelection(orcaTokens)
             } catch (e: Throwable) {
                 Timber.e(e, "Error searching possible destinations")

@@ -191,7 +191,6 @@ class TokenInfoPresenter(
                             receiveUSD = transaction.totalInUsd ?: BigDecimal.ZERO,
                             tokenName = transaction.tokenData.symbol,
                             receiveNetwork = receiveNetwork
-
                         )
                     }
                 }

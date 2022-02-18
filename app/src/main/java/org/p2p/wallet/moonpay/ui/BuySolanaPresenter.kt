@@ -5,10 +5,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.isZero
@@ -21,6 +23,7 @@ private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
     private val moonpayRepository: MoonpayRepository,
+    private val buyAnalytics: BuyAnalytics
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     companion object {
@@ -50,6 +53,17 @@ class BuySolanaPresenter(
 
     override fun onContinueClicked() {
         data?.let { view?.navigateToMoonpay(it.total.toString()) }
+        // TODO provide step name
+        buyAnalytics.logBuyProviderStepViewed("")
+    }
+
+    override fun onBackPressed() {
+        buyAnalytics.logBuyGoingBack(
+            buySum = data?.receiveAmount?.toBigDecimal() ?: BigDecimal.ZERO,
+            buyCurrency = SOL_SYMBOL,
+            buyUSD = data?.price ?: BigDecimal.ZERO
+        )
+        view?.close()
     }
 
     override fun setBuyAmount(amount: String) {

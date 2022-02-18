@@ -5,9 +5,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
+import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -53,7 +55,9 @@ class SendPresenter(
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
     private val settingsInteractor: SettingsInteractor,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val browseAnalytics: BrowseAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -204,6 +208,10 @@ class SendPresenter(
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filter { token -> !token.isZero }
+            browseAnalytics.logTokenListViewed(
+                lastScreenName = analyticsInteractor.getPreviousScreenName(),
+                tokenListLocation = BrowseAnalytics.TokenListLocation.SEND
+            )
             view?.navigateToTokenSelection(result)
         }
     }

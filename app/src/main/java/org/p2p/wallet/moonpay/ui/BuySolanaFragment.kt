@@ -1,7 +1,9 @@
 package org.p2p.wallet.moonpay.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
@@ -14,6 +16,7 @@ import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -29,12 +32,20 @@ class BuySolanaFragment :
     private val binding: FragmentBuySolanaBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            toast("Hello")
+            presenter.onBackPressed()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         analyticsInteractor.logScreenOpenEvent(EventsName.Buy.SOL)
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
-
+            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
             PrefixTextWatcher.installOn(payEditText) { data ->
                 purchaseCostView.setValueText(data.prefixText)
                 continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError()
@@ -45,7 +56,6 @@ class BuySolanaFragment :
                 presenter.onContinueClicked()
             }
         }
-
         presenter.loadData()
     }
 
@@ -79,6 +89,14 @@ class BuySolanaFragment :
 
     override fun navigateToMoonpay(amount: String) {
         replaceFragment(MoonpayViewFragment.create(amount))
+    }
+
+    override fun close() {
+        popBackStack()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
     }
 
     private fun hasInputError(): Boolean = binding.errorTextView.isVisible

@@ -8,11 +8,15 @@ class AnalyticsInMemoryRepository : AnalyticsLocalRepository {
         openedScreenList.add(screenName)
     }
 
-    override fun getCurrentScreenName(): String = openedScreenList[openedScreenList.lastIndex]
+    override fun getCurrentScreenName(): String = try {
+        openedScreenList[openedScreenList.lastIndex]
+    } catch (e: ArrayIndexOutOfBoundsException) {
+        ""
+    }
 
     override fun getPreviousScreenName(): String = try {
         openedScreenList[openedScreenList.lastIndex - 1]
-    } catch (e: IndexOutOfBoundsException) {
+    } catch (e: ArrayIndexOutOfBoundsException) {
         ""
     }
 }

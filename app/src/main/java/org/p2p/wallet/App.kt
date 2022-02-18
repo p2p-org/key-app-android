@@ -12,7 +12,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.AuthModule
-import org.p2p.wallet.auth.analytics.AnalyticsModule
+import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.TrackerContract
