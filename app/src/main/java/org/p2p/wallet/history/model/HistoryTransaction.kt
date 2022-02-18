@@ -103,7 +103,7 @@ sealed class HistoryTransaction(
         @ColorInt
         fun getTextColor(context: Context) =
             if (isSend) {
-                context.colorFromTheme(R.attr.colorMessagePrimary)
+                context.getColor(R.color.messagePrimary)
             } else {
                 ContextCompat.getColor(context, R.color.systemSuccessMain)
             }

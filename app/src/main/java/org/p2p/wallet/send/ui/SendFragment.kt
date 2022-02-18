@@ -233,7 +233,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
             messageTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.systemErrorMain))
@@ -246,7 +246,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = username
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.withTextOrGone(address.cutEnd())
             messageTextView.setTextColor(getColor(R.color.elementSecondary))
@@ -259,7 +259,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_warning)
             targetTextView.text = address
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
             messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
@@ -272,7 +272,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = address.cutEnd()
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.isVisible = false
             clearImageView.isVisible = true

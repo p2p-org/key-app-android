@@ -9,12 +9,11 @@
 
     <style name="AppRoundCornersModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bg_alert_elevation_rounded_top</item>
-        <item name="colorMessagePrimary">@color/colorGreen</item>
     </style>
 
     <style name="WalletTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/backgroundButtonPrimary</item>
-        <item name="android:textColorPrimary">?colorMessagePrimary</item>
+        <item name="android:textColorPrimary">@color/messagePrimary</item>
         <item name="android:windowBackground">@drawable/bg_white_rounded</item>
         <item name="android:windowMinWidthMinor">280dp</item>
         <item name="titleTextStyle">@style/WalletTheme.TextAppearance.SemiBold16</item>

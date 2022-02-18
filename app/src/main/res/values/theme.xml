@@ -13,9 +13,6 @@
         <item name="colorPrimary">@color/backgroundButtonPrimary</item>
         <item name="colorPrimaryDark">@color/backgroundActivePrimary</item>
 
-        <item name="colorElementSurface">@color/elementSurface</item>
-
-        <item name="colorMessagePrimary">@color/messagePrimary</item>
         <item name="colorMessageSecondary">@color/messageSecondary</item>
 
         <item name="colorBackgroundPrimary">@color/backgroundPrimary</item>

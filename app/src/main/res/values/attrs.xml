@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <attr name="colorElementSurface" format="color|reference" />
-
-    <attr name="colorMessagePrimary" format="color|reference" />
     <attr name="colorMessageSecondary" format="color|reference" />
 
     <attr name="colorBackgroundPrimary" format="color|reference" />
