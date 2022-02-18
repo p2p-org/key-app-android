@@ -9,6 +9,6 @@ interface SettingsZeroBalanceContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setZeroBalancesVisibility(isVisible: Boolean)
+        fun setZeroBalancesVisibility(isHidden: Boolean)
     }
 }
