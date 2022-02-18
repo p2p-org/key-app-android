@@ -51,10 +51,10 @@ class RenBTCFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
             statusView.setOnClickListener {
-                replaceFragment(RenTransactionsFragment.create())
+                presenter.onStatusReceivedClicked()
             }
             networkView.setOnClickListener {
-                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
+                presenter.onNetworkClicked()
             }
             setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
                 val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
@@ -88,8 +88,7 @@ class RenBTCFragment :
             shareButton.setOnClickListener { requireContext().shareText(address) }
 
             progressButton.setOnClickListener {
-                val url = getString(R.string.bitcoinExplorer, address)
-                showUrlInCustomTabs(url)
+                presenter.onBrowserClicked(address)
             }
             copyButton.setOnClickListener {
                 requireContext().copyToClipBoard(address)
@@ -131,5 +130,17 @@ class RenBTCFragment :
 
     override fun navigateToSolana() {
         popAndReplaceFragment(ReceiveSolanaFragment.create(null))
+    }
+
+    override fun showNetwork() {
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
+    }
+
+    override fun showBrowser(url: String) {
+        showUrlInCustomTabs(url)
+    }
+
+    override fun showStatuses() {
+        replaceFragment(RenTransactionsFragment.create())
     }
 }

@@ -8,9 +8,11 @@ interface RenTransactionsContract {
 
     interface View : MvpView {
         fun showTransactions(transactions: List<RenTransaction>)
+        fun showTransaction(item: RenTransaction)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadTransactions()
+        fun onTransactionClicked(item: RenTransaction)
     }
 }

@@ -1,11 +1,14 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.text.Editable
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -67,12 +70,20 @@ class OrcaSwapFragment :
     }
     private val binding: FragmentSwapOrcaBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
+    private var onBackPressedCallback: OnBackPressedCallback? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
+            presenter.onBackPressed()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.MAIN)
+
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
             toolbar.setOnMenuItemClickListener { menu ->
                 if (menu.itemId == R.id.settingsMenuItem) {
                     presenter.loadDataForSettings()
@@ -198,6 +209,10 @@ class OrcaSwapFragment :
 
     override fun showBiometricConfirmationPrompt(data: SwapConfirmData) {
         SwapConfirmBottomSheet.show(this, data) { presenter.swap() }
+    }
+
+    override fun close() {
+        popBackStack()
     }
 
     override fun showNewAmount(amount: String) {

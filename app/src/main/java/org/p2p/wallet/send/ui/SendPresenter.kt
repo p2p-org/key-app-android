@@ -14,6 +14,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.CheckAddressResult
@@ -46,6 +47,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
+import java.util.Locale
 import kotlin.properties.Delegates
 
 class SendPresenter(
@@ -57,7 +59,8 @@ class SendPresenter(
     private val settingsInteractor: SettingsInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: AnalyticsInteractor,
+    private val sendAnalytics: SendAnalytics
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -126,6 +129,7 @@ class SendPresenter(
         calculateRenBtcFeeIfNeeded()
         calculateData(newToken)
         checkAddress(target?.address)
+        sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
     }
 
     override fun setTargetResult(result: SearchResult?) {
@@ -154,6 +158,7 @@ class SendPresenter(
                     Target.Validation.EMPTY -> view?.showIdleTarget()
                     Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
                 }
+                sendAnalytics.logSendPasting()
             } catch (e: Throwable) {
                 Timber.e(e, "Error validating target: $value")
             } finally {
@@ -197,6 +202,21 @@ class SendPresenter(
                 amount = tokenAmount.toString(),
                 amountUsd = usdAmount.toString(),
                 destination = address
+            )
+            val sendNetworkType = if (networkType == NetworkType.SOLANA) {
+                SendAnalytics.SendNetwork.SOLANA
+            } else {
+                SendAnalytics.SendNetwork.BITCOIN
+            }
+            // TODO resolve [sendMax, sendFree,sendUsername]
+            sendAnalytics.logSendReviewing(
+                sendNetwork = sendNetworkType,
+                sendCurrency = token.tokenSymbol,
+                sendSum = tokenAmount,
+                sendUSD = usdAmount,
+                sendMax = false,
+                sendFree = false,
+                sendUsername = false
             )
             view?.showBiometricConfirmationPrompt(data)
         } else {
@@ -251,13 +271,30 @@ class SendPresenter(
         }
     }
 
+    override fun onScanClicked() {
+        sendAnalytics.logSendQrScanning()
+        view?.showScanner()
+    }
+
+    override fun onDetailsClicked() {
+        sendAnalytics.logSendShowDetailsPressed()
+        view?.showDetails()
+    }
+
     override fun switchCurrency() {
         val token = token ?: return
+        val sendCurrency: String
         mode = when (mode) {
-            is CurrencyMode.Token -> CurrencyMode.Usd
-            is CurrencyMode.Usd -> CurrencyMode.Token(token.tokenSymbol)
+            is CurrencyMode.Token -> {
+                sendCurrency = "USD"
+                CurrencyMode.Usd
+            }
+            is CurrencyMode.Usd -> {
+                sendCurrency = token.tokenSymbol.uppercase(Locale.getDefault())
+                CurrencyMode.Token(token.tokenSymbol)
+            }
         }
-
+        sendAnalytics.logSendChangingCurrency(sendCurrency)
         calculateData(token)
     }
 

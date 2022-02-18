@@ -70,6 +70,7 @@ class TokenInfoPresenter(
                     transactions.addAll(history)
                     view?.showHistory(transactions)
                 }
+
                 view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting transaction history")

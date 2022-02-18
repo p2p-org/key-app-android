@@ -12,6 +12,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
 object AnalyticsModule : InjectionModule {
@@ -25,6 +26,7 @@ object AnalyticsModule : InjectionModule {
         factory { AnalyticsInteractor(get(), get()) }
         factory { OnBoardingAnalytics(get()) }
         factory { BrowseAnalytics(get()) }
+        factory { SendAnalytics(get()) }
         single { AnalyticsInMemoryRepository() } bind AnalyticsLocalRepository::class
     }
 }

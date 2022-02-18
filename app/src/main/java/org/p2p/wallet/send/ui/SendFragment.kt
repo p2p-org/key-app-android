@@ -81,7 +81,6 @@ class SendFragment :
     override val presenter: SendContract.Presenter by inject {
         parametersOf(token)
     }
-
     private val glideManager: GlideManager by inject()
     private val binding: FragmentSendBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
@@ -176,8 +175,7 @@ class SendFragment :
             }
 
             scanTextView.setOnClickListener {
-                val target = ScanQrFragment.create { presenter.validateTarget(it) }
-                addFragment(target)
+                presenter.onScanClicked()
             }
 
             pasteTextView.setOnClickListener {
@@ -186,10 +184,7 @@ class SendFragment :
             }
 
             sendDetailsView.setOnPaidClickListener {
-                showInfoDialog(
-                    messageRes = R.string.main_free_transactions_info,
-                    primaryButtonRes = R.string.common_understood
-                )
+                presenter.onDetailsClicked()
             }
         }
     }
@@ -197,6 +192,18 @@ class SendFragment :
     override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
         analyticsInteractor.logScreenOpenEvent(EventsName.Send.CONFIRMATION)
         SendConfirmBottomSheet.show(this, data) { presenter.send() }
+    }
+
+    override fun showScanner() {
+        val target = ScanQrFragment.create { presenter.validateTarget(it) }
+        addFragment(target)
+    }
+
+    override fun showDetails() {
+        showInfoDialog(
+            messageRes = R.string.main_free_transactions_info,
+            primaryButtonRes = R.string.common_understood
+        )
     }
 
     // TODO: remove add fragment

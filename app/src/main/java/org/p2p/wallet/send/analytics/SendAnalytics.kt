@@ -117,7 +117,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
     }
 
     fun logSendReviewing(
-        sendNetwork: String,
+        sendNetwork: SendNetwork,
         sendCurrency: String,
         sendSum: BigDecimal,
         sendMax: Boolean,
@@ -159,6 +159,10 @@ class SendAnalytics(private val tracker: TrackerContract) {
                 Pair("Send_Status", sendStatus.title)
             )
         )
+    }
+
+    fun logSendShowDetailsPressed() {
+        tracker.logEvent("Send_Show_Details_Pressed")
     }
 
     fun logSendShowingDetails(

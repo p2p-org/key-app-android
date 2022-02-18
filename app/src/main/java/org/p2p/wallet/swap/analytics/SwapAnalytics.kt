@@ -43,7 +43,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
     }
 
     fun logSwapShowingSettings(
-        priceSlippage: Int,
+        priceSlippage: Double,
         priceSlippageExact: Boolean,
         feesSource: FeeSource,
         swapSettingsSource: SwapSettingsSource
@@ -60,7 +60,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
     }
 
     fun logSwapSettingSettings(
-        priceSlippage: Int,
+        priceSlippage: Double,
         priceSlippageExact: Boolean,
         feesSource: FeeSource
     ) {
@@ -94,7 +94,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
         swapSum: BigDecimal,
         swapMax: Boolean,
         swapUSD: BigDecimal,
-        priceSlippage: Int,
+        priceSlippage: Double,
         priceSlippageExact: Boolean,
         feesSource: FeeSource
     ) {

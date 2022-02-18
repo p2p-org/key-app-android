@@ -32,7 +32,7 @@ class RenTransactionsFragment :
     private val analyticsInteractor: AnalyticsInteractor by inject()
 
     private val adapter: RenTransactionsAdapter by lazy {
-        RenTransactionsAdapter { onTransactionClicked(it) }
+        RenTransactionsAdapter { presenter.onTransactionClicked(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +57,7 @@ class RenTransactionsFragment :
         binding.emptyTextView.isVisible = isEmpty
     }
 
-    private fun onTransactionClicked(transaction: RenTransaction) {
-        replaceFragment(RenStatusesFragment.create(transaction))
+    override fun showTransaction(item: RenTransaction) {
+        replaceFragment(RenStatusesFragment.create(item))
     }
 }

@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.ui.orca
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -10,6 +11,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.settings.interactor.SettingsInteractor
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.model.Slippage
@@ -50,7 +52,8 @@ class OrcaSwapPresenter(
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: AnalyticsInteractor,
+    private val swapAnalytics: SwapAnalytics
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     companion object {
@@ -74,6 +77,7 @@ class OrcaSwapPresenter(
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
     private var slippage: Slippage = Slippage.MEDIUM
+    private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
 
@@ -94,6 +98,7 @@ class OrcaSwapPresenter(
                 Timber.e(e, "Error loading all data for swap")
                 view?.showErrorMessage(e)
             } finally {
+                swapAnalytics.logSwapViewed(analyticsInteractor.getPreviousScreenName())
                 view?.showFullScreenLoading(false)
             }
         }
@@ -108,6 +113,7 @@ class OrcaSwapPresenter(
                 tokenListLocation = BrowseAnalytics.TokenListLocation.TOKEN_A
             )
             view?.showSourceSelection(result)
+            swapAnalytics.logSwapChangingTokenA(sourceToken.tokenSymbol)
         }
     }
 
@@ -120,6 +126,7 @@ class OrcaSwapPresenter(
                     tokenListLocation = BrowseAnalytics.TokenListLocation.TOKEN_B
                 )
                 view?.showDestinationSelection(orcaTokens)
+                swapAnalytics.logSwapChangingTokenB(destinationToken?.tokenName.orEmpty())
             } catch (e: Throwable) {
                 Timber.e(e, "Error searching possible destinations")
                 view?.showDestinationSelection(emptyList())
@@ -155,6 +162,7 @@ class OrcaSwapPresenter(
         val amount = sourceToken.total.scaleLong().toString()
         setSourceAmount(amount)
         view?.showNewAmount(amount)
+        isMaxClicked = true
     }
 
     override fun setSourceAmount(amount: String) {
@@ -189,8 +197,15 @@ class OrcaSwapPresenter(
         launch {
             val sol = userInteractor.getUserTokens().find { it.isSOL } ?: return@launch
             val tokens = listOf(sol, sourceToken)
-
             view?.showSwapSettings(slippage, tokens, swapInteractor.getFeePayerToken())
+            val feeSource = if (sourceToken.isSOL) SwapAnalytics.FeeSource.SOL else SwapAnalytics.FeeSource.OTHER
+            // TODO determine priceS lipaceExact
+            swapAnalytics.logSwapShowingSettings(
+                priceSlippage = slippage.doubleValue,
+                priceSlippageExact = false,
+                feesSource = feeSource,
+                swapSettingsSource = SwapAnalytics.SwapSettingsSource.ICON
+            )
         }
     }
 
@@ -210,8 +225,24 @@ class OrcaSwapPresenter(
         destinationAmount = ""
         view?.showTotal(null)
         view?.showNewAmount(sourceAmount)
-
+        swapAnalytics.logSwapReversing(destinationToken?.tokenSymbol.orEmpty())
         calculateData(sourceToken, destinationToken!!)
+    }
+
+    override fun onBackPressed() {
+        // TODO determine [swapCurrency,priceSlippageExact,feeSource] param
+        swapAnalytics.logSwapGoingBack(
+            tokenAName = sourceToken.tokenSymbol,
+            tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+            swapCurrency = "",
+            swapSum = sourceAmount.toBigDecimalOrZero(),
+            swapMax = isMaxClicked,
+            swapUSD = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+            priceSlippage = slippage.doubleValue,
+            priceSlippageExact = false,
+            feesSource = SwapAnalytics.FeeSource.UNKNOWN
+        )
+        view?.close()
     }
 
     override fun swapOrConfirm() {
@@ -225,9 +256,11 @@ class OrcaSwapPresenter(
                 destinationAmount = destinationAmount,
                 destinationAmountUsd = destinationAmount.toBigDecimalOrZero().toUsd(destinationToken!!)?.toString()
             )
+            swapAnalytics.logSwapVerificationInvoked(AuthAnalytics.AuthType.BIOMETRIC)
             view?.showBiometricConfirmationPrompt(data)
         } else {
             swap()
+            swapAnalytics.logSwapReversing(destinationToken?.tokenSymbol.orEmpty())
         }
     }
 
@@ -239,7 +272,6 @@ class OrcaSwapPresenter(
     override fun swap() {
         val pair = bestPoolPair ?: return
         val destination = destinationToken ?: return
-
         appScope.launch {
             try {
                 val subTitle =
@@ -250,6 +282,7 @@ class OrcaSwapPresenter(
                     transactionId = ""
                 )
                 view?.showProgressDialog(progress)
+                swapAnalytics.logSwapProcessShown()
                 val data = swapInteractor.swap(
                     fromToken = sourceToken,
                     toToken = destination,

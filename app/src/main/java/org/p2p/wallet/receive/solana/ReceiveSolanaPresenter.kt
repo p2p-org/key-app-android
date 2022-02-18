@@ -1,5 +1,6 @@
 package org.p2p.wallet.receive.solana
 
+import android.content.Context
 import android.graphics.Bitmap
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -10,6 +11,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.util.concurrent.CancellationException
@@ -22,7 +24,9 @@ class ReceiveSolanaPresenter(
     private val userInteractor: UserInteractor,
     private val qrCodeInteractor: QrCodeInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val receiveAnalytics: ReceiveAnalytics,
+    private val context: Context
 ) : BasePresenter<ReceiveSolanaContract.View>(), ReceiveSolanaContract.Presenter {
 
     private var qrJob: Job? = null
@@ -49,7 +53,7 @@ class ReceiveSolanaPresenter(
             view?.showUserData(publicKey, username)
 
             generateQrCode(publicKey)
-
+            receiveAnalytics.logReceiveViewed(isUsernameClaimed = !username?.username.isNullOrEmpty())
             view?.showFullScreenLoading(false)
         }
     }
@@ -59,6 +63,17 @@ class ReceiveSolanaPresenter(
             usernameInteractor.saveQr(name, bitmap)
             view?.showToastMessage(R.string.auth_save)
         }
+    }
+
+    override fun onNetworkClicked() {
+        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.ReceiveNetwork.SOLANA)
+        view?.showNetwork()
+    }
+
+    override fun onBrowserClicked(publicKey: String) {
+        receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.SOLANA)
+        val url = context.getString(R.string.solanaWalletExplorer, publicKey)
+        view?.showBrowser(url)
     }
 
     private fun generateQrCode(address: String) {

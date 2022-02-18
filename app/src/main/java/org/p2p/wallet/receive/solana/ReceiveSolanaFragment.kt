@@ -70,7 +70,7 @@ class ReceiveSolanaFragment :
                 presenter.saveQr(usernameTextView.text.toString(), bitmap)
             }
             networkView.setOnClickListener {
-                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA))
+                presenter.onNetworkClicked()
             }
             faqTextView.setOnClickListener {
                 analyticsInteractor.logScreenOpenEvent(EventsName.Receive.LIST)
@@ -127,8 +127,8 @@ class ReceiveSolanaFragment :
 
     override fun showReceiveToken(token: Token.Active) {
         binding.progressButton.setOnClickListener {
+            presenter.onBrowserClicked(token.publicKey)
             val url = getString(R.string.solanaWalletExplorer, token.publicKey)
-            showUrlInCustomTabs(url)
         }
     }
 
@@ -145,6 +145,14 @@ class ReceiveSolanaFragment :
 
     override fun showToastMessage(resId: Int) {
         toast(resId)
+    }
+
+    override fun showNetwork() {
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA))
+    }
+
+    override fun showBrowser(url: String) {
+        showUrlInCustomTabs(url)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {
