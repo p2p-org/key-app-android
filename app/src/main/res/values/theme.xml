@@ -13,8 +13,6 @@
         <item name="colorPrimary">@color/backgroundButtonPrimary</item>
         <item name="colorPrimaryDark">@color/backgroundActivePrimary</item>
 
-        <item name="colorBackgroundSecondary">@color/backgroundSecondary</item>
-
         <item name="colorSecondary">@color/elementSecondary</item>
         <item name="colorControlHighlight">@color/elementSecondary</item>
 
