@@ -94,7 +94,7 @@ class BuySolanaPresenter(
                     val result = moonpayRepository.getCurrency(
                         baseCurrencyAmount = amountInCurrency,
                         quoteCurrencyAmount = amountInTokens,
-                        quoteCurrencyCode = "eth",
+                        quoteCurrencyCode = TEMPORAL_ETH_SYMBOL.lowercase(),
                         baseCurrencyCode = baseCurrencyCode
                     )
                 ) {

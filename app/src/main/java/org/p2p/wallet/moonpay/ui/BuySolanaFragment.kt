@@ -81,39 +81,35 @@ class BuySolanaFragment :
         replaceFragment(MoonpayViewFragment.create(amount))
     }
 
-    override fun swapData(isSwapped: Boolean, prefixSuffixSymbol: String) {
-        binding.apply {
-            if (isSwapped) {
-                payTextView.setText(R.string.buy_you_get)
-                getTextView.setText(R.string.buy_you_pay)
-            } else {
-                payTextView.setText(R.string.buy_you_pay)
-                getTextView.setText(R.string.buy_you_get)
-            }
-            val isSuffix = prefixSuffixSymbol != Constants.USD_SYMBOL
-            installPrefixWatcher(isSwapped, prefixSuffixSymbol)
-            payEditText.hint = if (isSuffix) {
-                "0 $prefixSuffixSymbol"
-            } else {
-                "${prefixSuffixSymbol}0"
-            }
-            payEditText.text = payEditText.text
+    override fun swapData(isSwapped: Boolean, prefixSuffixSymbol: String) = with(binding) {
+        if (isSwapped) {
+            payTextView.setText(R.string.buy_you_get)
+            getTextView.setText(R.string.buy_you_pay)
+        } else {
+            payTextView.setText(R.string.buy_you_pay)
+            getTextView.setText(R.string.buy_you_get)
         }
+        val isSuffix = prefixSuffixSymbol != Constants.USD_SYMBOL
+        installPrefixWatcher(isSwapped, prefixSuffixSymbol)
+        payEditText.hint = if (isSuffix) {
+            "0 $prefixSuffixSymbol"
+        } else {
+            "${prefixSuffixSymbol}0"
+        }
+        payEditText.text = payEditText.text
     }
 
     private fun installPrefixWatcher(
         isSwapped: Boolean = false,
         prefixSuffixSymbol: String = Constants.USD_SYMBOL
-    ) {
-        binding.apply {
-            val isSuffix = prefixSuffixSymbol != Constants.USD_SYMBOL
-            val finalPrefixSuffixSymbol = if (isSuffix) " $prefixSuffixSymbol" else prefixSuffixSymbol
-            PrefixSuffixTextWatcher.uninstallFrom(payEditText)
-            PrefixSuffixTextWatcher.installOn(payEditText, finalPrefixSuffixSymbol, isSuffix = isSuffix) { data ->
-                if (!isSwapped) purchaseCostView.setValueText(data.prefixText)
-                continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError()
-                presenter.setBuyAmount(data.valueWithoutPrefix)
-            }
+    ) = with(binding) {
+        val isSuffix = prefixSuffixSymbol != Constants.USD_SYMBOL
+        val finalPrefixSuffixSymbol = if (isSuffix) " $prefixSuffixSymbol" else prefixSuffixSymbol
+        PrefixSuffixTextWatcher.uninstallFrom(payEditText)
+        PrefixSuffixTextWatcher.installOn(payEditText, finalPrefixSuffixSymbol, isSuffix = isSuffix) { data ->
+            if (!isSwapped) purchaseCostView.setValueText(data.prefixText)
+            continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError()
+            presenter.setBuyAmount(data.valueWithoutPrefix)
         }
     }
 
