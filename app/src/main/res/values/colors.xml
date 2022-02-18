@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <color name="accentSecondary">@color/backgroundActivePrimary</color>
-    <color name="accentTertiary">@color/backgroundActivePrimary</color>
-
     <!--Colors that are not designed-->
     <color name="colorProgressBackground">#33FFFFFF</color>
 
