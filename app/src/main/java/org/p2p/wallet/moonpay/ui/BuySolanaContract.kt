@@ -12,11 +12,13 @@ interface BuySolanaContract {
         fun showLoading(isLoading: Boolean)
         fun showMessage(message: String?)
         fun navigateToMoonpay(amount: String)
+        fun swapData(isSwapped: Boolean, prefixSuffixSymbol: String)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
         fun setBuyAmount(amount: String)
         fun onContinueClicked()
+        fun onSwapClicked()
     }
 }
