@@ -118,7 +118,13 @@ class BuySolanaPresenter(
                 view?.showLoading(true)
                 val baseCurrencyCode = USD_READABLE_SYMBOL.lowercase()
                 val buyResult: BuyAnalytics.BuyResult
-                when (val result = moonpayRepository.getCurrency(amount, "eth", baseCurrencyCode)) {
+                val result = moonpayRepository.getCurrency(
+                    baseCurrencyAmount = amountInCurrency,
+                    quoteCurrencyAmount = amountInTokens,
+                    quoteCurrencyCode = TEMPORAL_ETH_SYMBOL.lowercase(),
+                    baseCurrencyCode = baseCurrencyCode
+                )
+                when (result) {
                     is MoonpayBuyResult.Success -> {
                         buyResult = BuyAnalytics.BuyResult.SUCCESS
                         handleSuccess(result.data)
