@@ -89,6 +89,7 @@ class SendFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(EventsName.Send.MAIN)
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(

@@ -104,6 +104,7 @@ class SettingsFragment :
             R.string.settings_username -> presenter.onUsernameClicked()
 
             R.string.settings_wallet_pin -> {
+                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.PIN_RESET)
                 replaceFragment(ResetPinFragment.create(EXTRA_REQUEST_KEY, EXTRA_IS_PIN_CHANGED))
             }
             R.string.settings_app_security -> {
