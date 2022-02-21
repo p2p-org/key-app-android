@@ -9,6 +9,7 @@ import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.isZero
@@ -24,7 +25,6 @@ class BuySolanaPresenter(
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     companion object {
-        private const val TEMPORAL_ETH_SYMBOL = "ETH"
     }
 
     private var isSwapped: Boolean = false
@@ -39,7 +39,7 @@ class BuySolanaPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val price = moonpayRepository.getCurrencyAskPrice(TEMPORAL_ETH_SYMBOL.lowercase()).scaleShort()
+                val price = moonpayRepository.getCurrencyAskPrice(SOL_SYMBOL.lowercase()).scaleShort()
                 view?.showTokenPrice("$USD_SYMBOL$price")
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading currency ask price")
@@ -56,7 +56,7 @@ class BuySolanaPresenter(
 
     override fun onSwapClicked() {
         isSwapped = !isSwapped
-        val prefix = if (isSwapped) TEMPORAL_ETH_SYMBOL else USD_SYMBOL
+        val prefix = if (isSwapped) SOL_SYMBOL else USD_SYMBOL
         view?.swapData(isSwapped, prefix)
         setBuyAmount(amount)
     }
@@ -94,7 +94,7 @@ class BuySolanaPresenter(
                     val result = moonpayRepository.getCurrency(
                         baseCurrencyAmount = amountInCurrency,
                         quoteCurrencyAmount = amountInTokens,
-                        quoteCurrencyCode = TEMPORAL_ETH_SYMBOL.lowercase(),
+                        quoteCurrencyCode = SOL_SYMBOL.lowercase(),
                         baseCurrencyCode = baseCurrencyCode
                     )
                 ) {
@@ -113,11 +113,11 @@ class BuySolanaPresenter(
     }
 
     private fun handleSuccess(info: BuyCurrency) {
-        val receiveSymbol = if (isSwapped) USD_SYMBOL else TEMPORAL_ETH_SYMBOL
+        val receiveSymbol = if (isSwapped) USD_SYMBOL else SOL_SYMBOL
         val amount = if (isSwapped) info.totalAmount.scaleShort() else info.receiveAmount
         val currencyForTokensAmount = info.price * info.receiveAmount.toBigDecimal()
         val data = BuyData(
-            tokenSymbol = TEMPORAL_ETH_SYMBOL,
+            tokenSymbol = SOL_SYMBOL,
             currencySymbol = USD_SYMBOL,
             price = info.price.scaleShort(),
             receiveAmount = info.receiveAmount,
