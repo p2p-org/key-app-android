@@ -8,6 +8,7 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.view.isVisible
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
@@ -38,10 +39,15 @@ class ReserveUsernameFragment :
 
     companion object {
         private const val EXTRA_MODE: String = "EXTRA_MODE"
+        private const val EXTRA_SKIP_STEP_ENABLED = "EXTRA_SKIP_STEP_ENABLED"
         const val REQUEST_KEY = "RESERVE_USERNAME_REQUEST_KEY"
-        fun create(mode: ReserveMode) =
-            ReserveUsernameFragment()
-                .withArgs(EXTRA_MODE to mode)
+        fun create(
+            mode: ReserveMode,
+            isSkipStepEnabled: Boolean = true
+        ) = ReserveUsernameFragment().withArgs(
+            EXTRA_MODE to mode,
+            EXTRA_SKIP_STEP_ENABLED to isSkipStepEnabled
+        )
     }
 
     override val presenter: ReserveUsernameContract.Presenter by inject()
@@ -51,6 +57,7 @@ class ReserveUsernameFragment :
     private var gt3ConfigBean: GT3ConfigBean? = null
 
     private val mode: ReserveMode by args(EXTRA_MODE)
+    private val isSkipStepEnabled: Boolean by args(EXTRA_SKIP_STEP_ENABLED)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -67,7 +74,7 @@ class ReserveUsernameFragment :
             skipTextView.text = buildClickableText()
             skipTextView.movementMethod = LinkMovementMethod.getInstance()
             skipTextView.highlightColor = Color.TRANSPARENT
-
+            skipTextView.isVisible = isSkipStepEnabled
             inputTextView.doAfterTextChanged {
                 presenter.checkUsername(it.toString().lowercase())
             }
