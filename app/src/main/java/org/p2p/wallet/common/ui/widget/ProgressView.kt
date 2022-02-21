@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetProgressViewBinding
 

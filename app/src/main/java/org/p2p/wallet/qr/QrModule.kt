@@ -1,7 +1,6 @@
 package org.p2p.wallet.qr
 
 import android.content.Context
-import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.qr.interactor.QrCodeInteractor

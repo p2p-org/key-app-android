@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetKeyboardBinding
