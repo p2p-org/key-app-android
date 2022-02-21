@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui
+package org.p2p.wallet.send.ui.main
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface.BOLD
@@ -23,7 +23,6 @@ import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.NetworkType
@@ -35,7 +34,7 @@ import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
-import org.p2p.wallet.send.ui.transaction.SendConfirmBottomSheet
+import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
@@ -309,11 +308,18 @@ class SendFragment :
         )
     }
 
+    override fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean) {
+        val tokenAmount = "$amount $symbol"
+        val (message, iconRes) = if (isSuccess) {
+            getString(R.string.send_transaction_success, tokenAmount) to R.drawable.ic_done
+        } else {
+            getString(R.string.send_transaction_error, tokenAmount) to R.drawable.ic_close_red
+        }
+        showSnackbar(message, iconRes)
+    }
+
     override fun showTransactionDetails(transaction: HistoryTransaction) {
-        popAndReplaceFragment(
-            target = TransactionDetailsFragment.create(transaction),
-            popTo = HomeFragment::class
-        )
+        popAndReplaceFragment(TransactionDetailsFragment.create(transaction))
     }
 
     override fun showNetworkDestination(type: NetworkType) {

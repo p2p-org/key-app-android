@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui
+package org.p2p.wallet.send.ui.main
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -12,18 +12,19 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.Target
-import org.p2p.wallet.send.model.SendResult
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
@@ -49,6 +50,7 @@ import kotlin.properties.Delegates
 class SendPresenter(
     private val initialToken: Token.Active?,
     private val sendInteractor: SendInteractor,
+    private val addressInteractor: TransactionAddressInteractor,
     private val userInteractor: UserInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
@@ -315,7 +317,8 @@ class SendPresenter(
                 val amount = tokenAmount.toLamports(token.decimals)
                 val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
-                handleResult(SendResult.Success(transactionId))
+                buildTransaction(transactionId)
+                view?.showSuccessMessage("${tokenAmount.toPlainString()} ${token.tokenSymbol}")
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
             } finally {
@@ -330,21 +333,11 @@ class SendPresenter(
                 val destinationAddress = address.toPublicKey()
                 val lamports = tokenAmount.toLamports(token.decimals)
 
-                val data = ShowProgress(
-                    title = R.string.send_transaction_being_processed,
-                    subTitle = "$tokenAmount ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
-                    transactionId = "",
-                    onPrimaryCallback = { buildTransaction() }
-                )
-                view?.showProgressDialog(data)
-
-                val result = sendInteractor.sendTransaction(
-                    destinationAddress = destinationAddress,
-                    token = token,
-                    lamports = lamports
-                )
-
-                handleResult(result)
+                when (val validation = addressInteractor.validateAddress(destinationAddress, token.mintAddress)) {
+                    is AddressValidation.WrongWallet -> view?.showWrongWalletError()
+                    is AddressValidation.Error -> view?.showErrorMessage(validation.messageRes)
+                    is AddressValidation.Valid -> handleValidAddress(token, destinationAddress, validation, lamports)
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
                 view?.showErrorMessage(e)
@@ -354,15 +347,28 @@ class SendPresenter(
         }
     }
 
-    private fun handleResult(result: SendResult) {
-        when (result) {
-            is SendResult.Success -> {
-                buildTransaction(result.transactionId)
-                view?.showSuccessMessage("${tokenAmount.toPlainString()} ${token?.tokenSymbol}")
-            }
-            is SendResult.WrongWallet -> view?.showWrongWalletError()
-            is SendResult.Error -> view?.showErrorMessage(result.messageRes)
-        }
+    private suspend fun handleValidAddress(
+        token: Token.Active,
+        destinationAddress: PublicKey,
+        validation: AddressValidation.Valid,
+        lamports: BigInteger
+    ) {
+        val data = ShowProgress(
+            title = R.string.send_transaction_being_processed,
+            subTitle = "$tokenAmount ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
+            transactionId = "",
+            onPrimaryCallback = { buildTransaction() }
+        )
+        view?.showProgressDialog(data)
+
+        val result = sendInteractor.sendTransaction(
+            address = validation.addressData,
+            token = token,
+            lamports = lamports
+        )
+
+        buildTransaction(result)
+        view?.showSuccessMessage("${tokenAmount.toPlainString()} ${token.tokenSymbol}")
     }
 
     private fun buildTransaction(transactionId: String = "") {
@@ -379,6 +385,7 @@ class SendPresenter(
             fee = BigInteger.ZERO
         )
         view?.showTransactionDetails(transaction)
+        view?.showTransactionStatusMessage(tokenAmount, token!!.tokenSymbol, isSuccess = true)
     }
 
     private fun calculateData(token: Token.Active) {
@@ -437,7 +444,7 @@ class SendPresenter(
             total = tokenAmount,
             totalUsd = usdAmount,
             receive = "$receive ${sourceToken.tokenSymbol}",
-            receiveUsd = "${receive.toUsd(sourceToken)}",
+            receiveUsd = receive.toUsd(sourceToken),
             fee = sendFee,
             sourceSymbol = sourceToken.tokenSymbol
         )

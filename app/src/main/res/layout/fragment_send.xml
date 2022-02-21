@@ -438,7 +438,7 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <org.p2p.wallet.send.ui.SendDetailsView
+                <org.p2p.wallet.send.ui.main.SendDetailsView
                     android:id="@+id/sendDetailsView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

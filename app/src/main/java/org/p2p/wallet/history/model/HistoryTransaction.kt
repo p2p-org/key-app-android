@@ -11,6 +11,7 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
+import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.scaleLong
@@ -141,7 +142,7 @@ sealed class HistoryTransaction(
         @DrawableRes
         fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
 
-        fun getValue(): String = "${getSymbol(isBurn)} ${getFormattedAmount()} $"
+        fun getValue(): String = "${getSymbol(isBurn)} ${getFormattedAmount()} $USD_SYMBOL"
 
         fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} $REN_BTC_SYMBOL"
 

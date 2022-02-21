@@ -19,7 +19,7 @@ import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.send.ui.SendFragment
+import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
@@ -121,6 +121,13 @@ class HistoryFragment :
     }
 
     private fun onTransactionClicked(transaction: HistoryTransaction) {
-        replaceFragment(TransactionDetailsFragment.create(transaction))
+        when (transaction) {
+            is HistoryTransaction.Swap,
+            is HistoryTransaction.Transfer,
+            is HistoryTransaction.BurnOrMint -> replaceFragment(TransactionDetailsFragment.create(transaction))
+            else -> {
+                // todo: add support of other transactions
+            }
+        }
     }
 }

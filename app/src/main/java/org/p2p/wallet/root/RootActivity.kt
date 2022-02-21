@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
@@ -25,13 +24,11 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override val presenter: RootContract.Presenter by inject()
-    private lateinit var container: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root)
-        container = findViewById(R.id.content)
 
         if (savedInstanceState == null) {
             presenter.openRootScreen()
@@ -58,7 +55,11 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override fun onBackPressed() {
-        popBackStack()
+        if (onBackPressedDispatcher.hasEnabledCallbacks()) {
+            super.onBackPressed()
+        } else {
+            popBackStack()
+        }
     }
 
     @SuppressLint("SetTextI18n")

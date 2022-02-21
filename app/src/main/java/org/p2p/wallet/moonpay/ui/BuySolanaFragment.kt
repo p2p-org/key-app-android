@@ -2,6 +2,7 @@ package org.p2p.wallet.moonpay.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
@@ -14,6 +15,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withTextOrGone
+import timber.log.Timber
 
 class BuySolanaFragment :
     BaseMvpFragment<BuySolanaContract.View, BuySolanaContract.Presenter>(R.layout.fragment_buy_solana),
@@ -30,7 +32,10 @@ class BuySolanaFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationOnClickListener {
+                popBackStack()
+                logBuy()
+            }
 
             PrefixTextWatcher.installOn(payEditText) { data ->
                 purchaseCostView.setValueText(data.prefixText)
@@ -41,6 +46,11 @@ class BuySolanaFragment :
             continueButton.setOnClickListener {
                 presenter.onContinueClicked()
             }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            logBuy()
+            popBackStack()
         }
 
         presenter.loadData()
@@ -76,6 +86,10 @@ class BuySolanaFragment :
 
     override fun navigateToMoonpay(amount: String) {
         replaceFragment(MoonpayViewFragment.create(amount))
+    }
+
+    private fun logBuy() {
+        Timber.tag("###").d("something logged")
     }
 
     private fun hasInputError(): Boolean = binding.errorTextView.isVisible

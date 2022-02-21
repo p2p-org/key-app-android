@@ -9,7 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentNetworkSelectionBinding
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.ui.KEY_REQUEST_SEND
+import org.p2p.wallet.send.ui.main.KEY_REQUEST_SEND
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack

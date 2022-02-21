@@ -27,6 +27,7 @@ import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.scaleShort
@@ -203,15 +204,18 @@ class OrcaSwapPresenter(
     }
 
     override fun swapOrConfirm() {
+        val destination = destinationToken ?: throw IllegalStateException("Destination is null")
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
+            val sourceAmountUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken).orZero()
+            val destinationAmountUsd = destinationAmount.toBigDecimalOrZero().toUsd(destination).orZero()
             val data = SwapConfirmData(
                 sourceToken = sourceToken,
                 destinationToken = destinationToken!!,
                 sourceAmount = sourceAmount,
-                sourceAmountUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken)?.toString(),
+                sourceAmountUsd = sourceAmountUsd.toString(),
                 destinationAmount = destinationAmount,
-                destinationAmountUsd = destinationAmount.toBigDecimalOrZero().toUsd(destinationToken!!)?.toString()
+                destinationAmountUsd = destinationAmountUsd.toString()
             )
             view?.showBiometricConfirmationPrompt(data)
         } else {
@@ -226,7 +230,7 @@ class OrcaSwapPresenter(
      * */
     override fun swap() {
         val pair = bestPoolPair ?: return
-        val destination = destinationToken ?: return
+        val destination = destinationToken ?: throw IllegalStateException("Destination is null")
 
         appScope.launch {
             try {

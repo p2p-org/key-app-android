@@ -25,8 +25,8 @@ import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.ui.SendContract
-import org.p2p.wallet.send.ui.SendPresenter
+import org.p2p.wallet.send.ui.main.SendContract
+import org.p2p.wallet.send.ui.main.SendPresenter
 import org.p2p.wallet.send.ui.search.SearchContract
 import org.p2p.wallet.send.ui.search.SearchPresenter
 import retrofit2.Retrofit
@@ -69,7 +69,7 @@ object HomeModule : InjectionModule {
             ReceiveNetworkTypePresenter(get(), type)
         } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
-            SendPresenter(token, get(), get(), get(), get(), get(), get())
+            SendPresenter(token, get(), get(), get(), get(), get(), get(), get())
         } bind SendContract.Presenter::class
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())

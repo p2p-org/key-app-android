@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui
+package org.p2p.wallet.send.ui.main
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -19,6 +19,7 @@ interface SendContract {
 
     interface View : MvpView {
         fun showSourceToken(token: Token.Active)
+        fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean)
         fun showTransactionDetails(transaction: HistoryTransaction)
         fun showTotal(data: SendTotal?)
         fun showWrongWalletError()

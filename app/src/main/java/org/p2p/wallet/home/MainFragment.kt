@@ -14,7 +14,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.send.ui.SendFragment
+import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
