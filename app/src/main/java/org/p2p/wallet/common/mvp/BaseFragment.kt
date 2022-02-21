@@ -48,8 +48,9 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (getAnalyticsName().isNotEmpty()) {
-            analyticsInteractor.logScreenOpenEvent(getAnalyticsName())
+        val analyticsName = getAnalyticsName()
+        if (analyticsName.isNotEmpty()) {
+            analyticsInteractor.logScreenOpenEvent(analyticsName)
         }
     }
 

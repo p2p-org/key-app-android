@@ -8,6 +8,7 @@ class AnalyticsInteractor(
 ) {
 
     fun logScreenOpenEvent(screenName: String) {
+        analyticsLocalRepository.onScreenChanged(screenName)
         trackerContract.logEvent(screenName)
     }
 
