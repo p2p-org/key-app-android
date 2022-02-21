@@ -11,9 +11,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.textwatcher.PrefixTextWatcher
+import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.moonpay.model.BuyData
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -39,15 +40,15 @@ class BuySolanaFragment :
         }
         analyticsInteractor.logScreenOpenEvent(ScreenName.Buy.SOL)
         with(binding) {
-            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
-            PrefixTextWatcher.installOn(payEditText) { data ->
-                purchaseCostView.setValueText(data.prefixText)
-                continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError()
-                presenter.setBuyAmount(data.valueWithoutPrefix)
-            }
+            toolbar.setNavigationOnClickListener { popBackStack() }
+
+            installPrefixWatcher()
 
             continueButton.setOnClickListener {
                 presenter.onContinueClicked()
+            }
+            getValueTextView.setOnClickListener {
+                presenter.onSwapClicked()
             }
         }
         presenter.loadData()
@@ -65,6 +66,9 @@ class BuySolanaFragment :
             networkFeeView.setValueText(data.networkFeeText)
             extraFeeView.setValueText(data.extraFeeText)
             accountCreationView.setValueText(data.accountCreationCostText)
+            data.purchaseCostText?.let {
+                purchaseCostView.setValueText(it)
+            }
 
             totalView.setValueText(data.totalText)
         }
@@ -92,6 +96,38 @@ class BuySolanaFragment :
     override fun onDetach() {
         super.onDetach()
         backPressedCallback?.remove()
+    }
+
+    override fun swapData(isSwapped: Boolean, prefixSuffixSymbol: String) = with(binding) {
+        if (isSwapped) {
+            payTextView.setText(R.string.buy_you_get)
+            getTextView.setText(R.string.buy_you_pay)
+        } else {
+            payTextView.setText(R.string.buy_you_pay)
+            getTextView.setText(R.string.buy_you_get)
+        }
+        val isSuffix = prefixSuffixSymbol != Constants.USD_SYMBOL
+        installPrefixWatcher(isSwapped, prefixSuffixSymbol)
+        payEditText.hint = if (isSuffix) {
+            "0 $prefixSuffixSymbol"
+        } else {
+            "${prefixSuffixSymbol}0"
+        }
+        payEditText.text = payEditText.text
+    }
+
+    private fun installPrefixWatcher(
+        isSwapped: Boolean = false,
+        prefixSuffixSymbol: String = Constants.USD_SYMBOL
+    ) = with(binding) {
+        val isSuffix = prefixSuffixSymbol != Constants.USD_SYMBOL
+        val finalPrefixSuffixSymbol = if (isSuffix) " $prefixSuffixSymbol" else prefixSuffixSymbol
+        PrefixSuffixTextWatcher.uninstallFrom(payEditText)
+        PrefixSuffixTextWatcher.installOn(payEditText, finalPrefixSuffixSymbol, isSuffix = isSuffix) { data ->
+            if (!isSwapped) purchaseCostView.setValueText(data.prefixText)
+            continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError()
+            presenter.setBuyAmount(data.valueWithoutPrefix)
+        }
     }
 
     private fun hasInputError(): Boolean = binding.errorTextView.isVisible

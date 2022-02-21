@@ -382,7 +382,7 @@
     <string name="buy_one_time_payment">One time payment</string>
     <string name="buy_total">Total</string>
     <string name="buy_continue_on_moonpay">Continue on Moonpay</string>
-    <string name="buy_value_allowed_symbols"> 1234567890.,$</string>
+    <string name="buy_value_allowed_symbols"> 1234567890.,</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
