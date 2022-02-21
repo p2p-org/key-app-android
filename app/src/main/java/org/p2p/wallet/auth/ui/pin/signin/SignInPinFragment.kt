@@ -16,7 +16,7 @@ import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.home.MainFragment
 import javax.crypto.Cipher
 
@@ -37,7 +37,7 @@ class SignInPinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Lock.SCREEN)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Lock.SCREEN)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             requireActivity().finish()
         }

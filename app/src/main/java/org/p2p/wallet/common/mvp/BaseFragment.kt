@@ -17,7 +17,7 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
@@ -71,22 +71,22 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     }
     // TODO add another screens
     fun getAnalyticsName() = when (this) {
-        is CreateWalletFragment -> EventsName.OnBoarding.WALLET_CREATE
-        is SecretKeyFragment -> EventsName.OnBoarding.IMPORT_MANUAL
-        is SecurityKeyFragment -> EventsName.OnBoarding.CREATE_MANUAL
-        is CreatePinFragment -> EventsName.OnBoarding.PIN_CREATE
-        is SeedInfoFragment -> EventsName.OnBoarding.SEED_INFO
-        is VerifySecurityKeyFragment -> EventsName.OnBoarding.SEED_VERIFY
-        is DerivableAccountsFragment -> EventsName.OnBoarding.DERIVATION
-        is ReserveUsernameFragment -> EventsName.OnBoarding.USERNAME_RESERVE
-        is AuthDoneFragment -> EventsName.OnBoarding.WELCOME_NEW_USERNAME
-        is HomeFragment -> EventsName.Main.MAIN_COINS
-        is SettingsFragment -> EventsName.Settings.MAIN
-        is UsernameFragment -> EventsName.Settings.USERCARD
-        is SecurityFragment -> EventsName.Settings.SECURITY
-        is SettingsNetworkFragment -> EventsName.Settings.NETWORK
-        is NetworkSelectionFragment -> EventsName.Send.NETWORK
-        is OrcaSwapFragment -> EventsName.Swap.MAIN
+        is CreateWalletFragment -> ScreenName.OnBoarding.WALLET_CREATE
+        is SecretKeyFragment -> ScreenName.OnBoarding.IMPORT_MANUAL
+        is SecurityKeyFragment -> ScreenName.OnBoarding.CREATE_MANUAL
+        is CreatePinFragment -> ScreenName.OnBoarding.PIN_CREATE
+        is SeedInfoFragment -> ScreenName.OnBoarding.SEED_INFO
+        is VerifySecurityKeyFragment -> ScreenName.OnBoarding.SEED_VERIFY
+        is DerivableAccountsFragment -> ScreenName.OnBoarding.DERIVATION
+        is ReserveUsernameFragment -> ScreenName.OnBoarding.USERNAME_RESERVE
+        is AuthDoneFragment -> ScreenName.OnBoarding.WELCOME_NEW_USERNAME
+        is HomeFragment -> ScreenName.Main.MAIN_COINS
+        is SettingsFragment -> ScreenName.Settings.MAIN
+        is UsernameFragment -> ScreenName.Settings.USERCARD
+        is SecurityFragment -> ScreenName.Settings.SECURITY
+        is SettingsNetworkFragment -> ScreenName.Settings.NETWORK
+        is NetworkSelectionFragment -> ScreenName.Send.NETWORK
+        is OrcaSwapFragment -> ScreenName.Swap.MAIN
         else -> ""
     }
 }

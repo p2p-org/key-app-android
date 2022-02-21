@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.send.analytics.SendAnalytics
 
 class ScanQrFragment :
@@ -62,7 +62,7 @@ class ScanQrFragment :
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
             onBackPressed()
         }
-        analyticsInteractor.logScreenOpenEvent(EventsName.Send.QR_CAMERA)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.QR_CAMERA)
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
             closeImageView.setOnClickListener { onBackPressed() }

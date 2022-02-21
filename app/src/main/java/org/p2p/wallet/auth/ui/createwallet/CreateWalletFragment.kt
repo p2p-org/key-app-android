@@ -6,7 +6,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentCreateWalletBinding
 import org.p2p.wallet.utils.popBackStack
@@ -24,7 +24,7 @@ class CreateWalletFragment : BaseFragment(R.layout.fragment_create_wallet) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.WALLET_CREATE)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.WALLET_CREATE)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             progressButton.setOnClickListener {

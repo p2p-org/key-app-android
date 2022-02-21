@@ -16,7 +16,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
@@ -89,7 +89,7 @@ class SendFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Send.MAIN)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.MAIN)
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -191,7 +191,7 @@ class SendFragment :
     }
 
     override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
-        analyticsInteractor.logScreenOpenEvent(EventsName.Send.CONFIRMATION)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.CONFIRMATION)
         SendConfirmBottomSheet.show(this, data) { presenter.send() }
     }
 
@@ -209,12 +209,12 @@ class SendFragment :
 
     // TODO: remove add fragment
     override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
-        analyticsInteractor.logScreenOpenEvent(EventsName.Send.NETWORK)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.NETWORK)
         addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
-        analyticsInteractor.logScreenOpenEvent(EventsName.Send.FEE_CURRENCY)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.FEE_CURRENCY)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN),
             enter = R.anim.slide_up,
@@ -444,7 +444,7 @@ class SendFragment :
     }
 
     override fun showWrongWalletError() {
-        analyticsInteractor.logScreenOpenEvent(EventsName.Send.ERROR)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.ERROR)
         ErrorBottomSheet.show(
             fragment = this,
             iconRes = R.drawable.ic_wallet_error,
@@ -455,7 +455,7 @@ class SendFragment :
 
     override fun showSuccessMessage(amount: String) {
         val message = getString(R.string.send_successful_format, amount)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Send.SUCCESS)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
         showSnackbarMessage(message)
     }
 

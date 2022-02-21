@@ -18,7 +18,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import org.p2p.wallet.utils.PixelCopy
@@ -54,7 +54,7 @@ class SecurityKeyFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.CREATE_MANUAL)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.CREATE_MANUAL)
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
@@ -93,7 +93,7 @@ class SecurityKeyFragment :
         val clickableTermsOfUse = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 presenter.openTermsOfUse()
-                analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.TERMS_OF_USE)
+                analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.TERMS_OF_USE)
             }
 
             override fun updateDrawState(ds: TextPaint) {

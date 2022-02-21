@@ -21,7 +21,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListFragment
@@ -58,7 +58,7 @@ class ReceiveSolanaFragment :
     private val receiveAnalytics: ReceiveAnalytics by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Receive.SOLANA)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.SOLANA)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             edgeToEdge {
@@ -73,7 +73,7 @@ class ReceiveSolanaFragment :
                 presenter.onNetworkClicked()
             }
             faqTextView.setOnClickListener {
-                analyticsInteractor.logScreenOpenEvent(EventsName.Receive.LIST)
+                analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.LIST)
                 replaceFragment(TokenListFragment.create())
             }
             setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->

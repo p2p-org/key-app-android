@@ -1,5 +1,29 @@
 package org.p2p.wallet.auth.analytics
 
+import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKING_UP_COPYING
+import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKING_UP_RENEW
+import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKING_UP_SAVING
+import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKUP_ERROR
+import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKUP_MANUALLY
+import org.p2p.wallet.common.analytics.Events.ONBOARD_BIO_APPROVED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_BIO_REJECTED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_CREATE_MANUAL_INVOKED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_CREATE_SEED_INVOKED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_MANY_WALLETS_FOUND
+import org.p2p.wallet.common.analytics.Events.ONBOARD_NO_WALLET_FOUND
+import org.p2p.wallet.common.analytics.Events.ONBOARD_PUSH_APPROVED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_PUSH_REJECTED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_RESTORE_GOOGLE_INVOKED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_RESTORE_MANUAL_INVOKED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_CREATED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_RESTORING
+import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_SWIPED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_VIEWED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_USERNAME_RESERVED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_USERNAME_SAVED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_USERNAME_SKIPPED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_WALLET_CREATED
+import org.p2p.wallet.common.analytics.Events.ONBOARD_WALLET_RESTORED
 import org.p2p.wallet.common.analytics.TrackerContract
 
 class OnBoardingAnalytics(
@@ -7,7 +31,7 @@ class OnBoardingAnalytics(
 ) {
     fun logSplashViewed(campaignName: String) {
         tracker.logEvent(
-            "Splash_Viewed",
+            ONBOARD_SPLASH_VIEWED,
             arrayOf(
                 Pair("Splash_Campaign", campaignName)
             )
@@ -16,7 +40,7 @@ class OnBoardingAnalytics(
 
     fun logSplashSwiped(campaignName: String) {
         tracker.logEvent(
-            "Splash_Swiped",
+            ONBOARD_SPLASH_SWIPED,
             arrayOf(
                 Pair("Swipe_Campaign", campaignName)
             )
@@ -24,56 +48,56 @@ class OnBoardingAnalytics(
     }
 
     fun logSplashRestored() {
-        tracker.logEvent("Splash_Restoring")
+        tracker.logEvent(ONBOARD_SPLASH_RESTORING)
     }
 
     fun logSplashCreating() {
-        tracker.logEvent("Splash_Creating")
+        tracker.logEvent(ONBOARD_SPLASH_CREATED)
     }
 
     fun logRestoreGoogleInvoked() {
-        tracker.logEvent("Restore_Google_Invoked")
+        tracker.logEvent(ONBOARD_RESTORE_GOOGLE_INVOKED)
     }
 
     fun logRestoreManualInvoked() {
-        tracker.logEvent("Restore_Manual_Invoked")
+        tracker.logEvent(ONBOARD_RESTORE_MANUAL_INVOKED)
     }
 
     fun logCreateManualInvoked() {
-        tracker.logEvent("Create_Manual_Invoked")
+        tracker.logEvent(ONBOARD_CREATE_MANUAL_INVOKED)
     }
 
     fun logCreateSeedInvoked() {
-        tracker.logEvent("Create_Seed_Invoked")
+        tracker.logEvent(ONBOARD_CREATE_SEED_INVOKED)
     }
 
     fun logBackingUpCopying() {
-        tracker.logEvent("Backing_Up_Copying")
+        tracker.logEvent(ONBOARD_BACKING_UP_COPYING)
     }
 
     fun logBackingUpSaving() {
-        tracker.logEvent("Backing_Up_Saving")
+        tracker.logEvent(ONBOARD_BACKING_UP_SAVING)
     }
 
     fun logBackingUpRenew() {
-        tracker.logEvent("Backing_Up_Renewing")
+        tracker.logEvent(ONBOARD_BACKING_UP_RENEW)
     }
 
     fun logBackingUpManually() {
-        tracker.logEvent("Backing_Up_Manually")
+        tracker.logEvent(ONBOARD_BACKUP_MANUALLY)
     }
 
     fun logBackingUpError() {
-        tracker.logEvent("Backing_Up_Error")
+        tracker.logEvent(ONBOARD_BACKUP_ERROR)
     }
 
     fun logBioRejected() {
-        tracker.logEvent("Bio_Rejected")
+        tracker.logEvent(ONBOARD_BIO_REJECTED)
     }
 
     fun logWalletCreated(lastScreenName: String) {
         tracker.logEvent(
-            "Wallet_Created",
+            ONBOARD_WALLET_CREATED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -82,7 +106,7 @@ class OnBoardingAnalytics(
 
     fun logWalletRestored(lastScreenName: String) {
         tracker.logEvent(
-            "Wallet_Restored",
+            ONBOARD_WALLET_RESTORED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -91,7 +115,7 @@ class OnBoardingAnalytics(
 
     fun logManyWalletFound(lastScreenName: String) {
         tracker.logEvent(
-            "Many_Wallets_Found",
+            ONBOARD_MANY_WALLETS_FOUND,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -100,7 +124,7 @@ class OnBoardingAnalytics(
 
     fun logNoWalletFound(lastScreenName: String) {
         tracker.logEvent(
-            "No_Wallet_Found",
+            ONBOARD_NO_WALLET_FOUND,
             arrayOf(
                 Pair("No_Wallet_Found", lastScreenName)
             )
@@ -108,20 +132,20 @@ class OnBoardingAnalytics(
     }
 
     fun logBioApproved() {
-        tracker.logEvent("Bio_Approved")
+        tracker.logEvent(ONBOARD_BIO_APPROVED)
     }
 
     fun logPushRejected() {
-        tracker.logEvent("Push_Rejected")
+        tracker.logEvent(ONBOARD_PUSH_REJECTED)
     }
 
     fun logPushApproved() {
-        tracker.logEvent("Push_Approved")
+        tracker.logEvent(ONBOARD_PUSH_APPROVED)
     }
 
     fun logUsernameSkipped(usernameField: UsernameField) {
         tracker.logEvent(
-            "Username_Skipped",
+            ONBOARD_USERNAME_SKIPPED,
             arrayOf(
                 Pair("Username_Field", usernameField.title)
             )
@@ -130,7 +154,7 @@ class OnBoardingAnalytics(
 
     fun logUsernameSaved(lastScreenName: String) {
         tracker.logEvent(
-            "Username_Saved",
+            ONBOARD_USERNAME_SAVED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -138,7 +162,7 @@ class OnBoardingAnalytics(
     }
 
     fun logUsernameReserved() {
-        tracker.logEvent("Username_Reserved")
+        tracker.logEvent(ONBOARD_USERNAME_RESERVED)
     }
 
     enum class UsernameField(val title: String) {

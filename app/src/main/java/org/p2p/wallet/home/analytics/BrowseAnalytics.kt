@@ -1,12 +1,25 @@
 package org.p2p.wallet.home.analytics
 
+import org.p2p.wallet.common.analytics.Events.BROWSE_BANNER_BACKUP_PRESSED
+import org.p2p.wallet.common.analytics.Events.BROWSE_BANNER_FEEDBACK_PRESSED
+import org.p2p.wallet.common.analytics.Events.BROWSE_BANNER_NOTIFICATION_PRESSED
+import org.p2p.wallet.common.analytics.Events.BROWSE_BANNER_USERNAME_PRESSED
+import org.p2p.wallet.common.analytics.Events.BROWSE_CURRENCY_LIST_SEARCHING
+import org.p2p.wallet.common.analytics.Events.BROWSE_NETWORK_ADDING
+import org.p2p.wallet.common.analytics.Events.BROWSE_NETWORK_CHANGING
+import org.p2p.wallet.common.analytics.Events.BROWSE_NETWORK_SAVED
+import org.p2p.wallet.common.analytics.Events.BROWSE_SCREEN_OPENED
+import org.p2p.wallet.common.analytics.Events.BROWSE_TOKEN_CHOSEN
+import org.p2p.wallet.common.analytics.Events.BROWSE_TOKEN_LIST_SCROLLED
+import org.p2p.wallet.common.analytics.Events.BROWSE_TOKEN_LIST_SEARCHED
+import org.p2p.wallet.common.analytics.Events.BROWSE_TOKEN_LIST_VIEWED
 import org.p2p.wallet.common.analytics.TrackerContract
 
 class BrowseAnalytics(private val tracker: TrackerContract) {
 
     fun logTokenListViewed(lastScreenName: String, tokenListLocation: TokenListLocation) {
         tracker.logEvent(
-            "Token_List_Viewed",
+            BROWSE_TOKEN_LIST_VIEWED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName),
                 Pair("Token_List_Location", tokenListLocation.title)
@@ -17,7 +30,7 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
     fun logTokenListScrolled(scrollDepth: String) {
         // TODO ask about scroll depth
         tracker.logEvent(
-            "Token_List_Scrolled",
+            BROWSE_TOKEN_LIST_SCROLLED,
             arrayOf(
                 Pair("Scroll_Depth", scrollDepth)
             )
@@ -26,7 +39,7 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
 
     fun logTokenListSearching(searchString: String) {
         tracker.logEvent(
-            "Token_List_Searching",
+            BROWSE_TOKEN_LIST_SEARCHED,
             arrayOf(
                 Pair("Search_String", searchString)
             )
@@ -35,7 +48,7 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
 
     fun logCurrencyListSearching(searchString: String) {
         tracker.logEvent(
-            "Currency_List_Searching",
+            BROWSE_CURRENCY_LIST_SEARCHING,
             arrayOf(
                 Pair("Search_String", searchString)
             )
@@ -44,7 +57,7 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
 
     fun logTokenChosen(tokenName: String) {
         tracker.logEvent(
-            "Token_Chosen",
+            BROWSE_TOKEN_CHOSEN,
             arrayOf(
                 Pair("Token_Name", tokenName)
             )
@@ -53,7 +66,7 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
 
     fun logScreenOpened(screenName: String, lastScreen: String) {
         tracker.logEvent(
-            "Screen_Opened",
+            BROWSE_SCREEN_OPENED,
             arrayOf(
                 Pair("Screen_Name", screenName),
                 Pair("Last_Screen", lastScreen)
@@ -62,12 +75,12 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
     }
 
     fun logNetworkAdding() {
-        tracker.logEvent("Network_Adding")
+        tracker.logEvent(BROWSE_NETWORK_ADDING)
     }
 
     fun logNetworkChanging(networkName: String) {
         tracker.logEvent(
-            "Network_Changing",
+            BROWSE_NETWORK_CHANGING,
             arrayOf(
                 Pair("Network_Name", networkName)
             )
@@ -76,7 +89,7 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
 
     fun logNetworkSaving(networkName: String) {
         tracker.logEvent(
-            "Network_Saved",
+            BROWSE_NETWORK_SAVED,
             arrayOf(
                 Pair("Network_Name", networkName)
             )
@@ -84,19 +97,19 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
     }
 
     fun logBannerUsernamePressed() {
-        tracker.logEvent("Banner_Username_Pressed")
+        tracker.logEvent(BROWSE_BANNER_USERNAME_PRESSED)
     }
 
     fun logBannerBackupPressed() {
-        tracker.logEvent("Banner_Backup_Pressed")
+        tracker.logEvent(BROWSE_BANNER_BACKUP_PRESSED)
     }
 
     fun logBannerNotificationsPressed() {
-        tracker.logEvent("Banner_Notifications_Pressed")
+        tracker.logEvent(BROWSE_BANNER_NOTIFICATION_PRESSED)
     }
 
     fun logBannerFeedbackPressed() {
-        tracker.logEvent("Banner_Feedback_Pressed")
+        tracker.logEvent(BROWSE_BANNER_FEEDBACK_PRESSED)
     }
 
     enum class TokenListLocation(val title: String) {

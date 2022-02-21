@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenTransactionsBinding
 import org.p2p.wallet.renbtc.model.RenTransaction
@@ -43,7 +43,7 @@ class RenStatusesFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Receive.BITCOIN_STATUS)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN_STATUS)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getTransactionTitle()

@@ -9,7 +9,7 @@ import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
@@ -37,7 +37,7 @@ class BuySolanaFragment :
         backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
         }
-        analyticsInteractor.logScreenOpenEvent(EventsName.Buy.SOL)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Buy.SOL)
         with(binding) {
             toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
             PrefixTextWatcher.installOn(payEditText) { data ->

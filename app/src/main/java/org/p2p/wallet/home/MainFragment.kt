@@ -13,7 +13,7 @@ import androidx.lifecycle.Lifecycle
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -50,7 +50,7 @@ class MainFragment : BaseFragment(R.layout.fragment_home) {
             bottomNavigation.setOnItemSelectedListener {
                 if (it.itemId == R.id.itemFeedback) {
                     IntercomService.showMessenger()
-                    analyticsInteractor.logScreenOpenEvent(EventsName.Main.MAIN_FEEDBACK)
+                    analyticsInteractor.logScreenOpenEvent(ScreenName.Main.MAIN_FEEDBACK)
                     return@setOnItemSelectedListener false
                 }
                 navigate(it.itemId)
@@ -74,15 +74,15 @@ class MainFragment : BaseFragment(R.layout.fragment_home) {
         if (!fragments.containsKey(itemId)) {
             val fragment = when (Tabs.fromTabId(itemId)) {
                 Tabs.HOME -> {
-                    analyticsInteractor.logScreenOpenEvent(EventsName.Main.MAIN_COINS)
+                    analyticsInteractor.logScreenOpenEvent(ScreenName.Main.MAIN_COINS)
                     HomeFragment.create()
                 }
                 Tabs.SEND -> {
-                    analyticsInteractor.logScreenOpenEvent(EventsName.Send.MAIN)
+                    analyticsInteractor.logScreenOpenEvent(ScreenName.Send.MAIN)
                     SendFragment.create()
                 }
                 Tabs.SETTINGS -> {
-                    analyticsInteractor.logScreenOpenEvent(EventsName.Settings.MAIN)
+                    analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.MAIN)
                     SettingsFragment.create()
                 }
             }

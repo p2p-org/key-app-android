@@ -1,6 +1,6 @@
 package org.p2p.wallet.common.analytics
 
-object EventsName {
+object ScreenName {
 
     object OnBoarding {
         const val WALLET_CREATE = "Wallet_Create"

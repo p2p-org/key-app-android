@@ -8,7 +8,7 @@ import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
 import org.p2p.wallet.send.model.NetworkType
@@ -43,7 +43,7 @@ class RenBTCFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Receive.BITCOIN)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN)
         with(binding) {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }

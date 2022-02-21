@@ -1,6 +1,22 @@
 package org.p2p.wallet.send.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
+import org.p2p.wallet.common.analytics.Events.SEND_CHANGING_CURRENCY
+import org.p2p.wallet.common.analytics.Events.SEND_CHANGING_TOKEN
+import org.p2p.wallet.common.analytics.Events.SEND_CHOOSING_RECEIPT
+import org.p2p.wallet.common.analytics.Events.SEND_CREATING_ANOTHER
+import org.p2p.wallet.common.analytics.Events.SEND_GOING_BACK
+import org.p2p.wallet.common.analytics.Events.SEND_PASTING
+import org.p2p.wallet.common.analytics.Events.SEND_PROCESS_SHOWN
+import org.p2p.wallet.common.analytics.Events.SEND_QR_GOING_BACK
+import org.p2p.wallet.common.analytics.Events.SEND_QR_SCANNING
+import org.p2p.wallet.common.analytics.Events.SEND_RESOLVED_AUTO
+import org.p2p.wallet.common.analytics.Events.SEND_RESOLVED_MANUALLY
+import org.p2p.wallet.common.analytics.Events.SEND_REVIEWING
+import org.p2p.wallet.common.analytics.Events.SEND_SHOWING_DETAILS
+import org.p2p.wallet.common.analytics.Events.SEND_SHOW_DETAIL_PRESSED
+import org.p2p.wallet.common.analytics.Events.SEND_VERIFICATION_INVOKED
+import org.p2p.wallet.common.analytics.Events.SEND_VIEWED
 import org.p2p.wallet.common.analytics.TrackerContract
 import java.math.BigDecimal
 
@@ -8,7 +24,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
 
     fun logSendViewed(lastScreenName: String) {
         tracker.logEvent(
-            "Send_Viewed",
+            SEND_VIEWED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -17,7 +33,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
 
     fun logSendChangingToken(tokenName: String) {
         tracker.logEvent(
-            "Send_Changing_Token",
+            SEND_CHANGING_TOKEN,
             arrayOf(
                 Pair("Token_Name", tokenName)
             )
@@ -26,7 +42,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
 
     fun logSendChangingCurrency(currencyName: String) {
         tracker.logEvent(
-            "Send_Changing_Currency",
+            SEND_CHANGING_CURRENCY,
             arrayOf(
                 Pair("Send_Currency", currencyName)
             )
@@ -40,7 +56,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         sendMax: Boolean
     ) {
         tracker.logEvent(
-            "Send_Going_Back",
+            SEND_GOING_BACK,
             arrayOf(
                 Pair("Send_Sum", sendSum),
                 Pair("Send_Currency", sendCurrency),
@@ -57,7 +73,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         sendMax: Boolean
     ) {
         tracker.logEvent(
-            "Send_Choosing_Recipient",
+            SEND_CHOOSING_RECEIPT,
             arrayOf(
                 Pair("Send_Sum", sendSum),
                 Pair("Send_Currency", sendCurrency),
@@ -68,7 +84,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
     }
 
     fun logSendQrScanning() {
-        tracker.logEvent("Send_QR_Scanning")
+        tracker.logEvent(SEND_QR_SCANNING)
     }
 
     fun logSendQrGoingBack(
@@ -77,7 +93,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         qrTab: QrTab
     ) {
         tracker.logEvent(
-            "Send_QR_Going_Back",
+            SEND_QR_GOING_BACK,
             arrayOf(
                 Pair("QR_Camera_Availability", qrCameraIsAvailable),
                 Pair("QR_Gallery_Availability", qrGalleryIsAvailable),
@@ -87,7 +103,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
     }
 
     fun logSendPasting() {
-        tracker.logEvent("Send_Pasting")
+        tracker.logEvent(SEND_PASTING)
     }
 
     fun logSendResolvedAuto(
@@ -95,7 +111,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         isSendUsername: Boolean
     ) {
         tracker.logEvent(
-            "Send_Resolved_Auto",
+            SEND_RESOLVED_AUTO,
             arrayOf(
                 Pair("Address_Source", addressSource.title),
                 Pair("Send_Username", isSendUsername)
@@ -108,7 +124,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         isNoFunds: Boolean
     ) {
         tracker.logEvent(
-            "Send_Resolved_Manually",
+            SEND_RESOLVED_MANUALLY,
             arrayOf(
                 Pair("Resolve_Options_Number", resolveOptionsNumber),
                 Pair("No_Funds", isNoFunds)
@@ -126,7 +142,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         sendUsername: Boolean
     ) {
         tracker.logEvent(
-            "Send_Reviewing",
+            SEND_REVIEWING,
             arrayOf(
                 Pair("Send_Network", sendNetwork),
                 Pair("Send_Currency", sendCurrency),
@@ -141,7 +157,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
 
     fun logSendVerificationInvoked(authType: AuthAnalytics.AuthType) {
         tracker.logEvent(
-            "Send_Verification_Invoked",
+            SEND_VERIFICATION_INVOKED,
             arrayOf(
                 Pair("Auth_Type", authType.title)
             )
@@ -149,12 +165,12 @@ class SendAnalytics(private val tracker: TrackerContract) {
     }
 
     fun logSendProcessShown() {
-        tracker.logEvent("Send_Process_Shown")
+        tracker.logEvent(SEND_PROCESS_SHOWN)
     }
 
     fun logSendCreatingAnother(sendStatus: SendStatus) {
         tracker.logEvent(
-            "Send_Creating_Another",
+            SEND_CREATING_ANOTHER,
             arrayOf(
                 Pair("Send_Status", sendStatus.title)
             )
@@ -162,7 +178,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
     }
 
     fun logSendShowDetailsPressed() {
-        tracker.logEvent("Send_Show_Details_Pressed")
+        tracker.logEvent(SEND_SHOW_DETAIL_PRESSED)
     }
 
     fun logSendShowingDetails(
@@ -174,7 +190,7 @@ class SendAnalytics(private val tracker: TrackerContract) {
         sendUSD: BigDecimal
     ) {
         tracker.logEvent(
-            "Send_Showing_Details",
+            SEND_SHOWING_DETAILS,
             arrayOf(
                 Pair("Send_Status", sendStatus.title),
                 Pair("Last_Screen", lastScreenName),

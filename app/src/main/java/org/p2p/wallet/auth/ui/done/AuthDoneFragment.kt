@@ -5,7 +5,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentAuthDoneBinding
 import org.p2p.wallet.home.MainFragment
@@ -28,7 +28,7 @@ class AuthDoneFragment() :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.OnBoarding.WELCOME_NEW)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.WELCOME_NEW)
         with(binding) {
             edgeToEdge {
                 finishButton.fitMargin { Edge.BottomArc }

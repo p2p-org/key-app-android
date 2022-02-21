@@ -9,7 +9,7 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.model.SettingsRow
@@ -78,7 +78,7 @@ class SettingsFragment :
     }
 
     override fun showReserveUsername() {
-        analyticsInteractor.logScreenOpenEvent(EventsName.Settings.USERNAME_RESERVE)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.USERNAME_RESERVE)
         replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
     }
 
@@ -104,15 +104,15 @@ class SettingsFragment :
             R.string.settings_username -> presenter.onUsernameClicked()
 
             R.string.settings_wallet_pin -> {
-                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.PIN_RESET)
+                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_RESET)
                 replaceFragment(ResetPinFragment.create(EXTRA_REQUEST_KEY, EXTRA_IS_PIN_CHANGED))
             }
             R.string.settings_app_security -> {
-                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.SECURITY)
+                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.SECURITY)
                 replaceFragment(SecurityFragment.create())
             }
             R.string.settings_network -> {
-                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.NETWORK)
+                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.NETWORK)
                 addFragment(
                     SettingsNetworkFragment.create(EXTRA_REQUEST_KEY, EXTRA_NETWORK_NAME),
                     enter = 0,
@@ -122,7 +122,7 @@ class SettingsFragment :
                 )
             }
             R.string.settings_zero_balances -> {
-                analyticsInteractor.logScreenOpenEvent(EventsName.Settings.ZERO_BALANCES)
+                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.ZERO_BALANCES)
                 addFragment(
                     SettingsZeroBalanceFragment.create(),
                     enter = 0,

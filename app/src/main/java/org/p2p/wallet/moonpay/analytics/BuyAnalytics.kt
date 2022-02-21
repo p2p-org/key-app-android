@@ -1,20 +1,28 @@
 package org.p2p.wallet.moonpay.analytics
 
+import org.p2p.wallet.common.analytics.Events.BUY_CHANGING_PROVIDER
+import org.p2p.wallet.common.analytics.Events.BUY_CONTINUING
+import org.p2p.wallet.common.analytics.Events.BUY_GOING_BACK
+import org.p2p.wallet.common.analytics.Events.BUY_LIST_VIEWED
+import org.p2p.wallet.common.analytics.Events.BUY_PAYMENT_RESULT_SHOWN
+import org.p2p.wallet.common.analytics.Events.BUY_PROVIDER_STEP_VIEWED
+import org.p2p.wallet.common.analytics.Events.BUY_TOKEN_CHOSEN
+import org.p2p.wallet.common.analytics.Events.BUY_VIEWED
 import org.p2p.wallet.common.analytics.TrackerContract
 import java.math.BigDecimal
 
 class BuyAnalytics(private val tracker: TrackerContract) {
 
     fun logBuyViewed() {
-        tracker.logEvent("BuyViewed")
+        tracker.logEvent(BUY_VIEWED)
     }
     fun logBuyListViewed() {
-        tracker.logEvent("Buy_List_Viewed")
+        tracker.logEvent(BUY_LIST_VIEWED)
     }
 
     fun logBuyTokenChosen(tokenName: String, lastScreenName: String) {
         tracker.logEvent(
-            "Buy_Token_Chosen",
+            BUY_TOKEN_CHOSEN,
             arrayOf(
                 Pair("Token_Name", tokenName),
                 Pair("Last_Screen", lastScreenName)
@@ -24,7 +32,7 @@ class BuyAnalytics(private val tracker: TrackerContract) {
 
     fun logBuyGoingBack(buySum: BigDecimal, buyCurrency: String, buyUSD: BigDecimal) {
         tracker.logEvent(
-            "Buy_Going_Back",
+            BUY_GOING_BACK,
             arrayOf(
                 Pair("Buy_Sum", buySum),
                 Pair("Buy_Currency", buyCurrency),
@@ -41,7 +49,7 @@ class BuyAnalytics(private val tracker: TrackerContract) {
         lastScreenName: String
     ) {
         tracker.logEvent(
-            "Buy_Continuing",
+            BUY_CONTINUING,
             arrayOf(
                 Pair("Buy_Sum", buySum),
                 Pair("Buy_Currency", buyCurrency),
@@ -54,7 +62,7 @@ class BuyAnalytics(private val tracker: TrackerContract) {
 
     fun logBuyChangingProvider(buyProvider: String, buyCountry: String) {
         tracker.logEvent(
-            "Buy_Changing_Provider",
+            BUY_CHANGING_PROVIDER,
             arrayOf(
                 Pair("Buy_Provider", buyProvider),
                 Pair("Buy_Country", buyCountry)
@@ -64,7 +72,7 @@ class BuyAnalytics(private val tracker: TrackerContract) {
 
     fun logBuyProviderStepViewed(stepName: String) {
         tracker.logEvent(
-            "Buy_Provider_Step_Viewed",
+            BUY_PROVIDER_STEP_VIEWED,
             arrayOf(
                 Pair("Buy_Provider_Step_Name", stepName)
             )
@@ -73,7 +81,7 @@ class BuyAnalytics(private val tracker: TrackerContract) {
 
     fun logBuyPaymentResultShown(result: BuyResult) {
         tracker.logEvent(
-            "Buy_Payment_Result_Shown",
+            BUY_PAYMENT_RESULT_SHOWN,
             arrayOf(
                 Pair("Buy_Result", result.title)
             )

@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveNetworkTypeBinding
 import org.p2p.wallet.send.model.NetworkType
@@ -46,7 +46,7 @@ class ReceiveNetworkTypeFragment() :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Receive.NETWORK)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.NETWORK)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             edgeToEdge {
@@ -66,7 +66,7 @@ class ReceiveNetworkTypeFragment() :
         RenBtcInfoBottomSheet.show(childFragmentManager) {
             navigateToReceive(type)
         }
-        analyticsInteractor.logScreenOpenEvent(EventsName.Receive.BITCOIN_INFO)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN_INFO)
     }
 
     override fun setCheckState(type: NetworkType) {

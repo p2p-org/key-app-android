@@ -1,6 +1,22 @@
 package org.p2p.wallet.swap.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
+import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_CURRENCY
+import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_TOKEN_A
+import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_TOKEN_B
+import org.p2p.wallet.common.analytics.Events.SWAP_CREATING_ANOTHER
+import org.p2p.wallet.common.analytics.Events.SWAP_GOING_BACK
+import org.p2p.wallet.common.analytics.Events.SWAP_PROCESS_SHOWN
+import org.p2p.wallet.common.analytics.Events.SWAP_REVERSING
+import org.p2p.wallet.common.analytics.Events.SWAP_REVIEWING
+import org.p2p.wallet.common.analytics.Events.SWAP_REVIEWING_HELP_CLOSED
+import org.p2p.wallet.common.analytics.Events.SWAP_SETTING_SETTINGS
+import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_DETAILS
+import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_HISTORY
+import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_SETTINGS
+import org.p2p.wallet.common.analytics.Events.SWAP_SHOW_DETAILS_PRESSED
+import org.p2p.wallet.common.analytics.Events.SWAP_VERIFICATION_INVOKED
+import org.p2p.wallet.common.analytics.Events.SWAP_VIEWED
 import org.p2p.wallet.common.analytics.TrackerContract
 import java.math.BigDecimal
 
@@ -8,7 +24,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
 
     fun logSwapViewed(lastScreenName: String) {
         trackerContract.logEvent(
-            "Swap_Viewed",
+            SWAP_VIEWED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -17,7 +33,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
 
     fun logSwapChangingTokenA(tokenName: String) {
         trackerContract.logEvent(
-            "Swap_Changing_Token_A",
+            SWAP_CHANGING_TOKEN_A,
             arrayOf(
                 Pair("Token_A_Name", tokenName)
             )
@@ -26,7 +42,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
 
     fun logSwapChangingTokenB(tokenName: String) {
         trackerContract.logEvent(
-            "Swap_Changing_Token_B",
+            SWAP_CHANGING_TOKEN_B,
             arrayOf(
                 Pair("Token_B_Name", tokenName)
             )
@@ -35,7 +51,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
 
     fun logSwapReversing(reverseTokenName: String) {
         trackerContract.logEvent(
-            "Swap_Reversing",
+            SWAP_REVERSING,
             arrayOf(
                 Pair("Token_B_Name", reverseTokenName)
             )
@@ -49,7 +65,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
         swapSettingsSource: SwapSettingsSource
     ) {
         trackerContract.logEvent(
-            "Swap_Showing_Settings",
+            SWAP_SHOWING_SETTINGS,
             arrayOf(
                 Pair("Price_Slippage", priceSlippage),
                 Pair("Price_Slippage_Exact", priceSlippageExact),
@@ -65,7 +81,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
         feesSource: FeeSource
     ) {
         trackerContract.logEvent(
-            "Swap_Setting_Settings",
+            SWAP_SETTING_SETTINGS,
             arrayOf(
                 Pair("Price_Slippage", priceSlippage),
                 Pair("Price_Slippage_Exact", priceSlippageExact),
@@ -76,7 +92,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
 
     fun logSwapChangingCurrency(currency: String) {
         trackerContract.logEvent(
-            "Swap_Changing_Currency",
+            SWAP_CHANGING_CURRENCY,
             arrayOf(
                 Pair("Swap_Currency", currency)
             )
@@ -84,7 +100,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
     }
 
     fun logSwapShowDetailsPressed() {
-        trackerContract.logEvent("Swap_Show_Details_Pressed")
+        trackerContract.logEvent(SWAP_SHOW_DETAILS_PRESSED)
     }
 
     fun logSwapGoingBack(
@@ -99,7 +115,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
         feesSource: FeeSource
     ) {
         trackerContract.logEvent(
-            "Swap_Going_Back",
+            SWAP_GOING_BACK,
             arrayOf(
                 Pair("Token_A_Name", tokenAName),
                 Pair("Token_B_Name", tokenBName),
@@ -126,7 +142,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
         feesSource: FeeSource
     ) {
         trackerContract.logEvent(
-            "Swap_Reviewing",
+            SWAP_REVIEWING,
             arrayOf(
                 Pair("Token_A_Name", tokenAName),
                 Pair("Token_B_Name", tokenBName),
@@ -142,12 +158,12 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
     }
 
     fun logSwapReviewingHelpClosed() {
-        trackerContract.logEvent("Swap_Reviewing_Help_Closed")
+        trackerContract.logEvent(SWAP_REVIEWING_HELP_CLOSED)
     }
 
     fun logSwapVerificationInvoked(authType: AuthAnalytics.AuthType) {
         trackerContract.logEvent(
-            "Swap_Verification_Invoked",
+            SWAP_VERIFICATION_INVOKED,
             arrayOf(
                 Pair("Auth_Type", authType.title)
             )
@@ -155,12 +171,12 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
     }
 
     fun logSwapProcessShown() {
-        trackerContract.logEvent("Swap_Process_Shown")
+        trackerContract.logEvent(SWAP_PROCESS_SHOWN)
     }
 
     fun logSwapCreatingAnother(swapStatus: SwapStatus) {
         trackerContract.logEvent(
-            "Swap_Creating_Another",
+            SWAP_CREATING_ANOTHER,
             arrayOf(
                 Pair("Swap_Status", swapStatus.title)
             )
@@ -168,7 +184,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
     }
 
     fun logSwapShowingHistory() {
-        trackerContract.logEvent("Swap_Showing_History")
+        trackerContract.logEvent(SWAP_SHOWING_HISTORY)
     }
 
     fun logSwapShowingDetails(
@@ -182,7 +198,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
     ) {
 
         trackerContract.logEvent(
-            "Swap_Showing_Details",
+            SWAP_SHOWING_DETAILS,
             arrayOf(
                 Pair("Swap_Status", swapStatus.title),
                 Pair("Last_Screen", lastScreenName),

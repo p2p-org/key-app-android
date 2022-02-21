@@ -9,7 +9,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.EventsName
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogSwapConfirmBinding
@@ -60,7 +60,7 @@ class SwapConfirmBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(EventsName.Swap.CONFIRMATION)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.CONFIRMATION)
         with(binding) {
             glideManager.load(sourceImageView, data.sourceToken.iconUrl)
             amountTextView.text = data.getFormattedSourceAmount()
