@@ -19,7 +19,7 @@ class ProgressView @JvmOverloads constructor(
     )
 
     init {
-        binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorProgressBackground))
+        binding.root.setBackgroundColor(context.getColor(R.color.colorProgressBackground))
         binding.root.isClickable = true
         binding.root.isFocusable = true
     }

@@ -75,7 +75,7 @@ class ProgressButton @JvmOverloads constructor(
             R.color.textIconButtonPrimary
         )
         if (buttonDrawableTintId != 0) {
-            val tintColor = ContextCompat.getColor(context, buttonDrawableTintId)
+            val tintColor = context.getColor(buttonDrawableTintId)
             binding.startImageView.imageTintList = ColorStateList.valueOf(tintColor)
             binding.endImageView.imageTintList = ColorStateList.valueOf(tintColor)
         }

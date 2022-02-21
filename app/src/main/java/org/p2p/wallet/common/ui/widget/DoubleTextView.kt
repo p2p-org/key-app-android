@@ -56,7 +56,7 @@ class DoubleTextView @JvmOverloads constructor(
     }
 
     fun setBottomTextColor(@ColorRes colorRes: Int) {
-        binding.bottomTextView.setTextColor(ContextCompat.getColor(context, colorRes))
+        binding.bottomTextView.setTextColor(context.getColor(colorRes))
     }
 
     fun setBottomTextColorFromTheme(@AttrRes colorAttrId: Int) {

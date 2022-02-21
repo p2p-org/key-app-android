@@ -104,7 +104,7 @@ sealed class HistoryTransaction(
             if (isSend) {
                 context.getColor(R.color.messagePrimary)
             } else {
-                ContextCompat.getColor(context, R.color.systemSuccessMain)
+                context.getColor(R.color.systemSuccessMain)
             }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =

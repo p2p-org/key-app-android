@@ -20,7 +20,7 @@ class SnackBarView(
 ) : BaseTransientBottomBar<SnackBarView>(parent, content, content) {
 
     init {
-        view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+        view.setBackgroundColor(context.getColor(android.R.color.transparent))
         view.setPadding(0, 0, 0, 0)
     }
 

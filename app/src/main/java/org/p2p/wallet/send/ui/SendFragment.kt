@@ -236,7 +236,7 @@ class SendFragment :
             targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
-            messageTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.systemErrorMain))
+            messageTextView.setTextColor(getColor(R.color.systemErrorMain))
             clearImageView.isVisible = true
         }
     }

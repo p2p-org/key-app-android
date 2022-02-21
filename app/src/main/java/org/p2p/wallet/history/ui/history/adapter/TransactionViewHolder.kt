@@ -117,7 +117,7 @@ class TransactionViewHolder(
         addressTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
         valueTextView withTextOrGone transaction.getReceivedUsdAmount()
         totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
-        totalTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+        totalTextView.setTextColor(valueTextView.context.getColor(R.color.colorGreen))
         timeTextView.text = transaction.date.toTimeString()
     }
 

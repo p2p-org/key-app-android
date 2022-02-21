@@ -54,7 +54,7 @@ class PinView @JvmOverloads constructor(
 
     fun startErrorAnimation(errorText: String) {
         with(binding) {
-            messageTextView.setTextColor(ContextCompat.getColor(context, R.color.systemErrorMain))
+            messageTextView.setTextColor(context.getColor(R.color.systemErrorMain))
             messageTextView.text = errorText
             messageTextView.isVisible = true
             pinCodeView.startErrorAnimation {

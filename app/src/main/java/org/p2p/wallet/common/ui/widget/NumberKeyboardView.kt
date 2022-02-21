@@ -84,10 +84,7 @@ class NumberKeyboardView @JvmOverloads constructor(
     fun setLeftButtonVisible(isVisible: Boolean) {
         binding.additionalLeftPinCodeButton.isInvisible = !isVisible
         binding.additionalLeftPinCodeButton.setBackgroundColor(
-            ContextCompat.getColor(
-                context,
-                android.R.color.transparent
-            )
+            context.getColor(android.R.color.transparent)
         )
     }
 
