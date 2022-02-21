@@ -2,6 +2,7 @@ package org.p2p.wallet.receive.network
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -80,11 +81,12 @@ class ReceiveNetworkTypeFragment() :
     }
 
     override fun showLoading(isLoading: Boolean) {
+        binding.progressView.isVisible = isLoading
     }
 
-    override fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?) {
+    override fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?, type: NetworkType) {
         RenBtcBuyBottomSheet.show(childFragmentManager, priceInSol, priceInUsd) {
-            navigateToReceive()
+            navigateToReceive(type)
         }
     }
 

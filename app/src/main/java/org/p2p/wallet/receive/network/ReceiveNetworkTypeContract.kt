@@ -11,7 +11,7 @@ interface ReceiveNetworkTypeContract {
         fun setCheckState(type: NetworkType)
         fun navigateToReceive(type: NetworkType)
         fun showLoading(isLoading: Boolean)
-        fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?)
+        fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?, type: NetworkType)
         fun showTopup()
     }
 

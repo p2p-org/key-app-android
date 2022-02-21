@@ -34,17 +34,13 @@ class ReceiveNetworkTypePresenter(
                     view?.navigateToReceive(type)
                 }
                 NetworkType.BITCOIN -> {
-                    onBitcoinSelected(type, ::onWalletExists, ::createBtcWallet)
+                    onBitcoinSelected(type)
                 }
             }
         }
     }
 
-    private fun onBitcoinSelected(
-        type: NetworkType,
-        onWalletExists: suspend (type: NetworkType) -> Unit,
-        createWallet: suspend (Token.Active) -> Unit
-    ) {
+    private fun onBitcoinSelected(type: NetworkType) {
         launch {
             try {
                 view?.showLoading(true)
@@ -55,7 +51,7 @@ class ReceiveNetworkTypePresenter(
                     val userPublicKey = tokenKeyProvider.publicKey
                     val sol = userTokens.find { it.isSOL && it.publicKey == userPublicKey }
                         ?: throw IllegalStateException("No SOL account found")
-                    createWallet(sol)
+                    createBtcWallet(sol, type)
                     return@launch
                 }
                 onWalletExists(type)
@@ -76,14 +72,14 @@ class ReceiveNetworkTypePresenter(
         }
     }
 
-    private suspend fun createBtcWallet(sol: Token.Active) {
+    private suspend fun createBtcWallet(sol: Token.Active, type: NetworkType) {
         val btcMinPrice = transactionAmountInteractor.getMinBalanceForRentExemption()
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - btcMinPrice) >= BigInteger.ZERO
         if (isAmountEnough) {
             val priceInSol = btcMinPrice.fromLamports().scaleMedium()
             val priceInUsd = priceInSol.toUsd(sol)
-            view?.showBuy(priceInSol, priceInUsd)
+            view?.showBuy(priceInSol, priceInUsd, type)
         } else {
             view?.showTopup()
         }
