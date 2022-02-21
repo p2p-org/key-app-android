@@ -137,9 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="16dp"
-            app:optionsLabelText="SOL price" />
-        <!-- todo: revert back when moonpay is ready for production -->
-        <!--        app:optionsLabelText="@string/buy_sol_price"-->
+            app:optionsLabelText="@string/buy_sol_price" />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
