@@ -13,10 +13,10 @@ import org.koin.dsl.module
 object BackupModule : InjectionModule {
 
     override fun create() = module {
-        factory { SecretKeyInteractor(get(), get(), get(), get(), get(), get()) }
+        factory { SecretKeyInteractor(get(), get(), get(), get(), get(), get(), get()) }
         factory { SecretKeyPresenter(get()) } bind SecretKeyContract.Presenter::class
         factory { (secretKeys: List<SecretKey>) ->
-            DerivableAccountsPresenter(secretKeys, get(), get())
+            DerivableAccountsPresenter(secretKeys, get(), get(), get())
         } bind DerivableAccountsContract.Presenter::class
     }
 }

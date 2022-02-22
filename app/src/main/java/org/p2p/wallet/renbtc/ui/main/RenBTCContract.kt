@@ -16,6 +16,9 @@ interface RenBTCContract {
         fun showToastMessage(@StringRes resId: Int)
         fun showTransactionsCount(count: Int)
         fun navigateToSolana()
+        fun showNetwork()
+        fun showBrowser(url: String)
+        fun showStatuses()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -24,5 +27,8 @@ interface RenBTCContract {
         fun startNewSession(context: Context)
         fun cancelTimer()
         fun saveQr(name: String, bitmap: Bitmap)
+        fun onNetworkClicked()
+        fun onBrowserClicked(publicKey: String)
+        fun onStatusReceivedClicked()
     }
 }

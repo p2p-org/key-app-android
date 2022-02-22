@@ -12,7 +12,11 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.AuthModule
+import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.TrackerFactory
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
@@ -72,6 +76,7 @@ class App : Application() {
                     FeeRelayerModule.create(),
                     InfrastructureModule.create(),
                     TransactionModule.create(),
+                    AnalyticsModule.create(),
                     createAppModule()
                 )
             )
@@ -86,6 +91,10 @@ class App : Application() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
         } bind AppRestarter::class
+        single {
+            val trackers = TrackerFactory.create(this@App, BuildConfig.ANALYTICS_ENABLED)
+            Analytics(trackers)
+        } bind TrackerContract::class
     }
 
     private fun restart() {

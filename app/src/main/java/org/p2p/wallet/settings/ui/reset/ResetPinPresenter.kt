@@ -7,13 +7,17 @@ import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import timber.log.Timber
 import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 500L
 
 class ResetPinPresenter(
-    private val authInteractor: AuthInteractor
+    private val authInteractor: AuthInteractor,
+    private val adminAnalytics: AdminAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<ResetPinContract.View>(), ResetPinContract.Presenter {
 
     private var isCurrentPinConfirmed = false
@@ -79,6 +83,7 @@ class ResetPinPresenter(
         if (createdPin != pinCode) {
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
+            adminAnalytics.logPinRejected(analyticsInteractor.getCurrentScreenName())
             return
         }
 
@@ -95,6 +100,7 @@ class ResetPinPresenter(
         launch {
             try {
                 authInteractor.resetPin(createdPin, cipher?.let { EncodeCipher(it) })
+                adminAnalytics.logPinCreated(currentScreenName = analyticsInteractor.getCurrentScreenName())
                 view?.showResetSuccess()
             } catch (e: Exception) {
                 Timber.e(e, "error setting new pin")

@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -28,7 +29,9 @@ private const val ONE_SECOND_IN_MILLIS = 1000L
 class RenBTCPresenter(
     private val interactor: RenBtcInteractor,
     private val qrCodeInteractor: QrCodeInteractor,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val receiveAnalytics: ReceiveAnalytics,
+    private val context: Context
 ) : BasePresenter<RenBTCContract.View>(), RenBTCContract.Presenter {
 
     private var sessionTimer: CountDownTimer? = null
@@ -66,6 +69,22 @@ class RenBTCPresenter(
             usernameInteractor.saveQr(name, bitmap)
             view?.showToastMessage(R.string.auth_save)
         }
+    }
+
+    override fun onNetworkClicked() {
+        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
+        view?.showNetwork()
+    }
+
+    override fun onBrowserClicked(publicKey: String) {
+        receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
+        val url = context.getString(R.string.solanaWalletExplorer, publicKey)
+        view?.showBrowser(url)
+    }
+
+    override fun onStatusReceivedClicked() {
+        receiveAnalytics.logReceiveShowingStatuses()
+        view?.showStatuses()
     }
 
     override fun cancelTimer() {

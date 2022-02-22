@@ -6,6 +6,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenTransactionsBinding
 import org.p2p.wallet.renbtc.model.RenTransaction
@@ -26,15 +28,16 @@ class RenTransactionsFragment :
     }
 
     override val presenter: RenTransactionsContract.Presenter by inject()
-
     private val binding: FragmentRenTransactionsBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     private val adapter: RenTransactionsAdapter by lazy {
-        RenTransactionsAdapter { onTransactionClicked(it) }
+        RenTransactionsAdapter { presenter.onTransactionClicked(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN_STATUSES)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             dateTextView.isVisible = false
@@ -54,7 +57,7 @@ class RenTransactionsFragment :
         binding.emptyTextView.isVisible = isEmpty
     }
 
-    private fun onTransactionClicked(transaction: RenTransaction) {
-        replaceFragment(RenStatusesFragment.create(transaction))
+    override fun showTransaction(item: RenTransaction) {
+        replaceFragment(RenStatusesFragment.create(item))
     }
 }

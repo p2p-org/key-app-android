@@ -6,10 +6,13 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSelectTokenBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
@@ -37,7 +40,8 @@ class SelectTokenFragment(
     private val tokens: List<Token> by args(EXTRA_ALL_TOKENS)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
-
+    private val buyAnalytics: BuyAnalytics by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val binding: FragmentSelectTokenBinding by viewBinding()
 
     private val tokenAdapter: SelectTokenAdapter by lazy {
@@ -45,6 +49,7 @@ class SelectTokenFragment(
             onSelected?.invoke(it)
             setFragmentResult(requestKey, bundleOf(resultKey to it))
             parentFragmentManager.popBackStack()
+            buyAnalytics.logBuyTokenChosen(it.tokenSymbol, analyticsInteractor.getPreviousScreenName())
         }
     }
 

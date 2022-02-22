@@ -43,8 +43,8 @@ object RenBtcModule : InjectionModule {
         single { RenBtcInteractor(get(), get(), get()) }
         single { BurnBtcInteractor(get(), get(), get()) }
 
-        factory { RenBTCPresenter(get(), get(), get()) } bind RenBTCContract.Presenter::class
-        factory { RenTransactionsPresenter(get()) } bind RenTransactionsContract.Presenter::class
+        factory { RenBTCPresenter(get(), get(), get(), get(), get()) } bind RenBTCContract.Presenter::class
+        factory { RenTransactionsPresenter(get(), get()) } bind RenTransactionsContract.Presenter::class
         factory { RenStatusesPresenter(get()) } bind RenStatusesContract.Presenter::class
     }
 }
