@@ -51,10 +51,10 @@ class HomePresenter(
     private var collectJob: Job? = null
 
     private val actions = mutableListOf(
+        ActionButtonsView.ActionButton(R.string.main_buy, R.drawable.ic_plus),
         ActionButtonsView.ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
         ActionButtonsView.ActionButton(R.string.main_send, R.drawable.ic_send_medium),
-        ActionButtonsView.ActionButton(R.string.main_swap, R.drawable.ic_swap_medium),
-        ActionButtonsView.ActionButton(R.string.main_buy, R.drawable.ic_plus)
+        ActionButtonsView.ActionButton(R.string.main_swap, R.drawable.ic_swap_medium)
     )
 
     override fun attach(view: HomeContract.View) {
