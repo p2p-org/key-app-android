@@ -71,31 +71,6 @@ jobs:
           command: ./gradlew appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
-  commit:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: "Commit gradle properties changes"
-          command: |
-            cat app/gradle.properties
-            'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-            eval $(ssh-agent -s)
-            echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-            mkdir -p ~/.ssh
-            chmod 700 ~/.ssh
-            echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-            chmod 644 ~/.ssh/known_hosts
-            git config user.name gitlab
-            git config user.email gitlab@btsdigital.kz
-            git remote set-url --push origin `echo $CI_REPOSITORY_URL | perl -pe 's#.*@(.+?(\:\d+)?)/#git@\1:#'`
-            git checkout -B ci_processing
-            git commit -a -m "[CI SKIP] Bump version"
-            git checkout $CI_COMMIT_REF_NAME
-            git pull origin $CI_COMMIT_REF_NAME
-            git checkout ci_processing
-            git rebase -s recursive -X theirs $CI_COMMIT_REF_NAME
-            git push origin ci_processing:$CI_COMMIT_REF_NAME
 workflows:
   version: 2
 
@@ -125,14 +100,6 @@ workflows:
           requires:
             - android_lint
           context: feature
-      - build_and_publish:
-          requires:
-            - unit_tests
-          context: feature
-          filters:
-            branches:
-              only:
-                - merge_requests
 
   lint_test_and_publish_feature:
     jobs:
@@ -151,6 +118,11 @@ workflows:
           requires:
             - android_lint
           context: feature
-      - commit:
+      - build_and_publish:
           requires:
             - unit_tests
+          context: feature
+          filters:
+            branches:
+              only:
+                - develop
