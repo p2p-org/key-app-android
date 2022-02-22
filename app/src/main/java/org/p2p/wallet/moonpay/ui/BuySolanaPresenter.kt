@@ -22,18 +22,19 @@ private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
     private val moonpayRepository: MoonpayRepository,
+    private val minBuyErrorFormat: String,
+    private val maxBuyErrorFormat: String,
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
-    companion object {
-    }
-
-    private var isSwapped: Boolean = false
+    private var calculationJob: Job? = null
 
     private var amount: String = "0"
 
     private var data: BuyData? = null
 
-    private var calculationJob: Job? = null
+    private var isSwapped: Boolean = false
+
+    private var prefix = USD_SYMBOL
 
     override fun loadData() {
         launch {
@@ -41,6 +42,9 @@ class BuySolanaPresenter(
                 view?.showLoading(true)
                 val price = moonpayRepository.getCurrencyAskPrice(SOL_SYMBOL.lowercase()).scaleShort()
                 view?.showTokenPrice("$USD_SYMBOL$price")
+                if (isSwapped) {
+                    updateViewWithData()
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading currency ask price")
                 view?.showErrorMessage(e)
@@ -56,14 +60,18 @@ class BuySolanaPresenter(
 
     override fun onSwapClicked() {
         isSwapped = !isSwapped
-        val prefix = if (isSwapped) SOL_SYMBOL else USD_SYMBOL
-        view?.swapData(isSwapped, prefix)
-        setBuyAmount(amount)
+        updateViewWithData()
     }
 
     override fun setBuyAmount(amount: String) {
         this.amount = amount
         calculateTokens(amount)
+    }
+
+    private fun updateViewWithData() {
+        prefix = if (isSwapped) SOL_SYMBOL else USD_SYMBOL
+        view?.swapData(isSwapped, prefix)
+        setBuyAmount(amount)
     }
 
     private fun calculateTokens(amount: String) {
@@ -113,24 +121,50 @@ class BuySolanaPresenter(
     }
 
     private fun handleSuccess(info: BuyCurrency) {
-        val receiveSymbol = if (isSwapped) USD_SYMBOL else SOL_SYMBOL
-        val amount = if (isSwapped) info.totalAmount.scaleShort() else info.receiveAmount
-        val currencyForTokensAmount = info.price * info.receiveAmount.toBigDecimal()
-        val data = BuyData(
-            tokenSymbol = SOL_SYMBOL,
-            currencySymbol = USD_SYMBOL,
-            price = info.price.scaleShort(),
-            receiveAmount = info.receiveAmount,
-            processingFee = info.feeAmount.scaleShort(),
-            networkFee = info.networkFeeAmount.scaleShort(),
-            extraFee = info.extraFeeAmount.scaleShort(),
-            accountCreationCost = null,
-            total = info.totalAmount.scaleShort(),
-            receiveAmountText = "$amount $receiveSymbol",
-            purchaseCostText = if (isSwapped) currencyForTokensAmount.scaleShort().toString() else null
-        )
-        view?.showData(data).also { this.data = data }
-        view?.showMessage(null)
+        val amountBigDecimal = amount.toBigDecimal()
+        val currency = if (isSwapped) info.quoteCurrency else info.baseCurrency
+        if (amountBigDecimal >= currency.minAmount && currency.maxAmount?.let { amountBigDecimal <= it } != false) {
+            val receiveSymbol = if (isSwapped) USD_SYMBOL else SOL_SYMBOL
+            val amount = if (isSwapped) info.totalAmount.scaleShort() else info.receiveAmount
+            val currencyForTokensAmount = info.price * info.receiveAmount.toBigDecimal()
+            val data = BuyData(
+                tokenSymbol = SOL_SYMBOL,
+                currencySymbol = USD_SYMBOL,
+                price = info.price.scaleShort(),
+                receiveAmount = info.receiveAmount,
+                processingFee = info.feeAmount.scaleShort(),
+                networkFee = info.networkFeeAmount.scaleShort(),
+                extraFee = info.extraFeeAmount.scaleShort(),
+                accountCreationCost = null,
+                total = info.totalAmount.scaleShort(),
+                receiveAmountText = "$amount $receiveSymbol",
+                purchaseCostText = if (isSwapped) currencyForTokensAmount.scaleShort().toString() else null
+            )
+            view?.showData(data).also { this.data = data }
+            view?.showMessage(null)
+        } else {
+            val isUsd = currency.code == USD_READABLE_SYMBOL.lowercase()
+            val suffixPrefix = if (isUsd) USD_SYMBOL else currency.code.uppercase()
+            val amountIsLower = amountBigDecimal < currency.minAmount
+            val amountForFormatter = if (amountIsLower) {
+                currency.minAmount
+            } else {
+                currency.maxAmount
+            }
+            val suffixPrefixWithAmount =
+                if (isUsd) {
+                    "$suffixPrefix$amountForFormatter"
+                } else {
+                    "$amountForFormatter $suffixPrefix"
+                }
+            view?.showMessage(
+                if (amountIsLower) {
+                    minBuyErrorFormat
+                } else {
+                    maxBuyErrorFormat
+                }.format(suffixPrefixWithAmount)
+            )
+        }
     }
 
     private fun clear() {

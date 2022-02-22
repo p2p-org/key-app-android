@@ -1,9 +1,11 @@
 package org.p2p.wallet.home
 
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
@@ -74,7 +76,13 @@ object HomeModule : InjectionModule {
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
-        factory { BuySolanaPresenter(get()) } bind BuySolanaContract.Presenter::class
+        factory {
+            BuySolanaPresenter(
+                get(),
+                androidContext().resources.getString(R.string.buy_min_error_format),
+                androidContext().resources.getString(R.string.buy_max_error_format)
+            )
+        } bind BuySolanaContract.Presenter::class
         factory { TokenListPresenter(get()) } bind TokenListContract.Presenter::class
     }
 }
