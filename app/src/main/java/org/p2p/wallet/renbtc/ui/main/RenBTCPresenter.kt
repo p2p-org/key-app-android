@@ -77,10 +77,10 @@ class RenBTCPresenter(
         if (session != null && session.isValid) {
             val remaining = session.expiryTime - System.currentTimeMillis()
             val fee = calculateFee(session)
-            view?.showActiveState(session.gatewayAddress, remaining.toDateString(), fee.toString())
+            view?.showActiveState(session.gatewayAddress!!, remaining.toDateString(), fee.toString())
 
             startTimer(remaining)
-            generateQrCode(session.gatewayAddress)
+            generateQrCode(session.gatewayAddress!!)
             loadTransactionCount()
             view?.showLoading(false)
         } else {
@@ -88,8 +88,8 @@ class RenBTCPresenter(
         }
     }
 
-    private fun calculateFee(session: LockAndMint.Session) =
-        session.fee.fromLamports(BTC_DECIMALS).multiply(BigDecimal(2)).scaleMedium()
+    private fun calculateFee(session: LockAndMint.Session) = session.fee?.fromLamports(BTC_DECIMALS)
+        ?.multiply(BigDecimal(2))?.scaleMedium()
 
     private fun generateQrCode(address: String) {
         if (qrJob?.isActive == true) return

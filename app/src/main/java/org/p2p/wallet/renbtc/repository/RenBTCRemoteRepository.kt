@@ -31,7 +31,7 @@ class RenBTCRemoteRepository(
             nonce = session.nonce,
             createdAt = session.createdAt,
             expiryTime = session.expiryTime,
-            gatewayAddress = session.gatewayAddress,
+            gatewayAddress = session.gatewayAddress!!,
             fee = session.fee.toString()
         )
         dao.insert(entity)

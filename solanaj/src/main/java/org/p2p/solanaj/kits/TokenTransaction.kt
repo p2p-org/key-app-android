@@ -28,7 +28,7 @@ object TokenTransaction {
 
     @JvmStatic
     @Throws(RpcException::class)
-    fun getMintData(accountInfo: AccountInfo?, programId: PublicKey): MintData? {
+    fun getMintData(accountInfo: AccountInfo?, programId: PublicKey): MintData {
         if (accountInfo?.value == null) {
             throw RpcException("Failed to find mint account")
         }
@@ -95,7 +95,6 @@ object TokenTransaction {
         return findProgramAddress(
             listOf(owner.toByteArray(), programId.toByteArray(), mint.toByteArray()),
             associatedProgramId!!
-        )
-            .address
+        ).address
     }
 }

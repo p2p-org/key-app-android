@@ -68,7 +68,7 @@ public class SolanaChainTest {
         SolanaChain solanaChain = new SolanaChain(Mock.buildSolanaRpcClient(), NetworkConfig.DEVNET());
 
         assertTrue(
-                new PublicKey("FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD").equals(solanaChain.getSPLTokenPubkey()));
+                new PublicKey("FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD").equals(solanaChain.getSPLTokenPublicKey()));
     }
 
     @Test

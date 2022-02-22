@@ -39,9 +39,9 @@ object RenBtcModule : InjectionModule {
             RenBTCRemoteRepository(api, get())
         } bind RenBTCRepository::class
 
-        single { RenTransactionManager(get(), get(), get()) }
+        single { RenTransactionManager(get(), get(), get(), get()) }
         single { RenBtcInteractor(get(), get(), get()) }
-        single { BurnBtcInteractor(get(), get(), get()) }
+        single { BurnBtcInteractor(get(), get(), get(), get()) }
 
         factory { RenBTCPresenter(get(), get(), get()) } bind RenBTCContract.Presenter::class
         factory { RenTransactionsPresenter(get()) } bind RenTransactionsContract.Presenter::class

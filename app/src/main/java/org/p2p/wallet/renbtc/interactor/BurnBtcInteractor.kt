@@ -1,25 +1,27 @@
 package org.p2p.wallet.renbtc.interactor
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.kits.renBridge.BurnAndRelease
+import org.p2p.solanaj.kits.renBridge.NetworkConfig
+import org.p2p.solanaj.rpc.BlockChainRepository
+import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.RpcException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toPublicKey
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.kits.renBridge.BurnAndRelease
-import org.p2p.solanaj.kits.renBridge.NetworkConfig
-import org.p2p.solanaj.rpc.Environment
-import org.p2p.solanaj.rpc.RpcException
 import java.math.BigDecimal
 import java.math.BigInteger
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager,
-    private val rpcRepository: RpcRepository
+    private val rpcRepository: RpcRepository,
+    private val blockChainRepository: BlockChainRepository
 ) {
 
     companion object {
@@ -29,7 +31,7 @@ class BurnBtcInteractor(
     suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(Dispatchers.IO) {
         val signer = tokenKeyProvider.publicKey.toPublicKey()
         val signerSecretKey = tokenKeyProvider.secretKey
-        val burnAndRelease = BurnAndRelease(getNetworkConfig())
+        val burnAndRelease = BurnAndRelease(blockChainRepository, getNetworkConfig())
 
         val burnDetails = burnAndRelease.submitBurnTransaction(
             signer,

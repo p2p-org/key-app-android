@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
+import org.p2p.solanaj.rpc.BlockChainRepository
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -32,7 +33,8 @@ private const val SESSION_POLLING_DELAY = 5000L
 class RenTransactionManager(
     private val repository: RenBTCRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: EnvironmentManager,
+    private val blockChainRepository: BlockChainRepository
 ) {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -54,10 +56,10 @@ class RenTransactionManager(
                 repository.clearSessionData()
                 Timber.tag(REN_TAG).d("No existing session found, building new one")
                 val signer = tokenKeyProvider.publicKey
-                LockAndMint.buildSession(networkConfig, signer.toPublicKey())
+                LockAndMint.buildSession(blockChainRepository, networkConfig, signer.toPublicKey())
             } else {
                 Timber.tag(REN_TAG).d("Active session found, fetching information")
-                LockAndMint.getSession(networkConfig, existingSession)
+                LockAndMint.getSession(blockChainRepository, networkConfig, existingSession)
             }
 
             val gatewayAddress = lockAndMint.generateGatewayAddress()
@@ -113,7 +115,10 @@ class RenTransactionManager(
         scope.launch {
             Timber.tag(REN_TAG).d("Checking payment data by gateway address")
             try {
-                val data = repository.getPaymentData(environment, session.gatewayAddress)
+                val data = repository.getPaymentData(
+                    environment,
+                    session.gatewayAddress!!
+                )
                 handlePaymentData(data, secretKey)
             } catch (e: Throwable) {
                 Timber.e(e, "Error checking payment data")

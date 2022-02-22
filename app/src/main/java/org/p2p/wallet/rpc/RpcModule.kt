@@ -1,13 +1,14 @@
 package org.p2p.wallet.rpc
 
-import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
+import org.p2p.solanaj.rpc.BlockChainRepository
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
+import org.p2p.wallet.rpc.api.RpcApi
 import org.p2p.wallet.rpc.interactor.CloseInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.RpcRemoteRepository
@@ -38,7 +39,7 @@ object RpcModule : InjectionModule {
             val testnetRpcApi = testnet.create(RpcApi::class.java)
 
             RpcRemoteRepository(serumRpcApi, mainnetRpcApi, rpcpoolRpcApi, testnetRpcApi, get())
-        } bind RpcRepository::class
+        }.binds(arrayOf(RpcRepository::class, BlockChainRepository::class))
 
         factory { CloseInteractor(get(), get()) }
         factory { TransactionInteractor(get(), get(), get()) }

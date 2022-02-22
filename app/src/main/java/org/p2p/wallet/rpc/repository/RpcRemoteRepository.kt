@@ -1,10 +1,15 @@
 package org.p2p.wallet.rpc.repository
 
 import android.util.Base64
+import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
+import org.p2p.solanaj.kits.renBridge.renVM.types.ParamsSubmitMint
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryBlockState
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
@@ -19,10 +24,12 @@ import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.model.types.TokenSupply
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.rpc.BlockChainRepository
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.solanaj.utils.crypto.Base64Utils.encode
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.rpc.api.RpcApi
 import timber.log.Timber
 import java.math.BigInteger
 
@@ -34,7 +41,7 @@ class RpcRemoteRepository(
     private val testnetApi: RpcApi,
     environmentManager: EnvironmentManager,
     onlyMainnet: Boolean = false
-) : RpcRepository {
+) : RpcRepository, BlockChainRepository {
 
     private var rpcApi: RpcApi
 
@@ -71,6 +78,17 @@ class RpcRemoteRepository(
         params.add(base64Trx)
         params.add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
 
+        val rpcRequest = RpcRequest("sendTransaction", params)
+        return rpcApi.sendTransaction(rpcRequest).result
+    }
+
+    override suspend fun sendTransaction(transaction: Transaction, signers: List<Account>): String {
+        val recentBlockhash: String = getRecentBlockhash().recentBlockhash
+        transaction.recentBlockHash = recentBlockhash
+        transaction.sign(signers)
+        val serializedTransaction = transaction.serialize()
+        val base64Trx = encode(serializedTransaction)
+        val params = listOf(base64Trx, RpcSendTransactionConfig())
         val rpcRequest = RpcRequest("sendTransaction", params)
         return rpcApi.sendTransaction(rpcRequest).result
     }
@@ -301,5 +319,25 @@ class RpcRemoteRepository(
         }
 
         return rpcpoolRpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
+    }
+
+    override suspend fun queryMint(txHash: String): ResponseQueryTxMint {
+        val rpcRequest = RpcRequest("ren_queryTx", listOf("txHash" to txHash))
+        return rpcApi.queryMint(rpcRequest).result
+    }
+
+    override suspend fun queryBlockState(): ResponseQueryBlockState {
+        val rpcRequest = RpcRequest("ren_queryBlockState", emptyList())
+        return rpcApi.queryBlockState(rpcRequest).result
+    }
+
+    override suspend fun submitTx(
+        hash: String?,
+        mintTx: ParamsSubmitMint.MintTransactionInput?,
+        selector: String?
+    ): ResponseSubmitTxMint {
+        val params = ParamsSubmitMint(hash, mintTx, selector)
+        val rpcRequest = RpcRequest("ren_queryTx", listOf("tx" to params))
+        return rpcApi.submitTx(rpcRequest).result
     }
 }

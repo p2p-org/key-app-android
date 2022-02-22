@@ -1,153 +1,185 @@
-package org.p2p.solanaj.kits.renBridge.renVM;
+package org.p2p.solanaj.kits.renBridge.renVM
 
-import org.bitcoinj.core.Base58;
-import org.p2p.solanaj.kits.renBridge.NetworkConfig;
-import org.p2p.solanaj.kits.renBridge.renVM.types.ParamsSubmitMint;
-import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryBlockState;
-import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryConfig;
-import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint;
-import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint;
-import org.p2p.solanaj.rpc.RpcClient;
-import org.p2p.solanaj.rpc.RpcException;
-import org.p2p.solanaj.utils.ByteUtils;
-import org.p2p.solanaj.utils.Hash;
-import org.p2p.solanaj.utils.Utils;
-import org.p2p.solanaj.utils.crypto.Base64UrlUtils;
+import org.bitcoinj.core.Base58
+import org.p2p.solanaj.kits.renBridge.renVM.types.ParamsSubmitMint.MintTransactionInput
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryBlockState
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
+import org.p2p.solanaj.rpc.BlockChainRepository
+import org.p2p.solanaj.rpc.RpcException
+import org.p2p.solanaj.utils.ByteUtils
+import org.p2p.solanaj.utils.Hash
+import org.p2p.solanaj.utils.Utils
+import org.p2p.solanaj.utils.crypto.Base64UrlUtils
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.math.BigInteger
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.HashMap;
+private const val HASH_TRANSACTION_INPUT = "aHQBEVgedhqiYDUtzYKdu1Qg1fc781PEV4D1gLsuzfpHNwH8yK2A2" +
+    "BuZK4uZoMC6pp8o7GWQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1"
 
-public class RenVMProvider {
-    private RpcClient client;
-    private HashMap<String, Object> emptyParams = new HashMap<String, Object>();
+class RenVMProvider(private val blockChainRepository: BlockChainRepository) {
 
-    public RenVMProvider(NetworkConfig networkConfig) {
-        this.client = new RpcClient(networkConfig.getLightNode());
+    @Throws(RpcException::class)
+    suspend fun queryMint(txHash: String): ResponseQueryTxMint = blockChainRepository.queryMint(txHash)
+
+    @Throws(RpcException::class)
+    suspend fun queryBlockState(): ResponseQueryBlockState = blockChainRepository.queryBlockState()
+
+    @Throws(RpcException::class)
+    suspend fun submitTx(
+        hash: String?,
+        mintTx: MintTransactionInput?,
+        selector: String?
+    ): ResponseSubmitTxMint = blockChainRepository.submitTx(hash, mintTx, selector)
+
+    @Throws(RpcException::class)
+    suspend fun selectPublicKey(): ByteArray {
+        val pubKey = queryBlockState().pubKey
+        return Base64UrlUtils.fromURLBase64(pubKey)
     }
 
-    public ResponseQueryTxMint queryMint(String txHash) throws RpcException {
-        HashMap params = new HashMap();
-        params.put("txHash", txHash);
-        return client.callMap("ren_queryTx", params, ResponseQueryTxMint.class);
+    @Throws(RpcException::class)
+    suspend fun submitMint(
+        gHash: ByteArray?,
+        gPubKey: ByteArray,
+        nHash: ByteArray?,
+        nonce: ByteArray?,
+        amount: String?,
+        pHash: ByteArray?,
+        to: String?,
+        txIndex: String?,
+        txid: ByteArray?
+    ): String {
+        val selector = "BTC/toSolana"
+        val mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid)
+        val hash = Utils.toURLBase64(hashTransactionMint(mintTx, selector))
+        submitTx(hash, mintTx, selector)
+        return hash
     }
 
-    public ResponseQueryBlockState queryBlockState() throws RpcException {
-        return client.callMap("ren_queryBlockState", emptyParams, ResponseQueryBlockState.class);
+    @Throws(RpcException::class)
+    suspend fun submitBurn(
+        gHash: ByteArray?,
+        gPubKey: ByteArray,
+        nHash: ByteArray?,
+        nonce: ByteArray?,
+        amount: String?,
+        pHash: ByteArray?,
+        to: String?,
+        txIndex: String?,
+        txid: ByteArray?
+    ): String {
+        val selector = "BTC/fromSolana"
+        val mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid)
+        val hash = Utils.toURLBase64(hashTransactionMint(mintTx, selector))
+        submitTx(hash, mintTx, selector)
+        return hash
     }
 
-    public ResponseQueryConfig queryConfig() throws RpcException {
-        return client.callMap("ren_queryConfig", emptyParams, ResponseQueryConfig.class);
+    fun mintTxHash(
+        gHash: ByteArray?,
+        gPubKey: ByteArray,
+        nHash: ByteArray?,
+        nonce: ByteArray?,
+        amount: String?,
+        pHash: ByteArray?,
+        to: String?,
+        txIndex: String?,
+        txid: ByteArray?
+    ): String {
+        val mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid)
+        return Utils.toURLBase64(hashTransactionMint(mintTx, "BTC/toSolana"))
     }
 
-    public ResponseSubmitTxMint submitTx(String hash, ParamsSubmitMint.MintTransactionInput mintTx, String selector)
-            throws RpcException {
-        ParamsSubmitMint params = new ParamsSubmitMint(hash, mintTx, selector);
-        HashMap map = new HashMap();
-        map.put("tx", params);
-        return client.callMap("ren_submitTx", map, ResponseSubmitTxMint.class);
+    fun burnTxHash(
+        gHash: ByteArray?,
+        gPubKey: ByteArray,
+        nHash: ByteArray?,
+        nonce: ByteArray?,
+        amount: String?,
+        pHash: ByteArray?,
+        to: String?,
+        txIndex: String?,
+        txid: ByteArray?
+    ): String {
+        val burnTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid)
+        return Utils.toURLBase64(hashTransactionMint(burnTx, "BTC/fromSolana"))
     }
 
-    public byte[] selectPublicKey() throws RpcException {
-        String pubKey = queryBlockState().getPubKey();
-        return Base64UrlUtils.fromURLBase64(pubKey);
+    @Throws(RpcException::class)
+    suspend fun estimateTransactionFee(): BigInteger {
+        val queryBlockState = queryBlockState()
+        return BigInteger(queryBlockState.state.v.btc.gasLimit)
+            .multiply(BigInteger(queryBlockState.state.v.btc.gasCap))
     }
 
-    public String submitMint(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) throws RpcException {
-        String selector = "BTC/toSolana";
-        ParamsSubmitMint.MintTransactionInput mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
-        String hash = Utils.toURLBase64(hashTransactionMint(mintTx, selector));
-
-        submitTx(hash, mintTx, selector);
-
-        return hash;
-    }
-
-    public String submitBurn(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) throws RpcException {
-        String selector = "BTC/fromSolana";
-        ParamsSubmitMint.MintTransactionInput mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
-        String hash = Utils.toURLBase64(hashTransactionMint(mintTx, selector));
-
-        submitTx(hash, mintTx, selector);
-
-        return hash;
-    }
-
-    public String mintTxHash(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) {
-        ParamsSubmitMint.MintTransactionInput mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
-        return Utils.toURLBase64(hashTransactionMint(mintTx, "BTC/toSolana"));
-    }
-
-    public String burnTxHash(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) {
-        ParamsSubmitMint.MintTransactionInput burnTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
-        return Utils.toURLBase64(hashTransactionMint(burnTx, "BTC/fromSolana"));
-    }
-
-    public BigInteger estimateTransactionFee() throws RpcException {
-        ResponseQueryBlockState queryBlockState = queryBlockState();
-        return new BigInteger(queryBlockState.state.v.btc.gasLimit)
-                .multiply(new BigInteger(queryBlockState.state.v.btc.gasCap));
-    }
-
-    public static ParamsSubmitMint.MintTransactionInput buildTransaction(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce,
-                                                                         String amount, byte[] pHash, String to, String txIndex, byte[] txid) {
-        ParamsSubmitMint.MintTransactionInput mintTx = new ParamsSubmitMint.MintTransactionInput();
-        mintTx.txid = Utils.toURLBase64(txid);
-        mintTx.txindex = txIndex;
-        mintTx.ghash = Utils.toURLBase64(gHash);
-        mintTx.gpubkey = gPubKey.length == 0 ? "" : Utils.toURLBase64(gPubKey);
-        mintTx.nhash = Utils.toURLBase64(nHash);
-        mintTx.nonce = Utils.toURLBase64(nonce);
-        mintTx.phash = Utils.toURLBase64(pHash);
-        mintTx.to = to;
-        mintTx.amount = amount;
-        return mintTx;
-    }
-
-    // txHash
-    public static byte[] hashTransactionMint(ParamsSubmitMint.MintTransactionInput mintTx, String selector) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        String version = "1";
-        try {
-            // todo: it was out.writeBytes() workaround
-            out.write(marshalString(version));
-            out.write(marshalString(selector));
-
-            // marshalledType MintTransactionInput
-            out.write(Base58.decode(
-                    "aHQBEVgedhqiYDUtzYKdu1Qg1fc781PEV4D1gLsuzfpHNwH8yK2A2BuZK4uZoMC6pp8o7GWQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1"));
-
-            out.write(marshalBytes(Utils.fromURLBase64(mintTx.txid)));
-            out.write(ByteUtils.uint32ToByteArrayBE(Long.valueOf(mintTx.txindex)));
-            out.write(Utils.amountToUint256ByteArrayBE(mintTx.amount));
-            out.write(new byte[]{0, 0, 0, 0});
-            out.write(Utils.fromURLBase64(mintTx.phash));
-            out.write(marshalString(mintTx.to));
-            out.write(Utils.fromURLBase64(mintTx.nonce));
-            out.write(Utils.fromURLBase64(mintTx.nhash));
-            out.write(marshalBytes(Utils.fromURLBase64(mintTx.gpubkey)));
-            out.write(Utils.fromURLBase64(mintTx.ghash));
-        } catch (IOException e) {
-            e.printStackTrace();
+    companion object {
+        fun buildTransaction(
+            gHash: ByteArray?,
+            gPubKey: ByteArray,
+            nHash: ByteArray?,
+            nonce: ByteArray?,
+            amount: String?,
+            pHash: ByteArray?,
+            to: String?,
+            txIndex: String?,
+            txid: ByteArray?
+        ): MintTransactionInput {
+            val mintTx = MintTransactionInput()
+            mintTx.txid = Utils.toURLBase64(txid)
+            mintTx.txindex = txIndex
+            mintTx.ghash = Utils.toURLBase64(gHash)
+            mintTx.gpubkey = if (gPubKey.isEmpty()) "" else Utils.toURLBase64(gPubKey)
+            mintTx.nhash = Utils.toURLBase64(nHash)
+            mintTx.nonce = Utils.toURLBase64(nonce)
+            mintTx.phash = Utils.toURLBase64(pHash)
+            mintTx.to = to
+            mintTx.amount = amount
+            return mintTx
         }
-        return Hash.sha256(out.toByteArray());
-    }
 
-    static byte[] marshalString(String src) {
-        return marshalBytes(src.getBytes());
-    }
+        // txHash
+        @JvmStatic
+        fun hashTransactionMint(mintTx: MintTransactionInput, selector: String): ByteArray {
+            val out = ByteArrayOutputStream()
+            val version = "1"
+            try {
+                // todo: it was out.writeBytes() workaround
+                out.write(marshalString(version))
+                out.write(marshalString(selector))
 
-    static byte[] marshalBytes(byte[] in) {
-        byte[] out = new byte[ByteUtils.UINT_32_LENGTH + in.length];
-        System.arraycopy(ByteUtils.uint32ToByteArrayBE(in.length), 0, out, 0, ByteUtils.UINT_32_LENGTH);
-        System.arraycopy(in, 0, out, ByteUtils.UINT_32_LENGTH, in.length);
-        return out;
-    }
+                // marshalledType MintTransactionInput
+                out.write(
+                    Base58.decode(
+                        HASH_TRANSACTION_INPUT
+                    )
+                )
+                out.write(marshalBytes(Utils.fromURLBase64(mintTx.txid)))
+                out.write(ByteUtils.uint32ToByteArrayBE(mintTx.txindex.toLong()))
+                out.write(Utils.amountToUint256ByteArrayBE(mintTx.amount))
+                out.write(byteArrayOf(0, 0, 0, 0))
+                out.write(Utils.fromURLBase64(mintTx.phash))
+                out.write(marshalString(mintTx.to))
+                out.write(Utils.fromURLBase64(mintTx.nonce))
+                out.write(Utils.fromURLBase64(mintTx.nhash))
+                out.write(marshalBytes(Utils.fromURLBase64(mintTx.gpubkey)))
+                out.write(Utils.fromURLBase64(mintTx.ghash))
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return Hash.sha256(out.toByteArray())
+        }
 
+        private fun marshalString(src: String): ByteArray {
+            return marshalBytes(src.toByteArray())
+        }
+
+        private fun marshalBytes(`in`: ByteArray): ByteArray {
+            val out = ByteArray(ByteUtils.UINT_32_LENGTH + `in`.size)
+            System.arraycopy(ByteUtils.uint32ToByteArrayBE(`in`.size.toLong()), 0, out, 0, ByteUtils.UINT_32_LENGTH)
+            System.arraycopy(`in`, 0, out, ByteUtils.UINT_32_LENGTH, `in`.size)
+            return out
+        }
+    }
 }

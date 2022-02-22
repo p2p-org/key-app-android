@@ -1,7 +1,9 @@
 package org.p2p.wallet.rpc.api
 
-import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import org.p2p.solanaj.kits.MultipleAccountsInfo
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryBlockState
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.FeesResponse
@@ -14,6 +16,7 @@ import org.p2p.solanaj.model.types.SimulateTransactionResponse
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.model.types.TokenSupply
+import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Url
@@ -121,4 +124,22 @@ interface RpcApi {
         @Body rpcRequest: RpcRequest,
         @Url url: String = ""
     ): CommonResponse<MultipleAccountsInfo>
+
+    @POST
+    suspend fun queryMint(
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = ""
+    ): CommonResponse<ResponseQueryTxMint>
+
+    @POST
+    suspend fun queryBlockState(
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = ""
+    ): CommonResponse<ResponseQueryBlockState>
+
+    @POST
+    suspend fun submitTx(
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = ""
+    ): CommonResponse<ResponseSubmitTxMint>
 }

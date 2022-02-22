@@ -1,174 +1,208 @@
-package org.p2p.solanaj.kits.renBridge;
+package org.p2p.solanaj.kits.renBridge
 
-import org.bitcoinj.core.Base58;
-import org.p2p.solanaj.core.Account;
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider;
-import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint;
-import org.p2p.solanaj.kits.renBridge.script.Script;
-import org.p2p.solanaj.rpc.RpcClient;
-import org.p2p.solanaj.rpc.RpcException;
-import org.p2p.solanaj.utils.Hash;
-import org.p2p.solanaj.utils.Utils;
-import org.p2p.solanaj.utils.crypto.Hex;
+import org.bitcoinj.core.Base58
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
+import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
+import org.p2p.solanaj.kits.renBridge.script.Script
+import org.p2p.solanaj.rpc.BlockChainRepository
+import org.p2p.solanaj.rpc.RpcException
+import org.p2p.solanaj.utils.Hash
+import org.p2p.solanaj.utils.Utils
+import org.p2p.solanaj.utils.crypto.Hex.decode
+import org.p2p.solanaj.utils.crypto.Hex.encode
+import java.math.BigInteger
+import java.util.concurrent.TimeUnit
 
-import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
+class LockAndMint(
+    private val networkConfig: NetworkConfig,
+    private val renVMProvider: RenVMProvider,
+    private val solanaChain: SolanaChain,
+    val session: Session
+) {
 
-public class LockAndMint {
-    private NetworkConfig networkConfig;
-    private RenVMProvider renVMProvider;
-    private Session session;
-    private SolanaChain solanaChain;
-    private State state = new State();
+    private val state = State()
 
-    public static LockAndMint buildSession(NetworkConfig networkConfig, PublicKey destinationAddress) throws Exception {
-        return new LockAndMint(networkConfig, new RenVMProvider(networkConfig),
-                new SolanaChain(new RpcClient(networkConfig.getEndpoint()), networkConfig),
-                new Session(destinationAddress));
+    @Throws(Exception::class)
+    suspend fun generateGatewayAddress(): String? {
+        val sendTo = solanaChain.getAssociatedTokenAddress(session.destinationAddress)
+        state.sendTo = sendTo
+        val sendToHex = encode(sendTo.toByteArray())
+        val tokenGatewayContractHex = encode(Hash.generateSHash())
+        val gHash = Hash.generateGHash(
+            sendToHex, tokenGatewayContractHex,
+            decode(
+                session.nonce
+            )
+        )
+        state.gHash = gHash
+        val gPubKey = renVMProvider.selectPublicKey()
+        state.gPubKey = gPubKey
+        val gatewayAddress = Script.createAddressByteArray(
+            Hash.hash160(gPubKey), gHash,
+            byteArrayOf(
+                networkConfig.p2shPrefix.toByte()
+            )
+        )
+        session.gatewayAddress = Base58.encode(gatewayAddress)
+        return session.gatewayAddress
     }
 
-    public static LockAndMint getSession(NetworkConfig networkConfig, Session session) throws Exception {
-        return new LockAndMint(networkConfig, new RenVMProvider(networkConfig),
-                new SolanaChain(new RpcClient(networkConfig.getEndpoint()), networkConfig),
-                session);
+    @Throws(Exception::class)
+    fun getDepositState(transactionHash: String?, txIndex: String?, amount: String?): State {
+        val nonce = decode(session.nonce)
+        val txid = decode(Utils.reverseHex(transactionHash))
+        val nHash = Hash.generateNHash(nonce, txid, txIndex)
+        val pHash = Hash.generatePHash()
+        val txHash = renVMProvider.mintTxHash(
+            state.gHash, state.gPubKey, nHash, nonce, amount, pHash,
+            state.sendTo!!.toBase58(), txIndex, txid
+        )
+        state.txIndex = txIndex
+        state.amount = amount
+        state.nHash = nHash
+        state.txid = txid
+        state.pHash = pHash
+        state.txHash = txHash
+        return state
     }
 
-    public LockAndMint(NetworkConfig networkConfig, RenVMProvider renVMProvider, SolanaChain solanaChain,
-                       Session session) {
-        this.networkConfig = networkConfig;
-        this.renVMProvider = renVMProvider;
-        this.session = session;
-        this.solanaChain = solanaChain;
+    @Throws(RpcException::class)
+    suspend fun submitMintTransaction(): String {
+        return renVMProvider.submitMint(
+            state.gHash, state.gPubKey, state.nHash,
+            decode(
+                session.nonce
+            ),
+            state.amount, state.pHash, state.sendTo!!.toBase58(), state.txIndex, state.txid
+        )
     }
 
-    public String generateGatewayAddress() throws Exception {
-        PublicKey sendTo = solanaChain.getAssociatedTokenAddress(session.destinationAddress);
-        state.sendTo = sendTo;
-        String sendToHex = Hex.INSTANCE.encode(sendTo.toByteArray());
-        String tokenGatewayContractHex = Hex.INSTANCE.encode(Hash.generateSHash());
-        byte[] gHash = Hash.generateGHash(sendToHex, tokenGatewayContractHex, Hex.INSTANCE.decode(session.nonce));
-        state.gHash = gHash;
-        byte[] gPubKey = renVMProvider.selectPublicKey();
-        state.gPubKey = gPubKey;
-
-        byte[] gatewayAddress = Script.createAddressByteArray(Hash.hash160(gPubKey), gHash,
-                new byte[]{(byte) networkConfig.getP2shPrefix()});
-
-        session.gatewayAddress = Base58.encode(gatewayAddress);
-        return session.gatewayAddress;
+    @Throws(Exception::class)
+    suspend fun mint(signer: Account?): String {
+        val responseQueryMint = renVMProvider.queryMint(state.txHash!!)
+        return solanaChain.submitMint(session.destinationAddress, signer!!, responseQueryMint)
     }
 
-    public State getDepositState(String transactionHash, String txIndex, String amount) throws Exception {
-        byte[] nonce = Hex.INSTANCE.decode(session.nonce);
-        byte[] txid = Hex.INSTANCE.decode(Utils.reverseHex(transactionHash));
-        byte[] nHash = Hash.generateNHash(nonce, txid, txIndex);
-        byte[] pHash = Hash.generatePHash();
-
-        String txHash = renVMProvider.mintTxHash(state.gHash, state.gPubKey, nHash, nonce, amount, pHash,
-                state.sendTo.toBase58(), txIndex, txid);
-
-        state.txIndex = txIndex;
-        state.amount = amount;
-        state.nHash = nHash;
-        state.txid = txid;
-        state.pHash = pHash;
-        state.txHash = txHash;
-
-        return state;
+    @Throws(Exception::class)
+    suspend fun lockAndMint(txHash: String?): ResponseQueryTxMint {
+        return renVMProvider.queryMint(txHash!!)
     }
 
-    public String submitMintTransaction() throws RpcException {
-        String txHash = renVMProvider.submitMint(state.gHash, state.gPubKey, state.nHash, Hex.INSTANCE.decode(session.nonce),
-                state.amount, state.pHash, state.sendTo.toBase58(), state.txIndex, state.txid);
-        return txHash;
+    @Throws(Exception::class)
+    suspend fun estimateTransactionFee(): BigInteger {
+        val fee = renVMProvider.estimateTransactionFee()
+        session.fee = fee
+        return fee
     }
 
-    public String mint(Account signer) throws Exception {
-        ResponseQueryTxMint responseQueryMint = renVMProvider.queryMint(state.txHash);
-        String signature = solanaChain.submitMint(session.destinationAddress, signer, responseQueryMint);
-        return signature;
+    class State {
+        var gHash: ByteArray = byteArrayOf()
+        var gPubKey: ByteArray = byteArrayOf()
+        var sendTo: PublicKey? = null
+        var txid: ByteArray = byteArrayOf()
+        var nHash: ByteArray = byteArrayOf()
+        var pHash: ByteArray = byteArrayOf()
+
+        @JvmField
+        var txHash: String? = null
+        var txIndex: String? = null
+        var amount: String? = null
     }
 
-    public ResponseQueryTxMint lockAndMint(String txHash) throws Exception {
-        ResponseQueryTxMint responseQueryMint = renVMProvider.queryMint(txHash);
-        return responseQueryMint;
-    }
+    class Session {
+        var destinationAddress: PublicKey
 
-    public BigInteger estimateTransactionFee() throws Exception {
-        BigInteger fee = renVMProvider.estimateTransactionFee();
-        session.fee = fee;
-        return fee;
-    }
+        @JvmField
+        var nonce: String
+        var createdAt: Long
 
-    public Session getSession() {
-        return session;
-    }
+        @JvmField
+        var expiryTime: Long
+        var gatewayAddress: String? = null
+        var fee: BigInteger? = null
 
-    public static class State {
-        public byte[] gHash;
-        public byte[] gPubKey;
-        public PublicKey sendTo;
-        public byte[] txid;
-        public byte[] nHash;
-        public byte[] pHash;
-        public String txHash;
-        public String txIndex;
-        public String amount;
-
-    }
-
-    public static class Session {
-        public PublicKey destinationAddress;
-        public String nonce;
-        public long createdAt;
-        public long expiryTime;
-        public String gatewayAddress;
-        public BigInteger fee;
-
-        public Session(PublicKey destinationAddress) {
-            this.destinationAddress = destinationAddress;
-            this.nonce = Utils.generateNonce();
-            this.createdAt = System.currentTimeMillis();
-            this.expiryTime = Utils.getSessionExpiry();
+        constructor(destinationAddress: PublicKey) {
+            this.destinationAddress = destinationAddress
+            nonce = Utils.generateNonce()
+            createdAt = System.currentTimeMillis()
+            expiryTime = Utils.getSessionExpiry()
         }
 
-        public Session(
-                PublicKey destinationAddress,
-                String nonce,
-                long createdAt,
-                long expiryTime,
-                String gatewayAddress
+        constructor(
+            destinationAddress: PublicKey,
+            nonce: String,
+            createdAt: Long,
+            expiryTime: Long,
+            gatewayAddress: String?
         ) {
-            this.destinationAddress = destinationAddress;
-            this.nonce = nonce;
-            this.createdAt = createdAt;
-            this.expiryTime = expiryTime;
-            this.gatewayAddress = gatewayAddress;
+            this.destinationAddress = destinationAddress
+            this.nonce = nonce
+            this.createdAt = createdAt
+            this.expiryTime = expiryTime
+            this.gatewayAddress = gatewayAddress
         }
 
-        public Session(
-                PublicKey destinationAddress,
-                String nonce,
-                long createdAt,
-                long expiryTime,
-                String gatewayAddress,
-                BigInteger fee
+        constructor(
+            destinationAddress: PublicKey,
+            nonce: String,
+            createdAt: Long,
+            expiryTime: Long,
+            gatewayAddress: String?,
+            fee: BigInteger?
         ) {
-            this.destinationAddress = destinationAddress;
-            this.nonce = nonce;
-            this.createdAt = createdAt;
-            this.expiryTime = expiryTime;
-            this.gatewayAddress = gatewayAddress;
-            this.fee = fee;
+            this.destinationAddress = destinationAddress
+            this.nonce = nonce
+            this.createdAt = createdAt
+            this.expiryTime = expiryTime
+            this.gatewayAddress = gatewayAddress
+            this.fee = fee
         }
 
-        public Boolean isValid() {
-            long dayInMillis = TimeUnit.DAYS.toMillis(1);
-            long currentTime = System.currentTimeMillis();
-            /* We should subtract one day from expiry time to make it valid  */
-            return currentTime < (expiryTime - dayInMillis);
-        }
+        /* We should subtract one day from expiry time to make it valid  */
+        val isValid: Boolean
+            get() {
+                val dayInMillis = TimeUnit.DAYS.toMillis(1)
+                val currentTime = System.currentTimeMillis()
+                /* We should subtract one day from expiry time to make it valid  */
+                return currentTime < expiryTime - dayInMillis
+            }
     }
 
+    companion object {
+        @Throws(Exception::class)
+        suspend fun buildSession(
+            blockChainRepository: BlockChainRepository,
+            networkConfig: NetworkConfig,
+            destinationAddress: PublicKey
+        ): LockAndMint {
+            return LockAndMint(
+                networkConfig,
+                RenVMProvider(blockChainRepository),
+                SolanaChain.create(
+                    blockChainRepository,
+                    networkConfig
+                ),
+                Session(destinationAddress)
+            )
+        }
+
+        @Throws(Exception::class)
+        suspend fun getSession(
+            blockChainRepository: BlockChainRepository,
+            networkConfig: NetworkConfig,
+            session: Session
+        ): LockAndMint {
+            return LockAndMint(
+                networkConfig,
+                RenVMProvider(blockChainRepository),
+                SolanaChain.create(
+                    blockChainRepository,
+                    networkConfig
+                ),
+                session
+            )
+        }
+    }
 }
