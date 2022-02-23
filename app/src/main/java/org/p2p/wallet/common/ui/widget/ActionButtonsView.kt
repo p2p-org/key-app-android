@@ -16,21 +16,19 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemActionButtonBinding
 import org.p2p.wallet.databinding.WidgetTokenActionsBinding
 import org.p2p.wallet.utils.requireContext
+import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.toPx
 
-private const val MAX_HEIGHT = 80
-private const val DELTA = 32
-private const val MARGIN = 48
-
-interface OnOffsetChangedListener {
-    fun onOffsetChanged(offset: Float)
-}
+private const val DELTA_DP = 32
+private const val MARGIN_DP = 48
 
 class ActionButtonsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : CardView(context, attrs, defStyleAttr), OnOffsetChangedListener {
+
+    private val maxHeightDp = context.resources.getDimension(R.dimen.action_button_views_height).toDp()
 
     private val binding = WidgetTokenActionsBinding.inflate(
         LayoutInflater.from(context), this
@@ -52,8 +50,8 @@ class ActionButtonsView @JvmOverloads constructor(
     }
 
     override fun onOffsetChanged(offset: Float) {
-        val height = MAX_HEIGHT - (DELTA * offset)
-        val heightPx = height.toPx().toInt()
+        val heightDp = maxHeightDp - (DELTA_DP * offset)
+        val heightPx = heightDp.toPx().toInt()
         binding.root.apply {
             layoutParams.height = heightPx
             requestLayout()
@@ -119,11 +117,11 @@ class ActionButtonsView @JvmOverloads constructor(
             val textView = binding.textView
             val imageView = binding.imageView
 
-            override fun onOffsetChanged(offset: Float) {
-                val layoutParams = imageView.layoutParams as LinearLayout.LayoutParams
-                imageView.layoutParams = layoutParams.apply { topMargin = -(MARGIN.toPx() * offset).toInt() }
-                imageView.alpha = 1 - offset
-                imageView.requestLayout()
+            override fun onOffsetChanged(offset: Float) = with(imageView) {
+                val newLayoutParams = layoutParams as LinearLayout.LayoutParams
+                layoutParams = newLayoutParams.apply { topMargin = -(MARGIN_DP.toPx() * offset).toInt() }
+                alpha = 1 - offset
+                requestLayout()
             }
 
             fun bind(item: ActionButton) {
@@ -135,4 +133,8 @@ class ActionButtonsView @JvmOverloads constructor(
     }
 
     data class ActionButton(@StringRes val titleResId: Int, @DrawableRes val iconResId: Int)
+}
+
+interface OnOffsetChangedListener {
+    fun onOffsetChanged(offset: Float)
 }

@@ -1,7 +1,9 @@
 package org.p2p.wallet.utils
 
 import android.content.res.Resources
-import android.util.TypedValue
 
-fun Float.toPx() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, Resources.getSystem().displayMetrics)
-fun Int.toPx() = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics).toInt()
+fun Float.toPx() = this * Resources.getSystem().displayMetrics.density
+fun Int.toPx() = toFloat().toPx().toInt()
+
+fun Float.toDp() = this / Resources.getSystem().displayMetrics.density
+fun Int.toDp() = toFloat().toDp().toInt()
