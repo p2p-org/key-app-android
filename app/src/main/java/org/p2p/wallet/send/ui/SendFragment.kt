@@ -49,6 +49,7 @@ import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleLong
@@ -241,10 +242,10 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
+            messageTextView.setTextColor(getColor(R.color.systemErrorMain))
             clearImageView.isVisible = true
         }
     }
@@ -254,10 +255,10 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = username
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.withTextOrGone(address.cutEnd())
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
+            messageTextView.setTextColor(getColor(R.color.elementSecondary))
             clearImageView.isVisible = true
         }
     }
@@ -267,10 +268,10 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_warning)
             targetTextView.text = address
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
-            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarning))
+            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
             clearImageView.isVisible = true
         }
     }
@@ -280,7 +281,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = address.cutEnd()
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.messagePrimary))
 
             messageTextView.isVisible = false
             clearImageView.isVisible = true

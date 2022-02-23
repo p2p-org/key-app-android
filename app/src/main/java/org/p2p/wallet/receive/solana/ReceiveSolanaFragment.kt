@@ -12,7 +12,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -31,6 +30,7 @@ import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -91,7 +91,7 @@ class ReceiveSolanaFragment :
             fullAddressTextView.text = userPublicKey.highlightPublicKey(requireContext())
             fullAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(userPublicKey)
-                fullAddressTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
+                fullAddressTextView.setTextColor(getColor(R.color.backgroundButtonPrimary))
                 Toast.makeText(requireContext(), R.string.main_receive_address_copied, Toast.LENGTH_SHORT).show()
             }
             shareButton.setOnClickListener {
@@ -119,7 +119,7 @@ class ReceiveSolanaFragment :
 
             usernameTextView.setOnClickListener {
                 requireContext().copyToClipBoard(fullUsername)
-                usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
+                usernameTextView.setTextColor(getColor(R.color.backgroundButtonPrimary))
                 Toast.makeText(requireContext(), R.string.receive_username_copied, Toast.LENGTH_SHORT).show()
             }
         }

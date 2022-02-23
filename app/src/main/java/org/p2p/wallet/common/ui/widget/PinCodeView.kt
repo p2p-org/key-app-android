@@ -80,7 +80,7 @@ class PinCodeView @JvmOverloads constructor(
             override fun onAnimationRepeat(animation: Animation?) {}
 
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(R.color.systemError, R.color.systemErrorSecondary)
+                setDotsColor(R.color.systemErrorMain, R.color.systemErrorSecondary)
             }
         })
         startAnimation(animation)
@@ -133,11 +133,11 @@ class PinCodeView @JvmOverloads constructor(
             if (resourceId == null) {
                 it.clearColorFilter()
             } else {
-                it.setColorFilter(ContextCompat.getColor(context, resourceId))
+                it.setColorFilter(context.getColor(resourceId))
             }
         }
         val bg = binding.progressView.background.mutate()
-        bg.setTint(ContextCompat.getColor(context, backgroundColor ?: R.color.textIconLink))
+        bg.setTint(context.getColor(backgroundColor ?: R.color.textIconLink))
         binding.progressView.background = bg
     }
 }

@@ -26,7 +26,7 @@
         android:gravity="center"
         android:text="@string/auth_copy"
         android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
-        android:textColor="?colorAccentPrimary"
+        android:textColor="@color/backgroundButtonPrimary"
         android:textSize="14sp"
         android:textStyle="bold" />
 

@@ -589,7 +589,7 @@ class SendPresenter(
         val isValidAddress = isAddressValid(target?.address)
         val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
 
-        val availableColor = if (isMoreThanBalance) R.color.systemError else R.color.textIconSecondary
+        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
         view?.updateAvailableTextColor(availableColor)
         view?.showButtonEnabled(isEnabled)
     }

@@ -11,7 +11,6 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetPinViewBinding
-import org.p2p.wallet.utils.colorFromTheme
 
 private const val PIN_CODE_LENGTH = 6
 private const val DELAY_MS = 50L
@@ -54,7 +53,7 @@ class PinView @JvmOverloads constructor(
 
     fun startErrorAnimation(errorText: String) {
         with(binding) {
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
+            messageTextView.setTextColor(context.getColor(R.color.systemErrorMain))
             messageTextView.text = errorText
             messageTextView.isVisible = true
             pinCodeView.startErrorAnimation {
@@ -66,7 +65,7 @@ class PinView @JvmOverloads constructor(
 
     fun startSuccessAnimation(text: String, onAnimationFinished: () -> Unit) {
         with(binding) {
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorSystemSuccessMain))
+            messageTextView.setTextColor(context.getColor(R.color.systemSuccessMain))
             messageTextView.text = text
             messageTextView.isVisible = true
             pinCodeView.startSuccessAnimation {

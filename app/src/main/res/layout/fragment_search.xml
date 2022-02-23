@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorBackgroundPrimary"
+        android:background="@color/backgroundPrimary"
         android:orientation="vertical"
         app:layout_anchorGravity="center">
 
@@ -55,7 +55,7 @@
                 android:padding="16dp"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/ic_close"
-                app:tint="?colorElementSecondary"
+                app:tint="@color/elementPrimary"
                 tools:ignore="ContentDescription"
                 tools:visibility="visible" />
         </LinearLayout>
@@ -77,7 +77,7 @@
             android:layout_marginStart="16dp"
             android:text="@string/send_multiple_accounts"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             android:visibility="gone"
             tools:visibility="visible" />
 

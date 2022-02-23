@@ -5,13 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?colorBackgroundPrimary"
+    android:background="@color/backgroundPrimary"
     android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorElementPrimary">
+        android:background="@color/elementPrimary">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"

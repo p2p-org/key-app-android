@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:text="@string/main_max_price_slippage"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-            android:textColor="?colorElementSecondary" />
+            android:textColor="@color/elementPrimary" />
 
         <TextView
             android:id="@+id/bottomTextView"
