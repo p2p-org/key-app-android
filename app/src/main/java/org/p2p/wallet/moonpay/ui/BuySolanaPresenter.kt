@@ -4,7 +4,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
@@ -13,8 +15,10 @@ import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
+import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 
@@ -22,6 +26,8 @@ private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
     private val moonpayRepository: MoonpayRepository,
+    private val buyAnalytics: BuyAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     companion object {
@@ -45,13 +51,33 @@ class BuySolanaPresenter(
                 Timber.e(e, "Error loading currency ask price")
                 view?.showErrorMessage(e)
             } finally {
+                buyAnalytics.logBuyViewed()
                 view?.showLoading(false)
             }
         }
     }
 
     override fun onContinueClicked() {
-        data?.let { view?.navigateToMoonpay(it.total.toString()) }
+        data?.let {
+            view?.navigateToMoonpay(it.total.toString())
+            // TODO resolve [buyProvider]
+            buyAnalytics.logBuyContinuing(
+                buyCurrency = it.tokenSymbol,
+                buySum = it.price,
+                buyProvider = "moonpay",
+                buyUSD = it.price.toUsd(it.price).orZero(),
+                lastScreenName = analyticsInteractor.getPreviousScreenName()
+            )
+        }
+    }
+
+    override fun onBackPressed() {
+        buyAnalytics.logBuyGoingBack(
+            buySum = data?.receiveAmount?.toBigDecimal() ?: BigDecimal.ZERO,
+            buyCurrency = SOL_SYMBOL,
+            buyUSD = data?.price ?: BigDecimal.ZERO
+        )
+        view?.close()
     }
 
     override fun onSwapClicked() {
@@ -90,17 +116,24 @@ class BuySolanaPresenter(
                 delay(DELAY_IN_MS)
                 view?.showLoading(true)
                 val baseCurrencyCode = USD_READABLE_SYMBOL.lowercase()
-                when (
-                    val result = moonpayRepository.getCurrency(
-                        baseCurrencyAmount = amountInCurrency,
-                        quoteCurrencyAmount = amountInTokens,
-                        quoteCurrencyCode = SOL_SYMBOL.lowercase(),
-                        baseCurrencyCode = baseCurrencyCode
-                    )
-                ) {
-                    is MoonpayBuyResult.Success -> handleSuccess(result.data)
-                    is MoonpayBuyResult.Error -> view?.showMessage(result.message)
+                val buyResult: BuyAnalytics.BuyResult
+                val result = moonpayRepository.getCurrency(
+                    baseCurrencyAmount = amountInCurrency,
+                    quoteCurrencyAmount = amountInTokens,
+                    quoteCurrencyCode = SOL_SYMBOL.lowercase(),
+                    baseCurrencyCode = baseCurrencyCode
+                )
+                when (result) {
+                    is MoonpayBuyResult.Success -> {
+                        buyResult = BuyAnalytics.BuyResult.SUCCESS
+                        handleSuccess(result.data)
+                    }
+                    is MoonpayBuyResult.Error -> {
+                        buyResult = BuyAnalytics.BuyResult.ERROR
+                        view?.showMessage(result.message)
+                    }
                 }
+                buyAnalytics.logBuyPaymentResultShown(buyResult)
             } catch (e: CancellationException) {
                 Timber.w("Cancelled get currency request")
             } catch (e: Throwable) {

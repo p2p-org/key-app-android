@@ -3,12 +3,14 @@ package org.p2p.wallet.receive.list
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private const val PAGE_SIZE = 20
 
 class TokenListPresenter(
-    private val interactor: UserInteractor
+    private val interactor: UserInteractor,
+    private val browseAnalytics: BrowseAnalytics
 ) : BasePresenter<TokenListContract.View>(), TokenListContract.Presenter {
 
     private var searchText = ""
@@ -32,6 +34,8 @@ class TokenListPresenter(
         searchText = text.toString()
         if (searchText.isEmpty()) {
             view?.reset()
+        } else {
+            browseAnalytics.logTokenListSearching(text.toString())
         }
         load(isRefresh = true, scrollToUp = true)
     }

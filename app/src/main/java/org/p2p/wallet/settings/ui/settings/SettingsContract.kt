@@ -10,6 +10,7 @@ interface SettingsContract {
         fun showSettings(item: List<SettingsRow>)
         fun showReserveUsername()
         fun showUsername()
+        fun showLogoutConfirm()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -17,5 +18,6 @@ interface SettingsContract {
         fun logout()
         fun onUsernameClicked()
         fun onNetworkChanged(newName: String)
+        fun onLogoutClicked()
     }
 }

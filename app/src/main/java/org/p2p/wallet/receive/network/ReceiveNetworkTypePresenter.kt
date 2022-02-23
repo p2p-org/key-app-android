@@ -19,7 +19,8 @@ class ReceiveNetworkTypePresenter(
     private val userInteractor: UserInteractor,
     private val transactionAmountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val networkType: NetworkType
+    private val networkType: NetworkType,
+    private val receiveAnalytics: ReceiveAnalytics
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
 
@@ -37,6 +38,9 @@ class ReceiveNetworkTypePresenter(
                     onBitcoinSelected(type)
                 }
             }
+            val networkType = if (type == NetworkType.SOLANA) ReceiveAnalytics.ReceiveNetwork.SOLANA
+            else ReceiveAnalytics.ReceiveNetwork.BITCOIN
+            receiveAnalytics.logReceiveChangingNetwork(networkType)
         }
     }
 
@@ -66,6 +70,7 @@ class ReceiveNetworkTypePresenter(
     private suspend fun onWalletExists(type: NetworkType) {
         val session = renBtcInteractor.findActiveSession()
         if (session != null && session.isValid) {
+            receiveAnalytics.logReceiveSettingBitcoin()
             view?.navigateToReceive(type)
         } else {
             view?.showNetworkInfo(type)

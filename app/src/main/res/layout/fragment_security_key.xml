@@ -52,12 +52,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="?colorBackgroundPrimary"
+                android:backgroundTint="@color/backgroundPrimary"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                 app:buttonDrawable="@drawable/ic_swap_simple"
-                app:buttonDrawableTint="?colorAccentPrimary"
+                app:buttonDrawableTint="@color/backgroundButtonPrimary"
                 app:buttonText="@string/auth_renew"
-                app:buttonTextColor="?colorAccentPrimary" />
+                app:buttonTextColor="@color/backgroundButtonPrimary" />
 
             <org.p2p.wallet.common.ui.widget.ProgressButton
                 android:id="@+id/copyButton"
@@ -65,12 +65,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="?colorBackgroundPrimary"
+                android:backgroundTint="@color/backgroundPrimary"
                 android:foreground="?selectableItemBackground"
                 app:buttonDrawable="@drawable/ic_copy"
-                app:buttonDrawableTint="?colorAccentPrimary"
+                app:buttonDrawableTint="@color/backgroundButtonPrimary"
                 app:buttonText="@string/auth_copy"
-                app:buttonTextColor="?colorAccentPrimary" />
+                app:buttonTextColor="@color/backgroundButtonPrimary" />
 
             <org.p2p.wallet.common.ui.widget.ProgressButton
                 android:id="@+id/saveButton"
@@ -78,12 +78,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="?colorBackgroundPrimary"
+                android:backgroundTint="@color/backgroundPrimary"
                 android:foreground="?selectableItemBackground"
                 app:buttonDrawable="@drawable/ic_gallery"
-                app:buttonDrawableTint="?colorAccentPrimary"
+                app:buttonDrawableTint="@color/backgroundButtonPrimary"
                 app:buttonText="@string/auth_save"
-                app:buttonTextColor="?colorAccentPrimary" />
+                app:buttonTextColor="@color/backgroundButtonPrimary" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <org.p2p.wallet.common.ui.widget.ProgressButton
@@ -96,9 +96,9 @@
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonDrawableEnd="@drawable/ic_next"
-            app:buttonDrawableTint="?colorElementPrimary"
+            app:buttonDrawableTint="@color/elementPrimary"
             app:buttonText="@string/auth_lets_verify"
-            app:buttonTextColor="?colorElementPrimary"
+            app:buttonTextColor="@color/elementPrimary"
             app:layout_constraintBottom_toTopOf="@id/termsAndConditionsTextView"
             app:layout_constraintTop_toBottomOf="@id/actionContainer"
             app:layout_constraintVertical_bias="0.9" />

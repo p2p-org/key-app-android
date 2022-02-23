@@ -6,12 +6,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.utils.popBackStack
@@ -26,10 +31,13 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
     override val presenter: RootContract.Presenter by inject()
     private lateinit var container: FrameLayout
+    private val adminAnalytics: AdminAnalytics by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
+        adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
         setContentView(R.layout.activity_root)
         container = findViewById(R.id.content)
 
@@ -39,6 +47,11 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
         presenter.loadPricesAndBids()
         initializeDebugDrawer()
+        adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
+        onBackPressedDispatcher.addCallback {
+            val fragment = supportFragmentManager.findFragmentById(R.id.content) as BaseFragment
+            analyticsInteractor.logScreenOpenEvent(fragment.getAnalyticsName())
+        }
     }
 
     override fun navigateToOnboarding() {
@@ -58,7 +71,11 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override fun onBackPressed() {
-        popBackStack()
+        if (onBackPressedDispatcher.hasEnabledCallbacks()) {
+            super.onBackPressed()
+        } else {
+            popBackStack()
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -83,5 +100,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         } else {
             devView.isVisible = false
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adminAnalytics.logAppClosed(analyticsInteractor.getCurrentScreenName())
     }
 }

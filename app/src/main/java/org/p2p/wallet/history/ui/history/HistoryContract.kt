@@ -16,11 +16,13 @@ interface HistoryContract {
         fun showPagingState(newState: PagingState)
         fun showRefreshing(isRefreshing: Boolean)
         fun showError(@StringRes resId: Int, argument: String)
+        fun showDetails(transaction: HistoryTransaction)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadHistory()
         fun refresh()
         fun fetchNextPage()
+        fun onItemClicked(transaction: HistoryTransaction)
     }
 }

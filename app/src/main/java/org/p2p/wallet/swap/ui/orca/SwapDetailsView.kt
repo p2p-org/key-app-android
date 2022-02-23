@@ -14,7 +14,6 @@ import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -56,13 +55,13 @@ class SwapDetailsView @JvmOverloads constructor(
             destinationPriceTextView.text = SpanUtils.highlightText(
                 data.fullSourcePrice,
                 data.approxSourceUsd.orEmpty(),
-                colorFromTheme(R.attr.colorElementSecondary)
+                getColor(R.color.elementSecondary)
             )
             sourceNameTextView.text = context.getString(R.string.swap_price_format, data.sourceSymbol)
             sourcePriceTextView.text = SpanUtils.highlightText(
                 data.fullDestinationPrice,
                 data.approxDestinationUsd.orEmpty(),
-                colorFromTheme(R.attr.colorElementSecondary)
+                getColor(R.color.elementSecondary)
             )
         }
     }
@@ -100,7 +99,7 @@ class SwapDetailsView @JvmOverloads constructor(
                 accountCreationTextView.text = account
 
                 val spannedFee = SpanUtils.highlightText(
-                    fee, approxFeeUsd, colorFromTheme(R.attr.colorElementSecondary)
+                    fee, approxFeeUsd, getColor(R.color.elementSecondary)
                 )
                 accountCreationTokenTextView.text = spannedFee
             } else {
@@ -137,12 +136,12 @@ class SwapDetailsView @JvmOverloads constructor(
             atLeastTextView.text = SpanUtils.highlightText(
                 data.fullReceiveAtLeast,
                 data.approxReceiveAtLeast.orEmpty(),
-                colorFromTheme(R.attr.colorElementSecondary)
+                getColor(R.color.elementSecondary)
             )
             totalSourceTextView.text = SpanUtils.highlightText(
                 data.fullTotal,
                 data.approxTotalUsd.orEmpty(),
-                colorFromTheme(R.attr.colorElementSecondary)
+                getColor(R.color.elementSecondary)
             )
 
             val fullFee = data.fullFee

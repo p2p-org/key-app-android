@@ -38,7 +38,7 @@ object SpanUtils {
     }
 
     fun String.highlightPublicKey(context: Context): Spannable {
-        val color = context.getColor(R.color.accentPrimary)
+        val color = context.getColor(R.color.backgroundButtonPrimary)
         val outPutColoredText: Spannable = SpannableString(this)
         outPutColoredText.setSpan(ForegroundColorSpan(color), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         val endIndex = length - 4

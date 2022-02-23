@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.wallet.databinding.WidgetBottomSheetSnackbarBinding
@@ -20,7 +19,7 @@ class SnackBarView(
 ) : BaseTransientBottomBar<SnackBarView>(parent, content, content) {
 
     init {
-        view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+        view.setBackgroundColor(context.getColor(android.R.color.transparent))
         view.setPadding(0, 0, 0, 0)
     }
 
