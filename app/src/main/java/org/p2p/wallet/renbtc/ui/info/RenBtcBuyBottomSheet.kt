@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogBtcBuyInfoBinding
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
@@ -15,7 +15,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
-class RenBtcBuyBottomSheet(private val block: () -> Unit) : NonDraggableBottomSheetDialogFragment() {
+class RenBtcBuyBottomSheet(private val block: () -> Unit) : BottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_PRICE_IN_SOL = "EXTRA_PRICE_IN_SOL"
@@ -36,11 +36,10 @@ class RenBtcBuyBottomSheet(private val block: () -> Unit) : NonDraggableBottomSh
     private val priceInUsd: BigDecimal? by args(EXTRA_PRICE_IN_USD)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.dialog_btc_network_info, container, false)
+        inflater.inflate(R.layout.dialog_btc_buy_info, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isCancelable = false
         with(binding) {
             progressButton.setOnClickListener {
                 block.invoke()

@@ -5,15 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogBtcTopupInfoBinding
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class RenBtcTopupBottomSheet(
     private val onTopupClickListener: () -> Unit,
     private val onUseSolanaClickListener: () -> Unit
-) : NonDraggableBottomSheetDialogFragment() {
+) : BottomSheetDialogFragment() {
 
     companion object {
         fun show(
@@ -29,7 +29,7 @@ class RenBtcTopupBottomSheet(
     private val binding: DialogBtcTopupInfoBinding by viewBinding()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.dialog_btc_network_info, container, false)
+        inflater.inflate(R.layout.dialog_btc_topup_info, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogBtcNetworkInfoBinding
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class RenBtcInfoBottomSheet(private val block: () -> Unit) : NonDraggableBottomSheetDialogFragment() {
+class RenBtcInfoBottomSheet(private val block: () -> Unit) : BottomSheetDialogFragment() {
 
     companion object {
         fun show(fm: FragmentManager, block: () -> Unit) =
@@ -26,7 +26,6 @@ class RenBtcInfoBottomSheet(private val block: () -> Unit) : NonDraggableBottomS
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isCancelable = false
         with(binding) {
             progressButton.setOnClickListener {
                 block.invoke()
