@@ -8,6 +8,7 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.view.isVisible
 import com.geetest.sdk.GT3ConfigBean
 import com.geetest.sdk.GT3ErrorBean
 import com.geetest.sdk.GT3GeetestUtils
@@ -17,6 +18,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.InputTextView
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
@@ -36,22 +39,29 @@ class ReserveUsernameFragment :
 
     companion object {
         private const val EXTRA_MODE: String = "EXTRA_MODE"
+        private const val EXTRA_SKIP_STEP_ENABLED = "EXTRA_SKIP_STEP_ENABLED"
         const val REQUEST_KEY = "RESERVE_USERNAME_REQUEST_KEY"
-        fun create(mode: ReserveMode) =
-            ReserveUsernameFragment()
-                .withArgs(EXTRA_MODE to mode)
+        fun create(
+            mode: ReserveMode,
+            isSkipStepEnabled: Boolean = true
+        ) = ReserveUsernameFragment().withArgs(
+            EXTRA_MODE to mode,
+            EXTRA_SKIP_STEP_ENABLED to isSkipStepEnabled
+        )
     }
 
     override val presenter: ReserveUsernameContract.Presenter by inject()
-
     private val binding: FragmentReserveUsernameBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private var gt3GeeTestUtils: GT3GeetestUtils? = null
     private var gt3ConfigBean: GT3ConfigBean? = null
 
     private val mode: ReserveMode by args(EXTRA_MODE)
+    private val isSkipStepEnabled: Boolean by args(EXTRA_SKIP_STEP_ENABLED)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.USERNAME_RESERVE)
         initGeetestUtils()
 
         with(binding) {
@@ -64,13 +74,13 @@ class ReserveUsernameFragment :
             skipTextView.text = buildClickableText()
             skipTextView.movementMethod = LinkMovementMethod.getInstance()
             skipTextView.highlightColor = Color.TRANSPARENT
-
+            skipTextView.isVisible = isSkipStepEnabled
             inputTextView.doAfterTextChanged {
                 presenter.checkUsername(it.toString().lowercase())
             }
 
             usernameButton.setOnClickListener {
-                gt3GeeTestUtils?.startCustomFlow()
+                presenter.save()
             }
         }
     }
@@ -134,6 +144,10 @@ class ReserveUsernameFragment :
         binding.inputTextView.setMessageWithState(message, InputTextView.State.Loading)
     }
 
+    override fun showCustomFlow() {
+        gt3GeeTestUtils?.startCustomFlow()
+    }
+
     private fun initGeetestUtils() {
         gt3GeeTestUtils = GT3GeetestUtils(requireContext())
         gt3ConfigBean = GT3ConfigBean()
@@ -177,7 +191,7 @@ class ReserveUsernameFragment :
         val span = SpannableString(message)
         val clickableNumber = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                finishNavigation()
+                presenter.onSkipClicked()
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -191,7 +205,7 @@ class ReserveUsernameFragment :
         return span
     }
 
-    private fun finishNavigation() {
+    override fun finishNavigation() {
         when (mode) {
             ReserveMode.PIN_CODE -> {
                 navigateToPinCode()

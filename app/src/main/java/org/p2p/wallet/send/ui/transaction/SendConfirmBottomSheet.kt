@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogSendConfirmBinding
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.SpanUtils
@@ -43,6 +45,8 @@ class SendConfirmBottomSheet(
 
     private val authInteractor: AuthInteractor by inject()
 
+    private val sendAnalytics: SendAnalytics by inject()
+
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
             fragment = this,
@@ -61,6 +65,7 @@ class SendConfirmBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sendAnalytics.logSendVerificationInvoked(AuthAnalytics.AuthType.BIOMETRIC)
         with(binding) {
             glideManager.load(sourceImageView, data.token.iconUrl)
             amountTextView.text = data.getFormattedAmount()

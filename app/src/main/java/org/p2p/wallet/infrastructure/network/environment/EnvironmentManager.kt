@@ -39,7 +39,7 @@ class EnvironmentManager(
             .scheme("https")
             .authority(baseUrl)
             .appendQueryParameter("apiKey", apiKey)
-            .appendQueryParameter("currencyCode", "eth")
+            .appendQueryParameter("currencyCode", "sol")
             .appendQueryParameter("baseCurrencyAmount", amount)
             .appendQueryParameter("baseCurrencyCode", USD_READABLE_SYMBOL.lowercase())
             .appendQueryParameter("lockAmount", "false")

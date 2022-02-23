@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/ic_back"
-            app:title="Buy ETH on Moonpay"
+            app:title="Buy SOL on Moonpay"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
         <!--        app:title="@string/buy_solana_on_moonpay"-->
 
@@ -61,7 +61,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
                     android:background="@android:color/transparent"
-                    android:digits="@string/buy_value_allowed_symbols"
                     android:gravity="end"
                     android:hint="@string/send_zero_usd"
                     android:inputType="numberDecimal"
@@ -120,7 +119,7 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:singleLine="true"
-                    android:text="0 ETH"
+                    android:text="0 SOL"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="@color/elementPrimary"
                     app:drawableEndCompat="@drawable/ic_exchange"
@@ -138,9 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="16dp"
-            app:optionsLabelText="ETH price" />
-        <!-- todo: revert back when moonpay is ready for production -->
-        <!--        app:optionsLabelText="@string/buy_sol_price"-->
+            app:optionsLabelText="@string/buy_sol_price" />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -154,7 +151,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="12dp"
-            app:optionsLabelText="ETH purchase cost" />
+            app:optionsLabelText="SOL purchase cost" />
         <!--        app:optionsLabelText="@string/buy_sol_purchase_cost"-->
         <org.p2p.wallet.common.ui.widget.OptionsTextView
             android:id="@+id/processingFeeView"

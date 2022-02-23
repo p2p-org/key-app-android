@@ -10,7 +10,8 @@ interface MoonpayApi {
     suspend fun getBuyCurrency(
         @Path("currencyCode") quoteCurrencyCode: String,
         @Query("apiKey") apiKey: String,
-        @Query("baseCurrencyAmount") baseCurrencyAmount: String,
+        @Query("baseCurrencyAmount") baseCurrencyAmount: String?,
+        @Query("quoteCurrencyAmount") quoteCurrencyAmount: String?,
         @Query("baseCurrencyCode") baseCurrencyCode: String,
     ): MoonpayBuyCurrencyResponse
 

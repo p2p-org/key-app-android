@@ -37,14 +37,15 @@ class SettingsZeroBalanceFragment :
         }
     }
 
-    override fun showZeroBalances(isVisible: Boolean) {
-        val checkedId = if (isVisible) R.id.shownButton else R.id.hiddenButton
+    override fun showZeroBalances(isHidden: Boolean) {
+        val checkedId = if (isHidden) R.id.hiddenButton else R.id.shownButton
         binding.radioGroup.setOnCheckedChangeListener(null)
         binding.radioGroup.check(checkedId)
         binding.radioGroup.setOnCheckedChangeListener(this)
     }
 
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
-        presenter.setZeroBalancesVisibility(checkedId == R.id.shownButton)
+        val isHidden = checkedId != R.id.showButton
+        presenter.setZeroBalancesVisibility(isHidden)
     }
 }

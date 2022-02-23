@@ -15,6 +15,8 @@ import androidx.core.widget.doAfterTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
@@ -80,18 +82,15 @@ class SendFragment :
     override val presenter: SendContract.Presenter by inject {
         parametersOf(token)
     }
-
     private val glideManager: GlideManager by inject()
-
     private val binding: FragmentSendBinding by viewBinding()
-
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val address: String? by args(EXTRA_ADDRESS)
-
     private val token: Token? by args(EXTRA_TOKEN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.MAIN)
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -178,8 +177,7 @@ class SendFragment :
             }
 
             scanTextView.setOnClickListener {
-                val target = ScanQrFragment.create { presenter.validateTarget(it) }
-                addFragment(target)
+                presenter.onScanClicked()
             }
 
             pasteTextView.setOnClickListener {
@@ -188,24 +186,36 @@ class SendFragment :
             }
 
             sendDetailsView.setOnPaidClickListener {
-                showInfoDialog(
-                    messageRes = R.string.main_free_transactions_info,
-                    primaryButtonRes = R.string.common_understood
-                )
+                presenter.onDetailsClicked()
             }
         }
     }
 
     override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.CONFIRMATION)
         SendConfirmBottomSheet.show(this, data) { presenter.send() }
+    }
+
+    override fun showScanner() {
+        val target = ScanQrFragment.create { presenter.validateTarget(it) }
+        addFragment(target)
+    }
+
+    override fun showDetails() {
+        showInfoDialog(
+            messageRes = R.string.main_free_transactions_info,
+            primaryButtonRes = R.string.common_understood
+        )
     }
 
     // TODO: remove add fragment
     override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.NETWORK)
         addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.FEE_CURRENCY)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN),
             enter = R.anim.slide_up,
@@ -301,6 +311,7 @@ class SendFragment :
     }
 
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
+
         addFragment(
             target = SelectTokenFragment.create(feePayerTokens, KEY_REQUEST_SEND, EXTRA_FEE_PAYER),
             enter = R.anim.slide_up,
@@ -434,6 +445,7 @@ class SendFragment :
     }
 
     override fun showWrongWalletError() {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.ERROR)
         ErrorBottomSheet.show(
             fragment = this,
             iconRes = R.drawable.ic_wallet_error,
@@ -444,6 +456,7 @@ class SendFragment :
 
     override fun showSuccessMessage(amount: String) {
         val message = getString(R.string.send_successful_format, amount)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
         showSnackbarMessage(message)
     }
 

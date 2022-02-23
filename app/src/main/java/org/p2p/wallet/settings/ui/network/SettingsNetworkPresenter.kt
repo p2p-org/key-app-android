@@ -8,12 +8,14 @@ import org.p2p.wallet.renbtc.service.RenVMService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.home.analytics.BrowseAnalytics
 import timber.log.Timber
 
 class SettingsNetworkPresenter(
     private val context: Context,
     private val mainLocalRepository: HomeLocalRepository,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: EnvironmentManager,
+    private val analytics: BrowseAnalytics
 ) : BasePresenter<SettingsNetworkContract.View>(), SettingsNetworkContract.Presenter {
     private var networkName: String = environmentManager.loadEnvironment().name
 
@@ -24,6 +26,7 @@ class SettingsNetworkPresenter(
                 environmentManager.saveEnvironment(environment)
                 mainLocalRepository.clear()
                 RenVMService.stopService(context)
+                analytics.logNetworkChanging(networkName)
                 /* Sometimes these operations are completed too quickly
                  * On the UI it shows blinking loading effect which is not good
                  * Adding short delay to show loading state

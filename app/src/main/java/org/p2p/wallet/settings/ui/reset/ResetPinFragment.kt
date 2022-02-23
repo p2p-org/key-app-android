@@ -16,6 +16,9 @@ import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.auth.analytics.AuthAnalytics
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
@@ -39,10 +42,11 @@ class ResetPinFragment :
     }
 
     override val presenter: ResetPinContract.Presenter by inject()
-
     private val binding: FragmentChangePinBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
+    private val authAnalytics: AuthAnalytics by inject()
 
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
@@ -54,17 +58,14 @@ class ResetPinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_ENTER)
         with(binding) {
+            requireContext()
             toolbar.setNavigationOnClickListener { popBackStack() }
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             resetTextView.text = buildResetText()
             resetTextView.setOnClickListener {
-                replaceFragment(
-                    ResetSeedPhraseFragment.create(
-                        EXTRA_REQUEST_KEY,
-                        EXTRA_RESULT_KEY
-                    )
-                )
+                onResetClicked()
             }
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -92,6 +93,7 @@ class ResetPinFragment :
         binding.resetTextView.isVisible = false
         binding.toolbar.setTitle(R.string.settings_security_change_enter_pin)
         binding.pinView.clearPin()
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_CREATE)
     }
 
     override fun showConfirmationError() {
@@ -112,6 +114,7 @@ class ResetPinFragment :
     override fun showConfirmNewPin() {
         binding.toolbar.setTitle(R.string.settings_security_change_confirm_pin)
         binding.pinView.clearPin()
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_CONFIRM)
     }
 
     override fun showWalletLocked(seconds: Long) {
@@ -155,5 +158,15 @@ class ResetPinFragment :
         val resetEnd = span.indexOf(resetMessage) + resetMessage.length
         span.setSpan(clickableReset, resetStart, resetEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
         return span
+    }
+
+    private fun onResetClicked() {
+        replaceFragment(
+            ResetSeedPhraseFragment.create(
+                EXTRA_REQUEST_KEY,
+                EXTRA_RESULT_KEY
+            )
+        )
+        authAnalytics.logAuthResetInvoked()
     }
 }

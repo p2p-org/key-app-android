@@ -34,12 +34,14 @@ android {
             buildConfigField("String", "comparePublicKey", apikeyProperties['comparePublicKey'])
             buildConfigField("String", "intercomApiKey", apikeyProperties['intercomApiKey'])
             buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
+            buildConfigField("String", "amplitudeKey", apikeyProperties['amplitudeKey'])
         } else {
             buildConfigField("String", "rpcPoolApiKey", "\"\"")
             buildConfigField("String", "moonpayKey", "\"\"")
             buildConfigField("String", "comparePublicKey", "\"\"")
             buildConfigField("String", "intercomApiKey", "\"\"")
             buildConfigField("String", "intercomAppId", "\"\"")
+            buildConfigField("String", "amplitudeKey", "\"\"")
         }
     }
 
@@ -68,6 +70,7 @@ android {
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
+            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
         }
 
         feature {
@@ -79,6 +82,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
@@ -93,6 +97,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+            buildConfigField("boolean", "ANALYTICS_ENABLED", "true")
         }
     }
 
@@ -157,6 +162,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
+
+    implementation 'com.amplitude:android-sdk:2.33.0'
+
 
     // Debug drawer
     def debugDrawerVersion = '0.8.0'

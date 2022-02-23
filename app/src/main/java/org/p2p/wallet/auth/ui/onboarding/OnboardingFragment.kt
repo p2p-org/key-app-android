@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.onboarding
 
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -31,7 +32,12 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             animationVideoView.apply {
                 setVideoURI(getVideoUriFromResources(R.raw.anim1_white))
                 setOnPreparedListener { mediaPlayer ->
-                    animationVideoViewPlaceHolder.isVisible = false
+                    mediaPlayer.setOnInfoListener { _, infoState, _ ->
+                        if (infoState == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                            animationVideoViewPlaceHolder.isVisible = false
+                        }
+                        false
+                    }
                     mediaPlayer.isLooping = true
                 }
                 start()
@@ -52,6 +58,11 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     override fun onPause() {
         super.onPause()
         binding.animationVideoView.pause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.animationVideoViewPlaceHolder.isVisible = true
     }
 
     override fun onResume() {
