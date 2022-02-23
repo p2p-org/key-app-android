@@ -68,7 +68,7 @@ class FeeRelayerAccountInteractor(
         return@withContext relayAccount!!
     }
 
-    suspend fun getFreeTransactionFeeLimit(useCache: Boolean = true): FreeTransactionFeeLimit {
+    suspend fun getFreeTransactionFeeLimit(useCache: Boolean = false): FreeTransactionFeeLimit {
         if (useCache && transactionLimit != null) {
             return transactionLimit!!
         }
@@ -77,6 +77,9 @@ class FeeRelayerAccountInteractor(
             transactionLimit = it
         }
     }
+
+    suspend fun getFeePayerPublicKey(): PublicKey =
+        relayInfo?.feePayerAddress ?: feeRelayerRepository.getFeePayerPublicKey()
 
     suspend fun getFeeTokenAccounts(
         fromPublicKey: String

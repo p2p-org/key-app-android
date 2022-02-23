@@ -8,5 +8,7 @@ class SwapSplTransitiveRequest(
     @SerializedName("to")
     val to: SwapSplRequest,
     @SerializedName("transit_token_mint_pubkey")
-    val transitTokenMintPubkey: String
+    val transitTokenMintPubkey: String,
+    @SerializedName("needs_create_transit_token_account")
+    val needsCreateTransitTokenAccount: Boolean
 )

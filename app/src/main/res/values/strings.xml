@@ -111,6 +111,7 @@
     <string name="auth_your_username">Your username</string>
     <string name="auth_enter_your_username">Enter your username</string>
     <string name="auth_reserve">Reserve</string>
+    <string name="auth_not_yet_reserved">Not yet reserved</string>
     <string name="auth_use_any_latin">No more than 15 alphanumerical latin lowercase characters and dashes</string>
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>
@@ -232,6 +233,8 @@
     <string name="main_no_tokens_for_swap">No tokens found</string>
     <string name="main_free_transactions_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
     <string name="main_balance">Balance</string>
+    <string name="main_empty_title">Top up your account to get started</string>
+    <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -280,7 +283,7 @@
     <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>
     <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000112 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
     <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
-    <string name="receive_via_bitcoin_network_info">Make sure you understand the aspects</string>
+    <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
     <string name="receive_no_transactions_yet_message">After first transaction you\nwill be able to view it here</string>
@@ -317,7 +320,7 @@
     <string name="send_receive_at_least">Receive at least: %s</string>
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
     <string name="send_account_creation_fee">Account creation fee</string>
-    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
+    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay a one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
     <string name="send_transaction_details">Transaction details</string>
     <string name="send_receive_title">Receive</string>
     <string name="send_transaction_being_processed">The transaction is being processed</string>
@@ -349,8 +352,8 @@
     <string name="swap_max_available">Max</string>
     <string name="swap_min_order_size_amount">Amount is under min order size %s</string>
     <string name="swap_unable_to_swap_pair">Unable to swap pair</string>
-    <string name="swap_transaction_completed">Swap from %1s to %2s completed!</string>
-    <string name="swap_transaction_failed">Swap from %1s to %2s failed. Please try again</string>
+    <string name="swap_transaction_completed">%1s → %2s swap completed!</string>
+    <string name="swap_transaction_failed">%1s → %2s swap didn\'t complete!</string>
     <string name="swap_zero_value">$0</string>
     <string name="swap_details">Swap details</string>
     <string name="swap_receive_at_least">Receive at least</string>
@@ -382,7 +385,7 @@
     <string name="buy_one_time_payment">One time payment</string>
     <string name="buy_total">Total</string>
     <string name="buy_continue_on_moonpay">Continue on Moonpay</string>
-    <string name="buy_value_allowed_symbols"> 1234567890.,$</string>
+    <string name="buy_value_allowed_symbols"> 1234567890.,</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
@@ -476,7 +479,7 @@
     <string name="settings_resetting_your_PIN">Resetting your PIN</string>
     <string name="settings_choose_a_network">Choose a network</string>
     <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
-    <string name="settings_tokens_hidden">HIdden</string>
+    <string name="settings_tokens_hidden">Hidden</string>
     <string name="settings_tokens_shown">Shown</string>
     <string name="settings_logout_title">Are you sure you want to log out?</string>
     <string name="settings_logout_message">If you have no backup, you may never be able to access this account</string>

@@ -22,6 +22,7 @@ sealed class SwapData {
         val from: Direct,
         val to: Direct,
         val transitTokenMintPubkey: String,
-        val transitTokenAccountAddress: PublicKey
+        val transitTokenAccountAddress: PublicKey,
+        val needsCreateTransitTokenAccount: Boolean
     ) : SwapData()
 }

@@ -6,7 +6,8 @@ import java.math.BigDecimal
 interface MoonpayRepository {
 
     suspend fun getCurrency(
-        baseCurrencyAmount: String,
+        baseCurrencyAmount: String?,
+        quoteCurrencyAmount: String?,
         quoteCurrencyCode: String,
         baseCurrencyCode: String
     ): MoonpayBuyResult
