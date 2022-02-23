@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
@@ -19,8 +20,8 @@ class ReceiveNetworkTypePresenter(
     private val userInteractor: UserInteractor,
     private val transactionAmountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val networkType: NetworkType,
-    private val receiveAnalytics: ReceiveAnalytics
+    private val receiveAnalytics: ReceiveAnalytics,
+    private val networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
 

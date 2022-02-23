@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="@id/subtitleTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/titleTextView"
-        app:tint="@color/accentPrimary" />
+        app:tint="@color/textIconActive" />
 
     <TextView
         android:id="@+id/titleTextView"
@@ -47,7 +47,7 @@
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="36dp"
-        android:background="?colorElementTertiary"
+        android:background="@color/strokePrimary"
         android:backgroundTint="@color/strokePrimary"
         app:layout_constraintTop_toBottomOf="@id/subtitleTextView" />
 
