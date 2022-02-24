@@ -20,6 +20,8 @@ private const val EXTRA_SUBTITLE = "EXTRA_SUBTITLE"
 private const val EXTRA_PRIMARY_BUTTON = "EXTRA_PRIMARY_BUTTON"
 private const val EXTRA_SECONDARY_BUTTON = "EXTRA_SECONDARY_BUTTON"
 private const val EXTRA_PRIMARY_BUTTON_COLOR = "EXTRA_PRIMARY_BUTTON_COLOR"
+private const val EXTRA_CANCELABLE = "EXTRA_CANCELABLE"
+
 class InfoDialog : DialogFragment() {
 
     companion object {
@@ -32,6 +34,7 @@ class InfoDialog : DialogFragment() {
             @ColorRes primaryButtonTextColor: Int? = null,
             onPrimaryButtonClicked: () -> Unit,
             onSecondaryButtonClicked: () -> Unit,
+            isCancelable: Boolean
         ) {
             InfoDialog()
                 .withArgs(
@@ -39,7 +42,8 @@ class InfoDialog : DialogFragment() {
                     EXTRA_SUBTITLE to subTitleRes,
                     EXTRA_PRIMARY_BUTTON to primaryButtonRes,
                     EXTRA_SECONDARY_BUTTON to secondaryButtonRes,
-                    EXTRA_PRIMARY_BUTTON_COLOR to primaryButtonTextColor
+                    EXTRA_PRIMARY_BUTTON_COLOR to primaryButtonTextColor,
+                    EXTRA_CANCELABLE to isCancelable
                 )
                 .apply {
                     this.onPrimaryButtonClicked = onPrimaryButtonClicked
@@ -54,6 +58,7 @@ class InfoDialog : DialogFragment() {
     private val primaryButtonRes: Int by args(EXTRA_PRIMARY_BUTTON)
     private val secondaryButtonRes: Int? by args(EXTRA_SECONDARY_BUTTON)
     private val primaryButtonTextColor: Int? by args(EXTRA_PRIMARY_BUTTON_COLOR)
+    private val isDialogCancelable: Boolean by args(EXTRA_CANCELABLE)
 
     var onPrimaryButtonClicked: (() -> Unit)? = null
     var onSecondaryButtonClicked: (() -> Unit)? = null
@@ -63,6 +68,7 @@ class InfoDialog : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.WalletTheme_Dialog_Wide)
+        isCancelable = isDialogCancelable
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

@@ -79,6 +79,8 @@ class ReserveUsernameFragment :
                 presenter.checkUsername(it.toString().lowercase())
             }
 
+            inputTextView.requestFocus()
+
             usernameButton.setOnClickListener {
                 presenter.save()
             }
