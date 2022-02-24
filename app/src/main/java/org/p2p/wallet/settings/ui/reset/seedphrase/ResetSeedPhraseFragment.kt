@@ -110,7 +110,7 @@ class ResetSeedPhraseFragment :
     }
 
     private fun buildSeedInfoText(): SpannableString {
-        val message = getString(R.string.auth_enter_seed_phrase)
+        val message = getString(R.string.auth_recover_info)
         val span = SpannableString(message)
         val clickableSeedInfo = object : ClickableSpan() {
             override fun onClick(widget: View) {
@@ -122,7 +122,7 @@ class ResetSeedPhraseFragment :
                 ds.isUnderlineText = false
             }
         }
-        val seedInfo = getString(R.string.auth_what_is_secret_key)
+        val seedInfo = getString(R.string.settings_what_is_a_security_key)
         val termsStart = span.indexOf(seedInfo)
         val termsEnd = span.indexOf(seedInfo) + seedInfo.length
         span.setSpan(clickableSeedInfo, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)

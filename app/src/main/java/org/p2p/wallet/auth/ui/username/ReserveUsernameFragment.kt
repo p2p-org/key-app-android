@@ -209,12 +209,8 @@ class ReserveUsernameFragment :
 
     override fun finishNavigation() {
         when (mode) {
-            ReserveMode.PIN_CODE -> {
-                navigateToPinCode()
-            }
-            ReserveMode.POP -> {
-                navigateToUsername()
-            }
+            ReserveMode.PIN_CODE -> navigateToPinCode()
+            ReserveMode.POP -> navigateToUsername()
         }
     }
 }

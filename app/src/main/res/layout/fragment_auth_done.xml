@@ -58,7 +58,7 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonDrawable="@drawable/ic_light"
             app:buttonText="@string/auth_finish_setup"
-            app:buttonTextColor="@color/textIconPrimary"
+            app:buttonTextColor="@color/textIconButtonPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="UnusedAttribute" />
     </androidx.constraintlayout.widget.ConstraintLayout>

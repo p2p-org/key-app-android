@@ -163,7 +163,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_gravity="center"
-                            android:background="@drawable/bg_secondary_rounded"
+                            android:background="@drawable/bg_app_rounded"
                             android:padding="4dp"
                             android:rotation="180"
                             android:src="@drawable/ic_back"

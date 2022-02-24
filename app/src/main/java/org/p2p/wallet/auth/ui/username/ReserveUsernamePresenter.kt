@@ -78,6 +78,7 @@ class ReserveUsernamePresenter(
 
     override fun onSkipClicked() {
         analytics.logUsernameSkipped(OnBoardingAnalytics.UsernameField.getValueOf(lastUsername))
+        view?.finishNavigation()
     }
 
     override fun save() {
