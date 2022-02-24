@@ -80,10 +80,12 @@ class HomeFragment :
                 presenter.refresh()
             }
 
-            appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
-                (binding.actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
-            })
+            appBarLayout.addOnOffsetChangedListener(
+                AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                    val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
+                    (binding.actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
+                }
+            )
         }
 
         presenter.collectData()
