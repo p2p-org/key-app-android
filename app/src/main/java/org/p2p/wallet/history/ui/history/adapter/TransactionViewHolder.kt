@@ -5,7 +5,6 @@ import android.graphics.drawable.PictureDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -117,7 +116,7 @@ class TransactionViewHolder(
         addressTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
         valueTextView withTextOrGone transaction.getReceivedUsdAmount()
         totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
-        totalTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+        totalTextView.setTextColor(valueTextView.context.getColor(R.color.colorGreen))
         timeTextView.text = transaction.date.toTimeString()
     }
 

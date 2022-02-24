@@ -10,7 +10,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/elementPrimary"
+        android:background="@color/backgroundPrimary"
         app:elevation="2dp"
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/scrollView">
@@ -89,7 +89,7 @@
                             android:layout_marginEnd="16dp"
                             android:text="@string/send_bitcoin_network"
                             android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-                            android:textColor="@color/accentPrimary"
+                            android:textColor="@color/backgroundButtonPrimary"
                             app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
                             app:layout_constraintEnd_toStartOf="@id/arrowImageView"
                             app:layout_constraintTop_toTopOf="@id/arrowImageView" />
@@ -189,9 +189,9 @@
                             android:backgroundTint="@color/backgroundApp"
                             android:foreground="?selectableItemBackground"
                             app:buttonDrawable="@drawable/ic_copy"
-                            app:buttonDrawableTint="@color/accentPrimary"
+                            app:buttonDrawableTint="@color/backgroundButtonPrimary"
                             app:buttonText="@string/auth_copy"
-                            app:buttonTextColor="@color/accentPrimary" />
+                            app:buttonTextColor="@color/backgroundButtonPrimary" />
 
                         <View
                             android:layout_width="1dp"
@@ -208,9 +208,9 @@
                             android:backgroundTint="@color/backgroundApp"
                             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                             app:buttonDrawable="@drawable/ic_share_blue"
-                            app:buttonDrawableTint="@color/accentPrimary"
+                            app:buttonDrawableTint="@color/backgroundButtonPrimary"
                             app:buttonText="@string/auth_share"
-                            app:buttonTextColor="@color/accentPrimary" />
+                            app:buttonTextColor="@color/backgroundButtonPrimary" />
 
                         <View
                             android:layout_width="1dp"
@@ -229,7 +229,7 @@
                             android:foreground="?selectableItemBackground"
                             app:buttonDrawable="@drawable/ic_gallery"
                             app:buttonText="@string/auth_save"
-                            app:buttonTextColor="@color/accentPrimary" />
+                            app:buttonTextColor="@color/backgroundButtonPrimary" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </com.google.android.material.card.MaterialCardView>
@@ -334,10 +334,10 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                app:buttonBackground="@color/elementPrimary"
+                app:buttonBackground="@color/textIconPrimary"
                 app:buttonDrawableEnd="@drawable/ic_external"
                 app:buttonText="@string/receive_view_bitcoin_explorer"
-                app:buttonTextColor="@color/accentPrimary"
+                app:buttonTextColor="@color/backgroundButtonPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/attentionView"
                 app:layout_constraintVertical_bias="1" />

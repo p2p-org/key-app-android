@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?colorBackgroundPrimary"
+    android:background="@color/backgroundPrimary"
     android:orientation="vertical"
     android:paddingTop="16dp"
     android:paddingBottom="16dp">
@@ -27,7 +27,7 @@
         android:background="@drawable/bg_debug_drawer_rounded"
         android:enabled="true"
         android:text="Wipe data"
-        android:textColor="?colorElementPrimary"
+        android:textColor="@color/textIconPrimary"
         tools:ignore="HardcodedText" />
 
 </LinearLayout>

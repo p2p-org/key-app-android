@@ -42,13 +42,14 @@ class FeeRelayerInteractor(
     suspend fun load() = withContext(Dispatchers.IO) {
         feeRelayerAccountInteractor.getRelayInfo()
         feeRelayerAccountInteractor.getUserRelayAccount()
+        feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
     }
 
     // Calculate fee for given transaction
     suspend fun calculateFee(preparedTransaction: PreparedTransaction): FeeAmount {
         val fee = preparedTransaction.expectedFee
         // TODO: - Check if free transaction available
-        val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = true)
+        val feeLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val userRelayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
         val userRelayInfo = feeRelayerAccountInteractor.getRelayInfo()
         if (feeLimits.isFreeTransactionFeeAvailable(fee.transaction)) {

@@ -3,6 +3,8 @@ package org.p2p.wallet.qr.ui
 import android.Manifest
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +20,10 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+import org.koin.android.ext.android.inject
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.send.analytics.SendAnalytics
 
 class ScanQrFragment :
     Fragment(R.layout.fragment_scan_qr),
@@ -32,11 +38,12 @@ class ScanQrFragment :
     }
 
     private var successCallback: ((String) -> Unit)? = null
-
     private val binding: FragmentScanQrBinding by viewBinding()
-
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private var isPermissionsRequested = false
     private var isCameraStarted = false
+    private var onBackPressedCallback: OnBackPressedCallback? = null
+    private val sendAnalytics: SendAnalytics by inject()
 
     private val qrDecodeStartTimeout by lazy {
         requireContext().resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
@@ -52,10 +59,13 @@ class ScanQrFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
+            onBackPressed()
+        }
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.QR_CAMERA)
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
-            closeImageView.setOnClickListener { popBackStack() }
+            closeImageView.setOnClickListener { onBackPressed() }
         }
     }
 
@@ -136,7 +146,12 @@ class ScanQrFragment :
         }
     }
 
-    fun resumeCameraPreview() {
-        binding.barcodeView.resumeCameraPreview(barcodeCallback)
+    private fun onBackPressed() {
+        sendAnalytics.logSendQrGoingBack(
+            qrCameraIsAvailable = isCameraStarted,
+            qrGalleryIsAvailable = false,
+            SendAnalytics.QrTab.CAMERA
+        )
+        popBackStack()
     }
 }

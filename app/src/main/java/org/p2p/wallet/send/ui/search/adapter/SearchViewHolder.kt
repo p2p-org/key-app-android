@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -33,7 +32,7 @@ class SearchViewHolder(
             is SearchResult.Full -> {
                 topTextView.text = item.username
                 bottomTextView.withTextOrGone(item.address.cutEnd())
-                bottomTextView.setTextColor(bottomTextView.context.colorFromTheme(R.attr.colorElementSecondary))
+                bottomTextView.setTextColor(bottomTextView.context.getColor(R.color.backgroundDisabled))
             }
             is SearchResult.AddressOnly -> {
                 topTextView.text = item.address.cutEnd()
@@ -43,7 +42,7 @@ class SearchViewHolder(
                 topTextView.text = item.address.cutEnd()
                 val caution = bottomTextView.context.getString(R.string.send_caution_empty_balance)
                 bottomTextView.withTextOrGone(caution)
-                val warningColor = bottomTextView.context.getColor(R.color.systemWarning)
+                val warningColor = bottomTextView.context.getColor(R.color.systemWarningMain)
                 bottomTextView.setTextColor(warningColor)
             }
             is SearchResult.Wrong -> {

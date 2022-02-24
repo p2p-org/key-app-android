@@ -12,6 +12,7 @@ interface SecurityKeyContract {
         fun copyToClipboard(keys: List<String>)
         fun showLoading(isLoading: Boolean)
         fun navigateToVerify(keys: List<String>)
+        fun captureKeys()
         fun showFile(file: File)
         fun shareScreenShoot(file: File)
     }
@@ -20,6 +21,7 @@ interface SecurityKeyContract {
         fun loadKeys()
         fun copyKeys()
         fun cacheKeys()
+        fun saveKeys()
         fun openPrivacyPolicy()
         fun openTermsOfUse()
         fun createScreenShootFile(bitmap: Bitmap)

@@ -19,7 +19,7 @@
         android:layout_marginStart="6dp"
         android:gravity="center"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorElementSecondary"
+        android:textColor="@color/textIconPrimary"
         tools:text="3. " />
 
     <TextView

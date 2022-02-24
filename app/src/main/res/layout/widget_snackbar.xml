@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bg_blue_rounded"
-        android:backgroundTint="@color/colorSnackBar">
+        android:backgroundTint="@color/colorBackgroundNotification">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageView"
@@ -32,7 +32,7 @@
             android:maxLines="1"
             android:paddingHorizontal="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="?colorElementPrimary"
+            android:textColor="@color/textIconPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/actionImageView"
             app:layout_constraintStart_toEndOf="@id/imageView"

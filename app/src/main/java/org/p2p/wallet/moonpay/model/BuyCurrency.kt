@@ -9,7 +9,9 @@ data class BuyCurrency(
     val feeAmount: BigDecimal,
     val extraFeeAmount: BigDecimal,
     val networkFeeAmount: BigDecimal,
-    val totalAmount: BigDecimal
+    val totalAmount: BigDecimal,
+    val baseCurrency: Currency,
+    val quoteCurrency: Currency,
 ) {
 
     constructor(response: MoonpayBuyCurrencyResponse) : this(
@@ -18,6 +20,22 @@ data class BuyCurrency(
         feeAmount = response.feeAmount,
         extraFeeAmount = response.extraFeeAmount,
         networkFeeAmount = response.networkFeeAmount,
-        totalAmount = response.totalAmount
+        totalAmount = response.totalAmount,
+        baseCurrency = Currency(
+            response.baseCurrency.code,
+            response.baseCurrency.minBuyAmount,
+            response.baseCurrency.maxBuyAmount
+        ),
+        quoteCurrency = Currency(
+            response.currency.code,
+            response.currency.minBuyAmount,
+            response.currency.maxBuyAmount
+        )
+    )
+
+    data class Currency(
+        val code: String,
+        val minAmount: BigDecimal,
+        val maxAmount: BigDecimal?,
     )
 }

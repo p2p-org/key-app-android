@@ -115,7 +115,7 @@
                     app:layout_constraintStart_toEndOf="@id/imgTokenFrom"
                     app:layout_constraintTop_toTopOf="@id/imgTokenFrom"
                     app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="?colorElementSecondary" />
+                    app:tint="@color/textIconPrimary" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtAmountFrom"
@@ -223,7 +223,7 @@
                     app:layout_constraintStart_toEndOf="@id/imgTokenTo"
                     app:layout_constraintTop_toTopOf="@id/imgTokenTo"
                     app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="?colorElementSecondary" />
+                    app:tint="@color/textIconPrimary" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtAmountTo"
@@ -371,7 +371,7 @@
             android:paddingBottom="19dp"
             android:text="Swap_now"
             android:textAllCaps="false"
-            android:textColor="?colorElementPrimary"
+            android:textColor="@color/textIconPrimary"
             android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

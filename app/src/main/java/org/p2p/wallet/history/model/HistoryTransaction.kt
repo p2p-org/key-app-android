@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
@@ -104,9 +103,9 @@ sealed class HistoryTransaction(
         @ColorInt
         fun getTextColor(context: Context) =
             if (isSend) {
-                context.colorFromTheme(R.attr.colorMessagePrimary)
+                context.getColor(R.color.textIconPrimary)
             } else {
-                ContextCompat.getColor(context, R.color.systemSuccessMain)
+                context.getColor(R.color.systemSuccessMain)
             }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =

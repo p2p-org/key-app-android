@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="72dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-        android:textColor="@color/accentPrimary"
+        android:textColor="@color/backgroundButtonPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

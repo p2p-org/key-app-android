@@ -7,6 +7,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
 import org.p2p.wallet.send.model.NetworkType
@@ -36,12 +38,12 @@ class RenBTCFragment :
     }
 
     override val presenter: RenBTCContract.Presenter by inject()
-
     private val binding: FragmentRenBtcBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN)
         with(binding) {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
@@ -49,10 +51,10 @@ class RenBTCFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
             statusView.setOnClickListener {
-                replaceFragment(RenTransactionsFragment.create())
+                presenter.onStatusReceivedClicked()
             }
             networkView.setOnClickListener {
-                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
+                presenter.onNetworkClicked()
             }
             setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
                 val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
@@ -86,8 +88,7 @@ class RenBTCFragment :
             shareButton.setOnClickListener { requireContext().shareText(address) }
 
             progressButton.setOnClickListener {
-                val url = getString(R.string.bitcoinExplorer, address)
-                showUrlInCustomTabs(url)
+                presenter.onBrowserClicked(address)
             }
             copyButton.setOnClickListener {
                 requireContext().copyToClipBoard(address)
@@ -129,5 +130,17 @@ class RenBTCFragment :
 
     override fun navigateToSolana() {
         popAndReplaceFragment(ReceiveSolanaFragment.create(null))
+    }
+
+    override fun showNetwork() {
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
+    }
+
+    override fun showBrowser(url: String) {
+        showUrlInCustomTabs(url)
+    }
+
+    override fun showStatuses() {
+        replaceFragment(RenTransactionsFragment.create())
     }
 }

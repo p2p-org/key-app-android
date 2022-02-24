@@ -23,9 +23,9 @@ class InputTextView @JvmOverloads constructor(
         LayoutInflater.from(context), this
     )
 
-    private val colorIdle = context.getColor(R.color.elementSecondary)
-    private val colorFocused = context.getColor(R.color.accentPrimary)
-    private val colorError = context.getColor(R.color.accentWarning)
+    private val colorIdle = context.getColor(R.color.backgroundDisabled)
+    private val colorFocused = context.getColor(R.color.backgroundButtonPrimary)
+    private val colorError = context.getColor(R.color.systemErrorMain)
     private val colorSuccess = context.getColor(R.color.systemSuccessMain)
 
     init {
@@ -61,6 +61,10 @@ class InputTextView @JvmOverloads constructor(
     fun setMessageWithState(text: String, state: State) {
         binding.placeholderTextView.text = text
         setState(state)
+    }
+
+    fun requestFocusForInput() {
+        binding.textInputEditText.requestFocus()
     }
 
     private fun setState(state: State) {

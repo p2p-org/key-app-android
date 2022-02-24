@@ -134,7 +134,7 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        android:textColor="?colorMessagePrimary"
+        android:textColor="@color/textIconPrimary"
         android:visibility="gone"
         tools:text="0.5%"
         tools:visibility="visible" />

@@ -15,6 +15,8 @@ import androidx.core.widget.doAfterTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
@@ -46,6 +48,7 @@ import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleLong
@@ -78,18 +81,15 @@ class SendFragment :
     override val presenter: SendContract.Presenter by inject {
         parametersOf(token)
     }
-
     private val glideManager: GlideManager by inject()
-
     private val binding: FragmentSendBinding by viewBinding()
-
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val address: String? by args(EXTRA_ADDRESS)
-
     private val token: Token? by args(EXTRA_TOKEN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.MAIN)
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -176,8 +176,7 @@ class SendFragment :
             }
 
             scanTextView.setOnClickListener {
-                val target = ScanQrFragment.create { presenter.validateTarget(it) }
-                addFragment(target)
+                presenter.onScanClicked()
             }
 
             pasteTextView.setOnClickListener {
@@ -186,24 +185,36 @@ class SendFragment :
             }
 
             sendDetailsView.setOnPaidClickListener {
-                showInfoDialog(
-                    messageRes = R.string.main_free_transactions_info,
-                    primaryButtonRes = R.string.common_understood
-                )
+                presenter.onDetailsClicked()
             }
         }
     }
 
     override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.CONFIRMATION)
         SendConfirmBottomSheet.show(this, data) { presenter.send() }
+    }
+
+    override fun showScanner() {
+        val target = ScanQrFragment.create { presenter.validateTarget(it) }
+        addFragment(target)
+    }
+
+    override fun showDetails() {
+        showInfoDialog(
+            messageRes = R.string.main_free_transactions_info,
+            primaryButtonRes = R.string.common_understood
+        )
     }
 
     // TODO: remove add fragment
     override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.NETWORK)
         addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.FEE_CURRENCY)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN),
             enter = R.anim.slide_up,
@@ -230,10 +241,10 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorAccentWarning))
+            messageTextView.setTextColor(getColor(R.color.systemErrorMain))
             clearImageView.isVisible = true
         }
     }
@@ -243,10 +254,10 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = username
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.withTextOrGone(address.cutEnd())
-            messageTextView.setTextColor(colorFromTheme(R.attr.colorElementSecondary))
+            messageTextView.setTextColor(getColor(R.color.backgroundDisabled))
             clearImageView.isVisible = true
         }
     }
@@ -256,10 +267,10 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_warning)
             targetTextView.text = address
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
-            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarning))
+            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
             clearImageView.isVisible = true
         }
     }
@@ -269,7 +280,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = address.cutEnd()
-            targetTextView.setTextColor(colorFromTheme(R.attr.colorMessagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.isVisible = false
             clearImageView.isVisible = true
@@ -299,6 +310,7 @@ class SendFragment :
     }
 
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
+
         addFragment(
             target = SelectTokenFragment.create(feePayerTokens, KEY_REQUEST_SEND, EXTRA_FEE_PAYER),
             enter = R.anim.slide_up,
@@ -439,6 +451,7 @@ class SendFragment :
     }
 
     override fun showWrongWalletError() {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.ERROR)
         ErrorBottomSheet.show(
             fragment = this,
             iconRes = R.drawable.ic_wallet_error,
@@ -449,6 +462,7 @@ class SendFragment :
 
     override fun showSuccessMessage(amount: String) {
         val message = getString(R.string.send_successful_format, amount)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
         showSnackbarMessage(message)
     }
 

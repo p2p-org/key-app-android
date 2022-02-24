@@ -13,6 +13,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.history.ui.history.HistoryFragment
+import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
@@ -46,6 +47,7 @@ class HomeFragment :
         TokenAdapter(this)
     }
 
+    private val browseAnalytics: BrowseAnalytics by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -119,8 +121,14 @@ class HomeFragment :
 
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
-            R.string.main_username_banner_option -> replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
-            R.string.main_feedback_banner_option -> IntercomService.showMessenger()
+            R.string.main_username_banner_option -> {
+                browseAnalytics.logBannerUsernamePressed()
+                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+            }
+            R.string.main_feedback_banner_option -> {
+                browseAnalytics.logBannerFeedbackPressed()
+                IntercomService.showMessenger()
+            }
         }
     }
 

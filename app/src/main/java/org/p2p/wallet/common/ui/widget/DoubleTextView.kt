@@ -8,7 +8,6 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetDoubleTextViewBinding
@@ -56,7 +55,7 @@ class DoubleTextView @JvmOverloads constructor(
     }
 
     fun setBottomTextColor(@ColorRes colorRes: Int) {
-        binding.bottomTextView.setTextColor(ContextCompat.getColor(context, colorRes))
+        binding.bottomTextView.setTextColor(context.getColor(colorRes))
     }
 
     fun setBottomTextColorFromTheme(@AttrRes colorAttrId: Int) {

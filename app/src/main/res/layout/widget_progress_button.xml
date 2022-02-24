@@ -23,7 +23,7 @@
             android:visibility="gone"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_send_simple"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/actionTextView"

@@ -17,6 +17,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import org.p2p.wallet.utils.PixelCopy
@@ -45,13 +47,14 @@ class SecurityKeyFragment :
     override val presenter: SecurityKeyContract.Presenter by inject()
 
     private val binding: FragmentSecurityKeyBinding by viewBinding()
-
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val keysAdapter: KeysAdapter by lazy {
         KeysAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.CREATE_MANUAL)
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
@@ -70,7 +73,7 @@ class SecurityKeyFragment :
                 presenter.copyKeys()
             }
             saveButton.setOnClickListener {
-                PixelCopy.getBitmapView(view, requireActivity().window, this@SecurityKeyFragment)
+                presenter.saveKeys()
             }
 
             with(keysRecyclerView) {
@@ -90,6 +93,7 @@ class SecurityKeyFragment :
         val clickableTermsOfUse = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 presenter.openTermsOfUse()
+                analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.TERMS_OF_USE)
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -135,6 +139,10 @@ class SecurityKeyFragment :
 
     override fun navigateToVerify(keys: List<String>) {
         replaceFragment(VerifySecurityKeyFragment.create(keys))
+    }
+
+    override fun captureKeys() {
+        PixelCopy.getBitmapView(binding.root, requireActivity().window, this@SecurityKeyFragment)
     }
 
     override fun showFile(file: File) {

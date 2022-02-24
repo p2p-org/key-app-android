@@ -103,7 +103,7 @@ class OrcaSwapInteractor(
         val payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
 
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-        val freeTransactionLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
+        val freeTransactionLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature // feePayer, owner
         val freeTransactionFeeAvailable = freeTransactionLimit.isFreeTransactionFeeAvailable(transactionNetworkFee)
 

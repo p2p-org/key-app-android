@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorBackgroundPrimary"
+        android:background="@color/backgroundPrimary"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="20dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/textIconPrimary"
             tools:text="August 30, 2021" />
 
         <FrameLayout

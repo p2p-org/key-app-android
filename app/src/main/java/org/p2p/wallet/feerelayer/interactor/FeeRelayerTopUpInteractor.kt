@@ -77,13 +77,8 @@ class FeeRelayerTopUpInteractor(
         // the second signature is the owner's signature
         val ownerSignature = signatures[1].signature
 
-        // the third signature (optional) is the transferAuthority's signature
-//        val transferAuthoritySignature = signatures.getOrNull(2)?.signature
-
         val topUpSignatures = SwapTransactionSignatures(
             userAuthoritySignature = ownerSignature,
-            // TODO: revert back if it's will be necessary
-//            transferAuthoritySignature = transferAuthoritySignature
             transferAuthoritySignature = ownerSignature
         )
 

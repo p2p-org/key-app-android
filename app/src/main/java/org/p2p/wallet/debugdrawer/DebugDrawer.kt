@@ -16,7 +16,6 @@ import org.koin.core.component.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.edgetoedge.isInsetConsumed
 import org.p2p.wallet.utils.edgetoedge.navigationBarInset
 import org.p2p.wallet.utils.edgetoedge.redispatchWindowInsetsToAllChildren
@@ -52,7 +51,7 @@ object DebugDrawer : KoinComponent {
         }
         val drawerContent = activity.findViewById<ViewGroup>(R.id.dd_debug_view)
 
-        drawerContent.setBackgroundColor(activity.colorFromTheme(R.attr.colorBackgroundPrimary))
+        drawerContent.setBackgroundColor(activity.getColor(R.color.backgroundPrimary))
 
         ViewCompat.setOnApplyWindowInsetsListener(drawerContent) { v, insets ->
             if (insets.isInsetConsumed()) {

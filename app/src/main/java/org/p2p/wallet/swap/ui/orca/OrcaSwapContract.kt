@@ -45,6 +45,7 @@ interface OrcaSwapContract {
         fun showError(@StringRes errorText: Int?)
 
         fun showBiometricConfirmationPrompt(data: SwapConfirmData)
+        fun close()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -60,5 +61,6 @@ interface OrcaSwapContract {
         fun swap()
         fun calculateAvailableAmount()
         fun reverseTokens()
+        fun onBackPressed()
     }
 }

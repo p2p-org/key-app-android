@@ -39,6 +39,7 @@ class VerifySecurityKeyFragment :
         presenter.onKeySelected(keyIndex, key)
     }
     private val keys: List<String> by args(EXTRA_KEYS)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {

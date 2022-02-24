@@ -36,7 +36,7 @@
             android:gravity="center_horizontal"
             android:text="@string/settings_security_change_pin_info"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-            android:textColor="?colorElementSecondary" />
+            android:textColor="@color/textIconPrimary" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/backButton"
@@ -49,7 +49,7 @@
             android:text="@string/settings_security_go_back"
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="?colorElementPrimary"
+            android:textColor="@color/textIconPrimary"
             tools:ignore="UnusedAttribute" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

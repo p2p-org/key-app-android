@@ -11,6 +11,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveListBinding
+import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.attachAdapter
@@ -28,12 +29,11 @@ class TokenListFragment :
 
     override val presenter: TokenListContract.Presenter by inject()
     private val binding: FragmentReceiveListBinding by viewBinding()
+    private val browseAnalytics: BrowseAnalytics by inject()
     private val adapter = TokenListAdapter()
     private val linearLayoutManager by lazy { LinearLayoutManager(requireContext()) }
     private val scrollListener by lazy {
-        EndlessScrollListener(linearLayoutManager) {
-            presenter.load(isRefresh = false)
-        }
+        EndlessScrollListener(linearLayoutManager, ::loadNextPage, ::onScrollYChanged)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,5 +83,14 @@ class TokenListFragment :
         binding.recyclerView.post {
             binding.recyclerView.smoothScrollToPosition(0)
         }
+    }
+
+    private fun loadNextPage(count: Int) {
+        presenter.load(false)
+    }
+
+    private fun onScrollYChanged(dY: Int) {
+        // TODO calculate scroll Deepth
+        browseAnalytics.logTokenListScrolled(dY.toString())
     }
 }

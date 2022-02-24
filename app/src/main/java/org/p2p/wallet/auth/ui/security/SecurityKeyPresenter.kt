@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.security
 import android.content.Context
 import android.graphics.Bitmap
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
@@ -11,7 +12,8 @@ import kotlin.properties.Delegates
 class SecurityKeyPresenter(
     private val context: Context,
     private val secretKeyInteractor: SecretKeyInteractor,
-    private val fileRepository: FileRepository
+    private val fileRepository: FileRepository,
+    private val onBoardingAnalytics: OnBoardingAnalytics
 ) : BasePresenter<SecurityKeyContract.View>(), SecurityKeyContract.Presenter {
 
     private var keys: List<String> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
@@ -32,11 +34,13 @@ class SecurityKeyPresenter(
     override fun loadKeys() {
         launch {
             keys = secretKeyInteractor.generateSecretKeys()
+            onBoardingAnalytics.logBackingUpRenew()
         }
     }
 
     override fun copyKeys() {
         view?.copyToClipboard(keys)
+        onBoardingAnalytics.logBackingUpCopying()
     }
 
     override fun cacheKeys() {
@@ -45,6 +49,11 @@ class SecurityKeyPresenter(
             view?.navigateToVerify(keys)
             view?.showLoading(false)
         }
+    }
+
+    override fun saveKeys() {
+        view?.captureKeys()
+        onBoardingAnalytics.logBackingUpSaving()
     }
 
     override fun openTermsOfUse() {

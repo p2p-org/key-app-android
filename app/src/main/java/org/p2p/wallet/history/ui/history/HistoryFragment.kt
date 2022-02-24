@@ -18,6 +18,7 @@ import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
@@ -46,12 +47,13 @@ class HistoryFragment :
     private val token: Token.Active by args(EXTRA_TOKEN)
     private val historyAdapter: HistoryAdapter by lazy {
         HistoryAdapter(
-            onTransactionClicked = { onTransactionClicked(it) },
+            onTransactionClicked = { presenter.onItemClicked(it) },
             onRetryClicked = { presenter.fetchNextPage() }
         )
     }
 
     private val binding: FragmentHistoryBinding by viewBinding()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,6 +68,7 @@ class HistoryFragment :
                     replaceFragment(BuySolanaFragment.create())
                 }
                 onReceiveItemClickListener = {
+                    receiveAnalytics.logTokenReceiveViewed(token.tokenName)
                     replaceFragment(ReceiveSolanaFragment.create(token))
                 }
                 onSendClickListener = {
@@ -120,7 +123,7 @@ class HistoryFragment :
         historyAdapter.setPagingState(newState)
     }
 
-    private fun onTransactionClicked(transaction: HistoryTransaction) {
+    override fun showDetails(transaction: HistoryTransaction) {
         when (transaction) {
             is HistoryTransaction.Swap,
             is HistoryTransaction.Transfer,

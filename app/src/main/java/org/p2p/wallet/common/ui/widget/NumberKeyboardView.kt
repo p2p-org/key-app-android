@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetKeyboardBinding
@@ -84,10 +83,7 @@ class NumberKeyboardView @JvmOverloads constructor(
     fun setLeftButtonVisible(isVisible: Boolean) {
         binding.additionalLeftPinCodeButton.isInvisible = !isVisible
         binding.additionalLeftPinCodeButton.setBackgroundColor(
-            ContextCompat.getColor(
-                context,
-                android.R.color.transparent
-            )
+            context.getColor(android.R.color.transparent)
         )
     }
 
