@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_secondary_rounded" />
+            android:background="@drawable/bg_app_rounded" />
 
         <RadioGroup
             android:id="@+id/radioGroup"

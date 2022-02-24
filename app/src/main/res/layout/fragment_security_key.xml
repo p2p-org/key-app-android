@@ -96,9 +96,9 @@
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonDrawableEnd="@drawable/ic_next"
-            app:buttonDrawableTint="@color/textIconPrimary"
+            app:buttonDrawableTint="@color/textIconButtonPrimary"
             app:buttonText="@string/auth_lets_verify"
-            app:buttonTextColor="@color/textIconPrimary"
+            app:buttonTextColor="@color/textIconButtonPrimary"
             app:layout_constraintBottom_toTopOf="@id/termsAndConditionsTextView"
             app:layout_constraintTop_toBottomOf="@id/actionContainer"
             app:layout_constraintVertical_bias="0.9" />
@@ -116,7 +116,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-
 
         <org.p2p.wallet.common.ui.widget.ProgressView
             android:id="@+id/progressView"
