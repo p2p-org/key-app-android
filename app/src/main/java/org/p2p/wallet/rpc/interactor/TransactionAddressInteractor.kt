@@ -1,20 +1,44 @@
 package org.p2p.wallet.rpc.interactor
 
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.kits.TokenTransaction
+import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.wallet.R
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.kits.TokenTransaction
-import org.p2p.solanaj.programs.TokenProgram
 import timber.log.Timber
 
 private const val ADDRESS_TAG = "Address"
 
 class TransactionAddressInteractor(
     private val rpcRepository: RpcRepository,
-    private val userLocalRepository: UserLocalRepository
+    private val userLocalRepository: UserLocalRepository,
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
+
+    suspend fun validateAddress(destinationAddress: PublicKey, mintAddress: String): AddressValidation {
+        val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
+
+        if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
+            return AddressValidation.WrongWallet
+        }
+
+        if (destinationAddress.equals(userPublicKey)) {
+            return AddressValidation.Error(R.string.main_send_to_yourself_error)
+        }
+
+        val address = try {
+            findAssociatedAddress(destinationAddress, mintAddress)
+        } catch (e: IllegalStateException) {
+            return AddressValidation.WrongWallet
+        }
+
+        return AddressValidation.Valid(address)
+    }
 
     suspend fun findAssociatedAddress(
         ownerAddress: PublicKey,
@@ -22,7 +46,7 @@ class TransactionAddressInteractor(
     ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
-            findSplTokenAddress(destinationMint, ownerAddress)
+            findSplTokenAddress(ownerAddress, destinationMint)
         } catch (e: IllegalStateException) {
             Timber.tag(ADDRESS_TAG).d("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
@@ -33,13 +57,14 @@ class TransactionAddressInteractor(
         val value = accountInfo?.value
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         return TransactionAddressData(
+            destinationAddress = ownerAddress,
             associatedAddress = associatedAddress,
             shouldCreateAssociatedInstruction = !associatedNotNeeded
         )
     }
 
     @Throws(IllegalStateException::class)
-    suspend fun findSplTokenAddress(mintAddress: String, destinationAddress: PublicKey): PublicKey {
+    private suspend fun findSplTokenAddress(destinationAddress: PublicKey, mintAddress: String): PublicKey {
         val accountInfo = rpcRepository.getAccountInfo(destinationAddress.toBase58())
 
         // detect if it is a direct token address

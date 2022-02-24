@@ -93,6 +93,7 @@ class OrcaSwapInteractor(
         amount: Double,
         slippage: Double
     ): OrcaSwapResult {
+        val owner = Account(tokenKeyProvider.secretKey)
         val info = orcaInfoInteractor.getInfo() ?: throw IllegalStateException("Orca info is null")
         val fromDecimals = bestPoolsPair[0].tokenABalance?.decimals
             ?: throw IllegalStateException("Invalid pool")
@@ -106,13 +107,20 @@ class OrcaSwapInteractor(
         val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature // feePayer, owner
         val freeTransactionFeeAvailable = freeTransactionLimit.isFreeTransactionFeeAvailable(transactionNetworkFee)
 
+        val feePayer = if (freeTransactionFeeAvailable) {
+            feeRelayerAccountInteractor.getFeePayerPublicKey()
+        } else {
+            owner.publicKey
+        }
         when {
             feePayerToken.isSOL ->
                 return if (bestPoolsPair.size == 1) {
                     swapDirect(
+                        owner = owner,
                         pool = bestPoolsPair.first(),
                         fromTokenPubkey = fromToken.publicKey,
                         toTokenPubkey = toToken.publicKey,
+                        feePayer = feePayer,
                         amount = lamports,
                         slippage = slippage,
                         freeTransactionFeeAvailable = freeTransactionFeeAvailable
@@ -122,7 +130,7 @@ class OrcaSwapInteractor(
                         fromWalletPubkey = fromToken.publicKey,
                         toWalletPubkey = toToken.publicKey,
                         bestPoolsPair = bestPoolsPair,
-                        feeRelayerFeePayer = null,
+                        feePayer = feePayer,
                         info = info,
                         owner = Account(tokenKeyProvider.secretKey),
                         lamports = lamports,
@@ -156,14 +164,15 @@ class OrcaSwapInteractor(
     }
 
     private suspend fun swapDirect(
+        owner: Account,
         pool: OrcaPool,
         fromTokenPubkey: String,
         toTokenPubkey: String?,
+        feePayer: PublicKey,
         amount: BigInteger,
         slippage: Double,
         freeTransactionFeeAvailable: Boolean
     ): OrcaSwapResult {
-        val owner = Account(tokenKeyProvider.secretKey)
         val info = orcaInfoInteractor.getInfo() ?: return OrcaSwapResult.InvalidInfoOrPair
 
         val accountInstructions = orcaRouteInteractor.constructExchange(
@@ -184,13 +193,7 @@ class OrcaSwapInteractor(
         transaction.addInstructions(instructions)
         val blockhash = rpcRepository.getRecentBlockhash().recentBlockhash
         transaction.recentBlockHash = blockhash
-
-        if (freeTransactionFeeAvailable) {
-            val feeRelayerFeePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
-            transaction.feePayer = feeRelayerFeePayer
-        } else {
-            transaction.feePayer = owner.publicKey
-        }
+        transaction.feePayer = feePayer
 
         val signers = listOf(owner) + accountInstructions.signers
         transaction.sign(signers)
@@ -209,7 +212,7 @@ class OrcaSwapInteractor(
         fromWalletPubkey: String,
         toWalletPubkey: String?,
         bestPoolsPair: OrcaPoolsPair,
-        feeRelayerFeePayer: PublicKey?,
+        feePayer: PublicKey,
         info: OrcaSwapInfo,
         owner: Account,
         lamports: BigInteger,
@@ -220,7 +223,7 @@ class OrcaSwapInteractor(
             swapTransitiveSingle(
                 bestPoolsPair = bestPoolsPair,
                 toWalletPubkey = toWalletPubkey,
-                feeRelayerFeePayer = feeRelayerFeePayer,
+                feePayer = feePayer,
                 info = info,
                 owner = owner,
                 fromWalletPubkey = fromWalletPubkey,
@@ -232,7 +235,7 @@ class OrcaSwapInteractor(
             swapTransitiveSeparated(
                 bestPoolsPair = bestPoolsPair,
                 toWalletPubkey = toWalletPubkey,
-                feeRelayerFeePayer = feeRelayerFeePayer,
+                feePayer = feePayer,
                 info = info,
                 owner = owner,
                 fromWalletPubkey = fromWalletPubkey,
@@ -245,7 +248,7 @@ class OrcaSwapInteractor(
     private suspend fun swapTransitiveSeparated(
         bestPoolsPair: OrcaPoolsPair,
         toWalletPubkey: String?,
-        feeRelayerFeePayer: PublicKey?,
+        feePayer: PublicKey?,
         info: OrcaSwapInfo,
         owner: Account,
         fromWalletPubkey: String,
@@ -270,7 +273,7 @@ class OrcaSwapInteractor(
             pool0 = pool0,
             pool1 = pool1,
             toWalletPubkey = toWalletPubkey,
-            feeRelayerFeePayer = feeRelayerFeePayer,
+            feePayer = owner.publicKey,
             onConfirmed = { createTransactionConfirmed = true }
         )
 
@@ -336,25 +339,25 @@ class OrcaSwapInteractor(
         transaction.addInstructions(accountInstructions.instructions)
         transaction.addInstructions(accountInstructions.cleanupInstructions)
 
-        transaction.feePayer = feeRelayerFeePayer
+        transaction.feePayer = feePayer
         val recentBlockhash = rpcRepository.getRecentBlockhash()
         transaction.recentBlockHash = recentBlockhash.recentBlockhash
         transaction.sign(accountInstructions.signers)
 
-        val serializedMessage = transaction.serialize()
-        val serializedTransaction = Base64Utils.encode(serializedMessage)
+        val transactionId = if (freeTransactionFeeAvailable) {
+            feeRelayerInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
+        } else {
+            rpcRepository.sendTransaction(transaction)
+        }
 
         val signature = transaction.signature
-
-        val transactionId = feeRelayerInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
-
         return OrcaSwapResult.Finished(transactionId, signature.signature)
     }
 
     private suspend fun swapTransitiveSingle(
         bestPoolsPair: OrcaPoolsPair,
         toWalletPubkey: String?,
-        feeRelayerFeePayer: PublicKey?,
+        feePayer: PublicKey?,
         info: OrcaSwapInfo,
         owner: Account,
         fromWalletPubkey: String,
@@ -422,7 +425,7 @@ class OrcaSwapInteractor(
         val transaction = Transaction()
         transaction.addInstructions(accountInstructions.instructions)
         transaction.addInstructions(accountInstructions.cleanupInstructions)
-        transaction.feePayer = feeRelayerFeePayer
+        transaction.feePayer = feePayer
 
         val recentBlockhash = rpcRepository.getRecentBlockhash()
         transaction.recentBlockHash = recentBlockhash.recentBlockhash
@@ -433,7 +436,11 @@ class OrcaSwapInteractor(
 
         val signature = transaction.signature
 
-        val transactionId = feeRelayerInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
+        val transactionId = if (freeTransactionFeeAvailable) {
+            feeRelayerInteractor.relayTransaction(transaction).firstOrNull().orEmpty()
+        } else {
+            rpcRepository.sendTransaction(transaction)
+        }
         return OrcaSwapResult.Finished(transactionId, signature.signature)
     }
 
@@ -588,7 +595,7 @@ class OrcaSwapInteractor(
         pool0: OrcaPool,
         pool1: OrcaPool,
         toWalletPubkey: String?,
-        feeRelayerFeePayer: PublicKey?,
+        feePayer: PublicKey?,
         onConfirmed: () -> Unit
     ): List<OrcaInstructionsData> {
         val info = orcaInfoInteractor.getInfo()
@@ -630,8 +637,7 @@ class OrcaSwapInteractor(
         }
 
         // if creating transaction is needed
-        val feePayerPublicKey = feeRelayerFeePayer ?: owner
-        transaction.feePayer = feePayerPublicKey
+        transaction.feePayer = feePayer
 
         val blockhash = rpcRepository.getRecentBlockhash().recentBlockhash
         transaction.recentBlockHash = blockhash

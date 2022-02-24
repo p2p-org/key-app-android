@@ -21,7 +21,7 @@ import java.math.BigDecimal
 
 private const val PAGE_SIZE = 20
 
-class TokenInfoPresenter(
+class HistoryPresenter(
     private val token: Token.Active,
     private val historyInteractor: HistoryInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
@@ -196,6 +196,8 @@ class TokenInfoPresenter(
                     }
                 }
             }
+
+            view?.showDetails(transaction)
         }
     }
 }

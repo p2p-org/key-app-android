@@ -337,6 +337,8 @@
     <string name="send_confirm_warning_highlight">Once confirmed, it cannot be reversed.</string>
     <string name="send_confirm_with_fingerprint">Confirm with fingerprint</string>
     <string name="send_successful_format">%s is successfully sent!</string>
+    <string name="send_transaction_success">%s is successfully sent!</string>
+    <string name="send_transaction_error">%s send didn\'t complete!</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>

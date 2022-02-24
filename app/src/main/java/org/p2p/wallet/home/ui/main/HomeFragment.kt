@@ -22,7 +22,7 @@ import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.send.ui.SendFragment
+import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.getColor

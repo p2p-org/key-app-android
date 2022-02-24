@@ -18,7 +18,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSearchBinding
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.Target
-import org.p2p.wallet.send.ui.KEY_REQUEST_SEND
+import org.p2p.wallet.send.ui.main.KEY_REQUEST_SEND
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter

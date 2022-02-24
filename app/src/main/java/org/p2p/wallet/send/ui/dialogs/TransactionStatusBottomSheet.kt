@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.transaction
+package org.p2p.wallet.send.ui.dialogs
 
 import android.content.DialogInterface
 import android.os.Bundle

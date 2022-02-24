@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui
+package org.p2p.wallet.send.ui.main
 
 import android.content.Context
 import android.text.SpannedString
@@ -61,7 +61,7 @@ class SendDetailsView @JvmOverloads constructor(
             val color = context.getColor(R.color.textIconSecondary)
             receiveTextView.text = SpanUtils.highlightText(
                 data.fullReceive,
-                data.approxReceive.orEmpty(),
+                data.approxReceive,
                 color
             )
             totalSourceTextView.text = SpanUtils.highlightText(
