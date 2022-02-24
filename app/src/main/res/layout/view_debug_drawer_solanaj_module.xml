@@ -46,7 +46,7 @@
         android:background="@drawable/bg_debug_drawer_rounded"
         android:enabled="true"
         android:text="Close account"
-        android:textColor="@color/textIconPrimary"
+        android:textColor="@color/textIconButtonPrimary"
         tools:ignore="HardcodedText" />
 
 </LinearLayout>
