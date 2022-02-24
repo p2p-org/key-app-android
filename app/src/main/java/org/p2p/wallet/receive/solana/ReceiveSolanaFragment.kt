@@ -102,6 +102,7 @@ class ReceiveSolanaFragment :
         binding.progressButton.setOnClickListener {
             presenter.onBrowserClicked(token.publicKey)
             val url = getString(R.string.solanaWalletExplorer, token.publicKey)
+            showUrlInCustomTabs(url)
         }
     }
 
