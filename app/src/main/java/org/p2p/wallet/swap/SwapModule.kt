@@ -82,7 +82,7 @@ object SwapModule : InjectionModule {
         factory { OrcaInstructionsInteractor(get()) }
         factory { OrcaPoolInteractor(get(), get(), get(), get()) }
 
-        factory { TransactionAddressInteractor(get(), get()) }
+        factory { TransactionAddressInteractor(get(), get(), get()) }
         single { TransactionAmountInteractor(get()) }
 
         factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class

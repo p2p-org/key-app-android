@@ -15,5 +15,20 @@ data class MoonpayBuyCurrencyResponse(
     @SerializedName("quoteCurrencyAmount")
     val quoteCurrencyAmount: Double,
     @SerializedName("totalAmount")
-    val totalAmount: BigDecimal
-)
+    val totalAmount: BigDecimal,
+    @SerializedName("baseCurrency")
+    val baseCurrency: BaseCurrency,
+    @SerializedName("currency")
+    val currency: BaseCurrency
+) {
+    data class BaseCurrency(
+        @SerializedName("name")
+        val name: String,
+        @SerializedName("code")
+        val code: String,
+        @SerializedName("minBuyAmount")
+        val minBuyAmount: BigDecimal,
+        @SerializedName("maxBuyAmount")
+        val maxBuyAmount: BigDecimal?,
+    )
+}

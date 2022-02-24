@@ -12,13 +12,14 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/ic_close"
-            app:navigationIconTint="@color/elementPrimary"
+            app:navigationIconTint="@color/textIconPrimary"
             app:title="@string/settings_what_is_a_security_key"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold20"
-            app:titleTextColor="@color/elementPrimary" />
+            app:titleTextColor="@color/textIconPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

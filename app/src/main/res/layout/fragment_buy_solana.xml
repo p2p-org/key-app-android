@@ -93,7 +93,7 @@
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/elementTertiary"
+                    android:background="@color/strokeSecondary"
                     app:layout_constraintTop_toBottomOf="@id/errorTextView" />
 
                 <TextView
@@ -121,7 +121,7 @@
                     android:singleLine="true"
                     android:text="0 SOL"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    android:textColor="@color/elementPrimary"
+                    android:textColor="@color/textIconPrimary"
                     app:drawableEndCompat="@drawable/ic_exchange"
                     app:layout_constraintBottom_toBottomOf="@id/getTextView"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -142,7 +142,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginHorizontal="20dp"
-            android:background="@color/elementTertiary"
+            android:background="@color/strokeSecondary"
             app:layout_constraintTop_toBottomOf="@id/payTextView" />
 
         <org.p2p.wallet.common.ui.widget.OptionsTextView
@@ -191,7 +191,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginHorizontal="20dp"
-            android:background="@color/elementTertiary"
+            android:background="@color/strokeSecondary"
             app:layout_constraintTop_toBottomOf="@id/payTextView" />
 
         <org.p2p.wallet.common.ui.widget.OptionsTextView

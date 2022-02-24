@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
     android:background="@drawable/bg_rounded"
-    android:backgroundTint="@color/elementPrimary">
+    android:backgroundTint="@color/textIconPrimary">
 
     <ImageView
         android:id="@+id/arrowImageView"
@@ -47,7 +47,7 @@
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="36dp"
-        android:background="@color/elementTertiary"
+        android:background="@color/strokeSecondary"
         android:backgroundTint="@color/strokePrimary"
         app:layout_constraintTop_toBottomOf="@id/subtitleTextView" />
 
@@ -79,9 +79,9 @@
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
         app:buttonDrawable="@drawable/ic_done"
-        app:buttonDrawableTint="@color/elementPrimary"
+        app:buttonDrawableTint="@color/textIconPrimary"
         app:buttonText="@string/receive_understand"
-        app:buttonTextColor="@color/elementPrimary"
+        app:buttonTextColor="@color/textIconPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/infoTextView"
         app:layout_constraintVertical_bias="1" />

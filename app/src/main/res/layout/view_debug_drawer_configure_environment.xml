@@ -15,7 +15,7 @@
         android:layout_marginStart="16dp"
         android:text="Current Node"
         android:textAllCaps="true"
-        android:textColor="@color/messagePrimary"
+        android:textColor="@color/textIconPrimary"
         tools:ignore="HardcodedText" />
 
     <TextView

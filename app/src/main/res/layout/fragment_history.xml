@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="0dp"
-            app:contentScrim="@color/elementPrimary"
+            app:contentScrim="@color/backgroundPrimary"
             app:expandedTitleGravity="top"
             app:expandedTitleMarginEnd="48dp"
             app:expandedTitleMarginStart="48dp"
@@ -25,7 +25,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/elementPrimary"
+                android:background="@color/backgroundPrimary"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.Toolbar
@@ -70,7 +70,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/elementPrimary"
+            android:background="@color/backgroundPrimary"
             app:elevation="1dp">
 
             <org.p2p.wallet.common.ui.widget.ActionButtonsView

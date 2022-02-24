@@ -39,7 +39,7 @@ class OptionsTextView @JvmOverloads constructor(
 
         val optionsValueTextColor = typedArray.getColor(
             R.styleable.OptionsTextView_optionsValueTextColor,
-            getColor(R.color.messagePrimary)
+            getColor(R.color.textIconPrimary)
         )
         binding.valueTextView.setTextColor(optionsValueTextColor)
 

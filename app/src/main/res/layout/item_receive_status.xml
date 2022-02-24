@@ -31,7 +31,7 @@
             android:ellipsize="end"
             android:lines="1"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-            android:textColor="@color/elementPrimary"
+            android:textColor="@color/textIconPrimary"
             tools:text="August 12, 2021 9:06 AM" />
 
     </LinearLayout>
