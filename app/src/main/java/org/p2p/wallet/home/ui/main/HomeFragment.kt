@@ -21,6 +21,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -32,6 +33,9 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 import kotlin.math.absoluteValue
+
+private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
+private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_main),
@@ -65,7 +69,7 @@ class HomeFragment :
 
             with(actionButtonsView) {
                 onBuyItemClickListener = {
-                    replaceFragment(BuySolanaFragment.create())
+                    presenter.onBuyClicked()
                 }
                 onReceiveItemClickListener = {
                     replaceFragment(ReceiveSolanaFragment.create(null))
@@ -90,11 +94,27 @@ class HomeFragment :
             )
         }
 
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_TOKEN,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(KEY_RESULT_TOKEN) -> {
+                    val token = result.getParcelable<Token>(KEY_RESULT_TOKEN)
+                    if (token != null) replaceFragment(BuySolanaFragment.create()) //TODO pass token!
+                }
+            }
+        }
+
         presenter.collectData()
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
         mainAdapter.setItems(tokens, isZerosHidden, state)
+    }
+
+    override fun showTokensForBuy(tokens: List<Token>) {
+        SelectTokenBottomSheet.show(childFragmentManager, tokens, KEY_REQUEST_TOKEN, KEY_RESULT_TOKEN)
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {

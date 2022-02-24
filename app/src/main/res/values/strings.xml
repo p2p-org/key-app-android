@@ -173,6 +173,7 @@
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">$ %s</string>
     <string name="main_select_token">Select token</string>
+    <string name="main_choose_token">Choose a token for buying</string>
     <string name="main_select">Select</string>
     <string name="main_fee">Fee:</string>
     <string name="main_share">Share</string>

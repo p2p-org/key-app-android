@@ -66,6 +66,10 @@ class HomePresenter(
         IntercomService.signIn(tokenKeyProvider.publicKey) {}
     }
 
+    override fun onBuyClicked() {
+        view?.showTokensForBuy(tokens)
+    }
+
     override fun collectData() {
         collectJob?.cancel()
         collectJob = launch {
