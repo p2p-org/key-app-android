@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="center_vertical"
-            android:background="@color/elementTertiary" />
+            android:background="@color/strokeSecondary" />
 
         <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/iconImageView"
@@ -45,7 +45,7 @@
         android:gravity="center"
         android:text="@string/error_network_message"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="@color/elementPrimary" />
+        android:textColor="@color/textIconPrimary" />
 
     <Space
         android:layout_width="match_parent"

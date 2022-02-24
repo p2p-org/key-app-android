@@ -32,7 +32,7 @@ class SearchViewHolder(
             is SearchResult.Full -> {
                 topTextView.text = item.username
                 bottomTextView.withTextOrGone(item.address.cutEnd())
-                bottomTextView.setTextColor(bottomTextView.context.getColor(R.color.elementSecondary))
+                bottomTextView.setTextColor(bottomTextView.context.getColor(R.color.backgroundDisabled))
             }
             is SearchResult.AddressOnly -> {
                 topTextView.text = item.address.cutEnd()

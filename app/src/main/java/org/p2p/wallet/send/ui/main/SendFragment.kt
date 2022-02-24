@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui
+package org.p2p.wallet.send.ui.main
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface.BOLD
@@ -25,7 +25,6 @@ import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.NetworkType
@@ -37,7 +36,7 @@ import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
-import org.p2p.wallet.send.ui.transaction.SendConfirmBottomSheet
+import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
@@ -242,7 +241,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
-            targetTextView.setTextColor(getColor(R.color.messagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
             messageTextView.setTextColor(getColor(R.color.systemErrorMain))
@@ -255,10 +254,10 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = username
-            targetTextView.setTextColor(getColor(R.color.messagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.withTextOrGone(address.cutEnd())
-            messageTextView.setTextColor(getColor(R.color.elementSecondary))
+            messageTextView.setTextColor(getColor(R.color.backgroundDisabled))
             clearImageView.isVisible = true
         }
     }
@@ -268,7 +267,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_warning)
             targetTextView.text = address
-            targetTextView.setTextColor(getColor(R.color.messagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
             messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
@@ -281,7 +280,7 @@ class SendFragment :
             targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
             targetImageView.setImageResource(R.drawable.ic_wallet_white)
             targetTextView.text = address.cutEnd()
-            targetTextView.setTextColor(getColor(R.color.messagePrimary))
+            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.isVisible = false
             clearImageView.isVisible = true
@@ -321,11 +320,18 @@ class SendFragment :
         )
     }
 
+    override fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean) {
+        val tokenAmount = "$amount $symbol"
+        val (message, iconRes) = if (isSuccess) {
+            getString(R.string.send_transaction_success, tokenAmount) to R.drawable.ic_done
+        } else {
+            getString(R.string.send_transaction_error, tokenAmount) to R.drawable.ic_close_red
+        }
+        showSnackbar(message, iconRes)
+    }
+
     override fun showTransactionDetails(transaction: HistoryTransaction) {
-        popAndReplaceFragment(
-            target = TransactionDetailsFragment.create(transaction),
-            popTo = HomeFragment::class
-        )
+        popAndReplaceFragment(TransactionDetailsFragment.create(transaction))
     }
 
     override fun showNetworkDestination(type: NetworkType) {

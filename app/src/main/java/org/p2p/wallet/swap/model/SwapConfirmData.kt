@@ -9,9 +9,9 @@ class SwapConfirmData(
     val sourceToken: Token.Active,
     val destinationToken: Token,
     val sourceAmount: String,
-    val sourceAmountUsd: String?,
+    val sourceAmountUsd: String,
     val destinationAmount: String,
-    val destinationAmountUsd: String?
+    val destinationAmountUsd: String
 ) : Parcelable {
 
     fun getFormattedSourceAmount(): String = "$sourceAmount ${sourceToken.tokenSymbol}"

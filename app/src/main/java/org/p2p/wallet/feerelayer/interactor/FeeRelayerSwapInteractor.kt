@@ -493,7 +493,7 @@ class FeeRelayerSwapInteractor(
         if (WRAPPED_SOL_MINT == destinationTokenMint) {
             // Swap to native SOL account
             userDestinationAccountOwnerAddress = owner
-            addressData = TransactionAddressData(owner, true)
+            addressData = TransactionAddressData(owner, owner, true)
         } else {
             // Swap to other SPL
             userDestinationAccountOwnerAddress = null

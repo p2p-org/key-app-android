@@ -55,13 +55,13 @@ class SwapDetailsView @JvmOverloads constructor(
             destinationPriceTextView.text = SpanUtils.highlightText(
                 data.fullSourcePrice,
                 data.approxSourceUsd.orEmpty(),
-                getColor(R.color.elementSecondary)
+                getColor(R.color.backgroundDisabled)
             )
             sourceNameTextView.text = context.getString(R.string.swap_price_format, data.sourceSymbol)
             sourcePriceTextView.text = SpanUtils.highlightText(
                 data.fullDestinationPrice,
                 data.approxDestinationUsd.orEmpty(),
-                getColor(R.color.elementSecondary)
+                getColor(R.color.backgroundDisabled)
             )
         }
     }
@@ -99,7 +99,7 @@ class SwapDetailsView @JvmOverloads constructor(
                 accountCreationTextView.text = account
 
                 val spannedFee = SpanUtils.highlightText(
-                    fee, approxFeeUsd, getColor(R.color.elementSecondary)
+                    fee, approxFeeUsd, getColor(R.color.backgroundDisabled)
                 )
                 accountCreationTokenTextView.text = spannedFee
             } else {
@@ -136,12 +136,12 @@ class SwapDetailsView @JvmOverloads constructor(
             atLeastTextView.text = SpanUtils.highlightText(
                 data.fullReceiveAtLeast,
                 data.approxReceiveAtLeast.orEmpty(),
-                getColor(R.color.elementSecondary)
+                getColor(R.color.backgroundDisabled)
             )
             totalSourceTextView.text = SpanUtils.highlightText(
                 data.fullTotal,
                 data.approxTotalUsd.orEmpty(),
-                getColor(R.color.elementSecondary)
+                getColor(R.color.backgroundDisabled)
             )
 
             val fullFee = data.fullFee

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
@@ -30,7 +29,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override val presenter: RootContract.Presenter by inject()
-    private lateinit var container: FrameLayout
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: AnalyticsInteractor by inject()
 
@@ -39,7 +37,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         super.onCreate(savedInstanceState)
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
         setContentView(R.layout.activity_root)
-        container = findViewById(R.id.content)
 
         if (savedInstanceState == null) {
             presenter.openRootScreen()

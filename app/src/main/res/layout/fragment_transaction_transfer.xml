@@ -15,7 +15,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/elementPrimary"
+            android:background="@color/backgroundPrimary"
             app:elevation="2dp"
             app:liftOnScroll="true"
             app:liftOnScrollTargetViewId="@id/scrollView">
@@ -163,7 +163,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_gravity="center"
-                            android:background="@drawable/bg_secondary_rounded"
+                            android:background="@drawable/bg_app_rounded"
                             android:padding="4dp"
                             android:rotation="180"
                             android:src="@drawable/ic_back"

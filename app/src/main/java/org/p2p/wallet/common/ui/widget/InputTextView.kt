@@ -23,7 +23,7 @@ class InputTextView @JvmOverloads constructor(
         LayoutInflater.from(context), this
     )
 
-    private val colorIdle = context.getColor(R.color.elementSecondary)
+    private val colorIdle = context.getColor(R.color.backgroundDisabled)
     private val colorFocused = context.getColor(R.color.backgroundButtonPrimary)
     private val colorError = context.getColor(R.color.systemErrorMain)
     private val colorSuccess = context.getColor(R.color.systemSuccessMain)
