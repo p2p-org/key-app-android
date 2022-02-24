@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.p2p.wallet.common.ui.recycler.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.p2p.wallet.common.ui.recycler.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -65,53 +66,42 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:layout_constraintEnd_toStartOf="@id/totalTextView"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
+            app:layout_constraintEnd_toStartOf="@id/valueTextView"
             app:layout_constraintStart_toEndOf="@id/tokenImageView"
             app:layout_constraintTop_toTopOf="@id/tokenImageView"
+            app:layout_constraintBottom_toTopOf="@id/totalTextView"
             tools:text="Solana" />
 
         <TextView
-            android:id="@+id/rateTextView"
+            android:id="@+id/totalTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
             android:textColor="@color/textIconSecondary"
             app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
             app:layout_constraintEnd_toStartOf="@id/valueTextView"
             app:layout_constraintStart_toEndOf="@id/tokenImageView"
             app:layout_constraintTop_toBottomOf="@id/nameTextView"
             app:layout_constraintVertical_bias="1"
-            tools:text="$190.91" />
-
-        <TextView
-            android:id="@+id/totalTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/nameTextView"
             tools:text="23.8112 SOL" />
 
         <TextView
             android:id="@+id/valueTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
-            android:textColor="@color/textIconSecondary"
-            app:layout_constraintBottom_toBottomOf="@id/rateTextView"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+            app:layout_constraintBottom_toBottomOf="@id/totalTextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/rateTextView"
-            tools:text="$4,545.24" />
+            app:layout_constraintTop_toTopOf="@id/nameTextView"
+            android:text="$2,130.78" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
