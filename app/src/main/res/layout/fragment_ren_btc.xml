@@ -228,6 +228,7 @@
                             android:backgroundTint="@color/backgroundApp"
                             android:foreground="?selectableItemBackground"
                             app:buttonDrawable="@drawable/ic_gallery"
+                            app:buttonDrawableTint="@color/backgroundButtonPrimary"
                             app:buttonText="@string/auth_save"
                             app:buttonTextColor="@color/backgroundButtonPrimary" />
                     </androidx.appcompat.widget.LinearLayoutCompat>

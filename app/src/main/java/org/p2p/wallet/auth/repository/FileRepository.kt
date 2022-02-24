@@ -7,8 +7,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.format.DateFormat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.p2p.wallet.R
 import java.io.BufferedOutputStream
 import java.io.File
@@ -17,9 +15,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.util.Date
 
-class FileRepository(
-    private val context: Context
-) {
+class FileRepository(private val context: Context) {
 
     private val pdfFolder: File
 
@@ -29,7 +25,7 @@ class FileRepository(
     }
 
     @Throws(IOException::class)
-    suspend fun saveQr(name: String, bitmap: Bitmap) = withContext(Dispatchers.IO) {
+    fun saveQr(name: String, bitmap: Bitmap) {
         val stream: OutputStream = generateOutputStream(name)
             ?: throw IllegalStateException("Couldn't save qr image")
 
@@ -37,10 +33,7 @@ class FileRepository(
         stream.close()
     }
 
-    fun savePdf(
-        fileName: String,
-        bytes: ByteArray
-    ): File {
+    fun savePdf(fileName: String, bytes: ByteArray): File {
         ensurePdfFolderExists()
         val pdfFolder = getPdfFile(fileName)
         BufferedOutputStream(FileOutputStream(pdfFolder)).use {
