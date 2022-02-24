@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
@@ -11,6 +12,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
+import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
@@ -29,6 +31,7 @@ import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
+import kotlin.math.absoluteValue
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_main),
@@ -78,6 +81,13 @@ class HomeFragment :
             swipeRefreshLayout.setOnRefreshListener {
                 presenter.refresh()
             }
+
+            appBarLayout.addOnOffsetChangedListener(
+                AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                    val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
+                    (binding.actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
+                }
+            )
         }
 
         presenter.collectData()
