@@ -101,7 +101,7 @@
             app:layout_constraintBottom_toBottomOf="@id/totalTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/nameTextView"
-            android:text="$2,130.78" />
+            tools:text="$2,130.78" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
