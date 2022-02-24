@@ -32,7 +32,7 @@
             android:maxLines="1"
             android:paddingHorizontal="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="@color/elementPrimary"
+            android:textColor="@color/textIconPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/actionImageView"
             app:layout_constraintStart_toEndOf="@id/imageView"

@@ -6,7 +6,7 @@
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/elementPrimary"
+    android:background="@color/backgroundPrimary"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/elementPrimary"
+            android:background="@color/backgroundPrimary"
             app:navigationIcon="@drawable/ic_back"
             app:title="@string/settings_security"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />

@@ -10,7 +10,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/elementPrimary"
+        android:background="@color/backgroundPrimary"
         app:elevation="2dp"
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/scrollView">

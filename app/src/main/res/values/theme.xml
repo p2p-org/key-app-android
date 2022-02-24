@@ -13,12 +13,12 @@
         <item name="colorPrimary">@color/backgroundButtonPrimary</item>
         <item name="colorPrimaryDark">@color/backgroundActivePrimary</item>
 
-        <item name="colorSecondary">@color/elementSecondary</item>
-        <item name="colorControlHighlight">@color/elementSecondary</item>
+        <item name="colorSecondary">@color/backgroundDisabled</item>
+        <item name="colorControlHighlight">@color/backgroundDisabled</item>
 
         <item name="colorAccent">@color/backgroundButtonPrimary</item>
         <item name="colorControlActivated">@color/backgroundButtonPrimary</item>
-        <item name="colorControlNormal">@color/messagePrimary</item>
+        <item name="colorControlNormal">@color/textIconPrimary</item>
         <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>
 
         <item name="windowActionModeOverlay">true</item>
@@ -26,8 +26,8 @@
         <item name="android:windowAnimationStyle">@null</item>
         <!-- fix blue text for come Lollipop devices -->
         <!-- https://stackoverflow.com/questions/45196244/android-textcolor-ignored-in-androidtextappearance-of-the-edittext -->
-        <item name="android:editTextColor">@color/messagePrimary</item>
-        <item name="android:textColor">@color/messagePrimary</item>
+        <item name="android:editTextColor">@color/textIconPrimary</item>
+        <item name="android:textColor">@color/textIconPrimary</item>
         <item name="android:actionMenuTextColor">?colorSecondary</item>
     </style>
 </resources>

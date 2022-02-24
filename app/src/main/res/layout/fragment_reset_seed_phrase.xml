@@ -48,7 +48,7 @@
                     android:background="@android:color/transparent"
                     android:hint="@string/auth_seed_order"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                    android:textColorHint="@color/elementPrimary"
+                    android:textColorHint="@color/textIconPrimary"
                     tools:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
