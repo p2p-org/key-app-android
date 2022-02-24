@@ -24,6 +24,5 @@ interface ReceiveSolanaContract {
         fun saveQr(name: String, bitmap: Bitmap)
         fun onNetworkClicked()
         fun onBrowserClicked(publicKey: String)
-        fun onSaveClicked()
     }
 }

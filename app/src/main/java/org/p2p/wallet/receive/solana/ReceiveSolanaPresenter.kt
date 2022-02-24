@@ -76,9 +76,6 @@ class ReceiveSolanaPresenter(
         view?.showBrowser(url)
     }
 
-    override fun onSaveClicked() {
-    }
-
     private fun generateQrCode(address: String) {
         qrJob?.cancel()
         qrJob = launch {
