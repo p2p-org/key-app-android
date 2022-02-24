@@ -22,31 +22,54 @@ class ReceiveNetworkTypePresenter(
     private val transactionAmountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val receiveAnalytics: ReceiveAnalytics,
-    private val networkType: NetworkType
+    networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
 
+    private var selectedNetworkType: NetworkType = networkType
+
     override fun load() {
-        view?.setCheckState(networkType)
+        view?.setCheckState(selectedNetworkType)
     }
 
-    override fun onNetworkChanged(type: NetworkType) {
+    override fun onNetworkChanged(networkType: NetworkType) {
         launch {
-            when (type) {
-                NetworkType.SOLANA -> {
-                    view?.navigateToReceive(type)
-                }
-                NetworkType.BITCOIN -> {
-                    onBitcoinSelected(type)
-                }
+            selectedNetworkType = networkType
+            if (selectedNetworkType == NetworkType.SOLANA) {
+                view?.navigateToReceive(selectedNetworkType)
+            } else {
+                onBitcoinSelected()
             }
-            val networkType = if (type == NetworkType.SOLANA) ReceiveAnalytics.ReceiveNetwork.SOLANA
-            else ReceiveAnalytics.ReceiveNetwork.BITCOIN
-            receiveAnalytics.logReceiveChangingNetwork(networkType)
+            val analyticsNetworkType = if (networkType == NetworkType.SOLANA) {
+                ReceiveAnalytics.ReceiveNetwork.SOLANA
+            } else {
+                ReceiveAnalytics.ReceiveNetwork.BITCOIN
+            }
+            receiveAnalytics.logReceiveChangingNetwork(analyticsNetworkType)
         }
     }
 
-    private fun onBitcoinSelected(type: NetworkType) {
+    override fun onTopupSelected(isSelected: Boolean) {
+        if (isSelected) {
+            // TODO implement topup
+        } else {
+            view?.close()
+        }
+    }
+
+    override fun onBuySelected(isSelected: Boolean) {
+        if (isSelected) {
+            view?.navigateToReceive(selectedNetworkType)
+        }
+    }
+
+    override fun onBtcSelected(isSelected: Boolean) {
+        if (isSelected) {
+            view?.navigateToReceive(selectedNetworkType)
+        }
+    }
+
+    private fun onBitcoinSelected() {
         launch {
             try {
                 view?.showLoading(true)
@@ -57,12 +80,12 @@ class ReceiveNetworkTypePresenter(
                     val userPublicKey = tokenKeyProvider.publicKey
                     val sol = userTokens.find { it.isSOL && it.publicKey == userPublicKey }
                         ?: throw IllegalStateException("No SOL account found")
-                    createBtcWallet(sol, type)
+                    createBtcWallet(sol)
                 } else {
-                    onWalletExists(type)
+                    onWalletExists()
                 }
             } catch (e: Throwable) {
-                Timber.e(e)
+                Timber.e("Error on switch network: $e")
                 view?.showErrorMessage(e)
             } finally {
                 view?.showLoading(false)
@@ -70,24 +93,24 @@ class ReceiveNetworkTypePresenter(
         }
     }
 
-    private suspend fun onWalletExists(type: NetworkType) {
+    private suspend fun onWalletExists() {
         val session = renBtcInteractor.findActiveSession()
         if (session != null && session.isValid) {
             receiveAnalytics.logReceiveSettingBitcoin()
-            view?.navigateToReceive(type)
+            view?.navigateToReceive(selectedNetworkType)
         } else {
-            view?.showNetworkInfo(type)
+            view?.showNetworkInfo(selectedNetworkType)
         }
     }
 
-    private suspend fun createBtcWallet(sol: Token.Active, type: NetworkType) {
+    private suspend fun createBtcWallet(sol: Token.Active) {
         val btcMinPrice = transactionAmountInteractor.getMinBalanceForRentExemption()
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - btcMinPrice) >= BigInteger.ZERO
         if (isAmountEnough) {
             val priceInSol = btcMinPrice.fromLamports(sol.decimals).scaleMedium()
             val priceInUsd = priceInSol.toUsd(sol)
-            view?.showBuy(priceInSol, priceInUsd, type)
+            view?.showBuy(priceInSol, priceInUsd)
         } else {
             view?.showTopup()
         }

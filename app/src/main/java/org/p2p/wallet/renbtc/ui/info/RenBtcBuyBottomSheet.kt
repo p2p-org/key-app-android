@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogBtcBuyInfoBinding
@@ -15,7 +17,10 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
-class RenBtcBuyBottomSheet(private val block: () -> Unit) : NonDraggableBottomSheetDialogFragment() {
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+
+class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_PRICE_IN_SOL = "EXTRA_PRICE_IN_SOL"
@@ -24,16 +29,21 @@ class RenBtcBuyBottomSheet(private val block: () -> Unit) : NonDraggableBottomSh
             fm: FragmentManager,
             priceInSol: BigDecimal,
             priceInUsd: BigDecimal?,
-            block: () -> Unit
-        ) = RenBtcBuyBottomSheet(block).withArgs(
+            requestKey: String,
+            resultKey: String,
+        ) = RenBtcBuyBottomSheet().withArgs(
             EXTRA_PRICE_IN_SOL to priceInSol,
-            EXTRA_PRICE_IN_USD to priceInUsd
+            EXTRA_PRICE_IN_USD to priceInUsd,
+            EXTRA_REQUEST_KEY to requestKey,
+            EXTRA_RESULT_KEY to resultKey
         ).show(fm, RenBtcBuyBottomSheet::javaClass.name)
     }
 
     private val binding: DialogBtcBuyInfoBinding by viewBinding()
     private val priceInSol: BigDecimal by args(EXTRA_PRICE_IN_SOL)
     private val priceInUsd: BigDecimal? by args(EXTRA_PRICE_IN_USD)
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_btc_buy_info, container, false)
@@ -42,7 +52,7 @@ class RenBtcBuyBottomSheet(private val block: () -> Unit) : NonDraggableBottomSh
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             progressButton.setOnClickListener {
-                block.invoke()
+                setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
                 dismissAllowingStateLoss()
             }
 

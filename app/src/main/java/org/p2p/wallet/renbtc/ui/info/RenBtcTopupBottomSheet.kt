@@ -41,15 +41,18 @@ class RenBtcTopupBottomSheet : NonDraggableBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             topupButton.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
-                dismissAllowingStateLoss()
+                setResult(isTopupSelected = true)
             }
             progressButton.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(Pair(resultKey, false)))
-                dismissAllowingStateLoss()
+                setResult(isTopupSelected = false)
             }
         }
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+
+    private fun setResult(isTopupSelected: Boolean) {
+        setFragmentResult(requestKey, bundleOf(Pair(resultKey, isTopupSelected)))
+        dismissAllowingStateLoss()
+    }
 }

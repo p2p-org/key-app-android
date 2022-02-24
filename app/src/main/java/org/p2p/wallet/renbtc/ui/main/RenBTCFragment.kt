@@ -34,6 +34,8 @@ class RenBTCFragment :
     RenBTCContract.View {
 
     companion object {
+        private const val REQUEST_KEY = "REQUEST_KEY"
+        private const val BUNDLE_KEY_NETWORK_TYPE = "BUNDLE_KEY_NETWORK_TYPE"
         fun create() = RenBTCFragment()
     }
 
@@ -56,8 +58,8 @@ class RenBTCFragment :
             networkView.setOnClickListener {
                 presenter.onNetworkClicked()
             }
-            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
-                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
+            setFragmentResultListener(REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
                 if (type == NetworkType.SOLANA) {
                     popAndReplaceFragment(ReceiveSolanaFragment.create(null))
                 }
@@ -133,7 +135,7 @@ class RenBTCFragment :
     }
 
     override fun showNetwork() {
-        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN, REQUEST_KEY, BUNDLE_KEY_NETWORK_TYPE))
     }
 
     override fun showBrowser(url: String) {

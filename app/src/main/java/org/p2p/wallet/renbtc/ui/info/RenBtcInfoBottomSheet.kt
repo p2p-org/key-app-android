@@ -4,22 +4,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogBtcNetworkInfoBinding
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
 
-class RenBtcInfoBottomSheet(private val block: () -> Unit) : NonDraggableBottomSheetDialogFragment() {
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+
+class RenBtcInfoBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
-        fun show(fm: FragmentManager, block: () -> Unit) =
-            RenBtcInfoBottomSheet(block).show(fm, RenBtcInfoBottomSheet::javaClass.name)
+        fun show(fm: FragmentManager, requestKey: String, resultKey: String) =
+            RenBtcInfoBottomSheet().withArgs(
+                EXTRA_REQUEST_KEY to requestKey,
+                EXTRA_RESULT_KEY to resultKey
+            ).show(fm, RenBtcInfoBottomSheet::javaClass.name)
     }
 
     private val binding: DialogBtcNetworkInfoBinding by viewBinding()
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_btc_network_info, container, false)
@@ -28,7 +40,7 @@ class RenBtcInfoBottomSheet(private val block: () -> Unit) : NonDraggableBottomS
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             progressButton.setOnClickListener {
-                block.invoke()
+                setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
                 dismissAllowingStateLoss()
             }
 

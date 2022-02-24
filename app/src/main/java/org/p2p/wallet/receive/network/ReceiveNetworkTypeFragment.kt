@@ -25,6 +25,8 @@ import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
 private const val EXTRA_NETWORK_TYPE = "EXTRA_NETWORK_TYPE"
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ReceiveNetworkTypeFragment() :
     BaseMvpFragment<ReceiveNetworkTypeContract.View, ReceiveNetworkTypeContract.Presenter>
@@ -33,12 +35,17 @@ class ReceiveNetworkTypeFragment() :
 
     companion object {
         const val REQUEST_KEY = "REQUEST_KEY"
-        const val BUNDLE_KEY_IS_TOPUP_SELECTED = "BUNDLE_KEY_IS_TOPUP_SELECTED"
-        const val BUNDLE_NETWORK_KEY = "BUNDLE_NETWORK_KEY"
+        private const val BUNDLE_KEY_IS_TOPUP_SELECTED = "BUNDLE_KEY_IS_TOPUP_SELECTED"
+        private const val BUNDLE_KEY_IS_BUY_SELECTED = "BUNDLE_KEY_IS_BUY_SELECTED"
+        private const val BUNDLE_KEY_IS_BTC_SELECTED = "BUNDLE_KEY_IS_BTC_SELECTED"
         fun create(
-            networkType: NetworkType = NetworkType.SOLANA
+            networkType: NetworkType = NetworkType.SOLANA,
+            requestKey: String,
+            resultKey: String
         ) = ReceiveNetworkTypeFragment().withArgs(
-            EXTRA_NETWORK_TYPE to networkType
+            EXTRA_NETWORK_TYPE to networkType,
+            EXTRA_REQUEST_KEY to requestKey,
+            EXTRA_RESULT_KEY to resultKey
         )
     }
 
@@ -46,8 +53,10 @@ class ReceiveNetworkTypeFragment() :
         parametersOf(networkType)
     }
     private val binding: FragmentReceiveNetworkTypeBinding by viewBinding()
-    private val networkType: NetworkType by args(EXTRA_NETWORK_TYPE)
     private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val networkType: NetworkType by args(EXTRA_NETWORK_TYPE)
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,21 +75,20 @@ class ReceiveNetworkTypeFragment() :
         }
         childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { key, bundle ->
             if (bundle.containsKey(BUNDLE_KEY_IS_TOPUP_SELECTED)) {
-                val isTopupSelected = bundle.getBoolean(BUNDLE_KEY_IS_TOPUP_SELECTED)
-                if (isTopupSelected) {
-                    // TODO implement topup
-                } else {
-                    popBackStack()
-                }
+                onTopupResult(bundle)
+            }
+            if (bundle.containsKey(BUNDLE_KEY_IS_BUY_SELECTED)) {
+                onBuyResult(bundle)
+            }
+            if (bundle.containsKey(BUNDLE_KEY_IS_BTC_SELECTED)) {
+                onBtcInfoResult(bundle)
             }
         }
         presenter.load()
     }
 
     override fun showNetworkInfo(type: NetworkType) {
-        RenBtcInfoBottomSheet.show(childFragmentManager) {
-            navigateToReceive(type)
-        }
+        RenBtcInfoBottomSheet.show(childFragmentManager, REQUEST_KEY, BUNDLE_KEY_IS_BTC_SELECTED)
         analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN_INFO)
     }
 
@@ -92,7 +100,7 @@ class ReceiveNetworkTypeFragment() :
     }
 
     override fun navigateToReceive(type: NetworkType) {
-        setFragmentResult(REQUEST_KEY, Bundle().apply { putParcelable(BUNDLE_NETWORK_KEY, type) })
+        setFragmentResult(requestKey, Bundle().apply { putParcelable(resultKey, type) })
         popBackStack()
     }
 
@@ -100,13 +108,36 @@ class ReceiveNetworkTypeFragment() :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?, type: NetworkType) {
-        RenBtcBuyBottomSheet.show(childFragmentManager, priceInSol, priceInUsd) {
-            navigateToReceive(type)
-        }
+    override fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?) {
+        RenBtcBuyBottomSheet.show(
+            fm = childFragmentManager,
+            priceInSol = priceInSol,
+            priceInUsd = priceInUsd,
+            requestKey = REQUEST_KEY,
+            resultKey = BUNDLE_KEY_IS_BUY_SELECTED
+        )
     }
 
     override fun showTopup() {
         RenBtcTopupBottomSheet.show(childFragmentManager, REQUEST_KEY, BUNDLE_KEY_IS_TOPUP_SELECTED)
+    }
+
+    override fun close() {
+        popBackStack()
+    }
+
+    private fun onTopupResult(bundle: Bundle) {
+        val isTopupSelected = bundle.getBoolean(BUNDLE_KEY_IS_TOPUP_SELECTED)
+        presenter.onTopupSelected(isTopupSelected)
+    }
+
+    private fun onBuyResult(bundle: Bundle) {
+        val isBuySelected = bundle.getBoolean(BUNDLE_KEY_IS_BUY_SELECTED)
+        presenter.onBuySelected(isBuySelected)
+    }
+
+    private fun onBtcInfoResult(bundle: Bundle) {
+        val isBtcSelected = bundle.getBoolean(BUNDLE_KEY_IS_BTC_SELECTED)
+        presenter.onBtcSelected(isBtcSelected)
     }
 }

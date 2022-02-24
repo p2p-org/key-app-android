@@ -11,12 +11,16 @@ interface ReceiveNetworkTypeContract {
         fun setCheckState(type: NetworkType)
         fun navigateToReceive(type: NetworkType)
         fun showLoading(isLoading: Boolean)
-        fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?, type: NetworkType)
+        fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?)
         fun showTopup()
+        fun close()
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onNetworkChanged(type: NetworkType)
+        fun onNetworkChanged(networkType: NetworkType)
+        fun onTopupSelected(isSelected: Boolean)
+        fun onBuySelected(isSelected: Boolean)
+        fun onBtcSelected(isSelected: Boolean)
         fun load()
     }
 }
