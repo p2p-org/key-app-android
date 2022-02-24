@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -31,9 +32,9 @@ class ReceiveNetworkTypeFragment() :
     ReceiveNetworkTypeContract.View {
 
     companion object {
-        const val REQUEST_KEY = "REQUEST_KEY_NETWORK_TYPE"
+        const val REQUEST_KEY = "REQUEST_KEY"
+        const val BUNDLE_KEY_IS_TOPUP_SELECTED = "BUNDLE_KEY_IS_TOPUP_SELECTED"
         const val BUNDLE_NETWORK_KEY = "BUNDLE_NETWORK_KEY"
-
         fun create(
             networkType: NetworkType = NetworkType.SOLANA
         ) = ReceiveNetworkTypeFragment().withArgs(
@@ -61,6 +62,16 @@ class ReceiveNetworkTypeFragment() :
             }
             btcButton.setOnClickListener {
                 presenter.onNetworkChanged(NetworkType.BITCOIN)
+            }
+        }
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { key, bundle ->
+            if (bundle.containsKey(BUNDLE_KEY_IS_TOPUP_SELECTED)) {
+                val isTopupSelected = bundle.getBoolean(BUNDLE_KEY_IS_TOPUP_SELECTED)
+                if (isTopupSelected) {
+                    // TODO implement topup
+                } else {
+                    popBackStack()
+                }
             }
         }
         presenter.load()
@@ -96,14 +107,6 @@ class ReceiveNetworkTypeFragment() :
     }
 
     override fun showTopup() {
-        RenBtcTopupBottomSheet.show(childFragmentManager, ::onTopupClicked, ::onUseSolanaClicked)
-    }
-
-    private fun onTopupClicked() {
-        // TODO implement topup feature
-    }
-
-    private fun onUseSolanaClicked() {
-        popBackStack()
+        RenBtcTopupBottomSheet.show(childFragmentManager, REQUEST_KEY, BUNDLE_KEY_IS_TOPUP_SELECTED)
     }
 }

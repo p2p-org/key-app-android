@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
     android:background="@drawable/bg_rounded"
-    android:backgroundTint="@color/elementPrimary">
+    android:backgroundTint="@color/backgroundPrimary">
 
     <ImageView
         android:id="@+id/arrowImageView"
@@ -79,7 +79,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="82dp">
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="44dp"

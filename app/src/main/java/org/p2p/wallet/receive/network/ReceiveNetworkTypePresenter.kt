@@ -13,6 +13,7 @@ import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
+import timber.log.Timber
 import java.math.BigInteger
 
 class ReceiveNetworkTypePresenter(
@@ -50,17 +51,18 @@ class ReceiveNetworkTypePresenter(
             try {
                 view?.showLoading(true)
                 val userTokens = userInteractor.getUserTokens()
-                val bitcoinWallet = userTokens.firstOrNull { it.isRenBTC }
+                val renBtcWallet = userTokens.firstOrNull { it.isRenBTC }
 
-                if (bitcoinWallet == null) {
+                if (renBtcWallet == null) {
                     val userPublicKey = tokenKeyProvider.publicKey
                     val sol = userTokens.find { it.isSOL && it.publicKey == userPublicKey }
                         ?: throw IllegalStateException("No SOL account found")
                     createBtcWallet(sol, type)
-                    return@launch
+                } else {
+                    onWalletExists(type)
                 }
-                onWalletExists(type)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                Timber.e(e)
                 view?.showErrorMessage(e)
             } finally {
                 view?.showLoading(false)
@@ -83,7 +85,7 @@ class ReceiveNetworkTypePresenter(
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - btcMinPrice) >= BigInteger.ZERO
         if (isAmountEnough) {
-            val priceInSol = btcMinPrice.fromLamports().scaleMedium()
+            val priceInSol = btcMinPrice.fromLamports(sol.decimals).scaleMedium()
             val priceInUsd = priceInSol.toUsd(sol)
             view?.showBuy(priceInSol, priceInUsd, type)
         } else {

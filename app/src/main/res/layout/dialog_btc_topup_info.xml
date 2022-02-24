@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
     android:background="@drawable/bg_rounded"
-    android:backgroundTint="@color/elementPrimary">
+    android:backgroundTint="@color/backgroundPrimary">
 
     <ImageView
         android:id="@+id/arrowImageView"
