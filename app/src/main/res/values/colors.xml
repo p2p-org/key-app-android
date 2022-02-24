@@ -1,52 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--Colors that are not designed-->
     <color name="colorProgressBackground">#33FFFFFF</color>
-    <color name="colorGreen">#2DB533</color>
-    <color name="colorGreenTransparent">#802DB533</color>
-    <color name="systemWarning">#FFA631</color>
-    <color name="systemWarningBackground">#FFFBF5</color>
-    <color name="colorErrorBackground">#FEF5F5</color>
 
-    <color name="accentPrimary">#5887FF</color>
-    <color name="accentSecondary">#96B1F8</color>
-    <color name="accentTertiary">#EFF3FF</color>
-    <color name="accentWarning">#FF5858</color>
+    <!--System colors-->
+    <color name="statusBarColor">@android:color/transparent</color>
+    <color name="navigationBarColor">@android:color/transparent</color>
 
-    <color name="elementPrimary">#FFFFFFFF</color>
+    <!--Base colors-->
+    <color name="elementPrimary">@color/white</color>
     <color name="elementSecondary">#A3A5BA</color>
     <color name="elementTertiary">#FBFBFD</color>
     <color name="elementSurface">#D2D4E5</color>
 
-    <color name="messagePrimary">#CC000000</color>
+    <color name="messagePrimary">@color/black_80</color>
     <color name="messageSecondary">#202020</color>
     <color name="backgroundPrimary">#FFFFFF</color>
     <color name="backgroundSecondary">#F6F6F8</color>
 
-    <color name="white">#FFFFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="colorStaticDark">#CC000000</color>
-    <color name="colorSnackBar">#404040</color>
-
-    <!-- new colors below -->
+    <!--Error colors-->
     <color name="systemErrorMain">#F43D3D</color>
-    <color name="systemError">#F43D3D</color>
     <color name="systemErrorSecondary">#FD7373</color>
     <color name="systemErrorBackground">#FEF5F5</color>
+
+    <!--Success colors-->
     <color name="systemSuccess">#77DB7C</color>
-    <color name="systemSuccessMain">#2DB533</color>
+    <color name="systemSuccessMain">@color/colorGreen</color>
     <color name="systemSuccessSecondary">#50D756</color>
     <color name="systemSuccessBackground">#F5FBF5</color>
+
+    <!--Warning colors-->
     <color name="systemWarningMain">#FFA631</color>
+    <color name="systemWarningBackground">#FFFBF5</color>
 
     <color name="strokePrimary">#D3D4DE</color>
     <color name="strokeSecondary">#F6F6F8</color>
 
+    <!--Common Text colors-->
     <color name="textIconSecondary">#8E8E93</color>
     <color name="textIconButtonPrimary">#FFFFFF</color>
     <color name="textIconPrimary">#202020</color>
     <color name="textIconLink">#82A5FF</color>
     <color name="textIconActive">#5887FF</color>
 
+    <!--Common Background colors-->
     <color name="backgroundApp">#FBFBFD</color>
     <color name="backgroundAppStroke">#F2F2F7</color>
     <color name="backgroundActivePrimary">#EFF3FF</color>
@@ -54,6 +52,9 @@
     <color name="backgroundButtonPrimary">#5887FF</color>
     <color name="backgroundBanner">#D8F3E2</color>
     <color name="backgroundBannerSecondary">#D7D1FF</color>
+    <color name="colorBackgroundNotification">#404040</color>
 
+    <!--Android Overridden colors-->
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/elementSecondary</color>
+
 </resources>

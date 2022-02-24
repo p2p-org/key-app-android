@@ -6,6 +6,8 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.text.Editable
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
@@ -13,6 +15,8 @@ import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
@@ -63,13 +67,17 @@ class OrcaSwapFragment :
     override val presenter: OrcaSwapContract.Presenter by inject {
         parametersOf(token)
     }
-
     private val binding: FragmentSwapOrcaBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private var onBackPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
+            presenter.onBackPressed()
+        }
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
             toolbar.setOnMenuItemClickListener { menu ->
                 if (menu.itemId == R.id.settingsMenuItem) {
                     presenter.loadDataForSettings()
@@ -90,7 +98,6 @@ class OrcaSwapFragment :
             swapDetails.setOnPayFeeClickListener {
                 presenter.loadDataForSettings()
             }
-
             swapButton.setOnClickListener { presenter.swapOrConfirm() }
         }
 
@@ -198,6 +205,10 @@ class OrcaSwapFragment :
         SwapConfirmBottomSheet.show(this, data) { presenter.swap() }
     }
 
+    override fun close() {
+        popBackStack()
+    }
+
     override fun showNewAmount(amount: String) {
         binding.amountEditText.removeTextChangedListener(inputTextWatcher)
         binding.amountEditText.setText(amount)
@@ -214,6 +225,7 @@ class OrcaSwapFragment :
     }
 
     override fun showError(@StringRes errorText: Int?) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.ERROR)
         binding.swapDetails.showError(errorText)
     }
 
@@ -249,6 +261,7 @@ class OrcaSwapFragment :
     }
 
     override fun showDestinationSelection(tokens: List<Token>) {
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.CURRENCY_B)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,
@@ -277,6 +290,7 @@ class OrcaSwapFragment :
 
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
+            analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.PROCESSING)
             ProgressBottomSheet.show(childFragmentManager, data)
         } else {
             ProgressBottomSheet.hide(childFragmentManager)

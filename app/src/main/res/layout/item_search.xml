@@ -46,7 +46,7 @@
             android:maxLines="1"
             android:singleLine="true"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorElementSecondary"
+            android:textColor="@color/elementPrimary"
             tools:text="FG4Y3yX4AAchp1HvNZ7LfzFTewF2...rdpT" />
     </LinearLayout>
 

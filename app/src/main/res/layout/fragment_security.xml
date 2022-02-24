@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?colorElementPrimary"
+            android:background="@color/elementPrimary"
             app:navigationIcon="@drawable/ic_back"
             app:title="@string/settings_security"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
@@ -30,7 +30,7 @@
             android:paddingHorizontal="32dp"
             android:text="@string/settings_confirmations"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-            android:textColor="@color/accentPrimary" />
+            android:textColor="@color/backgroundButtonPrimary" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -76,7 +76,7 @@
             android:paddingHorizontal="32dp"
             android:text="@string/settings_biometrics"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-            android:textColor="@color/accentPrimary" />
+            android:textColor="@color/backgroundButtonPrimary" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

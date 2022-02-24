@@ -7,11 +7,15 @@ import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.ui.orca.KEY_REQUEST_SWAP
@@ -48,15 +52,17 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
     private val tokens: List<Token.Active> by args(EXTRA_TOKENS)
     private var selectedToken: Token.Active by args(EXTRA_SELECTED_TOKEN)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
-
+    private val swapAnalytics: SwapAnalytics by inject()
     private val tokensAdapter: SwapSettingsTokensAdapter by lazy {
         SwapSettingsTokensAdapter(selectedToken) { onTokenSelected(it) }
     }
 
     private val binding: FragmentSwapSettingsBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.SETTINGS)
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 updateSettings()
@@ -88,6 +94,16 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
             updateSettings()
             popBackStack()
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        val feeSource = if (selectedToken.isSOL) SwapAnalytics.FeeSource.SOL else SwapAnalytics.FeeSource.OTHER
+        swapAnalytics.logSwapSettingSettings(
+            priceSlippage = currentSlippage.doubleValue,
+            priceSlippageExact = false,
+            feesSource = feeSource
+        )
     }
 
     private fun checkSlippage() {

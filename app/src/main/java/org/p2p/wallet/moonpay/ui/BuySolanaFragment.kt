@@ -2,10 +2,14 @@ package org.p2p.wallet.moonpay.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
@@ -25,11 +29,16 @@ class BuySolanaFragment :
     }
 
     override val presenter: BuySolanaContract.Presenter by inject()
-
     private val binding: FragmentBuySolanaBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private var backPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            presenter.onBackPressed()
+        }
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Buy.SOL)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
 
@@ -42,7 +51,6 @@ class BuySolanaFragment :
                 presenter.onSwapClicked()
             }
         }
-
         presenter.loadData()
     }
 
@@ -79,6 +87,15 @@ class BuySolanaFragment :
 
     override fun navigateToMoonpay(amount: String) {
         replaceFragment(MoonpayViewFragment.create(amount))
+    }
+
+    override fun close() {
+        popBackStack()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        backPressedCallback?.remove()
     }
 
     override fun swapData(isSwapped: Boolean, prefixSuffixSymbol: String) = with(binding) {

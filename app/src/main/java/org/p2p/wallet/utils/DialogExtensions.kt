@@ -19,7 +19,8 @@ fun Fragment.showInfoDialog(
     @StringRes secondaryButtonRes: Int? = null,
     @ColorRes primaryButtonTextColor: Int? = null,
     primaryCallback: (() -> Unit)? = null,
-    secondaryCallback: (() -> Unit)? = null
+    secondaryCallback: (() -> Unit)? = null,
+    isCancelable: Boolean = true
 ) {
     InfoDialog.show(
         fragmentManager = childFragmentManager,
@@ -29,7 +30,8 @@ fun Fragment.showInfoDialog(
         secondaryButtonRes = secondaryButtonRes,
         primaryButtonTextColor = primaryButtonTextColor,
         onPrimaryButtonClicked = { primaryCallback?.invoke() },
-        onSecondaryButtonClicked = { secondaryCallback?.invoke() }
+        onSecondaryButtonClicked = { secondaryCallback?.invoke() },
+        isCancelable = isCancelable
     )
 }
 

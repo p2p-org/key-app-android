@@ -8,5 +8,5 @@
         android:bottomRightRadius="12dp"
         android:topLeftRadius="4dp"
         android:topRightRadius="12dp" />
-    <solid android:color="?colorElementTertiary" />
+    <solid android:color="@color/elementTertiary" />
 </shape>

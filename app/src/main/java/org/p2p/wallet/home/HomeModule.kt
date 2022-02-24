@@ -65,13 +65,13 @@ object HomeModule : InjectionModule {
         factory { SearchInteractor(get(), get()) }
 
         factory { (token: Token.Active?) ->
-            ReceiveSolanaPresenter(token, get(), get(), get(), get())
+            ReceiveSolanaPresenter(token, get(), get(), get(), get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (type: NetworkType) ->
-            ReceiveNetworkTypePresenter(get(), type)
+            ReceiveNetworkTypePresenter(get(), get(), type)
         } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
-            SendPresenter(token, get(), get(), get(), get(), get(), get())
+            SendPresenter(token, get(), get(), get(), get(), get(), get(), get(), get(), get())
         } bind SendContract.Presenter::class
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())
@@ -80,9 +80,10 @@ object HomeModule : InjectionModule {
             BuySolanaPresenter(
                 get(),
                 androidContext().resources.getString(R.string.buy_min_error_format),
-                androidContext().resources.getString(R.string.buy_max_error_format)
+                androidContext().resources.getString(R.string.buy_max_error_format),
+                get(), get()
             )
         } bind BuySolanaContract.Presenter::class
-        factory { TokenListPresenter(get()) } bind TokenListContract.Presenter::class
+        factory { TokenListPresenter(get(), get()) } bind TokenListContract.Presenter::class
     }
 }

@@ -10,8 +10,10 @@ import androidx.core.content.ContextCompat
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.copyToClipBoard
@@ -34,7 +36,8 @@ class UsernameFragment :
     override val presenter: UsernameContract.Presenter by inject()
 
     private val binding: FragmentUsernameBinding by viewBinding()
-
+    private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -56,6 +59,7 @@ class UsernameFragment :
 
             saveButton.setOnClickListener {
                 checkPermission()
+                receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
             }
             progressButton.setOnClickListener {
                 replaceFragment(TokenListFragment.create())
@@ -71,10 +75,12 @@ class UsernameFragment :
         binding.copyButton.setOnClickListener {
             requireContext().copyToClipBoard(fullUsername)
             toast(R.string.common_copied)
+            receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
         }
 
         binding.shareButton.setOnClickListener {
             requireContext().shareText(fullUsername)
+            receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
         }
     }
 

@@ -21,7 +21,7 @@
         android:id="@+id/dividerView"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?colorElementTertiary" />
+        android:background="@color/elementTertiary" />
 
     <org.p2p.wallet.common.ui.widget.DoubleTextView
         android:id="@+id/liquidityFeeView"
@@ -35,7 +35,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?colorElementTertiary" />
+        android:background="@color/elementTertiary" />
 
     <org.p2p.wallet.common.ui.widget.DoubleTextView
         android:id="@+id/networkFeeView"

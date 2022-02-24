@@ -5,13 +5,11 @@ import android.os.Parcelable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
@@ -103,9 +101,9 @@ sealed class HistoryTransaction(
         @ColorInt
         fun getTextColor(context: Context) =
             if (isSend) {
-                context.colorFromTheme(R.attr.colorMessagePrimary)
+                context.getColor(R.color.messagePrimary)
             } else {
-                ContextCompat.getColor(context, R.color.systemSuccessMain)
+                context.getColor(R.color.systemSuccessMain)
             }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =

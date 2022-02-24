@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--NOTE: use https://chir.ag/projects/name-that-color/ to add colors here in future-->
+
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="black_80">#CC000000</color>
+
+    <color name="colorGreen">#2DB533</color>
+    <color name="colorGreenTransparent">#802DB533</color>
+
+</resources>

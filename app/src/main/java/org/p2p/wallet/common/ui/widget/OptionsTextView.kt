@@ -10,6 +10,7 @@ import androidx.core.widget.TextViewCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetOptionsTextViewBinding
 import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
 class OptionsTextView @JvmOverloads constructor(
@@ -38,7 +39,7 @@ class OptionsTextView @JvmOverloads constructor(
 
         val optionsValueTextColor = typedArray.getColor(
             R.styleable.OptionsTextView_optionsValueTextColor,
-            colorFromTheme(R.attr.colorMessagePrimary)
+            getColor(R.color.messagePrimary)
         )
         binding.valueTextView.setTextColor(optionsValueTextColor)
 

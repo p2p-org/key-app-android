@@ -12,7 +12,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -20,6 +19,9 @@ import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
@@ -28,6 +30,7 @@ import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -47,16 +50,15 @@ class ReceiveSolanaFragment :
     }
 
     private val token: Token? by args(EXTRA_TOKEN)
-
     override val presenter: ReceiveSolanaContract.Presenter by inject {
         parametersOf(token)
     }
-
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
-
+    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.SOLANA)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             edgeToEdge {
@@ -68,9 +70,10 @@ class ReceiveSolanaFragment :
                 presenter.saveQr(usernameTextView.text.toString(), bitmap)
             }
             networkView.setOnClickListener {
-                replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA))
+                presenter.onNetworkClicked()
             }
             faqTextView.setOnClickListener {
+                analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.LIST)
                 replaceFragment(TokenListFragment.create())
             }
             setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
@@ -88,15 +91,17 @@ class ReceiveSolanaFragment :
             fullAddressTextView.text = userPublicKey.highlightPublicKey(requireContext())
             fullAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(userPublicKey)
-                fullAddressTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
+                fullAddressTextView.setTextColor(getColor(R.color.backgroundButtonPrimary))
                 Toast.makeText(requireContext(), R.string.main_receive_address_copied, Toast.LENGTH_SHORT).show()
             }
             shareButton.setOnClickListener {
                 requireContext().shareText(userPublicKey)
+                receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
             }
             copyButton.setOnClickListener {
                 requireContext().copyToClipBoard(userPublicKey)
                 toast(R.string.common_copied)
+                receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
             }
 
             progressButton.setOnClickListener {
@@ -114,7 +119,7 @@ class ReceiveSolanaFragment :
 
             usernameTextView.setOnClickListener {
                 requireContext().copyToClipBoard(fullUsername)
-                usernameTextView.setTextColor(colorFromTheme(R.attr.colorAccentPrimary))
+                usernameTextView.setTextColor(getColor(R.color.backgroundButtonPrimary))
                 Toast.makeText(requireContext(), R.string.receive_username_copied, Toast.LENGTH_SHORT).show()
             }
         }
@@ -122,8 +127,8 @@ class ReceiveSolanaFragment :
 
     override fun showReceiveToken(token: Token.Active) {
         binding.progressButton.setOnClickListener {
+            presenter.onBrowserClicked(token.publicKey)
             val url = getString(R.string.solanaWalletExplorer, token.publicKey)
-            showUrlInCustomTabs(url)
         }
     }
 
@@ -140,6 +145,14 @@ class ReceiveSolanaFragment :
 
     override fun showToastMessage(resId: Int) {
         toast(resId)
+    }
+
+    override fun showNetwork() {
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA))
+    }
+
+    override fun showBrowser(url: String) {
+        showUrlInCustomTabs(url)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {
