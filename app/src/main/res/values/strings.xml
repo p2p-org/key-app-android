@@ -383,6 +383,8 @@
     <string name="buy_total">Total</string>
     <string name="buy_continue_on_moonpay">Continue on Moonpay</string>
     <string name="buy_value_allowed_symbols"> 1234567890.,</string>
+    <string name="buy_min_error_format">Minimum amount for the purchase is %s</string>
+    <string name="buy_max_error_format">Maximum amount for the purchase is %s</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>
