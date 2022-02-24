@@ -15,6 +15,7 @@ import org.p2p.wallet.common.ui.recycler.SwipeLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.dip
+import org.p2p.wallet.utils.withTextOrGone
 
 class TokenViewHolder(
     binding: ItemTokenBinding,
@@ -62,7 +63,7 @@ class TokenViewHolder(
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName
-//        valueTextView withTextOrGone token.getFormattedUsdTotal()
+        valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getFormattedTotal()
 
         deleteImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
