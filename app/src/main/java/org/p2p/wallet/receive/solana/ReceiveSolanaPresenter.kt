@@ -61,7 +61,7 @@ class ReceiveSolanaPresenter(
     override fun saveQr(name: String, bitmap: Bitmap) {
         launch {
             usernameInteractor.saveQr(name, bitmap)
-            view?.showToastMessage(R.string.auth_save)
+            view?.showToastMessage(R.string.auth_saved)
         }
     }
 
@@ -74,6 +74,9 @@ class ReceiveSolanaPresenter(
         receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.SOLANA)
         val url = context.getString(R.string.solanaWalletExplorer, publicKey)
         view?.showBrowser(url)
+    }
+
+    override fun onSaveClicked() {
     }
 
     private fun generateQrCode(address: String) {
