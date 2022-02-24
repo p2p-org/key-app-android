@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
@@ -77,9 +78,11 @@ class QrView @JvmOverloads constructor(
     }
 
     private fun showSnapshotAnimation() {
-        val animation = AlphaAnimation(0.0f, 1.0f)
-        animation.duration = 500L
+        val animation = AlphaAnimation(1.0f, 0.0f)
+        animation.duration = 200L
+        animation.fillAfter = true
         animation.repeatCount = 1
+        animation.interpolator = LinearInterpolator()
         animation.repeatMode = Animation.REVERSE
         var bitmap: Bitmap
 

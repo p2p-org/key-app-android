@@ -90,46 +90,16 @@
                         android:textColor="@color/backgroundButtonPrimary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/arrowImageView" />
+
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <org.p2p.wallet.common.ui.widget.QrView
                     android:id="@+id/qrView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/backgroundPrimary"
-                    android:padding="16dp" />
+                    android:background="@color/backgroundPrimary" />
 
-                    <org.p2p.wallet.common.ui.widget.ProgressButton
-                        android:id="@+id/shareButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/backgroundApp"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                        app:buttonDrawable="@drawable/ic_share_blue"
-                        app:buttonDrawableTint="@color/backgroundButtonPrimary"
-                        app:buttonText="@string/auth_share"
-                        app:buttonTextColor="@color/backgroundButtonPrimary" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="@color/strokePrimary" />
-
-                    <org.p2p.wallet.common.ui.widget.ProgressButton
-                        android:id="@+id/saveButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/backgroundApp"
-                        android:foreground="?selectableItemBackground"
-                        app:buttonDrawable="@drawable/ic_gallery"
-                        app:buttonText="@string/auth_save"
-                        app:buttonTextColor="@color/backgroundButtonPrimary" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
         </com.google.android.material.card.MaterialCardView>
 
@@ -142,8 +112,8 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonBackground="@color/backgroundPrimary"
             app:buttonDrawableEnd="@drawable/ic_external"
-            app:buttonText="@string/receive_view_solana_explorer"
             app:buttonDrawableTint="@color/textIconActive"
+            app:buttonText="@string/receive_view_solana_explorer"
             app:buttonTextColor="@color/backgroundButtonPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardView" />
