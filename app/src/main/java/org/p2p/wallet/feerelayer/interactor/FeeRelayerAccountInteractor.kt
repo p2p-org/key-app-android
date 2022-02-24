@@ -68,7 +68,7 @@ class FeeRelayerAccountInteractor(
         return@withContext relayAccount!!
     }
 
-    suspend fun getFreeTransactionFeeLimit(useCache: Boolean = false): FreeTransactionFeeLimit {
+    suspend fun getFreeTransactionFeeLimit(useCache: Boolean = true): FreeTransactionFeeLimit {
         if (useCache && transactionLimit != null) {
             return transactionLimit!!
         }

@@ -76,6 +76,8 @@ class ReserveUsernameFragment :
                 presenter.checkUsername(it.toString().lowercase())
             }
 
+            inputTextView.requestFocus()
+
             usernameButton.setOnClickListener {
                 gt3GeeTestUtils?.startCustomFlow()
             }

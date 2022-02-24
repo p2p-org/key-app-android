@@ -63,6 +63,10 @@ class InputTextView @JvmOverloads constructor(
         setState(state)
     }
 
+    fun requestFocusForInput() {
+        binding.textInputEditText.requestFocus()
+    }
+
     private fun setState(state: State) {
         binding.progressBar.isVisible = state == State.Loading
         when (state) {
