@@ -8,6 +8,7 @@
     android:gravity="center"
     android:minWidth="80dp"
     android:orientation="vertical"
+    tools:background="@color/backgroundButtonPrimary"
     tools:parentTag="androidx.appcompat.widget.LinearLayoutCompat">
 
     <ImageView
@@ -22,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/elementPrimary"
+        android:textColor="@color/textIconButtonPrimary"
         tools:text="Buy" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

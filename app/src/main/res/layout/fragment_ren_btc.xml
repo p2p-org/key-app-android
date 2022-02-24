@@ -10,7 +10,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/elementPrimary"
+        android:background="@color/backgroundPrimary"
         app:elevation="2dp"
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/scrollView">
@@ -334,7 +334,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                app:buttonBackground="@color/elementPrimary"
+                app:buttonBackground="@color/textIconPrimary"
                 app:buttonDrawableEnd="@drawable/ic_external"
                 app:buttonText="@string/receive_view_bitcoin_explorer"
                 app:buttonTextColor="@color/backgroundButtonPrimary"

@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        android:textColor="@color/elementPrimary"
+        android:textColor="@color/textIconPrimary"
         tools:text="Select word #3" />
 
     <androidx.recyclerview.widget.RecyclerView

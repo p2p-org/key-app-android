@@ -182,7 +182,7 @@
             android:layout_margin="16dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonText="@string/receive_tokens_info"
-            app:buttonTextColor="@color/elementPrimary" />
+            app:buttonTextColor="@color/textIconPrimary" />
 
     </FrameLayout>
 

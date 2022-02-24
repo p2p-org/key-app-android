@@ -101,7 +101,7 @@ sealed class HistoryTransaction(
         @ColorInt
         fun getTextColor(context: Context) =
             if (isSend) {
-                context.getColor(R.color.messagePrimary)
+                context.getColor(R.color.textIconPrimary)
             } else {
                 context.getColor(R.color.systemSuccessMain)
             }

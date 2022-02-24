@@ -12,7 +12,7 @@
         android:paddingHorizontal="20dp"
         android:paddingVertical="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/elementPrimary"
+        android:textColor="@color/textIconPrimary"
         tools:text="Today, Dec 4" />
 
 </FrameLayout>

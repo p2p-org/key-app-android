@@ -8,5 +8,5 @@
         android:bottomRightRadius="4dp"
         android:topLeftRadius="12dp"
         android:topRightRadius="4dp" />
-    <solid android:color="@color/elementTertiary" />
+    <solid android:color="@color/strokeSecondary" />
 </shape>
