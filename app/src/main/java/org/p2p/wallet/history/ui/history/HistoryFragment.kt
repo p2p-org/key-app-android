@@ -65,7 +65,7 @@ class HistoryFragment :
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
                 onBuyItemClickListener = {
-                    replaceFragment(BuySolanaFragment.create())
+                    replaceFragment(BuySolanaFragment.create(token))
                 }
                 onReceiveItemClickListener = {
                     receiveAnalytics.logTokenReceiveViewed(token.tokenName)

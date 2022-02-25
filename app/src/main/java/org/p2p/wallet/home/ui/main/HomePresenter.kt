@@ -45,6 +45,7 @@ class HomePresenter(
     private var state: VisibilityState? = null
 
     private val tokens = mutableListOf<Token.Active>()
+    private val tokensValidForBuy = listOf("SOL", "USDC")
 
     private var username: Username? = null
 
@@ -64,6 +65,10 @@ class HomePresenter(
         loadData()
         username = usernameInteractor.getUsername()
         IntercomService.signIn(tokenKeyProvider.publicKey) {}
+    }
+
+    override fun onBuyClicked() {
+        view?.showTokensForBuy(tokens.filter { it.tokenSymbol in tokensValidForBuy })
     }
 
     override fun collectData() {
