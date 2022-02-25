@@ -27,10 +27,10 @@ class TokenButtonViewHolder(
     private val titleTextView = binding.titleTextView
 
     fun onBind(item: HomeElementItem.Action) {
-        val title = requireContext().run {
-            if (item.isHiddenTokens) getString(R.string.main_hidden_tokens)
-            else getString(R.string.main_active_tokens)
-        }
+        val title = requireContext().getString(
+            if (item.isHiddenTokens) R.string.main_hidden_tokens
+            else R.string.main_active_tokens
+        )
 
         titleTextView.text = title
         arrowImageView.isVisible = item.isHiddenTokens
