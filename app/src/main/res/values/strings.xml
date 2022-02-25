@@ -186,6 +186,7 @@
     <string name="main_receive_public_address">Your public %s address</string>
     <string name="main_receive_mint_address">%s mint address</string>
     <string name="main_hidden_tokens">Hidden tokens</string>
+    <string name="main_active_tokens">Tokens</string>
     <string name="main_hide">Hide</string>
     <string name="main_price">Current price</string>
     <string name="main_max_price_slippage">Max price slippage</string>
