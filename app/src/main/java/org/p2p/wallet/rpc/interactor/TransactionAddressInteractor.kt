@@ -31,22 +31,22 @@ class TransactionAddressInteractor(
             return AddressValidation.Error(R.string.main_send_to_yourself_error)
         }
 
-        val address = try {
-            findAssociatedAddress(destinationAddress, mintAddress)
+        try {
+            findSplTokenAddressData(destinationAddress, mintAddress)
         } catch (e: IllegalStateException) {
             return AddressValidation.WrongWallet
         }
 
-        return AddressValidation.Valid(address)
+        return AddressValidation.Valid
     }
 
-    suspend fun findAssociatedAddress(
-        ownerAddress: PublicKey,
-        destinationMint: String
+    suspend fun findSplTokenAddressData(
+        destinationAddress: PublicKey,
+        mintAddress: String
     ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
-            findSplTokenAddress(ownerAddress, destinationMint)
+            findSplTokenAddress(destinationAddress, mintAddress)
         } catch (e: IllegalStateException) {
             Timber.tag(ADDRESS_TAG).d("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
@@ -57,9 +57,8 @@ class TransactionAddressInteractor(
         val value = accountInfo?.value
         val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         return TransactionAddressData(
-            destinationAddress = ownerAddress,
-            associatedAddress = associatedAddress,
-            shouldCreateAssociatedInstruction = !associatedNotNeeded
+            destinationAddress = associatedAddress,
+            shouldCreateAccount = !associatedNotNeeded
         )
     }
 

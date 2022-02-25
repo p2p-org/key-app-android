@@ -446,25 +446,18 @@ class OrcaSwapInteractor(
 
     suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
         sourceToken: Token.Active,
-        destination: Token,
-        swapPools: OrcaPoolsPair
+        destination: Token
     ): SwapFee {
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val fee = feeRelayerSwapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
-            sourceToken = TokenInfo(sourceToken.publicKey, sourceToken.mintAddress),
+        val fee = feeRelayerSwapInteractor.calculateSwappingNetworkFees(
+            sourceTokenMint = sourceToken.mintAddress,
             destinationTokenMint = destination.mintAddress,
-            destinationAddress = destination.publicKey,
-            payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
-            swapPools = swapPools
+            destinationAddress = destination.publicKey
         )
 
         val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
-        val accountCreationFee = if (!feePayerToken.isSOL && fee.feeInPayingToken != null) {
-            fee.feeInPayingToken.total.fromLamports(feePayerToken.decimals).scaleMedium()
-        } else {
-            fee.feeInSOL.total.fromLamports(feePayerToken.decimals).scaleMedium()
-        }
+        val accountCreationFee = fee.total.fromLamports(feePayerToken.decimals).scaleMedium()
         val accountCreationFeeUsd = accountCreationFee.toUsd(feePayerToken.usdRate)
 
         val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature

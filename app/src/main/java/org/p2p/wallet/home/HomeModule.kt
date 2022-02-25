@@ -58,6 +58,7 @@ object HomeModule : InjectionModule {
                 orcaPoolInteractor = get(),
                 orcaInfoInteractor = get(),
                 amountInteractor = get(),
+                transactionInteractor = get(),
                 transactionManager = get(),
                 tokenKeyProvider = get(),
             )

@@ -146,7 +146,7 @@ class SwapInstructionsInteractor(
         feePayer: PublicKey,
         closeAfterward: Boolean
     ): AccountInstructions {
-        val addressData = orcaAddressInteractor.findAssociatedAddress(owner, mint.toBase58())
+        val addressData = orcaAddressInteractor.findSplTokenAddressData(owner, mint.toBase58())
 
         // cleanup instructions
         val cleanupInstructions = mutableListOf<TransactionInstruction>()
@@ -154,7 +154,7 @@ class SwapInstructionsInteractor(
             cleanupInstructions.add(
                 TokenProgram.closeAccountInstruction(
                     TokenProgram.PROGRAM_ID,
-                    addressData.associatedAddress,
+                    addressData.destinationAddress,
                     owner,
                     owner
                 )
@@ -162,28 +162,28 @@ class SwapInstructionsInteractor(
         }
 
         // if associated address is registered, there is no need to creating it again
-        if (!addressData.shouldCreateAssociatedInstruction) {
+        if (!addressData.shouldCreateAccount) {
             return AccountInstructions(
-                account = addressData.associatedAddress,
+                account = addressData.destinationAddress,
                 cleanupInstructions = cleanupInstructions
             )
         }
 
         // create associated address
         return AccountInstructions(
-            account = addressData.associatedAddress,
+            account = addressData.destinationAddress,
             instructions = mutableListOf(
                 TokenProgram.createAssociatedTokenAccountInstruction(
                     TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                     TokenProgram.PROGRAM_ID,
                     mint,
-                    addressData.associatedAddress,
+                    addressData.destinationAddress,
                     owner,
                     feePayer
                 )
             ),
             cleanupInstructions = cleanupInstructions,
-            newWalletPubkey = addressData.associatedAddress.toBase58()
+            newWalletPubkey = addressData.destinationAddress.toBase58()
         )
     }
 }

@@ -1,6 +1,7 @@
 package org.p2p.solanaj.kits
 
 import android.util.Base64
+import androidx.annotation.NonNull
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.PublicKey.Companion.findProgramAddress
 import org.p2p.solanaj.model.types.AccountInfo
@@ -12,7 +13,6 @@ import org.p2p.solanaj.utils.crypto.Base64Utils
 
 object TokenTransaction {
 
-    @Throws(RpcException::class)
     fun getAccountInfoData(
         accountInfo: AccountInfo?,
         programId: PublicKey
@@ -52,7 +52,7 @@ object TokenTransaction {
         return AccountInfoData.decode(data)
     }
 
-    fun decodeAccountInfo(value: AccountInfo.Value): AccountInfoData {
+    fun decodeAccountInfo(@NonNull value: AccountInfo.Value): AccountInfoData {
         val base64Data = value.data!![0]
         val data = Base64.decode(base64Data, Base64.DEFAULT)
         return AccountInfoData.decode(data)

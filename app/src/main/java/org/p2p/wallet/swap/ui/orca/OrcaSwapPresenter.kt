@@ -342,12 +342,9 @@ class OrcaSwapPresenter(
             return
         }
 
-        val pair = bestPoolPair ?: return
-
         fees = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
             sourceToken = source,
-            destination = destination,
-            swapPools = pair
+            destination = destination
         )
 
         view?.showFees(fees)

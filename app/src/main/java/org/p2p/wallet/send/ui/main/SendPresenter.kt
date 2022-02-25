@@ -14,9 +14,9 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.model.AddressValidation
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.CheckAddressResult
@@ -381,7 +381,7 @@ class SendPresenter(
                 when (val validation = addressInteractor.validateAddress(destinationAddress, token.mintAddress)) {
                     is AddressValidation.WrongWallet -> view?.showWrongWalletError()
                     is AddressValidation.Error -> view?.showErrorMessage(validation.messageRes)
-                    is AddressValidation.Valid -> handleValidAddress(token, destinationAddress, validation, lamports)
+                    is AddressValidation.Valid -> handleValidAddress(token, destinationAddress, lamports)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
@@ -395,7 +395,6 @@ class SendPresenter(
     private suspend fun handleValidAddress(
         token: Token.Active,
         destinationAddress: PublicKey,
-        validation: AddressValidation.Valid,
         lamports: BigInteger
     ) {
         val data = ShowProgress(
@@ -407,7 +406,7 @@ class SendPresenter(
         view?.showProgressDialog(data)
 
         val result = sendInteractor.sendTransaction(
-            address = validation.addressData,
+            destinationAddress = destinationAddress,
             token = token,
             lamports = lamports
         )

@@ -8,7 +8,6 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
-import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
@@ -25,7 +24,6 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
 import java.math.BigInteger
 
 class FeeRelayerTopUpInteractor(
@@ -70,22 +68,17 @@ class FeeRelayerTopUpInteractor(
 
         // STEP 4: send transaction
         val signatures = topUpTransaction.transaction.allSignatures
-        if (signatures.size < 2) {
+        if (signatures.size < 1) {
             throw IllegalStateException("Invalid signature")
         }
 
         // the second signature is the owner's signature
-        val ownerSignature = signatures[1].signature
+        val ownerSignature = signatures[0].signature
 
         val topUpSignatures = SwapTransactionSignatures(
             userAuthoritySignature = ownerSignature,
             transferAuthoritySignature = ownerSignature
         )
-
-        val transaction = topUpTransaction.transaction
-        val sm = transaction.serialize()
-        val st = Base64Utils.encode(sm)
-        Timber.tag("###").d(st)
 
         return feeRelayerRepository.relayTopUpSwap(
             userSourceTokenAccountPubkey = sourceToken.address,
@@ -127,19 +120,19 @@ class FeeRelayerTopUpInteractor(
             )
 
             // Get pools for topping up
-            // Get pools
             var topUpPools: OrcaPoolsPair? = null
 
-            // TODO: - Temporary solution, prefer direct swap to transitive swap to omit error Non-zero account can only be close if balance zero
+            // prefer direct swap to transitive swap
             val directSwapPools = tradableTopUpPoolsPair.firstOrNull { it.size == 1 }
-            if (directSwapPools != null) {
-                topUpPools = directSwapPools
+            topUpPools = if (directSwapPools != null) {
+                directSwapPools
             } else {
-                val transitiveSwapPools =
-                    orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(topUpAmount, tradableTopUpPoolsPair)
-                if (!transitiveSwapPools.isNullOrEmpty()) {
-                    topUpPools = transitiveSwapPools
-                }
+                // if direct swap is not available, use transitive swap
+                val transitiveSwapPools = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(
+                    estimatedAmount = topUpAmount,
+                    poolsPairs = tradableTopUpPoolsPair
+                )
+                transitiveSwapPools
             }
 
             if (topUpPools.isNullOrEmpty()) throw IllegalStateException("Swap pools not found")
@@ -197,10 +190,10 @@ class FeeRelayerTopUpInteractor(
         // swap_amount_out
 //        let swapAmountOut = targetAmount + currentFee
         var swapAmountOut = targetAmount
-        if (!relayAccount.isCreated) {
-            swapAmountOut += info.lamportsPerSignature // Temporary solution
+        swapAmountOut += if (!relayAccount.isCreated) {
+            info.lamportsPerSignature // Temporary solution
         } else {
-            swapAmountOut += currentFee
+            currentFee
         }
 
         // expected_fee
@@ -269,10 +262,6 @@ class FeeRelayerTopUpInteractor(
             transitTokenMintPubkey = transitTokenMintPubkey,
             userAuthorityAddress = userAuthorityAddress,
         )
-        // TODO: temporary removing user transfer authority account and approve instructions
-        // since it causes too large transaction error
-//        val userTransferAuthority = transferAuthorityAccount?.publicKey
-        val transferAuthorityAccount = Account(tokenKeyProvider.secretKey)
 
         val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(userAuthorityAddress)
         val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
@@ -346,7 +335,7 @@ class FeeRelayerTopUpInteractor(
 
         // resign transaction
         val owner = Account(tokenKeyProvider.secretKey)
-        val signers = mutableListOf(owner, transferAuthorityAccount)
+        val signers = mutableListOf(owner)
 
         transaction.sign(signers)
 

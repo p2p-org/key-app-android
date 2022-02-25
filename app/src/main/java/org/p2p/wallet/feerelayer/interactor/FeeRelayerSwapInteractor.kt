@@ -11,20 +11,16 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenSwapProgram
 import org.p2p.wallet.feerelayer.model.FeesAndPools
-import org.p2p.wallet.feerelayer.model.FeesAndTopUpAmount
 import org.p2p.wallet.feerelayer.model.FixedDestination
-import org.p2p.wallet.feerelayer.model.RelayAccount
-import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.model.TopUpAndActionPreparedParams
+import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
-import org.p2p.wallet.swap.model.Slippage
-import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
@@ -43,82 +39,6 @@ class FeeRelayerSwapInteractor(
 
     private var preparedParams: TopUpAndActionPreparedParams? = null
 
-    /*
-     * STEP 1: Calculate fee needed for transaction
-     * Calculate fee and needed amount for top up and swap
-     * Fee calculation is in IN SOL
-     * */
-    suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
-        sourceToken: TokenInfo,
-        destinationTokenMint: String,
-        destinationAddress: String?,
-        payingFeeToken: TokenInfo,
-        swapPools: OrcaPoolsPair
-    ): FeesAndTopUpAmount {
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-
-        val preparedParams = prepareForTopUpAndSwap(
-            sourceToken = sourceToken,
-            destinationTokenMint = destinationTokenMint,
-            destinationAddress = destinationAddress,
-            payingFeeToken = payingFeeToken,
-            swapPools = swapPools,
-            relayAccount = relayAccount,
-            reuseCache = true
-        )
-
-        val topUpPools = preparedParams.topUpFeesAndPools?.poolsPair
-
-        val feeAmountInSOL = preparedParams.actionFeesAndPools.fee
-
-        if (!relayAccount.isCreated) {
-            feeAmountInSOL.transaction += relayInfo.lamportsPerSignature
-        }
-
-        val topUpAmount = preparedParams.topUpAmount
-
-        var feeAmountInPayingToken: FeeAmount? = null
-        var topUpAmountInPayingToken: BigInteger? = null
-
-        if (topUpPools != null) {
-            val transactionFee =
-                topUpPools.getInputAmount(feeAmountInSOL.transaction, Slippage.PERCENT.doubleValue)
-            val accountCreationFee =
-                topUpPools.getInputAmount(feeAmountInSOL.accountBalances, Slippage.PERCENT.doubleValue)
-
-            if (transactionFee != null && accountCreationFee != null) {
-                feeAmountInPayingToken = FeeAmount(transactionFee, accountCreationFee)
-            }
-
-            if (topUpAmount != null) {
-                topUpAmountInPayingToken = topUpPools.getInputAmount(topUpAmount, Slippage.PERCENT.doubleValue)
-            }
-        }
-
-        return FeesAndTopUpAmount(
-            feeInSOL = feeAmountInSOL,
-            topUpAmountInSOL = topUpAmount,
-            feeInPayingToken = feeAmountInPayingToken,
-            topUpAmountInPayingToken = topUpAmountInPayingToken
-        )
-    }
-
-    // Calculate needed fee (count in payingToken)
-    suspend fun calculateFeeInPayingToken(
-        feeInSOL: BigInteger,
-        payingFeeToken: TokenInfo
-    ): BigInteger? {
-        val tradableTopUpPoolsPair = orcaPoolInteractor.getTradablePoolsPairs(payingFeeToken.mint, WRAPPED_SOL_MINT)
-        val topUpPools = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(feeInSOL, tradableTopUpPoolsPair)
-
-        if (topUpPools.isNullOrEmpty()) {
-            throw IllegalStateException("Swap pools not found")
-        }
-
-        return topUpPools.getInputAmount(feeInSOL, Slippage.PERCENT.doubleValue)
-    }
-
     // Prepare swap transaction for relay
     suspend fun prepareSwapTransaction(
         feeRelayerProgramId: PublicKey,
@@ -130,8 +50,6 @@ class FeeRelayerSwapInteractor(
         inputAmount: BigInteger,
         slippage: Double
     ): PreparedTransaction {
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-
         val info = feeRelayerAccountInteractor.getRelayInfo()
 
         val preparedParams = prepareForTopUpAndSwap(
@@ -140,10 +58,12 @@ class FeeRelayerSwapInteractor(
             destinationAddress = destinationAddress,
             payingFeeToken = payingFeeToken,
             swapPools = swapPools,
-            relayAccount = relayAccount,
             reuseCache = false
         )
-        val destination = getFixedDestination(destinationTokenMint)
+        val destination = getFixedDestination(
+            destinationTokenMint = destinationTokenMint,
+            destinationAddress = destinationAddress
+        )
 
         val recentBlockhash = rpcRepository.getRecentBlockhash()
 
@@ -170,37 +90,43 @@ class FeeRelayerSwapInteractor(
         )
     }
 
-    private fun calculateSwappingFee(
-        info: RelayInfo,
-        sourceToken: TokenInfo,
-        destinationToken: TokenInfo,
-        needsCreateDestinationTokenAccount: Boolean
+    suspend fun calculateSwappingNetworkFees(
+        sourceTokenMint: String,
+        destinationTokenMint: String,
+        destinationAddress: String?
     ): FeeAmount {
+        val destination = getFixedDestination(
+            destinationTokenMint = destinationTokenMint,
+            destinationAddress = destinationAddress
+        )
+        val info = feeRelayerAccountInteractor.getRelayInfo()
+        val lamportsPerSignature = info.lamportsPerSignature
+        val minimumTokenAccountBalance = info.minimumTokenAccountBalance
+
+        val needsCreateDestinationTokenAccount = destination.needsCreateDestinationTokenAccount
+
         val expectedFee = FeeAmount()
 
         // fee for payer's signature
-        expectedFee.transaction += info.lamportsPerSignature
+        expectedFee.transaction += lamportsPerSignature
 
         // fee for owner's signature
-        expectedFee.transaction += info.lamportsPerSignature
+        expectedFee.transaction += lamportsPerSignature
 
         // when source token is native SOL
-        if (sourceToken.mint == WRAPPED_SOL_MINT) {
+        if (sourceTokenMint == WRAPPED_SOL_MINT) {
             // WSOL's signature
-            expectedFee.transaction += info.lamportsPerSignature
-
-            // TODO: - Account creation fee?
-            expectedFee.accountBalances += info.minimumTokenAccountBalance
+            expectedFee.transaction += lamportsPerSignature
         }
 
         // when needed to create destination
-        if (needsCreateDestinationTokenAccount && destinationToken.mint != WRAPPED_SOL_MINT) {
-            expectedFee.accountBalances += info.minimumTokenAccountBalance
+        if (needsCreateDestinationTokenAccount && destinationTokenMint != WRAPPED_SOL_MINT) {
+            expectedFee.accountBalances += minimumTokenAccountBalance
         }
 
         // when destination is native SOL
-        if (destinationToken.mint == WRAPPED_SOL_MINT) {
-            expectedFee.transaction += info.lamportsPerSignature
+        if (destinationTokenMint == WRAPPED_SOL_MINT) {
+            expectedFee.transaction += lamportsPerSignature
         }
 
         return expectedFee
@@ -265,23 +191,42 @@ class FeeRelayerSwapInteractor(
         var destinationNewAccount: Account? = null
         var userDestinationTokenAccountAddress = destinationToken.address.toPublicKey()
         if (needsCreateDestinationTokenAccount) {
-            destinationNewAccount = Account()
+            if (destinationTokenMintAddress.toBase58() == WRAPPED_SOL_MINT) {
+                // For native solana, create and initialize WSOL
+                destinationNewAccount = Account()
+                val createAccountInstruction = SystemProgram.createAccount(
+                    feePayerAddress,
+                    destinationNewAccount.publicKey,
+                    minimumTokenAccountBalance.toLong()
+                )
+                instructions += createAccountInstruction
+                val initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
+                    TokenProgram.PROGRAM_ID,
+                    destinationNewAccount.publicKey,
+                    destinationTokenMintAddress,
+                    userAuthorityAddress
+                )
+                instructions += initializeAccountInstruction
+                userDestinationTokenAccountAddress = destinationNewAccount.publicKey
+            } else {
+                // For other token, create associated token address
+                val associatedAddress = TokenTransaction.getAssociatedTokenAddress(
+                    mint = destinationTokenMintAddress,
+                    owner = userAuthorityAddress
+                )
 
-            val createAccountInstruction = SystemProgram.createAccount(
-                feePayerAddress,
-                destinationNewAccount.publicKey,
-                minimumTokenAccountBalance.toLong()
-            )
-            instructions += createAccountInstruction
-            val initializeAccountInstruction = TokenProgram.initializeAccountInstruction(
-                TokenProgram.PROGRAM_ID,
-                destinationNewAccount.publicKey,
-                destinationTokenMintAddress,
-                userAuthorityAddress
-            )
-            instructions += initializeAccountInstruction
+                val createAssociatedTokenAccountInstruction = TokenProgram.createAssociatedTokenAccountInstruction(
+                    TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                    TokenProgram.PROGRAM_ID,
+                    destinationTokenMintAddress,
+                    associatedAddress,
+                    userAuthorityAddress,
+                    feePayerAddress
+                )
+                instructions += createAssociatedTokenAccountInstruction
+                userDestinationTokenAccountAddress = associatedAddress
+            }
             accountCreationFee += minimumTokenAccountBalance
-            userDestinationTokenAccountAddress = destinationNewAccount.publicKey
         }
 
         // swap
@@ -294,7 +239,6 @@ class FeeRelayerSwapInteractor(
             transitTokenMintPubkey = transitTokenMintPubkey,
             userAuthorityAddress = userAuthorityAddress
         )
-        val userTransferAuthority = Account(tokenKeyProvider.secretKey)
 
         when (swapData) {
             is SwapData.Direct -> {
@@ -303,7 +247,7 @@ class FeeRelayerSwapInteractor(
                 val swapInstruction = TokenSwapProgram.swapInstruction(
                     pool.account,
                     pool.authority,
-                    userTransferAuthority.publicKey,
+                    userAuthorityAddress,
                     userSourceTokenAccountAddress,
                     pool.tokenAccountA,
                     pool.tokenAccountB,
@@ -332,8 +276,6 @@ class FeeRelayerSwapInteractor(
                     )
                     instructions += transitTokenAccountInstruction
                 }
-                // Destination WSOL account funding
-                accountCreationFee += minimumTokenAccountBalance
 
                 // relay swap
                 val relaySwapInstruction = FeeRelayerProgram.createRelaySwapInstruction(
@@ -419,9 +361,10 @@ class FeeRelayerSwapInteractor(
         destinationAddress: String?,
         payingFeeToken: TokenInfo,
         swapPools: OrcaPoolsPair,
-        relayAccount: RelayAccount,
         reuseCache: Boolean
     ): TopUpAndActionPreparedParams {
+        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
         if (reuseCache && preparedParams != null) {
             return preparedParams!!
@@ -432,49 +375,47 @@ class FeeRelayerSwapInteractor(
             toMint = WRAPPED_SOL_MINT
         )
 
-        // SWAP
-        val destination = getFixedDestination(destinationTokenMint)
-        val destinationToken = destination.destinationToken
-        val needsCreateDestinationTokenAccount = destination.needsCreateDestinationTokenAccount
-
-        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-        val swappingFee = calculateSwappingFee(
-            info = relayInfo,
-            sourceToken = sourceToken,
-            destinationToken = destinationToken,
-            needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount
+        val swappingFee = calculateSwappingNetworkFees(
+            sourceTokenMint = sourceToken.mint,
+            destinationTokenMint = destinationTokenMint,
+            destinationAddress = destinationAddress
         )
 
         // TOP UP
-        val topUpFeesAndPools: FeesAndPools?
-        val topUpAmount: BigInteger?
+        val topUpPreparedParam: TopUpPreparedParams?
 
         if (relayAccount.balance == null ||
             relayAccount.balance >= swappingFee.total ||
             tradableTopUpPoolsPair.isEmpty()
         ) {
-            topUpFeesAndPools = null
-            topUpAmount = null
+            topUpPreparedParam = null
         } else {
             // STEP 2.2: Else
             // Get best poolpairs for topping up
-            topUpAmount = swappingFee.total - relayAccount.balance
+            val targetAmount = swappingFee.total - relayAccount.balance
 
+            // Get real amounts needed for topping up
+            val (topUpAmount, expectedFee) = feeRelayerTopUpInteractor.calculateTopUpAmount(
+                targetAmount = targetAmount,
+                relayAccount = relayAccount,
+                freeTransactionFeeLimit = freeTransactionFeeLimit
+            )
+
+            // Get pools
             val topUpPools =
                 orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(topUpAmount, tradableTopUpPoolsPair)
                     ?: throw IllegalStateException("Swap pools not found")
 
-            val topUpFee = feeRelayerTopUpInteractor.calculateTopUpFee(
-                info = relayInfo,
-                relayAccount = relayAccount
+            topUpPreparedParam = TopUpPreparedParams(
+                amount = topUpAmount,
+                expectedFee = expectedFee,
+                poolsPair = topUpPools
             )
-            topUpFeesAndPools = FeesAndPools(topUpFee, topUpPools)
         }
 
         preparedParams = TopUpAndActionPreparedParams(
-            topUpFeesAndPools = topUpFeesAndPools,
-            actionFeesAndPools = FeesAndPools(swappingFee, swapPools),
-            topUpAmount = topUpAmount
+            topUpPreparedParam = topUpPreparedParam,
+            actionFeesAndPools = FeesAndPools(swappingFee, swapPools)
         )
 
         return preparedParams!!
@@ -483,7 +424,10 @@ class FeeRelayerSwapInteractor(
     /*
      * Get fixed destination
      * */
-    private suspend fun getFixedDestination(destinationTokenMint: String): FixedDestination {
+    private suspend fun getFixedDestination(
+        destinationTokenMint: String,
+        destinationAddress: String?
+    ): FixedDestination {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
         // Redefine destination
@@ -493,24 +437,30 @@ class FeeRelayerSwapInteractor(
         if (WRAPPED_SOL_MINT == destinationTokenMint) {
             // Swap to native SOL account
             userDestinationAccountOwnerAddress = owner
-            addressData = TransactionAddressData(owner, owner, true)
+            addressData = TransactionAddressData(owner, true)
         } else {
             // Swap to other SPL
             userDestinationAccountOwnerAddress = null
-            addressData = addressInteractor.findAssociatedAddress(
-                destinationMint = destinationTokenMint,
-                ownerAddress = owner
-            )
+
+            addressData = if (destinationAddress.isNullOrEmpty()) {
+                addressInteractor.findSplTokenAddressData(
+                    destinationAddress = owner,
+                    mintAddress = destinationTokenMint
+                )
+            } else {
+                val destinationAddressPublicKey = destinationAddress.toPublicKey()
+                TransactionAddressData(destinationAddressPublicKey, false)
+            }
         }
 
         val destinationToken = TokenInfo(
-            address = addressData.associatedAddress.toBase58(),
+            address = addressData.destinationAddress.toBase58(),
             mint = destinationTokenMint
         )
         return FixedDestination(
             destinationToken = destinationToken,
             userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress,
-            needsCreateDestinationTokenAccount = addressData.shouldCreateAssociatedInstruction
+            needsCreateDestinationTokenAccount = addressData.shouldCreateAccount
         )
     }
 }

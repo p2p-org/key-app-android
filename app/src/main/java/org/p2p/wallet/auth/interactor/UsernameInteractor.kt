@@ -36,6 +36,9 @@ class UsernameInteractor(
         sharedPreferences.edit { putString(KEY_USERNAME, lookupUsername) }
     }
 
+    suspend fun findUsernameByAddress(owner: String): String? =
+        usernameRepository.lookup(owner)
+
     fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
 
     fun getUsername(): Username? {
