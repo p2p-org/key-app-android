@@ -82,7 +82,12 @@
     </declare-styleable>
 
     <declare-styleable name="ActionButtonView">
-        <attr name="android:text"/>
-        <attr name="srcCompat"/>
+        <attr name="android:text" />
+        <attr name="srcCompat" />
+    </declare-styleable>
+
+    <declare-styleable name="ExpandView">
+        <attr name="android:text" />
+        <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 </resources>

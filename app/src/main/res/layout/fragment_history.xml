@@ -22,7 +22,7 @@
             app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/backgroundPrimary"
@@ -55,13 +55,13 @@
                     tools:text="$12,380.00" />
 
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -85,7 +85,7 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:id="@+id/emptyView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -112,7 +112,7 @@
                 android:text="@string/receive_no_transactions_yet_message"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </LinearLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
@@ -127,7 +127,7 @@
                 tools:listitem="@layout/item_transaction" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
 
     <org.p2p.wallet.common.ui.widget.ProgressView
         android:id="@+id/progressView"

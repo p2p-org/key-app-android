@@ -36,7 +36,7 @@
             tools:itemCount="24"
             tools:listitem="@layout/item_security_key" />
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:id="@+id/actionContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                 app:buttonDrawableTint="@color/backgroundButtonPrimary"
                 app:buttonText="@string/auth_save"
                 app:buttonTextColor="@color/backgroundButtonPrimary" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </LinearLayout>
 
         <org.p2p.wallet.common.ui.widget.ProgressButton
             android:id="@+id/nextButton"

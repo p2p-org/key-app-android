@@ -17,10 +17,12 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/backgroundButtonPrimary"
             app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/ic_back"
+            app:navigationIcon="@drawable/ic_close_white"
             app:title="@string/main_receive"
-            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18"
+            app:titleTextColor="@color/textIconButtonPrimary" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardView"
@@ -102,21 +104,6 @@
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <org.p2p.wallet.common.ui.widget.ProgressButton
-            android:id="@+id/progressButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="24dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:buttonBackground="@color/backgroundPrimary"
-            app:buttonDrawableEnd="@drawable/ic_external"
-            app:buttonDrawableTint="@color/textIconActive"
-            app:buttonText="@string/receive_view_solana_explorer"
-            app:buttonTextColor="@color/backgroundButtonPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
