@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
     app:draggedItem="@id/contentView"
     app:rightItem="@id/settingsView"
     app:swipeDirection="left">
@@ -36,8 +37,8 @@
         android:background="@color/backgroundPrimary"
         android:clickable="true"
         android:focusable="true"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp">
 
         <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/tokenImageView"
