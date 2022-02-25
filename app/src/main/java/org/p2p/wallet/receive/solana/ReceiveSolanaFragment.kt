@@ -37,7 +37,8 @@ class ReceiveSolanaFragment :
 
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
-
+        private const val REQUEST_KEY = "REQUEST_KEY"
+        private const val BUNDLE_KEY_NETWORK_TYPE = "BUNDLE_KEY_NETWORK_TYPE"
         fun create(token: Token?) = ReceiveSolanaFragment().withArgs(
             EXTRA_TOKEN to token
         )
@@ -75,8 +76,8 @@ class ReceiveSolanaFragment :
             qrView.onSaveClickListener = { name, bitmap ->
                 presenter.saveQr(name, bitmap)
             }
-            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
-                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
+            setFragmentResultListener(REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
                 if (type == NetworkType.BITCOIN) {
                     popAndReplaceFragment(RenBTCFragment.create())
                 }
@@ -122,7 +123,7 @@ class ReceiveSolanaFragment :
     }
 
     override fun showNetwork() {
-        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA))
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.SOLANA, REQUEST_KEY, BUNDLE_KEY_NETWORK_TYPE))
     }
 
     override fun showBrowser(url: String) {
