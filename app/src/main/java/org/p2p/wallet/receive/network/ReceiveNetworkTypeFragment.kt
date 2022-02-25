@@ -30,11 +30,11 @@ private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ReceiveNetworkTypeFragment() :
     BaseMvpFragment<ReceiveNetworkTypeContract.View, ReceiveNetworkTypeContract.Presenter>
-    (R.layout.fragment_receive_network_type),
+        (R.layout.fragment_receive_network_type),
     ReceiveNetworkTypeContract.View {
 
     companion object {
-        const val REQUEST_KEY = "REQUEST_KEY"
+        private const val REQUEST_KEY = "REQUEST_KEY"
         private const val BUNDLE_KEY_IS_TOPUP_SELECTED = "BUNDLE_KEY_IS_TOPUP_SELECTED"
         private const val BUNDLE_KEY_IS_BUY_SELECTED = "BUNDLE_KEY_IS_BUY_SELECTED"
         private const val BUNDLE_KEY_IS_BTC_SELECTED = "BUNDLE_KEY_IS_BTC_SELECTED"
