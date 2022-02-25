@@ -62,7 +62,7 @@ class ReceiveSolanaPresenter(
         launch {
             try {
                 usernameInteractor.saveQr(name, bitmap)
-                view?.showToastMessage(R.string.auth_save)
+                view?.showToastMessage(R.string.auth_saved)
             } catch (e: Exception) {
                 view?.showErrorMessage(e)
             }
