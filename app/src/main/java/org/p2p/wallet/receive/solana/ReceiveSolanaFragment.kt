@@ -76,8 +76,8 @@ class ReceiveSolanaFragment :
             qrView.onSaveClickListener = { name, bitmap ->
                 presenter.saveQr(name, bitmap)
             }
-            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
-                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
+            setFragmentResultListener(REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
                 if (type == NetworkType.BITCOIN) {
                     popAndReplaceFragment(RenBTCFragment.create())
                 }

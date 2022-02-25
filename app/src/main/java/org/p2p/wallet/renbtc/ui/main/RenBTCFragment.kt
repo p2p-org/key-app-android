@@ -60,7 +60,6 @@ class RenBTCFragment :
                 presenter.saveQr(name, bitmap)
             }
 
-            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
             setFragmentResultListener(REQUEST_KEY) { _, bundle ->
                 val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
                 if (type == NetworkType.SOLANA) {
