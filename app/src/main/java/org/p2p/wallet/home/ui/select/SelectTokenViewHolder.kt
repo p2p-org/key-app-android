@@ -45,7 +45,7 @@ class SelectTokenViewHolder(
     private val totalTextView = binding.totalTextView
 
     fun onBind(item: Token) {
-        if (adapterPosition == 0) {
+        if (bindingAdapterPosition == 0) {
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
         } else {
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
