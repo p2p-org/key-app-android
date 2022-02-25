@@ -52,21 +52,16 @@ class TokenAdapter(
     private fun mapGroups(tokens: List<HomeElementItem>, state: VisibilityState): List<HomeElementItem> =
         tokens
             .groupBy { it is HomeElementItem.Hidden }
-            .map { (isHidden, list) -> mapHiddenGroup(isHidden, list, state) }
+            .map { (isHidden, list) -> mapTokensGroup(isHidden, list, state) }
             .flatten()
 
-    private fun mapHiddenGroup(
+    private fun mapTokensGroup(
         isHidden: Boolean,
         list: List<HomeElementItem>,
         state: VisibilityState
-    ) =
-        if (isHidden) {
-            list.toMutableList().apply {
-                add(0, HomeElementItem.Action(state))
-            }
-        } else {
-            list
-        }
+    ) = list.toMutableList().apply {
+        add(0, HomeElementItem.Action(state, isHidden))
+    }
 
     private fun getDiffCallback(
         oldList: List<HomeElementItem>,
