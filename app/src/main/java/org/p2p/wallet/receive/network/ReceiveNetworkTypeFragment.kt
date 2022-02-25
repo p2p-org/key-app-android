@@ -30,7 +30,7 @@ private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ReceiveNetworkTypeFragment() :
     BaseMvpFragment<ReceiveNetworkTypeContract.View, ReceiveNetworkTypeContract.Presenter>
-        (R.layout.fragment_receive_network_type),
+    (R.layout.fragment_receive_network_type),
     ReceiveNetworkTypeContract.View {
 
     companion object {
