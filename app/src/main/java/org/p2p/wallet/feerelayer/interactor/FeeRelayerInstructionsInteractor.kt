@@ -2,6 +2,7 @@ package org.p2p.wallet.feerelayer.interactor
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.feerelayer.model.SwapData
+import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
@@ -82,9 +83,9 @@ class FeeRelayerInstructionsInteractor(
                 mint = transitTokenMintPubkey
             )
 
-            val transitTokenAccountAddressAccount = addressInteractor.findAssociatedAddress(
-                ownerAddress = transitTokenAccountAddressData,
-                destinationMint = transitTokenMintPubkey.toBase58()
+            val transitTokenAccountAddressAccount = addressInteractor.findSplTokenAddressData(
+                destinationAddress = transitTokenAccountAddressData,
+                mintAddress = transitTokenMintPubkey.toBase58()
             )
 
             return SwapData.SplTransitive(
@@ -100,7 +101,7 @@ class FeeRelayerInstructionsInteractor(
                 ),
                 transitTokenMintPubkey = transitTokenMintPubkey.toBase58(),
                 transitTokenAccountAddress = transitTokenAccountAddressData,
-                needsCreateTransitTokenAccount = transitTokenAccountAddressAccount.shouldCreateAssociatedInstruction
+                needsCreateTransitTokenAccount = transitTokenAccountAddressAccount.shouldCreateAccount
             )
         }
     }
@@ -113,6 +114,29 @@ class FeeRelayerInstructionsInteractor(
             transitTokenMintPubkey = pubkey?.let { PublicKey(pubkey) }
         }
         return transitTokenMintPubkey
+    }
+
+    fun getTransitToken(
+        pools: OrcaPoolsPair
+    ): TokenInfo? {
+        val owner = tokenKeyProvider.publicKey
+        val transitTokenMintPubkey = getTransitTokenMintPubkey(pools)
+
+        var transitTokenAccountAddress: PublicKey? = null
+        if (transitTokenMintPubkey != null) {
+            transitTokenAccountAddress = feeRelayerAccountInteractor.getTransitTokenAccountAddress(
+                owner = owner.toPublicKey(),
+                mint = transitTokenMintPubkey
+            )
+        }
+
+        if (transitTokenMintPubkey != null && transitTokenAccountAddress != null) {
+            return TokenInfo(
+                address = transitTokenAccountAddress.toBase58(),
+                mint = transitTokenMintPubkey.toBase58()
+            )
+        }
+        return null
     }
 
     private fun OrcaPool.getSwapData(

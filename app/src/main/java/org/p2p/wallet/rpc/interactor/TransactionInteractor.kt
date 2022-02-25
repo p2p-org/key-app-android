@@ -9,7 +9,6 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
@@ -47,28 +46,15 @@ class TransactionInteractor(
     }
 
     suspend fun serializeAndSend(
-        instructions: List<TransactionInstruction>,
-        recentBlockhash: String? = null,
-        signers: List<Account>,
-        isSimulation: Boolean,
-        sourceSymbol: String,
-        destinationSymbol: String
+        preparedTransaction: PreparedTransaction,
+        isSimulation: Boolean
     ): String {
-        val serializedTransaction = serializeTransaction(
-            instructions = instructions,
-            recentBlockhash = recentBlockhash,
-            signers = signers
-        )
 
-        val transaction = AppTransaction(
-            serializedTransaction = serializedTransaction,
-            sourceSymbol = sourceSymbol,
-            destinationSymbol = destinationSymbol,
-            isSimulation = isSimulation
-        )
-//        transactionManager.addInQueue(transaction)
-
-        return serializedTransaction
+        return if (isSimulation) {
+            rpcRepository.simulateTransaction(preparedTransaction.transaction)
+        } else {
+            rpcRepository.sendTransaction(preparedTransaction.transaction)
+        }
     }
 
     suspend fun serializeTransaction(
