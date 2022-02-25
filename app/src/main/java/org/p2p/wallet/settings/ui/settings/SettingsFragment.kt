@@ -21,11 +21,13 @@ import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
+import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
-private const val EXTRA_NETWORK_NAME = "EXTRA_NETWORK_NAME"
-private const val EXTRA_IS_PIN_CHANGED = "EXTRA_IS_PIN_CHANGED"
+private const val REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val BUNDLE_KEY_NEW_NETWORK_NAME = "EXTRA_NETWORK_NAME"
+private const val BUNDLE_KEY_IS_PIN_CHANGED = "EXTRA_IS_PIN_CHANGED"
+private const val BUNDLE_KEY_IS_ZERO_BALANCE_VISIBLE = "EXTRA_IS_ZERO_BALANCE_VISIBLE"
 
 class SettingsFragment :
     BaseMvpFragment<SettingsContract.View, SettingsContract.Presenter>(R.layout.fragment_settings),
@@ -49,24 +51,18 @@ class SettingsFragment :
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            EXTRA_REQUEST_KEY,
+            REQUEST_KEY,
             viewLifecycleOwner
         ) { _, result ->
             when {
-                result.containsKey(EXTRA_IS_PIN_CHANGED) -> {
-                    val isPinChanged = result.getBoolean(EXTRA_IS_PIN_CHANGED)
-                    if (isPinChanged) {
-                        showSnackbar(
-                            message = getString(R.string.settings_a_new_wallet_pin_is_set),
-                            iconRes = R.drawable.ic_done
-                        )
-                    }
+                result.containsKey(BUNDLE_KEY_IS_PIN_CHANGED) -> {
+                    onPinChanged(result)
                 }
-                result.containsKey(EXTRA_NETWORK_NAME) -> {
-                    val networkName = result.getString(EXTRA_NETWORK_NAME)
-                    if (!networkName.isNullOrEmpty()) {
-                        presenter.onNetworkChanged(newName = networkName)
-                    }
+                result.containsKey(BUNDLE_KEY_NEW_NETWORK_NAME) -> {
+                    onNetworkChanged(result)
+                }
+                result.containsKey(BUNDLE_KEY_IS_ZERO_BALANCE_VISIBLE) -> {
+                    onZeroBalanceSettingsChanged(result)
                 }
             }
         }
@@ -105,7 +101,7 @@ class SettingsFragment :
 
             R.string.settings_wallet_pin -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_RESET)
-                replaceFragment(ResetPinFragment.create(EXTRA_REQUEST_KEY, EXTRA_IS_PIN_CHANGED))
+                replaceFragment(ResetPinFragment.create(REQUEST_KEY, BUNDLE_KEY_IS_PIN_CHANGED))
             }
             R.string.settings_app_security -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.SECURITY)
@@ -114,7 +110,7 @@ class SettingsFragment :
             R.string.settings_network -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.NETWORK)
                 addFragment(
-                    SettingsNetworkFragment.create(EXTRA_REQUEST_KEY, EXTRA_NETWORK_NAME),
+                    SettingsNetworkFragment.create(REQUEST_KEY, BUNDLE_KEY_NEW_NETWORK_NAME),
                     enter = 0,
                     exit = 0,
                     popEnter = 0,
@@ -124,7 +120,7 @@ class SettingsFragment :
             R.string.settings_zero_balances -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.ZERO_BALANCES)
                 addFragment(
-                    SettingsZeroBalanceFragment.create(),
+                    SettingsZeroBalanceFragment.create(REQUEST_KEY, BUNDLE_KEY_IS_ZERO_BALANCE_VISIBLE),
                     enter = 0,
                     exit = 0,
                     popEnter = 0,
@@ -136,5 +132,29 @@ class SettingsFragment :
 
     private fun onLogoutClickListener() {
         presenter.onLogoutClicked()
+    }
+
+    private fun onPinChanged(bundle: Bundle) {
+        val isPinChanged = bundle.getBoolean(BUNDLE_KEY_IS_PIN_CHANGED)
+        if (isPinChanged) {
+            showSnackbar(
+                message = getString(R.string.settings_a_new_wallet_pin_is_set),
+                iconRes = R.drawable.ic_done
+            )
+        }
+    }
+
+    private fun onNetworkChanged(bundle: Bundle) {
+        val networkName = bundle.getString(BUNDLE_KEY_NEW_NETWORK_NAME)
+        if (!networkName.isNullOrEmpty()) {
+            presenter.onNetworkChanged(newName = networkName)
+        }
+    }
+
+    private fun onZeroBalanceSettingsChanged(bundle: Bundle) {
+        val isZeroBalanceVisible = bundle.getBoolean(BUNDLE_KEY_IS_ZERO_BALANCE_VISIBLE)
+        if (isZeroBalanceVisible) {
+            toast(R.string.settings_tokens_with_zero_balances_are_shown)
+        }
     }
 }

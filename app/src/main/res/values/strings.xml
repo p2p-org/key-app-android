@@ -235,7 +235,7 @@
     <string name="main_balance">Balance</string>
     <string name="main_empty_title">Top up your account to get started</string>
     <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
-    <string name="home_main">Main</string>
+    <string name="home_main">Wallet</string>
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
@@ -488,6 +488,7 @@
     <string name="settings_resetting_your_PIN">Resetting your PIN</string>
     <string name="settings_choose_a_network">Choose a network</string>
     <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
+    <string name="settings_tokens_with_zero_balances_are_shown">Tokens with zero balances are shown</string>
     <string name="settings_tokens_hidden">Hidden</string>
     <string name="settings_tokens_shown">Shown</string>
     <string name="settings_logout_title">Are you sure you want to log out?</string>
