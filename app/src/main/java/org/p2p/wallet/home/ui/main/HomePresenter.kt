@@ -45,6 +45,7 @@ class HomePresenter(
     private var state: VisibilityState? = null
 
     private val tokens = mutableListOf<Token.Active>()
+    private val tokensValidForBuy = listOf("SOL", "USDC")
 
     private var username: Username? = null
 
@@ -67,7 +68,7 @@ class HomePresenter(
     }
 
     override fun onBuyClicked() {
-        view?.showTokensForBuy(tokens)
+        view?.showTokensForBuy(tokens.filter { it.tokenSymbol in tokensValidForBuy })
     }
 
     override fun collectData() {

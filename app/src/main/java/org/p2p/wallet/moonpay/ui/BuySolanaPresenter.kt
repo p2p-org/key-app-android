@@ -6,6 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyData
@@ -25,6 +26,7 @@ import java.math.BigDecimal
 private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
+    private val token: Token.Active,
     private val moonpayRepository: MoonpayRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,

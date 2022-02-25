@@ -76,8 +76,9 @@ object HomeModule : InjectionModule {
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
-        factory {
+        factory { (token: Token.Active) ->
             BuySolanaPresenter(
+                token,
                 get(),
                 androidContext().resources.getString(R.string.buy_min_error_format),
                 androidContext().resources.getString(R.string.buy_max_error_format),
