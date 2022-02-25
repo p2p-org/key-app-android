@@ -52,7 +52,7 @@ object TokenTransaction {
         return AccountInfoData.decode(data)
     }
 
-    fun decodeAccountInfo(@NonNull value: AccountInfo.Value): AccountInfoData {
+    fun decodeAccountInfo(value: AccountInfo.Value): AccountInfoData {
         val base64Data = value.data!![0]
         val data = Base64.decode(base64Data, Base64.DEFAULT)
         return AccountInfoData.decode(data)
