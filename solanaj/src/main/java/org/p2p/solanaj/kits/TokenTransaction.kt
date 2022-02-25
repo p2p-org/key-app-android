@@ -1,7 +1,6 @@
 package org.p2p.solanaj.kits
 
 import android.util.Base64
-import androidx.annotation.NonNull
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.PublicKey.Companion.findProgramAddress
 import org.p2p.solanaj.model.types.AccountInfo
