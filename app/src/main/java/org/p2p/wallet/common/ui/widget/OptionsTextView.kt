@@ -58,6 +58,10 @@ class OptionsTextView @JvmOverloads constructor(
         binding.labelTextView.setText(label)
     }
 
+    fun setLabelText(text: CharSequence) {
+        binding.labelTextView.text = text
+    }
+
     fun setOptionsText(@StringRes label: Int) {
         val labelText = context.getString(label)
         binding.optionsTextView withTextOrGone labelText

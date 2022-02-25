@@ -38,9 +38,10 @@ class BuySolanaFragment :
     override val presenter: BuySolanaContract.Presenter by inject {
         parametersOf(token)
     }
+    private val token: Token.Active by args(EXTRA_TOKEN)
+
     private val binding: FragmentBuySolanaBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
-    private val token: Token.Active by args(EXTRA_TOKEN)
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
@@ -51,7 +52,12 @@ class BuySolanaFragment :
         }
         analyticsInteractor.logScreenOpenEvent(ScreenName.Buy.SOL)
         with(binding) {
+            toolbar.title = getString(R.string.buy_token_on_moonpay, token.tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }
+            getValueTextView.text = getString(R.string.buy_zero_token, token.tokenSymbol)
+            priceView.setLabelText(getString(R.string.buy_token_price, token.tokenSymbol))
+            purchaseCostView.setLabelText(getString(R.string.buy_token_purchase_cost, token.tokenSymbol))
+            accountCreationView.setLabelText(getString(R.string.buy_account_creation, token.tokenSymbol))
 
             installPrefixWatcher()
 

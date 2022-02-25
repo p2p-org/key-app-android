@@ -18,9 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/ic_back"
-            app:title="Buy SOL on Moonpay"
+            app:title="@string/buy_token_on_moonpay"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
-        <!--        app:title="@string/buy_solana_on_moonpay"-->
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -119,14 +118,13 @@
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:singleLine="true"
-                    android:text="0 SOL"
+                    android:text="@string/buy_zero_token"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
                     android:textColor="@color/textIconPrimary"
                     app:drawableEndCompat="@drawable/ic_exchange"
                     app:layout_constraintBottom_toBottomOf="@id/getTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/getTextView" />
-                <!--                android:text="@string/buy_zero_sol"-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
@@ -137,7 +135,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="16dp"
-            app:optionsLabelText="@string/buy_sol_price" />
+            app:optionsLabelText="@string/buy_token_price" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -151,8 +150,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="36dp"
             android:layout_marginVertical="12dp"
-            app:optionsLabelText="SOL purchase cost" />
-        <!--        app:optionsLabelText="@string/buy_sol_purchase_cost"-->
+            app:optionsLabelText="@string/buy_token_purchase_cost" />
+
         <org.p2p.wallet.common.ui.widget.OptionsTextView
             android:id="@+id/processingFeeView"
             android:layout_width="match_parent"

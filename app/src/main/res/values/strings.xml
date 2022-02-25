@@ -379,17 +379,17 @@
     <string name="swap_transfer_confirm_message">You are going to swap</string>
 
     <!-- Buy -->
-    <string name="buy_solana_on_moonpay">Buy Solana on MoonPay</string>
+    <string name="buy_token_on_moonpay">Buy %s on MoonPay</string>
     <string name="buy_moonpay">Moonpay</string>
     <string name="buy_you_pay">You pay</string>
     <string name="buy_you_get">You get</string>
-    <string name="buy_sol_price">SOL price</string>
-    <string name="buy_zero_sol">0 SOL</string>
-    <string name="buy_sol_purchase_cost">SOL purchase cost</string>
+    <string name="buy_token_price">%s price</string>
+    <string name="buy_zero_token">0 %s</string>
+    <string name="buy_token_purchase_cost">%s purchase cost</string>
     <string name="buy_processing_fee">Processing fee</string>
     <string name="buy_network_fee">Network fee</string>
     <string name="buy_extra_fee">Extra fee</string>
-    <string name="buy_account_creation">SOL account creation</string>
+    <string name="buy_account_creation">%s account creation</string>
     <string name="buy_one_time_payment">One time payment</string>
     <string name="buy_total">Total</string>
     <string name="buy_continue_on_moonpay">Continue on Moonpay</string>
