@@ -51,7 +51,7 @@ class TokenViewHolder(
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
         val token = item.token
 
-        if (adapterPosition == 0) {
+        if (bindingAdapterPosition == 0) {
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
         } else {
             (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
