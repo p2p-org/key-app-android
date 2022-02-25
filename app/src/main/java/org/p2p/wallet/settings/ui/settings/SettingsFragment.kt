@@ -79,7 +79,7 @@ class SettingsFragment :
 
     override fun showReserveUsername() {
         analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.USERNAME_RESERVE)
-        replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
     }
 
     override fun showUsername() {

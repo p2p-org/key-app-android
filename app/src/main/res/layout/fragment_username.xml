@@ -19,6 +19,7 @@
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/backgroundPrimary"
@@ -174,7 +175,9 @@
         android:layout_height="96dp"
         android:layout_gravity="bottom"
         android:background="@drawable/bg_active_secondary_top_rounded"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nestedScrollView"
+        app:layout_constraintVertical_bias="1">
 
         <org.p2p.wallet.common.ui.widget.ProgressButton
             android:id="@+id/progressButton"
