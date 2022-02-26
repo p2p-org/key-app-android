@@ -18,9 +18,6 @@ class ReceiveCardView @JvmOverloads constructor(
 
     val binding = WidgetReceiveCardViewBinding.inflate(LayoutInflater.from(context), this)
 
-    init {
-    }
-
     fun setOnNetworkClickListener(block: () -> Unit) {
         binding.networkView.setOnClickListener { block() }
     }
@@ -33,9 +30,15 @@ class ReceiveCardView @JvmOverloads constructor(
         binding.networkView.isVisible = isVisible
     }
 
+    fun setFaqVisibility(isVisible: Boolean) {
+        binding.faqTextView.isVisible = isVisible
+    }
+
     fun setQrName(name: String) {
         binding.qrView.setName(name)
     }
+
+    fun getQrName() = binding.qrView.getName()
 
     fun setQrValue(value: Spannable) {
         binding.qrView.setValue(value)
@@ -43,6 +46,10 @@ class ReceiveCardView @JvmOverloads constructor(
 
     fun setQrWatermark(@DrawableRes iconResId: Int) {
         binding.qrView.setWatermarkIcon(iconResId)
+    }
+
+    fun setNetworkName(newName: String) {
+        binding.networkTextView.text = newName
     }
 
     fun setQrBitmap(bitmap: Bitmap) {

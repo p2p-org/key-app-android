@@ -40,7 +40,6 @@ class QrView @JvmOverloads constructor(
             saveButton.setOnClickListener {
                 showSnapshotAnimation()
             }
-
             shareButton.setOnClickListener {
                 context.shareText(qrValue.toString())
                 onShareClickListener?.invoke()
@@ -63,6 +62,8 @@ class QrView @JvmOverloads constructor(
             }
         }
     }
+
+    fun getName() = binding.nameTextView.text.toString()
 
     fun setImage(bitmap: Bitmap) {
         binding.qrImageView.setImageBitmap(bitmap)

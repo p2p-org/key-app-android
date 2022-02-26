@@ -49,16 +49,21 @@ class RenBTCFragment :
                 progressButton.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
+
             statusView.setOnClickListener {
                 presenter.onStatusReceivedClicked()
             }
-            networkView.setOnClickListener {
+
+            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage)
+            }
+            receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()
             }
-            qrView.setWatermarkIcon(R.drawable.ic_btc)
-            qrView.onSaveClickListener = { name, bitmap ->
-                presenter.saveQr(name, bitmap)
-            }
+            receiveCardView.setSelectNetworkVisibility(isVisible = true)
+            receiveCardView.setFaqVisibility(isVisible = false)
+            receiveCardView.setQrWatermark(R.drawable.ic_btc)
+            receiveCardView.setNetworkName(getString(R.string.send_bitcoin_network))
 
             setFragmentResultListener(REQUEST_KEY) { _, bundle ->
                 val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
@@ -80,13 +85,13 @@ class RenBTCFragment :
 
     override fun renderQr(qrBitmap: Bitmap?) {
         if (qrBitmap != null) {
-            binding.qrView.setImage(qrBitmap)
+            binding.receiveCardView.setQrBitmap(qrBitmap)
         }
     }
 
     override fun showActiveState(address: String, remaining: String, fee: String) {
         with(binding) {
-            qrView.setValue(address.highlightPublicKey(requireContext()))
+            receiveCardView.setQrValue(address.highlightPublicKey(requireContext()))
 
             progressButton.setOnClickListener {
                 presenter.onBrowserClicked(address)
@@ -110,7 +115,7 @@ class RenBTCFragment :
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
-        binding.qrView.showLoading(isLoading)
+        binding.receiveCardView.showQrLoading(isLoading)
     }
 
     override fun showToastMessage(resId: Int) {
