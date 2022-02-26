@@ -26,7 +26,7 @@ class TokenAdapter(
     override fun getItemViewType(position: Int): Int = when (data[position]) {
         is HomeElementItem.Shown -> R.layout.item_token
         is HomeElementItem.Hidden -> R.layout.item_token_hidden
-        is HomeElementItem.Action -> R.layout.item_token_hidden_group_button
+        is HomeElementItem.Action -> R.layout.item_token_group_button
         is HomeElementItem.Banners -> R.layout.item_banners
     }
 
@@ -35,7 +35,7 @@ class TokenAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
         R.layout.item_token -> TokenViewHolder(parent, listener)
         R.layout.item_token_hidden -> TokenHiddenViewHolder(parent, listener)
-        R.layout.item_token_hidden_group_button -> TokenButtonViewHolder(parent, listener)
+        R.layout.item_token_group_button -> TokenButtonViewHolder(parent, listener)
         R.layout.item_banners -> BannersViewHolder(parent, listener)
         else -> throw IllegalStateException("Unknown viewType: $viewType")
     }
