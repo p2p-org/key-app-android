@@ -60,27 +60,29 @@ class ReceiveSolanaFragment :
                 toolbar.fit { Edge.TopArc }
                 progressButton.fitMargin { Edge.BottomArc }
             }
-            networkView.setOnClickListener {
+            receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()
             }
-            faqTextView.setOnClickListener {
+            receiveCardView.setOnFaqClickListener {
                 analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.LIST)
                 replaceFragment(TokenListFragment.create())
             }
-            qrView.onShareClickListener = {
+            receiveCardView.setOnShareQrClickListener {
                 receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
             }
-            qrView.onCopyClickListener = {
+            receiveCardView.setOnCopyQrClickListener {
                 receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
             }
-            qrView.onSaveClickListener = { name, bitmap ->
-                presenter.saveQr(name, bitmap)
+            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage)
             }
-            setFragmentResultListener(REQUEST_KEY) { _, bundle ->
-                val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
-                if (type == NetworkType.BITCOIN) {
-                    popAndReplaceFragment(RenBTCFragment.create())
-                }
+            receiveCardView.setSelectNetworkVisibility(isVisible = true)
+        }
+
+        setFragmentResultListener(REQUEST_KEY) { _, bundle ->
+            val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
+            if (type == NetworkType.BITCOIN) {
+                popAndReplaceFragment(RenBTCFragment.create())
             }
         }
         presenter.loadData()
@@ -88,9 +90,9 @@ class ReceiveSolanaFragment :
 
     override fun showUserData(userPublicKey: String, username: Username?) {
         with(binding) {
-            qrView.setValue(userPublicKey.highlightPublicKey(requireContext()))
+            receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
             username?.getFullUsername(requireContext())?.let {
-                qrView.setName(it)
+                receiveCardView.setQrName(it)
             }
             progressButton.setOnClickListener {
                 val url = getString(R.string.solanaWalletExplorer, userPublicKey)
@@ -109,12 +111,12 @@ class ReceiveSolanaFragment :
 
     override fun renderQr(qrBitmap: Bitmap?) {
         if (qrBitmap != null) {
-            binding.qrView.setImage(qrBitmap)
+            binding.receiveCardView.setQrBitmap(qrBitmap)
         }
     }
 
     override fun showQrLoading(isLoading: Boolean) {
-        binding.qrView.showLoading(isLoading)
+        binding.receiveCardView.showQrLoading(isLoading)
         binding.progressView.isVisible = isLoading
     }
 

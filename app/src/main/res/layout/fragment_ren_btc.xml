@@ -96,7 +96,7 @@
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <org.p2p.wallet.common.ui.widget.QrView
+                    <org.p2p.wallet.receive.widget.QrView
                         android:id="@+id/qrView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

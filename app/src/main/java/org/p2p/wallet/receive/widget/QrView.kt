@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.ui.widget
+package org.p2p.wallet.receive.widget
 
 import android.content.Context
 import android.graphics.Bitmap
