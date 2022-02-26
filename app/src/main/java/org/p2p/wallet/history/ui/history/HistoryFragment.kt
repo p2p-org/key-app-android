@@ -60,7 +60,7 @@ class HistoryFragment :
         with(binding) {
             toolbar.title = token.tokenName
             toolbar.setNavigationOnClickListener { popBackStack() }
-            totalTextView.text = token.getFormattedTotal()
+            totalTextView.text = token.getFormattedTotal(includeSymbol = true)
             usdTotalTextView.text = token.getFormattedUsdTotal()
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
