@@ -40,10 +40,10 @@ class OrcaRouteInteractor(
         owner: Account,
         fromTokenPubkey: String,
         toTokenPubkey: String?,
-        feeRelayerFeePayer: PublicKey?,
         amount: BigInteger,
         slippage: Double,
-        freeTransactionFeeAvailable: Boolean
+        feeRelayerFeePayer: PublicKey?,
+        minRenExemption: BigInteger
     ): AccountInstructions {
         val fromMint = tokens[pool.tokenAName]?.mint?.toPublicKey()
         val toMint = tokens[pool.tokenBName]?.mint?.toPublicKey()
@@ -59,7 +59,7 @@ class OrcaRouteInteractor(
                 instructionsInteractor.prepareCreatingWSOLAccountAndCloseWhenDone(
                     from = owner.publicKey,
                     amount = amount,
-                    payer = owner.publicKey
+                    payer = feeRelayerFeePayer ?: owner.publicKey
                 )
             } else {
                 AccountInstructions(fromTokenPubkey)
@@ -107,48 +107,31 @@ class OrcaRouteInteractor(
         // form instructions
         val instructions = mutableListOf<TransactionInstruction>()
         val cleanupInstructions = mutableListOf<TransactionInstruction>()
+        var accountCreationFee: BigInteger = BigInteger.ZERO
 
         // source
         instructions += sourceAccountInstructions.instructions
         cleanupInstructions += sourceAccountInstructions.cleanupInstructions
 
+        if (sourceAccountInstructions.instructions.isNotEmpty()) {
+            accountCreationFee += minRenExemption
+        }
+
         // destination
         instructions += destinationAccountInstructions.instructions
         cleanupInstructions += destinationAccountInstructions.cleanupInstructions
-
-        // userTransferAuthorityPubkey
-        // fixme: this may fail for direct request to blockchain
-        val (userTransferAuthority, userTransferAuthorityPubkey) = if (freeTransactionFeeAvailable) {
-            owner to owner.publicKey
-        } else {
-            val userTransferAuthority = Account()
-            var userTransferAuthorityPubkey = userTransferAuthority.publicKey
-
-            if (feeRelayerFeePayer == null) {
-                // approve (if send without feeRelayer)
-                val approveTransaction = TokenProgram.approveInstruction(
-                    TokenProgram.PROGRAM_ID,
-                    sourceAccountInstructions.account,
-                    userTransferAuthorityPubkey,
-                    owner.publicKey,
-                    amount
-                )
-                instructions += approveTransaction
-            } else {
-                userTransferAuthorityPubkey = owner.publicKey
-            }
-
-            userTransferAuthority to userTransferAuthorityPubkey
+        if (destinationAccountInstructions.instructions.isNotEmpty()) {
+            accountCreationFee += minRenExemption
         }
 
-        // swap
+        // swap instructions
         val minAmountOut = pool.getMinimumAmountOut(amount, slippage)
             ?: throw IllegalStateException("Couldn't estimate minimum out amount")
 
         val swapInstruction = TokenSwapProgram.swapInstruction(
             pool.account,
             pool.authority,
-            userTransferAuthorityPubkey,
+            owner.publicKey,
             sourceAccountInstructions.account,
             pool.tokenAccountA,
             pool.tokenAccountB,
@@ -167,7 +150,6 @@ class OrcaRouteInteractor(
         val signers = mutableListOf<Account>()
         signers += sourceAccountInstructions.signers
         signers += destinationAccountInstructions.signers
-        signers.add(userTransferAuthority)
 
         return AccountInstructions(
             destinationAccountInstructions.account,

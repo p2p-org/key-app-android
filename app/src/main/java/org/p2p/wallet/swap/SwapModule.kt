@@ -14,6 +14,7 @@ import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaNativeSwapInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaRouteInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
@@ -61,8 +62,6 @@ object SwapModule : InjectionModule {
 
         single {
             OrcaSwapInteractor(
-                swapRepository = get(),
-                rpcRepository = get(),
                 feeRelayerSwapInteractor = get(),
                 feeRelayerAccountInteractor = get(),
                 feeRelayerInteractor = get(),
@@ -70,9 +69,7 @@ object SwapModule : InjectionModule {
                 orcaRouteInteractor = get(),
                 orcaInfoInteractor = get(),
                 orcaPoolInteractor = get(),
-                orcaInstructionsInteractor = get(),
-                transactionStatusInteractor = get(),
-                transactionManager = get(),
+                orcaNativeSwapInteractor = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get()
             )
@@ -81,6 +78,7 @@ object SwapModule : InjectionModule {
         single { OrcaRouteInteractor(get(), get()) }
         factory { OrcaInstructionsInteractor(get()) }
         factory { OrcaPoolInteractor(get(), get(), get(), get()) }
+        factory { OrcaNativeSwapInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
 
         factory { TransactionAddressInteractor(get(), get(), get()) }
         single { TransactionAmountInteractor(get()) }
