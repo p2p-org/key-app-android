@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.AttrRes
 import androidx.annotation.FloatRange
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetExpandViewBinding
@@ -24,12 +25,13 @@ class ExpandView @JvmOverloads constructor(
 
     private var isExpanded: Boolean = true
     private var headerTitle: String = ""
-    private var actionTitle: String = ""
     private var headerVisible: Boolean = true
-    private var actionVisible: Boolean = true
     private var arrowVisible: Boolean = true
     private var contentPadding: Int = dip(16)
     private var contentPaddingBottom: Int = dip(24)
+    private var container: LinearLayout? = null
+    private var headerLayout: ConstraintLayout? = null
+    private var expandLayout: LinearLayout? = null
 
     private val binding = WidgetExpandViewBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -39,6 +41,12 @@ class ExpandView @JvmOverloads constructor(
         setupHeader()
         setupExpandLayout()
         binding.expandableLayout.setup(isExpanded)
+        binding.container.setOnClickListener {
+            binding.expandableLayout.toggle(animate = true)
+        }
+        container = binding.container
+        headerLayout = binding.headerLayoutView
+        expandLayout = binding.expandableLayout
     }
 
     private fun initAttrs(attrs: TypedArray) {
@@ -77,7 +85,11 @@ class ExpandView @JvmOverloads constructor(
     }
 
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
-        binding.expandableLayout.addView(child, params)
+        if (container == null || headerLayout == null || expandLayout == null) {
+            super.addView(child, index, params)
+        } else {
+            binding.expandableLayout.addView(child, params)
+        }
     }
 
     override fun onSaveInstanceState(): Parcelable? {
