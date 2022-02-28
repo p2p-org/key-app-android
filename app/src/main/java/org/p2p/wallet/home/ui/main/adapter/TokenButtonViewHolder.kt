@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemTokenHiddenGroupButtonBinding
+import org.p2p.wallet.databinding.ItemTokenGroupButtonBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.utils.requireContext
 
 class TokenButtonViewHolder(
-    binding: ItemTokenHiddenGroupButtonBinding,
+    binding: ItemTokenGroupButtonBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -19,7 +19,7 @@ class TokenButtonViewHolder(
         parent: ViewGroup,
         listener: OnHomeItemsClickListener
     ) : this(
-        binding = ItemTokenHiddenGroupButtonBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+        binding = ItemTokenGroupButtonBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         listener = listener
     )
 
