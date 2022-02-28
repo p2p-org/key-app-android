@@ -16,7 +16,7 @@
         <item name="colorSecondary">@color/backgroundDisabled</item>
         <item name="colorControlHighlight">@color/backgroundDisabled</item>
 
-        <item name="colorAccent">@color/backgroundButtonPrimary</item>
+        <item name="colorAccent">@color/textIconActive</item>
         <item name="colorControlActivated">@color/backgroundButtonPrimary</item>
         <item name="colorControlNormal">@color/textIconPrimary</item>
         <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>

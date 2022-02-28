@@ -76,7 +76,6 @@ object DebugDrawer : KoinComponent {
         return arrayOf(
             ConfigurationModule(),
             CustomTimberModule(),
-            SolanajModule(),
             WipeDataModule(restartCallback, clearDataCallback),
             BuildModule(),
             DeviceModule()

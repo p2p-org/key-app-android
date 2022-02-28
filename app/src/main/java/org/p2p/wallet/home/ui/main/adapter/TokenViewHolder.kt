@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
@@ -27,7 +26,6 @@ class TokenViewHolder(
         .listener(SvgSoftwareLayerSetter())
 
     companion object {
-        private const val LIST_TOP_MARGIN_IN_DP = 16
         private const val IMAGE_SIZE = 56
     }
 
@@ -49,8 +47,6 @@ class TokenViewHolder(
 
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
         val token = item.token
-
-        if (bindingAdapterPosition == 1) itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = 0 }
 
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 

@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
@@ -14,6 +15,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
@@ -60,6 +62,18 @@ class HistoryFragment :
         with(binding) {
             toolbar.title = token.tokenName
             toolbar.setNavigationOnClickListener { popBackStack() }
+            if (BuildConfig.DEBUG) {
+                toolbar.inflateMenu(R.menu.menu_history)
+                toolbar.setOnMenuItemClickListener {
+                    if (it.itemId == R.id.closeItem) {
+                        presenter.closeAccount()
+                        return@setOnMenuItemClickListener true
+                    }
+
+                    return@setOnMenuItemClickListener false
+                }
+            }
+
             totalTextView.text = token.getFormattedTotal(includeSymbol = true)
             usdTotalTextView.text = token.getFormattedUsdTotal()
             refreshLayout.setOnRefreshListener { presenter.refresh() }
@@ -127,7 +141,10 @@ class HistoryFragment :
         when (transaction) {
             is HistoryTransaction.Swap,
             is HistoryTransaction.Transfer,
-            is HistoryTransaction.BurnOrMint -> replaceFragment(TransactionDetailsFragment.create(transaction))
+            is HistoryTransaction.BurnOrMint -> {
+                val state = TransactionDetailsLaunchState.History(transaction)
+                replaceFragment(TransactionDetailsFragment.create(state))
+            }
             else -> {
                 // todo: add support of other transactions
             }
