@@ -40,7 +40,6 @@ class TokenHiddenViewHolder(
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView
     private val nameTextView = binding.nameTextView
-    private val addressTextView = binding.addressTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
     private val hideImageView = binding.hideImageView
@@ -53,18 +52,19 @@ class TokenHiddenViewHolder(
         }
 
         itemView.isVisible = true
-        val data = item.token
-        if (!data.iconUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, data.iconUrl)
+        val token = item.token
+        if (!token.iconUrl.isNullOrEmpty()) {
+            loadImage(tokenImageView, token.iconUrl)
         }
-        wrappedImageView.isVisible = data.isWrapped
-        nameTextView.text = data.tokenSymbol
-        addressTextView.text = data.tokenName
-        valueTextView withTextOrGone data.getFormattedUsdTotal()
-        totalTextView.text = data.getFormattedTotal()
-        hideImageView.setImageResource(data.getVisibilityIcon(isZerosHidden))
-        hideImageView.setOnClickListener { listener.onHideClicked(data) }
-        contentView.setOnClickListener { listener.onTokenClicked(data) }
+        wrappedImageView.isVisible = token.isWrapped
+        nameTextView.text = token.tokenName
+        valueTextView withTextOrGone token.getFormattedUsdTotal()
+        totalTextView.text = token.getFormattedTotal()
+
+        hideImageView.setImageResource(token.getVisibilityIcon(isZerosHidden))
+        hideImageView.setOnClickListener { listener.onHideClicked(token) }
+
+        contentView.setOnClickListener { listener.onTokenClicked(token) }
     }
 
     private fun loadImage(imageView: ImageView, url: String) {
