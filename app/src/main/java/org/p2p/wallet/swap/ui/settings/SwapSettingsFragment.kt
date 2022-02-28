@@ -2,9 +2,12 @@ package org.p2p.wallet.swap.ui.settings
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.TextWatcher
 import android.view.View
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
@@ -21,6 +24,7 @@ import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.ui.orca.KEY_REQUEST_SWAP
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -29,6 +33,8 @@ private const val EXTRA_SLIPPAGE = "EXTRA_SLIPPAGE"
 private const val EXTRA_TOKENS = "EXTRA_TOKENS"
 private const val EXTRA_SELECTED_TOKEN = "EXTRA_SELECTED_TOKEN"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+
+private const val MAX_SLIPPAGE = 50.0
 
 class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
 
@@ -59,6 +65,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
 
     private val binding: FragmentSwapSettingsBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
+    private lateinit var validateWatcher: TextWatcher
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,13 +86,33 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
 
             checkSlippage()
 
+            validateWatcher = slippageInputTextView.doAfterTextChanged {
+                if((it.toString().toDoubleOrNull() ?: 0.0) > MAX_SLIPPAGE) {
+                    slippageInputTextViewLayout.error = getString(R.string.settings_slippage_max_error)
+                    slippageInputTextView.apply {
+                        removeTextChangedListener(validateWatcher)
+                        setText(MAX_SLIPPAGE.toString())
+                        setSelection(MAX_SLIPPAGE.toString().length)
+                        addTextChangedListener(validateWatcher)
+                    }
+                } else {
+                    slippageInputTextViewLayout.error = null
+                }
+            }
+
             slippageRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-                currentSlippage = when (checkedId) {
-                    R.id.minRadioButton -> Slippage.MIN
-                    R.id.mediumRadioButton -> Slippage.MEDIUM
-                    R.id.percentRadioButton -> Slippage.PERCENT
-                    R.id.fiveRadioButton -> Slippage.FIVE
-                    else -> currentSlippage
+                val isCustomSlippage = checkedId == R.id.customRadioButton
+                slippageInputTextViewLayout.isVisible = isCustomSlippage
+                if (isCustomSlippage) {
+                    slippageInputTextView.focusAndShowKeyboard()
+                } else {
+                    currentSlippage = when (checkedId) {
+                        R.id.minRadioButton -> Slippage.MIN
+                        R.id.mediumRadioButton -> Slippage.MEDIUM
+                        R.id.percentRadioButton -> Slippage.PERCENT
+                        R.id.fiveRadioButton -> Slippage.FIVE
+                        else -> currentSlippage
+                    }
                 }
             }
         }
@@ -94,6 +121,11 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
             updateSettings()
             popBackStack()
         }
+    }
+
+    override fun onDestroyView() {
+        binding.slippageInputTextView.removeTextChangedListener(validateWatcher)
+        super.onDestroyView()
     }
 
     override fun onDetach() {
@@ -112,7 +144,11 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
             Slippage.MEDIUM -> binding.slippageRadioGroup.check(R.id.mediumRadioButton)
             Slippage.PERCENT -> binding.slippageRadioGroup.check(R.id.percentRadioButton)
             Slippage.FIVE -> binding.slippageRadioGroup.check(R.id.fiveRadioButton)
-            else -> binding.slippageRadioGroup.check(R.id.percentRadioButton)
+            else -> with(binding) {
+                slippageRadioGroup.check(R.id.customRadioButton)
+                slippageInputTextView.setText(currentSlippage.percentValue)
+                slippageInputTextViewLayout.isVisible = true
+            }
         }
     }
 
@@ -137,6 +173,10 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
     }
 
     private fun updateSettings() {
+        if (binding.slippageRadioGroup.checkedRadioButtonId == R.id.customRadioButton) {
+            currentSlippage = binding.slippageInputTextView.text.toString().toDoubleOrNull()
+                ?.let { Slippage.CUSTOM(it) } ?: currentSlippage
+        }
         val result = OrcaSettingsResult(currentSlippage, selectedToken)
         setFragmentResult(KEY_REQUEST_SWAP, bundleOf(resultKey to result))
     }

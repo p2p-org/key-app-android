@@ -197,7 +197,11 @@ class OrcaSwapPresenter(
     override fun loadDataForSettings() {
         launch {
             val sol = userInteractor.getUserTokens().find { it.isSOL } ?: return@launch
-            val tokens = listOf(sol, sourceToken)
+            val tokens = mutableListOf(sol).apply {
+                if (!sourceToken.isSOL) {
+                    add(sourceToken)
+                }
+            }
             view?.showSwapSettings(slippage, tokens, swapInteractor.getFeePayerToken())
             val feeSource = if (sourceToken.isSOL) SwapAnalytics.FeeSource.SOL else SwapAnalytics.FeeSource.OTHER
             // TODO determine priceS lipaceExact
