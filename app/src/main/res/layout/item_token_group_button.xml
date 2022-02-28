@@ -9,13 +9,13 @@
     tools:ignore="UseCompoundDrawables">
 
     <TextView
-        android:id="@+id/hideTextView"
+        android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:text="@string/main_hidden_tokens"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        android:textColor="@color/textIconSecondary" />
+        android:textColor="@color/textIconSecondary"
+        tools:text="@string/main_hidden_tokens" />
 
     <ImageView
         android:id="@+id/arrowImageView"
