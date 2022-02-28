@@ -67,7 +67,7 @@ class RenBTCPresenter(
     override fun saveQr(name: String, bitmap: Bitmap) {
         launch {
             usernameInteractor.saveQr(name, bitmap)
-            view?.showToastMessage(R.string.auth_save)
+            view?.showToastMessage(R.string.auth_saved)
         }
     }
 

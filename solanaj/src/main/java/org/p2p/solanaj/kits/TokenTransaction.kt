@@ -12,7 +12,6 @@ import org.p2p.solanaj.utils.crypto.Base64Utils
 
 object TokenTransaction {
 
-    @Throws(RpcException::class)
     fun getAccountInfoData(
         accountInfo: AccountInfo?,
         programId: PublicKey

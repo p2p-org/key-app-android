@@ -27,15 +27,15 @@ class OrcaInstructionsInteractor(
             return OrcaInstructionsData(destination, instructions)
         }
 
-        // if destination is a native account or is nil
-        val addressData = orcaAddressInteractor.findAssociatedAddress(owner, destinationMint.toBase58())
+        // if destination is a native account or is null
+        val addressData = orcaAddressInteractor.findSplTokenAddressData(owner, destinationMint.toBase58())
 
-        if (addressData.shouldCreateAssociatedInstruction) {
+        if (addressData.shouldCreateAccount) {
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
                 TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                 TokenProgram.PROGRAM_ID,
                 destinationMint,
-                addressData.associatedAddress,
+                addressData.destinationAddress,
                 feePayer,
                 feePayer
             )
@@ -47,13 +47,13 @@ class OrcaInstructionsInteractor(
         if (closeAfterward) {
             closeInstructions += TokenProgram.closeAccountInstruction(
                 TokenProgram.PROGRAM_ID,
-                addressData.associatedAddress,
+                addressData.destinationAddress,
                 owner,
                 owner
             )
         }
 
-        return OrcaInstructionsData(addressData.associatedAddress, instructions)
+        return OrcaInstructionsData(addressData.destinationAddress, instructions)
     }
 
     fun createSwapInstruction(

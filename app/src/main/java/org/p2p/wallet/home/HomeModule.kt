@@ -58,6 +58,7 @@ object HomeModule : InjectionModule {
                 orcaPoolInteractor = get(),
                 orcaInfoInteractor = get(),
                 amountInteractor = get(),
+                transactionInteractor = get(),
                 transactionManager = get(),
                 tokenKeyProvider = get(),
             )
@@ -68,7 +69,7 @@ object HomeModule : InjectionModule {
             ReceiveSolanaPresenter(token, get(), get(), get(), get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (type: NetworkType) ->
-            ReceiveNetworkTypePresenter(get(), get(), type)
+            ReceiveNetworkTypePresenter(get(), get(), get(), get(), get(), type)
         } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
             SendPresenter(token, get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
@@ -76,8 +77,9 @@ object HomeModule : InjectionModule {
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
-        factory {
+        factory { (token: Token.Active) ->
             BuySolanaPresenter(
+                token,
                 get(),
                 androidContext().resources.getString(R.string.buy_min_error_format),
                 androidContext().resources.getString(R.string.buy_max_error_format),

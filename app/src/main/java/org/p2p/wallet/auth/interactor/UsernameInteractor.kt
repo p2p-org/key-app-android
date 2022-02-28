@@ -36,6 +36,9 @@ class UsernameInteractor(
         sharedPreferences.edit { putString(KEY_USERNAME, lookupUsername) }
     }
 
+    suspend fun findUsernameByAddress(owner: String): String? =
+        usernameRepository.lookup(owner)
+
     fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
 
     fun getUsername(): Username? {
@@ -43,7 +46,7 @@ class UsernameInteractor(
         return username?.let { Username(it) }
     }
 
-    suspend fun saveQr(name: String, bitmap: Bitmap) = fileLocalRepository.saveQr(name, bitmap)
+    fun saveQr(name: String, bitmap: Bitmap) = fileLocalRepository.saveQr(name, bitmap)
 
     suspend fun resolveUsername(name: String): List<ResolveUsername> =
         usernameRepository.resolve(name)

@@ -7,17 +7,21 @@ import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
 class BuySolanaFragment :
@@ -25,12 +29,20 @@ class BuySolanaFragment :
     BuySolanaContract.View {
 
     companion object {
-        fun create() = BuySolanaFragment()
+        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+        fun create(token: Token.Active) = BuySolanaFragment().withArgs(
+            EXTRA_TOKEN to token
+        )
     }
 
-    override val presenter: BuySolanaContract.Presenter by inject()
+    override val presenter: BuySolanaContract.Presenter by inject {
+        parametersOf(token)
+    }
+    private val token: Token.Active by args(EXTRA_TOKEN)
+
     private val binding: FragmentBuySolanaBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
+
     private var backPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,7 +52,12 @@ class BuySolanaFragment :
         }
         analyticsInteractor.logScreenOpenEvent(ScreenName.Buy.SOL)
         with(binding) {
+            toolbar.title = getString(R.string.buy_token_on_moonpay, token.tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }
+            getValueTextView.text = getString(R.string.buy_zero_token, token.tokenSymbol)
+            priceView.setLabelText(getString(R.string.buy_token_price, token.tokenSymbol))
+            purchaseCostView.setLabelText(getString(R.string.buy_token_purchase_cost, token.tokenSymbol))
+            accountCreationView.setLabelText(getString(R.string.buy_account_creation, token.tokenSymbol))
 
             installPrefixWatcher()
 

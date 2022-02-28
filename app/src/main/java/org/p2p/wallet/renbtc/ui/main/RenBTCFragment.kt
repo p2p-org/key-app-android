@@ -17,14 +17,11 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.createBitmap
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -34,6 +31,8 @@ class RenBTCFragment :
     RenBTCContract.View {
 
     companion object {
+        private const val REQUEST_KEY = "REQUEST_KEY"
+        private const val BUNDLE_KEY_NETWORK_TYPE = "BUNDLE_KEY_NETWORK_TYPE"
         fun create() = RenBTCFragment()
     }
 
@@ -56,8 +55,13 @@ class RenBTCFragment :
             networkView.setOnClickListener {
                 presenter.onNetworkClicked()
             }
-            setFragmentResultListener(ReceiveNetworkTypeFragment.REQUEST_KEY) { _, bundle ->
-                val type = bundle.get(ReceiveNetworkTypeFragment.BUNDLE_NETWORK_KEY) as NetworkType
+            qrView.setWatermarkIcon(R.drawable.ic_btc)
+            qrView.onSaveClickListener = { name, bitmap ->
+                presenter.saveQr(name, bitmap)
+            }
+
+            setFragmentResultListener(REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
                 if (type == NetworkType.SOLANA) {
                     popAndReplaceFragment(ReceiveSolanaFragment.create(null))
                 }
@@ -75,30 +79,19 @@ class RenBTCFragment :
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
-        binding.qrImageView.setImageBitmap(qrBitmap)
+        if (qrBitmap != null) {
+            binding.qrView.setImage(qrBitmap)
+        }
     }
 
     override fun showActiveState(address: String, remaining: String, fee: String) {
         with(binding) {
-            fullAddressTextView.text = address.highlightPublicKey(requireContext())
-            fullAddressTextView.setOnClickListener {
-                requireContext().copyToClipBoard(address)
-                toast(R.string.common_copied)
-            }
-            shareButton.setOnClickListener { requireContext().shareText(address) }
+            qrView.setValue(address.highlightPublicKey(requireContext()))
 
             progressButton.setOnClickListener {
                 presenter.onBrowserClicked(address)
             }
-            copyButton.setOnClickListener {
-                requireContext().copyToClipBoard(address)
-                toast(R.string.common_copied)
-            }
-            saveButton.setOnClickListener {
-                val bitmap = qrView.createBitmap()
-                // TODO ask which name use here ?
-                presenter.saveQr("", bitmap)
-            }
+
             val infoText = getString(R.string.receive_session_info)
             val onlyBitcoin = getString(R.string.receive_only_bitcoin)
             sessionInfoTextView.text = SpanUtils.setTextBold(infoText, onlyBitcoin)
@@ -117,6 +110,7 @@ class RenBTCFragment :
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+        binding.qrView.showLoading(isLoading)
     }
 
     override fun showToastMessage(resId: Int) {
@@ -133,7 +127,7 @@ class RenBTCFragment :
     }
 
     override fun showNetwork() {
-        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN))
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN, REQUEST_KEY, BUNDLE_KEY_NETWORK_TYPE))
     }
 
     override fun showBrowser(url: String) {

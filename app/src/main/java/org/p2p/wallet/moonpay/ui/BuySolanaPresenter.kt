@@ -6,12 +6,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.isZero
@@ -25,6 +25,7 @@ import java.math.BigDecimal
 private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
+    private val token: Token.Active,
     private val moonpayRepository: MoonpayRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
@@ -46,7 +47,7 @@ class BuySolanaPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val price = moonpayRepository.getCurrencyAskPrice(SOL_SYMBOL.lowercase()).scaleShort()
+                val price = moonpayRepository.getCurrencyAskPrice(token.tokenSymbol.lowercase()).scaleShort()
                 view?.showTokenPrice("$USD_SYMBOL$price")
                 if (isSwapped) {
                     updateViewWithData()
@@ -78,7 +79,7 @@ class BuySolanaPresenter(
     override fun onBackPressed() {
         buyAnalytics.logBuyGoingBack(
             buySum = data?.receiveAmount?.toBigDecimal() ?: BigDecimal.ZERO,
-            buyCurrency = SOL_SYMBOL,
+            buyCurrency = token.tokenSymbol,
             buyUSD = data?.price ?: BigDecimal.ZERO
         )
         view?.close()
@@ -95,7 +96,7 @@ class BuySolanaPresenter(
     }
 
     private fun updateViewWithData() {
-        prefix = if (isSwapped) SOL_SYMBOL else USD_SYMBOL
+        prefix = if (isSwapped) token.tokenSymbol else USD_SYMBOL
         view?.swapData(isSwapped, prefix)
         setBuyAmount(amount)
     }
@@ -128,7 +129,7 @@ class BuySolanaPresenter(
                 val result = moonpayRepository.getCurrency(
                     baseCurrencyAmount = amountInCurrency,
                     quoteCurrencyAmount = amountInTokens,
-                    quoteCurrencyCode = SOL_SYMBOL.lowercase(),
+                    quoteCurrencyCode = token.tokenSymbol.lowercase(),
                     baseCurrencyCode = baseCurrencyCode
                 )
                 when (result) {
@@ -157,11 +158,11 @@ class BuySolanaPresenter(
         val amountBigDecimal = amount.toBigDecimal()
         val currency = if (isSwapped) info.quoteCurrency else info.baseCurrency
         if (amountBigDecimal >= currency.minAmount && currency.maxAmount?.let { amountBigDecimal <= it } != false) {
-            val receiveSymbol = if (isSwapped) USD_SYMBOL else SOL_SYMBOL
+            val receiveSymbol = if (isSwapped) USD_SYMBOL else token.tokenSymbol
             val amount = if (isSwapped) info.totalAmount.scaleShort() else info.receiveAmount
             val currencyForTokensAmount = info.price * info.receiveAmount.toBigDecimal()
             val data = BuyData(
-                tokenSymbol = SOL_SYMBOL,
+                tokenSymbol = token.tokenSymbol,
                 currencySymbol = USD_SYMBOL,
                 price = info.price.scaleShort(),
                 receiveAmount = info.receiveAmount,

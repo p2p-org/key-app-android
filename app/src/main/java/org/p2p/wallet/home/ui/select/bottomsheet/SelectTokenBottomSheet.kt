@@ -1,21 +1,24 @@
-package org.p2p.wallet.home.ui.select
+package org.p2p.wallet.home.ui.select.bottomsheet
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.mvp.BaseFragment
-import org.p2p.wallet.databinding.FragmentSelectTokenBinding
+import org.p2p.wallet.databinding.DialogSelectTokenBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.select.SelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -23,15 +26,19 @@ private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
+class SelectTokenBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
-        fun create(tokens: List<Token>, requestKey: String, resultKey: String) = SelectTokenFragment()
-            .withArgs(
-                EXTRA_ALL_TOKENS to tokens,
-                EXTRA_REQUEST_KEY to requestKey,
-                EXTRA_RESULT_KEY to resultKey
-            )
+        fun show(
+            fm: FragmentManager,
+            tokens: List<Token>,
+            requestKey: String,
+            resultKey: String
+        ) = SelectTokenBottomSheet().withArgs(
+            EXTRA_ALL_TOKENS to tokens,
+            EXTRA_REQUEST_KEY to requestKey,
+            EXTRA_RESULT_KEY to resultKey
+        ).show(fm, SelectTokenBottomSheet::javaClass.name)
     }
 
     private val tokens: List<Token> by args(EXTRA_ALL_TOKENS)
@@ -39,20 +46,23 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val buyAnalytics: BuyAnalytics by inject()
     private val analyticsInteractor: AnalyticsInteractor by inject()
-    private val binding: FragmentSelectTokenBinding by viewBinding()
+    private val binding: DialogSelectTokenBinding by viewBinding()
 
     private val tokenAdapter: SelectTokenAdapter by lazy {
         SelectTokenAdapter {
             setFragmentResult(requestKey, bundleOf(resultKey to it))
-            parentFragmentManager.popBackStack()
+            dismissAllowingStateLoss()
             buyAnalytics.logBuyTokenChosen(it.tokenSymbol, analyticsInteractor.getPreviousScreenName())
         }
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_select_token, container, false)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            downImageView.setOnClickListener { dismissAllowingStateLoss() }
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokenRecyclerView.attachAdapter(tokenAdapter)
             tokenAdapter.setItems(tokens)
@@ -62,4 +72,6 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
             emptyTextView.isVisible = isEmpty
         }
     }
+
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 }

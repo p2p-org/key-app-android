@@ -60,8 +60,12 @@ class ReceiveSolanaPresenter(
 
     override fun saveQr(name: String, bitmap: Bitmap) {
         launch {
-            usernameInteractor.saveQr(name, bitmap)
-            view?.showToastMessage(R.string.auth_save)
+            try {
+                usernameInteractor.saveQr(name, bitmap)
+                view?.showToastMessage(R.string.auth_saved)
+            } catch (e: Exception) {
+                view?.showErrorMessage(e)
+            }
         }
     }
 

@@ -173,6 +173,7 @@
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">$ %s</string>
     <string name="main_select_token">Select token</string>
+    <string name="main_choose_token">Choose a token for buying</string>
     <string name="main_select">Select</string>
     <string name="main_fee">Fee:</string>
     <string name="main_share">Share</string>
@@ -236,7 +237,7 @@
     <string name="main_balance">Balance</string>
     <string name="main_empty_title">Top up your account to get started</string>
     <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
-    <string name="home_main">Main</string>
+    <string name="home_main">Wallet</string>
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
@@ -293,6 +294,10 @@
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
     <string name="receive_no_transactions_yet_message">After first transaction you\nwill be able to view it here</string>
+    <string name="receive_btc_buy_info">• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b> You can choose\n\t\twhich currency to pay in below.</string>
+    <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
+    <string name="receive_topup_your_account">Top up your account</string>
+    <string name="receive_share_your_solana_network_address">Share your Solana network address</string>
 
     <!-- send -->
     <string name="send_enter_address">Enter the recipient\'s address</string>
@@ -375,17 +380,17 @@
     <string name="swap_transfer_confirm_message">You are going to swap</string>
 
     <!-- Buy -->
-    <string name="buy_solana_on_moonpay">Buy Solana on MoonPay</string>
+    <string name="buy_token_on_moonpay">Buy %s on MoonPay</string>
     <string name="buy_moonpay">Moonpay</string>
     <string name="buy_you_pay">You pay</string>
     <string name="buy_you_get">You get</string>
-    <string name="buy_sol_price">SOL price</string>
-    <string name="buy_zero_sol">0 SOL</string>
-    <string name="buy_sol_purchase_cost">SOL purchase cost</string>
+    <string name="buy_token_price">%s price</string>
+    <string name="buy_zero_token">0 %s</string>
+    <string name="buy_token_purchase_cost">%s purchase cost</string>
     <string name="buy_processing_fee">Processing fee</string>
     <string name="buy_network_fee">Network fee</string>
     <string name="buy_extra_fee">Extra fee</string>
-    <string name="buy_account_creation">SOL account creation</string>
+    <string name="buy_account_creation">%s account creation</string>
     <string name="buy_one_time_payment">One time payment</string>
     <string name="buy_total">Total</string>
     <string name="buy_continue_on_moonpay">Continue on Moonpay</string>
@@ -485,6 +490,7 @@
     <string name="settings_resetting_your_PIN">Resetting your PIN</string>
     <string name="settings_choose_a_network">Choose a network</string>
     <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
+    <string name="settings_tokens_with_zero_balances_are_shown">Tokens with zero balances are shown</string>
     <string name="settings_tokens_hidden">Hidden</string>
     <string name="settings_tokens_shown">Shown</string>
     <string name="settings_logout_title">Are you sure you want to log out?</string>

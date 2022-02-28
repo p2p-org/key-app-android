@@ -60,12 +60,12 @@ class HistoryFragment :
         with(binding) {
             toolbar.title = token.tokenName
             toolbar.setNavigationOnClickListener { popBackStack() }
-            totalTextView.text = token.getFormattedTotal()
+            totalTextView.text = token.getFormattedTotal(includeSymbol = true)
             usdTotalTextView.text = token.getFormattedUsdTotal()
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
                 onBuyItemClickListener = {
-                    replaceFragment(BuySolanaFragment.create())
+                    replaceFragment(BuySolanaFragment.create(token))
                 }
                 onReceiveItemClickListener = {
                     receiveAnalytics.logTokenReceiveViewed(token.tokenName)

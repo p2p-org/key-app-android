@@ -292,8 +292,8 @@ class OrcaSwapPresenter(
                     fromToken = sourceToken,
                     toToken = destination,
                     bestPoolsPair = pair,
-                    amount = sourceAmount.toDoubleOrNull() ?: 0.toDouble(),
-                    slippage = slippage.doubleValue
+                    amount = sourceAmount.toBigDecimalOrZero().toLamports(sourceToken.decimals),
+                    slippage = slippage
                 )
 
                 when (data) {
@@ -342,12 +342,9 @@ class OrcaSwapPresenter(
             return
         }
 
-        val pair = bestPoolPair ?: return
-
         fees = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
             sourceToken = source,
-            destination = destination,
-            swapPools = pair
+            destination = destination
         )
 
         view?.showFees(fees)

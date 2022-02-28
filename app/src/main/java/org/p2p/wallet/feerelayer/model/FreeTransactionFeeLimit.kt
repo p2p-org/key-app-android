@@ -9,9 +9,11 @@ class FreeTransactionFeeLimit(
     val amountUsed: BigInteger
 ) {
 
-    val canUseFeeRelayer: Boolean
-        get() = currentUsage < maxUsage
-
-    fun isFreeTransactionFeeAvailable(transactionFee: BigInteger): Boolean =
-        currentUsage < maxUsage && (amountUsed + transactionFee) <= maxAmount
+    fun isFreeTransactionFeeAvailable(transactionFee: BigInteger, forNextTransaction: Boolean = false): Boolean {
+        var currentUsage = currentUsage
+        if (forNextTransaction) {
+            currentUsage += 1
+        }
+        return currentUsage < maxUsage && (amountUsed + transactionFee) <= maxAmount
+    }
 }
