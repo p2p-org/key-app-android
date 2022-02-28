@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
@@ -14,7 +15,6 @@ import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.SwipeLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.wallet.utils.dip
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenViewHolder(
@@ -50,11 +50,7 @@ class TokenViewHolder(
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
         val token = item.token
 
-        if (adapterPosition == 0) {
-            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
-        } else {
-            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
-        }
+        if (bindingAdapterPosition == 1) itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = 0 }
 
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 

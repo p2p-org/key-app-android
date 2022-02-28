@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="12dp"
+    android:layout_marginTop="16dp"
     app:draggedItem="@id/contentView"
     app:rightItem="@id/settingsView"
     app:swipeDirection="left">
@@ -70,10 +70,10 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
+            app:layout_constraintBottom_toTopOf="@id/totalTextView"
             app:layout_constraintEnd_toStartOf="@id/valueTextView"
             app:layout_constraintStart_toEndOf="@id/tokenImageView"
             app:layout_constraintTop_toTopOf="@id/tokenImageView"
-            app:layout_constraintBottom_toTopOf="@id/totalTextView"
             tools:text="Solana" />
 
         <TextView
