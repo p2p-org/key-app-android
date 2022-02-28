@@ -501,5 +501,8 @@
     <string name="seed_info_info">• If lost, no one can restore it\n• Keep it private, even from us</string>
     <string name="seed_info_where_i_can_find">Where I can find one?</string>
     <string name="receive_you_can_receive_sol_message">You can receive SOL by providing this\naddress, QR code or username:</string>
+    <string name="receive_direct_sol_address">Direct SOL Address</string>
+    <string name="receive_direct_and_mint_address">Direct and mint addresses</string>
+    <string name="receive_sol_mint_address">SOL Mint Address</string>
 
 </resources>

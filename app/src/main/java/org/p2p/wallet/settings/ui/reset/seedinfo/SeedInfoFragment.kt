@@ -9,6 +9,8 @@ import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentResetSeedInfoBinding
+import org.p2p.wallet.utils.edgetoedge.Edge
+import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -23,6 +25,11 @@ class SeedInfoFragment : BaseFragment(R.layout.fragment_reset_seed_info) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with(binding) {
+            edgeToEdge {
+                toolbar.fit { Edge.TopArc }
+            }
+        }
         analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.SEED_INFO)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
     }

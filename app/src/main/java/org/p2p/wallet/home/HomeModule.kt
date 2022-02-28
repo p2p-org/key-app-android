@@ -21,6 +21,8 @@ import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
+import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
+import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
 import org.p2p.wallet.receive.solana.ReceiveSolanaContract
 import org.p2p.wallet.receive.solana.ReceiveSolanaPresenter
 import org.p2p.wallet.receive.token.ReceiveTokenContract
@@ -89,6 +91,26 @@ object HomeModule : InjectionModule {
             )
         } bind BuySolanaContract.Presenter::class
         factory { TokenListPresenter(get(), get()) } bind TokenListContract.Presenter::class
-        factory { ReceiveTokenPresenter() } bind ReceiveTokenContract.Presenter::class
+        factory { (token: Token.Active) ->
+            ReceiveTokenPresenter(
+                token,
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get()
+            )
+        } bind ReceiveTokenContract.Presenter::class
+
+        factory {
+            ReceiveRenBtcPresenter(
+                get(),
+                get(),
+                get(),
+                get(),
+                get()
+            )
+        } bind ReceiveRenBtcContract.Presenter::class
     }
 }

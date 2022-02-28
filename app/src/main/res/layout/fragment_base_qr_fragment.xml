@@ -3,10 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary">
+    android:background="@color/backgroundPrimary"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -30,7 +30,6 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
@@ -64,31 +63,22 @@
                 android:layout_height="wrap_content"
                 android:text="@string/receive_direct_and_mint_address">
 
-                <LinearLayout
-                    android:id="@+id/directSollAddressView"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:text="@string/receive_direct_sol_address"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textColor="@color/textIconSecondary"
+                    app:drawableEndCompat="@drawable/ic_copy" />
+
+                <TextView
+                    android:id="@+id/directSolAddressTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:foreground="?selectableItemBackground"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="8dp"
-                        android:text="@string/receive_direct_sol_address"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        android:textColor="@color/textIconSecondary"
-                        app:drawableEndCompat="@drawable/ic_copy" />
-
-                    <TextView
-                        android:id="@+id/directSolAddressTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-                        tools:text="5faZRizz9rm8S9tampULb2Ghst6...zbXz" />
-                </LinearLayout>
-
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+                    tools:text="5faZRizz9rm8S9tampULb2Ghst6...zbXz" />
 
                 <View
                     android:layout_width="match_parent"
@@ -96,32 +86,25 @@
                     android:layout_marginTop="8dp"
                     android:background="@color/strokeSecondary" />
 
-                <LinearLayout
-                    android:id="@+id/mintAddressView"
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:drawablePadding="8dp"
+                    android:text="@string/receive_sol_mint_address"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textColor="@color/textIconSecondary"
+                    app:drawableEndCompat="@drawable/ic_copy" />
+
+                <TextView
+                    android:id="@+id/solMintAddressTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:foreground="?selectableItemBackground"
-                    android:orientation="vertical">
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+                    tools:text="5faZRizz9rm8S9tampULb2Ghst6...zbXz" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:drawablePadding="8dp"
-                        android:ellipsize="end"
-                        android:text="@string/receive_sol_mint_address"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        android:textColor="@color/textIconSecondary"
-                        app:drawableEndCompat="@drawable/ic_copy" />
-
-                    <TextView
-                        android:id="@+id/solMintAddressTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-                        tools:text="5faZRizz9rm8S9tampULb2Ghst6...zbXz" />
-                </LinearLayout>
 
             </org.p2p.wallet.common.ui.widget.ExpandView>
 

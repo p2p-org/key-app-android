@@ -11,6 +11,7 @@ import android.view.animation.LinearInterpolator
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetQrViewBinding
 import org.p2p.wallet.utils.copyToClipBoard
@@ -71,6 +72,10 @@ class QrView @JvmOverloads constructor(
 
     fun setWatermarkIcon(@DrawableRes iconResId: Int) {
         binding.watermarkImageView.setImageResource(iconResId)
+    }
+
+    fun setWatermarkIcon(iconUrl: String?) {
+        Glide.with(this).load(iconUrl).into(binding.watermarkImageView)
     }
 
     fun showLoading(isLoading: Boolean) {

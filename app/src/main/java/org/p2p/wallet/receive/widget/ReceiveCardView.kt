@@ -48,6 +48,10 @@ class ReceiveCardView @JvmOverloads constructor(
         binding.qrView.setWatermarkIcon(iconResId)
     }
 
+    fun setQrWatermark(iconUrl: String?) {
+        binding.qrView.setWatermarkIcon(iconUrl)
+    }
+
     fun setNetworkName(newName: String) {
         binding.networkTextView.text = newName
     }

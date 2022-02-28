@@ -69,7 +69,7 @@ class HistoryFragment :
                 }
                 onReceiveItemClickListener = {
                     receiveAnalytics.logTokenReceiveViewed(token.tokenName)
-                    replaceFragment(ReceiveTokenFragment.create(token))
+                    replaceFragment(ReceiveTokenFragment.create(token, isNetworkSelectable = token.isRenBTC))
                 }
                 onSendClickListener = {
                     replaceFragment(SendFragment.create(token))

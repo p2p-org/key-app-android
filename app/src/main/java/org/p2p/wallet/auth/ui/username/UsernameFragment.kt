@@ -46,6 +46,8 @@ class UsernameFragment :
                 presenter.saveQr(binding.receiveCardView.getQrName())
                 receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
             }
+            receiveCardView.setSelectNetworkVisibility(isVisible = false)
+            receiveCardView.setFaqVisibility(isVisible = false)
             progressButton.setOnClickListener {
                 replaceFragment(TokenListFragment.create())
             }
@@ -69,6 +71,7 @@ class UsernameFragment :
 
     override fun renderQr(qrBitmap: Bitmap) {
         binding.receiveCardView.setQrBitmap(qrBitmap)
+        binding.receiveCardView.showQrLoading(false)
     }
 
     override fun showAddress(address: String) {

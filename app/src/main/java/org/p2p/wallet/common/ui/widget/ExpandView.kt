@@ -23,7 +23,7 @@ class ExpandView @JvmOverloads constructor(
     @AttrRes defStyleAttr: Int = 0
 ) : LinearLayout(context, attributeSet, defStyleAttr) {
 
-    private var isExpanded: Boolean = true
+    private var isExpanded: Boolean = false
     private var headerTitle: String = ""
     private var headerVisible: Boolean = true
     private var arrowVisible: Boolean = true
@@ -41,7 +41,7 @@ class ExpandView @JvmOverloads constructor(
         setupHeader()
         setupExpandLayout()
         binding.expandableLayout.setup(isExpanded)
-        binding.container.setOnClickListener {
+        binding.headerLayoutView.setOnClickListener {
             binding.expandableLayout.toggle(animate = true)
         }
         container = binding.container
@@ -50,7 +50,7 @@ class ExpandView @JvmOverloads constructor(
     }
 
     private fun initAttrs(attrs: TypedArray) {
-        isExpanded = attrs.getBoolean(R.styleable.ExpandView_isExpanded, true)
+        isExpanded = attrs.getBoolean(R.styleable.ExpandView_isExpanded, false)
         headerTitle = attrs.getString(R.styleable.ExpandView_android_text) ?: ""
     }
 

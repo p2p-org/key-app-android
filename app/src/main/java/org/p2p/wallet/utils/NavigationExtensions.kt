@@ -38,7 +38,7 @@ fun FragmentActivity.popBackStack() {
     if (supportFragmentManager.backStackEntryCount < 2) {
         finish()
     } else {
-        supportFragmentManager.popBackStackImmediate()
+        supportFragmentManager.popBackStack()
     }
 }
 

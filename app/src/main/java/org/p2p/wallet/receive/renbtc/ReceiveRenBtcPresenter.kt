@@ -1,4 +1,4 @@
-package org.p2p.wallet.renbtc.ui.main
+package org.p2p.wallet.receive.renbtc
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -25,13 +25,13 @@ const val BTC_DECIMALS = 8
 private const val DELAY_IN_MILLIS = 200L
 private const val ONE_SECOND_IN_MILLIS = 1000L
 
-class RenBTCPresenter(
+class ReceiveRenBtcPresenter(
     private val interactor: RenBtcInteractor,
     private val qrCodeInteractor: QrCodeInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val context: Context
-) : BasePresenter<RenBTCContract.View>(), RenBTCContract.Presenter {
+) : BasePresenter<ReceiveRenBtcContract.View>(), ReceiveRenBtcContract.Presenter {
 
     private var sessionTimer: CountDownTimer? = null
 
@@ -107,7 +107,7 @@ class RenBTCPresenter(
     }
 
     private fun calculateFee(session: LockAndMint.Session) =
-        session.fee.fromLamports(org.p2p.wallet.receive.renbtc.BTC_DECIMALS).multiply(BigDecimal(2)).scaleMedium()
+        session.fee.fromLamports(BTC_DECIMALS).multiply(BigDecimal(2)).scaleMedium()
 
     private fun generateQrCode(address: String) {
         if (qrJob?.isActive == true) return
