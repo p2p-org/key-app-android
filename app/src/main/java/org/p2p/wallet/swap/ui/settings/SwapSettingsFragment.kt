@@ -87,7 +87,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
             checkSlippage()
 
             validateWatcher = slippageInputTextView.doAfterTextChanged {
-                if((it.toString().toDoubleOrNull() ?: 0.0) > MAX_SLIPPAGE) {
+                if ((it.toString().toDoubleOrNull() ?: 0.0) > MAX_SLIPPAGE) {
                     slippageInputTextViewLayout.error = getString(R.string.settings_slippage_max_error)
                     slippageInputTextView.apply {
                         removeTextChangedListener(validateWatcher)
