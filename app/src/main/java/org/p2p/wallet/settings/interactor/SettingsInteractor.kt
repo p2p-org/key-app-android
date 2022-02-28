@@ -16,7 +16,7 @@ class SettingsInteractor(
         sharedPreferences.edit { putBoolean(KEY_HIDDEN_ZERO_BALANCE, isHidden) }
     }
 
-    fun isZerosHidden(): Boolean = sharedPreferences.getBoolean(KEY_HIDDEN_ZERO_BALANCE, true)
+    fun isZerosHidden(): Boolean = sharedPreferences.getBoolean(KEY_HIDDEN_ZERO_BALANCE, false)
 
     fun isBiometricsConfirmationEnabled(): Boolean {
         val isConfirmationRequired = sharedPreferences.getBoolean(KEY_CONFIRMATION_REQUIRED, true)
