@@ -133,7 +133,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             titleTextView.text = state.message
             progressBar.isVisible = false
 
-            transactionImageView.setImageResource(R.drawable.ic_error)
+            transactionImageView.setImageResource(R.drawable.ic_error_transaction)
             lineView.isVisible = true
             lineView.setBackgroundColor(getColor(R.color.systemErrorMain))
         }
