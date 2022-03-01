@@ -13,8 +13,8 @@ import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMoonpayViewBinding
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -27,19 +27,17 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
     companion object {
         private const val EXTRA_AMOUNT = "EXTRA_AMOUNT"
-        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
-        fun create(amount: String, token: Token.Active) = MoonpayViewFragment().withArgs(
+        fun create(amount: String) = MoonpayViewFragment().withArgs(
             EXTRA_AMOUNT to amount,
-            EXTRA_TOKEN to token
         )
     }
 
     private val environmentManager: EnvironmentManager by inject()
     private val binding: FragmentMoonpayViewBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val tokenKeyProvider: TokenKeyProvider by inject()
 
     private val amount: String by args(EXTRA_AMOUNT)
-    private val token: Token.Active by args(EXTRA_TOKEN)
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +52,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
             lifecycleScope.launchWhenResumed {
                 delay(DELAY_IN_MS)
-                val url = environmentManager.getMoonpayUrl(amount, token.publicKey)
+                val url = environmentManager.getMoonpayUrl(amount, tokenKeyProvider.publicKey)
                 Timber.tag("Moonpay").d("Loading moonpay with url: $url")
                 webView.loadUrl(url)
             }

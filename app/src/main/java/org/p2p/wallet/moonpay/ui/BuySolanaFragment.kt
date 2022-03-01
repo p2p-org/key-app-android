@@ -103,7 +103,7 @@ class BuySolanaFragment :
     }
 
     override fun navigateToMoonpay(amount: String) {
-        replaceFragment(MoonpayViewFragment.create(amount, token))
+        replaceFragment(MoonpayViewFragment.create(amount))
     }
 
     override fun close() {
