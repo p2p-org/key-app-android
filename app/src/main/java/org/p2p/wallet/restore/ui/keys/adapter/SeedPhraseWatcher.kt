@@ -41,6 +41,9 @@ class SeedPhraseWatcher(
             when (val result = seedPhrase.result) {
                 is KeyResult.KeyAdded -> onKeyAdded(SecretKey(result.text.trim()))
                 is KeyResult.MultipleKeysAdded -> onSeedPhraseInserted(result.keys)
+                else -> {
+                    // do nothing
+                }
             }
         }
     }
