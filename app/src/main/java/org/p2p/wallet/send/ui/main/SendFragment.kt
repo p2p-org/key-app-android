@@ -437,7 +437,7 @@ class SendFragment :
     }
 
     override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(requireContext().getColor(availableColor))
+        binding.availableTextView.setTextColor(getColor(availableColor))
     }
 
     @SuppressLint("SetTextI18n")
