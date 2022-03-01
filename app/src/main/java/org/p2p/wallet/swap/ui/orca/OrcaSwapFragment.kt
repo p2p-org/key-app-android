@@ -45,6 +45,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
+import kotlin.properties.Delegates
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
 private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
@@ -58,6 +59,7 @@ class OrcaSwapFragment :
     OrcaSwapContract.View {
 
     companion object {
+        private const val SYMBOL_ZERO = "0"
 
         fun create() = OrcaSwapFragment()
 
@@ -316,9 +318,32 @@ class OrcaSwapFragment :
     }
 
     private val inputTextWatcher = object : SimpleTextWatcher() {
+
+        private var inputText: String by Delegates.observable("") { _, oldValue, newValue ->
+            if (newValue != oldValue) {
+                presenter.setSourceAmount(newValue)
+            }
+        }
+
+        override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+            super.onTextChanged(text, start, before, count)
+            if (text.isNullOrEmpty()) {
+                inputText = ""
+                return
+            }
+
+            inputText = if (text.startsWith('.')) {
+                "$SYMBOL_ZERO$text"
+            } else {
+                text.toString()
+            }
+        }
+
         override fun afterTextChanged(text: Editable) {
-            val amount = text.toString()
-            presenter.setSourceAmount(amount)
+            binding.amountEditText.removeTextChangedListener(this)
+            text.clear()
+            text.append(inputText)
+            binding.amountEditText.addTextChangedListener(this)
         }
     }
 }
