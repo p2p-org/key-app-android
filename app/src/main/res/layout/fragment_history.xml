@@ -62,41 +62,26 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <LinearLayout
+            android:id="@+id/emptyStateLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/backgroundPrimary"
-            app:elevation="1dp">
-
-            <org.p2p.wallet.common.ui.widget.ActionButtonsView
-                android:id="@+id/actionButtonsView"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_buttons"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintTop_toBottomOf="@id/usdTotalTextView" />
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <LinearLayout
-            android:id="@+id/emptyView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
-                android:src="@drawable/ic_history_empty_placeholder" />
+                android:src="@drawable/ic_history_empty_placeholder"
+                tools:ignore="contentDescription" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -118,17 +103,32 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/actionButtonsView">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/historyRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clipToPadding="false"
                 android:orientation="vertical"
+                android:paddingTop="24dp"
                 tools:listitem="@layout/item_transaction" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </LinearLayout>
+
+        <org.p2p.wallet.common.ui.widget.ActionButtonsView
+            android:id="@+id/actionButtonsView"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_buttons"
+            app:layout_constraintTop_toBottomOf="@id/emptyStateLayout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <org.p2p.wallet.common.ui.widget.ProgressView
         android:id="@+id/progressView"

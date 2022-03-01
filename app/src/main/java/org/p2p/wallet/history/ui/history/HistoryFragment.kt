@@ -135,7 +135,7 @@ class HistoryFragment :
         historyAdapter.setTransactions(transactions)
 
         val isEmpty = transactions.isEmpty()
-        binding.emptyView.isVisible = isEmpty
+        binding.emptyStateLayout.isVisible = isEmpty
         binding.refreshLayout.isVisible = !isEmpty
     }
 
