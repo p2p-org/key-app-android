@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="@id/container"
         app:layout_constraintTop_toTopOf="@id/container" />
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,12 +1,8 @@
 package org.p2p.wallet.auth.ui.username
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
@@ -16,7 +12,6 @@ import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
@@ -38,15 +33,6 @@ class UsernameFragment :
     private val binding: FragmentUsernameBinding by viewBinding()
     private val receiveAnalytics: ReceiveAnalytics by inject()
     private val analyticsInteractor: AnalyticsInteractor by inject()
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            presenter.saveQr(binding.nameTextView.text.toString())
-        } else {
-            toast(getString(R.string.auth_function_not_available))
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,11 +42,12 @@ class UsernameFragment :
                 bottomSheetView.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
-
-            saveButton.setOnClickListener {
-                checkPermission()
+            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
+                presenter.saveQr(binding.receiveCardView.getQrName())
                 receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
             }
+            receiveCardView.setSelectNetworkVisibility(isVisible = false)
+            receiveCardView.setFaqVisibility(isVisible = false)
             progressButton.setOnClickListener {
                 replaceFragment(TokenListFragment.create())
             }
@@ -70,37 +57,28 @@ class UsernameFragment :
 
     override fun showUsername(username: Username) {
         val fullUsername = username.getFullUsername(requireContext())
-        binding.nameTextView.text = fullUsername
+        binding.receiveCardView.setQrName(fullUsername)
 
-        binding.copyButton.setOnClickListener {
-            requireContext().copyToClipBoard(fullUsername)
-            toast(R.string.common_copied)
+        binding.receiveCardView.setOnCopyQrClickListener {
             receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
         }
 
-        binding.shareButton.setOnClickListener {
+        binding.receiveCardView.setOnShareQrClickListener {
             requireContext().shareText(fullUsername)
             receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
         }
     }
 
     override fun renderQr(qrBitmap: Bitmap) {
-        binding.qrImageView.setImageBitmap(qrBitmap)
+        binding.receiveCardView.setQrBitmap(qrBitmap)
+        binding.receiveCardView.showQrLoading(false)
     }
 
     override fun showAddress(address: String) {
-        binding.addressTextView.text = address.highlightPublicKey(requireContext())
+        binding.receiveCardView.setQrValue(address.highlightPublicKey(requireContext()))
     }
 
     override fun showToastMessage(messageRes: Int) {
         toast(messageRes)
-    }
-
-    private fun checkPermission() {
-        when (PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ->
-                presenter.saveQr(binding.nameTextView.text.toString())
-            else -> requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
     }
 }

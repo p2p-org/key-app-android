@@ -1,4 +1,4 @@
-package org.p2p.wallet.renbtc.ui.main
+package org.p2p.wallet.receive.renbtc
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -26,17 +26,17 @@ import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class RenBTCFragment :
-    BaseMvpFragment<RenBTCContract.View, RenBTCContract.Presenter>(R.layout.fragment_ren_btc),
-    RenBTCContract.View {
+class ReceiveRenBtcFragment :
+    BaseMvpFragment<ReceiveRenBtcContract.View, ReceiveRenBtcContract.Presenter>(R.layout.fragment_receive_ren_btc),
+    ReceiveRenBtcContract.View {
 
     companion object {
-        private const val REQUEST_KEY = "REQUEST_KEY"
+        private const val REQUEST_KEY = "REQUEST_KEY_RECEIVE_REN_BTC"
         private const val BUNDLE_KEY_NETWORK_TYPE = "BUNDLE_KEY_NETWORK_TYPE"
-        fun create() = RenBTCFragment()
+        fun create() = ReceiveRenBtcFragment()
     }
 
-    override val presenter: RenBTCContract.Presenter by inject()
+    override val presenter: ReceiveRenBtcContract.Presenter by inject()
     private val binding: FragmentRenBtcBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
 
@@ -60,6 +60,18 @@ class RenBTCFragment :
             receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()
             }
+            receiveCardView.setOnNetworkClickListener {
+                replaceFragment(
+                    ReceiveNetworkTypeFragment.create(
+                        networkType = NetworkType.BITCOIN,
+                        requestKey = REQUEST_KEY,
+                        resultKey = BUNDLE_KEY_NETWORK_TYPE
+                    )
+                )
+            }
+            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage)
+            }
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
             receiveCardView.setFaqVisibility(isVisible = false)
             receiveCardView.setQrWatermark(R.drawable.ic_btc)
@@ -68,7 +80,7 @@ class RenBTCFragment :
             setFragmentResultListener(REQUEST_KEY) { _, bundle ->
                 val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
                 if (type == NetworkType.SOLANA) {
-                    popAndReplaceFragment(ReceiveSolanaFragment.create(null))
+                    popBackStack()
                 }
             }
         }

@@ -7,10 +7,11 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/backgroundPrimary"
         app:elevation="2dp"
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/scrollView">
@@ -19,10 +20,12 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/backgroundButtonPrimary"
             app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/ic_back"
+            app:navigationIcon="@drawable/ic_close_white"
             app:title="@string/main_receive"
-            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18"
+            app:titleTextColor="@color/textIconButtonPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

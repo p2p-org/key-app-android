@@ -8,7 +8,7 @@ import org.p2p.wallet.renbtc.model.MintStatus
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.renbtc.model.RenTransactionStatus.WaitingDepositConfirm
-import org.p2p.wallet.renbtc.ui.main.BTC_DECIMALS
+import org.p2p.wallet.receive.renbtc.BTC_DECIMALS
 import org.p2p.wallet.utils.fromLamports
 import timber.log.Timber
 

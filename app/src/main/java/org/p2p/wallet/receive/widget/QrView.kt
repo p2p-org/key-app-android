@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.ui.widget
+package org.p2p.wallet.receive.widget
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -11,6 +11,7 @@ import android.view.animation.LinearInterpolator
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetQrViewBinding
 import org.p2p.wallet.utils.copyToClipBoard
@@ -40,7 +41,6 @@ class QrView @JvmOverloads constructor(
             saveButton.setOnClickListener {
                 showSnapshotAnimation()
             }
-
             shareButton.setOnClickListener {
                 context.shareText(qrValue.toString())
                 onShareClickListener?.invoke()
@@ -64,12 +64,18 @@ class QrView @JvmOverloads constructor(
         }
     }
 
+    fun getName() = binding.nameTextView.text.toString()
+
     fun setImage(bitmap: Bitmap) {
         binding.qrImageView.setImageBitmap(bitmap)
     }
 
     fun setWatermarkIcon(@DrawableRes iconResId: Int) {
         binding.watermarkImageView.setImageResource(iconResId)
+    }
+
+    fun setWatermarkIcon(iconUrl: String?) {
+        Glide.with(this).load(iconUrl).into(binding.watermarkImageView)
     }
 
     fun showLoading(isLoading: Boolean) {

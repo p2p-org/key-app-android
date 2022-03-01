@@ -24,7 +24,7 @@
             app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/backgroundPrimary"
@@ -59,13 +59,13 @@
                     android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
                     tools:text="$7,730.98" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -129,5 +129,5 @@
                 tools:listitem="@layout/item_token" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

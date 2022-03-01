@@ -23,7 +23,7 @@ import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
@@ -86,7 +86,7 @@ class HistoryFragment :
                 }
                 onReceiveItemClickListener = {
                     receiveAnalytics.logTokenReceiveViewed(token.tokenName)
-                    replaceFragment(ReceiveSolanaFragment.create(token))
+                    replaceFragment(ReceiveTokenFragment.create(token))
                 }
                 onSendClickListener = {
                     replaceFragment(SendFragment.create(token))

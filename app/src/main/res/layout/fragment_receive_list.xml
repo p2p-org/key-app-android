@@ -59,7 +59,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -82,7 +82,7 @@
             android:nestedScrollingEnabled="false"
             android:orientation="vertical"
             tools:listitem="@layout/item_token_list" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
 
     <org.p2p.wallet.common.ui.widget.ProgressView
         android:id="@+id/progressView"
