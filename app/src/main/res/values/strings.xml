@@ -28,6 +28,7 @@
     <string name="common_confirm">Confirm</string>
     <string name="common_logout">Log out</string>
     <string name="common_stay">Stay</string>
+    <string name="common_close_account">Close account</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -187,6 +188,7 @@
     <string name="main_receive_public_address">Your public %s address</string>
     <string name="main_receive_mint_address">%s mint address</string>
     <string name="main_hidden_tokens">Hidden tokens</string>
+    <string name="main_active_tokens">Tokens</string>
     <string name="main_hide">Hide</string>
     <string name="main_price">Current price</string>
     <string name="main_max_price_slippage">Max price slippage</string>
@@ -236,7 +238,7 @@
     <string name="main_balance">Balance</string>
     <string name="main_empty_title">Top up your account to get started</string>
     <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
-    <string name="home_main">Main</string>
+    <string name="home_main">Wallet</string>
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
@@ -424,6 +426,7 @@
     <string name="details_transaction_fees">Transaction fees</string>
     <string name="details_received">Received</string>
     <string name="details_transfer_format">%1s → %2s</string>
+    <string name="details_account_closed_successfully">Account is successfully closed!</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -489,6 +492,7 @@
     <string name="settings_resetting_your_PIN">Resetting your PIN</string>
     <string name="settings_choose_a_network">Choose a network</string>
     <string name="settings_tokens_with_zero_balances">Tokens with zero balances</string>
+    <string name="settings_tokens_with_zero_balances_are_shown">Tokens with zero balances are shown</string>
     <string name="settings_tokens_hidden">Hidden</string>
     <string name="settings_tokens_shown">Shown</string>
     <string name="settings_logout_title">Are you sure you want to log out?</string>
@@ -500,6 +504,9 @@
     <string name="seed_info_description_secondary">If you create a new wallet account, you will receive your security key that you must write down somewhere safe. This is the only way to recover your wallet.\n\nIf you still have access to your old wallet, sometimes you can recover your security key from it.\n\nUsing Custodian wallet, you still have the option to regain access to your data by asking a third party.</string>
     <string name="seed_info_info">• If lost, no one can restore it\n• Keep it private, even from us</string>
     <string name="seed_info_where_i_can_find">Where I can find one?</string>
+    <string name="swap_successfully_format">%1s was swapped to %2s successfully</string>
+    <string name="send_successfully_format">%s was sent successfully</string>
+    <string name="details_transaction_not_found">Transaction is not found</string>
     <string name="receive_you_can_receive_sol_message">You can receive SOL by providing this\naddress, QR code or username:</string>
     <string name="receive_direct_sol_address">Direct SOL Address</string>
     <string name="receive_direct_and_mint_address">Direct and mint addresses</string>

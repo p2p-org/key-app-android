@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogInfoBinding
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.showAllowingStateLoss
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -49,7 +50,7 @@ class InfoDialog : DialogFragment() {
                     this.onPrimaryButtonClicked = onPrimaryButtonClicked
                     this.onSecondaryButtonClicked = onSecondaryButtonClicked
                 }
-                .show(fragmentManager, InfoDialog::javaClass.name)
+                .showAllowingStateLoss(fragmentManager)
         }
     }
 

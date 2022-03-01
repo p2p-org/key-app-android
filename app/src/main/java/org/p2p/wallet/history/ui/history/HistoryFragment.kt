@@ -5,15 +5,19 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
+import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.history.ui.history.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
@@ -29,6 +33,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import kotlin.math.absoluteValue
 
 class HistoryFragment :
     BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
@@ -60,7 +65,19 @@ class HistoryFragment :
         with(binding) {
             toolbar.title = token.tokenName
             toolbar.setNavigationOnClickListener { popBackStack() }
-            totalTextView.text = token.getFormattedTotal()
+            if (BuildConfig.DEBUG) {
+                toolbar.inflateMenu(R.menu.menu_history)
+                toolbar.setOnMenuItemClickListener {
+                    if (it.itemId == R.id.closeItem) {
+                        presenter.closeAccount()
+                        return@setOnMenuItemClickListener true
+                    }
+
+                    return@setOnMenuItemClickListener false
+                }
+            }
+
+            totalTextView.text = token.getFormattedTotal(includeSymbol = true)
             usdTotalTextView.text = token.getFormattedUsdTotal()
             refreshLayout.setOnRefreshListener { presenter.refresh() }
             with(actionButtonsView) {
@@ -91,6 +108,13 @@ class HistoryFragment :
                 clearOnScrollListeners()
                 addOnScrollListener(scrollListener)
             }
+
+            appBarLayout.addOnOffsetChangedListener(
+                AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                    val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
+                    (binding.actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
+                }
+            )
         }
         presenter.loadHistory()
     }
@@ -127,7 +151,10 @@ class HistoryFragment :
         when (transaction) {
             is HistoryTransaction.Swap,
             is HistoryTransaction.Transfer,
-            is HistoryTransaction.BurnOrMint -> replaceFragment(TransactionDetailsFragment.create(transaction))
+            is HistoryTransaction.BurnOrMint -> {
+                val state = TransactionDetailsLaunchState.History(transaction)
+                replaceFragment(TransactionDetailsFragment.create(state))
+            }
             else -> {
                 // todo: add support of other transactions
             }

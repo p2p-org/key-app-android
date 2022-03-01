@@ -7,7 +7,6 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
@@ -18,7 +17,6 @@ import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -75,7 +73,6 @@ class SecretKeyFragment :
 
         val itemsCount = phraseAdapter.itemCount
         setButtonEnabled(itemsCount != 0)
-        copyPhrase()
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
@@ -94,25 +91,5 @@ class SecretKeyFragment :
     private fun clearError() {
         binding.errorTextView.text = ""
         binding.messageTextView.isVisible = true
-    }
-
-    private fun copyPhrase() {
-        if (!BuildConfig.DEBUG) return
-        requireContext().copyToClipBoard(
-            listOf(
-                "oval",
-                "you",
-                "token",
-                "plug",
-                "copper",
-                "visa",
-                "employ",
-                "link",
-                "sell",
-                "asset",
-                "kick",
-                "sausage"
-            ).joinToString(" ")
-        )
     }
 }

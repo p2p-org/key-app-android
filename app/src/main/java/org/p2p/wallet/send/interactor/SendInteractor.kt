@@ -9,7 +9,6 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -17,30 +16,25 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
-import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
-import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
 
 class SendInteractor(
-    private val rpcRepository: RpcRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
-    private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val amountInteractor: TransactionAmountInteractor,
     private val transactionInteractor: TransactionInteractor,
-    private val transactionManager: TransactionManager,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 

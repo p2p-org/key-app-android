@@ -384,15 +384,13 @@ class FeeRelayerSwapInteractor(
         // TOP UP
         val topUpPreparedParam: TopUpPreparedParams?
 
-        if (relayAccount.balance == null ||
-            relayAccount.balance >= swappingFee.total ||
-            tradableTopUpPoolsPair.isEmpty()
-        ) {
+//        if (relayAccount.balance != null && relayAccount.balance >= swappingFee.total) {
+        if (relayAccount.balance != null && relayAccount.balance >= swappingFee.total) {
             topUpPreparedParam = null
         } else {
             // STEP 2.2: Else
             // Get best poolpairs for topping up
-            val targetAmount = swappingFee.total - relayAccount.balance
+            val targetAmount = swappingFee.total - (relayAccount.balance ?: BigInteger.ZERO)
 
             // Get real amounts needed for topping up
             val (topUpAmount, expectedFee) = feeRelayerTopUpInteractor.calculateTopUpAmount(
@@ -402,9 +400,14 @@ class FeeRelayerSwapInteractor(
             )
 
             // Get pools
-            val topUpPools =
-                orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(topUpAmount, tradableTopUpPoolsPair)
-                    ?: throw IllegalStateException("Swap pools not found")
+            val topUpPools = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(
+                estimatedAmount = topUpAmount,
+                poolsPairs = tradableTopUpPoolsPair
+            )
+
+            if (topUpPools.isNullOrEmpty()) {
+                throw IllegalStateException("Swap pools not found")
+            }
 
             topUpPreparedParam = TopUpPreparedParams(
                 amount = topUpAmount,

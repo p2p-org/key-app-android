@@ -38,7 +38,7 @@
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="16dp"
                     android:text="@string/app_name"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold20" />
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
 
                 <TextView
                     android:id="@+id/balanceLabelTextView"

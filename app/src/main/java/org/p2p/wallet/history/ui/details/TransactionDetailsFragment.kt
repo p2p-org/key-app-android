@@ -11,19 +11,20 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
 import org.p2p.wallet.databinding.FragmentTransactionTransferBinding
-import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrInvisible
 
-private const val EXTRA_TRANSACTION = "EXTRA_TRANSACTION"
+private const val EXTRA_STATE = "EXTRA_STATE"
 
 class TransactionDetailsFragment :
     BaseMvpFragment<TransactionDetailsContract.View, TransactionDetailsContract.Presenter>(
@@ -32,22 +33,32 @@ class TransactionDetailsFragment :
     TransactionDetailsContract.View {
 
     companion object {
-        fun create(transaction: HistoryTransaction) =
+        fun create(state: TransactionDetailsLaunchState) =
             TransactionDetailsFragment()
-                .withArgs(EXTRA_TRANSACTION to transaction)
+                .withArgs(EXTRA_STATE to state)
     }
 
-    private val transaction: HistoryTransaction by args(EXTRA_TRANSACTION)
+    private val state: TransactionDetailsLaunchState by args(EXTRA_STATE)
 
     private val binding: FragmentTransactionTransferBinding by viewBinding()
 
     override val presenter: TransactionDetailsContract.Presenter by inject {
-        parametersOf(transaction)
+        parametersOf(state)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
+    }
+
+    override fun showError(messageId: Int) {
+        showInfoDialog(
+            titleRes = R.string.error_general_title,
+            messageRes = messageId,
+            primaryButtonRes = R.string.common_retry,
+            primaryCallback = { presenter.load() },
+            isCancelable = false
+        )
     }
 
     override fun showTitle(title: String) {

@@ -14,7 +14,6 @@ import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.SwipeLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.wallet.utils.dip
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenViewHolder(
@@ -27,7 +26,6 @@ class TokenViewHolder(
         .listener(SvgSoftwareLayerSetter())
 
     companion object {
-        private const val LIST_TOP_MARGIN_IN_DP = 16
         private const val IMAGE_SIZE = 56
     }
 
@@ -42,7 +40,6 @@ class TokenViewHolder(
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView
     private val nameTextView = binding.nameTextView
-    private val rateTextView = binding.rateTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
     private val deleteImageView = binding.deleteImageView
@@ -51,12 +48,6 @@ class TokenViewHolder(
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
         val token = item.token
 
-        if (bindingAdapterPosition == 0) {
-            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = itemView.dip(LIST_TOP_MARGIN_IN_DP)
-        } else {
-            (itemView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
-        }
-
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
 
         if (!token.iconUrl.isNullOrEmpty()) {
@@ -64,7 +55,6 @@ class TokenViewHolder(
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName
-        rateTextView withTextOrGone token.getCurrentRate()
         valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getFormattedTotal()
 

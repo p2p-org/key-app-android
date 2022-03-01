@@ -78,7 +78,7 @@
                     app:layout_constraintEnd_toStartOf="@id/maxTextView"
                     app:layout_constraintTop_toTopOf="@id/fromTextView"
                     tools:ignore="UseCompatTextViewDrawableXml"
-                    tools:text="2140.0000 SOL" />
+                    tools:text="2140.0000" />
 
                 <TextView
                     android:id="@+id/maxTextView"
@@ -143,7 +143,7 @@
                     android:inputType="numberDecimal"
                     android:singleLine="true"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
-                    android:textColorHint="@color/textIconPrimary"
+                    android:textColorHint="@color/textIconSecondary"
                     app:layout_constraintBottom_toBottomOf="@id/downImageView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1"
@@ -215,9 +215,7 @@
                     android:layout_height="44dp"
                     android:layout_marginStart="36dp"
                     android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_app_rounded"
-                    android:padding="6dp"
-                    android:src="@drawable/ic_question"
+                    android:src="@drawable/bg_wallet_blank"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/destinationTitleTextView" />
 

@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.cardview.widget.CardView
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexDirection.ROW
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -52,11 +53,7 @@ class ActionButtonsView @JvmOverloads constructor(
     override fun onOffsetChanged(offset: Float) {
         val heightDp = maxHeightDp - (DELTA_DP * offset)
         val heightPx = heightDp.toPx().toInt()
-        binding.root.apply {
-            layoutParams.height = heightPx
-            requestLayout()
-        }
-
+        binding.root.updateLayoutParams { height = heightPx }
         adapter.viewHolders.onEach { it.onOffsetChanged(offset) }
     }
 
@@ -118,10 +115,8 @@ class ActionButtonsView @JvmOverloads constructor(
             val imageView = binding.imageView
 
             override fun onOffsetChanged(offset: Float) = with(imageView) {
-                val newLayoutParams = layoutParams as LinearLayout.LayoutParams
-                layoutParams = newLayoutParams.apply { topMargin = -(MARGIN_DP.toPx() * offset).toInt() }
+                updateLayoutParams<LinearLayout.LayoutParams> { topMargin = -(MARGIN_DP.toPx() * offset).toInt() }
                 alpha = 1 - offset
-                requestLayout()
             }
 
             fun bind(item: ActionButton) {

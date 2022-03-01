@@ -54,16 +54,13 @@ object HomeModule : InjectionModule {
         single { HomePresenter(get(), get(), get(), get(), get(), get()) } bind HomeContract.Presenter::class
         single {
             SendInteractor(
-                rpcRepository = get(),
                 addressInteractor = get(),
                 feeRelayerInteractor = get(),
-                feeRelayerTopUpInteractor = get(),
                 feeRelayerAccountInteractor = get(),
                 orcaPoolInteractor = get(),
                 orcaInfoInteractor = get(),
                 amountInteractor = get(),
                 transactionInteractor = get(),
-                transactionManager = get(),
                 tokenKeyProvider = get(),
             )
         }
@@ -76,7 +73,20 @@ object HomeModule : InjectionModule {
             ReceiveNetworkTypePresenter(get(), get(), get(), get(), get(), type)
         } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
-            SendPresenter(token, get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+            SendPresenter(
+                initialToken = token,
+                sendInteractor = get(),
+                addressInteractor = get(),
+                userInteractor = get(),
+                searchInteractor = get(),
+                burnBtcInteractor = get(),
+                settingsInteractor = get(),
+                tokenKeyProvider = get(),
+                browseAnalytics = get(),
+                analyticsInteractor = get(),
+                sendAnalytics = get(),
+                transactionManager = get(),
+            )
         } bind SendContract.Presenter::class
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())

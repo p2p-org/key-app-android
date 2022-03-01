@@ -6,13 +6,13 @@ import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.transaction.model.ShowProgress
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.model.SendConfirmData
 import java.math.BigDecimal
 
 interface SendContract {
@@ -23,7 +23,6 @@ interface SendContract {
         fun showTransactionDetails(transaction: HistoryTransaction)
         fun showTotal(data: SendTotal?)
         fun showWrongWalletError()
-        fun showSuccessMessage(amount: String)
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
         fun showInputValue(value: BigDecimal)
         fun showUsdAroundValue(usdValue: BigDecimal)

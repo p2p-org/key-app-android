@@ -7,7 +7,6 @@ import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -24,7 +23,9 @@ import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
+import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
@@ -38,10 +39,8 @@ import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
-import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.BigInteger
 import kotlin.properties.Delegates
 
 // TODO: Refactor, make simpler
@@ -54,7 +53,8 @@ class OrcaSwapPresenter(
     private val settingsInteractor: SettingsInteractor,
     private val browseAnalytics: BrowseAnalytics,
     private val analyticsInteractor: AnalyticsInteractor,
-    private val swapAnalytics: SwapAnalytics
+    private val swapAnalytics: SwapAnalytics,
+    private val transactionManager: TransactionManager
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     companion object {
@@ -270,7 +270,7 @@ class OrcaSwapPresenter(
 
     /**
      * Sometimes swap operation is being executed too long
-     * Therefore, launching swap operation is launching in app scope, so user could move inside the app
+     * Therefore, launching swap operation is in app scope, so user could move to other screens inside the app
      * w/o interrupting swap operation
      * */
     override fun swap() {
@@ -279,8 +279,10 @@ class OrcaSwapPresenter(
 
         appScope.launch {
             try {
+                val sourceTokenSymbol = sourceToken.tokenSymbol
+                val destinationTokenSymbol = destination.tokenSymbol
                 val subTitle =
-                    "$sourceAmount ${sourceToken.tokenSymbol} → $destinationAmount ${destination.tokenSymbol}"
+                    "$sourceAmount $sourceTokenSymbol → $destinationAmount $destinationTokenSymbol"
                 val progress = ShowProgress(
                     title = R.string.swap_being_processed,
                     subTitle = subTitle,
@@ -292,13 +294,19 @@ class OrcaSwapPresenter(
                     fromToken = sourceToken,
                     toToken = destination,
                     bestPoolsPair = pair,
-                    amount = sourceAmount.toDoubleOrNull() ?: 0.toDouble(),
-                    slippage = slippage.doubleValue
+                    amount = sourceAmount.toBigDecimalOrZero().toLamports(sourceToken.decimals),
+                    slippage = slippage
                 )
 
                 when (data) {
-                    is OrcaSwapResult.Finished ->
-                        buildTransaction(data.transactionId, data.destinationAddress)
+                    is OrcaSwapResult.Finished -> {
+                        val state = TransactionState.SwapSuccess(
+                            data.transactionId,
+                            sourceTokenSymbol,
+                            destinationTokenSymbol
+                        )
+                        transactionManager.emitTransactionState(state)
+                    }
                     is OrcaSwapResult.InvalidInfoOrPair,
                     is OrcaSwapResult.InvalidPool ->
                         view?.showErrorMessage(R.string.error_general_message)
@@ -306,7 +314,6 @@ class OrcaSwapPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error swapping tokens")
                 view?.showErrorMessage(e)
-            } finally {
                 view?.showProgressDialog(null)
             }
         }
@@ -454,34 +461,5 @@ class OrcaSwapPresenter(
 
         val isEnabled = isValidAmount && !isMoreThanBalance && destinationToken != null && !isPoolPairEmpty
         view?.showButtonEnabled(isEnabled)
-    }
-
-    private fun buildTransaction(
-        transactionId: String = "",
-        destinationAddress: String
-    ) {
-        val destinationToken = destinationToken ?: return
-        val amountA = sourceAmount.toBigDecimalOrZero()
-        val amountB = destinationAmount.toBigDecimalOrZero()
-        val transaction = HistoryTransaction.Swap(
-            signature = transactionId,
-            date = ZonedDateTime.now(),
-            blockNumber = 0, // fixme: find block number
-            sourceAddress = sourceToken.publicKey,
-            destinationAddress = destinationAddress,
-            fee = BigInteger.ZERO,
-            amountA = amountA,
-            amountB = amountB,
-            amountSentInUsd = amountA.toUsd(sourceToken),
-            amountReceivedInUsd = amountB.toUsd(destinationToken.usdRate),
-            sourceSymbol = sourceToken.tokenSymbol,
-            sourceIconUrl = sourceToken.iconUrl.orEmpty(),
-            destinationSymbol = destinationToken.tokenSymbol,
-            destinationIconUrl = destinationToken.iconUrl.orEmpty()
-        )
-        view?.showTransactionDetails(transaction)
-        val fromSymbol = transaction.sourceSymbol
-        val toSymbol = transaction.destinationSymbol
-        view?.showTransactionStatusMessage(fromSymbol, toSymbol, isSuccess = true)
     }
 }
