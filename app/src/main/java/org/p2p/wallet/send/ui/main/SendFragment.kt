@@ -189,6 +189,10 @@ class SendFragment :
                 presenter.loadAvailableValue()
             }
 
+            maxTextView.setOnClickListener {
+                presenter.loadAvailableValue()
+            }
+
             aroundTextView.setOnClickListener {
                 presenter.switchCurrency()
             }
@@ -251,6 +255,8 @@ class SendFragment :
 
             messageTextView.isVisible = false
             clearImageView.isVisible = false
+            scanTextView.isVisible = true
+            pasteTextView.isVisible = true
         }
     }
 
@@ -264,6 +270,8 @@ class SendFragment :
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
             messageTextView.setTextColor(getColor(R.color.systemErrorMain))
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 
@@ -277,6 +285,8 @@ class SendFragment :
             messageTextView.withTextOrGone(address.cutEnd())
             messageTextView.setTextColor(getColor(R.color.backgroundDisabled))
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 
@@ -290,6 +300,8 @@ class SendFragment :
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
             messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 
@@ -442,7 +454,7 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = "${available.scaleLong()} $symbol"
+        binding.availableTextView.text = available.scaleLong().toString()
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
