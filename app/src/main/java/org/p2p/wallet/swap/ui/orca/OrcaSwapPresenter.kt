@@ -175,7 +175,7 @@ class OrcaSwapPresenter(
         aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(sourceToken.total)
-        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconPrimary
+        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
 
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
