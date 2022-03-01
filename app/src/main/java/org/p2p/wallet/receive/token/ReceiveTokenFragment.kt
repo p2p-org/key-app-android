@@ -27,7 +27,6 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
-private const val EXTRA_IS_NETWORK_SELECTABLE = "EXTRA_IS_NETWORK_SELECTABLE"
 
 class ReceiveTokenFragment :
     BaseMvpFragment<ReceiveTokenContract.View, ReceiveTokenContract.Presenter>(R.layout.fragment_receive_token),
@@ -38,10 +37,8 @@ class ReceiveTokenFragment :
         private const val BUNDLE_KEY_NETWORK_TYPE = "BUNDLE_KEY_NETWORK_TYPE"
         fun create(
             token: Token.Active,
-            isNetworkSelectable: Boolean
         ) = ReceiveTokenFragment().withArgs(
-            EXTRA_TOKEN to token,
-            EXTRA_IS_NETWORK_SELECTABLE to isNetworkSelectable
+            EXTRA_TOKEN to token
         )
     }
 
@@ -50,7 +47,6 @@ class ReceiveTokenFragment :
         parametersOf(token)
     }
     private val token: Token.Active by args(EXTRA_TOKEN)
-    private val isNetworkSelectable: Boolean by args(EXTRA_IS_NETWORK_SELECTABLE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,7 +71,7 @@ class ReceiveTokenFragment :
             receiveCardView.setQrWatermark(token.iconUrl)
             receiveCardView.showQrLoading(false)
             receiveCardView.setFaqVisibility(false)
-            receiveCardView.setSelectNetworkVisibility(isNetworkSelectable)
+            receiveCardView.setSelectNetworkVisibility(isVisible = token.isRenBTC)
         }
         setFragmentResultListener(REQUEST_KEY) { _, bundle ->
             val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType

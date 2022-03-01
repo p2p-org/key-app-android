@@ -95,7 +95,7 @@ class ExpandView @JvmOverloads constructor(
     override fun onSaveInstanceState(): Parcelable? {
         val superState = super.onSaveInstanceState() ?: return null
         val myState = ExpandViewState(superState)
-        myState.isExpanded = binding.expandableLayout.getState() == ExpandLinearLayout.State.EXPANDED
+        myState.isExpanded = binding.expandableLayout.state == ExpandLinearLayout.State.EXPANDED
         return myState
     }
 

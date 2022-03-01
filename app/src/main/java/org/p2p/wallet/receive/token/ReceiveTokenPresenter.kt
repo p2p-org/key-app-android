@@ -64,6 +64,7 @@ class ReceiveTokenPresenter(
                 usernameInteractor.saveQr(name, bitmap)
                 view?.showToastMessage(R.string.auth_saved)
             } catch (e: Exception) {
+                Timber.e("Error on saving QR: $e")
                 view?.showErrorMessage(e)
             }
         }
