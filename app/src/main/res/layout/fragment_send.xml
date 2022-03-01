@@ -69,14 +69,30 @@
                             android:id="@+id/availableTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
                             android:drawablePadding="4dp"
+                            android:gravity="center_vertical"
                             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                             android:textColor="@color/textIconSecondary"
                             app:drawableStartCompat="@drawable/ic_wallet_gray"
                             app:layout_constraintBottom_toBottomOf="@id/fromTextView"
-                            app:layout_constraintEnd_toEndOf="@id/amountEditText"
+                            app:layout_constraintEnd_toStartOf="@id/maxTextView"
                             app:layout_constraintTop_toTopOf="@id/fromTextView"
                             tools:text="2140.0000" />
+
+                        <TextView
+                            android:id="@+id/maxTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginEnd="36dp"
+                            android:gravity="center_vertical"
+                            android:text="@string/swap_max_available"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                            android:textColor="@color/backgroundButtonPrimary"
+                            app:layout_constraintBottom_toBottomOf="@id/availableTextView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/availableTextView" />
 
                         <org.p2p.wallet.common.ui.widget.RoundedImageView
                             android:id="@+id/sourceImageView"

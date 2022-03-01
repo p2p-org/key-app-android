@@ -37,7 +37,6 @@ interface SendContract {
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelectionView(isVisible: Boolean)
         fun navigateToNetworkSelection(currentNetworkType: NetworkType)
-
         fun navigateToTokenSelection(tokens: List<Token.Active>)
 
         fun showSearchLoading(isLoading: Boolean)
