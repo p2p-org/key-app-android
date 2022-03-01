@@ -15,13 +15,20 @@ class SendTotal constructor(
     fun getTotalFee(): String =
         when (fee) {
             is SendFee.SolanaFee ->
-                if (sourceSymbol == fee.feePayerSymbol) "${total + fee.fee} $sourceSymbol"
+                if (sourceSymbol == fee.feePayerSymbol) totalSum
                 else "$totalFormatted + ${fee.fee} ${fee.feePayerSymbol}"
             is SendFee.RenBtcFee ->
                 "$totalFormatted + ${fee.fee} ${fee.feePayerSymbol}"
             else ->
                 totalFormatted
         }
+
+    val showAdditionalFee: Boolean
+        get() = fee != null && sourceSymbol != fee.feePayerSymbol
+
+    val showAccountCreation: Boolean
+        // SendFee.SolanaFee is not null only if account creation is needed
+        get() = fee != null && fee is SendFee.SolanaFee
 
     val fullTotal: String
         get() = if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
@@ -35,5 +42,8 @@ class SendTotal constructor(
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalFormatted: String
+        get() = "$total $sourceSymbol"
+
+    private val totalSum: String
         get() = "${total + (fee?.fee ?: BigDecimal.ZERO)} $sourceSymbol"
 }

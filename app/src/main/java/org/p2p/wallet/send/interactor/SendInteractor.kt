@@ -116,6 +116,12 @@ class SendInteractor(
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
+    suspend fun getFreeTransactionsInfo(): Pair<Int, Int> {
+        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        val remaining = freeTransactionFeeLimit.maxUsage - freeTransactionFeeLimit.currentUsage
+        return freeTransactionFeeLimit.maxUsage to remaining
+    }
+
     suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult =
         try {
             val isSolAddress = addressInteractor.isSolAddress(destinationAddress.toBase58())

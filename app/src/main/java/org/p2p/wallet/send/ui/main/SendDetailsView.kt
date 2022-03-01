@@ -15,8 +15,10 @@ import org.p2p.wallet.databinding.WidgetSendDetailsBinding
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
+// TODO: Make it simpler
 class SendDetailsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -33,9 +35,6 @@ class SendDetailsView @JvmOverloads constructor(
         orientation = VERTICAL
 
         with(binding) {
-            headerView.setOnClickListener {
-                showExpanded(!isExpanded)
-            }
             headerView.isEnabled = false
         }
     }
@@ -46,18 +45,18 @@ class SendDetailsView @JvmOverloads constructor(
             totalTextView.text = buildTotalText
 
             if (data == null) {
-                showExpanded(false)
-                totalView.isVisible = false
-                receiveView.isVisible = false
-                totalFeeTextView.isVisible = false
+                totalFeeTextView.tag = null
+                showExpanded(false, data)
                 headerView.isEnabled = false
+                totalSourceTextView.text = ""
+                headerView.setOnClickListener(null)
                 return@with
             }
 
             headerView.isEnabled = true
             totalView.isVisible = isExpanded
             receiveView.isVisible = isExpanded
-            totalFeeTextView.isVisible = isExpanded
+            totalFeeTextView.isVisible = isExpanded && data.showAdditionalFee
 
             val color = context.getColor(R.color.textIconSecondary)
             receiveTextView.text = SpanUtils.highlightText(
@@ -80,12 +79,7 @@ class SendDetailsView @JvmOverloads constructor(
                         color
                     )
                     accountCreationTokenTextView.text = feeText
-
-                    if (data.fee.isFeePayerSame(data.sourceSymbol)) {
-                        totalFeeTextView.isVisible = false
-                    } else {
-                        totalFeeTextView.text = feeText
-                    }
+                    totalFeeTextView.text = feeText
                 }
                 is SendFee.RenBtcFee -> {
                     accountCreationFeeView.isVisible = false
@@ -106,6 +100,10 @@ class SendDetailsView @JvmOverloads constructor(
                     accountCreationFeeView.isVisible = false
                 }
             }
+
+            headerView.setOnClickListener {
+                showExpanded(!isExpanded, data)
+            }
         }
     }
 
@@ -122,18 +120,21 @@ class SendDetailsView @JvmOverloads constructor(
         val totalAmount = total?.getTotalFee() ?: context.getString(R.string.swap_total_zero_sol)
         val totalText = context.getString(R.string.swap_total)
         return buildSpannedString {
-            color(context.getColor(R.color.textIconSecondary)) { append(totalText) }
+            color(getColor(R.color.textIconSecondary)) { append(totalText) }
+            append(" ")
             bold { append(totalAmount) }
         }
     }
 
-    private fun showExpanded(isExpanded: Boolean) {
+    private fun showExpanded(isExpanded: Boolean, data: SendTotal?) {
         with(binding) {
             transactionFeeView.isVisible = isExpanded
             feeDividerView.isVisible = isExpanded
             receiveView.isVisible = isExpanded
             totalView.isVisible = isExpanded
-            totalFeeTextView.isVisible = isExpanded
+
+            accountCreationFeeView.isVisible = isExpanded && data?.showAccountCreation == true
+            totalFeeTextView.isVisible = isExpanded && data?.showAdditionalFee == true
 
             val rotationValue = if (isExpanded) 180f else 0f
             arrowImageView

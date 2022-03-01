@@ -22,8 +22,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
@@ -35,9 +35,9 @@ import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
+import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
-import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
@@ -207,7 +207,7 @@ class SendFragment :
             }
 
             sendDetailsView.setOnPaidClickListener {
-                presenter.onDetailsClicked()
+                presenter.onFeeClicked()
             }
         }
     }
@@ -222,9 +222,9 @@ class SendFragment :
         addFragment(target)
     }
 
-    override fun showDetails() {
+    override fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int) {
         showInfoDialog(
-            messageRes = R.string.main_free_transactions_info,
+            message = getString(R.string.main_free_transactions_info, maxTransactionsAvailable, remaining),
             primaryButtonRes = R.string.common_understood
         )
     }

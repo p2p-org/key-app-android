@@ -91,6 +91,8 @@ class SendPresenter(
 
     private var target: SearchResult? = null
 
+    private var fee: SendFee? = null
+
     private var calculationJob: Job? = null
     private var feeJob: Job? = null
     private var checkAddressJob: Job? = null
@@ -132,7 +134,7 @@ class SendPresenter(
         val feePayerToken = userTokens.firstOrNull { it.isSOL } ?: newToken
         sendInteractor.setFeePayerToken(feePayerToken)
 
-        calculateRenBtcFeeIfNeeded()
+        calculateRenBtcFeeIfNeeded(hideTotal = true)
         calculateData(newToken)
         checkAddress(target?.address)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
@@ -184,7 +186,7 @@ class SendPresenter(
     override fun setNetworkDestination(networkType: NetworkType) {
         this.networkType = networkType
         view?.showNetworkDestination(networkType)
-        calculateRenBtcFeeIfNeeded()
+        calculateRenBtcFeeIfNeeded(hideTotal = true)
     }
 
     override fun send() {
@@ -282,9 +284,12 @@ class SendPresenter(
         view?.showScanner()
     }
 
-    override fun onDetailsClicked() {
-        sendAnalytics.logSendShowDetailsPressed()
-        view?.showDetails()
+    override fun onFeeClicked() {
+        launch {
+            sendAnalytics.logSendShowDetailsPressed()
+            val (maxAvailable, remaining) = sendInteractor.getFreeTransactionsInfo()
+            view?.showFeeLimitsDialog(maxAvailable, remaining)
+        }
     }
 
     override fun switchCurrency() {
@@ -328,6 +333,8 @@ class SendPresenter(
         view?.showIdleTarget()
         view?.showTotal(data = null)
         view?.showAccountFeeView(fee = null)
+
+        fee = null
         calculateTotal(sendFee = null)
     }
 
@@ -448,7 +455,7 @@ class SendPresenter(
                 is CurrencyMode.Usd -> calculateByUsd(token)
             }
 
-            calculateTotal(sendFee = null)
+            calculateTotal(fee)
         }
     }
 
@@ -502,9 +509,9 @@ class SendPresenter(
         view?.showTotal(data)
     }
 
-    private fun calculateRenBtcFeeIfNeeded() {
+    private fun calculateRenBtcFeeIfNeeded(hideTotal: Boolean = false) {
         if (networkType == NetworkType.SOLANA) {
-            view?.showTotal(null)
+            if (hideTotal) view?.showTotal(null)
             return
         }
 
@@ -541,7 +548,7 @@ class SendPresenter(
             fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
         }
 
-        val fee = SendFee.SolanaFee(feeAmount, feePayer)
+        fee = SendFee.SolanaFee(feeAmount, feePayer)
         view?.showAccountFeeView(fee)
 
         calculateTotal(fee)
