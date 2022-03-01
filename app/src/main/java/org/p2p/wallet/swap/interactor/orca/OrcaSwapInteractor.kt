@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
+import org.p2p.solanaj.core.FeeAmount
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
@@ -17,6 +18,7 @@ import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
+import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.toUsd
 import java.math.BigDecimal
@@ -165,10 +167,12 @@ class OrcaSwapInteractor(
         return SwapFee(
             isFreeTransactionAvailable = isFreeTransactionAvailable,
             accountCreationToken = accountCreationToken,
-            accountCreationFee = "$accountCreationFee ${feePayerToken.tokenSymbol}",
+            accountCreationFee = accountCreationFee,
             accountCreationFeeUsd = accountCreationFeeUsd,
-            transactionFee = "$transactionFee ${feePayerToken.tokenSymbol}",
+            transactionFee = transactionFee,
             transactionFeeUsd = transactionFeeUsd,
+            feePayerToken = feePayerToken.tokenSymbol,
+            totalLamports = fee.total + transactionNetworkFee
         )
     }
 
@@ -238,6 +242,23 @@ class OrcaSwapInteractor(
         } else emptyList()
 
         return transactionFees to liquidityProviderFees
+    }
+
+    suspend fun getFeesInPayingToken(
+        feeInSOL: BigInteger
+    ): BigInteger {
+        if (feePayerToken.isSOL) return feeInSOL
+
+        return feeRelayerInteractor.calculateFeeInPayingToken(
+            feeInSOL = FeeAmount(accountBalances = feeInSOL),
+            payingFeeTokenMint = feePayerToken.mintAddress
+        ).total
+    }
+
+    suspend fun feePayerHasEnoughBalance(feeInSOL: BigInteger): Boolean {
+        val feePayerLamports = feePayerToken.total.toLamports(feePayerToken.decimals)
+        val feeInPayingToken = getFeesInPayingToken(feeInSOL)
+        return feePayerLamports >= feeInPayingToken
     }
 
     private fun isNativeSwap(

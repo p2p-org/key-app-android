@@ -35,5 +35,5 @@ class SendTotal constructor(
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalFormatted: String
-        get() = "$total $sourceSymbol"
+        get() = "${total + (fee?.fee ?: BigDecimal.ZERO)} $sourceSymbol"
 }

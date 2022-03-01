@@ -314,6 +314,8 @@ class SendFragment :
 
             messageTextView.isVisible = false
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 

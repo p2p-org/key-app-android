@@ -7,7 +7,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_NAME
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
@@ -112,7 +112,7 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val isSOL: Boolean
-        get() = tokenSymbol == SOL_SYMBOL
+        get() = mintAddress == WRAPPED_SOL_MINT
 
     @IgnoredOnParcel
     val isRenBTC: Boolean

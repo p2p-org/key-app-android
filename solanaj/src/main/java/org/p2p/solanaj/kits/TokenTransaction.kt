@@ -51,8 +51,12 @@ object TokenTransaction {
         return AccountInfoData.decode(data)
     }
 
-    fun decodeAccountInfo(value: AccountInfo.Value): AccountInfoData {
-        val base64Data = value.data!![0]
+    fun decodeAccountInfo(info: AccountInfo?): AccountInfoData? {
+        if (info == null) return null
+
+        val base64Data = info.value.data?.get(0)
+        if (base64Data.isNullOrEmpty()) return null
+
         val data = Base64.decode(base64Data, Base64.DEFAULT)
         return AccountInfoData.decode(data)
     }
@@ -76,24 +80,9 @@ object TokenTransaction {
         mint: PublicKey,
         owner: PublicKey
     ): PublicKey {
-        return getAssociatedTokenAddress(
-            TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-            TokenProgram.PROGRAM_ID,
-            mint,
-            owner
-        )
-    }
-
-    @Throws(Exception::class)
-    fun getAssociatedTokenAddress(
-        associatedProgramId: PublicKey?,
-        programId: PublicKey,
-        mint: PublicKey,
-        owner: PublicKey
-    ): PublicKey {
         return findProgramAddress(
-            listOf(owner.toByteArray(), programId.toByteArray(), mint.toByteArray()),
-            associatedProgramId!!
+            listOf(owner.toByteArray(), TokenProgram.PROGRAM_ID.toByteArray(), mint.toByteArray()),
+            TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID
         )
             .address
     }

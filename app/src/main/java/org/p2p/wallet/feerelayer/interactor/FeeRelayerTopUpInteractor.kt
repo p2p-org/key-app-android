@@ -10,7 +10,6 @@ import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
-import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.feerelayer.model.TokenInfo
@@ -23,6 +22,7 @@ import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
@@ -92,114 +92,135 @@ class FeeRelayerTopUpInteractor(
     }
 
     suspend fun prepareForTopUp(
-        targetAmount: BigInteger,
+        topUpAmount: BigInteger,
         payingFeeToken: TokenInfo,
         relayAccount: RelayAccount,
-        freeTransactionFeeLimit: FreeTransactionFeeLimit?,
-        checkIfBalanceHaveEnoughAmount: Boolean = true
-    ): TopUpPreparedParams? {
+        freeTransactionFeeLimit: FreeTransactionFeeLimit?
+    ): TopUpPreparedParams {
 
         val tradableTopUpPoolsPair = orcaPoolInteractor.getTradablePoolsPairs(payingFeeToken.mint, WRAPPED_SOL_MINT)
-        // TOP UP
-        if (checkIfBalanceHaveEnoughAmount && (relayAccount.balance != null && relayAccount.balance >= targetAmount)) {
-            return null
+
+        // Get fee
+        val expectedFee = calculateExpectedFeeForTopUp(relayAccount, freeTransactionFeeLimit)
+
+        // Get pools for topping up
+        var topUpPools: OrcaPoolsPair? = null
+
+        // prefer direct swap to transitive swap
+        val directSwapPools = tradableTopUpPoolsPair.firstOrNull { it.size == 1 }
+        topUpPools = if (directSwapPools != null) {
+            directSwapPools
         } else {
-            // STEP 2.2: Else
-
-            // Get target amount for topping up
-            var targetAmount = targetAmount
-            if (checkIfBalanceHaveEnoughAmount) {
-                targetAmount -= (relayAccount.balance ?: BigInteger.ZERO)
-            }
-
-            // Get real amounts needed for topping up
-            val (topUpAmount, expectedFee) = calculateTopUpAmount(
-                targetAmount = targetAmount,
-                relayAccount = relayAccount,
-                freeTransactionFeeLimit = freeTransactionFeeLimit
+            // if direct swap is not available, use transitive swap
+            val transitiveSwapPools = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(
+                estimatedAmount = topUpAmount,
+                poolsPairs = tradableTopUpPoolsPair
             )
+            transitiveSwapPools
+        }
 
-            // Get pools for topping up
-            var topUpPools: OrcaPoolsPair? = null
+        if (topUpPools.isNullOrEmpty()) throw IllegalStateException("Swap pools not found")
 
-            // prefer direct swap to transitive swap
-            val directSwapPools = tradableTopUpPoolsPair.firstOrNull { it.size == 1 }
-            topUpPools = if (directSwapPools != null) {
-                directSwapPools
+        return TopUpPreparedParams(
+            amount = topUpAmount,
+            expectedFee = expectedFee,
+            poolsPair = topUpPools
+        )
+    }
+
+    // Calculate needed top up amount for expected fee
+    suspend fun calculateNeededTopUpAmount(expectedFee: FeeAmount): FeeAmount {
+        val info = feeRelayerAccountInteractor.getRelayInfo()
+        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        val neededAmount = expectedFee
+
+        // expected fees
+        val expectedTopUpNetworkFee = BigInteger.valueOf(2L) * info.lamportsPerSignature
+        val expectedTransactionNetworkFee = expectedFee.transaction
+
+        // real fees
+        var neededTopUpNetworkFee = expectedTopUpNetworkFee
+        var neededTransactionNetworkFee = expectedTransactionNetworkFee
+
+        // is Top up free
+        if (freeTransactionFeeLimit.isFreeTransactionFeeAvailable(expectedTopUpNetworkFee)) {
+            neededTopUpNetworkFee = BigInteger.ZERO
+        }
+
+        // is transaction free
+        val freeTransactionFeeAvailable = freeTransactionFeeLimit.isFreeTransactionFeeAvailable(
+            transactionFee = expectedTopUpNetworkFee + expectedTransactionNetworkFee,
+            forNextTransaction = true
+        )
+        if (freeTransactionFeeAvailable) {
+            neededTransactionNetworkFee = BigInteger.ZERO
+        }
+
+        neededAmount.transaction = neededTopUpNetworkFee + neededTransactionNetworkFee
+
+        // transaction is totally free
+        if (neededAmount.total.isZero()) {
+            return neededAmount
+        }
+
+        if (neededAmount.transaction.isZero() && neededAmount.accountBalances.isZero()) {
+            return neededAmount
+        }
+
+        val minimumRelayAccountBalance = info.minimumRelayAccountBalance
+
+        // check if relay account current balance can cover part of needed amount
+        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        var relayAccountBalance = relayAccount.balance
+
+        if (relayAccountBalance != null) {
+
+            if (relayAccountBalance < minimumRelayAccountBalance) {
+                neededAmount.transaction += minimumRelayAccountBalance - relayAccountBalance
             } else {
-                // if direct swap is not available, use transitive swap
-                val transitiveSwapPools = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(
-                    estimatedAmount = topUpAmount,
-                    poolsPairs = tradableTopUpPoolsPair
-                )
-                transitiveSwapPools
+                relayAccountBalance -= minimumRelayAccountBalance
+
+                // if relayAccountBalance has enough balance to cover transaction fee
+                if (relayAccountBalance >= neededAmount.transaction) {
+                    neededAmount.transaction = BigInteger.ZERO
+
+                    // if relayAccountBalance has enough balance to cover accountBalances fee too
+                    if (relayAccountBalance - neededAmount.transaction >= neededAmount.accountBalances) {
+                        neededAmount.accountBalances = BigInteger.ZERO
+                    } else {
+                        // Relay account balance can cover part of account creation fee
+                        neededAmount.accountBalances -= (relayAccountBalance - neededAmount.transaction)
+                    }
+                } else {
+                    // if not, relayAccountBalance can cover part of transaction fee
+                    neededAmount.transaction -= relayAccountBalance
+                }
             }
-
-            if (topUpPools.isNullOrEmpty()) throw IllegalStateException("Swap pools not found")
-
-            return TopUpPreparedParams(
-                amount = topUpAmount,
-                expectedFee = expectedFee,
-                poolsPair = topUpPools
-            )
+        } else {
+            neededAmount.transaction += minimumRelayAccountBalance
         }
+        return neededAmount
     }
 
-    /*
-   * Calculate needed fee for topup transaction by forming fake transaction
-   * */
-    fun calculateTopUpFee(
-        info: RelayInfo,
-        relayAccount: RelayAccount
-    ): FeeAmount {
-        val topUpFee = FeeAmount()
-
-        // transaction fee
-        val numberOfSignatures: BigInteger = BigInteger.valueOf(2) // feePayer's signature, owner's Signature
-//        numberOfSignatures += 1 // transferAuthority
-        topUpFee.transaction = numberOfSignatures * info.lamportsPerSignature
-
-        // account creation fee
-        if (!relayAccount.isCreated) {
-            topUpFee.accountBalances += info.minimumRelayAccountBalance
-        }
-
-        // swap fee
-        topUpFee.accountBalances += info.minimumTokenAccountBalance
-
-        return topUpFee
-    }
-
-    suspend fun calculateTopUpAmount(
-        targetAmount: BigInteger,
+    suspend fun calculateExpectedFeeForTopUp(
         relayAccount: RelayAccount,
         freeTransactionFeeLimit: FreeTransactionFeeLimit?
-    ): Pair<BigInteger, BigInteger> {
+    ): BigInteger {
         val info = feeRelayerAccountInteractor.getRelayInfo()
-        // current_fee
-        var currentFee: BigInteger = BigInteger.ZERO
+
+        var expectedFee: BigInteger = BigInteger.ZERO
         if (!relayAccount.isCreated) {
-            currentFee += info.minimumRelayAccountBalance
+            expectedFee += info.minimumRelayAccountBalance
         }
 
         val transactionNetworkFee = BigInteger.valueOf(2) * info.lamportsPerSignature // feePayer, owner
         if (freeTransactionFeeLimit?.isFreeTransactionFeeAvailable(transactionNetworkFee) == false) {
-            currentFee += transactionNetworkFee
+            expectedFee += transactionNetworkFee
         }
 
-        // swap_amount_out
-//        let swapAmountOut = targetAmount + currentFee
-        var swapAmountOut = targetAmount
-        swapAmountOut += if (!relayAccount.isCreated) {
-            info.lamportsPerSignature // Temporary solution
-        } else {
-            currentFee
-        }
+        expectedFee += info.minimumTokenAccountBalance
 
-        // expected_fee
-        val expectedFee = currentFee + info.minimumTokenAccountBalance
-
-        return swapAmountOut to expectedFee
+        return expectedFee
     }
 
     /*

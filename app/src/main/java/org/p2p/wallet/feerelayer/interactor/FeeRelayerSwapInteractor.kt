@@ -384,17 +384,13 @@ class FeeRelayerSwapInteractor(
         // TOP UP
         val topUpPreparedParam: TopUpPreparedParams?
 
-//        if (relayAccount.balance != null && relayAccount.balance >= swappingFee.total) {
         if (relayAccount.balance != null && relayAccount.balance >= swappingFee.total) {
             topUpPreparedParam = null
         } else {
-            // STEP 2.2: Else
-            // Get best poolpairs for topping up
-            val targetAmount = swappingFee.total - (relayAccount.balance ?: BigInteger.ZERO)
-
             // Get real amounts needed for topping up
-            val (topUpAmount, expectedFee) = feeRelayerTopUpInteractor.calculateTopUpAmount(
-                targetAmount = targetAmount,
+            val topUpAmount = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(swappingFee).total
+
+            val expectedFee = feeRelayerTopUpInteractor.calculateExpectedFeeForTopUp(
                 relayAccount = relayAccount,
                 freeTransactionFeeLimit = freeTransactionFeeLimit
             )

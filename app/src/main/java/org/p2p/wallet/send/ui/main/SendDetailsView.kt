@@ -57,6 +57,7 @@ class SendDetailsView @JvmOverloads constructor(
             headerView.isEnabled = true
             totalView.isVisible = isExpanded
             receiveView.isVisible = isExpanded
+            totalFeeTextView.isVisible = isExpanded
 
             val color = context.getColor(R.color.textIconSecondary)
             receiveTextView.text = SpanUtils.highlightText(
@@ -83,14 +84,12 @@ class SendDetailsView @JvmOverloads constructor(
                     if (data.fee.isFeePayerSame(data.sourceSymbol)) {
                         totalFeeTextView.isVisible = false
                     } else {
-                        totalFeeTextView.isVisible = true
                         totalFeeTextView.text = feeText
                     }
                 }
                 is SendFee.RenBtcFee -> {
                     accountCreationFeeView.isVisible = false
                     paidByTextView.isVisible = false
-                    totalFeeTextView.isVisible = isExpanded
 
                     val feeText = SpanUtils.highlightText(
                         data.fee.fullFee,

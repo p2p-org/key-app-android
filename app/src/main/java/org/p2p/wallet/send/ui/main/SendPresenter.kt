@@ -130,7 +130,7 @@ class SendPresenter(
         }
 
         val feePayerToken = userTokens.firstOrNull { it.isSOL } ?: newToken
-        setFeePayerToken(feePayerToken)
+        sendInteractor.setFeePayerToken(feePayerToken)
 
         calculateRenBtcFeeIfNeeded()
         calculateData(newToken)
@@ -353,7 +353,7 @@ class SendPresenter(
 
     private suspend fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
         when (checkAddressResult) {
-            is CheckAddressResult.NewAccountNeeded -> calculateFeeRelayerFee(null)
+            is CheckAddressResult.NewAccountNeeded -> calculateFeeRelayerFee(checkAddressResult.feePayerToken)
             is CheckAddressResult.AccountExists,
             is CheckAddressResult.InvalidAddress -> view?.showAccountFeeView(null)
         }
@@ -489,13 +489,12 @@ class SendPresenter(
 
     private fun calculateTotal(sendFee: SendFee?) {
         val sourceToken = token ?: return
-        val receive = inputAmount.toBigDecimalOrZero()
 
         val data = SendTotal(
             total = tokenAmount,
             totalUsd = usdAmount,
-            receive = "$receive ${sourceToken.tokenSymbol}",
-            receiveUsd = receive.toUsd(sourceToken),
+            receive = "$tokenAmount ${sourceToken.tokenSymbol}",
+            receiveUsd = tokenAmount.toUsd(sourceToken),
             fee = sendFee,
             sourceSymbol = sourceToken.tokenSymbol
         )
@@ -521,10 +520,20 @@ class SendPresenter(
     /*
     * Assume this to be called only if associated account address creation needed
     * */
-    private suspend fun calculateFeeRelayerFee(feePayerToken: Token.Active?) {
-        val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
+    private suspend fun calculateFeeRelayerFee(feePayer: Token.Active) {
+        val source = token ?: throw IllegalStateException("Source token is null")
+        val receiver = target?.address
 
-        val fees = sendInteractor.calculateFeesForFeeRelayer()
+        val fees = sendInteractor.calculateFeesForFeeRelayer(
+            token = source,
+            receiver = receiver,
+            networkType = networkType
+        )
+
+        if (fees == null) {
+            view?.showAccountFeeView(null)
+            return
+        }
 
         val feeAmount = if (!feePayer.isSOL && fees.feeInPayingToken != null) {
             fees.feeInPayingToken.fromLamports(feePayer.decimals).scaleMedium()
