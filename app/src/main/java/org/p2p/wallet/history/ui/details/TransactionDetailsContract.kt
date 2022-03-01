@@ -20,7 +20,10 @@ interface TransactionDetailsContract {
         fun showFee(renBtcFee: String?)
         fun showBlockNumber(blockNumber: String)
         fun showLoading(isLoading: Boolean)
+        fun showError(@StringRes messageId: Int)
     }
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun load()
+    }
 }

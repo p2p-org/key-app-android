@@ -36,13 +36,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/send_transaction_being_processed"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="@color/textIconSecondary"
         app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/arrowImageView"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView" />
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        tools:text="0.02113 renBTC → bc1q...4tyf" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -50,6 +50,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
+        android:indeterminateTint="@color/textIconActive"
+        app:layout_constraintBottom_toBottomOf="@id/transactionImageView"
+        app:layout_constraintTop_toTopOf="@id/transactionImageView" />
+
+    <View
+        android:id="@+id/lineView"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/systemSuccessMain"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/transactionImageView"
         app:layout_constraintTop_toTopOf="@id/transactionImageView" />
 

@@ -10,6 +10,7 @@ import kotlinx.coroutines.plus
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.transaction.model.AppTransaction
 import org.p2p.wallet.transaction.model.TransactionExecutionState
+import org.p2p.wallet.transaction.model.TransactionState
 import timber.log.Timber
 import java.util.concurrent.Executors
 
@@ -36,7 +37,7 @@ class TransactionManager private constructor(
     /*
    * This one is to show user transaction id when progress dialog is shown
    * */
-    private val transactionIdFlow = MutableStateFlow("")
+    private val transactionStateFlow = MutableStateFlow<TransactionState>(TransactionState.Progress())
 
     private val pendingTransactions = mutableListOf<AppTransaction>()
 
@@ -67,10 +68,12 @@ class TransactionManager private constructor(
         return executor.getStateFlow()
     }
 
-    fun getTransactionIdFlow(): Flow<String> = transactionIdFlow
+    fun getTransactionStateFlow(): Flow<TransactionState> = transactionStateFlow
 
-    suspend fun emitTransactionId(transactionId: String) {
-        transactionIdFlow.emit(transactionId)
+    fun getTransactionState(): TransactionState = transactionStateFlow.value
+
+    suspend fun emitTransactionState(state: TransactionState) {
+        transactionStateFlow.emit(state)
     }
 
     private fun executeTransactions() {

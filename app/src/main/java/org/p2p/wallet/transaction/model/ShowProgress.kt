@@ -8,7 +8,5 @@ import kotlinx.parcelize.Parcelize
 class ShowProgress(
     @StringRes val title: Int,
     val subTitle: String,
-    val transactionId: String,
-    val onPrimaryCallback: () -> Unit = {},
-    val onSecondaryCallback: () -> Unit = {}
+    val transactionId: String
 ) : Parcelable

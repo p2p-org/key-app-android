@@ -28,6 +28,7 @@
     <string name="common_confirm">Confirm</string>
     <string name="common_logout">Log out</string>
     <string name="common_stay">Stay</string>
+    <string name="common_close_account">Close account</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -425,6 +426,7 @@
     <string name="details_transaction_fees">Transaction fees</string>
     <string name="details_received">Received</string>
     <string name="details_transfer_format">%1s → %2s</string>
+    <string name="details_account_closed_successfully">Account is successfully closed!</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -502,5 +504,8 @@
     <string name="seed_info_description_secondary">If you create a new wallet account, you will receive your security key that you must write down somewhere safe. This is the only way to recover your wallet.\n\nIf you still have access to your old wallet, sometimes you can recover your security key from it.\n\nUsing Custodian wallet, you still have the option to regain access to your data by asking a third party.</string>
     <string name="seed_info_info">• If lost, no one can restore it\n• Keep it private, even from us</string>
     <string name="seed_info_where_i_can_find">Where I can find one?</string>
+    <string name="swap_successfully_format">%1s was swapped to %2s successfully</string>
+    <string name="send_successfully_format">%s was sent successfully</string>
+    <string name="details_transaction_not_found">Transaction is not found</string>
 
 </resources>

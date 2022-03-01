@@ -22,6 +22,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
@@ -38,6 +39,9 @@ import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
+import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
+import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
@@ -112,6 +116,20 @@ class SendFragment :
                 result.containsKey(EXTRA_NETWORK) -> {
                     val ordinal = result.getInt(EXTRA_NETWORK, 0)
                     presenter.setNetworkDestination(NetworkType.values()[ordinal])
+                }
+                result.containsKey(EXTRA_RESULT_KEY_PRIMARY) -> {
+                    val transactionId = result.getString(EXTRA_RESULT_KEY_PRIMARY)
+                    if (!transactionId.isNullOrEmpty()) {
+                        val state = TransactionDetailsLaunchState.Id(transactionId)
+                        popAndReplaceFragment(TransactionDetailsFragment.create(state))
+                    }
+                }
+                result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
+                    // todo: add support for secondary cta
+                    popBackStack()
+                }
+                result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
+                    popBackStack()
                 }
             }
         }
@@ -331,7 +349,8 @@ class SendFragment :
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {
-        popAndReplaceFragment(TransactionDetailsFragment.create(transaction))
+        val state = TransactionDetailsLaunchState.History(transaction)
+        popAndReplaceFragment(TransactionDetailsFragment.create(state))
     }
 
     override fun showNetworkDestination(type: NetworkType) {
@@ -403,9 +422,9 @@ class SendFragment :
 
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
-            ProgressBottomSheet.show(childFragmentManager, data)
+            ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SEND)
         } else {
-            ProgressBottomSheet.hide(childFragmentManager)
+            ProgressBottomSheet.hide(parentFragmentManager)
         }
     }
 
@@ -458,12 +477,6 @@ class SendFragment :
             title = TextContainer(R.string.main_send_wrong_wallet),
             message = TextContainer(R.string.main_send_wrong_wallet_message)
         )
-    }
-
-    override fun showSuccessMessage(amount: String) {
-        val message = getString(R.string.send_successful_format, amount)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
-        showSnackbarMessage(message)
     }
 
     private fun checkClipBoard() {

@@ -11,7 +11,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 
 class UserInteractor(
     private val userRepository: UserRepository,
@@ -53,21 +52,19 @@ class UserInteractor(
     suspend fun loadUserTokensAndUpdateData() {
         val publicKey = tokenKeyProvider.publicKey
         val newTokens = userRepository.loadTokens(publicKey)
-        /* We have case when temporary SOL account is created but not deleted in database */
-        mainLocalRepository.removeIfExists(publicKey, SOL_SYMBOL)
-        /* Remove tokens that were closed by user */
+
         val oldTokens = mainLocalRepository.getUserTokens()
-        if (oldTokens.size > newTokens.size) {
-            oldTokens
-                .filterNot {
-                    newTokens.any { new -> new.publicKey == it.publicKey }
-                }
-                .forEach {
-                    mainLocalRepository.removeIfExists(it.publicKey, it.tokenSymbol)
-                }
+        mainLocalRepository.clear()
+        val result = newTokens.map { token ->
+            val old = oldTokens.find { it.publicKey == token.publicKey }
+            if (old != null) {
+                token.copy(visibility = old.visibility)
+            } else {
+                token
+            }
         }
 
-        mainLocalRepository.updateTokens(newTokens)
+        mainLocalRepository.updateTokens(result)
     }
 
     suspend fun getUserTokens(): List<Token.Active> =

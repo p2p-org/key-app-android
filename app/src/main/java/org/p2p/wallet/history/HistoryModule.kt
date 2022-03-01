@@ -5,7 +5,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.HistoryRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
@@ -28,11 +28,12 @@ object HistoryModule : InjectionModule {
                 get(),
                 get(),
                 get(),
+                get(),
                 get()
             )
         } bind HistoryContract.Presenter::class
-        factory { (transaction: HistoryTransaction) ->
-            TransactionDetailsPresenter(transaction, get(), get())
+        factory { (state: TransactionDetailsLaunchState) ->
+            TransactionDetailsPresenter(state, get(), get(), get())
         } bind TransactionDetailsContract.Presenter::class
     }
 }

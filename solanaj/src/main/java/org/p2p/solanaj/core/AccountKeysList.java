@@ -55,8 +55,6 @@ public class AccountKeysList {
             return cmpkWritable;
         }
 
-        // fixme: Dirty hack for mint address order, fix it when we'll have time
-        if (am1.getPublicKey().toBase58().equals("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")) return -1;
         return 0;
     };
 
