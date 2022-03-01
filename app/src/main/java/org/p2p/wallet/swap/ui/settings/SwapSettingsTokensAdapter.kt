@@ -49,7 +49,7 @@ class SwapSettingsTokensAdapter(
         private val subTitleTextView = binding.subTitleTextView
 
         fun onBind(item: Token.Active) {
-            radioButton.isChecked = adapterPosition == selectedIndex
+            radioButton.isChecked = bindingAdapterPosition == selectedIndex
             titleTextView.text = item.tokenSymbol
             if (item.isSOL) {
                 val available = itemView.context.getString(R.string.swap_available_format, item.total.toPlainString())
@@ -59,7 +59,7 @@ class SwapSettingsTokensAdapter(
             }
 
             itemView.setOnClickListener {
-                selectedIndex = adapterPosition
+                selectedIndex = bindingAdapterPosition
                 onTokenSelected.invoke(item)
             }
         }
