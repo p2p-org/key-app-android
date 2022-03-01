@@ -37,6 +37,10 @@ class RenBTCRemoteRepository(
         dao.insert(entity)
     }
 
+    override suspend fun onErrorHandled(message: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun findSessionFlow(destinationAddress: String): Flow<LockAndMint.Session?> {
         return dao.getSessionFlow(destinationAddress).map { session ->
             session?.let {

@@ -8,6 +8,7 @@ import org.p2p.solanaj.rpc.Environment
 interface RenBTCRepository {
     suspend fun getPaymentData(environment: Environment, gateway: String): List<RenBTCPayment>
     suspend fun saveSession(session: LockAndMint.Session)
+    suspend fun onErrorHandled(message: String)
     fun findSessionFlow(destinationAddress: String): Flow<LockAndMint.Session?>
     suspend fun findSession(destinationAddress: String): LockAndMint.Session?
     suspend fun clearSessionData()

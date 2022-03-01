@@ -11,6 +11,7 @@ import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.wallet.R
