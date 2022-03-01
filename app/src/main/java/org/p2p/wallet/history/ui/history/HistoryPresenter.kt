@@ -14,6 +14,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.rpc.interactor.CloseInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
@@ -28,7 +29,8 @@ class HistoryPresenter(
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: AnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
-    private val renBtcInteractor: RenBtcInteractor
+    private val renBtcInteractor: RenBtcInteractor,
+    private val closeInteractor: CloseInteractor
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private val transactions = mutableListOf<HistoryTransaction>()
@@ -195,9 +197,26 @@ class HistoryPresenter(
                         )
                     }
                 }
+                else -> {
+                    // TODO: Add support for other transaction types
+                    // do nothing yet
+                    return@launch
+                }
             }
 
             view?.showDetails(transaction)
+        }
+    }
+
+    override fun closeAccount() {
+        launch {
+            try {
+                closeInteractor.close(token.publicKey)
+                view?.showSnackbarMessage(R.string.details_account_closed_successfully)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error closing account: ${token.publicKey}")
+                view?.showErrorMessage(e)
+            }
         }
     }
 }

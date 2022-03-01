@@ -24,5 +24,6 @@ interface HistoryContract {
         fun refresh()
         fun fetchNextPage()
         fun onItemClicked(transaction: HistoryTransaction)
+        fun closeAccount()
     }
 }

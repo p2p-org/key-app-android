@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
@@ -28,7 +29,9 @@ import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.Target
 import org.p2p.wallet.settings.interactor.SettingsInteractor
+import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
@@ -62,7 +65,8 @@ class SendPresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val browseAnalytics: BrowseAnalytics,
     private val analyticsInteractor: AnalyticsInteractor,
-    private val sendAnalytics: SendAnalytics
+    private val sendAnalytics: SendAnalytics,
+    private val transactionManager: TransactionManager
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -363,7 +367,6 @@ class SendPresenter(
                 val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
                 buildTransaction(transactionId)
-                view?.showSuccessMessage("${tokenAmount.toPlainString()} ${token.tokenSymbol}")
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
             } finally {
@@ -379,15 +382,20 @@ class SendPresenter(
                 val lamports = tokenAmount.toLamports(token.decimals)
 
                 when (val validation = addressInteractor.validateAddress(destinationAddress, token.mintAddress)) {
-                    is AddressValidation.WrongWallet -> view?.showWrongWalletError()
-                    is AddressValidation.Error -> view?.showErrorMessage(validation.messageRes)
+                    is AddressValidation.WrongWallet -> {
+                        view?.showWrongWalletError()
+                        view?.showProgressDialog(null)
+                    }
+                    is AddressValidation.Error -> {
+                        view?.showErrorMessage(validation.messageRes)
+                        view?.showProgressDialog(null)
+                    }
                     is AddressValidation.Valid -> handleValidAddress(token, destinationAddress, lamports)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
-                view?.showErrorMessage(e)
-            } finally {
                 view?.showProgressDialog(null)
+                view?.showErrorMessage(e)
             }
         }
     }
@@ -400,8 +408,7 @@ class SendPresenter(
         val data = ShowProgress(
             title = R.string.send_transaction_being_processed,
             subTitle = "$tokenAmount ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
-            transactionId = "",
-            onPrimaryCallback = { buildTransaction() }
+            transactionId = ""
         )
         view?.showProgressDialog(data)
 
@@ -410,9 +417,9 @@ class SendPresenter(
             token = token,
             lamports = lamports
         )
-
-        buildTransaction(result)
-        view?.showSuccessMessage("${tokenAmount.toPlainString()} ${token.tokenSymbol}")
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
+        val state = TransactionState.SendSuccess(result, token.tokenSymbol)
+        transactionManager.emitTransactionState(state)
     }
 
     private fun buildTransaction(transactionId: String = "") {

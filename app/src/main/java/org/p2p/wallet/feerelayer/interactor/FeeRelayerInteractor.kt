@@ -85,7 +85,7 @@ class FeeRelayerInteractor(
             val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
             // TODO: - Unknown fee when first time using fee relayer
             if (!relayAccount.isCreated) {
-                neededAmount.accountBalances += info.lamportsPerSignature
+                neededAmount.transaction += info.lamportsPerSignature
             }
 
             // Check account balance

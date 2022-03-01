@@ -21,6 +21,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
@@ -32,6 +33,9 @@ import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
 import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
+import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
+import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
@@ -117,6 +121,19 @@ class OrcaSwapFragment :
                 result.containsKey(EXTRA_SETTINGS) -> {
                     val settingsResult = result.getParcelable<OrcaSettingsResult>(EXTRA_SETTINGS)
                     if (settingsResult != null) presenter.setNewSettings(settingsResult)
+                }
+                result.containsKey(EXTRA_RESULT_KEY_PRIMARY) -> {
+                    val transactionId = result.getString(EXTRA_RESULT_KEY_PRIMARY)
+                    if (!transactionId.isNullOrEmpty()) {
+                        val state = TransactionDetailsLaunchState.Id(transactionId)
+                        popAndReplaceFragment(TransactionDetailsFragment.create(state))
+                    }
+                }
+                result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
+                    // todo: add support for secondary cta
+                }
+                result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
+                    popBackStack()
                 }
             }
         }
@@ -247,7 +264,8 @@ class OrcaSwapFragment :
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {
-        popAndReplaceFragment(TransactionDetailsFragment.create(transaction))
+        val state = TransactionDetailsLaunchState.History(transaction)
+        popAndReplaceFragment(TransactionDetailsFragment.create(state))
     }
 
     override fun showSourceSelection(tokens: List<Token.Active>) {
@@ -291,9 +309,9 @@ class OrcaSwapFragment :
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
             analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.PROCESSING)
-            ProgressBottomSheet.show(childFragmentManager, data)
+            ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SWAP)
         } else {
-            ProgressBottomSheet.hide(childFragmentManager)
+            ProgressBottomSheet.hide(parentFragmentManager)
         }
     }
 
