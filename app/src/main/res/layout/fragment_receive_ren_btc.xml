@@ -44,8 +44,7 @@
             <org.p2p.wallet.receive.widget.ReceiveCardView
                 android:id="@+id/receiveCardView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp" />
+                android:layout_height="wrap_content" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/statusView"

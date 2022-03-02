@@ -57,7 +57,7 @@ object HomeModule : InjectionModule {
                 addressInteractor = get(),
                 feeRelayerInteractor = get(),
                 feeRelayerAccountInteractor = get(),
-                orcaPoolInteractor = get(),
+                feeRelayerTopUpInteractor = get(),
                 orcaInfoInteractor = get(),
                 amountInteractor = get(),
                 transactionInteractor = get(),

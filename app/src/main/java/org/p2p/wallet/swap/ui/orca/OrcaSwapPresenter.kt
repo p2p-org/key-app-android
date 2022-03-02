@@ -27,6 +27,7 @@ import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
@@ -41,6 +42,7 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.properties.Delegates
 
 // TODO: Refactor, make simpler
@@ -77,7 +79,7 @@ class OrcaSwapPresenter(
     private var fees: SwapFee? = null
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
-    private var slippage: Slippage = Slippage.MEDIUM
+    private var slippage: Slippage = Slippage.PERCENT
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
@@ -175,7 +177,7 @@ class OrcaSwapPresenter(
         aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(sourceToken.total)
-        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconPrimary
+        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
 
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
@@ -197,7 +199,11 @@ class OrcaSwapPresenter(
     override fun loadDataForSettings() {
         launch {
             val sol = userInteractor.getUserTokens().find { it.isSOL } ?: return@launch
-            val tokens = listOf(sol, sourceToken)
+            val tokens = mutableListOf(sol).apply {
+                if (!sourceToken.isSOL) {
+                    add(sourceToken)
+                }
+            }
             view?.showSwapSettings(slippage, tokens, swapInteractor.getFeePayerToken())
             val feeSource = if (sourceToken.isSOL) SwapAnalytics.FeeSource.SOL else SwapAnalytics.FeeSource.OTHER
             // TODO determine priceS lipaceExact
@@ -279,6 +285,12 @@ class OrcaSwapPresenter(
 
         appScope.launch {
             try {
+                val feeInSOL = fees?.totalLamports ?: BigInteger.ZERO
+                if (!swapInteractor.feePayerHasEnoughBalance(feeInSOL)) {
+                    view?.showErrorMessage(R.string.swap_insufficient_balance)
+                    return@launch
+                }
+
                 val sourceTokenSymbol = sourceToken.tokenSymbol
                 val destinationTokenSymbol = destination.tokenSymbol
                 val subTitle =
@@ -386,7 +398,7 @@ class OrcaSwapPresenter(
             destinationAmount = destinationAmount,
             total = "$sourceAmount ${source.tokenSymbol}",
             totalUsd = totalUsd.scaleShort().toPlainString(),
-            fee = fees?.accountCreationFee,
+            fee = fees?.transactionFeeString,
             approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
             receiveAtLeast = receiveAtLeast,
             receiveAtLeastUsd = receiveAtLeastUsd?.toPlainString()
@@ -408,17 +420,17 @@ class OrcaSwapPresenter(
             .getOutputAmount(inputAmountBigInteger)
             ?.fromLamports(destination.decimals) ?: return
 
-        val inputPrice = inputAmount.divideSafe(estimatedOutputAmount)
+        val inputPrice = inputAmount.divideSafe(estimatedOutputAmount).scaleMedium()
         val inputPriceUsd = source.usdRate?.let { inputPrice.multiply(it) }
-        val outputPrice = estimatedOutputAmount.divideSafe(inputAmount)
+        val outputPrice = estimatedOutputAmount.divideSafe(inputAmount).scaleMedium()
         val outputPriceUsd = destination.usdRate?.let { outputPrice.multiply(it) }
         val priceData = SwapPrice(
             sourceSymbol = source.tokenSymbol,
             destinationSymbol = destination.tokenSymbol,
-            sourcePrice = "${inputPrice.scaleMedium().toPlainString()} ${source.tokenSymbol}",
-            destinationPrice = "${outputPrice.scaleMedium().toPlainString()} ${destination.tokenSymbol}",
-            sourcePriceInUsd = inputPriceUsd?.scaleShort()?.toPlainString(),
-            destinationPriceInUsd = outputPriceUsd?.scaleShort()?.toPlainString()
+            sourcePrice = "${AmountUtils.format(inputPrice)} ${source.tokenSymbol}",
+            destinationPrice = "${AmountUtils.format(outputPrice)} ${destination.tokenSymbol}",
+            sourcePriceInUsd = inputPriceUsd?.scaleShort()?.let { AmountUtils.format(it) },
+            destinationPriceInUsd = outputPriceUsd?.scaleShort()?.let { AmountUtils.format(it) }
         )
         view?.showPrice(priceData)
     }

@@ -22,8 +22,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
@@ -35,9 +35,9 @@ import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
+import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
-import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
@@ -189,6 +189,10 @@ class SendFragment :
                 presenter.loadAvailableValue()
             }
 
+            maxTextView.setOnClickListener {
+                presenter.loadAvailableValue()
+            }
+
             aroundTextView.setOnClickListener {
                 presenter.switchCurrency()
             }
@@ -203,7 +207,7 @@ class SendFragment :
             }
 
             sendDetailsView.setOnPaidClickListener {
-                presenter.onDetailsClicked()
+                presenter.onFeeClicked()
             }
         }
     }
@@ -218,9 +222,9 @@ class SendFragment :
         addFragment(target)
     }
 
-    override fun showDetails() {
+    override fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int) {
         showInfoDialog(
-            messageRes = R.string.main_free_transactions_info,
+            message = getString(R.string.main_free_transactions_info, maxTransactionsAvailable, remaining),
             primaryButtonRes = R.string.common_understood
         )
     }
@@ -251,6 +255,8 @@ class SendFragment :
 
             messageTextView.isVisible = false
             clearImageView.isVisible = false
+            scanTextView.isVisible = true
+            pasteTextView.isVisible = true
         }
     }
 
@@ -264,6 +270,8 @@ class SendFragment :
             messageTextView.withTextOrGone(getString(R.string.send_no_address))
             messageTextView.setTextColor(getColor(R.color.systemErrorMain))
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 
@@ -277,6 +285,8 @@ class SendFragment :
             messageTextView.withTextOrGone(address.cutEnd())
             messageTextView.setTextColor(getColor(R.color.backgroundDisabled))
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 
@@ -290,6 +300,8 @@ class SendFragment :
             messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
             messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 
@@ -302,6 +314,8 @@ class SendFragment :
 
             messageTextView.isVisible = false
             clearImageView.isVisible = true
+            scanTextView.isVisible = false
+            pasteTextView.isVisible = false
         }
     }
 
@@ -437,12 +451,12 @@ class SendFragment :
     }
 
     override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(requireContext().getColor(availableColor))
+        binding.availableTextView.setTextColor(getColor(availableColor))
     }
 
     @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = "${available.scaleLong()} $symbol"
+        binding.availableTextView.text = available.scaleLong().toString()
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {

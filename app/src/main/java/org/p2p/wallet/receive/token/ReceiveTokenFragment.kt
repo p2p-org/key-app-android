@@ -56,6 +56,10 @@ class ReceiveTokenFragment :
                 coordinator.fit { Edge.Bottom }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
+            titleTextView.text = getString(R.string.receive_you_can_receive_token_message, token.tokenSymbol)
+            directAdressTopTextView.text = getString(R.string.receive_direct_token_address, token.tokenSymbol)
+            mintAddressTopTextView.text = getString(R.string.receive_token_mint_address, token.tokenSymbol)
+
             receiveCardView.setOnNetworkClickListener {
                 replaceFragment(
                     ReceiveNetworkTypeFragment.create(
@@ -90,7 +94,7 @@ class ReceiveTokenFragment :
 
     override fun showReceiveToken(token: Token.Active) {
         with(binding) {
-            solMintAddressTextView.text = token.mintAddress
+            mintAddressBottomTextView.text = token.mintAddress
             mintAddressView.setOnClickListener {
                 requireContext().copyToClipBoard(token.mintAddress)
                 toast(R.string.auth_copied)
@@ -99,13 +103,13 @@ class ReceiveTokenFragment :
     }
 
     override fun showUserData(userPublicKey: String, username: Username?) {
-        binding.directSolAddressTextView.text = userPublicKey
+        binding.directAddressBottomTextView.text = userPublicKey
         val username = username?.getFullUsername(requireContext())
         if (username != null) {
             binding.receiveCardView.setQrName(username)
             binding.receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
-            binding.directSolAddressTextView.text = userPublicKey
-            binding.directSollAddressView.setOnClickListener {
+            binding.directAddressBottomTextView.text = userPublicKey
+            binding.directTokenAddressView.setOnClickListener {
                 requireContext().copyToClipBoard(userPublicKey)
                 toast(R.string.auth_copied)
             }

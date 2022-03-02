@@ -12,12 +12,12 @@ import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
-import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.utils.toPublicKey
 
 class FeeRelayerAccountInteractor(
-    private val rpcRepository: RpcRepository,
+    private val userAccountRepository: UserAccountRepository,
     private val amountInteractor: TransactionAmountInteractor,
     private val feeRelayerRepository: FeeRelayerRepository,
     private val userInteractor: UserInteractor,
@@ -56,7 +56,7 @@ class FeeRelayerAccountInteractor(
         if (relayAccount == null || !reuseCache) {
             val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
             val userRelayAddress = getUserRelayAddress(userPublicKey)
-            val account = rpcRepository.getAccountInfo(userRelayAddress.toBase58())
+            val account = userAccountRepository.getAccountInfo(userRelayAddress.toBase58(), useCache = false)
             val value = account?.value
             relayAccount = RelayAccount(
                 publicKey = userRelayAddress,

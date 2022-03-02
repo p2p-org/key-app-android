@@ -25,7 +25,30 @@ fun Fragment.showInfoDialog(
     InfoDialog.show(
         fragmentManager = childFragmentManager,
         titleRes = titleRes,
-        subTitleRes = messageRes,
+        subTitle = getString(messageRes),
+        primaryButtonRes = primaryButtonRes,
+        secondaryButtonRes = secondaryButtonRes,
+        primaryButtonTextColor = primaryButtonTextColor,
+        onPrimaryButtonClicked = { primaryCallback?.invoke() },
+        onSecondaryButtonClicked = { secondaryCallback?.invoke() },
+        isCancelable = isCancelable
+    )
+}
+
+fun Fragment.showInfoDialog(
+    @StringRes titleRes: Int? = null,
+    message: String,
+    @StringRes primaryButtonRes: Int,
+    @StringRes secondaryButtonRes: Int? = null,
+    @ColorRes primaryButtonTextColor: Int? = null,
+    primaryCallback: (() -> Unit)? = null,
+    secondaryCallback: (() -> Unit)? = null,
+    isCancelable: Boolean = true
+) {
+    InfoDialog.show(
+        fragmentManager = childFragmentManager,
+        titleRes = titleRes,
+        subTitle = message,
         primaryButtonRes = primaryButtonRes,
         secondaryButtonRes = secondaryButtonRes,
         primaryButtonTextColor = primaryButtonTextColor,

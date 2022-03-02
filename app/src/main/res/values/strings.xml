@@ -234,7 +234,7 @@
     <string name="main_reserve_username">Reserve your P2P username now</string>
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
-    <string name="main_free_transactions_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
+    <string name="main_free_transactions_info">On the Solana network, the first %1$d transactions in a day are paid by P2P.org. You have %2$d free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
     <string name="main_balance">Balance</string>
     <string name="main_empty_title">Top up your account to get started</string>
     <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
@@ -299,10 +299,10 @@
     <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
     <string name="receive_topup_your_account">Top up your account</string>
     <string name="receive_share_your_solana_network_address">Share your Solana network address</string>
-    <string name="receive_you_can_receive_sol_message">You can receive SOL by providing this\naddress, QR code or username:</string>
-    <string name="receive_direct_sol_address">Direct SOL Address</string>
+    <string name="receive_you_can_receive_token_message">You can receive %s by providing this\naddress, QR code or username:</string>
+    <string name="receive_direct_token_address">Direct %s Address</string>
     <string name="receive_direct_and_mint_address">Direct and mint addresses</string>
-    <string name="receive_sol_mint_address">SOL Mint Address</string>
+    <string name="receive_token_mint_address">%s Mint Address</string>
 
     <!-- send -->
     <string name="send_enter_address">Enter the recipient\'s address</string>
@@ -350,6 +350,7 @@
     <string name="send_successful_format">%s is successfully sent!</string>
     <string name="send_transaction_success">%s is successfully sent!</string>
     <string name="send_transaction_error">%s send didn\'t complete!</string>
+    <string name="send_successfully_format">%s was sent successfully</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -383,6 +384,8 @@
     <string name="swap_being_processed">The swap is being processed</string>
     <string name="swap_max_price_slippage">Max price slippage</string>
     <string name="swap_transfer_confirm_message">You are going to swap</string>
+    <string name="swap_insufficient_balance">Your account does not have enough balance to cover fees. Please choose another token and try again</string>
+    <string name="swap_successfully_format">%1s was swapped to %2s successfully</string>
 
     <!-- Buy -->
     <string name="buy_token_on_moonpay">Buy %s on MoonPay</string>
@@ -429,8 +432,9 @@
     <string name="details_show_wallet_address">Show wallet address</string>
     <string name="details_transaction_fees">Transaction fees</string>
     <string name="details_received">Received</string>
-    <string name="details_transfer_format">%1s → %2s</string>
+    <string name="details_transfer_format">%1$s → %2$s</string>
     <string name="details_account_closed_successfully">Account is successfully closed!</string>
+    <string name="details_transaction_not_found">Transaction is not found</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
@@ -482,7 +486,8 @@
     <string name="settings_default_currency">Default currency</string>
     <string name="settings_default_currency_subtitle">Showing balances in US Dollar</string>
     <string name="settings_zero_balances">Zero balances</string>
-    <string name="settings_zero_balances_subtitle">Tokens with zero balances are hidden</string>
+    <string name="settings_zero_balances_hidden">Tokens with zero balances are hidden</string>
+    <string name="settings_zero_balances_shown">Tokens with zero balances are shown</string>
     <string name="settings_logout">Log out now</string>
     <string name="settings_forgot_your_pin">Forgot your PIN? Reset it</string>
     <string name="settings_reset_it">Reset it</string>
@@ -502,13 +507,17 @@
     <string name="settings_logout_title">Are you sure you want to log out?</string>
     <string name="settings_logout_message">If you have no backup, you may never be able to access this account</string>
     <string name="settings_what_is_a_security_key">What is a security key?</string>
+    <string name="settings_slippage_hint">Custom slippage tolerance (%)</string>
+    <string name="settings_slippage_max_error">Max price slippage is 50%</string>
+    <string name="settings_slippage_info">&#8226; A slippage is a difference between the expected price and the actual price at which a trade is executed\n\n
+&#8226; Slippage can occur at any time, but it is most prevalent during periods of higher volatility\n\n
+&#8226; Transactions that exceed 20% slippage tolerance may be frontrun\n\n
+&#8226; Slippage tolerance cannot exceed 50%</string>
 
+    <!-- fixme: rename these resources by existing prefixes -->
     <string name="seed_info_the_definition">The definition</string>
     <string name="seed_info_description">You can compare a cryptocurrency wallet to\na password manager for crypto, and a\nsecurity key to a master password.\n\nA security key is a series of 12 or 24 words\ngenerated by the wallet that give you access\nto its associated crypto.</string>
     <string name="seed_info_description_secondary">If you create a new wallet account, you will receive your security key that you must write down somewhere safe. This is the only way to recover your wallet.\n\nIf you still have access to your old wallet, sometimes you can recover your security key from it.\n\nUsing Custodian wallet, you still have the option to regain access to your data by asking a third party.</string>
     <string name="seed_info_info">• If lost, no one can restore it\n• Keep it private, even from us</string>
     <string name="seed_info_where_i_can_find">Where I can find one?</string>
-    <string name="swap_successfully_format">%1s was swapped to %2s successfully</string>
-    <string name="send_successfully_format">%s was sent successfully</string>
-    <string name="details_transaction_not_found">Transaction is not found</string>
 </resources>

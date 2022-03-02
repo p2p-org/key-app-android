@@ -11,6 +11,7 @@ import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsRow
 
 class SettingsPresenter(
@@ -20,6 +21,7 @@ class SettingsPresenter(
     private val appRestarter: AppRestarter,
     private val analytics: ReceiveAnalytics,
     private val adminAnalytics: AdminAnalytics,
+    private val settingsInteractor: SettingsInteractor,
     private val context: Context,
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
@@ -28,8 +30,9 @@ class SettingsPresenter(
     override fun loadData() {
         launch {
             val username = usernameInteractor.getUsername()?.getFullUsername(context).orEmpty()
-            val settings =
-                getProfileSettings(username) + getNetworkSettings() + getAppearanceSettings()
+            val settings = getProfileSettings(username) +
+                getNetworkSettings() +
+                getAppearanceSettings(settingsInteractor.isZerosHidden())
             view?.showSettings(settings)
         }
     }
@@ -54,6 +57,10 @@ class SettingsPresenter(
 
     override fun onNetworkChanged(newName: String) {
         this.networkName = newName
+        loadData()
+    }
+
+    override fun onZeroBalanceVisibilityChanged(isVisible: Boolean) {
         loadData()
     }
 
@@ -96,12 +103,17 @@ class SettingsPresenter(
         )
     }
 
-    private fun getAppearanceSettings(): List<SettingsRow> {
+    private fun getAppearanceSettings(isZeroBalanceHidden: Boolean): List<SettingsRow> {
+        val zeroBalanceSubtitleRes = if (isZeroBalanceHidden) {
+            R.string.settings_zero_balances_hidden
+        } else {
+            R.string.settings_zero_balances_shown
+        }
         return listOf(
             SettingsRow.Title(R.string.settings_appearance, isDivider = true),
             SettingsRow.Section(
                 titleResId = R.string.settings_zero_balances,
-                subtitleRes = R.string.settings_zero_balances_subtitle,
+                subtitleRes = zeroBalanceSubtitleRes,
                 iconRes = R.drawable.ic_settings_eye,
                 isDivider = true
             ),

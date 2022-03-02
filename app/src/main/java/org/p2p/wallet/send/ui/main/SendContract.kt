@@ -37,7 +37,6 @@ interface SendContract {
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelectionView(isVisible: Boolean)
         fun navigateToNetworkSelection(currentNetworkType: NetworkType)
-
         fun navigateToTokenSelection(tokens: List<Token.Active>)
 
         fun showSearchLoading(isLoading: Boolean)
@@ -54,7 +53,7 @@ interface SendContract {
         fun showBiometricConfirmationPrompt(data: SendConfirmData)
 
         fun showScanner()
-        fun showDetails()
+        fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -73,6 +72,6 @@ interface SendContract {
         fun setNetworkDestination(networkType: NetworkType)
         fun setFeePayerToken(feePayerToken: Token.Active)
         fun onScanClicked()
-        fun onDetailsClicked()
+        fun onFeeClicked()
     }
 }

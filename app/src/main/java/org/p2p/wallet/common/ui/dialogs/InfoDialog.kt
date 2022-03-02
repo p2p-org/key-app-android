@@ -29,7 +29,7 @@ class InfoDialog : DialogFragment() {
         fun show(
             fragmentManager: FragmentManager,
             @StringRes titleRes: Int?,
-            @StringRes subTitleRes: Int,
+            subTitle: String,
             @StringRes primaryButtonRes: Int,
             @StringRes secondaryButtonRes: Int?,
             @ColorRes primaryButtonTextColor: Int? = null,
@@ -40,7 +40,7 @@ class InfoDialog : DialogFragment() {
             InfoDialog()
                 .withArgs(
                     EXTRA_TITLE to titleRes,
-                    EXTRA_SUBTITLE to subTitleRes,
+                    EXTRA_SUBTITLE to subTitle,
                     EXTRA_PRIMARY_BUTTON to primaryButtonRes,
                     EXTRA_SECONDARY_BUTTON to secondaryButtonRes,
                     EXTRA_PRIMARY_BUTTON_COLOR to primaryButtonTextColor,
@@ -55,7 +55,7 @@ class InfoDialog : DialogFragment() {
     }
 
     private val titleRes: Int? by args(EXTRA_TITLE)
-    private val subTitleRes: Int by args(EXTRA_SUBTITLE)
+    private val subTitle: String by args(EXTRA_SUBTITLE)
     private val primaryButtonRes: Int by args(EXTRA_PRIMARY_BUTTON)
     private val secondaryButtonRes: Int? by args(EXTRA_SECONDARY_BUTTON)
     private val primaryButtonTextColor: Int? by args(EXTRA_PRIMARY_BUTTON_COLOR)
@@ -82,7 +82,7 @@ class InfoDialog : DialogFragment() {
         with(binding) {
 
             titleTextView withTextOrGone titleRes?.let { getString(it) }
-            subTitleTextView.setText(subTitleRes)
+            subTitleTextView.text = subTitle
             primaryButton.setText(primaryButtonRes)
 
             secondaryButtonRes?.let {

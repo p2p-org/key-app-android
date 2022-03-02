@@ -5,7 +5,6 @@ import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
-import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
@@ -14,7 +13,6 @@ import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.wallet.utils.isNotZero
 import java.math.BigInteger
 
 class FeeRelayerInteractor(
@@ -50,70 +48,7 @@ class FeeRelayerInteractor(
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
     }
 
-    // Calculate needed top up amount for expected fee
-    suspend fun calculateNeededTopUpAmount(expectedFee: FeeAmount): FeeAmount {
-        val info = feeRelayerAccountInteractor.getRelayInfo()
-        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val neededAmount = expectedFee
-
-        // expected fees
-        val expectedTopUpNetworkFee = BigInteger.valueOf(2L) * info.lamportsPerSignature
-        val expectedTransactionNetworkFee = expectedFee.transaction
-
-        // real fees
-        var neededTopUpNetworkFee = expectedTopUpNetworkFee
-        var neededTransactionNetworkFee = expectedTransactionNetworkFee
-
-        // is Top up free
-        if (freeTransactionFeeLimit.isFreeTransactionFeeAvailable(expectedTopUpNetworkFee)) {
-            neededTopUpNetworkFee = BigInteger.ZERO
-        }
-
-        // is transaction free
-        val freeTransactionFeeAvailable = freeTransactionFeeLimit.isFreeTransactionFeeAvailable(
-            transactionFee = expectedTopUpNetworkFee + expectedTransactionNetworkFee,
-            forNextTransaction = true
-        )
-        if (freeTransactionFeeAvailable) {
-            neededTransactionNetworkFee = BigInteger.ZERO
-        }
-
-        neededAmount.transaction = neededTopUpNetworkFee + neededTransactionNetworkFee
-
-        // check relay account balance
-        if (neededAmount.total.isNotZero()) {
-            val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-            // TODO: - Unknown fee when first time using fee relayer
-            if (!relayAccount.isCreated) {
-                neededAmount.transaction += info.lamportsPerSignature
-            }
-
-            // Check account balance
-            var relayAccountBalance = relayAccount.balance
-            if (relayAccountBalance != null && relayAccountBalance.isNotZero()) {
-
-                // if relayAccountBalance has enough balance to cover transaction fee
-                if (relayAccountBalance >= neededAmount.transaction) {
-                    relayAccountBalance -= neededAmount.transaction
-                    neededAmount.transaction = BigInteger.ZERO
-
-                    // if relayAccountBlance has enough balance to cover accountBalances fee too
-                    if (relayAccountBalance >= neededAmount.accountBalances) {
-                        neededAmount.accountBalances = BigInteger.ZERO
-                    } else {
-                        // Relay account balance can cover part of account creation fee
-                        neededAmount.accountBalances -= relayAccountBalance
-                    }
-                } else {
-                    // if not, relayAccountBalance can cover part of transaction fee
-                    neededAmount.transaction -= relayAccountBalance
-                }
-            }
-        }
-        return neededAmount
-    }
-
-    // / Calculate needed fee (count in payingToken)
+    // Calculate needed fee (count in payingToken)
     suspend fun calculateFeeInPayingToken(
         feeInSOL: FeeAmount,
         payingFeeTokenMint: String
@@ -125,8 +60,10 @@ class FeeRelayerInteractor(
             throw IllegalStateException("Swap pools not found")
         }
 
-        val transactionFee =
-            topUpPools.getInputAmount(minimumAmountOut = feeInSOL.transaction, slippage = Slippage.PERCENT.doubleValue)
+        val transactionFee = topUpPools.getInputAmount(
+            minimumAmountOut = feeInSOL.transaction,
+            slippage = Slippage.PERCENT.doubleValue
+        )
         val accountCreationFee = topUpPools.getInputAmount(
             minimumAmountOut = feeInSOL.accountBalances,
             slippage = Slippage.PERCENT.doubleValue
@@ -150,7 +87,7 @@ class FeeRelayerInteractor(
         return relayTransaction(preparedTransaction)
     }
 
-    suspend fun checkAndTopUp(
+    private suspend fun checkAndTopUp(
         expectedFee: FeeAmount,
         payingFeeToken: TokenInfo?
     ): List<String>? {
@@ -167,7 +104,7 @@ class FeeRelayerInteractor(
         val topUpParams = when {
             payingFeeToken != null -> {
                 feeRelayerTopUpInteractor.prepareForTopUp(
-                    targetAmount = expectedFee.total,
+                    topUpAmount = expectedFee.total,
                     payingFeeToken = payingFeeToken,
                     relayAccount = relayAccount,
                     freeTransactionFeeLimit = freeTransactionFeeLimit
@@ -186,19 +123,17 @@ class FeeRelayerInteractor(
             }
         }
 
-        return if (topUpParams != null) {
-            feeRelayerTopUpInteractor.topUp(
-                feeRelayerProgramId = feeRelayerProgramId,
-                needsCreateUserRelayAddress = !relayAccount.isCreated,
-                sourceToken = payingFeeToken,
-                targetAmount = topUpParams.amount,
-                topUpPools = topUpParams.poolsPair,
-                expectedFee = topUpParams.expectedFee
-            )
-        } else null
+        return feeRelayerTopUpInteractor.topUp(
+            feeRelayerProgramId = feeRelayerProgramId,
+            needsCreateUserRelayAddress = !relayAccount.isCreated,
+            sourceToken = payingFeeToken,
+            targetAmount = topUpParams.amount,
+            topUpPools = topUpParams.poolsPair,
+            expectedFee = topUpParams.expectedFee
+        )
     }
 
-    suspend fun relayTransaction(
+    private suspend fun relayTransaction(
         preparedTransaction: PreparedTransaction
     ): List<String> {
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
@@ -239,7 +174,4 @@ class FeeRelayerInteractor(
 
         return feeRelayerTopUpInteractor.relayTransaction(transaction)
     }
-
-    suspend fun relayTransaction(transaction: Transaction): List<String> =
-        feeRelayerTopUpInteractor.relayTransaction(transaction)
 }

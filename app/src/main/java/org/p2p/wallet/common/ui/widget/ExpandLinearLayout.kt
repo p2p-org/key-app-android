@@ -28,6 +28,9 @@ class ExpandLinearLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
+    init {
+        orientation = LinearLayout.VERTICAL
+    }
     private var parallax: Float = 1f
         set(value) {
             val previous = min(1f, max(0f, value))

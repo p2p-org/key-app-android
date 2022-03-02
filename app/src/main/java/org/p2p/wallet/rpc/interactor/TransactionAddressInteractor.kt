@@ -2,12 +2,13 @@ package org.p2p.wallet.rpc.interactor
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.TokenTransaction
+import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.model.AddressValidation
-import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
+import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
@@ -15,7 +16,7 @@ import timber.log.Timber
 private const val ADDRESS_TAG = "Address"
 
 class TransactionAddressInteractor(
-    private val rpcRepository: RpcRepository,
+    private val userAccountRepository: UserAccountRepository,
     private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -53,21 +54,21 @@ class TransactionAddressInteractor(
         }
 
         /* If account is not found, create one */
-        val accountInfo = rpcRepository.getAccountInfo(associatedAddress.toBase58())
+        val accountInfo = userAccountRepository.getAccountInfo(associatedAddress.toBase58())
         val value = accountInfo?.value
-        val associatedNotNeeded = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
+        val accountExists = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         return TransactionAddressData(
             destinationAddress = associatedAddress,
-            shouldCreateAccount = !associatedNotNeeded
+            shouldCreateAccount = !accountExists
         )
     }
 
     @Throws(IllegalStateException::class)
     private suspend fun findSplTokenAddress(destinationAddress: PublicKey, mintAddress: String): PublicKey {
-        val accountInfo = rpcRepository.getAccountInfo(destinationAddress.toBase58())
+        val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58())
 
         // detect if it is a direct token address
-        val info = TokenTransaction.parseAccountInfoData(accountInfo, TokenProgram.PROGRAM_ID)
+        val info = TokenTransaction.decodeAccountInfo(accountInfo)
         if (info != null && userLocalRepository.findTokenData(info.mint.toBase58()) != null) {
             Timber.tag(ADDRESS_TAG).d("Token by mint was found. Continuing with direct address")
             return destinationAddress
@@ -87,7 +88,7 @@ class TransactionAddressInteractor(
         }
 
         // detect if destination address is a SOL address
-        if (info?.owner?.toBase58() == TokenProgram.PROGRAM_ID.toBase58()) {
+        if (info?.owner?.toBase58() == SystemProgram.PROGRAM_ID.toBase58()) {
             Timber.tag(ADDRESS_TAG).d("Destination address is SOL address. Getting the associated token address")
 
             // create associated token address
@@ -95,5 +96,10 @@ class TransactionAddressInteractor(
         }
 
         throw IllegalStateException("Wallet address is not valid")
+    }
+
+    suspend fun isSolAddress(address: String): Boolean {
+        val accountInfo = userAccountRepository.getAccountInfo(address)
+        return accountInfo?.value?.owner == SystemProgram.PROGRAM_ID.toBase58()
     }
 }
