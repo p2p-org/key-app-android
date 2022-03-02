@@ -29,6 +29,7 @@ class SecurityPresenter(
 
     override fun onBiometricsConfirmed(cipher: Cipher) {
         authInteractor.enableFingerprintSignIn(EncodeCipher(cipher))
+        view?.showBiometricActive(isActive = true)
     }
 
     override fun onConfirmationStateChanged(isEnabled: Boolean) {
@@ -44,7 +45,6 @@ class SecurityPresenter(
                 } else {
                     authInteractor.disableBiometricSignIn()
                 }
-                view?.showConfirmationEnabled(isEnabled)
             } catch (e: Exception) {
                 view?.showErrorMessage(e)
             }

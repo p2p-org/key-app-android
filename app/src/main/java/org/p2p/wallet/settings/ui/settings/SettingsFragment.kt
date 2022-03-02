@@ -21,7 +21,6 @@ import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
-import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 private const val REQUEST_KEY = "EXTRA_REQUEST_KEY"
@@ -153,8 +152,6 @@ class SettingsFragment :
 
     private fun onZeroBalanceSettingsChanged(bundle: Bundle) {
         val isZeroBalanceVisible = bundle.getBoolean(BUNDLE_KEY_IS_ZERO_BALANCE_VISIBLE)
-        if (isZeroBalanceVisible) {
-            toast(R.string.settings_tokens_with_zero_balances_are_shown)
-        }
+        presenter.onZeroBalanceVisibilityChanged(isVisible = isZeroBalanceVisible)
     }
 }

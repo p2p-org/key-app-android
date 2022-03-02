@@ -29,11 +29,12 @@ class SecurityFragment :
             this,
             onSuccess = { presenter.onBiometricsConfirmed(it) },
             onError = { message ->
-                if (message == null) popBackStack()
-                else AlertDialog.Builder(requireContext())
-                    .setMessage(message)
-                    .setPositiveButton(R.string.common_ok, null)
-                    .show()
+                if (message != null) {
+                    AlertDialog.Builder(requireContext())
+                        .setMessage(message)
+                        .setPositiveButton(R.string.common_ok, null)
+                        .show()
+                }
             }
         )
     }
@@ -53,7 +54,12 @@ class SecurityFragment :
         binding.biometricSwitch.setOnCheckedChangeListener(null)
         binding.biometricSwitch.isChecked = isActive
         binding.biometricSwitch.setOnCheckedChangeListener { _, isChecked ->
-            presenter.setBiometricEnabled(isChecked)
+            if (isChecked) {
+                binding.biometricSwitch.isChecked = !isChecked
+                presenter.setBiometricEnabled(isChecked)
+            } else {
+                presenter.setBiometricEnabled(isChecked)
+            }
         }
         binding.biometricBottomTextView.text =
             getString(if (isActive) R.string.settings_registered else R.string.settings_unregistered)
