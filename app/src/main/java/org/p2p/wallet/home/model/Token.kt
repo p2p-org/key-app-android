@@ -60,6 +60,10 @@ sealed class Token constructor(
             get() = total.isZero()
 
         @IgnoredOnParcel
+        val isAbsoluteZero: Boolean
+            get() = total.isZero() && (totalInUsd == null || totalInUsd.isZero())
+
+        @IgnoredOnParcel
         val usdRateOrZero: BigDecimal
             get() = usdRate ?: BigDecimal.ZERO
 

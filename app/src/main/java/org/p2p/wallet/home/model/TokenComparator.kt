@@ -28,10 +28,20 @@ class TokenComparator : Comparator<Token> {
         o1.totalInUsd == null && o2.totalInUsd == null ->
             if (o1.total.isMoreThan(o2.total)) -1 else 1
         o1.totalInUsd != null && o2.totalInUsd == null ->
-            -1
+            compareAbsoluteAmount(o1, o2, -1)
         o1.totalInUsd == null && o2.totalInUsd != null ->
-            1
+            compareAbsoluteAmount(o1, o2, 1)
         else ->
             if (o1.total.isMoreThan(o2.total)) -1 else 1
+    }
+
+    private fun compareAbsoluteAmount(
+        o1: Token.Active,
+        o2: Token.Active,
+        defaultValue: Int
+    ) = when {
+        o1.isAbsoluteZero && !o2.isAbsoluteZero -> 1
+        !o1.isAbsoluteZero && o2.isAbsoluteZero -> -1
+        else -> defaultValue
     }
 }
