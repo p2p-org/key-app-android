@@ -103,7 +103,8 @@ class BuySolanaFragment :
     }
 
     override fun navigateToMoonpay(amount: String) {
-        val currencyCode = if (token.isSOL) "sol" else "${token.tokenSymbol.lowercase()}_sol"
+        val sol = Constants.SOL_SYMBOL.lowercase()
+        val currencyCode = if (token.isSOL) sol else "${token.tokenSymbol.lowercase()}_$sol"
         replaceFragment(MoonpayViewFragment.create(amount, currencyCode))
     }
 
