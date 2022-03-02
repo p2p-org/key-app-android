@@ -18,6 +18,7 @@ interface SettingsContract {
         fun logout()
         fun onUsernameClicked()
         fun onNetworkChanged(newName: String)
+        fun onZeroBalanceVisibilityChanged(isVisible: Boolean)
         fun onLogoutClicked()
     }
 }
