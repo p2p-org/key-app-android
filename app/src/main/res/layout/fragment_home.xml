@@ -126,6 +126,7 @@
                 android:clipToPadding="false"
                 android:overScrollMode="never"
                 android:paddingTop="32dp"
+                android:paddingBottom="52dp"
                 tools:listitem="@layout/item_token" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
