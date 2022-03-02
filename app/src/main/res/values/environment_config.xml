@@ -15,7 +15,7 @@
     <string name="node_rpcpool">https://p2p.rpcpool.com/</string>
     <string name="node_devnet">https://api.devnet.solana.com/</string>
 
-    <string name="moonpayWalletDomain">buy.moonpay.com</string>
+    <string name="moonpayWalletDomain">moonpay.wallet.p2p.org</string>
     <string name="moonpayBaseDomain">buy-staging.moonpay.com</string>
     <string name="moonpayBaseUrl">https://api.moonpay.com/v3/</string>
 
