@@ -49,9 +49,7 @@ class SecretKeyFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 it.hideKeyboard()
-                it.post {
-                    popBackStack()
-                }
+                popBackStack()
             }
 
             restoreButton.setOnClickListener {
