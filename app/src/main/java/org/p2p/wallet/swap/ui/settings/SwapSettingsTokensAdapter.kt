@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.ui.settings
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
@@ -58,10 +59,12 @@ class SwapSettingsTokensAdapter(
                 subTitleTextView.setText(R.string.swap_outcomes_from_the_transaction)
             }
 
-            itemView.setOnClickListener {
+            val itemClickListener = View.OnClickListener {
                 selectedIndex = bindingAdapterPosition
                 onTokenSelected.invoke(item)
             }
+            radioButton.setOnClickListener(itemClickListener)
+            itemView.setOnClickListener(itemClickListener)
         }
     }
 }
