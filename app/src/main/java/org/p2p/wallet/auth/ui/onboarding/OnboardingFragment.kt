@@ -29,22 +29,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            animationVideoView.apply {
-                setVideoURI(getVideoUriFromResources(R.raw.anim1_white))
-                setOnPreparedListener { mediaPlayer ->
-                    mediaPlayer.setOnInfoListener { _, infoState, _ ->
-                        if (infoState == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                            animationVideoViewPlaceHolder.isVisible = false
-                        }
-                        false
-                    }
-                    mediaPlayer.isLooping = true
-                }
-                start()
-            }
-            edgeToEdge {
-                loginButton.fitMargin { Edge.BottomArc }
-            }
+            prepareAnimationAndStart()
             createButton.clipToOutline = true
             createButton.setOnClickListener {
                 runAfterAnimation { replaceFragment(CreateWalletFragment.create()) }
@@ -63,11 +48,30 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     override fun onStop() {
         super.onStop()
         binding.animationVideoViewPlaceHolder.isVisible = true
+        isFinalAnimationWorking = false
     }
 
     override fun onResume() {
         super.onResume()
-        binding.animationVideoView.start()
+        prepareAnimationAndStart()
+    }
+
+    private fun prepareAnimationAndStart() {
+        with(binding) {
+            animationVideoView.apply {
+                setVideoURI(getVideoUriFromResources(R.raw.anim1_white))
+                setOnPreparedListener { mediaPlayer ->
+                    mediaPlayer.setOnInfoListener { _, infoState, _ ->
+                        if (infoState == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                            animationVideoViewPlaceHolder.isVisible = false
+                        }
+                        false
+                    }
+                    mediaPlayer.isLooping = true
+                }
+                start()
+            }
+        }
     }
 
     private fun runAfterAnimation(transaction: () -> Unit) {
