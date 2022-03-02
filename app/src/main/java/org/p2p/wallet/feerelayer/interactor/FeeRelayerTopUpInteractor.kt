@@ -104,11 +104,9 @@ class FeeRelayerTopUpInteractor(
         val expectedFee = calculateExpectedFeeForTopUp(relayAccount, freeTransactionFeeLimit)
 
         // Get pools for topping up
-        var topUpPools: OrcaPoolsPair? = null
-
         // prefer direct swap to transitive swap
         val directSwapPools = tradableTopUpPoolsPair.firstOrNull { it.size == 1 }
-        topUpPools = if (directSwapPools != null) {
+        val topUpPools = if (directSwapPools != null) {
             directSwapPools
         } else {
             // if direct swap is not available, use transitive swap
@@ -263,7 +261,7 @@ class FeeRelayerTopUpInteractor(
             val transferInstruction = SystemProgram.transfer(
                 fromPublicKey = feePayerAddress.toPublicKey(),
                 toPublicKey = userRelayAddress,
-                lamports = minimumTokenAccountBalance
+                lamports = minimumRelayAccountBalance
             )
             instructions += transferInstruction
 
@@ -362,7 +360,4 @@ class FeeRelayerTopUpInteractor(
 
         return topUpSwap to PreparedTransaction(transaction, signers, expectedFee)
     }
-
-    suspend fun relayTransaction(transaction: Transaction): List<String> =
-        feeRelayerRepository.relayTransaction(transaction)
 }

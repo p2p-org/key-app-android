@@ -7,21 +7,30 @@ import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
+import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.isLessThan
+import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.retryRequest
 import java.math.BigInteger
 
 class FeeRelayerInteractor(
+    private val feeRelayerRepository: FeeRelayerRepository,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager
 ) {
+
+    companion object {
+        private val MIN_TOP_UP_AMOUNT = BigInteger.valueOf(1000L)
+    }
 
     /**
      *  Top up and make a transaction
@@ -123,11 +132,23 @@ class FeeRelayerInteractor(
             }
         }
 
+        if (topUpParams.amount.isZero()) return null
+
+        /*
+        * If amount is too low, we may receive [Slippage Exceeded Error],
+        * that's why we are topping up min amount
+        * */
+        val targetAmount = if (topUpParams.amount.isLessThan(MIN_TOP_UP_AMOUNT)) {
+            MIN_TOP_UP_AMOUNT
+        } else {
+            topUpParams.amount
+        }
+
         return feeRelayerTopUpInteractor.topUp(
             feeRelayerProgramId = feeRelayerProgramId,
             needsCreateUserRelayAddress = !relayAccount.isCreated,
             sourceToken = payingFeeToken,
-            targetAmount = topUpParams.amount,
+            targetAmount = targetAmount,
             topUpPools = topUpParams.poolsPair,
             expectedFee = topUpParams.expectedFee
         )
@@ -172,6 +193,12 @@ class FeeRelayerInteractor(
         // resign transaction
         transaction.sign(preparedTransaction.signers)
 
-        return feeRelayerTopUpInteractor.relayTransaction(transaction)
+        /*
+        * Retrying 3 times to avoid some errors
+        * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
+        * */
+        return retryRequest {
+            feeRelayerRepository.relayTransaction(transaction)
+        }
     }
 }

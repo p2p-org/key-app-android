@@ -17,6 +17,7 @@ import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.transaction.interactor.TransactionStatusInteractor
+import org.p2p.wallet.utils.retryRequest
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
@@ -238,11 +239,12 @@ class OrcaNativeSwapInteractor(
         transaction.addInstructions(accountInstructions.cleanupInstructions)
 
         transaction.feePayer = feePayer
-        val recentBlockhash = rpcRepository.getRecentBlockhash()
-        transaction.recentBlockHash = recentBlockhash.recentBlockhash
-        transaction.sign(accountInstructions.signers)
-
-        val transactionId = rpcRepository.sendTransaction(transaction)
+        val transactionId = retryRequest {
+            val recentBlockhash = rpcRepository.getRecentBlockhash()
+            transaction.recentBlockHash = recentBlockhash.recentBlockhash
+            transaction.sign(accountInstructions.signers)
+            rpcRepository.sendTransaction(transaction)
+        }
 
         val signature = transaction.signature
         return OrcaSwapResult.Finished(transactionId, signature.signature)

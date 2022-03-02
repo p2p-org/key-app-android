@@ -25,17 +25,18 @@ class FeeRelayerInterceptor(
 
     private fun extractException(bodyString: String, code: Int): Throwable {
         try {
-            Timber.tag("FeeRelayerInterceptor").e("Error received. Code: $code, error body: $bodyString")
+            val formattedBody = bodyString.replace("\\\"Program [^\\\"]+\\\"", "")
+            Timber.tag("FeeRelayerInterceptor").e("Error received. Code: $code, error body: $formattedBody")
 
-            if (bodyString.isEmpty()) {
+            if (formattedBody.isEmpty()) {
                 return ServerException(
                     errorCode = ErrorCode.SERVER_ERROR,
                     fullMessage = "No error body",
                     errorMessage = null
                 )
             }
-            val fullMessage = JSONObject(bodyString).toString(1)
-            val serverError = gson.fromJson(bodyString, FeeRelayerServerError::class.java)
+            val fullMessage = JSONObject(formattedBody).toString(1)
+            val serverError = gson.fromJson(formattedBody, FeeRelayerServerError::class.java)
             return ServerException(
                 errorCode = ErrorTypeConverter.fromFeeRelayer(serverError.data?.type ?: FeeRelayerErrorType.UNKNOWN),
                 fullMessage = fullMessage,

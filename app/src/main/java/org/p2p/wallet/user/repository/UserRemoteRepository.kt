@@ -78,6 +78,11 @@ class UserRemoteRepository(
                     return@mapNotNull mapDevnetRenBTC(it)
                 }
 
+                if (mintAddress == WRAPPED_SOL_MINT) {
+                    // Hiding Wrapped Sol account because we are adding native SOL lower
+                    return@mapNotNull null
+                }
+
                 val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
                 val price = userLocalRepository.getPriceByToken(token.symbol)
                 TokenConverter.fromNetwork(it, token, price)
