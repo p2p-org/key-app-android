@@ -40,7 +40,6 @@ class ReserveUsernameFragment :
     companion object {
         private const val EXTRA_MODE: String = "EXTRA_MODE"
         private const val EXTRA_SKIP_STEP_ENABLED = "EXTRA_SKIP_STEP_ENABLED"
-        const val REQUEST_KEY = "RESERVE_USERNAME_REQUEST_KEY"
         fun create(
             mode: ReserveMode,
             isSkipStepEnabled: Boolean = true
@@ -79,7 +78,7 @@ class ReserveUsernameFragment :
                 presenter.checkUsername(it.toString().lowercase())
             }
 
-            inputTextView.requestFocus()
+            inputTextView.focusAndShowKeyboard()
 
             usernameButton.setOnClickListener {
                 presenter.save()
