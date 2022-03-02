@@ -33,6 +33,7 @@ object SettingsModule : InjectionModule {
                 get(),
                 get(),
                 get(),
+                get(),
                 get()
             )
         } bind SettingsContract.Presenter::class

@@ -486,7 +486,8 @@
     <string name="settings_default_currency">Default currency</string>
     <string name="settings_default_currency_subtitle">Showing balances in US Dollar</string>
     <string name="settings_zero_balances">Zero balances</string>
-    <string name="settings_zero_balances_subtitle">Tokens with zero balances are hidden</string>
+    <string name="settings_zero_balances_hidden">Tokens with zero balances are hidden</string>
+    <string name="settings_zero_balances_shown">Tokens with zero balances are shown</string>
     <string name="settings_logout">Log out now</string>
     <string name="settings_forgot_your_pin">Forgot your PIN? Reset it</string>
     <string name="settings_reset_it">Reset it</string>
