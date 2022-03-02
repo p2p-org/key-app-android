@@ -55,8 +55,6 @@ class RenBTCPresenter(
                 view?.showLoading(session is RenBtcSession.Loading)
             }
         }
-        launch {
-        }
     }
 
     override fun startNewSession(context: Context) {
