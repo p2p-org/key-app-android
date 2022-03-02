@@ -27,8 +27,10 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
     companion object {
         private const val EXTRA_AMOUNT = "EXTRA_AMOUNT"
-        fun create(amount: String) = MoonpayViewFragment().withArgs(
+        private const val EXTRA_CURRENCY_CODE = "EXTRA_CURRENCY_CODE"
+        fun create(amount: String, currencyCode: String) = MoonpayViewFragment().withArgs(
             EXTRA_AMOUNT to amount,
+            EXTRA_CURRENCY_CODE to currencyCode,
         )
     }
 
@@ -38,6 +40,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
     private val tokenKeyProvider: TokenKeyProvider by inject()
 
     private val amount: String by args(EXTRA_AMOUNT)
+    private val currencyCode: String by args(EXTRA_CURRENCY_CODE)
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,7 +55,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
             lifecycleScope.launchWhenResumed {
                 delay(DELAY_IN_MS)
-                val url = environmentManager.getMoonpayUrl(amount, tokenKeyProvider.publicKey)
+                val url = environmentManager.getMoonpayUrl(amount, tokenKeyProvider.publicKey, currencyCode)
                 Timber.tag("Moonpay").d("Loading moonpay with url: $url")
                 webView.loadUrl(url)
             }
