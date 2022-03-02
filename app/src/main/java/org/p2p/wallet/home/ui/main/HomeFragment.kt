@@ -13,7 +13,7 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
-import org.p2p.wallet.databinding.FragmentMainBinding
+import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
@@ -37,8 +37,7 @@ import kotlin.math.absoluteValue
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
-class HomeFragment :
-    BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_main),
+class HomeFragment : BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
     HomeContract.View,
     OnHomeItemsClickListener {
 
@@ -48,7 +47,7 @@ class HomeFragment :
 
     override val presenter: HomeContract.Presenter by inject()
 
-    private val binding: FragmentMainBinding by viewBinding()
+    private val binding: FragmentHomeBinding by viewBinding()
 
     private val mainAdapter: TokenAdapter by lazy {
         TokenAdapter(this)
