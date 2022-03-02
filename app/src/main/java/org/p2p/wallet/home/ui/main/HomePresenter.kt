@@ -68,7 +68,10 @@ class HomePresenter(
     }
 
     override fun onBuyClicked() {
-        view?.showTokensForBuy(tokens.filter { it.tokenSymbol in tokensValidForBuy })
+        launch {
+            val tokensForBuy = userInteractor.getTokensForBuy(tokensValidForBuy)
+            view?.showTokensForBuy(tokensForBuy)
+        }
     }
 
     override fun collectData() {

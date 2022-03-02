@@ -40,7 +40,6 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         )
 
         private val tokenImageView = binding.tokenImageView
-        private val symbolTextView = binding.symbolTextView
         private val nameTextView = binding.nameTextView
         private val valueTextView = binding.valueTextView
         private val totalTextView = binding.totalTextView
@@ -48,7 +47,6 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         @SuppressLint("SetTextI18n")
         fun onBind(account: DerivableAccount) {
             tokenImageView.setImageResource(R.drawable.ic_sol)
-            symbolTextView.text = SOL_SYMBOL
             nameTextView.text = cutAddress(account.account.publicKey.toBase58())
             valueTextView.text = "${account.totalInUsd.scaleShort()} $"
             totalTextView.text = "${account.total.toPlainString()} $SOL_SYMBOL"

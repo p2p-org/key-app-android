@@ -30,7 +30,7 @@ class BuySolanaFragment :
 
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
-        fun create(token: Token.Active) = BuySolanaFragment().withArgs(
+        fun create(token: Token) = BuySolanaFragment().withArgs(
             EXTRA_TOKEN to token
         )
     }
@@ -38,7 +38,7 @@ class BuySolanaFragment :
     override val presenter: BuySolanaContract.Presenter by inject {
         parametersOf(token)
     }
-    private val token: Token.Active by args(EXTRA_TOKEN)
+    private val token: Token by args(EXTRA_TOKEN)
 
     private val binding: FragmentBuySolanaBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()

@@ -91,7 +91,7 @@ object HomeModule : InjectionModule {
         factory { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames, get())
         } bind SearchContract.Presenter::class
-        factory { (token: Token.Active) ->
+        factory { (token: Token) ->
             BuySolanaPresenter(
                 token,
                 get(),

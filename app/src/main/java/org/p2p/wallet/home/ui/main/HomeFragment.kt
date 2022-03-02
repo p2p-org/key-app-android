@@ -100,7 +100,7 @@ class HomeFragment :
         ) { _, result ->
             when {
                 result.containsKey(KEY_RESULT_TOKEN) -> {
-                    val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN)
+                    val token = result.getParcelable<Token>(KEY_RESULT_TOKEN)
                     if (token != null) replaceFragment(BuySolanaFragment.create(token))
                 }
             }
