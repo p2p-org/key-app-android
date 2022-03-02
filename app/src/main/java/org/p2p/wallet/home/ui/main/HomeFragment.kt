@@ -37,7 +37,8 @@ import kotlin.math.absoluteValue
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
-class HomeFragment : BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
+class HomeFragment :
+    BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
     HomeContract.View,
     OnHomeItemsClickListener {
 
