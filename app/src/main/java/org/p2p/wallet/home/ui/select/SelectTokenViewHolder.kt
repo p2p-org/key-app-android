@@ -39,7 +39,6 @@ class SelectTokenViewHolder(
 
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView
-    private val symbolTextView = binding.symbolTextView
     private val nameTextView = binding.nameTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
@@ -57,7 +56,6 @@ class SelectTokenViewHolder(
 
         nameTextView.text = item.tokenName
         wrappedImageView.isVisible = item.isWrapped
-        symbolTextView.text = item.tokenSymbol
         itemView.setOnClickListener { onItemClicked(item) }
 
         when (item) {

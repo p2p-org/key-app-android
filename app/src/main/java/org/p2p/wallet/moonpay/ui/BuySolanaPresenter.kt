@@ -25,7 +25,7 @@ import java.math.BigDecimal
 private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
-    private val token: Token.Active,
+    private val token: Token,
     private val moonpayRepository: MoonpayRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,

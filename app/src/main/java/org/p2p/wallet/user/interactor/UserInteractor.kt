@@ -26,8 +26,31 @@ class UserInteractor(
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
+    fun findTokenDataBySymbol(symbol: String): Token? {
+        val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
+        val price = tokenData?.let { userLocalRepository.getPriceByToken(it.symbol) }
+        return tokenData?.let { TokenConverter.fromNetwork(it, price) }
+    }
+
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
         mainLocalRepository.getTokensFlow()
+
+    suspend fun getTokensForBuy(availableTokensSymbols: List<String>): List<Token> {
+        val userTokens = getUserTokens()
+        val publicKey = tokenKeyProvider.publicKey
+        val allTokens = availableTokensSymbols
+            .mapNotNull { tokenSymbol ->
+                val userToken = userTokens.find { it.tokenSymbol == tokenSymbol }
+                return@mapNotNull when {
+                    userToken != null ->
+                        if (userToken.isSOL && userToken.publicKey != publicKey) null else userToken
+                    else -> findTokenDataBySymbol(tokenSymbol)
+                }
+            }
+            .sortedWith(TokenComparator())
+
+        return allTokens
+    }
 
     suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
 
