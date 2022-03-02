@@ -132,7 +132,8 @@ class OrcaSwapFragment :
                     }
                 }
                 result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
-                    // todo: add support for secondary cta
+                    val swapFragment = create()
+                    popAndReplaceFragment(swapFragment)
                 }
                 result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
                     popBackStack()

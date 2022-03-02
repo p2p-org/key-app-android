@@ -125,8 +125,8 @@ class SendFragment :
                     }
                 }
                 result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
-                    // todo: add support for secondary cta
-                    popBackStack()
+                    val sendFragment = create()
+                    popAndReplaceFragment(sendFragment)
                 }
                 result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
                     popBackStack()
