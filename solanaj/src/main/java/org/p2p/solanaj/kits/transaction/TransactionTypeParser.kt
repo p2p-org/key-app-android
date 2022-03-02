@@ -15,8 +15,10 @@ object TransactionTypeParser {
 
     fun parse(transaction: ConfirmedTransactionParsed): List<TransactionDetails> {
         details = ArrayList()
-        val signature = transaction.transaction.signatures.firstOrNull().orEmpty()
-        val instructions = transaction.transaction.message.instructions
+        val parsedTransaction = transaction.transaction ?: return emptyList()
+
+        val signature = parsedTransaction.signatures.firstOrNull().orEmpty()
+        val instructions = parsedTransaction.message.instructions
 
         /* Orca Swap */
         val orcaSwapInstructionIndex = getOrcaSwapInstructionIndex(instructions)
@@ -54,8 +56,10 @@ object TransactionTypeParser {
         index: Int,
         transaction: ConfirmedTransactionParsed
     ): TransactionDetails? {
-        val signature = transaction.transaction.signatures.firstOrNull().orEmpty()
-        val instructions = transaction.transaction.message.instructions
+        val parsedTransaction = transaction.transaction ?: return null
+
+        val signature = parsedTransaction.signatures.firstOrNull().orEmpty()
+        val instructions = parsedTransaction.message.instructions
 
         // get instruction
         if (index >= instructions.size) return null
@@ -66,11 +70,11 @@ object TransactionTypeParser {
         val destination = innerInstructions.lastOrNull() ?: return null
         // get instructions
         val sourceInstructions = source.instructions.filter {
-            it.parsed.type == "transfer"
+            it.parsed?.type == "transfer"
         }
 
         val destinationInstructions = destination.instructions.filter {
-            it.parsed.type == "transfer"
+            it.parsed?.type == "transfer"
         }
 
         if (sourceInstructions.size < 2 || destinationInstructions.size < 2) return null
@@ -112,7 +116,8 @@ object TransactionTypeParser {
         signature: String,
         details: MutableList<TransactionDetails>
     ) {
-        val instructions = transaction.transaction.message.instructions
+        val parsedTransaction = (if (transaction.transaction != null) transaction.transaction else null) ?: return
+        val instructions = parsedTransaction.message.instructions
         instructions.forEach { parsedInstruction ->
             val parsedInfo = parsedInstruction.parsed
             when (parsedInfo?.type) {
@@ -203,7 +208,8 @@ object TransactionTypeParser {
         transaction: ConfirmedTransactionParsed,
         signature: String
     ) {
-        val instructions = transaction.transaction.message.instructions
+        val parsedTransaction = transaction.transaction ?: return
+        val instructions = parsedTransaction.message.instructions
         val swapInstructionIndex = getSerumSwapInstructionIndex(instructions)
 
         val preTokenBalances = transaction.meta.preTokenBalances
