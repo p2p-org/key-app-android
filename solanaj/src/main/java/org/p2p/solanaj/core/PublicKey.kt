@@ -1,5 +1,6 @@
 package org.p2p.solanaj.core
 
+import android.util.Log
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Sha256Hash
 import org.p2p.solanaj.utils.ByteUtils
@@ -10,11 +11,14 @@ class PublicKey {
     private var pubkey: ByteArray
 
     constructor(pubkey: String) {
+        Log.d("#####_KEY", pubkey)
         require(pubkey.length >= PUBLIC_KEY_LENGTH) { "Invalid public key input" }
         this.pubkey = Base58.decode(pubkey)
     }
 
     constructor(pubkey: ByteArray) {
+        Log.d("#####_KEY_BYTE", pubkey.toString())
+
         require(pubkey.size <= PUBLIC_KEY_LENGTH) { "Invalid public key input" }
         this.pubkey = pubkey
     }

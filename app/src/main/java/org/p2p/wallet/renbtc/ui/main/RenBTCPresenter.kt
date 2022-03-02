@@ -17,6 +17,7 @@ import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.renbtc.model.RenBtcSession
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -43,24 +44,30 @@ class RenBTCPresenter(
     override fun subscribe() {
         launch {
             interactor.getSessionFlow().collect { session ->
-                handleSession(session)
+                when (session) {
+                    is RenBtcSession.Error -> {
+                        view?.showErrorMessage(session.throwable)
+                    }
+                    is RenBtcSession.Active -> {
+                        handleSession(session.session)
+                    }
+                }
+                view?.showLoading(session is RenBtcSession.Loading)
             }
+        }
+        launch {
         }
     }
 
     override fun startNewSession(context: Context) {
         launch {
-            view?.showLoading(true)
             RenVMService.startWithNewSession(context)
         }
     }
 
     override fun checkActiveSession(context: Context) {
         launch {
-            view?.showLoading(true)
             RenVMService.startWithCheck(context)
-            delay(ONE_SECOND_IN_MILLIS)
-            view?.showLoading(false)
         }
     }
 
