@@ -4,7 +4,7 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -18,8 +18,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        /* Remove jcenter and replace deprecated libs, such as zxing, koin etc. */
-        jcenter()
+        mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url "https://maven.google.com/" }
         mavenCentral()
