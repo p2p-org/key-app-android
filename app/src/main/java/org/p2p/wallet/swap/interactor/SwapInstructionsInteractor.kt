@@ -7,13 +7,13 @@ import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.RpcAmountRepository
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class SwapInstructionsInteractor(
-    private val rpcRepository: RpcRepository,
+    private val rpcAmountRepository: RpcAmountRepository,
     private val orcaAddressInteractor: TransactionAddressInteractor
 ) {
 
@@ -84,8 +84,8 @@ class SwapInstructionsInteractor(
         amount: BigInteger,
         payer: PublicKey
     ): AccountInstructions {
-        val minBalanceForRentExemption = rpcRepository.getMinimumBalanceForRentExemption(
-            TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong()
+        val minBalanceForRentExemption = rpcAmountRepository.getMinimumBalanceForRentExemption(
+            TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
         )
 
         // create new account
@@ -97,7 +97,7 @@ class SwapInstructionsInteractor(
                 SystemProgram.createAccount(
                     fromPublicKey = from,
                     newAccountPublicKey = newAccount.publicKey,
-                    lamports = amount.toLong() + minBalanceForRentExemption
+                    lamports = amount.toLong() + minBalanceForRentExemption.toLong()
                 ),
                 TokenProgram.initializeAccountInstruction(
                     TokenProgram.PROGRAM_ID,

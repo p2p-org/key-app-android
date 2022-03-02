@@ -18,8 +18,6 @@ sealed class SendFee(
     val feePayerSymbol: String
         get() = feePayerToken.tokenSymbol
 
-    fun isFeePayerSame(sourceSymbol: String): Boolean = sourceSymbol == feePayerSymbol
-
     data class RenBtcFee(
         override val fee: BigDecimal,
         override val feePayerToken: Token.Active

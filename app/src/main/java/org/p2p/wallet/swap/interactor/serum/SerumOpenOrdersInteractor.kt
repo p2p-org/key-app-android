@@ -31,7 +31,7 @@ class SerumOpenOrdersInteractor(
             minRentExemption.toLong()
         } else {
             val span = OpenOrders.getLayoutSpan(programId.toBase58())
-            rpcRepository.getMinimumBalanceForRentExemption(span)
+            rpcRepository.getMinimumBalanceForRentExemption(span.toInt())
         }
 
         val order = Account()
@@ -89,7 +89,7 @@ class SerumOpenOrdersInteractor(
 
     suspend fun getMinimumBalanceForRentExemption(programId: PublicKey): Long {
         val span = OpenOrders.getLayoutSpan(programId.toBase58())
-        return rpcRepository.getMinimumBalanceForRentExemption(span)
+        return rpcRepository.getMinimumBalanceForRentExemption(span.toInt())
     }
 
     private suspend fun getFilteredProgramAccounts(

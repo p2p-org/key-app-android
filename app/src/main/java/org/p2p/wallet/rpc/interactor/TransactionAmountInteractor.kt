@@ -1,22 +1,16 @@
 package org.p2p.wallet.rpc.interactor
 
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.RpcAmountRepository
 import java.math.BigInteger
 
 class TransactionAmountInteractor(
-    private val rpcRepository: RpcRepository
+    private val amountRepository: RpcAmountRepository
 ) {
 
-    private var lamportsPerSignature: BigInteger? = null
-    private var minBalanceForRentExemption: BigInteger? = null
-
     suspend fun getLamportsPerSignature(): BigInteger =
-        lamportsPerSignature ?: rpcRepository.getFees(commitment = null).also { lamportsPerSignature = it }
+        amountRepository.getFees(commitment = null)
 
-    suspend fun getMinBalanceForRentExemption(dataLength: Long = ACCOUNT_INFO_DATA_LENGTH.toLong()): BigInteger =
-        rpcRepository
-            .getMinimumBalanceForRentExemption(dataLength)
-            .toBigInteger()
-            .also { minBalanceForRentExemption = it }
+    suspend fun getMinBalanceForRentExemption(dataLength: Int = ACCOUNT_INFO_DATA_LENGTH): BigInteger =
+        amountRepository.getMinimumBalanceForRentExemption(dataLength)
 }

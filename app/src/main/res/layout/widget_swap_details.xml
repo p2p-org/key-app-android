@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/swap_details"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
 
             <TextView
                 android:id="@+id/totalTextView"

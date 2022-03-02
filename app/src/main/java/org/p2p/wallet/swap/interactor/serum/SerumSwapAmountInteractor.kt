@@ -1,21 +1,18 @@
 package org.p2p.wallet.swap.interactor.serum
 
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor.Companion.BASE_TAKER_FEE_BPS
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor.Companion.FEE_MULTIPLIER
 import org.p2p.wallet.swap.model.serum.SerumFeeType
 import org.p2p.wallet.swap.model.serum.SerumSwapFee
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toLamports
-import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import java.math.BigDecimal
 import java.math.BigInteger
 
 class SerumSwapAmountInteractor(
-    private val rpcRepository: RpcRepository,
     private val serumSwapInteractor: SerumSwapInteractor
 ) {
 
@@ -139,14 +136,4 @@ class SerumSwapAmountInteractor(
     }
 
     fun calculateLiquidityProviderFee(): BigDecimal = (BASE_TAKER_FEE_BPS * 100).toBigDecimal()
-
-    suspend fun loadPrice(fromMint: String, toMint: String): BigDecimal =
-        serumSwapInteractor.loadFair(fromMint, toMint).toBigDecimal()
-
-    suspend fun getLamportsPerSignature(): BigInteger = rpcRepository.getFees(null)
-
-    suspend fun getCreatingTokenAccountFee(): BigInteger =
-        rpcRepository
-            .getMinimumBalanceForRentExemption(TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong())
-            .toBigInteger()
 }

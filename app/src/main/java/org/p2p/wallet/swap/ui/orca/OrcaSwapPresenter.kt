@@ -42,6 +42,7 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.properties.Delegates
 
 // TODO: Refactor, make simpler
@@ -284,6 +285,12 @@ class OrcaSwapPresenter(
 
         appScope.launch {
             try {
+                val feeInSOL = fees?.totalLamports ?: BigInteger.ZERO
+                if (!swapInteractor.feePayerHasEnoughBalance(feeInSOL)) {
+                    view?.showErrorMessage(R.string.swap_insufficient_balance)
+                    return@launch
+                }
+
                 val sourceTokenSymbol = sourceToken.tokenSymbol
                 val destinationTokenSymbol = destination.tokenSymbol
                 val subTitle =
@@ -391,7 +398,7 @@ class OrcaSwapPresenter(
             destinationAmount = destinationAmount,
             total = "$sourceAmount ${source.tokenSymbol}",
             totalUsd = totalUsd.scaleShort().toPlainString(),
-            fee = fees?.accountCreationFee,
+            fee = fees?.transactionFeeString,
             approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
             receiveAtLeast = receiveAtLeast,
             receiveAtLeastUsd = receiveAtLeastUsd?.toPlainString()
