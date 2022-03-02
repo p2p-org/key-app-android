@@ -23,7 +23,6 @@ import java.math.BigDecimal
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
-const val BTC_DECIMALS = 8
 private const val DELAY_IN_MILLIS = 200L
 private const val ONE_SECOND_IN_MILLIS = 1000L
 
@@ -44,15 +43,11 @@ class RenBTCPresenter(
     override fun subscribe() {
         launch {
             interactor.getSessionFlow().collect { session ->
-                when (session) {
-                    is RenBtcSession.Error -> {
-                        view?.showErrorMessage(session.throwable)
-                    }
-                    is RenBtcSession.Active -> {
-                        handleSession(session.session)
-                    }
-                }
                 view?.showLoading(session is RenBtcSession.Loading)
+                when (session) {
+                    is RenBtcSession.Error -> view?.showErrorMessage(session.throwable)
+                    is RenBtcSession.Active -> handleSession(session.session)
+                }
             }
         }
     }

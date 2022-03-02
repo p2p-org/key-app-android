@@ -111,11 +111,11 @@ class RenVMService : Service(), CoroutineScope {
 
         renVMJob = launch {
             try {
-                renBtcInteractor.saveSession(RenBtcSession.Loading)
+                renBtcInteractor.setSessionSate(RenBtcSession.Loading)
                 val session = renBtcInteractor.generateSession()
                 renBtcInteractor.startPolling(session)
             } catch (e: Throwable) {
-                renBtcInteractor.saveSession(RenBtcSession.Error(e))
+                renBtcInteractor.setSessionSate(RenBtcSession.Error(e))
                 Timber.e(e, "Error generating session")
             }
         }

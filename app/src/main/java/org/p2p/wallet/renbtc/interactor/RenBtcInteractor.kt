@@ -13,12 +13,12 @@ import org.p2p.wallet.renbtc.model.RenBtcSession
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.renbtc.repository.RenBTCRepository
-import org.p2p.wallet.renbtc.repository.RenBtcDaoRepository
+import org.p2p.wallet.renbtc.repository.RenBtcDatabaseRepository
 import org.p2p.wallet.renbtc.repository.RenBtcLocalRepository
 
 class RenBtcInteractor(
     private val repository: RenBTCRepository,
-    private val daoRepository: RenBtcDaoRepository,
+    private val databaseRepository: RenBtcDatabaseRepository,
     private val localRepository: RenBtcLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val renTransactionManager: RenTransactionManager
@@ -33,7 +33,7 @@ class RenBtcInteractor(
 
     fun getSessionFlow(): Flow<RenBtcSession> {
         val signer = tokenKeyProvider.publicKey
-        val daoFlow = daoRepository.findSessionFlow(signer).filterNotNull().map { RenBtcSession.Active(it) }
+        val daoFlow = databaseRepository.findSessionFlow(signer).filterNotNull().map { RenBtcSession.Active(it) }
         val localFlow = localRepository.getSessionFlow()
         return flowOf(daoFlow, localFlow).flattenMerge()
     }
@@ -43,24 +43,24 @@ class RenBtcInteractor(
 
     suspend fun findActiveSession(): LockAndMint.Session? {
         val signer = tokenKeyProvider.publicKey
-        return daoRepository.findSession(signer)
+        return databaseRepository.findSession(signer)
     }
 
     suspend fun clearSession() {
-        daoRepository.clearSessionData()
+        databaseRepository.clearSessionData()
     }
 
     suspend fun generateSession(): LockAndMint.Session {
-        daoRepository.clearSessionData()
+        databaseRepository.clearSessionData()
         val session = renTransactionManager.initializeSession(null)
-        saveSession(RenBtcSession.Active(session))
+        setSessionSate(RenBtcSession.Active(session))
         return session
     }
 
     suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session {
-        daoRepository.clearSessionData()
+        databaseRepository.clearSessionData()
         val session = renTransactionManager.initializeSession(session)
-        saveSession(RenBtcSession.Active(session))
+        setSessionSate(RenBtcSession.Active(session))
         return session
     }
 
@@ -71,14 +71,10 @@ class RenBtcInteractor(
     suspend fun getPaymentData(environment: Environment, gatewayAddress: String) =
         repository.getPaymentData(environment, gatewayAddress)
 
-    suspend fun saveSession(session: RenBtcSession) {
+    suspend fun setSessionSate(session: RenBtcSession) {
         when (session) {
-            is RenBtcSession.Active -> {
-                daoRepository.saveSession(session.session)
-            }
-            else -> {
-                localRepository.saveSession(session)
-            }
+            is RenBtcSession.Active -> databaseRepository.saveSession(session.session)
+            else -> localRepository.saveSession(session)
         }
     }
 }

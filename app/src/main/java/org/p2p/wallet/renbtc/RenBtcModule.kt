@@ -14,8 +14,8 @@ import org.p2p.wallet.renbtc.repository.RenBtcRoomRepository
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.repository.RenBTCRemoteRepository
 import org.p2p.wallet.renbtc.repository.RenBTCRepository
+import org.p2p.wallet.renbtc.repository.RenBtcDatabaseRepository
 import org.p2p.wallet.renbtc.repository.RenBtcDaoRepository
-import org.p2p.wallet.renbtc.repository.RenBtcInMemoryRepository
 import org.p2p.wallet.renbtc.repository.RenBtcLocalRepository
 import org.p2p.wallet.renbtc.ui.main.RenBTCContract
 import org.p2p.wallet.renbtc.ui.main.RenBTCPresenter
@@ -42,8 +42,8 @@ object RenBtcModule : InjectionModule {
 
             RenBTCRemoteRepository(api)
         } bind RenBTCRepository::class
-        single { RenBtcRoomRepository(get()) } bind RenBtcDaoRepository::class
-        single { RenBtcInMemoryRepository() } bind RenBtcLocalRepository::class
+        single { RenBtcRoomRepository(get()) } bind RenBtcDatabaseRepository::class
+        single { RenBtcDaoRepository() } bind RenBtcLocalRepository::class
         single { RenBtcInteractor(get(), get(), get(), get(), get()) }
 
         single { RenTransactionManager(get(), get(), get()) }

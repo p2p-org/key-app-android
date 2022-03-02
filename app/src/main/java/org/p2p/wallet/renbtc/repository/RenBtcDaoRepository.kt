@@ -1,11 +1,16 @@
 package org.p2p.wallet.renbtc.repository
 
 import kotlinx.coroutines.flow.Flow
-import org.p2p.solanaj.kits.renBridge.LockAndMint
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.wallet.renbtc.model.RenBtcSession
 
-interface RenBtcDaoRepository {
-    suspend fun saveSession(session: LockAndMint.Session)
-    suspend fun clearSessionData()
-    fun findSessionFlow(destinationAddress: String): Flow<LockAndMint.Session?>
-    suspend fun findSession(destinationAddress: String): LockAndMint.Session?
+class RenBtcDaoRepository : RenBtcLocalRepository {
+
+    private val sessionFlow = MutableStateFlow<RenBtcSession>(RenBtcSession.Loading)
+
+    override fun saveSession(session: RenBtcSession) {
+        sessionFlow.value = session
+    }
+
+    override fun getSessionFlow(): Flow<RenBtcSession> = sessionFlow
 }

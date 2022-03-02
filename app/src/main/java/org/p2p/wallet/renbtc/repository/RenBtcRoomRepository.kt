@@ -9,7 +9,7 @@ import org.p2p.wallet.utils.toPublicKey
 
 class RenBtcRoomRepository(
     private val dao: SessionDao
-) : RenBtcDaoRepository {
+) : RenBtcDatabaseRepository {
 
     override suspend fun saveSession(session: LockAndMint.Session) {
         val entity = SessionEntity(
