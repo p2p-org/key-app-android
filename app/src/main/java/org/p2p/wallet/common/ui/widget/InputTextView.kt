@@ -12,6 +12,7 @@ import androidx.core.widget.doAfterTextChanged
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetInputTextViewBinding
 import org.p2p.wallet.utils.LetterInputFilter
+import org.p2p.wallet.utils.focusAndShowKeyboard
 
 class InputTextView @JvmOverloads constructor(
     context: Context,
@@ -63,8 +64,8 @@ class InputTextView @JvmOverloads constructor(
         setState(state)
     }
 
-    fun requestFocusForInput() {
-        binding.textInputEditText.requestFocus()
+    fun focusAndShowKeyboard() {
+        binding.textInputEditText.focusAndShowKeyboard()
     }
 
     private fun setState(state: State) {

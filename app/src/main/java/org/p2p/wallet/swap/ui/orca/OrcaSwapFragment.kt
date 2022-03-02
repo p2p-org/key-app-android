@@ -39,6 +39,7 @@ import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
@@ -105,6 +106,7 @@ class OrcaSwapFragment :
                 presenter.loadDataForSettings()
             }
             swapButton.setOnClickListener { presenter.swapOrConfirm() }
+            amountEditText.focusAndShowKeyboard()
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
