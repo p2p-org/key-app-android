@@ -11,8 +11,6 @@ import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentOnboardingBinding
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -29,22 +27,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            animationVideoView.apply {
-                setVideoURI(getVideoUriFromResources(R.raw.anim1_white))
-                setOnPreparedListener { mediaPlayer ->
-                    mediaPlayer.setOnInfoListener { _, infoState, _ ->
-                        if (infoState == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                            animationVideoViewPlaceHolder.isVisible = false
-                        }
-                        false
-                    }
-                    mediaPlayer.isLooping = true
-                }
-                start()
-            }
-            edgeToEdge {
-                loginButton.fitMargin { Edge.BottomArc }
-            }
+            prepareAnimationAndStart()
             createButton.clipToOutline = true
             createButton.setOnClickListener {
                 runAfterAnimation { replaceFragment(CreateWalletFragment.create()) }
@@ -63,11 +46,30 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     override fun onStop() {
         super.onStop()
         binding.animationVideoViewPlaceHolder.isVisible = true
+        isFinalAnimationWorking = false
     }
 
     override fun onResume() {
         super.onResume()
-        binding.animationVideoView.start()
+        prepareAnimationAndStart()
+    }
+
+    private fun prepareAnimationAndStart() {
+        with(binding) {
+            animationVideoView.apply {
+                setVideoURI(getVideoUriFromResources(R.raw.anim1_white))
+                setOnPreparedListener { mediaPlayer ->
+                    mediaPlayer.setOnInfoListener { _, infoState, _ ->
+                        if (infoState == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                            animationVideoViewPlaceHolder.isVisible = false
+                        }
+                        false
+                    }
+                    mediaPlayer.isLooping = true
+                }
+                start()
+            }
+        }
     }
 
     private fun runAfterAnimation(transaction: () -> Unit) {
