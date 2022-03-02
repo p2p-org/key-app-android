@@ -27,7 +27,11 @@ class EnvironmentManager(
             Environment.SOLANA
         )
 
-    fun getMoonpayUrl(amount: String, publicKey: String): String {
+    fun getMoonpayUrl(
+        amount: String,
+        publicKey: String,
+        currencyCode: String
+    ): String {
         val baseUrl = context.getString(R.string.moonpayWalletDomain)
         val apiKey = BuildConfig.moonpayKey
 
@@ -35,7 +39,7 @@ class EnvironmentManager(
             .scheme("https")
             .authority(baseUrl)
             .appendQueryParameter("apiKey", apiKey)
-            .appendQueryParameter("currencyCode", "sol")
+            .appendQueryParameter("currencyCode", currencyCode)
             .appendQueryParameter("baseCurrencyAmount", amount)
             .appendQueryParameter("baseCurrencyCode", USD_READABLE_SYMBOL.lowercase())
             .appendQueryParameter("lockAmount", "false")
