@@ -7,6 +7,7 @@ import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -26,6 +27,7 @@ import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.divideSafe
@@ -40,6 +42,7 @@ import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -285,12 +288,6 @@ class OrcaSwapPresenter(
 
         appScope.launch {
             try {
-                val feeInSOL = fees?.totalLamports ?: BigInteger.ZERO
-                if (!swapInteractor.feePayerHasEnoughBalance(feeInSOL)) {
-                    view?.showErrorMessage(R.string.swap_insufficient_balance)
-                    return@launch
-                }
-
                 val sourceTokenSymbol = sourceToken.tokenSymbol
                 val destinationTokenSymbol = destination.tokenSymbol
                 val subTitle =
@@ -313,7 +310,7 @@ class OrcaSwapPresenter(
                 when (data) {
                     is OrcaSwapResult.Finished -> {
                         val state = TransactionState.SwapSuccess(
-                            data.transactionId,
+                            buildTransaction(destination, data.transactionId, data.destinationAddress),
                             sourceTokenSymbol,
                             destinationTokenSymbol
                         )
@@ -473,5 +470,31 @@ class OrcaSwapPresenter(
 
         val isEnabled = isValidAmount && !isMoreThanBalance && destinationToken != null && !isPoolPairEmpty
         view?.showButtonEnabled(isEnabled)
+    }
+
+    private fun buildTransaction(
+        destination: Token,
+        transactionId: String,
+        destinationAddress: String
+    ): HistoryTransaction {
+        val amountA = sourceAmount.toBigDecimalOrZero()
+        val amountB = destinationAmount.toBigDecimalOrZero()
+        return HistoryTransaction.Swap(
+            signature = transactionId,
+            date = ZonedDateTime.now(),
+            blockNumber = null,
+            sourceAddress = sourceToken.publicKey,
+            destinationAddress = destinationAddress,
+            fee = BigInteger.ZERO,
+            amountA = amountA,
+            amountB = amountB,
+            amountSentInUsd = amountA.toUsd(sourceToken),
+            amountReceivedInUsd = amountB.toUsd(destination.usdRate),
+            sourceSymbol = sourceToken.tokenSymbol,
+            sourceIconUrl = sourceToken.iconUrl.orEmpty(),
+            destinationSymbol = destination.tokenSymbol,
+            destinationIconUrl = destination.iconUrl.orEmpty(),
+            status = TransactionStatus.PENDING
+        )
     }
 }

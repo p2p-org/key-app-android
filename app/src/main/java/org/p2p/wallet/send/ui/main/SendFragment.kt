@@ -118,9 +118,9 @@ class SendFragment :
                     presenter.setNetworkDestination(NetworkType.values()[ordinal])
                 }
                 result.containsKey(EXTRA_RESULT_KEY_PRIMARY) -> {
-                    val transactionId = result.getString(EXTRA_RESULT_KEY_PRIMARY)
-                    if (!transactionId.isNullOrEmpty()) {
-                        val state = TransactionDetailsLaunchState.Id(transactionId)
+                    val transaction = result.getParcelable<HistoryTransaction>(EXTRA_RESULT_KEY_PRIMARY)
+                    if (transaction != null) {
+                        val state = TransactionDetailsLaunchState.History(transaction)
                         popAndReplaceFragment(TransactionDetailsFragment.create(state))
                     }
                 }

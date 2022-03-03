@@ -44,7 +44,7 @@ class CreatePinFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationOnClickListener { presenter.clearUserData() }
             pinView.onPinCompleted = {
                 presenter.setPinCode(it)
             }
@@ -53,6 +53,10 @@ class CreatePinFragment :
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             popBackStackTo(OnboardingFragment::class)
         }
+    }
+
+    override fun navigateBack() {
+        popBackStack()
     }
 
     override fun showLoading(isLoading: Boolean) {

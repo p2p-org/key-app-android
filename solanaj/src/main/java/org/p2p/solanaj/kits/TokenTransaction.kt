@@ -54,7 +54,7 @@ object TokenTransaction {
     fun decodeAccountInfo(info: AccountInfo?): AccountInfoData? {
         if (info == null) return null
 
-        val base64Data = info.value.data?.get(0)
+        val base64Data = info.value?.data?.get(0)
         if (base64Data.isNullOrEmpty()) return null
 
         val data = Base64.decode(base64Data, Base64.DEFAULT)

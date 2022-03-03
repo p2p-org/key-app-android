@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
+import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
@@ -26,17 +27,17 @@ sealed class HistoryTransaction(
 ) : Parcelable {
 
     abstract val signature: String
-    abstract val blockNumber: Int
+    abstract val blockNumber: Int?
 
     protected fun getSymbol(isSend: Boolean) = if (isSend) "-" else "+"
 
-    fun getBlockNumber(): String = "#$blockNumber"
+    fun getBlockNumber(): String? = blockNumber?.let { "#$it" }
 
     @Parcelize
     data class Swap(
         override val signature: String,
         override val date: ZonedDateTime,
-        override val blockNumber: Int,
+        override val blockNumber: Int?,
         val sourceAddress: String,
         val destinationAddress: String,
         val fee: BigInteger,
@@ -47,7 +48,8 @@ sealed class HistoryTransaction(
         val sourceSymbol: String,
         val sourceIconUrl: String,
         val destinationSymbol: String,
-        val destinationIconUrl: String
+        val destinationIconUrl: String,
+        val status: TransactionStatus = TransactionStatus.COMPLETED
     ) : HistoryTransaction(date) {
 
         fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
@@ -69,14 +71,15 @@ sealed class HistoryTransaction(
     data class Transfer(
         override val signature: String,
         override val date: ZonedDateTime,
-        override val blockNumber: Int,
+        override val blockNumber: Int?,
         val type: TransferType,
         val senderAddress: String,
         val tokenData: TokenData,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val destination: String,
-        val fee: BigInteger
+        val fee: BigInteger,
+        val status: TransactionStatus = TransactionStatus.COMPLETED
     ) : HistoryTransaction(date) {
 
         @IgnoredOnParcel

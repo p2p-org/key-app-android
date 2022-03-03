@@ -32,6 +32,7 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
@@ -373,7 +374,9 @@ class SendPresenter(
                 val amount = tokenAmount.toLamports(token.decimals)
                 val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
-                buildTransaction(transactionId)
+                val transaction = buildTransaction(transactionId)
+                view?.showTransactionDetails(transaction)
+                view?.showTransactionStatusMessage(tokenAmount, token.tokenSymbol, isSuccess = true)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
             } finally {
@@ -425,26 +428,25 @@ class SendPresenter(
             lamports = lamports
         )
         analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
-        val state = TransactionState.SendSuccess(result, token.tokenSymbol)
+        val transaction = buildTransaction(result)
+        val state = TransactionState.SendSuccess(transaction, token.tokenSymbol)
         transactionManager.emitTransactionState(state)
     }
 
-    private fun buildTransaction(transactionId: String = "") {
-        val transaction = HistoryTransaction.Transfer(
+    private fun buildTransaction(transactionId: String): HistoryTransaction =
+        HistoryTransaction.Transfer(
             signature = transactionId,
             date = ZonedDateTime.now(),
-            blockNumber = 0, // fixme: find block number
+            blockNumber = null,
             type = TransferType.SEND,
             senderAddress = tokenKeyProvider.publicKey,
             tokenData = TokenConverter.toTokenData(token!!),
             totalInUsd = usdAmount,
             total = tokenAmount,
             destination = target!!.address,
-            fee = BigInteger.ZERO
+            fee = BigInteger.ZERO,
+            status = TransactionStatus.PENDING
         )
-        view?.showTransactionDetails(transaction)
-        view?.showTransactionStatusMessage(tokenAmount, token!!.tokenSymbol, isSuccess = true)
-    }
 
     private fun calculateData(token: Token.Active) {
         if (calculationJob?.isActive == true) return

@@ -313,9 +313,7 @@
                     android:text="@string/main_to"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
                     android:textColor="@color/textIconSecondary"
-                    app:drawableEndCompat="@drawable/ic_copy"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sourceDivider" />
+                    app:drawableEndCompat="@drawable/ic_copy" />
 
                 <TextView
                     android:id="@+id/destinationAddressTextView"
@@ -342,9 +340,7 @@
                     android:layout_marginStart="32dp"
                     android:text="@string/details_received"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                    android:textColor="@color/textIconSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sourceDivider" />
+                    android:textColor="@color/textIconSecondary" />
 
                 <TextView
                     android:id="@+id/amountTextView"
@@ -376,9 +372,7 @@
                         android:layout_weight="1"
                         android:text="@string/details_transaction_fees"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                        android:textColor="@color/textIconSecondary"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/sourceDivider" />
+                        android:textColor="@color/textIconSecondary" />
 
                     <TextView
                         android:id="@+id/freeTextView"
@@ -392,8 +386,6 @@
                         android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
                         android:textColor="@color/systemSuccessMain"
                         android:visibility="gone"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/sourceDivider"
                         tools:visibility="visible" />
                 </LinearLayout>
 
@@ -432,9 +424,7 @@
                     android:layout_marginStart="32dp"
                     android:text="@string/details_block_number"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                    android:textColor="@color/textIconSecondary"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/sourceDivider" />
+                    android:textColor="@color/textIconSecondary" />
 
                 <TextView
                     android:id="@+id/blockNumberTextView"
