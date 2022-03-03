@@ -92,7 +92,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
       - android_lint:
           requires:
