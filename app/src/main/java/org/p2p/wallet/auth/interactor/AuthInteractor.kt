@@ -6,6 +6,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.core.content.edit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.utils.crypto.HashingUtils
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
@@ -13,13 +17,13 @@ import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import org.p2p.wallet.main.repository.MainLocalRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.utils.crypto.HashingUtils
+import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.renbtc.RenTransactionManager
+import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.updates.UpdatesManager
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
@@ -34,13 +38,16 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
  * */
 
 class AuthInteractor(
+    private val context: Context,
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,
+    private val renBtcInteractor: RenBtcInteractor,
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider,
     private val biometricManager: BiometricManager,
-    private val mainLocalRepository: MainLocalRepository,
+    private val mainLocalRepository: HomeLocalRepository,
     private val updatesManager: UpdatesManager,
+    private val transactionManager: RenTransactionManager,
     private val appScope: AppScope
 ) {
 
@@ -99,24 +106,24 @@ class AuthInteractor(
 
     fun getBiometricStatus(): BiometricStatus =
         when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
-                BiometricStatus.NO_HARDWARE
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
-                BiometricStatus.NO_REGISTERED_BIOMETRIC
-            else ->
+            BiometricManager.BIOMETRIC_SUCCESS -> {
                 if (secureStorage.contains(KEY_PIN_CODE_BIOMETRIC_HASH)) {
                     BiometricStatus.ENABLED
                 } else {
                     BiometricStatus.AVAILABLE
                 }
+            }
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
+                BiometricStatus.NO_REGISTERED_BIOMETRIC
+
+            else -> BiometricStatus.NO_HARDWARE
         }
 
     fun getBiometricType(context: Context): BiometricType {
         val packageManager: PackageManager = context.packageManager
 
         // SDK 29 adds FACE and IRIS authentication
-        if (Build.VERSION.SDK_INT >= 29) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
                 return BiometricType.FACE_ID
             }
@@ -165,7 +172,11 @@ class AuthInteractor(
         sharedPreferences.edit { clear() }
         tokenKeyProvider.clear()
         secureStorage.clear()
+        transactionManager.stop()
         mainLocalRepository.clear()
+        renBtcInteractor.clearSession()
+        IntercomService.logout()
+        RenVMService.stopService(context)
     }
 
     fun clear() {
@@ -175,8 +186,11 @@ class AuthInteractor(
             tokenKeyProvider.clear()
             mainLocalRepository.clear()
             updatesManager.stop()
+            transactionManager.stop()
+            renBtcInteractor.clearSession()
+            RenVMService.stopService(context)
         }
     }
 
-    private fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
+    fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
 }

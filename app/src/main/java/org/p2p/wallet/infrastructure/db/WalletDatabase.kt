@@ -4,10 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_VERSION
-import org.p2p.wallet.main.db.SessionDao
-import org.p2p.wallet.main.db.SessionEntity
-import org.p2p.wallet.main.db.TokenDao
-import org.p2p.wallet.main.db.TokenEntity
+import org.p2p.wallet.renbtc.db.SessionDao
+import org.p2p.wallet.renbtc.db.SessionEntity
+import org.p2p.wallet.home.db.TokenDao
+import org.p2p.wallet.home.db.TokenEntity
 
 @Database(
     entities = [
@@ -21,7 +21,7 @@ import org.p2p.wallet.main.db.TokenEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 3
         const val DATABASE_NAME = "p2p.wallet"
     }
 

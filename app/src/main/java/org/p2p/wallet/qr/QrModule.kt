@@ -1,11 +1,10 @@
 package org.p2p.wallet.qr
 
 import android.content.Context
-import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
-import org.p2p.wallet.qr.model.QrColors
+import org.p2p.wallet.qr.model.QrParams
 import org.koin.dsl.module
 
 object QrModule : InjectionModule {
@@ -14,9 +13,9 @@ object QrModule : InjectionModule {
         factory { QrCodeInteractor(get()) }
         single {
             val context = get<Context>()
-            QrColors(
-                ContextCompat.getColor(context, R.color.colorStaticDark),
-                ContextCompat.getColor(context, R.color.white)
+            QrParams(
+                context.getColor(R.color.black),
+                context.getColor(R.color.white)
             )
         }
     }

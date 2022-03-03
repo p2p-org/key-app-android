@@ -4,10 +4,13 @@ import android.content.Context
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.scaleMedium
 import java.math.BigDecimal
 
-private const val ONE_MINUTE_IN_MS = 1000 * 60
+/* Five minutes */
+private const val ONE_MINUTE_IN_MS = 1000 * 60 * 5
+private const val NA = "N/A"
 
 sealed class RenTransactionStatus(
     open val transactionId: String,
@@ -39,7 +42,10 @@ sealed class RenTransactionStatus(
         override val transactionId: String,
         val amount: BigDecimal
     ) : RenTransactionStatus(transactionId, System.currentTimeMillis()) {
-        fun getMintedData(): String = "+ ${amount.scaleMedium()} renBTC"
+        fun getMintedData(): String {
+            val value = if (amount.isNotZero()) amount.scaleMedium() else NA
+            return "+ $value renBTC"
+        }
     }
 
     fun isSuccessAndPastMinuteAgo(): Boolean =
@@ -51,6 +57,9 @@ sealed class RenTransactionStatus(
             is SubmittingToRenVM -> context.getString(R.string.receive_submitting_to_renvm)
             is AwaitingForSignature -> context.getString(R.string.receive_awaiting_the_signature)
             is Minting -> context.getString(R.string.receive_minting)
-            is SuccessfullyMinted -> context.getString(R.string.receive_successfully_minted, this.amount.scaleMedium())
+            is SuccessfullyMinted -> context.getString(
+                R.string.receive_successfully_minted,
+                if (amount.isNotZero()) amount.scaleMedium() else NA
+            )
         }
 }

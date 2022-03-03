@@ -3,6 +3,7 @@ package org.p2p.wallet.history.interactor
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
+import org.p2p.solanaj.kits.transaction.CreateAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.TransactionTypeParser
@@ -11,33 +12,32 @@ import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.PriceHistory
 import org.p2p.wallet.history.model.TransactionConverter
-import org.p2p.wallet.history.repository.HistoryRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.main.model.Token
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
-    private val historyRepository: HistoryRepository,
     private val rpcRepository: RpcRepository,
     private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun getDailyPriceHistory(sourceToken: String, destination: String, days: Int): List<PriceHistory> =
-        historyRepository.getDailyPriceHistory(sourceToken, destination, days)
+    suspend fun getConfirmedTransaction(tokenPublicKey: String, transactionId: String): HistoryTransaction? =
+        parseTransactions(tokenPublicKey, listOf(transactionId)).firstOrNull()
 
-    suspend fun getHourlyPriceHistory(sourceToken: String, destination: String, hours: Int): List<PriceHistory> =
-        historyRepository.getHourlyPriceHistory(sourceToken, destination, hours)
-
-    suspend fun getHistory(publicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
+    suspend fun getHistory(tokenPublicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
         val signatures = rpcRepository.getConfirmedSignaturesForAddress(
-            publicKey.toPublicKey(), before, limit
+            tokenPublicKey.toPublicKey(), before, limit
         ).map { it.signature }
 
+        return parseTransactions(tokenPublicKey, signatures)
+    }
+
+    private suspend fun parseTransactions(tokenPublicKey: String, signatures: List<String>): List<HistoryTransaction> {
         val transactions = mutableListOf<TransactionDetails>()
         rpcRepository.getConfirmedTransactions(signatures)
             .forEach { response ->
@@ -57,6 +57,12 @@ class HistoryInteractor(
                 val transfer = data.firstOrNull { it is TransferDetails }
                 if (transfer != null) {
                     transactions.add(transfer)
+                    return@forEach
+                }
+
+                val create = data.firstOrNull { it is CreateAccountDetails }
+                if (create != null) {
+                    transactions.add(create)
                     return@forEach
                 }
 
@@ -97,13 +103,16 @@ class HistoryInteractor(
             emptyList()
         }
 
+        val userPublicKey = tokenKeyProvider.publicKey
+
         return transactions
             .mapNotNull { details ->
                 when (details) {
                     is SwapDetails -> parseOrcaSwapDetails(details, accountsInfo)
-                    is BurnOrMintDetails -> parseBurnAndMintDetails(details)
-                    is TransferDetails -> parseTransferDetails(details, publicKey, tokenKeyProvider.publicKey)
+                    is BurnOrMintDetails -> parseBurnAndMintDetails(details, userPublicKey)
+                    is TransferDetails -> parseTransferDetails(details, tokenPublicKey, userPublicKey)
                     is CloseAccountDetails -> parseCloseDetails(details)
+                    is CreateAccountDetails -> TransactionConverter.fromNetwork(details)
                     is UnknownDetails -> TransactionConverter.fromNetwork(details)
                     else -> throw IllegalStateException("Unknown transaction details $details")
                 }
@@ -118,14 +127,22 @@ class HistoryInteractor(
         val finalMintA = parseOrcaSource(details, accountsInfo) ?: return null
         val finalMintB = parseOrcaDestination(details, accountsInfo) ?: return null
 
-        val sourceData = userLocalRepository.findTokenDataBySymbol(finalMintA) ?: return null
-        val destinationData = userLocalRepository.findTokenDataBySymbol(finalMintB) ?: return null
+        val sourceData = userLocalRepository.findTokenData(finalMintA) ?: return null
+        val destinationData = userLocalRepository.findTokenData(finalMintB) ?: return null
 
         if (sourceData.mintAddress == destinationData.mintAddress) return null
 
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
+        val sourceRate = userLocalRepository.getPriceByToken(sourceData.symbol)
         val source = tokenKeyProvider.publicKey
-        return TransactionConverter.fromNetwork(details, sourceData, destinationData, destinationRate, source)
+        return TransactionConverter.fromNetwork(
+            details,
+            sourceData,
+            destinationData,
+            destinationRate,
+            sourceRate,
+            source
+        )
     }
 
     private fun parseOrcaSource(
@@ -166,20 +183,20 @@ class HistoryInteractor(
         transfer: TransferDetails,
         directPublicKey: String,
         publicKey: String
-    ): HistoryTransaction {
-        val symbol = if (transfer.isSimpleTransfer) Token.SOL_SYMBOL else findSymbol(transfer.mint)
+    ): HistoryTransaction? {
+        val symbol = if (transfer.isSimpleTransfer) SOL_SYMBOL else findSymbol(transfer.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
 
-        val mint = if (transfer.isSimpleTransfer) Token.WRAPPED_SOL_MINT else transfer.mint
-        val source = userLocalRepository.findTokenDataBySymbol(mint)!!
+        val mint = if (transfer.isSimpleTransfer) WRAPPED_SOL_MINT else transfer.mint
+        val source = userLocalRepository.findTokenData(mint) ?: return null
 
         return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
     }
 
-    private fun parseBurnAndMintDetails(details: BurnOrMintDetails): HistoryTransaction {
+    private fun parseBurnAndMintDetails(details: BurnOrMintDetails, userPublicKey: String): HistoryTransaction {
         val symbol = findSymbol(details.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
-        return TransactionConverter.fromNetwork(details, rate)
+        return TransactionConverter.fromNetwork(details, userPublicKey, rate)
     }
 
     private fun parseCloseDetails(
@@ -190,5 +207,5 @@ class HistoryInteractor(
     }
 
     private fun findSymbol(mint: String): String =
-        if (mint.isNotEmpty()) userLocalRepository.findTokenDataBySymbol(mint)?.symbol.orEmpty() else ""
+        if (mint.isNotEmpty()) userLocalRepository.findTokenData(mint)?.symbol.orEmpty() else ""
 }

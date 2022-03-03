@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="WalletBase.v29" parent="WalletBase.v27">
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+
+    <style name="WalletTheme" parent="WalletBase.v29" />
+</resources>

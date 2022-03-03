@@ -10,14 +10,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorBackgroundSecondary"
+        android:background="@color/backgroundSecondary"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?colorElementPrimary"
+            android:background="@color/backgroundPrimary"
             app:navigationIcon="@drawable/ic_back"
             app:title="@string/settings_theme"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="?colorElementPrimary"
+                android:background="@color/backgroundPrimary"
                 android:button="@drawable/button_radio_inset"
                 android:padding="12dp"
                 android:text="@string/settings_theme_light"
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="?colorElementPrimary"
+                android:background="@color/backgroundPrimary"
                 android:button="@drawable/button_radio_inset"
                 android:padding="12dp"
                 android:text="@string/settings_theme_dark"
@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:background="?colorElementPrimary"
+                android:background="@color/backgroundPrimary"
                 android:button="@drawable/button_radio_inset"
                 android:padding="12dp"
                 android:text="@string/settings_theme_system"

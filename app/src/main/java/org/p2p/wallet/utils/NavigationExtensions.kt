@@ -10,9 +10,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.whenStateAtLeast
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragmentContract
-import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 inline fun LifecycleOwner.whenStateAtLeast(state: Lifecycle.State, crossinline block: () -> Unit) {
@@ -25,7 +25,10 @@ inline fun LifecycleOwner.whenStateAtLeast(state: Lifecycle.State, crossinline b
     }
 }
 
+fun Fragment.backStackEntryCount(): Int = requireActivity().supportFragmentManager.backStackEntryCount
+
 fun Fragment.popBackStack() {
+    requireActivity().hideKeyboard()
     requireActivity().popBackStack()
 }
 
@@ -36,7 +39,7 @@ fun FragmentActivity.popBackStack() {
     if (supportFragmentManager.backStackEntryCount < 2) {
         finish()
     } else {
-        supportFragmentManager.popBackStackImmediate()
+        supportFragmentManager.popBackStack()
     }
 }
 

@@ -5,15 +5,18 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
-import org.p2p.wallet.main.model.Token
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.swap.api.InternalWebApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
-import org.p2p.wallet.swap.interactor.orca.OrcaAmountInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInstructionsInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaNativeSwapInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaRouteInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumMarketInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
@@ -45,28 +48,56 @@ object SwapModule : InjectionModule {
                 openOrdersInteractor = get(),
                 marketInteractor = get(),
                 swapMarketInteractor = get(),
-                serializationInteractor = get(),
+                transactionInteractor = get(),
                 tokenKeyProvider = get()
             )
         }
 
         factory { SerumMarketInteractor(get()) }
         factory { SerumOpenOrdersInteractor(get()) }
-        factory { SwapSerializationInteractor(get(), get(), get()) }
-        factory { SerumSwapAmountInteractor(get(), get()) }
+        factory { SwapSerializationInteractor(get()) }
+        factory { SerumSwapAmountInteractor(get()) }
         factory { SwapInstructionsInteractor(get(), get()) }
         factory { SerumSwapMarketInteractor(get()) }
 
-        single { OrcaPoolInteractor(get(), get()) }
-        single { OrcaSwapInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-
+        single {
+            OrcaSwapInteractor(
+                feeRelayerSwapInteractor = get(),
+                feeRelayerAccountInteractor = get(),
+                feeRelayerInteractor = get(),
+                amountInteractor = get(),
+                orcaRouteInteractor = get(),
+                orcaInfoInteractor = get(),
+                orcaPoolInteractor = get(),
+                orcaNativeSwapInteractor = get(),
+                environmentManager = get(),
+                tokenKeyProvider = get()
+            )
+        }
+        single { OrcaInfoInteractor(get()) }
+        single { OrcaRouteInteractor(get(), get()) }
         factory { OrcaInstructionsInteractor(get()) }
-        factory { OrcaAddressInteractor(get(), get()) }
-        factory { OrcaAmountInteractor(get()) }
+        factory { OrcaPoolInteractor(get(), get(), get(), get()) }
+        factory { OrcaNativeSwapInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
+
+        factory { TransactionAddressInteractor(get(), get(), get()) }
+        factory { TransactionAmountInteractor(get()) }
+
         factory { OrcaSwapRemoteRepository(get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->
-            OrcaSwapPresenter(token, get(), get(), get(), get(), get(), get())
+            OrcaSwapPresenter(
+                initialToken = token,
+                appScope = get(),
+                userInteractor = get(),
+                swapInteractor = get(),
+                orcaPoolInteractor = get(),
+                settingsInteractor = get(),
+                browseAnalytics = get(),
+                analyticsInteractor = get(),
+                swapAnalytics = get(),
+                transactionManager = get(),
+            )
         } bind OrcaSwapContract.Presenter::class
     }
 }

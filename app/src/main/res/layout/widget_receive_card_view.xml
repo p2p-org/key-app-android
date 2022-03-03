@@ -1,0 +1,92 @@
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0.5dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/networkView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_app_top_rounded"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_network"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+                        app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/arrowImageView" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/arrowImageView"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/textIconSecondary" />
+
+                    <TextView
+                        android:id="@+id/networkTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:text="@string/send_solana_network"
+                        android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+                        android:textColor="@color/backgroundButtonPrimary"
+                        app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
+                        app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+                        app:layout_constraintTop_toTopOf="@id/arrowImageView" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/faqTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="-2dp"
+                    android:background="@color/backgroundApp"
+                    android:gravity="center_vertical|start"
+                    android:paddingHorizontal="24dp"
+                    android:text="@string/receive_tokens_info"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    android:textColor="@color/backgroundButtonPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/arrowImageView" />
+
+                <org.p2p.wallet.receive.widget.QrView
+                    android:id="@+id/qrView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/backgroundPrimary"
+                    app:layout_constraintTop_toBottomOf="@id/faqTextView" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
+
+</merge>

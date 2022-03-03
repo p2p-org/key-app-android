@@ -4,12 +4,13 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.renbtc.model.RenBtcSession
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
@@ -40,7 +41,7 @@ class RenVMService : Service(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext = Dispatchers.IO
 
-    private val interactor: RenBtcInteractor by inject()
+    private val renBtcInteractor: RenBtcInteractor by inject()
 
     private var checkJob: Job? = null
     private var renVMJob: Job? = null
@@ -66,7 +67,7 @@ class RenVMService : Service(), CoroutineScope {
 
     private fun stopServiceAndCleanSession() {
         launch {
-            interactor.clearSession()
+            renBtcInteractor.clearSession()
             stopSelf()
         }
     }
@@ -85,8 +86,11 @@ class RenVMService : Service(), CoroutineScope {
 
         checkJob = launch {
             try {
-                val session = interactor.findActiveSession()
-                if (session != null && session.isValid) startNewSession()
+                val session = renBtcInteractor.findActiveSession()
+                if (session != null && session.isValid) {
+                    renBtcInteractor.startSession(session)
+                    renBtcInteractor.startPolling(session)
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error starting session")
             }
@@ -107,9 +111,11 @@ class RenVMService : Service(), CoroutineScope {
 
         renVMJob = launch {
             try {
-                val session = interactor.generateSession()
-                interactor.startPolling(session)
+                renBtcInteractor.setSessionSate(RenBtcSession.Loading)
+                val session = renBtcInteractor.generateSession()
+                renBtcInteractor.startPolling(session)
             } catch (e: Throwable) {
+                renBtcInteractor.setSessionSate(RenBtcSession.Error(e))
                 Timber.e(e, "Error generating session")
             }
         }

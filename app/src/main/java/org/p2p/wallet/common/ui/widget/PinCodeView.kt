@@ -3,47 +3,41 @@ package org.p2p.wallet.common.ui.widget
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import androidx.annotation.ColorRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
-import org.p2p.wallet.utils.resFromTheme
+import org.p2p.wallet.databinding.WidgetPinCodeViewBinding
+import org.p2p.wallet.utils.dip
 
 private const val ANIMATION_DURATION = 400L
+private const val DOT_STROKE_WIDTH = 24
+private const val DOT_DELTA = 12
 
 class PinCodeView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : RelativeLayout(context, attrs, defStyleAttr) {
+) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private var roundViews = mutableListOf<ImageView>()
     private var emptyDotDrawableId: Drawable? = null
     private var fullDotDrawableId: Drawable? = null
-    private var roundContainer: LinearLayout
 
     var currentLength: Int = 0
         private set
+
+    private val binding = WidgetPinCodeViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     init {
         attrs.let {
             emptyDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_dot_empty)
             fullDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_dot_full)
         }
-
-        roundContainer = LinearLayout(context)
-        roundContainer.apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_HORIZONTAL
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        }
-        addView(roundContainer)
     }
 
     fun refresh(pinLength: Int) {
@@ -55,6 +49,20 @@ class PinCodeView @JvmOverloads constructor(
                 roundViews[i].setImageDrawable(emptyDotDrawableId)
             }
         }
+        showProgress(pinLength)
+    }
+
+    private fun showProgress(length: Int) {
+        val width = when (length) {
+            0 -> 0
+            1 -> DOT_STROKE_WIDTH
+            else -> {
+                DOT_STROKE_WIDTH + (DOT_STROKE_WIDTH + DOT_DELTA) * (length - 1)
+            }
+        }.toInt()
+        val lp = binding.progressView.layoutParams as LayoutParams
+        lp.width = dip(width)
+        binding.progressView.layoutParams = lp
     }
 
     @SuppressWarnings("MagicNumber")
@@ -65,45 +73,71 @@ class PinCodeView @JvmOverloads constructor(
         animation.repeatCount = 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationEnd(animation: Animation?) {
-                setDotsColor(null)
+                setDotsColor(null, null)
                 onAnimationFinished()
             }
 
-            override fun onAnimationRepeat(animation: Animation?) {
-            }
+            override fun onAnimationRepeat(animation: Animation?) {}
 
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(resFromTheme(R.attr.colorAccentWarning))
+                setDotsColor(R.color.systemErrorMain, R.color.systemErrorSecondary)
             }
+        })
+        startAnimation(animation)
+    }
+
+    fun startSuccessAnimation(onAnimationFinished: () -> Unit) {
+        val animation = TranslateAnimation(0f, 0f, 0f, 0f)
+        animation.duration = 1000L
+        animation.repeatMode = Animation.INFINITE
+        animation.repeatCount = 2
+        animation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                setDotsColor(
+                    R.color.systemSuccess,
+                    R.color.systemSuccessSecondary
+                )
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                setDotsColor(null, null)
+                onAnimationFinished()
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {}
         })
         startAnimation(animation)
     }
 
     fun setPinLength(pinLength: Int) {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        roundContainer.removeAllViews()
+        binding.container.removeAllViews()
         val temp = mutableListOf<ImageView>()
         for (i in 0 until pinLength) {
             val roundView = if (i < roundViews.size) {
                 roundViews[i]
             } else {
-                inflater.inflate(R.layout.view_pin_code_dot, roundContainer, false) as ImageView
+                inflater.inflate(R.layout.view_pin_code_dot, binding.container, false) as ImageView
             }
-            roundContainer.addView(roundView)
+            binding.container.addView(roundView)
             temp.add(roundView)
         }
         roundViews.clear()
         roundViews.addAll(temp)
+
         refresh(0)
     }
 
-    private fun setDotsColor(@ColorRes resourceId: Int?) {
+    private fun setDotsColor(@ColorRes resourceId: Int?, @ColorRes backgroundColor: Int?) {
         roundViews.forEach {
             if (resourceId == null) {
                 it.clearColorFilter()
             } else {
-                it.setColorFilter(ContextCompat.getColor(context, resourceId))
+                it.setColorFilter(context.getColor(resourceId))
             }
         }
+        val bg = binding.progressView.background.mutate()
+        bg.setTint(context.getColor(backgroundColor ?: R.color.textIconLink))
+        binding.progressView.background = bg
     }
 }

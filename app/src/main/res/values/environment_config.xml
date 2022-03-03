@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="compareBaseUrl">https://min-api.cryptocompare.com/</string>
-    <string name="comparePublicKey">ad6104e4e9d655c1faab7ef1743c16651a1628f01d384bc5fea09661c0eb18db</string>
 
     <string name="bitcoinExplorer">https://btc.com/btc/address/%s</string>
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
@@ -16,6 +15,7 @@
     <string name="node_rpcpool">https://p2p.rpcpool.com/</string>
     <string name="node_devnet">https://api.devnet.solana.com/</string>
 
+    <string name="moonpayWalletDomain">moonpay.wallet.p2p.org</string>
     <string name="moonpayBaseDomain">buy-staging.moonpay.com</string>
     <string name="moonpayBaseUrl">https://api.moonpay.com/v3/</string>
 

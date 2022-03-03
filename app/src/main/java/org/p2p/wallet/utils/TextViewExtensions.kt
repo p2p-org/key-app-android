@@ -1,25 +1,8 @@
 package org.p2p.wallet.utils
 
-import android.graphics.Typeface
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.StyleSpan
 import android.widget.TextView
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-
-fun String.setTextBold(vararg boldText: String): SpannableString {
-    val stringBuilder = SpannableString(this)
-
-    boldText.forEach {
-        val copyStart = stringBuilder.indexOf(it)
-        val copyEnd = stringBuilder.indexOf(it) + it.length
-        if (copyStart == -1 || copyEnd == -1) return@forEach
-
-        stringBuilder.setSpan(StyleSpan(Typeface.BOLD), copyStart, copyEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-    }
-
-    return stringBuilder
-}
 
 infix fun TextView.withTextOrGone(text: CharSequence?) {
     if (text.isNullOrEmpty()) {
@@ -27,6 +10,16 @@ infix fun TextView.withTextOrGone(text: CharSequence?) {
         this.text = ""
     } else {
         isVisible = true
+        this.text = text
+    }
+}
+
+infix fun TextView.withTextOrInvisible(text: CharSequence?) {
+    if (text.isNullOrEmpty()) {
+        isInvisible = true
+        this.text = ""
+    } else {
+        isInvisible = false
         this.text = text
     }
 }

@@ -3,10 +3,14 @@ package org.p2p.wallet.swap.interactor.orca
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.programs.TokenSwapProgram
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.model.OrcaInstructionsData
+import org.p2p.wallet.swap.model.orca.OrcaPool
+import java.math.BigInteger
 
 class OrcaInstructionsInteractor(
-    private val orcaAddressInteractor: OrcaAddressInteractor,
+    private val orcaAddressInteractor: TransactionAddressInteractor,
 ) {
 
     suspend fun buildDestinationInstructions(
@@ -23,15 +27,15 @@ class OrcaInstructionsInteractor(
             return OrcaInstructionsData(destination, instructions)
         }
 
-        // if destination is a native account or is nil
-        val addressData = orcaAddressInteractor.findAssociatedAddress(owner, destinationMint.toBase58())
+        // if destination is a native account or is null
+        val addressData = orcaAddressInteractor.findSplTokenAddressData(owner, destinationMint.toBase58())
 
-        if (addressData.shouldCreateAssociatedInstruction) {
+        if (addressData.shouldCreateAccount) {
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
                 TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                 TokenProgram.PROGRAM_ID,
                 destinationMint,
-                addressData.associatedAddress,
+                addressData.destinationAddress,
                 feePayer,
                 feePayer
             )
@@ -43,12 +47,37 @@ class OrcaInstructionsInteractor(
         if (closeAfterward) {
             closeInstructions += TokenProgram.closeAccountInstruction(
                 TokenProgram.PROGRAM_ID,
-                addressData.associatedAddress,
+                addressData.destinationAddress,
                 owner,
                 owner
             )
         }
 
-        return OrcaInstructionsData(addressData.associatedAddress, instructions)
+        return OrcaInstructionsData(addressData.destinationAddress, instructions)
     }
+
+    fun createSwapInstruction(
+        pool: OrcaPool,
+        userTransferAuthorityPubkey: PublicKey,
+        sourceTokenAddress: PublicKey,
+        destinationTokenAddress: PublicKey,
+        amountIn: BigInteger,
+        minAmountOut: BigInteger
+    ): TransactionInstruction =
+        TokenSwapProgram.swapInstruction(
+            pool.account,
+            pool.authority,
+            userTransferAuthorityPubkey,
+            sourceTokenAddress,
+            pool.tokenAccountA,
+            pool.tokenAccountB,
+            destinationTokenAddress,
+            pool.poolTokenMint,
+            pool.feeAccount,
+            pool.hostFeeAccount,
+            TokenProgram.PROGRAM_ID,
+            pool.swapProgramId,
+            amountIn,
+            minAmountOut
+        )
 }

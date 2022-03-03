@@ -8,6 +8,9 @@ import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.analytics.AuthAnalytics
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -19,14 +22,19 @@ private const val TIMER_INTERVAL = 1000L
 
 class SignInPinPresenter(
     private val authInteractor: AuthInteractor,
+    private val adminAnalytics: AdminAnalytics,
+    private val authAnalytics: AuthAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<SignInPinContract.View>(), SignInPinContract.Presenter {
 
     private var wrongPinCounter = 0
+    private var authType = AuthAnalytics.AuthType.PIN
 
     private var timer: CountDownTimer? = null
 
     override fun signIn(pinCode: String) {
         signInActual {
+            authType = AuthAnalytics.AuthType.PIN
             authInteractor.signInByPinCode(pinCode)
         }
     }
@@ -34,6 +42,7 @@ class SignInPinPresenter(
     override fun signInByBiometric(cipher: Cipher) {
         val decodeCipher = DecodeCipher(cipher)
         signInActual {
+            authType = AuthAnalytics.AuthType.BIOMETRIC
             authInteractor.signInByBiometric(decodeCipher)
         }
     }
@@ -73,6 +82,14 @@ class SignInPinPresenter(
         }
     }
 
+    override fun load() {
+        val authType = if (authInteractor.getBiometricStatus() == BiometricStatus.ENABLED) {
+            AuthAnalytics.AuthType.BIOMETRIC
+        } else {
+            AuthAnalytics.AuthType.PIN
+        }
+    }
+
     private inline fun signInActual(
         crossinline performSignIn: suspend () -> SignInResult
     ) {
@@ -93,6 +110,7 @@ class SignInPinPresenter(
     }
 
     private fun handleResult(result: SignInResult) {
+        val authResult: AuthAnalytics.AuthResult
         when (result) {
             SignInResult.WrongPin -> {
                 wrongPinCounter++
@@ -103,15 +121,18 @@ class SignInPinPresenter(
                     view?.clearPin()
                     return
                 }
-
+                authResult = AuthAnalytics.AuthResult.ERROR
+                adminAnalytics.logPinRejected(analyticsInteractor.getCurrentScreenName())
                 view?.showWrongPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
                 view?.vibrate(VIBRATE_DURATION)
             }
             is SignInResult.Success -> {
                 timer?.cancel()
                 view?.onSignInSuccess()
+                authResult = AuthAnalytics.AuthResult.SUCCESS
             }
-        } ?: Unit
+        }
+        authAnalytics.logAuthValidated(result = authResult, authType = authType)
     }
 
     private fun startTimer() {

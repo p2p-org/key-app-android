@@ -1,6 +1,6 @@
 package org.p2p.wallet.utils
 
-import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -9,21 +9,24 @@ import android.content.Intent
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
+import androidx.core.content.FileProvider
 import org.p2p.wallet.R
+import java.io.File
 
-@SuppressLint("MissingPermission")
 fun Context.vibrate(duration: Long = 500) {
-    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val effect = VibrationEffect.createOneShot(
-            duration,
-            VibrationEffect.DEFAULT_AMPLITUDE
-        )
-        vibrator?.vibrate(effect)
+    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val manager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+        manager?.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
-        vibrator?.vibrate(duration)
+        getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
+    val effect = VibrationEffect.createOneShot(
+        duration,
+        VibrationEffect.DEFAULT_AMPLITUDE
+    )
+    vibrator?.vibrate(effect)
 }
 
 fun Context.copyToClipBoard(content: String) {
@@ -43,4 +46,19 @@ fun Context.shareText(value: String) {
     shareIntent.type = "text/plain"
     shareIntent.putExtra(Intent.EXTRA_TEXT, value)
     startActivity(Intent.createChooser(shareIntent, "Share Text"))
+}
+
+fun Context.shareScreenShoot(image: File) {
+    val uri = FileProvider.getUriForFile(this, this.packageName + ".provider", image)
+    val intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        type = "image/*"
+        putExtra(Intent.EXTRA_TEXT, "Save Screenshot")
+        putExtra(Intent.EXTRA_STREAM, uri)
+    }
+    try {
+        startActivity(Intent.createChooser(intent, "Share with"))
+    } catch (e: ActivityNotFoundException) {
+        toast("No App Available")
+    }
 }

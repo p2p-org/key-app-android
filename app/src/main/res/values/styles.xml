@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="WalletTheme.Dialog.Wide" parent="Base.Theme.AppCompat.Dialog">
+    <style name="WalletTheme.Dialog.Wide" parent="WalletTheme.AlertDialog">
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -9,19 +9,29 @@
 
     <style name="AppRoundCornersModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bg_alert_elevation_rounded_top</item>
-        <item name="colorMessagePrimary">@color/colorGreen</item>
     </style>
 
     <style name="WalletTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="colorAccent">?colorAccentPrimary</item>
-        <item name="android:textColorPrimary">?colorElementPrimary</item>
+        <item name="colorAccent">@color/backgroundButtonPrimary</item>
+        <item name="android:textColorPrimary">@color/textIconPrimary</item>
         <item name="android:windowBackground">@drawable/bg_white_rounded</item>
         <item name="android:windowMinWidthMinor">280dp</item>
+        <item name="titleTextStyle">@style/WalletTheme.TextAppearance.SemiBold16</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/WalletTheme.TextAppearance.Regular16</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/WalletTheme.TextAppearance.SemiBold16</item>
+        <item name="buttonBarPositiveButtonStyle">@style/AccentColoredText</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AccentColoredText</item>
+
     </style>
 
     <style name="SwitchStyle" parent="Theme.Design.BottomSheetDialog">
-        <item name="colorControlActivated">?colorAccentPrimary</item>
-        <item name="colorSwitchThumbNormal">?colorElementSecondary</item>
-        <item name="android:colorForeground">?colorElementSecondary</item>
+        <item name="colorControlActivated">@color/backgroundButtonPrimary</item>
+        <item name="colorSwitchThumbNormal">@color/textIconPrimary</item>
+        <item name="android:colorForeground">@color/textIconPrimary</item>
     </style>
+
+    <style name="AccentColoredText" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/backgroundButtonPrimary</item>
+    </style>
+
 </resources>

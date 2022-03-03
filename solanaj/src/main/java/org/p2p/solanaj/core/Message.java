@@ -1,5 +1,7 @@
 package org.p2p.solanaj.core;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +62,16 @@ public class Message {
         return this;
     }
 
+    public List<TransactionInstruction> getInstructions() {
+        return instructions;
+    }
+
     public void setRecentBlockHash(String recentBlockhash) {
         this.recentBlockhash = recentBlockhash;
+    }
+
+    public String getRecentBlockHash() {
+        return recentBlockhash;
     }
 
     public byte[] serialize() {
@@ -72,6 +82,10 @@ public class Message {
 
         if (instructions.size() == 0) {
             throw new IllegalArgumentException("No instructions provided");
+        }
+
+        if (feePayer == null) {
+            throw new IllegalArgumentException("Fee payer not found");
         }
 
         messageHeader = new MessageHeader();
@@ -156,7 +170,11 @@ public class Message {
         this.feePayer = feePayer;
     }
 
-    private List<AccountMeta> getAccountKeys() {
+    public int getNumRequiredSignatures() {
+        return messageHeader.numRequiredSignatures;
+    }
+
+    public List<AccountMeta> getAccountKeys() {
         List<AccountMeta> keysList = accountKeys.getList();
         int feePayerIndex = AccountMeta.Companion.findAccountIndex(keysList, feePayer);
 

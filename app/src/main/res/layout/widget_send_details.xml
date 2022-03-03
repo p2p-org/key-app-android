@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <LinearLayout
+        android:id="@+id/headerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/detailsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/send_transaction_details"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
+
+            <TextView
+                android:id="@+id/totalTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+                tools:text="Total: 1,050.67 USDC + 0.002778 SOL" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/arrowImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:src="@drawable/ic_arrow_down"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/receiveView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/receiveLabelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/send_receive_title"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="@color/textIconSecondary"
+            tools:ignore="TextContrastCheck" />
+
+        <TextView
+            android:id="@+id/receiveTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end|center_vertical"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            tools:text="0.02401 BTC (~$1,046.81)" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/transactionFeeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/transactionFeeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/details_transaction_fee"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="@color/textIconSecondary" />
+
+        <TextView
+            android:id="@+id/freeTextView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:gravity="end|center_vertical"
+            android:text="@string/send_free_transaction"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14" />
+
+        <TextView
+            android:id="@+id/paidByTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:text="@string/details_paid_by_p2p_brackets"
+            android:textAlignment="textEnd"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            android:textColor="@color/systemSuccessMain"
+            app:drawableEndCompat="@drawable/ic_info" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/accountCreationFeeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/accountCreationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/send_account_creation_fee"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="@color/textIconSecondary" />
+
+        <TextView
+            android:id="@+id/accountCreationTokenTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="end|center_vertical"
+            android:singleLine="true"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            tools:text="0.002778 SOL (~$0.5)" />
+    </LinearLayout>
+
+
+    <View
+        android:id="@+id/feeDividerView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginVertical="16dp"
+        android:background="@color/strokeSecondary"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/totalView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/totalLabelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/buy_total"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textColor="@color/textIconSecondary"
+            tools:ignore="TextContrastCheck" />
+
+        <TextView
+            android:id="@+id/totalSourceTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end|center_vertical"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            tools:text="1,050.67 USDC (~$1,049.98)" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/totalFeeTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="end|center_vertical"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+        android:visibility="gone"
+        tools:text="0.002778 SOL (~$0.5)"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/errorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textColor="@color/systemErrorMain"
+        android:visibility="gone"
+        tools:text="Insufficient balance to make transaction"
+        tools:visibility="visible" />
+</merge>

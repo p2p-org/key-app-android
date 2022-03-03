@@ -2,18 +2,23 @@ package org.p2p.wallet.restore.ui.keys
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
+import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -29,6 +34,7 @@ class SecretKeyFragment :
 
     override val presenter: SecretKeyContract.Presenter by inject()
     private val binding: FragmentSecretKeyBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     private val phraseAdapter: SecretPhraseAdapter by lazy {
         SecretPhraseAdapter {
@@ -39,10 +45,11 @@ class SecretKeyFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.IMPORT_MANUAL)
         with(binding) {
             toolbar.setNavigationOnClickListener {
-                popBackStack()
                 it.hideKeyboard()
+                popBackStack()
             }
 
             restoreButton.setOnClickListener {
@@ -55,14 +62,18 @@ class SecretKeyFragment :
             }
             keysRecyclerView.attachAdapter(phraseAdapter)
 
-            phraseTextView.setOnClickListener {
-                phraseTextView.isVisible = false
-                keysRecyclerView.isVisible = true
-                phraseAdapter.addSecretKey(SecretKey())
+            phraseTextView.isVisible = false
+            keysRecyclerView.isVisible = true
+            phraseAdapter.addSecretKey(SecretKey())
+
+            questionTextView.setOnClickListener {
+                replaceFragment(SeedInfoFragment.create())
             }
+            keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
         }
 
-        setButtonEnabled(false)
+        val itemsCount = phraseAdapter.itemCount
+        setButtonEnabled(itemsCount != 0)
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {

@@ -47,7 +47,7 @@
             app:srcCompat="@drawable/ic_settings" />
 
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:id="@+id/lSwapFromTo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/imgSwap">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -76,7 +76,7 @@
                     android:gravity="end"
                     tools:text="Available: 2140.0000" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -115,7 +115,7 @@
                     app:layout_constraintStart_toEndOf="@id/imgTokenFrom"
                     app:layout_constraintTop_toTopOf="@id/imgTokenFrom"
                     app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="?colorElementSecondary" />
+                    app:tint="@color/textIconPrimary" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/edtAmountFrom"
@@ -166,7 +166,7 @@
                     app:srcCompat="@drawable/ic_swap" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:id="@+id/view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -184,7 +184,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     tools:text="Balance: 1012.0000" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -223,7 +223,7 @@
                     app:layout_constraintStart_toEndOf="@id/imgTokenTo"
                     app:layout_constraintTop_toTopOf="@id/imgTokenTo"
                     app:srcCompat="@drawable/ic_arrow_down"
-                    app:tint="?colorElementSecondary" />
+                    app:tint="@color/textIconPrimary" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtAmountTo"
@@ -287,9 +287,9 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </LinearLayout>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <LinearLayout
             android:id="@+id/lDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -301,7 +301,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lSwapFromTo">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -316,9 +316,9 @@
                     android:gravity="end"
                     tools:text="0.003452 DAI" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp">
@@ -334,9 +334,9 @@
                     android:gravity="end"
                     tools:text="0.0001 SOL" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp">
@@ -352,10 +352,10 @@
                     android:gravity="end"
                     tools:text="\u003c 0.1 %" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/swapButton"
@@ -371,7 +371,7 @@
             android:paddingBottom="19dp"
             android:text="Swap_now"
             android:textAllCaps="false"
-            android:textColor="?colorElementPrimary"
+            android:textColor="@color/textIconPrimary"
             android:textSize="15sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

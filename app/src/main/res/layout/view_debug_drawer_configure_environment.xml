@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?colorBackgroundPrimary"
+    android:background="@color/backgroundPrimary"
     android:orientation="vertical"
     android:paddingBottom="16dp">
 
@@ -15,7 +15,7 @@
         android:layout_marginStart="16dp"
         android:text="Current Node"
         android:textAllCaps="true"
-        android:textColor="?colorMessagePrimary"
+        android:textColor="@color/textIconPrimary"
         tools:ignore="HardcodedText" />
 
     <TextView

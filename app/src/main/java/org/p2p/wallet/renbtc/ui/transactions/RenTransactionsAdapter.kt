@@ -11,7 +11,6 @@ import org.p2p.wallet.common.ui.recycler.adapter.BaseViewHolder
 import org.p2p.wallet.databinding.ItemRenTransactionBinding
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
-import org.p2p.wallet.utils.colorFromTheme
 
 class RenTransactionsAdapter(
     private val onTransactionClicked: (RenTransaction) -> Unit
@@ -46,11 +45,11 @@ class RenTransactionsAdapter(
                 amountTextView.isVisible = false
                 arrowImageView.isVisible = true
                 titleTextView.text = item.getTransactionTitle(itemView.context)
-                subTitleTextView.text = item.status.getStringResId(itemView.context)
-                val color = if (item.status is RenTransactionStatus.SuccessfullyMinted) {
+                subTitleTextView.text = item.getLatestStatus()?.getStringResId(itemView.context)
+                val color = if (item.getLatestStatus() is RenTransactionStatus.SuccessfullyMinted) {
                     itemView.context.getColor(R.color.colorGreen)
                 } else {
-                    itemView.context.colorFromTheme(R.attr.colorElementSecondary)
+                    itemView.context.getColor(R.color.backgroundDisabled)
                 }
                 subTitleTextView.setTextColor(color)
 

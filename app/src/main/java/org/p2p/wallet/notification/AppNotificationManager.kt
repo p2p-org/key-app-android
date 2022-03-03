@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
-import org.p2p.wallet.root.ui.RootActivity
+import org.p2p.wallet.root.RootActivity
 
 private const val P2P_WALLET_CHANNEL_ID = "P2P_WALLET_CHANNEL_ID"
 
@@ -22,8 +22,6 @@ class AppNotificationManager(
 
     companion object {
         fun createNotificationChannels(context: Context) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
             val channels = getNotificationChannels()
             val notificationManager = NotificationManagerCompat.from(context)
             for (channel in channels) {

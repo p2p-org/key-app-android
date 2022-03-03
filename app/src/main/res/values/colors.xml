@@ -1,53 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--Colors that are not designed-->
     <color name="colorProgressBackground">#33FFFFFF</color>
-    <color name="colorGreen">#2DB533</color>
-    <color name="colorGreenTransparent">#802DB533</color>
-    <color name="colorWarning">#FFA631</color>
-    <color name="colorErrorBackground">#FEF5F5</color>
 
-    <color name="accentPrimary">#5887FF</color>
-    <color name="accentSecondary">#96B1F8</color>
-    <color name="accentTertiary">#EFF3FF</color>
-    <color name="accentWarning">#FF5858</color>
-    <color name="accentGraph">#2DB533</color>
+    <!--System colors-->
+    <color name="statusBarColor">@android:color/transparent</color>
+    <color name="navigationBarColor">@android:color/transparent</color>
 
-    <color name="elementPrimary">#FFFFFFFF</color>
-    <color name="elementSecondary">#A3A5BA</color>
-    <color name="elementTertiary">#F6F6F8</color>
+    <!--Error colors-->
+    <color name="systemErrorMain">#F43D3D</color>
+    <color name="systemErrorSecondary">#FD7373</color>
+    <color name="systemErrorBackground">#FEF5F5</color>
 
-    <color name="messagePrimary">#CC000000</color>
-    <color name="messageSecondary">#202020</color>
+    <!--Success colors-->
+    <color name="systemSuccess">#77DB7C</color>
+    <color name="systemSuccessMain">@color/colorGreen</color>
+    <color name="systemSuccessSecondary">#50D756</color>
+    <color name="systemSuccessBackground">#F5FBF5</color>
+
+    <!--Warning colors-->
+    <color name="systemWarningMain">#FFA631</color>
+    <color name="systemWarningBackground">#FFFBF5</color>
+
+    <color name="strokePrimary">#D3D4DE</color>
+    <color name="strokeSecondary">#F6F6F8</color>
+
+    <!--Common Text colors-->
+    <color name="textIconSecondary">#8E8E93</color>
+    <color name="textIconTertiary">#D2D4E5</color>
+    <color name="textIconButtonPrimary">#FFFFFF</color>
+    <color name="textIconPrimary">#202020</color>
+    <color name="textIconLink">#82A5FF</color>
+    <color name="textIconActive">#5887FF</color>
+
+    <!--Common Background colors-->
     <color name="backgroundPrimary">#FFFFFF</color>
     <color name="backgroundSecondary">#F6F6F8</color>
+    <color name="backgroundApp">#FBFBFD</color>
+    <color name="backgroundAppStroke">#F2F2F7</color>
+    <color name="backgroundActivePrimary">#EFF3FF</color>
+    <color name="backgroundDisabled">#A3A5BA</color>
+    <color name="backgroundButtonPrimary">#5887FF</color>
+    <color name="backgroundBanner">#D8F3E2</color>
+    <color name="backgroundBannerSecondary">#D7D1FF</color>
+    <color name="colorBackgroundNotification">#404040</color>
 
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorStaticDark">#CC000000</color>
+    <!--Android Overridden colors-->
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/backgroundDisabled</color>
 
-    <color name="chartSOL">#6FECB5</color>
-    <color name="chartETH">#677DE3</color>
-    <color name="chartSRM">#7FD4E3</color>
-    <color name="chartBTC">#FEB150</color>
-    <color name="chartFTX">#7FCEE2</color>
-    <color name="chartYFI">#006AE3</color>
-    <color name="chartXRP">#24292E</color>
-    <color name="chartUSDT">#4F9E7E</color>
-    <color name="chartUSDC">#3D73C4</color>
-    <color name="chartSUSHI">#D765A3</color>
-    <color name="chartALEPH">#518BE6</color>
-    <color name="chartSXP">#FA7850</color>
-    <color name="chartHGET">#F0CA5D</color>
-    <color name="chartCREAM">#89DFDB</color>
-    <color name="chartUBXT">#4BA6BA</color>
-    <color name="chartHNT">#57A0F8</color>
-    <color name="chartFRONT">#473733</color>
-    <color name="chartLINK">#3C5CCB</color>
-    <color name="chartAKRO">#B85BF4</color>
-    <color name="chartHXRO">#56B838</color>
-    <color name="chartUNI">#FBEBF5</color>
-    <color name="chartMATH">#000000</color>
-    <color name="chartTOMO">#252829</color>
-    <color name="chartLUA">#F1BE5C</color>
-
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">?colorElementSecondary</color>
 </resources>

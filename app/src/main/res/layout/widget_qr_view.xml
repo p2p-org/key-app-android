@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/nameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold20"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="konstantink.p2p.sol" />
+
+    <FrameLayout
+        android:id="@+id/qrFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nameTextView">
+
+        <ImageView
+            android:id="@+id/qrImageView"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_circle"
+            android:visibility="gone"
+            tools:ignore="ContentDescription"
+            tools:src="@tools:sample/avatars" />
+
+        <FrameLayout
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_circle">
+
+            <org.p2p.wallet.common.ui.widget.RoundedImageView
+                android:id="@+id/watermarkImageView"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_sol"
+                app:cornerRadius="36dp" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/qrFrame"
+        app:layout_constraintEnd_toEndOf="@id/qrFrame"
+        app:layout_constraintStart_toStartOf="@id/qrFrame"
+        app:layout_constraintTop_toTopOf="@id/qrFrame" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/valueTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="36dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+        app:layout_constraintTop_toBottomOf="@id/qrFrame"
+        tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
+
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingBottom="16dp"
+        android:src="@drawable/ic_p2p_validator"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/valueTextView" />
+
+    <LinearLayout
+        android:id="@+id/actionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_app_bottom_rounded"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/logoImageView">
+
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/copyButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/backgroundApp"
+            android:foreground="?selectableItemBackground"
+            app:buttonDrawable="@drawable/ic_copy"
+            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonText="@string/auth_copy"
+            app:buttonTextColor="@color/backgroundButtonPrimary" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/strokePrimary" />
+
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/shareButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/backgroundApp"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            app:buttonDrawable="@drawable/ic_share_blue"
+            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonText="@string/auth_share"
+            app:buttonTextColor="@color/backgroundButtonPrimary" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/strokePrimary" />
+
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/backgroundApp"
+            android:foreground="?selectableItemBackground"
+            app:buttonDrawable="@drawable/ic_gallery"
+            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonText="@string/auth_save"
+            app:buttonTextColor="@color/backgroundButtonPrimary" />
+    </LinearLayout>
+
+</merge>

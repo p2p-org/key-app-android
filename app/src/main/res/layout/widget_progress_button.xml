@@ -13,13 +13,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:paddingVertical="16dp"
         tools:ignore="UseCompoundDrawables">
 
-        <ImageView
-            android:id="@+id/actionImageView"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/startImageView"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            tools:ignore="ContentDescription" />
+            android:visibility="gone"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_send_simple"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/actionTextView"
@@ -27,10 +31,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginVertical="16dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-            android:textColor="?colorElementPrimary"
+            android:textColor="@color/textIconButtonPrimary"
             tools:text="Restore" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/endImageView"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
     <ProgressBar

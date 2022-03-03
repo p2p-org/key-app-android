@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/actionButton"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_margin="16dp"
+    android:background="@drawable/bg_system_error_main_rounded"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/settings_logout"
+        android:drawablePadding="8dp"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+        android:textColor="@color/systemErrorMain"
+        app:drawableEndCompat="@drawable/ic_logout" />
+
+</LinearLayout>
+

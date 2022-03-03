@@ -12,19 +12,25 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.AuthModule
+import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.TrackerFactory
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.debugdrawer.DebugDrawer
+import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
+import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
-import org.p2p.wallet.main.MainModule
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.qr.QrModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
+import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.RootModule
-import org.p2p.wallet.root.ui.RootActivity
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.settings.interactor.ThemeInteractor
@@ -43,7 +49,7 @@ class App : Application() {
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(BuildConfig.CRASHLYTICS_ENABLED)
 
         AppNotificationManager.createNotificationChannels(this)
-
+        IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
         AndroidThreeTen.init(this)
         DebugDrawer.init(this)
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
@@ -59,7 +65,7 @@ class App : Application() {
                     RootModule.create(),
                     BackupModule.create(),
                     UserModule.create(),
-                    MainModule.create(),
+                    HomeModule.create(),
                     RenBtcModule.create(),
                     NetworkModule.create(),
                     QrModule.create(),
@@ -67,8 +73,10 @@ class App : Application() {
                     SettingsModule.create(),
                     SwapModule.create(),
                     RpcModule.create(),
+                    FeeRelayerModule.create(),
                     InfrastructureModule.create(),
                     TransactionModule.create(),
+                    AnalyticsModule.create(),
                     createAppModule()
                 )
             )
@@ -83,12 +91,16 @@ class App : Application() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
         } bind AppRestarter::class
+        single {
+            val trackers = TrackerFactory.create(this@App, BuildConfig.ANALYTICS_ENABLED)
+            Analytics(trackers)
+        } bind TrackerContract::class
     }
 
     private fun restart() {
         setupKoin()
         RootActivity
-            .createIntent(this)
+            .createIntent(this, action = RootActivity.ACTION_RESTART)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             .let { startActivity(it) }
     }

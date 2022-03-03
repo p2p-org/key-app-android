@@ -15,7 +15,6 @@ import androidx.core.view.children
 import androidx.core.widget.TextViewCompat
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetTabRadiogroupBinding
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.dip
 import kotlin.math.max
 
@@ -139,7 +138,7 @@ class TabsView @JvmOverloads constructor(
 
     private fun RadioButton.updateButtonStyleAndLayoutParams() {
         TextViewCompat.setTextAppearance(this, R.style.WalletTheme_TextAppearance_SemiBold14)
-        setTextColor(colorFromTheme(R.attr.colorAccentGraph))
+        setTextColor(context.getColor(R.color.systemSuccessMain))
         setBackgroundResource(R.drawable.bg_chart_rounded_stroke)
 
         measure(

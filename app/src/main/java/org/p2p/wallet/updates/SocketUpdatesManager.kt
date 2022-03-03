@@ -3,6 +3,7 @@ package org.p2p.wallet.updates
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -43,6 +44,7 @@ class SocketUpdatesManager private constructor(
 
     private val endpoint = environmentManager.loadEnvironment().endpoint
     private var client: SubscriptionWebSocketClient? = null
+    private var connectionJob: Job? = null
 
     private val observers = mutableListOf<UpdatesStateObserver>()
 
@@ -91,9 +93,20 @@ class SocketUpdatesManager private constructor(
         // TODO: unsubscribe from transaction
     }
 
+    override fun onWebsocketPong() {
+//        Timber.tag("SOCKET").d("PONG")
+    }
+
     override fun onConnected() {
         Timber.tag("SOCKET").w("Socket client is successfully connected")
-        launch { state = UpdatesState.CONNECTED }
+        connectionJob?.cancel()
+        connectionJob = launch {
+            state = UpdatesState.CONNECTED
+            while (true) {
+                client?.ping()
+                delay(DELAY_MS)
+            }
+        }
     }
 
     override fun onFailed(exception: Exception) {
@@ -106,11 +119,6 @@ class SocketUpdatesManager private constructor(
 
     override fun onClosed(code: Int, message: String) {
         Timber.tag("SOCKET").d("Event updates connection is closed: $message")
-        if (code == 1006) {
-            // 1006 The connection was closed because the other endpoint did not respond with a pong in time.
-            // For more information check: https://github.com/TooTallNate/Java-WebSocket/wiki/Lost-connection-detection
-            restartInternal()
-        }
     }
 
     private suspend fun startActual() {

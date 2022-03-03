@@ -14,18 +14,24 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.renBridge.LockAndMint
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.renbtc.model.RenBtcSession
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 
-const val BTC_DECIMALS = 8
 private const val DELAY_IN_MILLIS = 200L
 private const val ONE_SECOND_IN_MILLIS = 1000L
 
 class RenBTCPresenter(
     private val interactor: RenBtcInteractor,
-    private val qrCodeInteractor: QrCodeInteractor
+    private val qrCodeInteractor: QrCodeInteractor,
+    private val usernameInteractor: UsernameInteractor,
+    private val receiveAnalytics: ReceiveAnalytics,
+    private val context: Context
 ) : BasePresenter<RenBTCContract.View>(), RenBTCContract.Presenter {
 
     private var sessionTimer: CountDownTimer? = null
@@ -37,23 +43,61 @@ class RenBTCPresenter(
     override fun subscribe() {
         launch {
             interactor.getSessionFlow().collect { session ->
-                handleSession(session)
+                when (session) {
+                    is RenBtcSession.Error -> {
+                        view?.showErrorMessage(session.throwable)
+                        view?.showLoading(false)
+                    }
+                    is RenBtcSession.Active -> {
+                        handleSession(session.session)
+                        view?.showLoading(false)
+                    }
+                    is RenBtcSession.Loading -> {
+                        view?.showLoading(true)
+                    }
+                }
             }
         }
     }
 
     override fun startNewSession(context: Context) {
-        view?.showLoading(true)
-        RenVMService.startWithNewSession(context)
+        launch {
+            RenVMService.startWithNewSession(context)
+        }
     }
 
     override fun checkActiveSession(context: Context) {
         launch {
-            view?.showLoading(true)
             RenVMService.startWithCheck(context)
-            delay(ONE_SECOND_IN_MILLIS)
-            view?.showLoading(false)
         }
+    }
+
+    override fun saveQr(name: String, bitmap: Bitmap) {
+        launch {
+            try {
+                usernameInteractor.saveQr(name, bitmap)
+                view?.showToastMessage(R.string.auth_saved)
+            } catch (e: Throwable) {
+                Timber.e("Error on saving QR: $e")
+                view?.showErrorMessage(e)
+            }
+        }
+    }
+
+    override fun onNetworkClicked() {
+        receiveAnalytics.logReceiveChangingNetwork(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
+        view?.showNetwork()
+    }
+
+    override fun onBrowserClicked(publicKey: String) {
+        receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
+        val url = context.getString(R.string.solanaWalletExplorer, publicKey)
+        view?.showBrowser(url)
+    }
+
+    override fun onStatusReceivedClicked() {
+        receiveAnalytics.logReceiveShowingStatuses()
+        view?.showStatuses()
     }
 
     override fun cancelTimer() {
@@ -62,8 +106,6 @@ class RenBTCPresenter(
     }
 
     private fun handleSession(session: LockAndMint.Session?) {
-        view?.showLoading(false)
-
         if (session != null && session.isValid) {
             val remaining = session.expiryTime - System.currentTimeMillis()
             val fee = calculateFee(session)
@@ -71,13 +113,15 @@ class RenBTCPresenter(
 
             startTimer(remaining)
             generateQrCode(session.gatewayAddress)
+            loadTransactionCount()
+            view?.showLoading(false)
         } else {
-            view?.showIdleState()
+            // TODO navigate so solana broke logic
         }
     }
 
     private fun calculateFee(session: LockAndMint.Session) =
-        session.fee.fromLamports(BTC_DECIMALS).multiply(BigDecimal(2)).scaleMedium()
+        session.fee.fromLamports(org.p2p.wallet.receive.renbtc.BTC_DECIMALS).multiply(BigDecimal(2)).scaleMedium()
 
     private fun generateQrCode(address: String) {
         if (qrJob?.isActive == true) return
@@ -98,6 +142,13 @@ class RenBTCPresenter(
         }
     }
 
+    private fun loadTransactionCount() {
+        launch {
+            val transactions = interactor.getAllTransactions()
+            view?.showTransactionsCount(transactions.size)
+        }
+    }
+
     private fun startTimer(time: Long) {
         if (sessionTimer != null) return
 
@@ -108,7 +159,7 @@ class RenBTCPresenter(
             }
 
             override fun onFinish() {
-                view?.showIdleState()
+                view?.navigateToSolana()
             }
         }
 

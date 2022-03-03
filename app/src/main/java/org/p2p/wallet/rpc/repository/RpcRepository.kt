@@ -12,6 +12,7 @@ import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
+import org.p2p.solanaj.model.types.TokenSupply
 import java.math.BigInteger
 
 interface RpcRepository {
@@ -25,6 +26,7 @@ interface RpcRepository {
 
     suspend fun getFees(commitment: String?): BigInteger
     suspend fun getTokenAccountBalances(accounts: List<String>): List<Pair<String, TokenAccountBalance>>
+    suspend fun getTokenSupply(mint: String): TokenSupply
     suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance
     suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
     suspend fun getAccountInfo(account: String): AccountInfo?
@@ -35,9 +37,9 @@ interface RpcRepository {
     ): List<ProgramAccount>
 
     suspend fun getBalance(account: String): Long
-    suspend fun getBalances(accounts: List<String>): List<Pair<String, Long>>
+    suspend fun getBalances(accounts: List<String>): List<Pair<String, BigInteger>>
     suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts
-    suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long
+    suspend fun getMinimumBalanceForRentExemption(dataLength: Int): Long
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo
 
     /**

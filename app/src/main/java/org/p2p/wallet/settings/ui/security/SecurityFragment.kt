@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityBinding
-import org.p2p.wallet.settings.ui.reset.ResetPinFragment
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.koin.android.ext.android.inject
 import javax.crypto.Cipher
@@ -32,11 +29,12 @@ class SecurityFragment :
             this,
             onSuccess = { presenter.onBiometricsConfirmed(it) },
             onError = { message ->
-                if (message == null) popBackStack()
-                else AlertDialog.Builder(requireContext())
-                    .setMessage(message)
-                    .setPositiveButton(R.string.common_ok, null)
-                    .show()
+                if (message != null) {
+                    AlertDialog.Builder(requireContext())
+                        .setMessage(message)
+                        .setPositiveButton(R.string.common_ok, null)
+                        .show()
+                }
             }
         )
     }
@@ -45,52 +43,47 @@ class SecurityFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-
-            pinCodeView.setOnClickListener {
-                replaceFragment(ResetPinFragment.create())
-            }
-            biometricSwitch.setOnCheckedChangeListener { _, isChecked ->
-                presenter.setBiometricEnabled(isChecked)
-            }
         }
-
-        presenter.loadBiometricType()
-    }
-
-    override fun showBiometricData(type: BiometricType) {
-        with(binding) {
-            when (type) {
-                BiometricType.IRIS,
-                BiometricType.FACE_ID -> {
-                    biometricImageView.setImageResource(R.drawable.ic_faceid)
-                    biometricTextView.setText(R.string.settings_security_face_id)
-                }
-                BiometricType.TOUCH_ID -> {
-                    biometricImageView.setImageResource(R.drawable.ic_fingerprint)
-                    biometricTextView.setText(R.string.settings_security_fingerprint)
-                }
-                BiometricType.NONE -> {
-                    biometricSwitch.isEnabled = false
-                    biometricTextView.setText(R.string.auth_no_biometric_detected)
-                }
-            }
-        }
+        presenter.load()
     }
 
     override fun showBiometricActive(isActive: Boolean) {
+        // Enable confirmation switch only if biometrics is active
+        binding.confirmationSwitch.isEnabled = isActive
+
         binding.biometricSwitch.setOnCheckedChangeListener(null)
         binding.biometricSwitch.isChecked = isActive
         binding.biometricSwitch.setOnCheckedChangeListener { _, isChecked ->
-            presenter.setBiometricEnabled(isChecked)
+            if (isChecked) {
+                binding.biometricSwitch.isChecked = !isChecked
+                presenter.setBiometricEnabled(isChecked)
+            } else {
+                presenter.setBiometricEnabled(isChecked)
+            }
         }
+        binding.biometricBottomTextView.text =
+            getString(if (isActive) R.string.settings_registered else R.string.settings_unregistered)
     }
 
     override fun showBiometricEnabled(isEnabled: Boolean) {
-        binding.biometricSwitch.setOnCheckedChangeListener(null)
         binding.biometricSwitch.isEnabled = isEnabled
     }
 
     override fun confirmBiometrics(cipher: Cipher) {
         biometricWrapper.authenticate(cipher)
+    }
+
+    override fun showConfirmationEnabled(isEnabled: Boolean) {
+        binding.confirmationSwitch.isEnabled = isEnabled
+    }
+
+    override fun showConfirmationActive(isActive: Boolean) {
+        with(binding) {
+            confirmationSwitch.setOnCheckedChangeListener(null)
+            confirmationSwitch.isChecked = isActive
+            confirmationSwitch.setOnCheckedChangeListener { _, isChecked ->
+                presenter.onConfirmationStateChanged(isChecked)
+            }
+        }
     }
 }

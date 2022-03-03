@@ -3,18 +3,26 @@ package org.p2p.wallet.renbtc.ui.main
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
-import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
-import org.p2p.wallet.utils.addFragment
-import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.setTextBold
-import org.p2p.wallet.utils.shareText
+import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
+import org.p2p.wallet.utils.edgetoedge.Edge
+import org.p2p.wallet.utils.edgetoedge.edgeToEdge
+import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -24,33 +32,51 @@ class RenBTCFragment :
     RenBTCContract.View {
 
     companion object {
+        private const val REQUEST_KEY = "REQUEST_KEY"
+        private const val BUNDLE_KEY_NETWORK_TYPE = "BUNDLE_KEY_NETWORK_TYPE"
         fun create() = RenBTCFragment()
     }
 
     override val presenter: RenBTCContract.Presenter by inject()
-
     private val binding: FragmentRenBtcBinding by viewBinding()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN)
         with(binding) {
-            completeSwitch.setOnCheckedChangeListener { _, isChecked ->
-                showButton.isEnabled = isChecked
-                val text = if (isChecked) R.string.receive_show_address else R.string.receive_make_transaction_confirm
-                showButton.setText(text)
+            edgeToEdge {
+                toolbar.fit { Edge.TopArc }
+                progressButton.fitMargin { Edge.BottomArc }
+            }
+            toolbar.setNavigationOnClickListener { popBackStack() }
+
+            statusView.setOnClickListener {
+                presenter.onStatusReceivedClicked()
             }
 
-            showButton.setOnClickListener {
-                presenter.startNewSession(requireContext())
+            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage)
             }
-            statusView.setOnClickListener {
-                addFragment(RenTransactionsFragment.create())
+            receiveCardView.setOnNetworkClickListener {
+                presenter.onNetworkClicked()
+            }
+            receiveCardView.setSelectNetworkVisibility(isVisible = true)
+            receiveCardView.setFaqVisibility(isVisible = false)
+            receiveCardView.setQrWatermark(R.drawable.ic_btc)
+            receiveCardView.setNetworkName(getString(R.string.send_bitcoin_network))
+
+            setFragmentResultListener(REQUEST_KEY) { _, bundle ->
+                val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
+                if (type == NetworkType.SOLANA) {
+                    popAndReplaceFragment(ReceiveSolanaFragment.create(null))
+                }
             }
         }
 
         presenter.subscribe()
         presenter.checkActiveSession(requireContext())
+        presenter.startNewSession(requireContext())
     }
 
     override fun onDestroyView() {
@@ -59,60 +85,68 @@ class RenBTCFragment :
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
-        binding.qrImageView.setImageBitmap(qrBitmap)
+        if (qrBitmap != null) {
+            binding.receiveCardView.setQrBitmap(qrBitmap)
+        }
     }
 
     override fun showActiveState(address: String, remaining: String, fee: String) {
         with(binding) {
-            attentionImageView.isVisible = false
-            idleState.isVisible = false
-            activeState.isVisible = true
+            receiveCardView.setQrValue(address.highlightPublicKey(requireContext()))
 
-            fullAddressTextView.text = address.cutMiddle()
-            fullAddressTextView.setOnClickListener {
-                requireContext().copyToClipBoard(address)
-                toast(R.string.common_copied)
-            }
-            shareImageView.setOnClickListener { requireContext().shareText(address) }
-            viewButton.setOnClickListener {
-                val url = getString(R.string.bitcoinExplorer, address)
-                showUrlInCustomTabs(url)
+            progressButton.setOnClickListener {
+                presenter.onBrowserClicked(address)
             }
 
-            val attentionText = buildSpannedString {
-                val onlyBitcoin = getString(R.string.receive_only_bitcoin)
-                val text = getString(R.string.receive_session_info).setTextBold(onlyBitcoin)
-                append(text)
+            val infoText = getString(R.string.receive_session_info)
+            val onlyBitcoin = getString(R.string.receive_only_bitcoin)
+            sessionInfoTextView.text = SpanUtils.setTextBold(infoText, onlyBitcoin)
 
-                val minTransactionText = getString(R.string.receive_session_min_transaction, fee)
-                append(minTransactionText.setTextBold(fee))
-            }
-
-            attentionTextView.text = attentionText
-        }
-    }
-
-    override fun showIdleState() {
-        with(binding) {
-            idleState.isVisible = true
-            activeState.isVisible = false
-
-            attentionImageView.isVisible = true
-
-            val message = getString(R.string.receive_ren_attention_message)
-            val openHoursText = getString(R.string.receive_ren_open_hours)
-            val riskLosingText = getString(R.string.receive_ren_risk_losing_deposits)
-            binding.attentionTextView.text = message.setTextBold(openHoursText, riskLosingText)
+            val btcText = getString(R.string.common_btc)
+            val amountText = getString(R.string.receive_session_min_transaction, fee)
+            amountInfoTextView.text = SpanUtils.setTextBold(amountText, fee, btcText)
         }
     }
 
     override fun updateTimer(remaining: String) {
-        val text = getString(R.string.receive_session_timer_info, remaining).setTextBold(remaining)
-        binding.timerTextView.text = text
+        val text = getString(R.string.receive_session_timer_info, remaining)
+        binding.timerTextView.text = SpanUtils.setTextBold(text, remaining)
         binding.timerTextView.isVisible = true
     }
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+        binding.receiveCardView.showQrLoading(isLoading)
+    }
+
+    override fun showToastMessage(resId: Int) {
+        toast(resId)
+    }
+
+    override fun showTransactionsCount(count: Int) {
+        binding.statusCountTextView.text = count.toString()
+        binding.statusView.isEnabled = count != 0
+    }
+
+    override fun navigateToSolana() {
+        popAndReplaceFragment(ReceiveSolanaFragment.create(null))
+    }
+
+    override fun showNetwork() {
+        replaceFragment(ReceiveNetworkTypeFragment.create(NetworkType.BITCOIN, REQUEST_KEY, BUNDLE_KEY_NETWORK_TYPE))
+    }
+
+    override fun showBrowser(url: String) {
+        showUrlInCustomTabs(url)
+    }
+
+    override fun showStatuses() {
+        replaceFragment(RenTransactionsFragment.create())
+    }
+
+    override fun showErrorMessage(e: Throwable?) {
+        showErrorDialog(e) {
+            popBackStack()
+        }
     }
 }

@@ -1,17 +1,18 @@
 package org.p2p.solanaj.programs;
 
+import org.p2p.solanaj.core.AbstractData;
+import org.p2p.solanaj.core.AccountMeta;
+import org.p2p.solanaj.core.PublicKey;
+import org.p2p.solanaj.core.Sysvar;
+import org.p2p.solanaj.core.TransactionInstruction;
+import org.p2p.solanaj.utils.ByteUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import org.p2p.solanaj.core.AbstractData;
-import org.p2p.solanaj.core.AccountMeta;
-import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.core.TransactionInstruction;
-import org.p2p.solanaj.programs.SystemProgram;
-import org.p2p.solanaj.utils.ByteUtils;
-import org.p2p.solanaj.core.Sysvar;
+import androidx.annotation.NonNull;
 
 public class TokenProgram {
     public static final PublicKey PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
@@ -60,8 +61,13 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, data);
     }
 
-    public static TransactionInstruction transferInstruction(PublicKey tokenProgramId, PublicKey source,
-                                                             PublicKey destination, PublicKey owner, BigInteger amount) {
+    public static TransactionInstruction transferInstruction(
+            PublicKey tokenProgramId,
+            PublicKey source,
+            PublicKey destination,
+            PublicKey owner,
+            BigInteger amount
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(source, false, true));
         keys.add(new AccountMeta(destination, false, true));
@@ -79,8 +85,13 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction approveInstruction(PublicKey tokenProgramId, PublicKey account,
-                                                            PublicKey delegate, PublicKey owner, BigInteger amount) {
+    public static TransactionInstruction approveInstruction(
+            @NonNull PublicKey tokenProgramId,
+            @NonNull PublicKey account,
+            @NonNull PublicKey delegate,
+            @NonNull PublicKey owner,
+            @NonNull BigInteger amount
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(delegate, false, false));
@@ -129,8 +140,15 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, data);
     }
 
-    public static TransactionInstruction createTransferCheckedInstruction(PublicKey tokenProgramId, PublicKey source,
-                                                                          PublicKey mint, PublicKey destination, PublicKey owner, BigInteger amount, int decimals) {
+    public static TransactionInstruction createTransferCheckedInstruction(
+            PublicKey tokenProgramId,
+            PublicKey source,
+            PublicKey mint,
+            PublicKey destination,
+            PublicKey owner,
+            BigInteger amount,
+            int decimals
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(source, false, true));
         keys.add(new AccountMeta(mint, false, false));
@@ -151,8 +169,14 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction createAssociatedTokenAccountInstruction(PublicKey associatedProgramId,
-                                                                                 PublicKey tokenProgramId, PublicKey mint, PublicKey associatedAccount, PublicKey owner, PublicKey payer) {
+    public static TransactionInstruction createAssociatedTokenAccountInstruction(
+            PublicKey associatedProgramId,
+            PublicKey tokenProgramId,
+            PublicKey mint,
+            PublicKey associatedAccount,
+            PublicKey owner,
+            PublicKey payer
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(payer, true, true));
         keys.add(new AccountMeta(associatedAccount, false, true));

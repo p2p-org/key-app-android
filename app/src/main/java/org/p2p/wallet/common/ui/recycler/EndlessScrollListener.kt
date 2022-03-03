@@ -7,7 +7,8 @@ private const val VISIBLE_THRESHOLD = 11
 
 class EndlessScrollListener(
     private val layoutManager: LinearLayoutManager,
-    private val loadNextPage: (Int) -> Unit
+    private val onYScroll: ((Int) -> Unit)? = null,
+    private val loadNextPage: (Int) -> Unit,
 ) : RecyclerView.OnScrollListener() {
 
     private var isLoading = false
@@ -15,7 +16,7 @@ class EndlessScrollListener(
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
-
+        onYScroll?.invoke(dy)
         val visibleItemCount = recyclerView.childCount
         val totalItemCount = layoutManager.itemCount
         val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
@@ -31,5 +32,10 @@ class EndlessScrollListener(
             loadNextPage(totalItemCount)
             isLoading = true
         }
+    }
+
+    fun reset() {
+        isLoading = false
+        total = 0
     }
 }

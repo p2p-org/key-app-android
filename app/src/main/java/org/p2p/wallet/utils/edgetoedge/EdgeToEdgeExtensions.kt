@@ -4,11 +4,8 @@ package org.p2p.wallet.utils.edgetoedge
 
 import android.app.Activity
 import android.app.Dialog
-import android.os.Build
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
@@ -62,7 +59,6 @@ fun Fragment.fitEdgeToEdge() {
 inline fun Dialog.edgeToEdge(block: EdgeToEdgeBuilder.() -> Unit) {
     val contentView = findViewById<View>(android.R.id.content)
     window?.decorView?.redispatchWindowInsetsToAllChildren()
-    window?.applyTranslucentFlag()
     EdgeToEdgeBuilder(contentView) { return@EdgeToEdgeBuilder isShowing }.also(block).build()
 }
 
@@ -106,24 +102,5 @@ fun Fragment.isVisibleTopFragment(): Boolean {
 fun Dialog.setOnApplyWindowInsetsListener(view: View, listener: (View, WindowInsetsCompat) -> WindowInsetsCompat) {
     window?.findViewById<View>(com.google.android.material.R.id.container)?.fitsSystemWindows = false
     window?.decorView?.redispatchWindowInsetsToAllChildren()
-    window?.applyTranslucentFlag()
     ViewCompat.setOnApplyWindowInsetsListener(window?.decorView ?: view, listener)
-}
-
-/*
-* For API < 23 It’s not possible to change the color of the status bar in android.
-* The only thing you can set in your app is the status bar’s background color.
-* Thus, we set translucent flag to set darker color to status bar and navigation bar
-* */
-fun Window.applyTranslucentFlag() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        setFlags(
-            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
-            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
-        )
-        setFlags(
-            WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-            WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-        )
-    }
 }

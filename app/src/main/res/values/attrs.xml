@@ -1,26 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <attr name="colorAccentPrimary" format="color|reference" />
-    <attr name="colorAccentSecondary" format="color|reference" />
-    <attr name="colorAccentTertiary" format="color|reference" />
-    <attr name="colorAccentWarning" format="color|reference" />
-    <attr name="colorAccentGraph" format="color|reference" />
-
-    <attr name="colorElementPrimary" format="color|reference" />
-    <attr name="colorElementSecondary" format="color|reference" />
-    <attr name="colorElementTertiary" format="color|reference" />
-
-    <attr name="colorMessagePrimary" format="color|reference" />
-    <attr name="colorMessageSecondary" format="color|reference" />
-
-    <attr name="colorBackgroundPrimary" format="color|reference" />
-    <attr name="colorBackgroundSecondary" format="color|reference" />
-
-    <item name="edgetoedge" type="id" />
-    <item name="seed_phrase_watcher_tag_id" type="id" />
-    <item name="prefix_watcher_tag_id" type="id" />
-
     <declare-styleable name="NumberKeyboardButtonView">
         <attr name="keyboard_button_text" format="string" />
         <attr name="keyboard_button_image" format="integer" />
@@ -28,6 +7,17 @@
 
     <declare-styleable name="RoundedImageView">
         <attr name="cornerRadius" />
+    </declare-styleable>
+
+    <declare-styleable name="ShapeImageView">
+        <attr name="colorFill" format="color" />
+        <attr name="colorStroke" format="color" />
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="paintStyle" format="enum">
+            <enum name="fill" value="0" />
+            <enum name="stroke" value="1" />
+            <enum name="fillAndStroke" value="2" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="EndlessScrollRecyclerView">
@@ -69,8 +59,11 @@
         <attr name="buttonText" format="string" />
         <attr name="buttonDrawable" format="reference" />
         <attr name="buttonBackground" format="reference" />
+        <attr name="buttonDrawableTint" format="reference" />
         <attr name="buttonTextColor" format="color" />
         <attr name="buttonEnabled" format="boolean" />
+        <attr name="buttonDrawableEnd" format="reference" />
+        <attr name="android:textAppearance" />
     </declare-styleable>
 
     <declare-styleable name="OptionsTextView">
@@ -79,5 +72,22 @@
         <attr name="optionsValueText" format="string" />
         <attr name="optionsValueTextColor" format="string" />
         <attr name="isBoldValue" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="InputTextView">
+        <attr name="suffixText" format="string" />
+        <attr name="hint" format="string" />
+        <attr name="android:maxLength" />
+        <attr name="android:digits" />
+    </declare-styleable>
+
+    <declare-styleable name="ActionButtonView">
+        <attr name="android:text" />
+        <attr name="srcCompat" />
+    </declare-styleable>
+
+    <declare-styleable name="ExpandView">
+        <attr name="android:text" />
+        <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 </resources>

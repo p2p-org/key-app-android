@@ -4,20 +4,40 @@ import android.content.Context
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
-import org.p2p.wallet.main.model.RenBTCPayment
+import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.scaleMedium
+import org.p2p.wallet.renbtc.model.RenTransactionStatus.WaitingDepositConfirm
 
 @Parcelize
 data class RenTransaction(
     val transactionId: String,
     val payment: RenBTCPayment,
-    val status: RenTransactionStatus
+    val statuses: MutableList<RenTransactionStatus> = mutableListOf(WaitingDepositConfirm(transactionId))
 ) : Parcelable {
 
-    fun getTransactionTitle(context: Context): String =
-        if (status is RenTransactionStatus.SuccessfullyMinted) {
-            context.getString(R.string.receive_renbtc_format, status.amount.scaleMedium())
+    fun getTransactionTitle(context: Context): String {
+        val currentStatus = statuses.lastOrNull()
+        return if (currentStatus is RenTransactionStatus.SuccessfullyMinted) {
+            val amount = currentStatus.amount
+            val scaleMedium = if (amount.isNotZero()) amount.scaleMedium() else "N/A"
+            context.getString(R.string.receive_renbtc_format, scaleMedium)
         } else {
             context.getString(R.string.main_mint_renbtc)
         }
+    }
+
+    fun getLatestStatus(): RenTransactionStatus? = statuses.lastOrNull()
+
+    fun isAwaiting() = statuses.lastOrNull() is WaitingDepositConfirm
+
+    fun isFinished(): Boolean = statuses.lastOrNull() is RenTransactionStatus.SuccessfullyMinted
+
+    fun isActive(): Boolean {
+        val latestStatus = statuses.lastOrNull()
+        val isMinted = latestStatus is RenTransactionStatus.SuccessfullyMinted
+        val isSubmitting = latestStatus is RenTransactionStatus.SubmittingToRenVM
+        val isMinting = latestStatus is RenTransactionStatus.Minting
+        val isAwaiting = latestStatus is RenTransactionStatus.AwaitingForSignature
+        return isMinted || isSubmitting || isMinting || isAwaiting
+    }
 }

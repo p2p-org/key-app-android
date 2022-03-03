@@ -26,20 +26,6 @@
             android:visibility="invisible"
             tools:visibility="visible" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/resetButton"
-            android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:layout_marginHorizontal="24dp"
-            android:background="@drawable/bg_gray_secondary_rounded"
-            android:foreground="?selectableItemBackground"
-            android:text="@string/auth_reset_pin"
-            android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="?colorElementSecondary"
-            android:visibility="gone"
-            tools:ignore="UnusedAttribute"
-            tools:visibility="visible" />
     </FrameLayout>
 
     <TextView
@@ -49,8 +35,8 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        android:textColor="?colorAccentWarning"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        android:textColor="@color/systemErrorMain"
         android:visibility="invisible"
         tools:text="PIN-codes do not match"
         tools:visibility="visible" />
@@ -59,5 +45,5 @@
         android:id="@+id/keyboardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp" />
+        android:layout_marginTop="16dp" />
 </merge>

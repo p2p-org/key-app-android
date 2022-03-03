@@ -5,19 +5,20 @@ import android.graphics.drawable.PictureDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.wallet.R
+import org.p2p.wallet.common.date.toTimeString
 import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.databinding.ItemTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.dip
+import org.p2p.wallet.utils.withTextOrGone
 
 class TransactionViewHolder(
     binding: ItemTransactionBinding,
@@ -38,8 +39,8 @@ class TransactionViewHolder(
         .listener(SvgSoftwareLayerSetter())
 
     private val tokenImageView = binding.tokenImageView
-    private val typeTextView = binding.typeTextView
     private val addressTextView = binding.addressTextView
+    private val timeTextView = binding.timeTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
     private val swapView = binding.swapView
@@ -51,6 +52,7 @@ class TransactionViewHolder(
             is HistoryTransaction.Transfer -> showTransferTransaction(item.transaction)
             is HistoryTransaction.Swap -> showSwapTransaction(item.transaction)
             is HistoryTransaction.BurnOrMint -> showBurnOrMint(item.transaction)
+            is HistoryTransaction.CreateAccount -> showCreateAccountTransaction(item.transaction)
             is HistoryTransaction.CloseAccount -> showCloseTransaction(item.transaction)
             is HistoryTransaction.Unknown -> showUnknownTransaction(item.transaction)
         }
@@ -62,8 +64,8 @@ class TransactionViewHolder(
         swapView.isVisible = false
 
         tokenImageView.setImageResource(transaction.getIcon())
-        typeTextView.setText(transaction.getTitle())
         addressTextView.text = transaction.signature.cutMiddle()
+        timeTextView.text = transaction.date.toTimeString()
         totalTextView.text = transaction.getTotal()
         valueTextView.text = transaction.getValue()
     }
@@ -75,7 +77,17 @@ class TransactionViewHolder(
         totalTextView.isVisible = false
 
         tokenImageView.setImageResource(R.drawable.ic_no_money)
-        typeTextView.setText(R.string.main_transaction)
+        addressTextView.text = transaction.signature.cutMiddle()
+        timeTextView.text = transaction.date.toTimeString()
+    }
+
+    private fun showCreateAccountTransaction(transaction: HistoryTransaction.CreateAccount) {
+        tokenImageView.isVisible = true
+        swapView.isVisible = false
+        valueTextView.isVisible = false
+        totalTextView.isVisible = false
+
+        tokenImageView.setImageResource(R.drawable.ic_wallet_gray)
         addressTextView.text = transaction.signature.cutMiddle()
     }
 
@@ -83,14 +95,12 @@ class TransactionViewHolder(
     private fun showCloseTransaction(transaction: HistoryTransaction.CloseAccount) {
         tokenImageView.isVisible = true
         swapView.isVisible = false
-        valueTextView.isVisible = true
+        valueTextView.isVisible = false
         totalTextView.isVisible = false
 
         tokenImageView.setImageResource(R.drawable.ic_trash)
-        typeTextView.setText(R.string.main_close_account)
         addressTextView.text = transaction.getInfo()
-
-        valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+        timeTextView.text = transaction.date.toTimeString()
     }
 
     @SuppressLint("SetTextI18n")
@@ -100,13 +110,14 @@ class TransactionViewHolder(
         valueTextView.isVisible = true
         totalTextView.isVisible = true
 
-        loadImage(sourceImageView, transaction.sourceTokenUrl)
-        loadImage(destinationImageView, transaction.destinationTokenUrl)
-        typeTextView.setText(R.string.main_swap)
-        valueTextView.text = "+ ${transaction.amountReceivedInUsd} $"
-        totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
+        loadImage(sourceImageView, transaction.sourceIconUrl)
+        loadImage(destinationImageView, transaction.destinationIconUrl)
+
         addressTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
-        valueTextView.setTextColor(ContextCompat.getColor(valueTextView.context, R.color.colorGreen))
+        valueTextView withTextOrGone transaction.getReceivedUsdAmount()
+        totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
+        totalTextView.setTextColor(valueTextView.context.getColor(R.color.colorGreen))
+        timeTextView.text = transaction.date.toTimeString()
     }
 
     private fun showTransferTransaction(transaction: HistoryTransaction.Transfer) {
@@ -116,11 +127,11 @@ class TransactionViewHolder(
         totalTextView.isVisible = true
 
         tokenImageView.setImageResource(transaction.getIcon())
-        typeTextView.setText(transaction.getTitle())
         addressTextView.text = transaction.getAddress()
-        valueTextView.text = transaction.getValue()
+        timeTextView.text = transaction.date.toTimeString()
+        valueTextView withTextOrGone transaction.getValue()
         totalTextView.text = transaction.getTotal()
-        valueTextView.setTextColor(transaction.getTextColor(valueTextView.context))
+        totalTextView.setTextColor(transaction.getTextColor(valueTextView.context))
     }
 
     private fun loadImage(imageView: ImageView, url: String) {

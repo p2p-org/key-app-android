@@ -6,17 +6,16 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import android.text.format.DateFormat
+import org.p2p.wallet.R
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.util.Date
 
-class FileRepository(
-    private val context: Context
-) {
+class FileRepository(private val context: Context) {
 
     private val pdfFolder: File
 
@@ -26,7 +25,7 @@ class FileRepository(
     }
 
     @Throws(IOException::class)
-    suspend fun saveQr(name: String, bitmap: Bitmap) = withContext(Dispatchers.IO) {
+    fun saveQr(name: String, bitmap: Bitmap) {
         val stream: OutputStream = generateOutputStream(name)
             ?: throw IllegalStateException("Couldn't save qr image")
 
@@ -34,10 +33,7 @@ class FileRepository(
         stream.close()
     }
 
-    fun savePdf(
-        fileName: String,
-        bytes: ByteArray
-    ): File {
+    fun savePdf(fileName: String, bytes: ByteArray): File {
         ensurePdfFolderExists()
         val pdfFolder = getPdfFile(fileName)
         BufferedOutputStream(FileOutputStream(pdfFolder)).use {
@@ -63,8 +59,34 @@ class FileRepository(
             resolver.openOutputStream(uri)
         } else {
             @Suppress("DEPRECATION")
-            val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            val pathName = directory.toString() + File.separator + "p2p-wallet"
+            val rootFolder = File(context.cacheDir.toString() + File.separator + "p2p-wallet")
+            if (!rootFolder.exists()) {
+                rootFolder.mkdirs()
+            }
+            val pathName = rootFolder.toString() + File.separator + "p2p-wallet"
             FileOutputStream(File(pathName))
         }
+
+    fun takeScreenShot(bitmap: Bitmap): File? {
+        val date = Date()
+        val format = DateFormat.format("MM-dd-yyyy_hh:mm:ss", date)
+        try {
+            val mainDir =
+                File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), context.getString(R.string.app_name))
+            if (!mainDir.exists()) {
+                val mkdir = mainDir.mkdir()
+            }
+
+            val stringPath = mainDir.absolutePath + "/$date" + ".jpeg"
+            val imageFile = File(stringPath)
+            val fos = FileOutputStream(imageFile)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            fos.flush()
+            fos.close()
+            return imageFile
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
 }

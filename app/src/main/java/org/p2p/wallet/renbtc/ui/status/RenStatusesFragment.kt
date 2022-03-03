@@ -6,6 +6,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenTransactionsBinding
 import org.p2p.wallet.renbtc.model.RenTransaction
@@ -32,22 +34,23 @@ class RenStatusesFragment :
     }
 
     override val presenter: RenStatusesContract.Presenter by inject()
-
     private val binding: FragmentRenTransactionsBinding by viewBinding()
-
+    private val analyticsInteractor: AnalyticsInteractor by inject()
     private val transaction: RenTransaction by args(EXTRA_TRANSACTION)
-
     private val adapter: RenStatusesAdapter by lazy {
         RenStatusesAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN_STATUS)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getTransactionTitle()
 
-            dateTextView.text = DateTimeUtils.getFormattedDate(transaction.status.date)
+            dateTextView.text = DateTimeUtils.getFormattedDate(
+                transaction.getLatestStatus()?.date ?: System.currentTimeMillis()
+            )
             recyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
                 reverseLayout = true
             }
@@ -71,7 +74,7 @@ class RenStatusesFragment :
     }
 
     private fun getTransactionTitle(): String {
-        val status = transaction.status
+        val status = transaction.getLatestStatus()
         return if (status is RenTransactionStatus.SuccessfullyMinted) {
             getString(R.string.receive_renbtc_transaction_format, status.amount.scaleMedium())
         } else {

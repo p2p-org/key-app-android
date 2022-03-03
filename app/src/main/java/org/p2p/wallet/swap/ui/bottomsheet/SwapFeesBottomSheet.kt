@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
@@ -52,11 +50,11 @@ class SwapFeesBottomSheet : BottomSheetDialogFragment() {
             networkFeeView.setBottomText(networkFee)
 
             /* fixme: revert back when network fee payment option is available */
-            payView.isVisible = false
-            payView.setBottomText(alternativeFeeOptions)
-            payView.setOnClickListener {
-                Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show()
-            }
+//            payView.isVisible = false
+//            payView.setBottomText(alternativeFeeOptions)
+//            payView.setOnClickListener {
+//                Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show()
+//            }
         }
     }
 

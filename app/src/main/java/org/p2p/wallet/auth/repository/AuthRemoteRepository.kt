@@ -1,12 +1,12 @@
 package org.p2p.wallet.auth.repository
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.mnemoticgenerator.MnemonicGenerator
 import org.p2p.wallet.utils.mnemoticgenerator.Words
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.solanaj.core.Account
 import java.security.SecureRandom
 
 class AuthRemoteRepository : AuthRepository {
@@ -24,7 +24,11 @@ class AuthRemoteRepository : AuthRepository {
             }
         }
 
-    override suspend fun getDerivableAccounts(path: DerivationPath, keys: List<String>): List<Account> {
+    override suspend fun getDerivableAccounts(
+        path: DerivationPath,
+        keys: List<String>
+    ): MutableMap<DerivationPath, List<Account>> {
+        val data = mutableMapOf<DerivationPath, List<Account>>()
         val accounts = mutableListOf<Account>()
 
         for (index in 0 until ACCOUNTS_SIZE) {
@@ -37,7 +41,8 @@ class AuthRemoteRepository : AuthRepository {
             accounts.add(account)
         }
 
-        return accounts
+        data[path] = accounts
+        return data
     }
 
     override suspend fun generatePhrase(): List<String> = withContext(Dispatchers.IO) {

@@ -17,14 +17,16 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
+import org.p2p.solanaj.model.types.TokenSupply
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.infrastructure.network.EmptyDataException
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import timber.log.Timber
 import java.math.BigInteger
 
+// TODO: Split to domain repositories
 class RpcRemoteRepository(
     private val serumApi: RpcApi,
     private val mainnetApi: RpcApi,
@@ -141,6 +143,12 @@ class RpcRemoteRepository(
             }
     }
 
+    override suspend fun getTokenSupply(mint: String): TokenSupply {
+        val params = listOf(mint)
+        val rpcRequest = RpcRequest("getTokenSupply", params)
+        return rpcApi.getTokenSupply(rpcRequest).result
+    }
+
     override suspend fun getTokenAccountBalance(account: PublicKey): TokenAccountBalance {
         val params = listOf(account.toString())
         val rpcRequest = RpcRequest("getTokenAccountBalance", params)
@@ -212,7 +220,7 @@ class RpcRemoteRepository(
         return rpcApi.getBalance(rpcRequest).result.value
     }
 
-    override suspend fun getBalances(accounts: List<String>): List<Pair<String, Long>> {
+    override suspend fun getBalances(accounts: List<String>): List<Pair<String, BigInteger>> {
         val requestsBatch = accounts.map {
             val params = listOf(it)
             RpcRequest("getBalance", params)
@@ -221,7 +229,7 @@ class RpcRemoteRepository(
         return rpcApi
             .getBalances(requestsBatch)
             .mapIndexed { index, response ->
-                requestsBatch[index].params!!.first() as String to response.result.value
+                requestsBatch[index].params!!.first() as String to response.result.value.toBigInteger()
             }
     }
 
@@ -243,7 +251,7 @@ class RpcRemoteRepository(
         return rpcApi.getTokenAccountsByOwner(rpcRequest = rpcRequest).result
     }
 
-    override suspend fun getMinimumBalanceForRentExemption(dataLength: Long): Long {
+    override suspend fun getMinimumBalanceForRentExemption(dataLength: Int): Long {
         val params = listOf(dataLength)
         val rpcRequest = RpcRequest("getMinimumBalanceForRentExemption", params)
         return rpcApi.getMinimumBalanceForRentExemption(rpcRequest).result
@@ -279,7 +287,7 @@ class RpcRemoteRepository(
         )
 
         val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
-        return mainnetApi.getConfirmedSignaturesForAddress2(rpcRequest).result
+        return rpcpoolRpcApi.getConfirmedSignaturesForAddress2(rpcRequest).result
     }
 
     override suspend fun getConfirmedTransactions(
@@ -292,6 +300,6 @@ class RpcRemoteRepository(
             RpcRequest("getConfirmedTransaction", params)
         }
 
-        return mainnetApi.getConfirmedTransactions(requestsBatch).map { it.result }
+        return rpcpoolRpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
     }
 }

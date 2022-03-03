@@ -1,25 +1,21 @@
 package org.p2p.wallet.auth.ui.username
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
-import org.p2p.wallet.utils.colorFromTheme
-import org.p2p.wallet.utils.copyToClipBoard
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.receive.list.TokenListFragment
+import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.edgetoedge.Edge
 import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -35,71 +31,54 @@ class UsernameFragment :
     override val presenter: UsernameContract.Presenter by inject()
 
     private val binding: FragmentUsernameBinding by viewBinding()
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            presenter.saveQr(binding.nameTextView.text.toString())
-        } else {
-            toast(getString(R.string.auth_function_not_available))
-        }
-    }
+    private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
             edgeToEdge {
                 toolbar.fit { Edge.TopArc }
+                bottomSheetView.fitMargin { Edge.BottomArc }
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
-
-            saveTextView.setOnClickListener {
-                checkPermission()
+            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
+                presenter.saveQr(binding.receiveCardView.getQrName(), qrImage)
+                receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
+            }
+            receiveCardView.setSelectNetworkVisibility(isVisible = false)
+            receiveCardView.setFaqVisibility(isVisible = false)
+            progressButton.setOnClickListener {
+                replaceFragment(TokenListFragment.create())
             }
         }
-
         presenter.loadData()
     }
 
     override fun showUsername(username: Username) {
         val fullUsername = username.getFullUsername(requireContext())
-        binding.nameTextView.text = fullUsername
+        binding.receiveCardView.setQrName(fullUsername)
 
-        binding.copyTextView.setOnClickListener {
-            requireContext().copyToClipBoard(fullUsername)
-            toast(R.string.common_copied)
+        binding.receiveCardView.setOnCopyQrClickListener {
+            receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
         }
 
-        binding.shareTextView.setOnClickListener {
+        binding.receiveCardView.setOnShareQrClickListener {
             requireContext().shareText(fullUsername)
+            receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
         }
     }
 
     override fun renderQr(qrBitmap: Bitmap) {
-        binding.qrImageView.setImageBitmap(qrBitmap)
+        binding.receiveCardView.setQrBitmap(qrBitmap)
+        binding.receiveCardView.showQrLoading(false)
     }
 
     override fun showAddress(address: String) {
-        binding.addressTextView.text = buildPartTextColor(address, colorFromTheme(R.attr.colorAccent))
+        binding.receiveCardView.setQrValue(address.highlightPublicKey(requireContext()))
     }
 
     override fun showToastMessage(messageRes: Int) {
         toast(messageRes)
-    }
-
-    private fun buildPartTextColor(text: String, color: Int): SpannableString {
-        val span = SpannableString(text)
-        span.setSpan(ForegroundColorSpan(color), 0, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-        span.setSpan(ForegroundColorSpan(color), text.length - 4, text.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-        return span
-    }
-
-    private fun checkPermission() {
-        when (PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ->
-                presenter.saveQr(binding.nameTextView.text.toString())
-            else -> requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
     }
 }

@@ -6,14 +6,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.FragmentActivity
-import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.AuthInteractor
-import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.utils.colorFromTheme
-import org.p2p.wallet.utils.edgetoedge.isInsetConsumed
-import org.p2p.wallet.utils.edgetoedge.navigationBarInset
-import org.p2p.wallet.utils.edgetoedge.redispatchWindowInsetsToAllChildren
-import org.p2p.wallet.utils.edgetoedge.statusBarInset
 import io.palaima.debugdrawer.DebugDrawer
 import io.palaima.debugdrawer.base.DebugModuleAdapter
 import io.palaima.debugdrawer.commons.BuildModule
@@ -21,6 +13,13 @@ import io.palaima.debugdrawer.commons.DeviceModule
 import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.utils.edgetoedge.isInsetConsumed
+import org.p2p.wallet.utils.edgetoedge.navigationBarInset
+import org.p2p.wallet.utils.edgetoedge.redispatchWindowInsetsToAllChildren
+import org.p2p.wallet.utils.edgetoedge.statusBarInset
 import timber.log.Timber
 
 object DebugDrawer : KoinComponent {
@@ -34,8 +33,8 @@ object DebugDrawer : KoinComponent {
         Timber.plant(lumberYard.tree())
     }
 
-    fun install(activity: FragmentActivity) {
-        DebugDrawer.Builder(activity)
+    fun install(activity: FragmentActivity): DebugDrawer {
+        val drawer = DebugDrawer.Builder(activity)
             .modules(*getDefaultModules())
             .withTheme(R.style.WalletTheme)
             .build()
@@ -52,7 +51,7 @@ object DebugDrawer : KoinComponent {
         }
         val drawerContent = activity.findViewById<ViewGroup>(R.id.dd_debug_view)
 
-        drawerContent.setBackgroundColor(activity.colorFromTheme(R.attr.colorBackgroundPrimary))
+        drawerContent.setBackgroundColor(activity.getColor(R.color.backgroundPrimary))
 
         ViewCompat.setOnApplyWindowInsetsListener(drawerContent) { v, insets ->
             if (insets.isInsetConsumed()) {
@@ -66,6 +65,8 @@ object DebugDrawer : KoinComponent {
         }
         parent.redispatchWindowInsetsToAllChildren()
         content.redispatchWindowInsetsToAllChildren()
+
+        return drawer
     }
 
     private fun getDefaultModules(): Array<DebugModuleAdapter> {

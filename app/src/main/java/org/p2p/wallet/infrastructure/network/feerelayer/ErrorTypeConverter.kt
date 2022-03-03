@@ -1,6 +1,6 @@
 package org.p2p.wallet.infrastructure.network.feerelayer
 
-import org.p2p.wallet.infrastructure.network.ErrorCode
+import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorType
 
 object ErrorTypeConverter {

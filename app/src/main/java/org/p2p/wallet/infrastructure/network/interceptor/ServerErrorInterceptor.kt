@@ -8,10 +8,10 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.p2p.wallet.infrastructure.network.EmptyDataException
-import org.p2p.wallet.infrastructure.network.ErrorCode
-import org.p2p.wallet.infrastructure.network.ServerError
-import org.p2p.wallet.infrastructure.network.ServerException
+import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.wallet.infrastructure.network.data.ErrorCode
+import org.p2p.wallet.infrastructure.network.data.ServerError
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import timber.log.Timber
 import java.io.IOException
 
@@ -99,10 +99,11 @@ class ServerErrorInterceptor(
 
         val serverError = gson.fromJson(bodyString, ServerError::class.java)
 
+        val errorMessage = serverError.error.data.getErrorLog() ?: serverError.error.message
         ServerException(
             errorCode = serverError.error.code,
             fullMessage = fullMessage,
-            errorMessage = serverError.error.message
+            errorMessage = errorMessage
         )
     } catch (e: Throwable) {
         IOException("Error reading response error body", e)

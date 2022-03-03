@@ -6,15 +6,15 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.wallet.main.model.Token
-import org.p2p.wallet.rpc.repository.RpcRepository
-import org.p2p.wallet.swap.interactor.orca.OrcaAddressInteractor
+import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.rpc.repository.RpcAmountRepository
+import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class SwapInstructionsInteractor(
-    private val rpcRepository: RpcRepository,
-    private val orcaAddressInteractor: OrcaAddressInteractor
+    private val rpcAmountRepository: RpcAmountRepository,
+    private val orcaAddressInteractor: TransactionAddressInteractor
 ) {
 
     suspend fun prepareValidAccountAndInstructions(
@@ -25,7 +25,7 @@ class SwapInstructionsInteractor(
         feePayer: PublicKey,
         closeAfterward: Boolean
     ): AccountInstructions {
-        if (mint.toBase58() == Token.WRAPPED_SOL_MINT) {
+        if (mint.toBase58() == WRAPPED_SOL_MINT) {
             val accountInstructions = prepareSourceAccountAndInstructions(
                 myNativeWallet = myAccount,
                 source = address ?: myAccount,
@@ -40,8 +40,8 @@ class SwapInstructionsInteractor(
             if (isCreatingWSOL && initAmount.compareTo(BigInteger.ZERO) != 0) {
                 val transferInstruction = SystemProgram.transfer(
                     fromPublicKey = myAccount,
-                    toPublickKey = accountInstructions.account,
-                    lamports = initAmount.toLong()
+                    toPublicKey = accountInstructions.account,
+                    lamports = initAmount
                 )
 
                 accountInstructions.instructions.add(1, transferInstruction)
@@ -84,8 +84,8 @@ class SwapInstructionsInteractor(
         amount: BigInteger,
         payer: PublicKey
     ): AccountInstructions {
-        val minBalanceForRentExemption = rpcRepository.getMinimumBalanceForRentExemption(
-            TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH.toLong()
+        val minBalanceForRentExemption = rpcAmountRepository.getMinimumBalanceForRentExemption(
+            TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
         )
 
         // create new account
@@ -97,12 +97,12 @@ class SwapInstructionsInteractor(
                 SystemProgram.createAccount(
                     fromPublicKey = from,
                     newAccountPublicKey = newAccount.publicKey,
-                    lamports = amount.toLong() + minBalanceForRentExemption
+                    lamports = amount.toLong() + minBalanceForRentExemption.toLong()
                 ),
                 TokenProgram.initializeAccountInstruction(
                     TokenProgram.PROGRAM_ID,
                     newAccount.publicKey,
-                    Token.WRAPPED_SOL_MINT.toPublicKey(),
+                    WRAPPED_SOL_MINT.toPublicKey(),
                     payer
                 )
             ),
@@ -146,7 +146,7 @@ class SwapInstructionsInteractor(
         feePayer: PublicKey,
         closeAfterward: Boolean
     ): AccountInstructions {
-        val addressData = orcaAddressInteractor.findAssociatedAddress(owner, mint.toBase58())
+        val addressData = orcaAddressInteractor.findSplTokenAddressData(owner, mint.toBase58())
 
         // cleanup instructions
         val cleanupInstructions = mutableListOf<TransactionInstruction>()
@@ -154,7 +154,7 @@ class SwapInstructionsInteractor(
             cleanupInstructions.add(
                 TokenProgram.closeAccountInstruction(
                     TokenProgram.PROGRAM_ID,
-                    addressData.associatedAddress,
+                    addressData.destinationAddress,
                     owner,
                     owner
                 )
@@ -162,28 +162,28 @@ class SwapInstructionsInteractor(
         }
 
         // if associated address is registered, there is no need to creating it again
-        if (!addressData.shouldCreateAssociatedInstruction) {
+        if (!addressData.shouldCreateAccount) {
             return AccountInstructions(
-                account = addressData.associatedAddress,
+                account = addressData.destinationAddress,
                 cleanupInstructions = cleanupInstructions
             )
         }
 
         // create associated address
         return AccountInstructions(
-            account = addressData.associatedAddress,
+            account = addressData.destinationAddress,
             instructions = mutableListOf(
                 TokenProgram.createAssociatedTokenAccountInstruction(
                     TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
                     TokenProgram.PROGRAM_ID,
                     mint,
-                    addressData.associatedAddress,
+                    addressData.destinationAddress,
                     owner,
                     feePayer
                 )
             ),
             cleanupInstructions = cleanupInstructions,
-            newWalletPubkey = addressData.associatedAddress.toBase58()
+            newWalletPubkey = addressData.destinationAddress.toBase58()
         )
     }
 }

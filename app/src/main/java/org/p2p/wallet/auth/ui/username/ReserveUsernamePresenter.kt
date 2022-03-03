@@ -1,27 +1,28 @@
 package org.p2p.wallet.auth.ui.username
 
-import android.content.Context
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class ReserveUsernamePresenter(
-    private val context: Context,
     private val usernameInteractor: UsernameInteractor,
-    private val fileRepository: FileRepository
+    private val analytics: OnBoardingAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<ReserveUsernameContract.View>(),
     ReserveUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
+    private var lastUsername: String = ""
 
     override fun checkUsername(username: String) {
+        lastUsername = username
         checkUsernameJob?.cancel()
-
         if (username.isEmpty()) {
             view?.showIdleState()
             return
@@ -42,8 +43,6 @@ class ReserveUsernamePresenter(
             } catch (e: Throwable) {
                 view?.showAvailableName(username)
                 Timber.e(e, "Error occurred while checking username: $username")
-            } finally {
-                view?.showUsernameLoading(false)
             }
         }
     }
@@ -66,6 +65,7 @@ class ReserveUsernamePresenter(
         launch {
             try {
                 usernameInteractor.registerUsername(username, result)
+                analytics.logUsernameReserved()
                 view?.showSuccess()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while registering username")
@@ -76,15 +76,13 @@ class ReserveUsernamePresenter(
         }
     }
 
-    override fun openTermsOfUse() {
-        val inputStream = context.assets.open("p2p_terms_of_service.pdf")
-        val file = fileRepository.savePdf("p2p_terms_of_service", inputStream.readBytes())
-        view?.showFile(file)
+    override fun onSkipClicked() {
+        analytics.logUsernameSkipped(OnBoardingAnalytics.UsernameField.getValueOf(lastUsername))
+        view?.finishNavigation()
     }
 
-    override fun openPrivacyPolicy() {
-        val inputStream = context.assets.open("p2p_privacy_policy.pdf")
-        val file = fileRepository.savePdf("p2p_privacy_policy", inputStream.readBytes())
-        view?.showFile(file)
+    override fun save() {
+        analytics.logUsernameSaved(analyticsInteractor.getPreviousScreenName())
+        view?.showCustomFlow()
     }
 }

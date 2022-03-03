@@ -45,11 +45,6 @@ class PinView @JvmOverloads constructor(
             onBiometricClicked?.invoke()
         }
 
-        binding.resetButton.clipToOutline = true
-        binding.resetButton.setOnClickListener {
-            onResetClicked?.invoke()
-        }
-
         binding.keyboardView.onRightButtonClicked = {
             pinCode = pinCode.dropLast(1)
             updateDots()
@@ -58,13 +53,27 @@ class PinView @JvmOverloads constructor(
 
     fun startErrorAnimation(errorText: String) {
         with(binding) {
+            messageTextView.setTextColor(context.getColor(R.color.systemErrorMain))
             messageTextView.text = errorText
             messageTextView.isVisible = true
-            pinCodeView.startErrorAnimation(
-                onAnimationFinished = { messageTextView.isInvisible = true }
-            )
+            pinCodeView.startErrorAnimation {
+                messageTextView.isInvisible = true
+                clearPin()
+            }
         }
-        clearPin()
+    }
+
+    fun startSuccessAnimation(text: String, onAnimationFinished: () -> Unit) {
+        with(binding) {
+            messageTextView.setTextColor(context.getColor(R.color.systemSuccessMain))
+            messageTextView.text = text
+            messageTextView.isVisible = true
+            pinCodeView.startSuccessAnimation {
+                messageTextView.isVisible = true
+                clearPin()
+                onAnimationFinished()
+            }
+        }
     }
 
     fun showLockedState(message: String) {
@@ -75,7 +84,6 @@ class PinView @JvmOverloads constructor(
 
             messageTextView.isVisible = true
             messageTextView.text = message
-            resetButton.isVisible = true
         }
     }
 
@@ -87,7 +95,6 @@ class PinView @JvmOverloads constructor(
 
             messageTextView.isVisible = false
             messageTextView.text = ""
-            resetButton.isVisible = false
         }
     }
 

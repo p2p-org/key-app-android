@@ -3,30 +3,44 @@ package org.p2p.wallet.swap.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+/*
+* We are sending to blockchain converting slippage to coersing at most 1 value
+* Since 100 percent is slippage 1
+* We are dividing every custom slippage value to 100
+* Thus:
+* 1 percent is 0.01 value
+* 5 percent is 0.05 value
+* 10 percent is 0.1 value
+* 50 percent is 0.5 value
+* etc.
+* */
+const val PERCENT_DIVIDE_VALUE = 100
+const val MAX_ALLOWED_SLIPPAGE = 50
+
 sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parcelable {
     @Parcelize
-    object MIN : Slippage(0.001, "0.1%")
+    object Min : Slippage(0.001, "0.1%")
 
     @Parcelize
-    object MEDIUM : Slippage(0.005, "0.5%")
+    object Medium : Slippage(0.005, "0.5%")
 
     @Parcelize
-    object PERCENT : Slippage(0.01, "1%")
+    object Percent : Slippage(0.01, "1%")
 
     @Parcelize
-    object FIVE : Slippage(0.05, "5%")
+    object Five : Slippage(0.05, "5%")
 
     @Parcelize
-    data class CUSTOM(val value: Double) : Slippage(value, "$value")
+    data class Custom(val value: Double) : Slippage(value / PERCENT_DIVIDE_VALUE, "$value")
 
     companion object {
         fun parse(slippage: Double): Slippage =
             when (slippage) {
-                MIN.doubleValue -> MIN
-                MEDIUM.doubleValue -> MEDIUM
-                PERCENT.doubleValue -> PERCENT
-                FIVE.doubleValue -> FIVE
-                else -> CUSTOM(slippage)
+                Min.doubleValue -> Min
+                Medium.doubleValue -> Medium
+                Percent.doubleValue -> Percent
+                Five.doubleValue -> Five
+                else -> if (slippage == 0.0) Min else Custom(slippage)
             }
     }
 }

@@ -18,18 +18,32 @@ class EnvironmentManager(
 
     private var onChanged: ((Environment) -> Unit)? = null
 
-    fun getMoonpayUrl(amount: String): String {
-        val baseUrl = context.getString(R.string.moonpayBaseDomain)
+    fun isDevnet(): Boolean = loadEnvironment() == Environment.DEVNET
+
+    fun isMainnet(): Boolean =
+        loadEnvironment() in listOf(
+            Environment.MAINNET,
+            Environment.RPC_POOL,
+            Environment.SOLANA
+        )
+
+    fun getMoonpayUrl(
+        amount: String,
+        publicKey: String,
+        currencyCode: String
+    ): String {
+        val baseUrl = context.getString(R.string.moonpayWalletDomain)
         val apiKey = BuildConfig.moonpayKey
 
         return Uri.Builder()
             .scheme("https")
             .authority(baseUrl)
             .appendQueryParameter("apiKey", apiKey)
-            .appendQueryParameter("currencyCode", "eth")
+            .appendQueryParameter("currencyCode", currencyCode)
             .appendQueryParameter("baseCurrencyAmount", amount)
             .appendQueryParameter("baseCurrencyCode", USD_READABLE_SYMBOL.lowercase())
             .appendQueryParameter("lockAmount", "false")
+            .appendQueryParameter("walletAddress", publicKey)
             .build()
             .toString()
     }

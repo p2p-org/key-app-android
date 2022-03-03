@@ -7,25 +7,28 @@ import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.analytics.AuthAnalytics
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import timber.log.Timber
 import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 500L
-private const val PIN_CODE_ATTEMPT_COUNT = 3
-
-private const val TIMER_MILLIS = 10000L
-private const val TIMER_INTERVAL = 1000L
 
 class ResetPinPresenter(
-    private val authInteractor: AuthInteractor
+    private val authInteractor: AuthInteractor,
+    private val adminAnalytics: AdminAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<ResetPinContract.View>(), ResetPinContract.Presenter {
 
     private var isCurrentPinConfirmed = false
     private var createdPin = ""
 
-    private var wrongPinCounter = 0
-
     private var timer: CountDownTimer? = null
+
+    init {
+        adminAnalytics.logPinResetInvoked()
+    }
 
     override fun setPinCode(pinCode: String) {
         if (!isCurrentPinConfirmed) {
@@ -43,6 +46,10 @@ class ResetPinPresenter(
         resetPinActually(cipher)
     }
 
+    override fun onSeedPhraseValidated(keys: List<String>) {
+        onSignInResult(SignInResult.Success)
+    }
+
     private fun verifyPin(pinCode: String) {
         view?.showLoading(true)
         launch {
@@ -50,7 +57,7 @@ class ResetPinPresenter(
                 onSignInResult(authInteractor.signInByPinCode(pinCode))
             } catch (e: Exception) {
                 Timber.e(e, "error checking current pin")
-                view?.showCurrentPinIncorrectError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
+                view?.showCurrentPinIncorrectError()
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 view?.showLoading(false)
@@ -65,22 +72,14 @@ class ResetPinPresenter(
                 view?.showEnterNewPin()
             }
             SignInResult.WrongPin -> {
-                wrongPinCounter++
-
-                if (wrongPinCounter >= PIN_CODE_ATTEMPT_COUNT) {
-                    startTimer()
-                    view?.vibrate(VIBRATE_DURATION)
-                    view?.clearPin()
-                    return
-                }
-
-                view?.showCurrentPinIncorrectError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
+                view?.showCurrentPinIncorrectError()
                 view?.vibrate(VIBRATE_DURATION)
             }
-        } ?: Unit
+        }
     }
 
     private fun resetPin(pinCode: String) {
+        val resetResult: AuthAnalytics.AuthResult
         if (createdPin.isEmpty()) {
             createdPin = pinCode
             view?.showConfirmNewPin()
@@ -90,6 +89,7 @@ class ResetPinPresenter(
         if (createdPin != pinCode) {
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
+            resetResult = AuthAnalytics.AuthResult.ERROR
             return
         }
 
@@ -99,6 +99,8 @@ class ResetPinPresenter(
         } else {
             resetPinWithoutBiometrics()
         }
+        resetResult = AuthAnalytics.AuthResult.SUCCESS
+        adminAnalytics.logPinResetValidated(resetResult)
     }
 
     private fun resetPinActually(cipher: Cipher? = null) {
@@ -106,6 +108,7 @@ class ResetPinPresenter(
         launch {
             try {
                 authInteractor.resetPin(createdPin, cipher?.let { EncodeCipher(it) })
+                adminAnalytics.logPinCreated(currentScreenName = analyticsInteractor.getCurrentScreenName())
                 view?.showResetSuccess()
             } catch (e: Exception) {
                 Timber.e(e, "error setting new pin")
@@ -117,24 +120,6 @@ class ResetPinPresenter(
                 view?.showLoading(false)
             }
         }
-    }
-
-    private fun startTimer() {
-        timer = object : CountDownTimer(TIMER_MILLIS, TIMER_INTERVAL) {
-
-            @SuppressWarnings("MagicNumber")
-            override fun onTick(millisUntilFinished: Long) {
-                val remainingInSeconds = millisUntilFinished / 1000L
-                val seconds = remainingInSeconds % 60
-                view?.showWalletLocked(seconds)
-            }
-
-            override fun onFinish() {
-                wrongPinCounter = 0
-                view?.showWalletUnlocked()
-                view?.showLoading(false)
-            }
-        }.start()
     }
 
     override fun detach() {

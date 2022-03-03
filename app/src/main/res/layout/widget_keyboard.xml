@@ -20,22 +20,22 @@
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/onePinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             app:keyboard_button_text="1" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/twoPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:layout_marginStart="36dp"
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="2" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/threePinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             app:keyboard_button_text="3" />
 
     </LinearLayout>
@@ -51,22 +51,22 @@
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/fourPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             app:keyboard_button_text="4" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/fivePinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:layout_marginStart="36dp"
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="5" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/sixPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             app:keyboard_button_text="6" />
 
     </LinearLayout>
@@ -83,22 +83,22 @@
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/sevenPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             app:keyboard_button_text="7" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/eightPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:layout_marginStart="36dp"
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="8" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/ninePinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             app:keyboard_button_text="9" />
 
     </LinearLayout>
@@ -114,22 +114,22 @@
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/additionalLeftPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:visibility="invisible" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/zeroPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:layout_marginStart="36dp"
             android:layout_marginEnd="36dp"
             app:keyboard_button_text="0" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/additionalRightPinCodeButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
             android:visibility="invisible"
             app:keyboard_button_image="@drawable/ic_backspace" />
     </LinearLayout>

@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?colorBackgroundPrimary"
+        android:background="@color/backgroundPrimary"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
@@ -71,7 +71,7 @@
                     android:drawableStart="@drawable/ic_wallet_small"
                     android:drawablePadding="4dp"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    android:textColor="?colorAccentPrimary"
+                    android:textColor="@color/backgroundButtonPrimary"
                     app:layout_constraintBottom_toBottomOf="@id/fromTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/fromTextView"
@@ -117,13 +117,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:background="@drawable/bg_gray_secondary_rounded"
+                    android:background="@drawable/bg_app_rounded"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:text="@string/swap_max_available"
                     android:textAllCaps="true"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/textIconPrimary"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/downImageView"
                     app:layout_constraintStart_toEndOf="@id/downImageView"
@@ -144,7 +144,7 @@
                     android:inputType="numberDecimal"
                     android:singleLine="true"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Bold24"
-                    android:textColorHint="?colorElementSecondary"
+                    android:textColorHint="@color/textIconPrimary"
                     app:layout_constraintBottom_toBottomOf="@id/downImageView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/centerGuideline"
@@ -158,7 +158,7 @@
                     android:gravity="end"
                     android:singleLine="true"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/textIconPrimary"
                     app:layout_constraintEnd_toEndOf="@id/amountEditText"
                     app:layout_constraintStart_toStartOf="@id/amountEditText"
                     app:layout_constraintTop_toBottomOf="@id/amountEditText"
@@ -170,7 +170,7 @@
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="54dp"
-                    android:background="?colorElementTertiary"
+                    android:background="@color/strokeSecondary"
                     app:layout_constraintTop_toBottomOf="@id/aroundTextView" />
 
                 <ImageView
@@ -215,9 +215,9 @@
                     android:layout_marginEnd="36dp"
                     android:drawableStart="@drawable/ic_wallet_small"
                     android:drawablePadding="4dp"
-                    android:drawableTint="?colorElementSecondary"
+                    android:drawableTint="@color/textIconPrimary"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/textIconPrimary"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/destinationTitleTextView"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -280,7 +280,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/textIconPrimary"
                     app:layout_constraintEnd_toEndOf="@id/destinationAmountTextView"
                     app:layout_constraintTop_toBottomOf="@id/destinationAmountTextView"
                     tools:text="Receive at least: 4,970751" />
@@ -318,7 +318,7 @@
                     android:layout_marginTop="16dp"
                     android:text="@string/main_price"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold12"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/textIconPrimary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/destinationBarrier" />
 
@@ -350,7 +350,7 @@
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="16dp"
-                    android:background="?colorElementTertiary"
+                    android:background="@color/strokeSecondary"
                     app:layout_constraintTop_toBottomOf="@id/exchangeTextView" />
 
                 <org.p2p.wallet.common.ui.widget.DoubleTextView
@@ -379,7 +379,7 @@
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="16dp"
-                    android:background="?colorElementTertiary"
+                    android:background="@color/strokeSecondary"
                     app:layout_constraintTop_toBottomOf="@id/slippageView" />
 
                 <TextView
@@ -422,7 +422,7 @@
                     android:text="@string/main_select_token"
                     android:textAllCaps="false"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="?colorElementPrimary"
+                    android:textColor="@color/textIconPrimary"
                     app:layout_constraintBottom_toTopOf="@id/poweredTextView"
                     app:layout_constraintTop_toBottomOf="@id/feesTextView"
                     app:layout_constraintVertical_bias="1"
@@ -448,7 +448,7 @@
                     android:gravity="center"
                     android:text="@string/main_powered_by"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-                    android:textColor="?colorElementSecondary"
+                    android:textColor="@color/textIconPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/poweredImageView"
                     app:layout_constraintStart_toEndOf="@id/centerGuideline" />
