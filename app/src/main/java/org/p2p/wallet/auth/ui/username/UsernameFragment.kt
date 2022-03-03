@@ -43,7 +43,7 @@ class UsernameFragment :
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
-                presenter.saveQr(binding.receiveCardView.getQrName())
+                presenter.saveQr(binding.receiveCardView.getQrName(), qrImage)
                 receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
             }
             receiveCardView.setSelectNetworkVisibility(isVisible = false)
