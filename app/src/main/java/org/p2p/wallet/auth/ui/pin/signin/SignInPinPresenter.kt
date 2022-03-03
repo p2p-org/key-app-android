@@ -121,12 +121,10 @@ class SignInPinPresenter(
                     view?.clearPin()
                     return
                 }
-
-                view?.showWrongPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
-                view?.vibrate(VIBRATE_DURATION)
-
                 authResult = AuthAnalytics.AuthResult.ERROR
                 adminAnalytics.logPinRejected(analyticsInteractor.getCurrentScreenName())
+                view?.showWrongPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
+                view?.vibrate(VIBRATE_DURATION)
             }
             is SignInResult.Success -> {
                 timer?.cancel()

@@ -5,6 +5,8 @@ import org.p2p.wallet.common.analytics.Events.ADMIN_APP_OPENED
 import org.p2p.wallet.common.analytics.Events.ADMIN_PASSWORD_CREATED
 import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_CREATED
 import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_REJECTED
+import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_RESET_INVOKED
+import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_RESET_VALIDATED
 import org.p2p.wallet.common.analytics.Events.ADMIN_PUSH_RECEIVED
 import org.p2p.wallet.common.analytics.Events.ADMIN_SIGNED_OUT
 import org.p2p.wallet.common.analytics.Events.ADMIN_SIGN_OUT
@@ -62,6 +64,19 @@ class AdminAnalytics(
                 Pair("Current_Screen", currentScreenName)
             )
         )
+    }
+
+    fun logPinResetValidated(authResult: AuthAnalytics.AuthResult) {
+        tracker.logEvent(
+            ADMIN_PIN_RESET_VALIDATED,
+            arrayOf(
+                Pair("Auth_Reset_Result", authResult.title)
+            )
+        )
+    }
+
+    fun logPinResetInvoked() {
+        tracker.logEvent(ADMIN_PIN_RESET_INVOKED)
     }
 
     fun logPasswordCreated() {

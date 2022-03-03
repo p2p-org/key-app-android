@@ -9,7 +9,7 @@ object Events {
     const val BROWSE_TOKEN_CHOSEN = "Token_Chosen"
     const val BROWSE_SCREEN_OPENED = "Screen_Opened"
     const val BROWSE_NETWORK_ADDING = "Network_Adding"
-    const val BROWSE_NETWORK_CHANGING = "Network_Adding"
+    const val BROWSE_NETWORK_CHANGING = "Network_Changing"
     const val BROWSE_NETWORK_SAVED = "Network_Saved"
     const val BROWSE_BANNER_USERNAME_PRESSED = "Banner_Username_Pressed"
     const val BROWSE_BANNER_BACKUP_PRESSED = "Banner_Backup_Pressed"
@@ -30,6 +30,8 @@ object Events {
     const val ADMIN_PIN_CREATED = "Pin_Created"
     const val ADMIN_PIN_REJECTED = "Pin_Rejected"
     const val ADMIN_PASSWORD_CREATED = "Password_Created"
+    const val ADMIN_PIN_RESET_INVOKED = "PIN_Reset_Invoked"
+    const val ADMIN_PIN_RESET_VALIDATED = "PIN_Reset_Validated"
 
     const val ONBOARD_SPLASH_VIEWED = "Splash_Viewed"
     const val ONBOARD_SPLASH_SWIPED = "Splash_Swiped"

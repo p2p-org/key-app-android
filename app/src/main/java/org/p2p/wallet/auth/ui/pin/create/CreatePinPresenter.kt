@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -34,6 +35,7 @@ class CreatePinPresenter(
         if (pinCode != createdPin) {
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
+            adminAnalytics.logPinRejected(ScreenName.OnBoarding.PIN_CONFIRM)
             return
         }
 

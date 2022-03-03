@@ -116,6 +116,7 @@ class BrowseAnalytics(private val tracker: TrackerContract) {
         SEND("Send"),
         BUY("Buy"),
         TOKEN_A("Token_A"),
-        TOKEN_B("Token_B")
+        TOKEN_B("Token_B"),
+        RECEIVE("Receive")
     }
 }
