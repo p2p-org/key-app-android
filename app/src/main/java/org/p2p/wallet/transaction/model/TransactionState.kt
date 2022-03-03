@@ -2,27 +2,27 @@ package org.p2p.wallet.transaction.model
 
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
+import org.p2p.wallet.history.model.HistoryTransaction
 
-sealed class TransactionState(open val transactionId: String) {
+sealed class TransactionState {
 
     data class Progress(
-        override val transactionId: String = "...",
         @StringRes val message: Int = R.string.send_transaction_being_processed
-    ) : TransactionState(transactionId)
+    ) : TransactionState()
 
     data class SendSuccess(
-        override val transactionId: String,
+        val transaction: HistoryTransaction,
         val sourceTokenSymbol: String
-    ) : TransactionState(transactionId)
+    ) : TransactionState()
 
     data class SwapSuccess(
-        override val transactionId: String,
+        val transaction: HistoryTransaction,
         val fromToken: String,
         val toToken: String
-    ) : TransactionState(transactionId)
+    ) : TransactionState()
 
     data class Error(
-        override val transactionId: String,
+        val transaction: HistoryTransaction,
         val message: String
-    ) : TransactionState(transactionId)
+    ) : TransactionState()
 }

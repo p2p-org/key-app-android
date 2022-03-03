@@ -16,11 +16,13 @@ interface CreatePinContract {
         fun vibrate(duration: Long)
         fun showLoading(isLoading: Boolean)
         fun showBiometricDialog(cipher: Cipher)
+        fun navigateBack()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun setPinCode(pinCode: String)
         fun enableBiometric()
         fun createPin(cipher: Cipher?)
+        fun clearUserData()
     }
 }

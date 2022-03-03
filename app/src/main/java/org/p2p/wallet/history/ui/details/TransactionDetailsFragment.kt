@@ -12,6 +12,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
 import org.p2p.wallet.databinding.FragmentTransactionTransferBinding
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
+import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutEnd
@@ -22,6 +23,7 @@ import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 import org.p2p.wallet.utils.withTextOrInvisible
 
 private const val EXTRA_STATE = "EXTRA_STATE"
@@ -67,6 +69,17 @@ class TransactionDetailsFragment :
 
     override fun showDate(date: String) {
         binding.dateTextView.text = date
+    }
+
+    override fun showStatus(status: TransactionStatus) {
+        binding.statusTextView.setText(status.resValue)
+        val color = when (status) {
+            TransactionStatus.COMPLETED -> R.color.colorGreen
+            TransactionStatus.PENDING -> R.color.systemWarningMain
+            TransactionStatus.ERROR -> R.color.systemErrorMain
+        }
+
+        binding.statusColorView.setBackgroundColor(getColor(color))
     }
 
     override fun showSourceInfo(iconContainer: DrawableContainer, primaryInfo: String, secondaryInfo: String?) {
@@ -139,8 +152,9 @@ class TransactionDetailsFragment :
         }
     }
 
-    override fun showBlockNumber(blockNumber: String) {
-        binding.blockNumberTextView.text = blockNumber
+    override fun showBlockNumber(blockNumber: String?) {
+        binding.blockNumberTextView withTextOrGone blockNumber
+        binding.blockNumberTitleTextView.isVisible = !blockNumber.isNullOrEmpty()
     }
 
     override fun showLoading(isLoading: Boolean) {

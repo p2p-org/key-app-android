@@ -29,6 +29,7 @@
     <string name="common_logout">Log out</string>
     <string name="common_stay">Stay</string>
     <string name="common_close_account">Close account</string>
+    <string name="common_commas">…</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -422,6 +423,8 @@
     <string name="details_creation_fee">Wallet creation fee</string>
     <string name="details_block_number">Block number</string>
     <string name="details_completed">Completed</string>
+    <string name="details_pending">Pending</string>
+    <string name="details_error">Error</string>
     <string name="details_value">Value</string>
     <string name="details_paid_by_p2p">Paid by p2p.org</string>
     <string name="details_paid_by_p2p_brackets">(Paid by p2p.org)</string>

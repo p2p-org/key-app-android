@@ -84,12 +84,6 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             }
 
             transactionIdTextView.text = data.transactionId
-            showButton.setOnClickListener {
-                val transactionId = transactionManager.getTransactionState().transactionId
-                val result = bundleOf(EXTRA_RESULT_KEY_PRIMARY to transactionId)
-                setFragmentResult(requestKey, result)
-                dismissAllowingStateLoss()
-            }
 
             secondaryButton.setOnClickListener {
                 setFragmentResult(requestKey, bundleOf(EXTRA_RESULT_KEY_SECONDARY to null))
@@ -146,11 +140,17 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             progressBar.isVisible = false
 
             transactionIdGroup.isVisible = true
-            transactionIdTextView.text = state.transactionId
+            transactionIdTextView.text = state.transaction.signature
 
             transactionImageView.setImageResource(R.drawable.ic_success)
             lineView.isVisible = true
             lineView.setBackgroundColor(getColor(R.color.systemSuccessMain))
+
+            showButton.setOnClickListener {
+                val result = bundleOf(EXTRA_RESULT_KEY_PRIMARY to state.transaction)
+                setFragmentResult(requestKey, result)
+                dismissAllowingStateLoss()
+            }
         }
     }
 
@@ -161,11 +161,17 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             progressBar.isVisible = false
 
             transactionIdGroup.isVisible = true
-            transactionIdTextView.text = state.transactionId
+            transactionIdTextView.text = state.transaction.signature
 
             transactionImageView.setImageResource(R.drawable.ic_success)
             lineView.isVisible = true
             lineView.setBackgroundColor(getColor(R.color.systemSuccessMain))
+
+            showButton.setOnClickListener {
+                val result = bundleOf(EXTRA_RESULT_KEY_PRIMARY to state.transaction)
+                setFragmentResult(requestKey, result)
+                dismissAllowingStateLoss()
+            }
         }
     }
 
@@ -175,7 +181,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             progressBar.isVisible = true
 
             transactionIdGroup.isVisible = true
-            transactionIdTextView.text = state.transactionId
+            transactionIdTextView.text = getString(R.string.common_commas)
 
             transactionImageView.setImageResource(R.drawable.ic_pending)
             lineView.isVisible = false

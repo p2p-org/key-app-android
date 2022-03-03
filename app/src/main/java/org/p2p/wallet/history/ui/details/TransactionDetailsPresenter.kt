@@ -77,6 +77,7 @@ class TransactionDetailsPresenter(
         val title = transaction.getTitle()
         view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
+        view?.showStatus(transaction.status)
 
         view?.showSourceInfo(
             iconContainer = DrawableContainer(transaction.sourceIconUrl),
@@ -101,6 +102,7 @@ class TransactionDetailsPresenter(
         val title = transaction.getTitle(context)
         view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
+        view?.showStatus(transaction.status)
 
         val tokenData = transaction.tokenData
         val isSend = transaction.isSend

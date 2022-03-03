@@ -57,6 +57,27 @@ class CreatePinPresenter(
         }
     }
 
+    override fun createPin(cipher: Cipher?) {
+        launch {
+            try {
+                val encoderCipher = if (cipher != null) EncodeCipher(cipher) else null
+                registerComplete(createdPin, encoderCipher)
+                analytics.logBioRejected()
+                view?.onAuthFinished()
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to create pin code")
+                view?.showErrorMessage(R.string.error_general_message)
+            }
+        }
+    }
+
+    override fun clearUserData() {
+        launch {
+            authInteractor.logout()
+            view?.navigateBack()
+        }
+    }
+
     private fun createPinCode(pinCode: String) {
         view?.showLoading(true)
         launch {
@@ -71,20 +92,6 @@ class CreatePinPresenter(
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 view?.showLoading(false)
-            }
-        }
-    }
-
-    override fun createPin(cipher: Cipher?) {
-        launch {
-            try {
-                val encoderCipher = if (cipher != null) EncodeCipher(cipher) else null
-                registerComplete(createdPin, encoderCipher)
-                analytics.logBioRejected()
-                view?.onAuthFinished()
-            } catch (e: Throwable) {
-                Timber.e(e, "Failed to create pin code")
-                view?.showErrorMessage(R.string.error_general_message)
             }
         }
     }
