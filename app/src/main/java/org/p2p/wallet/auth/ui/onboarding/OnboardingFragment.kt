@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.RawRes
 import androidx.core.view.isVisible
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentOnboardingBinding
@@ -21,6 +23,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     }
 
     private val binding: FragmentOnboardingBinding by viewBinding()
+    private val analytics: OnBoardingAnalytics by inject()
 
     private var isFinalAnimationWorking = false
 
@@ -30,9 +33,11 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             prepareAnimationAndStart()
             createButton.clipToOutline = true
             createButton.setOnClickListener {
+                analytics.logSplashCreating()
                 runAfterAnimation { replaceFragment(CreateWalletFragment.create()) }
             }
             loginButton.setOnClickListener {
+                analytics.logSplashRestored()
                 runAfterAnimation { replaceFragment(SecretKeyFragment.create()) }
             }
         }

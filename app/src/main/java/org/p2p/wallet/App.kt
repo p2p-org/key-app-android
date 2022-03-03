@@ -100,7 +100,7 @@ class App : Application() {
     private fun restart() {
         setupKoin()
         RootActivity
-            .createIntent(this)
+            .createIntent(this, action = RootActivity.ACTION_RESTART)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             .let { startActivity(it) }
     }

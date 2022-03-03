@@ -2,6 +2,7 @@ package org.p2p.wallet.receive.list
 
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -10,7 +11,8 @@ private const val PAGE_SIZE = 20
 
 class TokenListPresenter(
     private val interactor: UserInteractor,
-    private val browseAnalytics: BrowseAnalytics
+    private val browseAnalytics: BrowseAnalytics,
+    private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<TokenListContract.View>(), TokenListContract.Presenter {
 
     private var searchText = ""
@@ -18,6 +20,10 @@ class TokenListPresenter(
 
     override fun attach(view: TokenListContract.View) {
         super.attach(view)
+        browseAnalytics.logTokenListViewed(
+            analyticsInteractor.getPreviousScreenName(),
+            BrowseAnalytics.TokenListLocation.RECEIVE
+        )
         observeTokens()
     }
 

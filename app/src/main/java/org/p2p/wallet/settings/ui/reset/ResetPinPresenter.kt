@@ -8,6 +8,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -24,6 +25,10 @@ class ResetPinPresenter(
     private var createdPin = ""
 
     private var timer: CountDownTimer? = null
+
+    init {
+        adminAnalytics.logPinResetInvoked()
+    }
 
     override fun setPinCode(pinCode: String) {
         if (!isCurrentPinConfirmed) {
@@ -74,6 +79,7 @@ class ResetPinPresenter(
     }
 
     private fun resetPin(pinCode: String) {
+        val resetResult: AuthAnalytics.AuthResult
         if (createdPin.isEmpty()) {
             createdPin = pinCode
             view?.showConfirmNewPin()
@@ -83,7 +89,7 @@ class ResetPinPresenter(
         if (createdPin != pinCode) {
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
-            adminAnalytics.logPinRejected(analyticsInteractor.getCurrentScreenName())
+            resetResult = AuthAnalytics.AuthResult.ERROR
             return
         }
 
@@ -93,6 +99,8 @@ class ResetPinPresenter(
         } else {
             resetPinWithoutBiometrics()
         }
+        resetResult = AuthAnalytics.AuthResult.SUCCESS
+        adminAnalytics.logPinResetValidated(resetResult)
     }
 
     private fun resetPinActually(cipher: Cipher? = null) {

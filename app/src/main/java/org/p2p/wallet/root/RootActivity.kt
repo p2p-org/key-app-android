@@ -25,7 +25,10 @@ import org.p2p.wallet.utils.toast
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
     companion object {
-        fun createIntent(context: Context) = Intent(context, RootActivity::class.java)
+        const val ACTION_RESTART = "android.intent.action.RESTART"
+        fun createIntent(context: Context, action: String = Intent.ACTION_PACKAGE_FIRST_LAUNCH) =
+            Intent(context, RootActivity::class.java)
+                .apply { this.action = action }
     }
 
     override val presenter: RootContract.Presenter by inject()
@@ -100,6 +103,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
     override fun onStop() {
         super.onStop()
+        if (intent.action == ACTION_RESTART) return
         adminAnalytics.logAppClosed(analyticsInteractor.getCurrentScreenName())
     }
 }
