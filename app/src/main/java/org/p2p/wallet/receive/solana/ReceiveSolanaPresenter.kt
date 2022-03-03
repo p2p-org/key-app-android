@@ -63,7 +63,8 @@ class ReceiveSolanaPresenter(
             try {
                 usernameInteractor.saveQr(name, bitmap)
                 view?.showToastMessage(R.string.auth_saved)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                Timber.e("Error on saving QR: $e")
                 view?.showErrorMessage(e)
             }
         }

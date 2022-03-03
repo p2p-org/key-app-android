@@ -65,8 +65,13 @@ class ReceiveRenBtcPresenter(
 
     override fun saveQr(name: String, bitmap: Bitmap) {
         launch {
-            usernameInteractor.saveQr(name, bitmap)
-            view?.showToastMessage(R.string.auth_saved)
+            try {
+                usernameInteractor.saveQr(name, bitmap)
+                view?.showToastMessage(R.string.auth_saved)
+            } catch (e: Throwable) {
+                Timber.e("Error on saving QR $e")
+                view?.showErrorMessage(e)
+            }
         }
     }
 

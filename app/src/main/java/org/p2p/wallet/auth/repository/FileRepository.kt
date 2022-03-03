@@ -59,8 +59,11 @@ class FileRepository(private val context: Context) {
             resolver.openOutputStream(uri)
         } else {
             @Suppress("DEPRECATION")
-            val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            val pathName = directory.toString() + File.separator + "p2p-wallet"
+            val rootFolder = File(context.cacheDir.toString() + File.separator + "p2p-wallet")
+            if (!rootFolder.exists()) {
+                rootFolder.mkdirs()
+            }
+            val pathName = rootFolder.toString() + File.separator + "p2p-wallet"
             FileOutputStream(File(pathName))
         }
 
