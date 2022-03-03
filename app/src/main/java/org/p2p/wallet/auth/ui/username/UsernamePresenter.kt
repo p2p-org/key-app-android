@@ -19,7 +19,6 @@ class UsernamePresenter(
 ) : BasePresenter<UsernameContract.View>(), UsernameContract.Presenter {
 
     private var qrJob: Job? = null
-    private var qrBitmap: Bitmap? = null
 
     override fun loadData() {
         val publicKey = tokenKeyProvider.publicKey
@@ -35,8 +34,6 @@ class UsernamePresenter(
         qrJob = launch {
             try {
                 val qr = qrCodeInteractor.generateQrCode(address)
-                qrBitmap?.recycle()
-                qrBitmap = qr
                 view?.renderQr(qr)
             } catch (e: CancellationException) {
                 Timber.d("Qr generation was cancelled")
@@ -47,11 +44,14 @@ class UsernamePresenter(
         }
     }
 
-    override fun saveQr(name: String) {
+    override fun saveQr(name: String, qrBitmap: Bitmap) {
         launch {
-            qrBitmap?.let {
-                usernameInteractor.saveQr(name, it)
+            try {
+                usernameInteractor.saveQr(name, qrBitmap)
                 view?.showToastMessage(R.string.auth_saved)
+            } catch (e: Throwable) {
+                Timber.e("Error on saving QR $e")
+                view?.showErrorMessage(e)
             }
         }
     }
