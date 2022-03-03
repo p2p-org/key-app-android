@@ -100,7 +100,7 @@ object HomeModule : InjectionModule {
                 get(), get()
             )
         } bind BuySolanaContract.Presenter::class
-        factory { TokenListPresenter(get(), get()) } bind TokenListContract.Presenter::class
+        factory { TokenListPresenter(get(), get(),get()) } bind TokenListContract.Presenter::class
         factory { (token: Token.Active) ->
             ReceiveTokenPresenter(
                 token,
