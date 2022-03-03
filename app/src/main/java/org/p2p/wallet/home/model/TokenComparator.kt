@@ -1,7 +1,7 @@
 package org.p2p.wallet.home.model
 
 import org.p2p.wallet.utils.isMoreThan
-import org.p2p.wallet.utils.isNotZero
+import org.p2p.wallet.utils.isNullOrZero
 
 /**
  * First element should always be SOL
@@ -26,12 +26,10 @@ class TokenComparator : Comparator<Token> {
     ): Int = when {
         o1.totalInUsd != null && o2.totalInUsd != null ->
             if (o1.totalInUsd.isMoreThan(o2.totalInUsd)) -1 else 1
-        o1.totalInUsd == null && o2.totalInUsd == null ->
+        o1.totalInUsd.isNullOrZero() && o2.totalInUsd.isNullOrZero() ->
             if (o1.total.isMoreThan(o2.total)) -1 else 1
-        o1.totalInUsd != null && o1.totalInUsd.isNotZero() -> -1
-        o2.totalInUsd != null && o2.totalInUsd.isNotZero() -> 1
-        o1.isAbsoluteZero && !o2.isAbsoluteZero -> 1
-        o2.isAbsoluteZero && o1.isAbsoluteZero -> -1
-        else -> if (o1.total.isMoreThan(o2.total)) -1 else 1
+        else -> {
+            if (o1.totalInUsd != null) -1 else 1
+        }
     }
 }
