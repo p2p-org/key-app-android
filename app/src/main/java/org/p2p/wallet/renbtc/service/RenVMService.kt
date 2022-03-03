@@ -10,6 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.renbtc.model.RenBtcSession
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
@@ -110,9 +111,11 @@ class RenVMService : Service(), CoroutineScope {
 
         renVMJob = launch {
             try {
+                renBtcInteractor.setSessionSate(RenBtcSession.Loading)
                 val session = renBtcInteractor.generateSession()
                 renBtcInteractor.startPolling(session)
             } catch (e: Throwable) {
+                renBtcInteractor.setSessionSate(RenBtcSession.Error(e))
                 Timber.e(e, "Error generating session")
             }
         }

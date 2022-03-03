@@ -1,29 +1,15 @@
 package org.p2p.wallet.renbtc.repository
 
-import org.p2p.wallet.renbtc.db.SessionDao
-import org.p2p.wallet.renbtc.db.SessionEntity
-import org.p2p.wallet.renbtc.model.RenBTCPayment
-import org.p2p.wallet.renbtc.api.RenBTCApi
-import org.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.p2p.solanaj.kits.renBridge.LockAndMint
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.renbtc.db.SessionDao
+import org.p2p.wallet.renbtc.db.SessionEntity
+import org.p2p.wallet.utils.toPublicKey
 
-class RenBTCRemoteRepository(
-    private val api: RenBTCApi,
+class RenDatabaseRepository(
     private val dao: SessionDao
-) : RenBTCRepository {
-
-    override suspend fun getPaymentData(environment: Environment, gateway: String): List<RenBTCPayment> {
-        val response = when (environment) {
-            Environment.RPC_POOL,
-            Environment.SOLANA,
-            Environment.MAINNET -> api.getPaymentData(gateway)
-            Environment.DEVNET -> api.getPaymentData("testnet", gateway)
-        }
-        return response.map { RenBTCPayment(it.transactionHash, it.txIndex, it.amount) }
-    }
+) : RenLoaclRepository {
 
     override suspend fun saveSession(session: LockAndMint.Session) {
         val entity = SessionEntity(

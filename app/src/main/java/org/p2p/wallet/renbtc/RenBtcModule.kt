@@ -10,9 +10,13 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule.createLoggingInterceptor
 import org.p2p.wallet.renbtc.api.RenBTCApi
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import org.p2p.wallet.renbtc.repository.RenDatabaseRepository
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.renbtc.repository.RenBTCRemoteRepository
-import org.p2p.wallet.renbtc.repository.RenBTCRepository
+import org.p2p.wallet.renbtc.repository.RenRemoteRepository
+import org.p2p.wallet.renbtc.repository.RenRepository
+import org.p2p.wallet.renbtc.repository.RenLoaclRepository
+import org.p2p.wallet.renbtc.repository.RenStateInMemoryRepository
+import org.p2p.wallet.renbtc.repository.RenStateLocalRepository
 import org.p2p.wallet.renbtc.ui.main.RenBTCContract
 import org.p2p.wallet.renbtc.ui.main.RenBTCPresenter
 import org.p2p.wallet.renbtc.ui.status.RenStatusesContract
@@ -36,11 +40,13 @@ object RenBtcModule : InjectionModule {
                 .build()
                 .create(RenBTCApi::class.java)
 
-            RenBTCRemoteRepository(api, get())
-        } bind RenBTCRepository::class
+            RenRemoteRepository(api)
+        } bind RenRepository::class
+        single { RenDatabaseRepository(get()) } bind RenLoaclRepository::class
+        single { RenStateInMemoryRepository() } bind RenStateLocalRepository::class
+        single { RenBtcInteractor(get(), get(), get(), get(), get()) }
 
         single { RenTransactionManager(get(), get(), get()) }
-        single { RenBtcInteractor(get(), get(), get()) }
         single { BurnBtcInteractor(get(), get(), get()) }
 
         factory { RenBTCPresenter(get(), get(), get(), get(), get()) } bind RenBTCContract.Presenter::class

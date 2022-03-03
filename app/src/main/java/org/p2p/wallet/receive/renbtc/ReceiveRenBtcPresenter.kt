@@ -16,6 +16,7 @@ import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.renbtc.model.RenBtcSession
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -42,24 +43,32 @@ class ReceiveRenBtcPresenter(
     override fun subscribe() {
         launch {
             interactor.getSessionFlow().collect { session ->
-                handleSession(session)
+                when (session) {
+                    is RenBtcSession.Error -> {
+                        view?.showErrorMessage(session.throwable)
+                        view?.showLoading(false)
+                    }
+                    is RenBtcSession.Active -> {
+                        handleSession(session.session)
+                        view?.showLoading(false)
+                    }
+                    is RenBtcSession.Loading -> {
+                        view?.showLoading(true)
+                    }
+                }
             }
         }
     }
 
     override fun startNewSession(context: Context) {
         launch {
-            view?.showLoading(true)
             RenVMService.startWithNewSession(context)
         }
     }
 
     override fun checkActiveSession(context: Context) {
         launch {
-            view?.showLoading(true)
             RenVMService.startWithCheck(context)
-            delay(ONE_SECOND_IN_MILLIS)
-            view?.showLoading(false)
         }
     }
 
@@ -100,7 +109,6 @@ class ReceiveRenBtcPresenter(
             startTimer(remaining)
             generateQrCode(session.gatewayAddress)
             loadTransactionCount()
-            view?.showLoading(false)
         } else {
             // TODO navigate so solana broke logic
         }

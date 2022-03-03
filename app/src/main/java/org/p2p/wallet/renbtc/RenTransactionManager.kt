@@ -15,7 +15,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
-import org.p2p.wallet.renbtc.repository.RenBTCRepository
+import org.p2p.wallet.renbtc.repository.RenRemoteRepository
 import org.p2p.wallet.renbtc.service.RenStatusExecutor
 import org.p2p.wallet.renbtc.service.RenTransactionExecutor
 import org.p2p.wallet.utils.toPublicKey
@@ -30,7 +30,7 @@ private const val SESSION_POLLING_DELAY = 5000L
  * */
 
 class RenTransactionManager(
-    private val repository: RenBTCRepository,
+    private val renBTCRemoteRepository: RenRemoteRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager
 ) {
@@ -51,7 +51,6 @@ class RenTransactionManager(
         withContext(Dispatchers.IO) {
             val networkConfig = getNetworkConfig()
             lockAndMint = if (existingSession == null || !existingSession.isValid) {
-                repository.clearSessionData()
                 Timber.tag(REN_TAG).d("No existing session found, building new one")
                 val signer = tokenKeyProvider.publicKey
                 LockAndMint.buildSession(networkConfig, signer.toPublicKey())
@@ -67,8 +66,6 @@ class RenTransactionManager(
             Timber.tag(REN_TAG).d("Fee calculated: $fee")
 
             val session = lockAndMint.session
-
-            repository.saveSession(session)
             return@withContext session
         }
 
@@ -113,7 +110,7 @@ class RenTransactionManager(
         scope.launch {
             Timber.tag(REN_TAG).d("Checking payment data by gateway address")
             try {
-                val data = repository.getPaymentData(environment, session.gatewayAddress)
+                val data = renBTCRemoteRepository.getPaymentData(environment, session.gatewayAddress)
                 handlePaymentData(data, secretKey)
             } catch (e: Throwable) {
                 Timber.e(e, "Error checking payment data")

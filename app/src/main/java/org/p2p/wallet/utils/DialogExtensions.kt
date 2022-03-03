@@ -103,13 +103,13 @@ fun Fragment.showErrorDialog(message: String, dismissCallback: (() -> Unit)? = n
     )
 }
 
-fun Fragment.showErrorDialog(throwable: Throwable? = null) {
+fun Fragment.showErrorDialog(throwable: Throwable? = null, dismissCallback: (() -> Unit)? = null) {
     ErrorBottomSheet.show(
         fragment = this,
         iconRes = R.drawable.ic_common_error,
         title = TextContainer(R.string.error_title),
         message = TextContainer(throwable.getErrorMessage(requireContext())),
-        actionCallback = null,
+        actionCallback = dismissCallback,
         dismissCallback = null
     )
 }

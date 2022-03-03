@@ -22,6 +22,7 @@ import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -141,5 +142,11 @@ class RenBTCFragment :
 
     override fun showStatuses() {
         replaceFragment(RenTransactionsFragment.create())
+    }
+
+    override fun showErrorMessage(e: Throwable?) {
+        showErrorDialog(e) {
+            popBackStack()
+        }
     }
 }
