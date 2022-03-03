@@ -80,8 +80,7 @@ class ExpandView @JvmOverloads constructor(
     }
 
     private fun setArrowRotation(@FloatRange(from = .0, to = 1.0) value: Float) {
-        val rotation = 1 - value
-        binding.arrowIconView.rotation = rotation * -180
+        binding.arrowIconView.rotation = value * -180
     }
 
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {

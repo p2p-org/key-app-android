@@ -30,7 +30,7 @@ class SwapSlippageBottomSheet(
 
     private val initialSlippage: Slippage by args(EXTRA_SLIPPAGE)
 
-    private var slippage: Slippage = Slippage.MIN
+    private var slippage: Slippage = Slippage.Min
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.dialog_slippage_bottom_sheet, container, false)

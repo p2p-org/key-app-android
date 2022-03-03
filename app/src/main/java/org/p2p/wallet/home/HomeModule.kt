@@ -107,8 +107,6 @@ object HomeModule : InjectionModule {
                 get(),
                 get(),
                 get(),
-                get(),
-                get(),
                 get()
             )
         } bind ReceiveTokenContract.Presenter::class

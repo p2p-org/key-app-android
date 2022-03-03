@@ -1,6 +1,5 @@
 package org.p2p.wallet.receive.token
 
-import android.content.Context
 import android.graphics.Bitmap
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -12,7 +11,6 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.util.concurrent.CancellationException
 import kotlin.properties.Delegates
@@ -21,12 +19,10 @@ private const val DELAY_IN_MILLIS = 200L
 
 class ReceiveTokenPresenter(
     private val defaultToken: Token.Active,
-    private val userInteractor: UserInteractor,
     private val qrCodeInteractor: QrCodeInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val receiveAnalytics: ReceiveAnalytics,
-    private val context: Context
+    private val receiveAnalytics: ReceiveAnalytics
 ) : BasePresenter<ReceiveTokenContract.View>(),
     ReceiveTokenContract.Presenter {
 
@@ -50,7 +46,7 @@ class ReceiveTokenPresenter(
             token = receive
             val publicKey = tokenKeyProvider.publicKey
             val username = usernameInteractor.getUsername()
-            view?.showUserData(publicKey, username)
+            view?.showUserData(publicKey, receive.publicKey, username)
 
             generateQrCode(publicKey)
             receiveAnalytics.logReceiveViewed(isUsernameClaimed = !username?.username.isNullOrEmpty())

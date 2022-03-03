@@ -509,6 +509,7 @@
     <string name="settings_what_is_a_security_key">What is a security key?</string>
     <string name="settings_slippage_hint">Custom slippage tolerance (%)</string>
     <string name="settings_slippage_max_error">Max price slippage is 50%</string>
+    <string name="settings_slippage_min_error">Min slippage is 0.1%</string>
     <string name="settings_slippage_info">&#8226; A slippage is a difference between the expected price and the actual price at which a trade is executed\n\n
 &#8226; Slippage can occur at any time, but it is most prevalent during periods of higher volatility\n\n
 &#8226; Transactions that exceed 20% slippage tolerance may be frontrun\n\n

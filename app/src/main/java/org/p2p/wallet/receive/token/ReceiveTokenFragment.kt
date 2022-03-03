@@ -102,15 +102,15 @@ class ReceiveTokenFragment :
         }
     }
 
-    override fun showUserData(userPublicKey: String, username: Username?) {
+    override fun showUserData(userPublicKey: String, directPublicKey: String, username: Username?) {
         binding.directAddressBottomTextView.text = userPublicKey
         val username = username?.getFullUsername(requireContext())
         if (username != null) {
             binding.receiveCardView.setQrName(username)
             binding.receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
-            binding.directAddressBottomTextView.text = userPublicKey
+            binding.directAddressBottomTextView.text = directPublicKey
             binding.directTokenAddressView.setOnClickListener {
-                requireContext().copyToClipBoard(userPublicKey)
+                requireContext().copyToClipBoard(directPublicKey)
                 toast(R.string.auth_copied)
             }
         }

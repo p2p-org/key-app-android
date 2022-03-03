@@ -18,7 +18,6 @@ import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -84,7 +83,7 @@ class DerivableAccountsFragment :
     }
 
     override fun navigateToCreatePin() {
-        popAndReplaceFragment(CreatePinFragment.create(), inclusive = true)
+        replaceFragment(CreatePinFragment.create())
     }
 
     override fun navigateToReserveUsername() {

@@ -90,18 +90,18 @@ class BuySolanaPresenter(
         updateViewWithData()
     }
 
-    override fun setBuyAmount(amount: String) {
+    override fun setBuyAmount(amount: String, isDelayEnabled: Boolean) {
         this.amount = amount
-        calculateTokens(amount)
+        calculateTokens(amount, isDelayEnabled)
     }
 
     private fun updateViewWithData() {
         prefix = if (isSwapped) token.tokenSymbol else USD_SYMBOL
         view?.swapData(isSwapped, prefix)
-        setBuyAmount(amount)
+        setBuyAmount(amount, isDelayEnabled = false)
     }
 
-    private fun calculateTokens(amount: String) {
+    private fun calculateTokens(amount: String, isDelayEnabled: Boolean) {
         calculationJob?.cancel()
 
         val parsedAmount = amount.toBigDecimalOrZero()
@@ -122,7 +122,7 @@ class BuySolanaPresenter(
 
         calculationJob = launch {
             try {
-                delay(DELAY_IN_MS)
+                if (isDelayEnabled) delay(DELAY_IN_MS)
                 view?.showLoading(true)
                 val baseCurrencyCode = USD_READABLE_SYMBOL.lowercase()
                 val buyResult: BuyAnalytics.BuyResult

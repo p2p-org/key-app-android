@@ -11,7 +11,6 @@ import androidx.annotation.ColorRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -21,6 +20,7 @@ import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.wallet.common.ui.bottomsheet.TextContainer
+import org.p2p.wallet.common.ui.textwatcher.AmountFractionTextWatcher
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -138,6 +138,11 @@ class SendFragment :
         checkClipBoard()
     }
 
+    override fun onStop() {
+        super.onStop()
+        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+    }
+
     private fun setupViews() {
         with(binding) {
             edgeToEdge {
@@ -165,8 +170,8 @@ class SendFragment :
                 presenter.setTargetResult(null)
             }
 
-            amountEditText.doAfterTextChanged {
-                presenter.setNewSourceAmount(it.toString())
+            AmountFractionTextWatcher.installOn(amountEditText) {
+                presenter.setNewSourceAmount(it)
             }
 
             networkView.setOnClickListener {

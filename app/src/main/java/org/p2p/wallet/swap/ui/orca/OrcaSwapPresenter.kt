@@ -79,7 +79,7 @@ class OrcaSwapPresenter(
     private var fees: SwapFee? = null
 
     private var aroundValue: BigDecimal = BigDecimal.ZERO
-    private var slippage: Slippage = Slippage.PERCENT
+    private var slippage: Slippage = Slippage.Percent
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null

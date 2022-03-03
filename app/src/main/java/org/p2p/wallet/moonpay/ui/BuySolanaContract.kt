@@ -18,7 +18,7 @@ interface BuySolanaContract {
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
-        fun setBuyAmount(amount: String)
+        fun setBuyAmount(amount: String, delayEnabled: Boolean = true)
         fun onContinueClicked()
         fun onSwapClicked()
         fun onBackPressed()
