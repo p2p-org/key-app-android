@@ -11,7 +11,7 @@ interface ReceiveTokenContract {
     interface View : MvpView {
         fun renderQr(qrBitmap: Bitmap?)
         fun showReceiveToken(token: Token.Active)
-        fun showUserData(userPublicKey: String, username: Username?)
+        fun showUserData(userPublicKey: String, directPublicKey: String, username: Username?)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showQrLoading(isLoading: Boolean)
         fun showToastMessage(resId: Int)

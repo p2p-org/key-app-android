@@ -54,7 +54,7 @@ class SelectTokenViewHolder(
             loadImage(tokenImageView, item.iconUrl!!)
         }
 
-        nameTextView.text = item.tokenName
+        nameTextView.text = item.getFormattedName()
         wrappedImageView.isVisible = item.isWrapped
         itemView.setOnClickListener { onItemClicked(item) }
 

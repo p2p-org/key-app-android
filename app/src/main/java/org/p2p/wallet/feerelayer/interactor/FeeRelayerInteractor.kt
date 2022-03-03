@@ -71,11 +71,11 @@ class FeeRelayerInteractor(
 
         val transactionFee = topUpPools.getInputAmount(
             minimumAmountOut = feeInSOL.transaction,
-            slippage = Slippage.PERCENT.doubleValue
+            slippage = Slippage.Percent.doubleValue
         )
         val accountCreationFee = topUpPools.getInputAmount(
             minimumAmountOut = feeInSOL.accountBalances,
-            slippage = Slippage.PERCENT.doubleValue
+            slippage = Slippage.Percent.doubleValue
         )
 
         return FeeAmount(transactionFee ?: BigInteger.ZERO, accountCreationFee ?: BigInteger.ZERO)

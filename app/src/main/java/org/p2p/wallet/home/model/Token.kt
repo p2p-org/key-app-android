@@ -60,17 +60,11 @@ sealed class Token constructor(
             get() = total.isZero()
 
         @IgnoredOnParcel
-        val isAbsoluteZero: Boolean
-            get() = total.isZero() && (totalInUsd == null || totalInUsd.isZero())
-
-        @IgnoredOnParcel
         val usdRateOrZero: BigDecimal
             get() = usdRate ?: BigDecimal.ZERO
 
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
-
-        fun getCurrentRate(): String? = usdRate?.let { "$$it" }
 
         fun getFormattedUsdTotal(): String? = totalInUsd?.let { "$${totalInUsd.scaleShort()}" }
 
@@ -121,6 +115,8 @@ sealed class Token constructor(
     @IgnoredOnParcel
     val isRenBTC: Boolean
         get() = tokenSymbol == REN_BTC_SYMBOL
+
+    fun getFormattedName(): String = if (isSOL) SOL_NAME else tokenName
 
     companion object {
         fun createSOL(
