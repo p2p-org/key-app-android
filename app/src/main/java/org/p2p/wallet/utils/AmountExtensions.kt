@@ -46,6 +46,7 @@ fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.usdRate?.let { this.multiply(it).scaleShort() }
 
+fun BigDecimal?.isNullOrZero() = this == null || this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isNotZero() = this.compareTo(BigDecimal.ZERO) != 0
 fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
