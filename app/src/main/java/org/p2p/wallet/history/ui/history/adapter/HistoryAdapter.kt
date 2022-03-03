@@ -23,9 +23,10 @@ class HistoryAdapter(
     private var pagingState: PagingState = PagingState.Idle
 
     fun setTransactions(new: List<HistoryTransaction>) {
+        val old = ArrayList(data)
         data.clear()
         data.addAll(mapTransactions(new))
-        notifyItemInserted(data.size - 1)
+        DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)
     }
 
     fun setPagingState(newState: PagingState) {

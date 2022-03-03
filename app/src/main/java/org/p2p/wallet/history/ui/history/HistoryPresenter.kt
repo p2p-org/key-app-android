@@ -93,6 +93,7 @@ class HistoryPresenter(
         refreshJob = launch {
             try {
                 view?.showRefreshing(true)
+                transactions.clear()
                 val history = historyInteractor.getHistory(token.publicKey, null, PAGE_SIZE)
                 if (history.isEmpty()) {
                     paginationEnded = true
