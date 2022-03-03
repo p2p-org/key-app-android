@@ -4,9 +4,9 @@ import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.api.RenBTCApi
 import org.p2p.solanaj.rpc.Environment
 
-class RenBTCRemoteRepository(
+class RenRemoteRepository(
     private val api: RenBTCApi
-) : RenBTCRepository {
+) : RenRepository {
 
     override suspend fun getPaymentData(environment: Environment, gateway: String): List<RenBTCPayment> {
         val response = when (environment) {

@@ -12,14 +12,14 @@ import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.model.RenBtcSession
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
-import org.p2p.wallet.renbtc.repository.RenBTCRepository
-import org.p2p.wallet.renbtc.repository.RenBtcDatabaseRepository
-import org.p2p.wallet.renbtc.repository.RenBtcLocalRepository
+import org.p2p.wallet.renbtc.repository.RenRepository
+import org.p2p.wallet.renbtc.repository.RenLoaclRepository
+import org.p2p.wallet.renbtc.repository.RenStateLocalRepository
 
 class RenBtcInteractor(
-    private val repository: RenBTCRepository,
-    private val databaseRepository: RenBtcDatabaseRepository,
-    private val localRepository: RenBtcLocalRepository,
+    private val repository: RenRepository,
+    private val databaseRepository: RenLoaclRepository,
+    private val localRepository: RenStateLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val renTransactionManager: RenTransactionManager
 ) {

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.renbtc.model.RenBtcSession
 
-class RenBtcDaoRepository : RenBtcLocalRepository {
+class RenStateInMemoryRepository : RenStateLocalRepository {
 
     private val sessionFlow = MutableStateFlow<RenBtcSession>(RenBtcSession.Loading)
 

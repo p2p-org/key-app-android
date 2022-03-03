@@ -15,7 +15,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
-import org.p2p.wallet.renbtc.repository.RenBTCRemoteRepository
+import org.p2p.wallet.renbtc.repository.RenRemoteRepository
 import org.p2p.wallet.renbtc.service.RenStatusExecutor
 import org.p2p.wallet.renbtc.service.RenTransactionExecutor
 import org.p2p.wallet.utils.toPublicKey
@@ -30,7 +30,7 @@ private const val SESSION_POLLING_DELAY = 5000L
  * */
 
 class RenTransactionManager(
-    private val renBTCRemoteRepository: RenBTCRemoteRepository,
+    private val renBTCRemoteRepository: RenRemoteRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager
 ) {
