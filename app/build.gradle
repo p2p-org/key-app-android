@@ -81,7 +81,7 @@ android {
             versionNameSuffix ".$VERSION_BUILD-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
             buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
 
             firebaseAppDistribution {
