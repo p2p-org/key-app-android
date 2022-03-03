@@ -44,7 +44,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
         presenter.loadPricesAndBids()
         initializeDebugDrawer()
-        adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
         onBackPressedDispatcher.addCallback {
             val fragment = supportFragmentManager.findFragmentById(R.id.content) as BaseFragment
             analyticsInteractor.logScreenOpenEvent(fragment.getAnalyticsName())

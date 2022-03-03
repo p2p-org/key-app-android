@@ -43,10 +43,18 @@ class RenBTCPresenter(
     override fun subscribe() {
         launch {
             interactor.getSessionFlow().collect { session ->
-                view?.showLoading(session is RenBtcSession.Loading)
                 when (session) {
-                    is RenBtcSession.Error -> view?.showErrorMessage(session.throwable)
-                    is RenBtcSession.Active -> handleSession(session.session)
+                    is RenBtcSession.Error -> {
+                        view?.showErrorMessage(session.throwable)
+                        view?.showLoading(false)
+                    }
+                    is RenBtcSession.Active -> {
+                        handleSession(session.session)
+                        view?.showLoading(false)
+                    }
+                    is RenBtcSession.Loading -> {
+                        view?.showLoading(true)
+                    }
                 }
             }
         }
