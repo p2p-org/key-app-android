@@ -41,7 +41,7 @@ class HistoryPresenter(
     )
 
     init {
-        if (token.isSOL) {
+        if (token.isSOL || token.isUSDC) {
             actions.add(0, ActionButton(R.string.main_buy, R.drawable.ic_plus))
         }
     }
