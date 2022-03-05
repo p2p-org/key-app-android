@@ -42,7 +42,7 @@ class TokenViewHolder(
     private val nameTextView = binding.nameTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
-    private val deleteImageView = binding.deleteImageView
+    private val deleteImageView = binding.hideImageView
     private val contentView = binding.contentView
 
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
