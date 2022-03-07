@@ -17,7 +17,7 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenViewHolder(
-    binding: ItemTokenBinding,
+    private val binding: ItemTokenBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -37,16 +37,7 @@ class TokenViewHolder(
         listener = listener
     )
 
-    private val tokenImageView = binding.tokenImageView
-    private val wrappedImageView = binding.wrappedImageView
-    private val nameTextView = binding.nameTextView
-    private val valueTextView = binding.valueTextView
-    private val totalTextView = binding.totalTextView
-    private val hideImageView = binding.hideImageView
-    private val sendImageView = binding.sendImageView
-    private val contentView = binding.contentView
-
-    fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
+    fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) = with(binding) {
         val token = item.token
 
         (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
