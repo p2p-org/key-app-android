@@ -42,7 +42,8 @@ class TokenViewHolder(
     private val nameTextView = binding.nameTextView
     private val valueTextView = binding.valueTextView
     private val totalTextView = binding.totalTextView
-    private val deleteImageView = binding.hideImageView
+    private val hideImageView = binding.hideImageView
+    private val sendImageView = binding.sendImageView
     private val contentView = binding.contentView
 
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
@@ -58,8 +59,9 @@ class TokenViewHolder(
         valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getFormattedTotal()
 
-        deleteImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
-        deleteImageView.setOnClickListener { listener.onHideClicked(token) }
+        hideImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
+        hideImageView.setOnClickListener { listener.onHideClicked(token) }
+        sendImageView.setOnClickListener { listener.onSendClicked(token) }
 
         contentView.setOnClickListener { listener.onTokenClicked(token) }
     }
