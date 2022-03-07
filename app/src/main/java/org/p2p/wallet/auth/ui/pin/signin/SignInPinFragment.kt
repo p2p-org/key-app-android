@@ -9,8 +9,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.BiometricPromptWrapper
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -42,9 +40,6 @@ class SignInPinFragment :
             requireActivity().finish()
         }
         with(binding) {
-            edgeToEdge {
-                contentView.fit { Edge.All }
-            }
             pinView.onBiometricClicked = { presenter.onBiometricSignInRequested() }
             pinView.onPinCompleted = { presenter.signIn(it) }
             pinView.onResetClicked = { popAndReplaceFragment(SecretKeyFragment.create()) }

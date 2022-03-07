@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -17,8 +16,6 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.ui.info.RenBtcInfoBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -63,9 +60,6 @@ class ReceiveNetworkTypeFragment() :
         analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.NETWORK)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-            }
             solanaButton.setOnClickListener {
                 presenter.onNetworkChanged(NetworkType.SOLANA)
             }

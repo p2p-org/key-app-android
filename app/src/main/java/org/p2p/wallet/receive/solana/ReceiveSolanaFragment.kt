@@ -23,8 +23,6 @@ import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -56,10 +54,6 @@ class ReceiveSolanaFragment :
         analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.SOLANA)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                progressButton.fitMargin { Edge.BottomArc }
-            }
             receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()
             }

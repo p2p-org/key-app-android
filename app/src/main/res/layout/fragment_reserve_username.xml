@@ -1,99 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/auth_reserve_username"
+        app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fillViewport="true">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:navigationIcon="@drawable/ic_back"
-            app:title="@string/auth_reserve_username"
-            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+            android:layout_height="wrap_content">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+            <TextView
+                android:id="@+id/receiveTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_app_rounded"
+                android:lineSpacingExtra="5dp"
+                android:padding="16dp"
+                android:paddingBottom="16dp"
+                android:text="@string/auth_you_can_receive"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
+            <org.p2p.wallet.common.ui.widget.InputTextView
+                android:id="@+id/inputTextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:digits="@string/common_username_allowed_symbols"
+                android:paddingVertical="8dp"
+                app:hint="@string/auth_your_username"
+                app:layout_constraintTop_toBottomOf="@id/receiveTextView"
+                app:suffixText="@string/auth_p2p_sol" />
 
-                <TextView
-                    android:id="@+id/receiveTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_app_rounded"
-                    android:lineSpacingExtra="5dp"
-                    android:padding="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="@string/auth_you_can_receive"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/skipTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="44dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="@string/auth_you_can_skip"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+                app:layout_constraintBottom_toTopOf="@id/usernameButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/inputTextView"
+                app:layout_constraintVertical_bias="0" />
 
-                <org.p2p.wallet.common.ui.widget.InputTextView
-                    android:id="@+id/inputTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:digits="@string/common_username_allowed_symbols"
-                    android:paddingVertical="8dp"
-                    app:hint="@string/auth_your_username"
-                    app:layout_constraintTop_toBottomOf="@id/receiveTextView"
-                    app:suffixText="@string/auth_p2p_sol" />
+            <org.p2p.wallet.common.ui.widget.ProgressButton
+                android:id="@+id/usernameButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                app:buttonDrawable="@drawable/ic_done"
+                app:buttonDrawableTint="@color/textIconButtonPrimary"
+                app:buttonEnabled="false"
+                app:buttonText="@string/auth_reserve"
+                app:buttonTextColor="@color/textIconButtonPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
-                    android:id="@+id/skipTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="44dp"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="center"
-                    android:text="@string/auth_you_can_skip"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-                    app:layout_constraintBottom_toTopOf="@id/usernameButton"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/inputTextView"
-                    app:layout_constraintVertical_bias="0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <org.p2p.wallet.common.ui.widget.ProgressButton
-                    android:id="@+id/usernameButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="24dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="12dp"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    app:buttonDrawable="@drawable/ic_done"
-                    app:buttonDrawableTint="@color/textIconButtonPrimary"
-                    app:buttonEnabled="false"
-                    app:buttonText="@string/auth_reserve"
-                    app:buttonTextColor="@color/textIconButtonPrimary"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+    </ScrollView>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </ScrollView>
-    </LinearLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

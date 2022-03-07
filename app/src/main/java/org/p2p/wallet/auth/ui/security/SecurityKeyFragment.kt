@@ -28,8 +28,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.toast
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.shareScreenShoot
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -56,10 +54,6 @@ class SecurityKeyFragment :
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.CREATE_MANUAL)
         binding.run {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                termsAndConditionsTextView.fitMargin { Edge.BottomArc }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
