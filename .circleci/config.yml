@@ -74,21 +74,7 @@ jobs:
 workflows:
   version: 2
 
-  test_job:
-    jobs:
-      - version_build:
-          context: feature
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
-      - commit:
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
-
-  lint_and_test:
+  lint_test_and_publish_feature:
     jobs:
       - android_lint:
           context: feature
@@ -100,15 +86,23 @@ workflows:
           requires:
             - android_lint
           context: feature
+      - build_and_publish:
+          requires:
+            - unit_tests
+          context: feature
+          type: approval
+          filters:
+            branches:
+              only:
+                - /(^feature\/.+)/
 
-  lint_test_and_publish_feature:
+  lint_and_test:
     jobs:
       - version_build:
           context: feature
           filters:
             branches:
               only:
-                - master
                 - develop
       - android_lint:
           requires:
@@ -118,11 +112,3 @@ workflows:
           requires:
             - android_lint
           context: feature
-      - build_and_publish:
-          requires:
-            - unit_tests
-          context: feature
-          filters:
-            branches:
-              only:
-                - develop
