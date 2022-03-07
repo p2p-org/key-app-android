@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
-import org.p2p.wallet.common.ui.recycler.SwipeLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.withTextOrGone
@@ -40,7 +39,7 @@ class TokenViewHolder(
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) = with(binding) {
         val token = item.token
 
-        (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
+        hideImageView.isVisible = !token.isSOL
 
         if (!token.iconUrl.isNullOrEmpty()) {
             loadImage(tokenImageView, token.iconUrl)
