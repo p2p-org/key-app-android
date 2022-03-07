@@ -1,14 +1,18 @@
 package org.p2p.wallet.restore.ui.keys
 
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-import org.p2p.wallet.restore.model.SeedPhraseResult
+import android.content.res.Resources
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.restore.interactor.SecretKeyInteractor
+import org.p2p.wallet.restore.model.SecretKey
+import org.p2p.wallet.restore.model.SeedPhraseResult
 import kotlin.properties.Delegates
 
 class SecretKeyPresenter(
-    private val secretKeyInteractor: SecretKeyInteractor
+    private val resources: Resources,
+    private val secretKeyInteractor: SecretKeyInteractor,
+    private val fileRepository: FileRepository,
 ) : BasePresenter<SecretKeyContract.View>(), SecretKeyContract.Presenter {
 
     companion object {
@@ -36,5 +40,17 @@ class SecretKeyPresenter(
                 is SeedPhraseResult.Error -> view?.showError(data.message)
             }
         }
+    }
+
+    override fun openTermsOfUse() {
+        val inputStream = resources.assets.open("p2p_terms_of_service.pdf")
+        val file = fileRepository.savePdf("p2p_terms_of_service", inputStream.readBytes())
+        view?.showFile(file)
+    }
+
+    override fun openPrivacyPolicy() {
+        val inputStream = resources.assets.open("p2p_privacy_policy.pdf")
+        val file = fileRepository.savePdf("p2p_privacy_policy", inputStream.readBytes())
+        view?.showFile(file)
     }
 }
