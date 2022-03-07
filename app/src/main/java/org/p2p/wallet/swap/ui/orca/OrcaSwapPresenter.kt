@@ -165,7 +165,7 @@ class OrcaSwapPresenter(
     }
 
     override fun calculateAvailableAmount() {
-        val amount = sourceToken.total.scaleLong().toString()
+        val amount = AmountUtils.format(sourceToken.total.scaleLong())
         setSourceAmount(amount)
         view?.showNewAmount(amount)
         isMaxClicked = true
@@ -381,24 +381,24 @@ class OrcaSwapPresenter(
         val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
         Timber.tag(TAG_SWAP).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
-        destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleLong().toString()
+        destinationAmount = AmountUtils.format(estimatedOutputAmount.fromLamports(destination.decimals).scaleLong())
 
         val minReceive = pair.getMinimumAmountOut(inputAmount, slippage.doubleValue) ?: return
         val minReceiveResult = minReceive.fromLamports(destination.decimals).scaleLong()
 
         val totalUsd = sourceAmount.toBigDecimalOrZero().multiply(source.usdRateOrZero)
 
-        val receiveAtLeast = "${minReceiveResult.toPlainString()} ${destination.tokenSymbol}"
+        val receiveAtLeast = "${AmountUtils.format(minReceiveResult)} ${destination.tokenSymbol}"
         val receiveAtLeastUsd = destination.usdRate?.let { minReceiveResult.multiply(it) }
 
         val data = SwapTotal(
             destinationAmount = destinationAmount,
-            total = "$sourceAmount ${source.tokenSymbol}",
-            totalUsd = totalUsd.scaleShort().toPlainString(),
+            total = "${AmountUtils.format(sourceAmount.toBigDecimalOrZero())} ${source.tokenSymbol}",
+            totalUsd = AmountUtils.format(totalUsd.scaleShort()),
             fee = fees?.transactionFeeString,
             approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
             receiveAtLeast = receiveAtLeast,
-            receiveAtLeastUsd = receiveAtLeastUsd?.toPlainString()
+            receiveAtLeastUsd = receiveAtLeastUsd?.let { AmountUtils.format(it) }
         )
         view?.showTotal(data)
 

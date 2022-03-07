@@ -13,6 +13,7 @@ import kotlin.properties.Delegates
  * For example: 0.1234456789123123 -> 0.123456789
  * */
 
+private const val SYMBOL_ZERO = "0"
 private const val MAX_AMOUNT_ALLOWED_FRACTION_LENGTH = 9
 
 class AmountFractionTextWatcher(
@@ -49,13 +50,17 @@ class AmountFractionTextWatcher(
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         val value = s.toString()
-        valueText = if (value.contains(".")) {
-            val dividedValues = value.split(".")
-            val valueAfterDelimiter = dividedValues.last()
-            val fractionValue = valueAfterDelimiter.take(maxLengthAllowed)
-            "${dividedValues.first()}.$fractionValue"
-        } else {
-            value
+        valueText = when {
+            value.startsWith('.') -> {
+                "$SYMBOL_ZERO$value"
+            }
+            value.contains(".") -> {
+                val dividedValues = value.split(".")
+                val valueAfterDelimiter = dividedValues.last()
+                val fractionValue = valueAfterDelimiter.take(maxLengthAllowed)
+                "${dividedValues.first()}.$fractionValue"
+            }
+            else -> value
         }
     }
 
