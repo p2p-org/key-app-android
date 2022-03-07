@@ -33,8 +33,11 @@ jobs:
       - run:
           name: "Generate build version"
           command: |
-            ./gradlew setVersionBuild -Pversion=<< pipeline.number >>
-            echo "Set build version to << pipeline.number >>"
+            ./gradlew setVersionBuild -Pversion=$CIRCLE_BUILD_NUM
+            echo "Set build version to $CIRCLE_BUILD_NUM"
+      - store_artifacts:
+          path: "./app/gradle.properties"
+          destination: gradle.properties
   android_lint:
     <<: *defaults
     steps:
@@ -68,11 +71,10 @@ jobs:
           command: ./gradlew appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
-
 workflows:
   version: 2
 
-  lint_and_test:
+  lint_test_and_publish_feature:
     jobs:
       - android_lint:
           context: feature
@@ -84,8 +86,17 @@ workflows:
           requires:
             - android_lint
           context: feature
+      - build_and_publish:
+          requires:
+            - unit_tests
+          context: feature
+          type: approval
+          filters:
+            branches:
+              only:
+                - /(^feature\/.+)/
 
-  lint_test_and_publish_feature:
+  lint_and_test:
     jobs:
       - version_build:
           context: feature
@@ -101,11 +112,3 @@ workflows:
           requires:
             - android_lint
           context: feature
-      - build_and_publish:
-          requires:
-            - unit_tests
-          context: feature
-          filters:
-            branches:
-              only:
-                - develop
