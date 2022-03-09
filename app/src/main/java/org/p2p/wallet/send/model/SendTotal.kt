@@ -31,7 +31,11 @@ class SendTotal constructor(
         get() = fee != null && fee is SendFee.SolanaFee
 
     val fullTotal: String
-        get() = if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
+        get() = if (sourceSymbol == fee?.feePayerSymbol) {
+            if (approxTotalUsd != null) "$totalSum $approxTotalUsd" else totalSum
+        } else {
+            if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
+        }
 
     val approxTotalUsd: String? get() = totalUsd?.let { "(~$$it)" }
 
