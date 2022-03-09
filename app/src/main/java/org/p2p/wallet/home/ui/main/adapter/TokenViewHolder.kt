@@ -11,13 +11,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
-import org.p2p.wallet.common.ui.recycler.SwipeLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenViewHolder(
-    binding: ItemTokenBinding,
+    private val binding: ItemTokenBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -37,18 +36,10 @@ class TokenViewHolder(
         listener = listener
     )
 
-    private val tokenImageView = binding.tokenImageView
-    private val wrappedImageView = binding.wrappedImageView
-    private val nameTextView = binding.nameTextView
-    private val valueTextView = binding.valueTextView
-    private val totalTextView = binding.totalTextView
-    private val deleteImageView = binding.deleteImageView
-    private val contentView = binding.contentView
-
-    fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) {
+    fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) = with(binding) {
         val token = item.token
 
-        (itemView as SwipeLayout).isEnabledSwipe = !token.isSOL
+        hideImageView.isVisible = !token.isSOL
 
         if (!token.iconUrl.isNullOrEmpty()) {
             loadImage(tokenImageView, token.iconUrl)
@@ -58,8 +49,9 @@ class TokenViewHolder(
         valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getFormattedTotal()
 
-        deleteImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
-        deleteImageView.setOnClickListener { listener.onHideClicked(token) }
+        hideImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
+        hideImageView.setOnClickListener { listener.onHideClicked(token) }
+        sendImageView.setOnClickListener { listener.onSendClicked(token) }
 
         contentView.setOnClickListener { listener.onTokenClicked(token) }
     }

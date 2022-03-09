@@ -17,7 +17,7 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenHiddenViewHolder(
-    binding: ItemTokenHiddenBinding,
+    private val binding: ItemTokenHiddenBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -37,15 +37,7 @@ class TokenHiddenViewHolder(
         .`as`(PictureDrawable::class.java)
         .listener(SvgSoftwareLayerSetter())
 
-    private val tokenImageView = binding.tokenImageView
-    private val wrappedImageView = binding.wrappedImageView
-    private val nameTextView = binding.nameTextView
-    private val valueTextView = binding.valueTextView
-    private val totalTextView = binding.totalTextView
-    private val hideImageView = binding.hideImageView
-    private val contentView = binding.contentView
-
-    fun onBind(item: HomeElementItem.Hidden, isZerosHidden: Boolean) {
+    fun onBind(item: HomeElementItem.Hidden, isZerosHidden: Boolean) = with(binding) {
         if (item.state is VisibilityState.Hidden) {
             itemView.isVisible = false
             return
@@ -61,8 +53,9 @@ class TokenHiddenViewHolder(
         valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getFormattedTotal()
 
-        hideImageView.setImageResource(token.getVisibilityIcon(isZerosHidden))
-        hideImageView.setOnClickListener { listener.onHideClicked(token) }
+        exposeImageView.setImageResource(token.getVisibilityIcon(isZerosHidden))
+        exposeImageView.setOnClickListener { listener.onHideClicked(token) }
+        sendImageView.setOnClickListener { listener.onSendClicked(token) }
 
         contentView.setOnClickListener { listener.onTokenClicked(token) }
     }
