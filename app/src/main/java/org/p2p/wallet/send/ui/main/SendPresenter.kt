@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.ui.main
 
+import android.content.res.Resources
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -67,7 +68,8 @@ class SendPresenter(
     private val browseAnalytics: BrowseAnalytics,
     private val analyticsInteractor: AnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
-    private val transactionManager: TransactionManager
+    private val transactionManager: TransactionManager,
+    private val resources: Resources
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -254,6 +256,9 @@ class SendPresenter(
         } ?: return
 
         view?.showInputValue(totalAvailable)
+
+        val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
+        view?.showSnackbarMessage(message, R.drawable.ic_done)
         setNewSourceAmount(totalAvailable.toString())
     }
 
@@ -287,9 +292,13 @@ class SendPresenter(
 
     override fun onFeeClicked() {
         launch {
-            sendAnalytics.logSendShowDetailsPressed()
-            val (maxAvailable, remaining) = sendInteractor.getFreeTransactionsInfo()
-            view?.showFeeLimitsDialog(maxAvailable, remaining)
+            try {
+                sendAnalytics.logSendShowDetailsPressed()
+                val (maxAvailable, remaining) = sendInteractor.getFreeTransactionsInfo()
+                view?.showFeeLimitsDialog(maxAvailable, remaining)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading free transactions info")
+            }
         }
     }
 
@@ -298,7 +307,7 @@ class SendPresenter(
         val sendCurrency: String
         mode = when (mode) {
             is CurrencyMode.Token -> {
-                sendCurrency = "USD"
+                sendCurrency = USD_READABLE_SYMBOL
                 CurrencyMode.Usd
             }
             is CurrencyMode.Usd -> {
@@ -361,9 +370,13 @@ class SendPresenter(
 
     private suspend fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
         when (checkAddressResult) {
-            is CheckAddressResult.NewAccountNeeded -> calculateFeeRelayerFee(checkAddressResult.feePayerToken)
+            is CheckAddressResult.NewAccountNeeded ->
+                calculateFeeRelayerFee(checkAddressResult.feePayerToken)
             is CheckAddressResult.AccountExists,
-            is CheckAddressResult.InvalidAddress -> view?.showAccountFeeView(null)
+            is CheckAddressResult.InvalidAddress -> {
+                calculateTotal(null)
+                view?.showAccountFeeView(null)
+            }
         }
     }
 
