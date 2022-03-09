@@ -49,7 +49,6 @@ class RenTransactionManager(
         val networkConfig = getNetworkConfig()
         lockAndMint = if (existingSession == null || !existingSession.isValid) {
             Timber.tag(REN_TAG).d("No existing session found, building new one")
-            Timber.tag("#####_publicKey").d(signer)
             LockAndMint.buildSession(networkConfig, signer.toPublicKey())
         } else {
             Timber.tag(REN_TAG).d("Active session found, fetching information")
