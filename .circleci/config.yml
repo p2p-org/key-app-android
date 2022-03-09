@@ -90,7 +90,6 @@ workflows:
           requires:
             - unit_tests
           context: feature
-          type: approval
           filters:
             branches:
               only:
