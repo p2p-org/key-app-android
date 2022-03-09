@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
-import android.text.Editable
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
@@ -19,7 +18,6 @@ import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.AmountFractionTextWatcher
-import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -38,6 +36,7 @@ import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.focusAndShowKeyboard
@@ -47,7 +46,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
-import kotlin.properties.Delegates
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
 private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
@@ -61,8 +59,6 @@ class OrcaSwapFragment :
     OrcaSwapContract.View {
 
     companion object {
-        private const val SYMBOL_ZERO = "0"
-
         fun create() = OrcaSwapFragment()
 
         fun create(token: Token) = OrcaSwapFragment().withArgs(
@@ -260,7 +256,10 @@ class OrcaSwapFragment :
     }
 
     override fun showAroundValue(aroundValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, aroundValue)
+        binding.aroundTextView.text = getString(
+            R.string.main_send_around_in_usd,
+            AmountUtils.format(aroundValue)
+        )
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
@@ -325,36 +324,6 @@ class OrcaSwapFragment :
             ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SWAP)
         } else {
             ProgressBottomSheet.hide(parentFragmentManager)
-        }
-    }
-
-    private val inputTextWatcher = object : SimpleTextWatcher() {
-
-        private var inputText: String by Delegates.observable("") { _, oldValue, newValue ->
-            if (newValue != oldValue) {
-                presenter.setSourceAmount(newValue)
-            }
-        }
-
-        override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-            super.onTextChanged(text, start, before, count)
-            if (text.isNullOrEmpty()) {
-                inputText = ""
-                return
-            }
-
-            inputText = if (text.startsWith('.')) {
-                "$SYMBOL_ZERO$text"
-            } else {
-                text.toString()
-            }
-        }
-
-        override fun afterTextChanged(text: Editable) {
-            binding.amountEditText.removeTextChangedListener(this)
-            text.clear()
-            text.append(inputText)
-            binding.amountEditText.addTextChangedListener(this)
         }
     }
 
