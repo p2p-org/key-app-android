@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.dialogs
+package org.p2p.wallet.send.ui.network
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -61,7 +61,7 @@ class NetworkSelectionFragment : BaseFragment(R.layout.fragment_network_selectio
         setNetworkSelected(network)
         setFragmentResult(KEY_REQUEST_SEND, bundleOf(EXTRA_NETWORK to network.ordinal))
         val message = getString(R.string.send_network_selected_format, network.stringValue)
-        showSnackbar(message, R.drawable.ic_done)
+        // TODO showSnackBar
     }
 
     private fun setNetworkSelected(network: NetworkType) {

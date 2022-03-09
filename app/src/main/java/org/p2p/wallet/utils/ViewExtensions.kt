@@ -171,8 +171,8 @@ fun View.getColor(@ColorRes colorRes: Int): Int =
 fun Fragment.getColor(@ColorRes colorRes: Int): Int =
     requireContext().getColor(colorRes)
 
-fun Fragment.snackbar(view: View, action: (SnackBar) -> Unit) {
-    val viewGroup = view as ViewGroup
+fun Fragment.snackbar(action: (SnackBar) -> Unit) {
+    val viewGroup = requireView() as ViewGroup
     viewGroup.snackbar(action)
 }
 
@@ -192,7 +192,7 @@ fun ViewGroup.snackbar(action: (SnackBar) -> Unit) {
         CoordinatorLayout.LayoutParams.MATCH_PARENT,
         CoordinatorLayout.LayoutParams.WRAP_CONTENT
     ).apply {
-        bottomMargin = dip(36)
+        bottomMargin = dip(24)
     }
     action.invoke(binding.snackbar)
     binding.snackbar.layoutParams = lp

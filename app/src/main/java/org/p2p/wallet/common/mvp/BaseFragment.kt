@@ -5,7 +5,6 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
-import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
@@ -21,13 +20,12 @@ import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
-import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
+import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.utils.snackbar
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -60,25 +58,6 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     override fun overrideExitAnimation(@AnimRes animation: Int) {
         overrideAnimation(animation, EXTRA_OVERRIDDEN_EXIT_ANIMATION)
-    }
-
-    protected fun showSnackBar(message: String) {
-        snackbar(requireView()) { snackBar -> snackBar.setMessage(message) }
-    }
-
-    protected fun showSnackBar(message: String, @DrawableRes iconRes: Int) {
-        snackbar(requireView()) { snackBar ->
-            snackBar.setMessage(message)
-            snackBar.setIcon(iconRes)
-        }
-    }
-
-    protected fun showSnackBar(message: String, @DrawableRes iconRes: Int, actionText: String, block: () -> Unit) {
-        snackbar(requireView()) { snackBar ->
-            snackBar.setMessage(message)
-            snackBar.setIcon(iconRes)
-            snackBar.setAction(actionText, block)
-        }
     }
 
     private fun overrideAnimation(@AnimRes animation: Int, extraKey: String) {

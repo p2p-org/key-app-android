@@ -258,7 +258,7 @@ class SendPresenter(
         view?.showInputValue(totalAvailable)
 
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
-        view?.showSnackbarMessage(message, R.drawable.ic_done)
+        view?.showSuccessSnackBar(message)
         setNewSourceAmount(totalAvailable.toString())
     }
 

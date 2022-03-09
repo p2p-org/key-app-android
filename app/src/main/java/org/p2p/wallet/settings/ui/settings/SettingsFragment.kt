@@ -136,10 +136,7 @@ class SettingsFragment :
     private fun onPinChanged(bundle: Bundle) {
         val isPinChanged = bundle.getBoolean(BUNDLE_KEY_IS_PIN_CHANGED)
         if (isPinChanged) {
-            showSnackbar(
-                message = getString(R.string.settings_a_new_wallet_pin_is_set),
-                iconRes = R.drawable.ic_done
-            )
+            showSuccessSnackBar(R.string.settings_a_new_wallet_pin_is_set)
         }
     }
 

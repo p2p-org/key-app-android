@@ -47,42 +47,34 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     }
 
     override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar(requireView()) { snackBar ->
-            snackBar.setMessage(getString(messageResId))
-            snackBar.setIcon(R.drawable.ic_close_red)
-            if (actionResId != null && block != null) {
-                snackBar.setAction(getString(actionResId), block)
-            }
+        snackbar {
+            it.setMessage(getString(messageResId))
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
         }
     }
 
     override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar(requireView()) { snackBar ->
-            snackBar.setMessage(message)
-            snackBar.setIcon(R.drawable.ic_close_red)
-            if (actionResId != null && block != null) {
-                snackBar.setAction(getString(actionResId), block)
-            }
+        snackbar {
+            it.setMessage(message)
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
         }
     }
 
     override fun showSuccessSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar(requireView()) { snackBar ->
-            snackBar.setMessage(getString(messageResId))
-            snackBar.setIcon(R.drawable.ic_done)
-            if (actionResId != null && block != null) {
-                snackBar.setAction(getString(actionResId), block)
-            }
+        snackbar {
+            it.setMessage(getString(messageResId))
+                .setIcon(R.drawable.ic_done)
+                .setAction(actionResId, block)
         }
     }
 
     override fun showSuccessSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
-        snackbar(requireView()) { snackBar ->
-            snackBar.setMessage(message)
-            snackBar.setIcon(R.drawable.ic_done)
-            if (actionResId != null && block != null) {
-                snackBar.setAction(getString(actionResId), block)
-            }
+        snackbar {
+            it.setMessage(message)
+                .setIcon(R.drawable.ic_done)
+                .setAction(actionResId, block)
         }
     }
 }

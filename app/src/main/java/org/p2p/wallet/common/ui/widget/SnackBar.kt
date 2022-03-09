@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.ContentViewCallback
 import org.p2p.wallet.databinding.WidgetSnackbarBinding
+import org.p2p.wallet.utils.getString
 
 private const val ANIMATION_DURATION = 500L
 
@@ -54,21 +55,11 @@ class SnackBar @JvmOverloads constructor(
         return this
     }
 
-    fun setAction(title: String, block: () -> Unit): SnackBar {
-        binding.actionTextView.text = title
-        binding.actionTextView.setOnClickListener { block.invoke() }
-        binding.actionTextView.isVisible = true
-        return this
+    fun setAction(actionResId: Int?, block: (() -> Unit)?) {
+        if (actionResId != null && block != null) {
+            binding.actionTextView.text = getString(actionResId)
+            binding.actionTextView.setOnClickListener { block.invoke() }
+            binding.actionTextView.isVisible = true
+        }
     }
-
-    fun setAction(@DrawableRes icon: Int, block: () -> Unit): SnackBar {
-        binding.actionImageView.setImageResource(icon)
-        binding.actionImageView.setOnClickListener { block.invoke() }
-        binding.actionImageView.isVisible = true
-        return this
-    }
-
-    fun getActionTextView() = binding.actionTextView
-
-    fun getActionImageView() = binding.actionImageView
 }

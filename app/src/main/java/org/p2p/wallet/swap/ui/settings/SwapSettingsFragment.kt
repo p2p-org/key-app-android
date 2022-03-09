@@ -15,7 +15,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseFragment
-import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.swap.analytics.SwapAnalytics
@@ -27,6 +26,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.snackbar
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -158,11 +158,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
 
     private fun showMessage(tokenSymbol: String) {
         val message = getString(R.string.swap_pay_fee_format, tokenSymbol)
-        SnackBarView.make(
-            requireView(),
-            message,
-            R.drawable.ic_done
-        )?.show()
+        snackbar { it.setMessage(message) }
     }
 
     /* There are couple of elements in the list and it's okay for us to update all list */
