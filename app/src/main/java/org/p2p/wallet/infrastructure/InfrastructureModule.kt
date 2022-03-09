@@ -45,7 +45,7 @@ object InfrastructureModule : InjectionModule {
             return@single KeyStoreWrapper(encoderDecoder)
         }
 
-        factory { SecureStorage(get(), get()) } bind SecureStorageContract::class
+        single { SecureStorage(get(), get()) } bind SecureStorageContract::class
 
         single { GlideManager(get()) }
 

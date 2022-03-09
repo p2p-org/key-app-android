@@ -52,20 +52,20 @@ class RenBtcInteractor(
 
     suspend fun generateSession(): LockAndMint.Session {
         databaseRepository.clearSessionData()
-        val session = renTransactionManager.initializeSession(null)
+        val session = renTransactionManager.initializeSession(null, tokenKeyProvider.publicKey)
         setSessionSate(RenBtcSession.Active(session))
         return session
     }
 
     suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session {
         databaseRepository.clearSessionData()
-        val session = renTransactionManager.initializeSession(session)
+        val session = renTransactionManager.initializeSession(session, tokenKeyProvider.publicKey)
         setSessionSate(RenBtcSession.Active(session))
         return session
     }
 
     suspend fun startPolling(session: LockAndMint.Session) {
-        renTransactionManager.startPolling(session)
+        renTransactionManager.startPolling(session, tokenKeyProvider.secretKey)
     }
 
     suspend fun getPaymentData(environment: Environment, gatewayAddress: String) =

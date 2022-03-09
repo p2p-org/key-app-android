@@ -20,6 +20,7 @@ import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.scaleLong
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -70,9 +71,11 @@ class SecretKeyInteractor(
     suspend fun createAndSaveAccount(path: DerivationPath, keys: List<String>, lookup: Boolean = true) {
         val account = authRepository.createAccount(path, keys)
         val publicKey = account.publicKey.toBase58()
+        Timber.tag("#####").d(publicKey)
 
         tokenProvider.secretKey = account.secretKey
         tokenProvider.publicKey = publicKey
+        Timber.tag("#####").d(tokenProvider.publicKey)
 
         sharedPreferences.edit {
             putString(KEY_PHRASES, keys.joinToString(","))
