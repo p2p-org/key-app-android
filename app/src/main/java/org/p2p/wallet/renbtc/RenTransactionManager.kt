@@ -11,7 +11,6 @@ import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
@@ -31,7 +30,6 @@ private const val SESSION_POLLING_DELAY = 5000L
 
 class RenTransactionManager(
     private val renBTCRemoteRepository: RenRemoteRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager
 ) {
 
@@ -47,36 +45,33 @@ class RenTransactionManager(
 
     private var queuedTransactions = mutableListOf<RenTransaction>()
 
-    suspend fun initializeSession(existingSession: LockAndMint.Session?): LockAndMint.Session =
-        withContext(Dispatchers.IO) {
-            val networkConfig = getNetworkConfig()
-            lockAndMint = if (existingSession == null || !existingSession.isValid) {
-                Timber.tag(REN_TAG).d("No existing session found, building new one")
-                val signer = tokenKeyProvider.publicKey
-                LockAndMint.buildSession(networkConfig, signer.toPublicKey())
-            } else {
-                Timber.tag(REN_TAG).d("Active session found, fetching information")
-                LockAndMint.getSession(networkConfig, existingSession)
-            }
-
-            val gatewayAddress = lockAndMint.generateGatewayAddress()
-            Timber.tag(REN_TAG).d("Gateway address generated: $gatewayAddress")
-
-            val fee = lockAndMint.estimateTransactionFee()
-            Timber.tag(REN_TAG).d("Fee calculated: $fee")
-
-            val session = lockAndMint.session
-            return@withContext session
+    fun initializeSession(existingSession: LockAndMint.Session?, signer: String): LockAndMint.Session {
+        val networkConfig = getNetworkConfig()
+        lockAndMint = if (existingSession == null || !existingSession.isValid) {
+            Timber.tag(REN_TAG).d("No existing session found, building new one")
+            LockAndMint.buildSession(networkConfig, signer.toPublicKey())
+        } else {
+            Timber.tag(REN_TAG).d("Active session found, fetching information")
+            LockAndMint.getSession(networkConfig, existingSession)
         }
 
-    suspend fun startPolling(session: LockAndMint.Session) {
+        val gatewayAddress = lockAndMint.generateGatewayAddress()
+        Timber.tag(REN_TAG).d("Gateway address generated: $gatewayAddress")
+
+        val fee = lockAndMint.estimateTransactionFee()
+        Timber.tag(REN_TAG).d("Fee calculated: $fee")
+
+        val session = lockAndMint.session
+        return session
+    }
+
+    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) {
         if (!this::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
         Timber.tag(REN_TAG).d("Starting blockstream polling")
 
         val environment = environmentManager.loadEnvironment()
 
         /* Caching value, since it's being called multiple times inside the loop */
-        val secretKey = tokenKeyProvider.secretKey
         while (session.isValid) {
             pollPaymentData(environment, session, secretKey)
             delay(SESSION_POLLING_DELAY)

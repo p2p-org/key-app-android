@@ -10,12 +10,12 @@ class PublicKey {
     private var pubkey: ByteArray
 
     constructor(pubkey: String) {
-        require(pubkey.length >= PUBLIC_KEY_LENGTH) { "Invalid public key input" }
+        require(pubkey.length >= PUBLIC_KEY_LENGTH) { "Invalid public key input[String]" }
         this.pubkey = Base58.decode(pubkey)
     }
 
     constructor(pubkey: ByteArray) {
-        require(pubkey.size <= PUBLIC_KEY_LENGTH) { "Invalid public key input" }
+        require(pubkey.size <= PUBLIC_KEY_LENGTH) { "Invalid public key input[ByteArray]" }
         this.pubkey = pubkey
     }
 

@@ -107,13 +107,13 @@ class ReceiveTokenFragment :
         val username = username?.getFullUsername(requireContext())
         if (username != null) {
             binding.receiveCardView.setQrName(username)
-            binding.receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
-            binding.directAddressBottomTextView.text = directPublicKey
-            binding.directTokenAddressView.setOnClickListener {
-                requireContext().copyToClipBoard(directPublicKey)
-                toast(R.string.auth_copied)
-            }
         }
+        binding.directAddressBottomTextView.text = directPublicKey
+        binding.directTokenAddressView.setOnClickListener {
+            requireContext().copyToClipBoard(directPublicKey)
+            toast(R.string.auth_copied)
+        }
+        binding.receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {
