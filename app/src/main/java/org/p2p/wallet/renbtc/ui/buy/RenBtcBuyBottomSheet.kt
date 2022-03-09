@@ -1,4 +1,4 @@
-package org.p2p.wallet.renbtc.ui.info
+package org.p2p.wallet.renbtc.ui.buy
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,8 +8,9 @@ import androidx.core.os.bundleOf
 import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
+import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogBtcBuyInfoBinding
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
@@ -20,7 +21,9 @@ import java.math.BigDecimal
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
+class RenBtcBuyBottomSheet :
+    BaseMvpBottomSheet<RenBtcBuyContract.View, RenBtcBuyContract.Presenter>(),
+    RenBtcBuyContract.View {
 
     companion object {
         private const val EXTRA_PRICE_IN_SOL = "EXTRA_PRICE_IN_SOL"
@@ -39,6 +42,7 @@ class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
         ).show(fm, RenBtcBuyBottomSheet::javaClass.name)
     }
 
+    override val presenter: RenBtcBuyContract.Presenter by inject()
     private val binding: DialogBtcBuyInfoBinding by viewBinding()
     private val priceInSol: BigDecimal by args(EXTRA_PRICE_IN_SOL)
     private val priceInUsd: BigDecimal? by args(EXTRA_PRICE_IN_USD)
@@ -75,6 +79,8 @@ class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
                 val remainTime = getString(R.string.receive_btc_remain_time)
                 val session = getString(R.string.receive_session_timer_info, remainTime)
                 append(SpanUtils.setTextBold(session, remainTime))
+            }
+            accountView.setOnClickListener {
             }
             infoTextView.text = attentionText
         }

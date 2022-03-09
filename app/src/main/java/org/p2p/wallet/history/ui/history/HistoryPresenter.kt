@@ -213,7 +213,7 @@ class HistoryPresenter(
         launch {
             try {
                 closeInteractor.close(token.publicKey)
-                view?.showSnackbarMessage(R.string.details_account_closed_successfully)
+                view?.showErrorSnackBar(R.string.details_account_closed_successfully)
             } catch (e: Throwable) {
                 Timber.e(e, "Error closing account: ${token.publicKey}")
                 view?.showErrorMessage(e)

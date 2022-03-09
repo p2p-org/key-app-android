@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.utils.showErrorDialog
+import org.p2p.wallet.utils.snackbar
 
 abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActivity(), MvpView {
 
@@ -32,15 +32,22 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
         showErrorDialog(e)
     }
 
-    override fun showSnackbarMessage(message: String, iconRes: Int?) {
-        showSnackbar(message, iconRes)
+    protected fun showSnackBar(message: String) {
+        snackbar { snackBar -> snackBar.setMessage(message) }
     }
 
-    override fun showSnackbarMessage(messageRes: Int, iconRes: Int?) {
-        showSnackbar(getString(messageRes), iconRes)
+    protected fun showSnackBar(message: String, @DrawableRes iconRes: Int) {
+        snackbar { snackBar ->
+            snackBar.setMessage(message)
+            snackBar.setIcon(iconRes)
+        }
     }
 
-    private fun showSnackbar(message: String, @DrawableRes iconRes: Int?) {
-        SnackBarView.make(findViewById(android.R.id.content), message, iconRes)?.show()
+    protected fun showSnackBar(message: String, @DrawableRes iconRes: Int, actionText: String, block: () -> Unit) {
+        snackbar { snackBar ->
+            snackBar.setMessage(message)
+            snackBar.setIcon(iconRes)
+            snackBar.setAction(actionText, block)
+        }
     }
 }

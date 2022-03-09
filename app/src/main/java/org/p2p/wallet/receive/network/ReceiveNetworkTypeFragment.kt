@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -12,7 +11,7 @@ import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveNetworkTypeBinding
-import org.p2p.wallet.renbtc.ui.info.RenBtcBuyBottomSheet
+import org.p2p.wallet.renbtc.ui.buy.RenBtcBuyBottomSheet
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.ui.info.RenBtcInfoBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
