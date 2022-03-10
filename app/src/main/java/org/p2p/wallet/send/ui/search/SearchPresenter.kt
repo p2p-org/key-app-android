@@ -88,9 +88,13 @@ class SearchPresenter(
             null
         } ?: return
 
-        val result = searchInteractor.searchByAddress(validatedAddress.toBase58())
-        view?.showMessage(R.string.send_account_found)
-        view?.showResult(result)
+        try {
+            val result = searchInteractor.searchByAddress(validatedAddress.toBase58())
+            view?.showMessage(R.string.send_account_found)
+            view?.showResult(result)
+        } catch (e: Throwable) {
+            showNotFound()
+        }
     }
 
     private fun showEmptyState() {
