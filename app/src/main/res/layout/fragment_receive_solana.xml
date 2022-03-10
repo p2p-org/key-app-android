@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
-    android:fitsSystemWindows="true">
+    android:background="@color/backgroundPrimary">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -61,8 +60,8 @@
                 app:layout_constraintTop_toBottomOf="@id/receiveCardView" />
 
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
+    </androidx.core.widget.NestedScrollView>
 
     <org.p2p.wallet.common.ui.widget.ProgressView
         android:id="@+id/progressView"

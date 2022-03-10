@@ -12,8 +12,6 @@ import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareText
@@ -37,10 +35,6 @@ class UsernameFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                bottomSheetView.fitMargin { Edge.BottomArc }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(binding.receiveCardView.getQrName(), qrImage)

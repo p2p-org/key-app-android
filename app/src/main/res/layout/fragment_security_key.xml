@@ -1,126 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contentView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/auth_security_key_title"
+        app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/ic_back"
-            app:title="@string/auth_security_key_title"
-            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/keysRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        android:overScrollMode="never"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/actionContainer"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:spanCount="3"
+        tools:itemCount="24"
+        tools:listitem="@layout/item_security_key" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/keysRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="32dp"
-            android:orientation="vertical"
-            android:overScrollMode="never"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/actionContainer"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:spanCount="3"
-            tools:itemCount="24"
-            tools:listitem="@layout/item_security_key" />
-
-        <LinearLayout
-            android:id="@+id/actionContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            app:layout_constraintTop_toBottomOf="@id/keysRecyclerView">
-
-            <org.p2p.wallet.common.ui.widget.ProgressButton
-                android:id="@+id/renewButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/backgroundPrimary"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                app:buttonDrawable="@drawable/ic_swap_simple"
-                app:buttonDrawableTint="@color/backgroundButtonPrimary"
-                app:buttonText="@string/auth_renew"
-                app:buttonTextColor="@color/backgroundButtonPrimary" />
-
-            <org.p2p.wallet.common.ui.widget.ProgressButton
-                android:id="@+id/copyButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/backgroundPrimary"
-                android:foreground="?selectableItemBackground"
-                app:buttonDrawable="@drawable/ic_copy"
-                app:buttonDrawableTint="@color/backgroundButtonPrimary"
-                app:buttonText="@string/auth_copy"
-                app:buttonTextColor="@color/backgroundButtonPrimary" />
-
-            <org.p2p.wallet.common.ui.widget.ProgressButton
-                android:id="@+id/saveButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/backgroundPrimary"
-                android:foreground="?selectableItemBackground"
-                app:buttonDrawable="@drawable/ic_gallery"
-                app:buttonDrawableTint="@color/backgroundButtonPrimary"
-                app:buttonText="@string/auth_save"
-                app:buttonTextColor="@color/backgroundButtonPrimary" />
-        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/actionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/keysRecyclerView">
 
         <org.p2p.wallet.common.ui.widget.ProgressButton
-            android:id="@+id/nextButton"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginHorizontal="24dp"
-            android:background="@drawable/bg_blue_selector"
-            android:foreground="?selectableItemBackground"
-            android:textAllCaps="false"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:buttonDrawableEnd="@drawable/ic_next"
-            app:buttonDrawableTint="@color/textIconButtonPrimary"
-            app:buttonText="@string/auth_lets_verify"
-            app:buttonTextColor="@color/textIconButtonPrimary"
-            app:layout_constraintBottom_toTopOf="@id/termsAndConditionsTextView"
-            app:layout_constraintTop_toBottomOf="@id/actionContainer"
-            app:layout_constraintVertical_bias="0.9" />
-
-        <TextView
-            android:id="@+id/termsAndConditionsTextView"
+            android:id="@+id/renewButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:text="@string/auth_agree_terms_and_privacy"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/backgroundPrimary"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+            app:buttonDrawable="@drawable/ic_swap_simple"
+            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonText="@string/auth_renew"
+            app:buttonTextColor="@color/backgroundButtonPrimary" />
 
-        <org.p2p.wallet.common.ui.widget.ProgressView
-            android:id="@+id/progressView"
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/copyButton"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/backgroundPrimary"
+            android:foreground="?selectableItemBackground"
+            app:buttonDrawable="@drawable/ic_copy"
+            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonText="@string/auth_copy"
+            app:buttonTextColor="@color/backgroundButtonPrimary" />
+
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/backgroundPrimary"
+            android:foreground="?selectableItemBackground"
+            app:buttonDrawable="@drawable/ic_gallery"
+            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonText="@string/auth_save"
+            app:buttonTextColor="@color/backgroundButtonPrimary" />
+    </LinearLayout>
+
+    <org.p2p.wallet.common.ui.widget.ProgressButton
+        android:id="@+id/nextButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:background="@drawable/bg_blue_selector"
+        android:foreground="?selectableItemBackground"
+        android:textAllCaps="false"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+        app:buttonDrawableEnd="@drawable/ic_next"
+        app:buttonDrawableTint="@color/textIconButtonPrimary"
+        app:buttonText="@string/auth_lets_verify"
+        app:buttonTextColor="@color/textIconButtonPrimary"
+        app:layout_constraintBottom_toTopOf="@id/termsAndConditionsTextView"
+        app:layout_constraintTop_toBottomOf="@id/actionContainer"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <TextView
+        android:id="@+id/termsAndConditionsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="@string/auth_agree_terms_and_privacy"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.p2p.wallet.common.ui.widget.ProgressView
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+</androidx.constraintlayout.widget.ConstraintLayout>

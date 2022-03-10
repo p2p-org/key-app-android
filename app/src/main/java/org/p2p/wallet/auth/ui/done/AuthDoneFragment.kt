@@ -9,12 +9,10 @@ import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentAuthDoneBinding
 import org.p2p.wallet.home.MainFragment
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class AuthDoneFragment() :
+class AuthDoneFragment :
     BaseMvpFragment<AuthDoneContract.View, AuthDoneContract.Presenter>(R.layout.fragment_auth_done),
     AuthDoneContract.View {
 
@@ -30,9 +28,6 @@ class AuthDoneFragment() :
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.WELCOME_NEW)
         with(binding) {
-            edgeToEdge {
-                finishButton.fitMargin { Edge.BottomArc }
-            }
 
             finishButton.clipToOutline = true
             finishButton.setOnClickListener {
