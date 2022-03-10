@@ -32,6 +32,7 @@ interface SendContract {
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
+        fun showMaxButton(show: Boolean)
         fun updateAvailableTextColor(@ColorRes availableColor: Int)
 
         fun showNetworkDestination(type: NetworkType)

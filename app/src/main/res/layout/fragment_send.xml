@@ -69,6 +69,7 @@
                         android:gravity="center_vertical"
                         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                         android:textColor="@color/textIconSecondary"
+                        app:layout_goneMarginEnd="36dp"
                         app:drawableStartCompat="@drawable/ic_wallet_gray"
                         app:layout_constraintBottom_toBottomOf="@id/fromTextView"
                         app:layout_constraintEnd_toStartOf="@id/maxTextView"
