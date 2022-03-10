@@ -33,9 +33,9 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
-import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
-import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
+import org.p2p.wallet.send.ui.network.EXTRA_NETWORK
+import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
@@ -354,12 +354,11 @@ class SendFragment :
 
     override fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean) {
         val tokenAmount = "$amount $symbol"
-        val (message, iconRes) = if (isSuccess) {
-            getString(R.string.send_transaction_success, tokenAmount) to R.drawable.ic_done
+        if (isSuccess) {
+            showSuccessSnackBar(getString(R.string.send_transaction_success, tokenAmount))
         } else {
-            getString(R.string.send_transaction_error, tokenAmount) to R.drawable.ic_close_red
+            showErrorSnackBar(getString(R.string.send_transaction_error, tokenAmount), R.drawable.ic_close_red)
         }
-        showSnackbar(message, iconRes)
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {

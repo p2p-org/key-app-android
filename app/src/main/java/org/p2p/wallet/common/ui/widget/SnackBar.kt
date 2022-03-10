@@ -9,12 +9,14 @@ import android.view.View
 import android.view.animation.OvershootInterpolator
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.ContentViewCallback
 import org.p2p.wallet.databinding.WidgetSnackbarBinding
+import org.p2p.wallet.utils.getString
 
 private const val ANIMATION_DURATION = 500L
 
-class SimpleSnackBar @JvmOverloads constructor(
+class SnackBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -42,25 +44,22 @@ class SimpleSnackBar @JvmOverloads constructor(
     override fun animateContentOut(delay: Int, duration: Int) {
     }
 
-    fun setMessage(text: String) {
+    fun setMessage(text: String): SnackBar {
         binding.textView.text = text
+        return this
     }
 
-    fun setIcon(@DrawableRes iconResId: Int) {
+    fun setIcon(@DrawableRes iconResId: Int): SnackBar {
         binding.imageView.setImageResource(iconResId)
+        binding.imageView.isVisible = true
+        return this
     }
 
-    fun setAction(title: String, block: () -> Unit) {
-        binding.actionTextView.text = title
-        binding.actionTextView.setOnClickListener { block.invoke() }
+    fun setAction(actionResId: Int?, block: (() -> Unit)?) {
+        if (actionResId != null && block != null) {
+            binding.actionTextView.text = getString(actionResId)
+            binding.actionTextView.setOnClickListener { block.invoke() }
+            binding.actionTextView.isVisible = true
+        }
     }
-
-    fun setAction(@DrawableRes icon: Int, block: () -> Unit) {
-        binding.actionImageView.setImageResource(icon)
-        binding.imageView.setOnClickListener { block.invoke() }
-    }
-
-    fun getActionTextView() = binding.actionTextView
-
-    fun getActionImageView() = binding.actionImageView
 }

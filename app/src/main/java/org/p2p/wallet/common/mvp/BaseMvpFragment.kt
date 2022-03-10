@@ -5,11 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
-import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
+import org.p2p.wallet.R
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.keyboardIsVisible
 import org.p2p.wallet.utils.showErrorDialog
+import org.p2p.wallet.utils.snackbar
 
 abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     @LayoutRes layoutRes: Int
@@ -45,11 +46,35 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
         showErrorDialog(messageRes = messageRes)
     }
 
-    override fun showSnackbarMessage(messageRes: Int, @DrawableRes iconRes: Int?) {
-        showSnackbar(getString(messageRes), iconRes)
+    override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(getString(messageResId))
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
+        }
     }
 
-    override fun showSnackbarMessage(message: String, iconRes: Int?) {
-        showSnackbar(message, iconRes)
+    override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(message)
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
+        }
+    }
+
+    override fun showSuccessSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(getString(messageResId))
+                .setIcon(R.drawable.ic_done)
+                .setAction(actionResId, block)
+        }
+    }
+
+    override fun showSuccessSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(message)
+                .setIcon(R.drawable.ic_done)
+                .setAction(actionResId, block)
+        }
     }
 }

@@ -20,6 +20,7 @@
             android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_warning" />
 
@@ -30,7 +31,7 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:paddingHorizontal="8dp"
+            android:layout_marginHorizontal="16dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/textIconButtonPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -48,6 +49,7 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
             android:textColor="@color/white"
             android:textSize="12sp"
+            android:visibility="gone"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

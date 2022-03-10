@@ -267,12 +267,11 @@ class OrcaSwapFragment :
     }
 
     override fun showTransactionStatusMessage(fromSymbol: String, toSymbol: String, isSuccess: Boolean) {
-        val (message, iconRes) = if (isSuccess) {
-            getString(R.string.swap_transaction_completed, fromSymbol, toSymbol) to R.drawable.ic_done
+        if (isSuccess) {
+            showSuccessSnackBar(getString(R.string.swap_transaction_completed, fromSymbol, toSymbol))
         } else {
-            getString(R.string.swap_transaction_failed, fromSymbol, toSymbol) to R.drawable.ic_close_red
+            showErrorSnackBar(getString(R.string.swap_transaction_failed, fromSymbol, toSymbol))
         }
-        showSnackbar(message, iconRes)
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {

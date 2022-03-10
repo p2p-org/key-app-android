@@ -11,7 +11,7 @@ import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveNetworkTypeBinding
-import org.p2p.wallet.renbtc.ui.info.RenBtcBuyBottomSheet
+import org.p2p.wallet.renbtc.ui.buy.RenBtcBuyBottomSheet
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.ui.info.RenBtcInfoBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
