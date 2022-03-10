@@ -172,7 +172,7 @@ fun Fragment.getColor(@ColorRes colorRes: Int): Int =
     requireContext().getColor(colorRes)
 
 fun Fragment.snackbar(action: (SnackBar) -> Unit) {
-    val viewGroup = requireView() as ViewGroup
+    val viewGroup = requireActivity().findViewById<ViewGroup>(android.R.id.content)
     viewGroup.snackbar(action)
 }
 
