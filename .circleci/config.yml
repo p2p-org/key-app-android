@@ -98,10 +98,6 @@ workflows:
           requires:
             - android_lint
           context: feature
-      - version_build:
-          requires:
-            - unit_tests
-            context: feature
       - build_and_publish:
           requires:
             - unit_tests
