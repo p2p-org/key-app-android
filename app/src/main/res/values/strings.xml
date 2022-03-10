@@ -264,7 +264,7 @@
     <string name="receive_session_min_transaction">•\tMinimum transaction amount of %s\n\t\tBTC.</string>
     <string name="receive_session_timer_info">• %s is the remaining time to safely\n\t\tsend the assets.</string>
     <string name="receive_only_bitcoin">only Bitcoin</string>
-    <string name="receive_btc_min_transaction">0.000112</string>
+    <string name="receive_btc_min_transaction">0.000144</string>
     <string name="receive_btc_remain_time">35:59:59</string>
     <string name="receive_statuses">Receiving statuses</string>
     <string name="receive_waiting_for_deposit">Waiting for deposit confirmation</string>
@@ -290,7 +290,7 @@
     <string name="receive_btc_network">Bitcoin network</string>
     <string name="receive_btc_network_info">This address accepts <b>only Bitcoin.</b> You may lose assets by sending another coin.</string>
     <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>
-    <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000112 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
+    <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000144 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
     <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
     <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
