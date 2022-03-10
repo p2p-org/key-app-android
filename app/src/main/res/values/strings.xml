@@ -333,7 +333,7 @@
     <string name="send_receive_at_least">Receive at least: %s</string>
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
     <string name="send_account_creation_fee">Account creation fee</string>
-    <string name="send_account_creation_info">This address does not appear to have a USDC account. You have to pay a one-time fee to create a USDC account for this address. You can choose which currency to pay in below.</string>
+    <string name="send_account_creation_info">This address does not appear to have a %s account. You have to pay a one-time fee to create a %s account for this address. You can choose which currency to pay in below.</string>
     <string name="send_transaction_details">Transaction details</string>
     <string name="send_receive_title">Receive</string>
     <string name="send_transaction_being_processed">The transaction is being processed</string>
