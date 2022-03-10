@@ -428,8 +428,12 @@ class SendFragment :
 
     override fun showInputValue(value: BigDecimal) {
         val textValue = "$value"
-        binding.amountEditText.setText(textValue)
-        binding.amountEditText.setSelection(textValue.length)
+        binding.amountEditText.apply {
+            setText(textValue)
+            setSelection(
+                text.toString().length
+            )
+        }
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -446,13 +450,6 @@ class SendFragment :
 
     override fun showMaxButton(show: Boolean) = with(binding) {
         maxTextView.isVisible = show
-        availableTextView.setTextDrawableColor(
-            if (show) {
-                R.color.textIconSecondary
-            } else {
-                R.color.systemSuccessMain
-            }
-        )
     }
 
     override fun showSearchLoading(isLoading: Boolean) {
@@ -464,7 +461,10 @@ class SendFragment :
     }
 
     override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(getColor(availableColor))
+        binding.availableTextView.apply {
+            setTextColor(getColor(availableColor))
+            setTextDrawableColor(availableColor)
+        }
     }
 
     @SuppressLint("SetTextI18n")
