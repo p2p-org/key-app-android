@@ -8,6 +8,7 @@ import androidx.annotation.AnimRes
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
@@ -34,6 +35,9 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     private val analyticsInteractor: AnalyticsInteractor by inject()
 
+    protected open val statusBarColor: Int = R.color.backgroundPrimary
+    protected open val statusBarDarkTint: Boolean = true
+
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
         val animRes = arguments?.getInt(extra)?.takeIf { it != 0 }
@@ -50,6 +54,8 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         if (analyticsName.isNotEmpty()) {
             analyticsInteractor.logScreenOpenEvent(analyticsName)
         }
+        updateStatusBarColor()
+        setStatusBarIconsColor(statusBarDarkTint)
     }
 
     override fun overrideEnterAnimation(@AnimRes animation: Int) {
@@ -62,6 +68,23 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     private fun overrideAnimation(@AnimRes animation: Int, extraKey: String) {
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
+    }
+
+
+    private fun updateStatusBarColor() {
+        requireActivity().window.statusBarColor = resources.getColor(
+            statusBarColor,
+            requireActivity().theme
+        )
+    }
+
+    private fun setStatusBarIconsColor(dark: Boolean) {
+        val decor: View = requireActivity().window.decorView
+        if (dark) {
+            decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            decor.systemUiVisibility = 0
+        }
     }
 
     // TODO add another screens

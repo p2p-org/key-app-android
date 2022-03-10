@@ -18,8 +18,6 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
@@ -42,6 +40,9 @@ class ReceiveTokenFragment :
         )
     }
 
+    override val statusBarColor: Int = R.color.backgroundButtonPrimary
+    override val statusBarDarkTint: Boolean = false
+
     private val binding: FragmentReceiveTokenBinding by viewBinding()
     override val presenter: ReceiveTokenContract.Presenter by inject {
         parametersOf(token)
@@ -51,10 +52,6 @@ class ReceiveTokenFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.Top }
-                coordinator.fit { Edge.Bottom }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
             titleTextView.text = getString(R.string.receive_you_can_receive_token_message, token.tokenSymbol)
             directAdressTopTextView.text = getString(R.string.receive_direct_token_address, token.tokenSymbol)
