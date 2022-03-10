@@ -235,7 +235,7 @@
     <string name="main_reserve_username">Reserve your P2P username now</string>
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
-    <string name="main_free_transactions_info">On the Solana network, the first %1$d transactions in a day are paid by P2P.org. You have %2$d free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
+    <string name="main_free_transactions_info"><![CDATA[On the Solana network, the first %1$d transactions in a day are paid by P2P.org. You have <b>%2$d</b> free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.]]></string>
     <string name="main_balance">Balance</string>
     <string name="main_empty_title">Top up your account to get started</string>
     <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
