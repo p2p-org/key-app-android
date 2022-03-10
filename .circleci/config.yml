@@ -78,6 +78,10 @@ workflows:
     jobs:
       - version_build:
           context: feature
+          filters:
+            branches:
+              only:
+                - /(^chore\/.+)/
       - build_and_publish:
           requires:
             - version_build
@@ -111,6 +115,10 @@ workflows:
     jobs:
       - android_lint:
           context: feature
+          filters:
+            branches:
+              only:
+                - develop
       - unit_tests:
           requires:
             - android_lint
