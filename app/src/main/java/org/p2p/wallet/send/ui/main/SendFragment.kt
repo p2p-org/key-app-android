@@ -325,6 +325,8 @@ class SendFragment :
                 return
             }
 
+            val tokenSymbol = fee.feePayerToken.tokenSymbol
+            accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
             accountInfoTextView.isVisible = true
             accountCardView.isVisible = true
 
