@@ -15,6 +15,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -53,7 +54,11 @@ class ReceiveTokenFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            titleTextView.text = getString(R.string.receive_you_can_receive_token_message, token.tokenSymbol)
+            toolbar.title = getString(R.string.receive_token_name, token.tokenName)
+            val message = getString(R.string.receive_you_can_receive_token_message, token.tokenSymbol)
+            val boldText = getString(R.string.receive_token_name_lower_case, token.tokenSymbol)
+            titleTextView.text = SpanUtils.setTextBold(message, boldText)
+
             directAdressTopTextView.text = getString(R.string.receive_direct_token_address, token.tokenSymbol)
             mintAddressTopTextView.text = getString(R.string.receive_token_mint_address, token.tokenSymbol)
 

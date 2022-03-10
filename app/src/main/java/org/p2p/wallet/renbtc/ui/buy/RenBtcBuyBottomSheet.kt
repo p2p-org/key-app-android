@@ -4,22 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogBtcBuyInfoBinding
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
+import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
+private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
 class RenBtcBuyBottomSheet :
     BaseMvpBottomSheet<RenBtcBuyContract.View, RenBtcBuyContract.Presenter>(),
@@ -55,11 +59,6 @@ class RenBtcBuyBottomSheet :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            progressButton.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
-                dismissAllowingStateLoss()
-            }
-
             val feeUsd = if (priceInUsd != null) "~$$priceInUsd" else getString(R.string.common_not_available)
             topTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
             amountTextView.text = priceInSol.toString()
@@ -80,11 +79,29 @@ class RenBtcBuyBottomSheet :
                 val session = getString(R.string.receive_session_timer_info, remainTime)
                 append(SpanUtils.setTextBold(session, remainTime))
             }
-            accountView.setOnClickListener {
-            }
             infoTextView.text = attentionText
+
+            accountView.setOnClickListener {
+                presenter.onBuyClicked()
+            }
+            progressButton.setOnClickListener {
+                presenter.onBuyClicked()
+            }
+
+            childFragmentManager.setFragmentResultListener(KEY_REQUEST_TOKEN, viewLifecycleOwner) { _, result ->
+                when {
+                    result.containsKey(KEY_RESULT_TOKEN) -> {
+                        val token = result.getParcelable<Token>(KEY_RESULT_TOKEN)
+                        if (token != null) replaceFragment(BuySolanaFragment.create(token))
+                    }
+                }
+            }
         }
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+
+    override fun showTokensForBuy(tokens: List<Token>) {
+        SelectTokenBottomSheet.show(childFragmentManager, tokens, KEY_REQUEST_TOKEN, KEY_RESULT_TOKEN)
+    }
 }
