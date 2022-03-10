@@ -300,7 +300,7 @@
     <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
     <string name="receive_topup_your_account">Top up your account</string>
     <string name="receive_share_your_solana_network_address">Share your Solana network address</string>
-    <string name="receive_you_can_receive_token_message">You can <b>receive %s</b> by providing this\naddress, QR code or username:</string>
+    <string name="receive_you_can_receive_token_message">You can receive %s by providing this\naddress, QR code or username:</string>
     <string name="receive_direct_token_address">Direct %s Address</string>
     <string name="receive_direct_and_mint_address">Direct and mint addresses</string>
     <string name="receive_token_mint_address">%s Mint Address</string>
