@@ -1,12 +1,15 @@
 package org.p2p.wallet.send.ui.main
 
 import android.annotation.SuppressLint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface.BOLD
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
@@ -441,6 +444,17 @@ class SendFragment :
         }
     }
 
+    override fun showMaxButton(show: Boolean) = with(binding) {
+        maxTextView.isVisible = show
+        availableTextView.setTextDrawableColor(
+            if (show) {
+                R.color.textIconSecondary
+            } else {
+                R.color.systemSuccessMain
+            }
+        )
+    }
+
     override fun showSearchLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
     }
@@ -495,5 +509,16 @@ class SendFragment :
     private fun checkClipBoard() {
         val clipBoardData = requireContext().getClipBoardText()
         binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
+    }
+
+    private fun TextView.setTextDrawableColor(@ColorRes color: Int) {
+        for (drawable in compoundDrawables) {
+            if (drawable != null) {
+                drawable.colorFilter = PorterDuffColorFilter(
+                    getColor(color),
+                    PorterDuff.Mode.SRC_IN
+                )
+            }
+        }
     }
 }
