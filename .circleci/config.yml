@@ -52,23 +52,13 @@ jobs:
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_test_results
-      - android/save-gradle-cache
-      - android/save-build-cache
   build_and_publish:
     <<: *defaults
     steps:
       - checkout
-      - android/restore-gradle-cache
-      - android/restore-build-cache
-      - run:
-          name: "Assemble Feature Build"
-          command: ./gradlew assembleFeature
-      - store_artifacts:
-          path: "./app/build/outputs/mapping/feature/mapping.txt"
-          destination: artifact-file
       - run:
           name: "Distribute to Firebase App Distribution"
-          command: ./gradlew appDistributionUploadFeature
+          command: ./gradlew --no-daemon -g /cache assembleFeature appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
 workflows:
