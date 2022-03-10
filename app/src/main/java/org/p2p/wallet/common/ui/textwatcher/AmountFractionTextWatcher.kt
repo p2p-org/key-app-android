@@ -14,6 +14,8 @@ import kotlin.properties.Delegates
  * */
 
 private const val SYMBOL_ZERO = "0"
+private const val SYMBOL_DOT = "."
+private const val EMPTY = ""
 private const val MAX_AMOUNT_ALLOWED_FRACTION_LENGTH = 9
 
 class AmountFractionTextWatcher(
@@ -51,14 +53,16 @@ class AmountFractionTextWatcher(
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         val value = s.toString()
         valueText = when {
-            value.startsWith('.') -> {
+            value == SYMBOL_ZERO && before == 1 -> EMPTY
+            value == "$SYMBOL_ZERO$SYMBOL_ZERO" && start == 1 -> SYMBOL_ZERO
+            value.startsWith(SYMBOL_DOT) -> {
                 "$SYMBOL_ZERO$value"
             }
-            value.contains(".") -> {
-                val dividedValues = value.split(".")
-                val valueAfterDelimiter = dividedValues.last()
+            value.contains(SYMBOL_DOT) -> {
+                val indexOfDot = value.indexOfFirst { it.toString() == SYMBOL_DOT }
+                val valueAfterDelimiter = value.substring(indexOfDot).replace(SYMBOL_DOT, EMPTY)
                 val fractionValue = valueAfterDelimiter.take(maxLengthAllowed)
-                "${dividedValues.first()}.$fractionValue"
+                "${value.substring(0, indexOfDot)}$SYMBOL_DOT$fractionValue"
             }
             else -> value
         }
