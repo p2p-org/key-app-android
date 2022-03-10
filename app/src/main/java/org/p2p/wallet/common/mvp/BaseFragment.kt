@@ -70,7 +70,6 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
     }
 
-
     private fun updateStatusBarColor() {
         requireActivity().window.statusBarColor = resources.getColor(
             statusBarColor,
