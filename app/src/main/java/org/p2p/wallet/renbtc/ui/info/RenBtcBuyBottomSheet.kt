@@ -1,4 +1,4 @@
-package org.p2p.wallet.renbtc.ui.buy
+package org.p2p.wallet.renbtc.ui.info
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,9 +8,8 @@ import androidx.core.os.bundleOf
 import androidx.core.text.buildSpannedString
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
-import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
+import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogBtcBuyInfoBinding
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
@@ -21,9 +20,7 @@ import java.math.BigDecimal
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class RenBtcBuyBottomSheet :
-    BaseMvpBottomSheet<RenBtcBuyContract.View, RenBtcBuyContract.Presenter>(),
-    RenBtcBuyContract.View {
+class RenBtcBuyBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_PRICE_IN_SOL = "EXTRA_PRICE_IN_SOL"
@@ -42,7 +39,6 @@ class RenBtcBuyBottomSheet :
         ).show(fm, RenBtcBuyBottomSheet::javaClass.name)
     }
 
-    override val presenter: RenBtcBuyContract.Presenter by inject()
     private val binding: DialogBtcBuyInfoBinding by viewBinding()
     private val priceInSol: BigDecimal by args(EXTRA_PRICE_IN_SOL)
     private val priceInUsd: BigDecimal? by args(EXTRA_PRICE_IN_USD)
@@ -55,11 +51,6 @@ class RenBtcBuyBottomSheet :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            progressButton.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
-                dismissAllowingStateLoss()
-            }
-
             val feeUsd = if (priceInUsd != null) "~$$priceInUsd" else getString(R.string.common_not_available)
             topTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
             amountTextView.text = priceInSol.toString()
@@ -80,11 +71,18 @@ class RenBtcBuyBottomSheet :
                 val session = getString(R.string.receive_session_timer_info, remainTime)
                 append(SpanUtils.setTextBold(session, remainTime))
             }
-            accountView.setOnClickListener {
-            }
             infoTextView.text = attentionText
+
+            progressButton.setOnClickListener {
+                onBuySelected()
+            }
         }
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+
+    private fun onBuySelected() {
+        setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
+        dismissAllowingStateLoss()
+    }
 }

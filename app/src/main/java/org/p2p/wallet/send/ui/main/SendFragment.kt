@@ -357,7 +357,7 @@ class SendFragment :
         if (isSuccess) {
             showSuccessSnackBar(getString(R.string.send_transaction_success, tokenAmount))
         } else {
-            showErrorSnackBar(getString(R.string.send_transaction_error, tokenAmount), R.drawable.ic_close_red)
+            showErrorSnackBar(getString(R.string.send_transaction_error, tokenAmount))
         }
     }
 
