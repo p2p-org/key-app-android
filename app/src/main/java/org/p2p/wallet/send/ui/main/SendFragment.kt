@@ -510,13 +510,11 @@ class SendFragment :
     }
 
     private fun TextView.setTextDrawableColor(@ColorRes color: Int) {
-        for (drawable in compoundDrawables) {
-            if (drawable != null) {
-                drawable.colorFilter = PorterDuffColorFilter(
-                    getColor(color),
-                    PorterDuff.Mode.SRC_IN
-                )
-            }
+        compoundDrawables.filterNotNull().forEach {
+            it.colorFilter = PorterDuffColorFilter(
+                getColor(color),
+                PorterDuff.Mode.SRC_IN
+            )
         }
     }
 }

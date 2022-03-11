@@ -634,14 +634,14 @@ class SendPresenter(
 
     private fun setButtonEnabled(amount: BigDecimal, total: BigDecimal) {
         val isMoreThanBalance = amount.isMoreThan(total)
-        val isMax = amount == total
+        val isMaxAmount = amount == total
         val isNotZero = !amount.isZero()
         val isValidAddress = isAddressValid(target?.address)
         val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
 
         val availableColor = when {
             isMoreThanBalance -> R.color.systemErrorMain
-            isMax -> R.color.systemSuccessMain
+            isMaxAmount -> R.color.systemSuccessMain
             else -> R.color.textIconSecondary
         }
         view?.updateAvailableTextColor(availableColor)
