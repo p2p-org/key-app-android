@@ -71,9 +71,9 @@ sealed class Token constructor(
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${total.scaleLong()} $tokenSymbol"
+                "${total.scaleLong().toPlainString()} $tokenSymbol"
             } else {
-                "${total.scaleLong()}"
+                total.scaleLong().toPlainString()
             }
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int {
