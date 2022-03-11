@@ -58,7 +58,7 @@ jobs:
       - checkout
       - run:
           name: "Distribute to Firebase App Distribution"
-          command: ./gradlew --no-daemon -g /cache assembleFeature appDistributionUploadFeature
+          command: ./gradlew assembleFeature appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
 workflows:
