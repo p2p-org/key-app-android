@@ -563,7 +563,7 @@ class SendPresenter(
             fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
         }
 
-        fee = SendFee.SolanaFee(feeAmount, feePayer)
+        fee = SendFee.SolanaFee(feeAmount, feePayer, token?.tokenSymbol ?: feePayer.tokenSymbol)
         view?.showAccountFeeView(fee)
 
         calculateTotal(fee)
