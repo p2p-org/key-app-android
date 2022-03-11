@@ -1,12 +1,15 @@
 package org.p2p.wallet.send.ui.main
 
 import android.annotation.SuppressLint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface.BOLD
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
@@ -425,8 +428,12 @@ class SendFragment :
 
     override fun showInputValue(value: BigDecimal) {
         val textValue = "$value"
-        binding.amountEditText.setText(textValue)
-        binding.amountEditText.setSelection(textValue.length)
+        with(binding.amountEditText) {
+            setText(textValue)
+            setSelection(
+                text.toString().length
+            )
+        }
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -441,6 +448,10 @@ class SendFragment :
         }
     }
 
+    override fun setMaxButtonVisibility(isVisible: Boolean) {
+        binding.maxTextView.isVisible = isVisible
+    }
+
     override fun showSearchLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
     }
@@ -449,8 +460,9 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(getColor(availableColor))
+    override fun updateAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
+        setTextColor(getColor(availableColor))
+        setTextDrawableColor(availableColor)
     }
 
     @SuppressLint("SetTextI18n")
@@ -495,5 +507,14 @@ class SendFragment :
     private fun checkClipBoard() {
         val clipBoardData = requireContext().getClipBoardText()
         binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
+    }
+
+    private fun TextView.setTextDrawableColor(@ColorRes color: Int) {
+        compoundDrawables.filterNotNull().forEach {
+            it.colorFilter = PorterDuffColorFilter(
+                getColor(color),
+                PorterDuff.Mode.SRC_IN
+            )
+        }
     }
 }
