@@ -186,7 +186,7 @@ class SendPresenter(
             is CurrencyMode.Usd -> token.totalInUsd
             is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
-        view?.showMaxButton(inputAmount != totalAvailable.toString())
+        view?.setMaxButtonVisibility(inputAmount != totalAvailable.toString())
         calculateRenBtcFeeIfNeeded()
         calculateData(token)
     }
