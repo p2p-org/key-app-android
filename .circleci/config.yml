@@ -73,6 +73,7 @@ workflows:
               only:
                 - /(^chore\/.+)/
       - build_and_publish:
+          context: feature
           requires:
             - version_build
 
