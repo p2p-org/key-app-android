@@ -48,7 +48,7 @@ interface SendContract {
         fun showAddressOnlyTarget(address: String)
         fun showSearchScreen(usernames: List<SearchResult>)
 
-        fun showAccountFeeView(fee: SendFee?)
+        fun showAccountFeeView(fee: SendFee?, isSourceSOL: Boolean = false)
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 
         fun showBiometricConfirmationPrompt(data: SendConfirmData)

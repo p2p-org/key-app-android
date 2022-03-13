@@ -52,7 +52,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
+    suspend fun getBalance(address: String): Long = rpcRepository.getBalance(address)
 
     suspend fun loadTokenPrices(targetCurrency: String) {
         // TODO: 15.02.2022 replace TokenSymbols with user tokens from local storage [P2PW-1315]

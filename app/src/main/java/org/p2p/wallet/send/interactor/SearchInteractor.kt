@@ -15,7 +15,8 @@ class SearchInteractor(
     }
 
     suspend fun searchByAddress(address: String): List<SearchResult> {
-        val hasEmptyBalance = userInteractor.getBalance(address.trim()) == 0L
+        val balance = userInteractor.getBalance(address.trim())
+        val hasEmptyBalance = balance == 0L
         val result = if (hasEmptyBalance) {
             SearchResult.EmptyBalance(address)
         } else {

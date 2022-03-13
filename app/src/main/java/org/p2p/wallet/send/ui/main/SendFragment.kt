@@ -320,9 +320,9 @@ class SendFragment :
         }
     }
 
-    override fun showAccountFeeView(fee: SendFee?) {
+    override fun showAccountFeeView(fee: SendFee?, isSourceSOL: Boolean) {
         with(binding) {
-            if (fee == null) {
+            if (fee == null || isSourceSOL) {
                 accountCardView.isVisible = false
                 accountInfoTextView.isVisible = false
                 return
