@@ -341,7 +341,7 @@ class SendPresenter(
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
         view?.showWrongAddressTarget(result.address.cutEnd())
-        view?.showAccountFeeView(null)
+        view?.showAccountFeeView(fee = null)
     }
 
     private fun handleIdleTarget() {
@@ -379,8 +379,8 @@ class SendPresenter(
                 calculateFeeRelayerFee(checkAddressResult.feePayerToken)
             is CheckAddressResult.AccountExists,
             is CheckAddressResult.InvalidAddress -> {
-                calculateTotal(null)
-                view?.showAccountFeeView(null)
+                calculateTotal(sendFee = null)
+                view?.showAccountFeeView(fee = null)
             }
         }
     }
@@ -558,7 +558,7 @@ class SendPresenter(
         )
 
         if (fees == null) {
-            view?.showAccountFeeView(null, token?.isSOL == true)
+            view?.showAccountFeeView(fee = null, isSourceSOL = token?.isSOL == true)
             return
         }
 
@@ -569,7 +569,7 @@ class SendPresenter(
         }
 
         fee = SendFee.SolanaFee(feeAmount, feePayer)
-        view?.showAccountFeeView(fee, token?.isSOL == true)
+        view?.showAccountFeeView(fee, isSourceSOL = token?.isSOL == true)
 
         calculateTotal(fee)
     }
