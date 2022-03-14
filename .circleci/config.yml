@@ -76,11 +76,16 @@ workflows:
           requires:
             - android_lint
           context: feature
+      - approve_alpha_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /(^feature\/.+)/
       - build_and_publish:
           requires:
-            - unit_tests
-          context: feature
-          type: approval
+            - approve_alpha_build
+            context: feature
 
   lint_and_test:
     jobs:
