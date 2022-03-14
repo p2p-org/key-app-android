@@ -83,13 +83,13 @@ workflows:
               only:
                 - /(^feature\/.+)/
       - build_and_publish:
+          context: feature
           requires:
             - approve-feature-build
-            context: feature
-            filters:
-              branches:
-                only:
-                  - /(^feature\/.+)/
+          filters:
+            branches:
+              only:
+                - /(^feature\/.+)/
 
   lint_and_test:
     jobs:
