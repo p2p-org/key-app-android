@@ -57,7 +57,7 @@ class App : Application() {
 
     private fun setupKoin() {
         GlobalContext.stopKoin()
-        startKoin {
+        startKoin{
             androidContext(this@App)
             modules(
                 listOf(
