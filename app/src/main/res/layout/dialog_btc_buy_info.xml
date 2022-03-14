@@ -137,7 +137,6 @@
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
         app:buttonDrawable="@drawable/ic_done"
         app:buttonDrawableTint="@color/textIconButtonPrimary"
-        app:buttonText="@string/receive_understand"
         app:buttonTextColor="@color/textIconButtonPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/infoTextView"

@@ -10,7 +10,7 @@ import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
@@ -123,7 +123,7 @@ class ReceiveNetworkTypePresenter(
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - btcMinPrice) >= BigInteger.ZERO
         if (isAmountEnough) {
-            val priceInSol = btcMinPrice.fromLamports(sol.decimals).scaleMedium()
+            val priceInSol = btcMinPrice.fromLamports(sol.decimals).scaleLong()
             val priceInUsd = priceInSol.toUsd(sol)
             view?.showBuy(priceInSol, priceInUsd)
         } else {

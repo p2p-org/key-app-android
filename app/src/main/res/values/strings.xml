@@ -306,6 +306,8 @@
     <string name="receive_token_mint_address">%s Mint Address</string>
     <string name="receive_token_name">Receive %s</string>
     <string name="receive_token_name_lower_case">receive %s</string>
+    <string name="receive_amount_in_sol">%s SOL</string>
+    <string name="receive_pay_and_countinue">Pay %s SOL &amp; Continue</string>
 
     <!-- send -->
     <string name="send_enter_address">Enter the recipient\'s address</string>
