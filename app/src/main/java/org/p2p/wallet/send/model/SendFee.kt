@@ -21,8 +21,9 @@ sealed class SendFee(
 
     data class RenBtcFee(
         override val fee: BigDecimal,
-        override val feePayerToken: Token.Active
-    ) : SendFee(fee, feePayerToken, feePayerToken.tokenSymbol) {
+        override val feePayerToken: Token.Active,
+        override val sourceTokenSymbol: String
+    ) : SendFee(fee, feePayerToken, sourceTokenSymbol) {
 
         val fullFee: String
             get() = "$fee $feePayerSymbol ${approxFeeUsd.orEmpty()}"

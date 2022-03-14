@@ -535,7 +535,7 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(SendFee.RenBtcFee(fee, sourceToken))
+            calculateTotal(SendFee.RenBtcFee(fee, sourceToken, sourceToken.tokenSymbol))
         }
     }
 
