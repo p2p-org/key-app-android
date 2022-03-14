@@ -6,5 +6,5 @@ data class TokenListData(
     val searchText: String = "",
     val result: List<TokenData> = emptyList()
 ) {
-    fun getSize() = result.size
+    val size = result.size
 }
