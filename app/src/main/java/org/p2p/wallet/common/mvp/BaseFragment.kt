@@ -54,6 +54,8 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         if (analyticsName.isNotEmpty()) {
             analyticsInteractor.logScreenOpenEvent(analyticsName)
         }
+        updateStatusBarColor()
+        setStatusBarIconsColor(statusBarDarkTint)
     }
 
     override fun overrideEnterAnimation(@AnimRes animation: Int) {
@@ -66,6 +68,22 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     private fun overrideAnimation(@AnimRes animation: Int, extraKey: String) {
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
+    }
+
+    private fun updateStatusBarColor() {
+        requireActivity().window.statusBarColor = resources.getColor(
+            statusBarColor,
+            requireActivity().theme
+        )
+    }
+
+    private fun setStatusBarIconsColor(dark: Boolean) {
+        val decor: View = requireActivity().window.decorView
+        if (dark) {
+            decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            decor.systemUiVisibility = 0
+        }
     }
 
     // TODO add another screens
