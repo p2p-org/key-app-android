@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
-import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -21,12 +20,13 @@ import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
+import timber.log.Timber
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
     companion object {
         const val ACTION_RESTART = "android.intent.action.RESTART"
-        fun createIntent(context: Context, action: String = Intent.ACTION_PACKAGE_FIRST_LAUNCH) =
+        fun createIntent(context: Context, action: String = Intent.ACTION_PACKAGE_FIRST_LAUNCH): Intent =
             Intent(context, RootActivity::class.java)
                 .apply { this.action = action }
     }
@@ -48,8 +48,20 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         presenter.loadPricesAndBids()
         initializeDebugDrawer()
         onBackPressedDispatcher.addCallback {
-            val fragment = supportFragmentManager.findFragmentById(R.id.content) as BaseFragment
-            analyticsInteractor.logScreenOpenEvent(fragment.getAnalyticsName())
+            logScreenOpenEvent()
+        }
+    }
+
+    private fun logScreenOpenEvent(){
+        val openedFragment = supportFragmentManager.findFragmentById(R.id.content) as? BaseFragment
+        if (openedFragment != null) {
+            Timber.i("Opened fragment: ${supportFragmentManager.findFragmentById(R.id.content)}")
+            analyticsInteractor.logScreenOpenEvent(openedFragment.getAnalyticsName())
+        } else {
+            val findFragmentError = IllegalArgumentException(
+                "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.content)}"
+            )
+            Timber.w(findFragmentError)
         }
     }
 
