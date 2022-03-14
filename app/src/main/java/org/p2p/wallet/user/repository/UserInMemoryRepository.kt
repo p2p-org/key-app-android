@@ -36,7 +36,7 @@ class UserInMemoryRepository : UserLocalRepository {
             tokensSearchResultFlow.value = TokenListData()
         }
         val allInMemoryTokens = allTokensFlow.value
-        val currentSearchTokenResultSize = tokensSearchResultFlow.value.getSize()
+        val currentSearchTokenResultSize = tokensSearchResultFlow.value.size
         if (currentSearchTokenResultSize >= allInMemoryTokens.size) {
             return
         }
