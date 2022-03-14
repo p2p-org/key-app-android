@@ -9,6 +9,7 @@ interface TokenListContract {
     interface View : MvpView {
         fun showLoading(isLoading: Boolean)
         fun showItems(items: List<TokenData>, scrollToUp: Boolean)
+        fun showEmpty(searchText: String)
         fun reset()
     }
 
