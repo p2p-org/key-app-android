@@ -81,10 +81,6 @@ workflows:
             - unit_tests
           context: feature
           type: approval
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
 
   lint_and_test:
     jobs:
