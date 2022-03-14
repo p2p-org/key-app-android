@@ -64,20 +64,6 @@ jobs:
 workflows:
   version: 2
 
-  test:
-    jobs:
-      - version_build:
-          context: feature
-          filters:
-            branches:
-              only:
-                - /(^chore\/.+)/
-      - build_and_publish:
-          context: feature
-          type: approval
-          requires:
-            - version_build
-
   lint_test_and_publish_feature:
     jobs:
       - android_lint:
@@ -94,6 +80,7 @@ workflows:
           requires:
             - unit_tests
           context: feature
+          type: approval
           filters:
             branches:
               only:
