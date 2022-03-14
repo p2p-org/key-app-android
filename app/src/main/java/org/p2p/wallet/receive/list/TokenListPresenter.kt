@@ -1,6 +1,5 @@
 package org.p2p.wallet.receive.list
 
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter

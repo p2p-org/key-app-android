@@ -6,10 +6,15 @@ import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
 import timber.log.Timber
 
+private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
+
 class UserInMemoryRepository : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
     private val tokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
+
+    private val tokensSearchResultFlow = MutableStateFlow<List<TokenData>>(emptyList())
+    private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
 
     override fun setTokenPrices(prices: List<TokenPrice>) {
         pricesFlow.value = prices
@@ -18,45 +23,65 @@ class UserInMemoryRepository : UserLocalRepository {
     override fun getPriceByToken(symbol: String): TokenPrice? =
         pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
 
-    private val decimalsFlow = MutableStateFlow<List<TokenData>>(emptyList())
+    private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
     override fun setTokenData(data: List<TokenData>) {
-        decimalsFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+        allTokensFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
 
     override fun fetchTokens(searchText: String, count: Int, refresh: Boolean) {
         if (refresh) {
-            tokensFlow.value = emptyList()
+            searchTextByTokens.clear()
+            tokensSearchResultFlow.value = emptyList()
         }
-        if (tokensFlow.value.size >= decimalsFlow.value.size) {
+        val allInMemoryTokens = allTokensFlow.value
+        val currentSearchTokenResultSize = tokensSearchResultFlow.value.size
+        if (currentSearchTokenResultSize >= allInMemoryTokens.size) {
             return
         }
-        val items = decimalsFlow.value
-        val offset = tokensFlow.value.size
 
-        if (searchText.isNotEmpty()) {
-            val result = items.filter {
-                searchText == it.symbol ||
-                    it.name.startsWith(searchText, ignoreCase = true)
+        when {
+            searchText.isEmpty() -> {
+                val defaultTokens = searchTextByTokens.getOrDefault(DEFAULT_TOKEN_KEY, emptyList())
+                val newSize = (defaultTokens.size - getPopularDecimals().size) + count
+                val needToLoadMore = newSize > defaultTokens.size
+                if (needToLoadMore) {
+                    searchTextByTokens[DEFAULT_TOKEN_KEY] = getPopularDecimals() + allInMemoryTokens.take(newSize)
+                }
+                tokensSearchResultFlow.value = searchTextByTokens[DEFAULT_TOKEN_KEY].orEmpty()
             }
-            val indexes = findEdges(items = result, count = count, offset = offset)
-            appendTokens(result.subList(indexes.first, indexes.second))
+            searchText in searchTextByTokens -> {
+                val tokensBySearchText = searchTextByTokens.getOrDefault(searchText, emptyList())
+                val newSize = tokensBySearchText.size + count
+                val needToLoadMore = newSize > tokensBySearchText.size
+                if (needToLoadMore) {
+                    loadMoreTokensBySearchText(searchText, newSize)
+                }
+                tokensSearchResultFlow.value = searchTextByTokens[searchText].orEmpty()
+            }
+            searchText !in searchTextByTokens -> {
+                loadMoreTokensBySearchText(searchText, count)
+                tokensSearchResultFlow.value = searchTextByTokens[searchText].orEmpty()
+            }
         }
-
-        val indexes = findEdges(items = items, count = count, offset = offset)
-        val result = items.subList(indexes.first, indexes.second)
-
-        if (offset == 0 && searchText.isEmpty()) {
-            appendTokens(getPopularDecimals() + result)
-            return
-        }
-        appendTokens(result)
     }
 
-    override fun getTokenListFlow(): Flow<List<TokenData>> = tokensFlow
+    private fun loadMoreTokensBySearchText(searchText: String, newSearchTokensSize: Int) {
+        val searchResult = findTokensBySearchText(searchText)
+        searchTextByTokens[searchText] = searchResult.take(newSearchTokensSize)
+    }
+
+    private fun findTokensBySearchText(searchText: String): List<TokenData> {
+        return allTokensFlow.value
+            .asSequence()
+            .filter { token -> searchText == token.symbol || token.name.startsWith(searchText, ignoreCase = true) }
+            .toList()
+    }
+
+    override fun getTokenListFlow(): Flow<List<TokenData>> = tokensSearchResultFlow
 
     override fun findTokenData(mintAddress: String): TokenData? {
-        val data = decimalsFlow.value.firstOrNull { it.mintAddress == mintAddress }
+        val data = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
         if (data == null) {
             Timber.w("No data found for $mintAddress")
         }
@@ -65,7 +90,7 @@ class UserInMemoryRepository : UserLocalRepository {
     }
 
     override fun findTokenDataBySymbol(symbol: String): TokenData? {
-        val data = decimalsFlow.value.firstOrNull { it.symbol == symbol }
+        val data = allTokensFlow.value.firstOrNull { it.symbol == symbol }
         if (data == null) {
             Timber.w("No data found for $symbol")
         }
@@ -75,7 +100,7 @@ class UserInMemoryRepository : UserLocalRepository {
 
     private fun getPopularDecimals(): List<TokenData> {
         val items = mutableListOf<TokenData>()
-        val tokens = decimalsFlow.value
+        val tokens = allTokensFlow.value
         for (symbol in popularItems) {
             val token = tokens.firstOrNull { it.symbol == symbol }
             if (token != null) items.add(token)
@@ -83,8 +108,8 @@ class UserInMemoryRepository : UserLocalRepository {
         return items
     }
 
-    private fun appendTokens(items: List<TokenData>) {
-        tokensFlow.value = tokensFlow.value + items
+    private fun appendTokensToFlow(items: List<TokenData>) {
+        tokensSearchResultFlow.value = tokensSearchResultFlow.value + items
     }
 
     private fun <T> findEdges(items: List<T>, offset: Int, count: Int): Pair<Int, Int> {
