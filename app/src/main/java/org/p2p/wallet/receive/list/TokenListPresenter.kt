@@ -1,5 +1,8 @@
 package org.p2p.wallet.receive.list
 
+import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -47,8 +50,12 @@ class TokenListPresenter(
 
     private fun observeTokens() {
         launch {
-            interactor.getTokenListFlow().collect { tokens ->
-                view?.showItems(tokens, scrollToUp)
+            interactor.getTokenListFlow().collectIndexed { index, tokens ->
+                if(tokens.isNotEmpty()) {
+                    view?.showItems(tokens, scrollToUp)
+                } else {
+                    view?.showEmpty(searchText)
+                }
             }
         }
     }
