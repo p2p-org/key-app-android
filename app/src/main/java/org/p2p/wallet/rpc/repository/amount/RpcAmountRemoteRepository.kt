@@ -1,6 +1,9 @@
-package org.p2p.wallet.rpc.repository
+package org.p2p.wallet.rpc.repository.amount
 
 import org.koin.ext.getFullName
+import org.p2p.solanaj.model.types.RequestConfiguration
+import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.wallet.rpc.repository.RpcRepository
 import timber.log.Timber
 import java.math.BigInteger
 
@@ -19,6 +22,18 @@ class RpcAmountRemoteRepository(
         } else {
             rpcRepository.getFees(commitment = null).also { lamportsPerSignature = it }
         }
+
+    override suspend fun getFees(commitment: String?): BigInteger {
+        val params = commitment?.let {
+            val config = RequestConfiguration(commitment = it)
+            listOf<Any>(config)
+        }
+
+        val rpcRequest = RpcRequest("getFees", params)
+
+        val response = rpcApi.getFees(rpcRequest).result
+        return BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
+    }
 
     private val rentExemptionCache = mutableMapOf<Int, BigInteger>()
 

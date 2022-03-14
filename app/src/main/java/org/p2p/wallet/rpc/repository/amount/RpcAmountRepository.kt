@@ -1,4 +1,4 @@
-package org.p2p.wallet.rpc.repository
+package org.p2p.wallet.rpc.repository.amount
 
 import java.math.BigInteger
 

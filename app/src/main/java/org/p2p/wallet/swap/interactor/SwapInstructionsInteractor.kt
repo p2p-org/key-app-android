@@ -7,7 +7,7 @@ import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.rpc.repository.RpcAmountRepository
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger

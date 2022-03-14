@@ -12,7 +12,7 @@ import org.p2p.solanaj.kits.renBridge.BurnAndRelease
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.solanaj.rpc.RpcException
-import org.p2p.wallet.rpc.repository.RpcAmountRepository
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import java.math.BigDecimal
 import java.math.BigInteger
 
