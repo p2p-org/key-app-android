@@ -3,6 +3,7 @@ package org.p2p.wallet.user.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.home.model.TokenPrice
+import org.p2p.wallet.receive.list.TokenListData
 import org.p2p.wallet.user.model.TokenData
 import timber.log.Timber
 
@@ -13,7 +14,7 @@ class UserInMemoryRepository : UserLocalRepository {
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
     private val tokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
-    private val tokensSearchResultFlow = MutableStateFlow<List<TokenData>>(emptyList())
+    private val tokensSearchResultFlow = MutableStateFlow<TokenListData>(TokenListData())
     private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
 
     override fun setTokenPrices(prices: List<TokenPrice>) {
@@ -32,10 +33,10 @@ class UserInMemoryRepository : UserLocalRepository {
     override fun fetchTokens(searchText: String, count: Int, refresh: Boolean) {
         if (refresh) {
             searchTextByTokens.clear()
-            tokensSearchResultFlow.value = emptyList()
+            tokensSearchResultFlow.value = TokenListData()
         }
         val allInMemoryTokens = allTokensFlow.value
-        val currentSearchTokenResultSize = tokensSearchResultFlow.value.size
+        val currentSearchTokenResultSize = tokensSearchResultFlow.value.getSize()
         if (currentSearchTokenResultSize >= allInMemoryTokens.size) {
             return
         }
@@ -48,7 +49,7 @@ class UserInMemoryRepository : UserLocalRepository {
                 if (needToLoadMore) {
                     searchTextByTokens[DEFAULT_TOKEN_KEY] = getPopularDecimals() + allInMemoryTokens.take(newSize)
                 }
-                tokensSearchResultFlow.value = searchTextByTokens[DEFAULT_TOKEN_KEY].orEmpty()
+                setResult(DEFAULT_TOKEN_KEY)
             }
             searchText in searchTextByTokens -> {
                 val tokensBySearchText = searchTextByTokens.getOrDefault(searchText, emptyList())
@@ -57,15 +58,22 @@ class UserInMemoryRepository : UserLocalRepository {
                 if (needToLoadMore) {
                     loadMoreTokensBySearchText(searchText, newSize)
                 }
-                tokensSearchResultFlow.value = searchTextByTokens[searchText].orEmpty()
+                setResult(searchText)
             }
             searchText !in searchTextByTokens -> {
                 loadMoreTokensBySearchText(searchText, count)
-                tokensSearchResultFlow.value = searchTextByTokens[searchText].orEmpty()
+                setResult(searchText)
             }
         }
     }
 
+    private fun setResult(key: String) {
+        val result = TokenListData(
+            searchText = key,
+            result = searchTextByTokens[DEFAULT_TOKEN_KEY].orEmpty()
+        )
+        tokensSearchResultFlow.value = result
+    }
     private fun loadMoreTokensBySearchText(searchText: String, newSearchTokensSize: Int) {
         val searchResult = findTokensBySearchText(searchText)
         searchTextByTokens[searchText] = searchResult.take(newSearchTokensSize)
@@ -78,7 +86,7 @@ class UserInMemoryRepository : UserLocalRepository {
             .toList()
     }
 
-    override fun getTokenListFlow(): Flow<List<TokenData>> = tokensSearchResultFlow
+    override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow
 
     override fun findTokenData(mintAddress: String): TokenData? {
         val data = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
@@ -106,15 +114,5 @@ class UserInMemoryRepository : UserLocalRepository {
             if (token != null) items.add(token)
         }
         return items
-    }
-
-    private fun appendTokensToFlow(items: List<TokenData>) {
-        tokensSearchResultFlow.value = tokensSearchResultFlow.value + items
-    }
-
-    private fun <T> findEdges(items: List<T>, offset: Int, count: Int): Pair<Int, Int> {
-        val endIndex = if (offset + count > items.size) items.size else offset + count
-        val startIndex = if (offset > items.size) 0 else offset
-        return Pair(startIndex, endIndex)
     }
 }
