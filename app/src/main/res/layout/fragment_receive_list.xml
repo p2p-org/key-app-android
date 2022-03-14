@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:text="@string/receive_token_list_not_found"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
                 android:textColor="@color/systemErrorMain"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
