@@ -42,7 +42,6 @@ class ReceiveTokenFragment :
     }
 
     override val statusBarColor: Int = R.color.backgroundButtonPrimary
-    override val statusBarDarkTint: Boolean = false
 
     private val binding: FragmentReceiveTokenBinding by viewBinding()
     override val presenter: ReceiveTokenContract.Presenter by inject {
@@ -52,6 +51,7 @@ class ReceiveTokenFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setLightStatusBar(false)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getString(R.string.receive_token_name, token.tokenName)

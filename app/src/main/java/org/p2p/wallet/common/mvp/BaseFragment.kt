@@ -2,10 +2,14 @@ package org.p2p.wallet.common.mvp
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
+import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -27,6 +31,7 @@ import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
+import org.p2p.wallet.utils.getColor
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -36,7 +41,6 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     private val analyticsInteractor: AnalyticsInteractor by inject()
 
     protected open val statusBarColor: Int = R.color.backgroundPrimary
-    protected open val statusBarDarkTint: Boolean = true
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -54,8 +58,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         if (analyticsName.isNotEmpty()) {
             analyticsInteractor.logScreenOpenEvent(analyticsName)
         }
-        updateStatusBarColor()
-        setStatusBarIconsColor(statusBarDarkTint)
+        setStatusBarColor(statusBarColor)
     }
 
     override fun overrideEnterAnimation(@AnimRes animation: Int) {
@@ -70,20 +73,19 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
     }
 
-    private fun updateStatusBarColor() {
-        requireActivity().window.statusBarColor = resources.getColor(
-            statusBarColor,
-            requireActivity().theme
-        )
+    private fun setStatusBarColor(@ColorRes colorResId: Int) {
+        val window = requireActivity().window ?: return
+        with(window) {
+            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            statusBarColor = resources.getColor(colorResId, requireActivity().theme)
+        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
-    private fun setStatusBarIconsColor(dark: Boolean) {
-        val decor: View = requireActivity().window.decorView
-        if (dark) {
-            decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        } else {
-            decor.systemUiVisibility = 0
-        }
+    protected fun setLightStatusBar(isLight: Boolean) {
+        val window = requireActivity().window
+        val decorView = window.decorView
+        WindowInsetsControllerCompat(window, decorView).isAppearanceLightStatusBars = isLight
     }
 
     // TODO add another screens
