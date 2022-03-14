@@ -99,7 +99,7 @@ class ServerErrorInterceptor(
 
         val serverError = gson.fromJson(bodyString, ServerError::class.java)
 
-        val errorMessage = serverError.error.data.getErrorLog() ?: serverError.error.message
+        val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
         ServerException(
             errorCode = serverError.error.code,
             fullMessage = fullMessage,
