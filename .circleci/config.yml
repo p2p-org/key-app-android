@@ -76,7 +76,7 @@ workflows:
           requires:
             - android_lint
           context: feature
-      - approve_feature_build:
+      - approve-feature-build:
           type: approval
           filters:
             branches:
@@ -84,7 +84,7 @@ workflows:
                 - /(^feature\/.+)/
       - build_and_publish:
           requires:
-            - approve_feature_build
+            - approve-feature-build
             context: feature
             filters:
               branches:
