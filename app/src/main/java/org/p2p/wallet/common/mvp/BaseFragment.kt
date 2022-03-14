@@ -82,6 +82,13 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
+    /*
+        Change status bar icon color
+        isLight = true - dark color
+        isLight = false - white color
+
+        Don't forget to reset status bar color on fragment destroy to restore previous color
+     */
     protected fun setLightStatusBar(isLight: Boolean) {
         val window = requireActivity().window
         val decorView = window.decorView

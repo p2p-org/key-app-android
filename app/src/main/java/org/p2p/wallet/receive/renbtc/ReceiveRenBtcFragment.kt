@@ -158,4 +158,9 @@ class ReceiveRenBtcFragment :
             popBackStack()
         }
     }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(true)
+    }
 }

@@ -27,4 +27,9 @@ class SeedInfoFragment : BaseFragment(R.layout.fragment_reset_seed_info) {
         analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.SEED_INFO)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
     }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(true)
+    }
 }

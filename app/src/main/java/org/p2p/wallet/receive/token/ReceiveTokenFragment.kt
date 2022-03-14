@@ -137,4 +137,9 @@ class ReceiveTokenFragment :
             )
         )
     }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(true)
+    }
 }
