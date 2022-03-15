@@ -82,11 +82,10 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
-    /*
-        Change status bar icon color
-        isLight = true - dark color
-        isLight = false - white color
-
+     /*
+        Change status bar and its icons color
+        isLight = true - white status bar, dark icons
+        isLight = false - dark status bar, white icons
         Don't forget to reset status bar color on fragment destroy to restore previous color
      */
     protected fun setLightStatusBar(isLight: Boolean) {
