@@ -3,6 +3,7 @@ package org.p2p.solanaj.core
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.Sha256Hash
 import org.p2p.solanaj.utils.ByteUtils
+import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.solanaj.utils.TweetNaclFast
 import java.io.ByteArrayOutputStream
 
@@ -10,12 +11,12 @@ class PublicKey {
     private var pubkey: ByteArray
 
     constructor(pubkey: String) {
-        require(pubkey.length >= PUBLIC_KEY_LENGTH) { "Invalid public key input[String]" }
+        PublicKeyValidator.validate(pubkey)
         this.pubkey = Base58.decode(pubkey)
     }
 
     constructor(pubkey: ByteArray) {
-        require(pubkey.size <= PUBLIC_KEY_LENGTH) { "Invalid public key input[ByteArray]" }
+        PublicKeyValidator.validate(pubkey)
         this.pubkey = pubkey
     }
 
