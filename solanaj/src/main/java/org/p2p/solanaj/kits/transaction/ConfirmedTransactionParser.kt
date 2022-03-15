@@ -9,11 +9,11 @@ import java.math.BigInteger
 // todo: Parser should be refactored and optimized
 // Get some parsing info from here
 // https://github.com/p2p-org/solana-swift/blob/main/Sources/SolanaSwift/Helpers/TransactionParser.swift#L74-L86
-object TransactionTypeParser {
+object ConfirmedTransactionParser {
 
     private var details = mutableListOf<TransactionDetails>()
 
-    fun parse(transaction: ConfirmedTransactionParsed): List<TransactionDetails> {
+    fun parseToTransactionDetails(transaction: ConfirmedTransactionParsed): List<TransactionDetails> {
         details = ArrayList()
         val parsedTransaction = transaction.transaction ?: return emptyList()
 
@@ -34,7 +34,7 @@ object TransactionTypeParser {
             return details
         }
 
-        parseDetails(transaction, signature, details)
+        parseDetails(transaction, signature)
         return details
     }
 
@@ -114,14 +114,13 @@ object TransactionTypeParser {
     private fun parseDetails(
         transaction: ConfirmedTransactionParsed,
         signature: String,
-        details: MutableList<TransactionDetails>
     ) {
-        val parsedTransaction = (if (transaction.transaction != null) transaction.transaction else null) ?: return
+        val parsedTransaction = transaction.transaction ?: return
         val instructions = parsedTransaction.message.instructions
         instructions.forEach { parsedInstruction ->
             val parsedInfo = parsedInstruction.parsed
             when (parsedInfo?.type) {
-                "burnChecked" -> parseBurnOrMintTransaction(signature, transaction, parsedInfo, details)
+                "burnChecked" -> parseBurnOrMintTransaction(signature, transaction, parsedInfo)
                 "transfer",
                 "transferChecked" -> parseTransferTransaction(signature, transaction, parsedInfo, details)
                 "closeAccount" -> parseCloseTransaction(parsedInstruction, parsedInfo, transaction, signature, details)
@@ -190,15 +189,13 @@ object TransactionTypeParser {
     private fun parseBurnOrMintTransaction(
         signature: String,
         transaction: ConfirmedTransactionParsed,
-        parsedInfo: ConfirmedTransactionParsed.Parsed,
-        details: MutableList<TransactionDetails>
+        parsedInfo: ConfirmedTransactionParsed.Parsed
     ) {
         val transferDetails = BurnOrMintDetails(
             signature,
             transaction.blockTime,
             transaction.slot,
             transaction.meta.fee,
-            parsedInfo.type,
             parsedInfo.info
         )
         details.add(transferDetails)

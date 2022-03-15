@@ -29,7 +29,7 @@ class RenBtcBurnOrMintTransactionEntity(
     val decimals: Int,
 
     @ColumnInfo(name = COLUMN_FEE)
-    val fee: String
+    val fee: Long
 ) : TransactionEntity {
     companion object {
         const val TABLE_NAME = "burn_or_mint_transactions"

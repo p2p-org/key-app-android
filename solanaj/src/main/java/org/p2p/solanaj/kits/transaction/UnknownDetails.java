@@ -3,7 +3,7 @@ package org.p2p.solanaj.kits.transaction;
 import java.util.Map;
 
 public class UnknownDetails extends TransactionDetails {
-    private Object rawData;
+    private Map<String, Object> rawData;
     private String data;
 
     public UnknownDetails(String signature, long blockTime, int slot, Map<String, Object> rawData) {

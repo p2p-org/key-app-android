@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 import org.p2p.wallet.history.db.entities.embedded.CommonTransactionInformationEntity
 import org.p2p.wallet.history.db.entities.embedded.TransactionIdentifiersEntity
 
-
 @Entity(tableName = CloseAccountTransactionEntity.TABLE_NAME)
 class CloseAccountTransactionEntity(
     @Embedded

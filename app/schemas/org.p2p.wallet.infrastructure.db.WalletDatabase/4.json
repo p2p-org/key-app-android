@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "b44b6691f4f98c4d211000daff92ff3f",
+    "identityHash": "4d83211a763573267b1d97a14a49a213",
     "entities": [
       {
         "tableName": "token_table",
@@ -355,7 +355,7 @@
       },
       {
         "tableName": "transfer_transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`source` TEXT NOT NULL, `destination` TEXT NOT NULL, `authority` TEXT NOT NULL, `mint` TEXT NOT NULL, `amount` TEXT NOT NULL, `decimals` INTEGER NOT NULL, `fee` INTEGER NOT NULL, `signature` TEXT NOT NULL, `slot` INTEGER NOT NULL, `block_time` INTEGER NOT NULL, `transaction_type` TEXT NOT NULL, `info` TEXT, PRIMARY KEY(`signature`, `slot`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`source` TEXT NOT NULL, `destination` TEXT NOT NULL, `authority` TEXT, `mint` TEXT, `amount` TEXT NOT NULL, `decimals` INTEGER NOT NULL, `fee` INTEGER NOT NULL, `signature` TEXT NOT NULL, `slot` INTEGER NOT NULL, `block_time` INTEGER NOT NULL, `transaction_type` TEXT NOT NULL, `info` TEXT, PRIMARY KEY(`signature`, `slot`))",
         "fields": [
           {
             "fieldPath": "source",
@@ -373,13 +373,13 @@
             "fieldPath": "authority",
             "columnName": "authority",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "mint",
             "columnName": "mint",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "amount",
@@ -442,7 +442,7 @@
       },
       {
         "tableName": "burn_or_mint_transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`account` TEXT NOT NULL, `authority` TEXT NOT NULL, `amount` TEXT NOT NULL, `decimals` INTEGER NOT NULL, `fee` TEXT NOT NULL, `signature` TEXT NOT NULL, `slot` INTEGER NOT NULL, `block_time` INTEGER NOT NULL, `transaction_type` TEXT NOT NULL, `info` TEXT, PRIMARY KEY(`signature`, `slot`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`account` TEXT NOT NULL, `authority` TEXT NOT NULL, `amount` TEXT NOT NULL, `decimals` INTEGER NOT NULL, `fee` INTEGER NOT NULL, `signature` TEXT NOT NULL, `slot` INTEGER NOT NULL, `block_time` INTEGER NOT NULL, `transaction_type` TEXT NOT NULL, `info` TEXT, PRIMARY KEY(`signature`, `slot`))",
         "fields": [
           {
             "fieldPath": "account",
@@ -471,7 +471,7 @@
           {
             "fieldPath": "fee",
             "columnName": "fee",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -576,7 +576,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b44b6691f4f98c4d211000daff92ff3f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4d83211a763573267b1d97a14a49a213')"
     ]
   }
 }

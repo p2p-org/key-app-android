@@ -65,11 +65,15 @@ class HistoryPresenter(
             try {
                 view?.showPagingState(PagingState.InitialLoading)
 
-                val history = historyInteractor.getHistory(token.publicKey, null, PAGE_SIZE)
-                if (history.isEmpty()) {
+                val historyTransactions = historyInteractor.getHistory(
+                    tokenPublicKey = token.publicKey,
+                    before = null,
+                    limit = PAGE_SIZE
+                )
+                if (historyTransactions.isEmpty()) {
                     paginationEnded = true
                 } else {
-                    transactions.addAll(history)
+                    transactions.addAll(historyTransactions)
                     view?.showHistory(transactions)
                 }
 

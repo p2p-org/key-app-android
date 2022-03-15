@@ -2,6 +2,7 @@ package org.p2p.wallet.infrastructure
 
 import android.content.Context
 import androidx.room.Room
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -9,6 +10,14 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.common.glide.GlideManager
+import org.p2p.wallet.history.db.dao.CloseAccountTransactionsDao
+import org.p2p.wallet.history.db.dao.CreateAccountTransactionsDao
+import org.p2p.wallet.history.db.dao.RenBtcBurnOrMintTransactionsDao
+import org.p2p.wallet.history.db.dao.SwapTransactionsDao
+import org.p2p.wallet.history.db.dao.TransactionDao
+import org.p2p.wallet.history.db.dao.TransactionDaoDelegate
+import org.p2p.wallet.history.db.dao.TransferTransactionsDao
+import org.p2p.wallet.history.db.dao.UnknownTransactionsDao
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_NAME
 import org.p2p.wallet.infrastructure.security.SecureStorage
@@ -25,7 +34,7 @@ object InfrastructureModule : InjectionModule {
     override fun create() = module {
         single {
             Room
-                .databaseBuilder(get(), WalletDatabase::class.java, DATABASE_NAME)
+                .databaseBuilder(androidContext(), WalletDatabase::class.java, DATABASE_NAME)
                 .fallbackToDestructiveMigration()
                 .setQueryExecutor(Executors.newCachedThreadPool())
                 .build()
@@ -39,6 +48,18 @@ object InfrastructureModule : InjectionModule {
         single { get<WalletDatabase>().transferTransactionsDao }
         single { get<WalletDatabase>().renBtcBurnOrMintTransactionsDao }
         single { get<WalletDatabase>().unknownTransactionsDao }
+
+        single {
+            val allTransactionDaos: List<TransactionDao<*>> = listOf(
+                get<CloseAccountTransactionsDao>(),
+                get<CreateAccountTransactionsDao>(),
+                get<SwapTransactionsDao>(),
+                get<TransferTransactionsDao>(),
+                get<RenBtcBurnOrMintTransactionsDao>(),
+                get<UnknownTransactionsDao>(),
+            )
+            TransactionDaoDelegate(allTransactionDaos)
+        }
 
         single {
             val context = get<Context>()

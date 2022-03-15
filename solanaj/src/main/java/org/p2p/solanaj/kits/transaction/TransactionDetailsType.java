@@ -1,5 +1,7 @@
 package org.p2p.solanaj.kits.transaction;
 
+import androidx.annotation.NonNull;
+
 public enum TransactionDetailsType {
     UNKNOWN("unknown"),
     SWAP("swap"),
@@ -13,6 +15,7 @@ public enum TransactionDetailsType {
         this.type = type;
     }
 
+    @NonNull
     public String getType() {
         return type;
     }
