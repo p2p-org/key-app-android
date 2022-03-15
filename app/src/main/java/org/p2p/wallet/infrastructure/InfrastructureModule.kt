@@ -33,6 +33,12 @@ object InfrastructureModule : InjectionModule {
 
         single { get<WalletDatabase>().tokenDao() }
         single { get<WalletDatabase>().sessionDao() }
+        single { get<WalletDatabase>().closeAccountTransactionsDao }
+        single { get<WalletDatabase>().createAccountTransactionsDao }
+        single { get<WalletDatabase>().swapTransactionsDao }
+        single { get<WalletDatabase>().transferTransactionsDao }
+        single { get<WalletDatabase>().renBtcBurnOrMintTransactionsDao }
+        single { get<WalletDatabase>().unknownTransactionsDao }
 
         single {
             val context = get<Context>()
