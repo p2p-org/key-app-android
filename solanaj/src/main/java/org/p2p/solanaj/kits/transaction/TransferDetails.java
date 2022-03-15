@@ -1,16 +1,20 @@
 package org.p2p.solanaj.kits.transaction;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.math.BigInteger;
 import java.util.Map;
 
 public class TransferDetails extends TransactionDetails {
     private final String destination;
     private final String source;
+    @Nullable
     private final String authority;
+    @Nullable
     private String mint;
     private final String amount;
     private int decimals;
-    private final String transferType;
     private final long fee;
 
     public TransferDetails(String signature, long blockTime, int slot, long fee, String type, Map<String, Object> rawData) {
@@ -18,7 +22,6 @@ public class TransferDetails extends TransactionDetails {
         this.destination = (String) rawData.get("destination");
         this.source = (String) rawData.get("source");
         this.authority = (String) rawData.get("authority");
-        this.transferType = type;
         this.fee = fee;
 
         if (type.equals("transferChecked")) {
@@ -38,11 +41,34 @@ public class TransferDetails extends TransactionDetails {
         }
     }
 
+    public TransferDetails(
+            @NonNull String signature,
+            long blockTime,
+            int slot,
+            String destination,
+            String source,
+            @Nullable String authority,
+            @Nullable String mint,
+            String amount,
+            int decimals,
+            long fee
+    ) {
+        super(signature, blockTime, slot);
+        this.destination = destination;
+        this.source = source;
+        this.authority = authority;
+        this.mint = mint;
+        this.amount = amount;
+        this.decimals = decimals;
+        this.fee = fee;
+    }
+
     public Boolean isSimpleTransfer() {
-        return transferType.equals("transfer");
+        return this.getType().getType().equals("transfer");
     }
 
     @Override
+    @NonNull
     public TransactionDetailsType getType() {
         return TransactionDetailsType.TRANSFER;
     }
@@ -64,14 +90,12 @@ public class TransferDetails extends TransactionDetails {
         return source;
     }
 
-    public String getTransferType() {
-        return transferType;
-    }
-
+    @Nullable
     public String getAuthority() {
         return authority;
     }
 
+    @Nullable
     public String getMint() {
         return mint;
     }

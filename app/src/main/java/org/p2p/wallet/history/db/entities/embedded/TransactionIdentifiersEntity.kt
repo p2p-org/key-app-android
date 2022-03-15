@@ -3,7 +3,6 @@ package org.p2p.wallet.history.db.entities.embedded
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 
-
 /**
  * Primary keys for all transactions in database
  * for usage add field like this in your transaction entity:

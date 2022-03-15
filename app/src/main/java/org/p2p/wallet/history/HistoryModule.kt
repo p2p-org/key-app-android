@@ -3,9 +3,13 @@ package org.p2p.wallet.history
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParser
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.history.db.dao.*
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.interactor.HistoryTransactionMapper
+import org.p2p.wallet.history.interactor.HistoryTransactionsRepository
+import org.p2p.wallet.history.interactor.HistoryTransactionsRepositoryImpl
+import org.p2p.wallet.history.interactor.TransactionDetailsMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.HistoryRepository
@@ -18,38 +22,50 @@ import org.p2p.wallet.home.model.Token
 object HistoryModule : InjectionModule {
 
     override fun create(): Module = module {
-        initDataLayer()
-        factory { HistoryInteractor(get(), get(), get(), get()) }
+        dataLayer()
+
+        factory {
+            HistoryInteractor(
+                rpcRepository = get(),
+                historyTransactionsRepository = get()
+            )
+        }
         factory { (token: Token.Active) ->
             HistoryPresenter(
-                token,
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+                token = token,
+                historyInteractor = get(),
+                receiveAnalytics = get(),
+                swapAnalytics = get(),
+                analyticsInteractor = get(),
+                sendAnalytics = get(),
+                renBtcInteractor = get(),
+                closeInteractor = get()
             )
         } bind HistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
-            TransactionDetailsPresenter(state, get(), get(), get())
+            TransactionDetailsPresenter(
+                state = state,
+                userLocalRepository = get(),
+                context = get(),
+                historyInteractor = get()
+            )
         } bind TransactionDetailsContract.Presenter::class
     }
 
-    private fun Module.initDataLayer() {
-        factory { HistoryRemoteRepository(get()) } bind HistoryRepository::class
-        factory {
-            val allTransactionDaos: List<TransactionDao<*>> = listOf(
-                get<CloseAccountTransactionsDao>(),
-                get<CreateAccountTransactionsDao>(),
-                get<SwapTransactionsDao>(),
-                get<TransferTransactionsDao>(),
-                get<RenBtcBurnOrMintTransactionsDao>(),
-                get<UnknownTransactionsDao>(),
+    private fun Module.dataLayer() {
+        factory { HistoryRemoteRepository(compareApi = get()) } bind HistoryRepository::class
+
+        factory { ConfirmedTransactionParser }
+        factory { TransactionDetailsMapper(confirmedTransactionParser = get()) }
+        factory { HistoryTransactionMapper(userLocalRepository = get()) }
+        single {
+            HistoryTransactionsRepositoryImpl(
+                rpcRepository = get(),
+                tokenKeyProvider = get(),
+                transactionDaoDelegate = get(),
+                transactionDetailsMapper = get(),
+                historyTransactionMapper = get()
             )
-            TransactionDaoDelegate(allTransactionDaos)
-        }
+        } bind HistoryTransactionsRepository::class
     }
 }
-

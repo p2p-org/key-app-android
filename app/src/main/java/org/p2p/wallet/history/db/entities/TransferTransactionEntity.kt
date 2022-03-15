@@ -4,10 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.history.db.entities.embedded.CommonTransactionInformationEntity
 import org.p2p.wallet.history.db.entities.embedded.TransactionIdentifiersEntity
-
+import org.p2p.wallet.utils.Base58String
 
 @Entity(tableName = TransferTransactionEntity.TABLE_NAME)
 class TransferTransactionEntity(
@@ -25,10 +24,10 @@ class TransferTransactionEntity(
     val destination: Base58String,
 
     @ColumnInfo(name = COLUMN_AUTHORITY)
-    val authority: String,
+    val authority: String?,
 
     @ColumnInfo(name = COLUMN_MINT)
-    val mint: String,
+    val mint: String?,
 
     @ColumnInfo(name = COLUMN_AMOUNT)
     val amount: String,

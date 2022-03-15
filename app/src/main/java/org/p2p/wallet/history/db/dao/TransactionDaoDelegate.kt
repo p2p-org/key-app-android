@@ -1,15 +1,22 @@
 package org.p2p.wallet.history.db.dao
 
-import org.p2p.wallet.history.db.entities.*
+import org.p2p.wallet.history.db.entities.CloseAccountTransactionEntity
+import org.p2p.wallet.history.db.entities.CreateAccountTransactionEntity
+import org.p2p.wallet.history.db.entities.RenBtcBurnOrMintTransactionEntity
+import org.p2p.wallet.history.db.entities.SwapTransactionEntity
+import org.p2p.wallet.history.db.entities.TransactionEntity
+import org.p2p.wallet.history.db.entities.TransferTransactionEntity
+import org.p2p.wallet.history.db.entities.UnknownTransactionEntity
 import org.p2p.wallet.utils.findInstance
+import timber.log.Timber
 
 class TransactionDaoDelegate(
-    private val transactionDao: List<TransactionDao<*>>,
+    private val transactionDao: List<TransactionDao<*>>
 ) {
 
-    suspend fun getTransactions(): List<TransactionEntity> {
+    suspend fun getTransactions(signatures: List<String>): List<TransactionEntity> {
         return transactionDao
-            .map { daoImpl -> daoImpl.getAllTransactions() }
+            .map { daoImpl -> daoImpl.getTransactionsBySignature(signatures) }
             .flatten()
     }
 
@@ -44,5 +51,7 @@ class TransactionDaoDelegate(
                     ?.insertTransaction(entity)
             }
         }
+
+        Timber.i("Inserted entity: ${entity.commonInformation.transactionDetailsType}")
     }
 }

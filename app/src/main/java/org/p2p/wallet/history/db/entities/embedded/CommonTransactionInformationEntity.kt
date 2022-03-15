@@ -2,12 +2,7 @@ package org.p2p.wallet.history.db.entities.embedded
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.google.gson.Gson
-import org.p2p.wallet.utils.fromJsonReified
-import java.util.*
-
 
 @Entity
 class CommonTransactionInformationEntity(
@@ -27,4 +22,3 @@ class CommonTransactionInformationEntity(
         const val COLUMN_INFO = "info"
     }
 }
-

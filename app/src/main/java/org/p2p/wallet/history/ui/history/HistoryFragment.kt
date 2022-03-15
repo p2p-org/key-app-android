@@ -31,6 +31,7 @@ import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import kotlin.math.absoluteValue
@@ -41,16 +42,16 @@ class HistoryFragment :
 
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
-        fun create(token: Token.Active) = HistoryFragment().withArgs(
+        fun create(token: Token.Active): HistoryFragment = HistoryFragment().withArgs(
             EXTRA_TOKEN to token
         )
     }
 
-    override val presenter: HistoryContract.Presenter by inject {
-        parametersOf(token)
-    }
+    override val presenter: HistoryContract.Presenter by inject { parametersOf(token) }
+
     private val token: Token.Active by args(EXTRA_TOKEN)
-    private val historyAdapter: HistoryAdapter by lazy {
+
+    private val historyAdapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             onTransactionClicked = { presenter.onItemClicked(it) },
             onRetryClicked = { presenter.fetchNextPage() }
