@@ -4,6 +4,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.history.db.dao.*
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.HistoryRemoteRepository
@@ -17,9 +18,8 @@ import org.p2p.wallet.home.model.Token
 object HistoryModule : InjectionModule {
 
     override fun create(): Module = module {
-
-        factory { HistoryRemoteRepository(get()) } bind HistoryRepository::class
-        factory { HistoryInteractor(get(), get(), get()) }
+        initDataLayer()
+        factory { HistoryInteractor(get(), get(), get(), get()) }
         factory { (token: Token.Active) ->
             HistoryPresenter(
                 token,
@@ -36,4 +36,20 @@ object HistoryModule : InjectionModule {
             TransactionDetailsPresenter(state, get(), get(), get())
         } bind TransactionDetailsContract.Presenter::class
     }
+
+    private fun Module.initDataLayer() {
+        factory { HistoryRemoteRepository(get()) } bind HistoryRepository::class
+        factory {
+            val allTransactionDaos: List<TransactionDao<*>> = listOf(
+                get<CloseAccountTransactionsDao>(),
+                get<CreateAccountTransactionsDao>(),
+                get<SwapTransactionsDao>(),
+                get<TransferTransactionsDao>(),
+                get<RenBtcBurnOrMintTransactionsDao>(),
+                get<UnknownTransactionsDao>(),
+            )
+            TransactionDaoDelegate(allTransactionDaos)
+        }
+    }
 }
+

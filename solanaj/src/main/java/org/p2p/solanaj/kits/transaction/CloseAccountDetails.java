@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 public class CloseAccountDetails extends TransactionDetails {
     private String account;
     private String mint;
-    private int slot;
 
     public CloseAccountDetails(
             @Nullable String signature,
@@ -15,7 +14,6 @@ public class CloseAccountDetails extends TransactionDetails {
             @Nullable String mint) {
         super(signature, blockTime, slot);
         this.account = account;
-        this.slot = slot;
         this.mint = mint;
     }
 
@@ -35,10 +33,5 @@ public class CloseAccountDetails extends TransactionDetails {
 
     public String getMint() {
         return mint;
-    }
-
-    @Override
-    public int getSlot() {
-        return slot;
     }
 }
