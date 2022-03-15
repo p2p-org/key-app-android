@@ -12,14 +12,14 @@ import org.p2p.solanaj.kits.renBridge.BurnAndRelease
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.solanaj.rpc.RpcException
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceInteractor
 import java.math.BigDecimal
 import java.math.BigInteger
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager,
-    private val rpcAmountRepository: RpcAmountRepository
+    private val rpcBalanceInteractor: RpcBalanceInteractor
 ) {
 
     companion object {
@@ -55,8 +55,8 @@ class BurnBtcInteractor(
     }
 
     suspend fun getBurnFee(): BigDecimal {
-        val fee = rpcAmountRepository.getMinimumBalanceForRentExemption(BURN_FEE_LENGTH)
-        return fee.fromLamports().add(BigDecimal("0.000005")).scaleMedium()
+        val fee = rpcBalanceInteractor.getMinimumBalanceForRentExemption(BURN_FEE_LENGTH, useCache = true)
+        return fee.toBigInteger().fromLamports().add(BigDecimal("0.000005")).scaleMedium()
     }
 
     private fun getNetworkConfig(): NetworkConfig =

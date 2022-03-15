@@ -2,18 +2,21 @@ package org.p2p.wallet.rpc.repository.account
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.MultipleAccountsInfo
+import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.model.types.AccountInfo
+import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
-import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.wallet.rpc.api.RpcAccountApi
 import timber.log.Timber
 
-class RpcAccountRemoteRepository(private val rpcApi: RpcApi) : RpcAccountRepository {
+class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRepository {
 
     override suspend fun getAccountInfo(account: String): AccountInfo? {
         return try {
@@ -22,7 +25,7 @@ class RpcAccountRemoteRepository(private val rpcApi: RpcApi) : RpcAccountReposit
                 RequestConfiguration(encoding = Encoding.BASE64.encoding)
             )
             val rpcRequest = RpcRequest("getAccountInfo", params)
-            rpcApi.getAccountInfo(rpcRequest).result
+            api.getAccountInfo(rpcRequest).result
         } catch (e: EmptyDataException) {
             Timber.w("`getAccountInfo` responded with empty data, returning null")
             null
@@ -36,7 +39,7 @@ class RpcAccountRemoteRepository(private val rpcApi: RpcApi) : RpcAccountReposit
         }
 
         return try {
-            rpcApi
+            api
                 .getAccountsInfo(requestsBatch)
                 .mapIndexed { index, response ->
                     requestsBatch[index].params!!.first() as String to response.result
@@ -54,7 +57,7 @@ class RpcAccountRemoteRepository(private val rpcApi: RpcApi) : RpcAccountReposit
         return try {
             val params = listOf(publicKey.toString(), config)
             val rpcRequest = RpcRequest("getProgramAccounts", params)
-            val response = rpcApi.getProgramAccounts(rpcRequest)
+            val response = api.getProgramAccounts(rpcRequest)
 
             // sometimes result can be null
             response.result
@@ -79,7 +82,7 @@ class RpcAccountRemoteRepository(private val rpcApi: RpcApi) : RpcAccountReposit
         )
 
         val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
-        return rpcApi.getTokenAccountsByOwner(rpcRequest = rpcRequest).result
+        return api.getTokenAccountsByOwner(rpcRequest = rpcRequest).result
     }
 
     override suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo {
@@ -95,6 +98,16 @@ class RpcAccountRemoteRepository(private val rpcApi: RpcApi) : RpcAccountReposit
 
         val rpcRequest = RpcRequest("getMultipleAccounts", params)
 
-        return rpcApi.getMultipleAccounts(rpcRequest).result
+        return api.getMultipleAccounts(rpcRequest).result
+    }
+
+    override suspend fun getPools(account: PublicKey): List<Pool.PoolInfo> {
+        val params = listOf(
+            account.toString(),
+            ConfigObjects.ProgramAccountConfig(RpcSendTransactionConfig.Encoding.base64)
+        )
+        val rpcRequest = RpcRequest("getProgramAccounts", params)
+        val response = api.getProgramAccounts(rpcRequest).result
+        return response.map { Pool.PoolInfo.fromProgramAccount(it) }
     }
 }

@@ -1,16 +1,16 @@
 package org.p2p.wallet.swap.interactor.serum
 
 import android.util.Base64
-import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.serumswap.Market
 import org.p2p.solanaj.serumswap.MarketStatLayout
 import org.p2p.solanaj.serumswap.MarketStatLayoutParser
 import org.p2p.solanaj.serumswap.orderbook.Orderbook
+import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 
 class SerumMarketInteractor(
-    private val rpcRepository: RpcRepository
+    private val rpcRepository: RpcAccountRepository
 ) {
 
     // Load a market base on its address

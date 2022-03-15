@@ -8,13 +8,15 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRepository
+import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRepository
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
 
 class TransactionInteractor(
-    private val rpcRepository: RpcRepository,
+    private val rpcBlockHashRepository: RpcBlockHashRepository,
+    private val rpcTransactionRepository: RpcTransactionRepository,
     private val transactionAmountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -31,7 +33,7 @@ class TransactionInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.recentBlockHash = recentBlockhash ?: rpcRepository.getRecentBlockhash().recentBlockhash
+        transaction.recentBlockHash = recentBlockhash ?: rpcBlockHashRepository.getRecentBlockhash().recentBlockhash
         transaction.feePayer = feePayer
 
         // calculate fee first
@@ -51,9 +53,9 @@ class TransactionInteractor(
     ): String {
 
         return if (isSimulation) {
-            rpcRepository.simulateTransaction(preparedTransaction.transaction)
+            rpcTransactionRepository.simulateTransaction(preparedTransaction.transaction)
         } else {
-            rpcRepository.sendTransaction(preparedTransaction.transaction)
+            rpcTransactionRepository.sendTransaction(preparedTransaction.transaction)
         }
     }
 
@@ -65,7 +67,7 @@ class TransactionInteractor(
     ): String {
         // get recentBlockhash
         val blockhash = if (recentBlockhash.isNullOrEmpty()) {
-            rpcRepository.getRecentBlockhash().recentBlockhash
+            rpcBlockHashRepository.getRecentBlockhash().recentBlockhash
         } else {
             recentBlockhash
         }

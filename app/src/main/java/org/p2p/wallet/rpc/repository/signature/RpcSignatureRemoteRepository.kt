@@ -4,9 +4,9 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.SignatureInformation
-import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.wallet.rpc.api.RpcSignatureApi
 
-class RpcSignatureRemoteRepository(private val rpcPoolApi: RpcApi) : RpcSignatureRepository {
+class RpcSignatureRemoteRepository(private val rpcPoolApi: RpcSignatureApi) : RpcSignatureRepository {
 
     override suspend fun getConfirmedSignaturesForAddress(
         account: PublicKey,

@@ -1,10 +1,10 @@
 package org.p2p.wallet.rpc.repository.balance
 
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.wallet.rpc.api.RpcBalanceApi
 import java.math.BigInteger
 
-class RpcBalanceRemoteRepository(private val rpcApi: RpcApi) : RpcBalanceRepository {
+class RpcBalanceRemoteRepository(private val rpcApi: RpcBalanceApi) : RpcBalanceRepository {
 
     override suspend fun getBalance(account: String): Long {
         val params = listOf(account)

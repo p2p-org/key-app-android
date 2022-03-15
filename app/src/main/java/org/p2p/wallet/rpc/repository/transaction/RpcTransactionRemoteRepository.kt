@@ -6,11 +6,11 @@ import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.wallet.rpc.api.RpcTransactionApi
 
 class RpcTransactionRemoteRepository(
-    private val rpcApi: RpcApi,
-    private val rpcPoolApi: RpcApi
+    private val rpcApi: RpcTransactionApi,
+    private val rpcPoolApi: RpcTransactionApi
 ) : RpcTransactionRepository {
 
     override suspend fun sendTransaction(transaction: Transaction): String {

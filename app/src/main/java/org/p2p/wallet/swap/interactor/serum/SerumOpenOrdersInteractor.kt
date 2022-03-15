@@ -1,6 +1,5 @@
 package org.p2p.wallet.swap.interactor.serum
 
-import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
@@ -13,10 +12,13 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.serumswap.OpenOrders
 import org.p2p.solanaj.serumswap.OpenOrdersLayoutParser
 import org.p2p.solanaj.serumswap.Version
+import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import java.math.BigInteger
 
 class SerumOpenOrdersInteractor(
-    private val rpcRepository: RpcRepository
+    private val rpcBalanceRepository: RpcBalanceRepository,
+    private val rpcAccountRepository: RpcAccountRepository
 ) {
 
     suspend fun makeCreateAccountInstructions(
@@ -31,7 +33,7 @@ class SerumOpenOrdersInteractor(
             minRentExemption.toLong()
         } else {
             val span = OpenOrders.getLayoutSpan(programId.toBase58())
-            rpcRepository.getMinimumBalanceForRentExemption(span.toInt())
+            rpcBalanceRepository.getMinimumBalanceForRentExemption(span.toInt())
         }
 
         val order = Account()
@@ -89,7 +91,7 @@ class SerumOpenOrdersInteractor(
 
     suspend fun getMinimumBalanceForRentExemption(programId: PublicKey): Long {
         val span = OpenOrders.getLayoutSpan(programId.toBase58())
-        return rpcRepository.getMinimumBalanceForRentExemption(span.toInt())
+        return rpcBalanceRepository.getMinimumBalanceForRentExemption(span.toInt())
     }
 
     private suspend fun getFilteredProgramAccounts(
@@ -106,7 +108,7 @@ class SerumOpenOrdersInteractor(
             encoding = Encoding.BASE64.encoding,
             filters = updatedFilters
         )
-        val programAccounts = rpcRepository.getProgramAccounts(programId, config)
+        val programAccounts = rpcAccountRepository.getProgramAccounts(programId, config)
 
         return programAccounts.map {
             if (it.account.owner != programId.toBase58()) {

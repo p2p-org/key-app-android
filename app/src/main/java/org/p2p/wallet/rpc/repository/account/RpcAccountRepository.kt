@@ -2,6 +2,7 @@ package org.p2p.wallet.rpc.repository.account
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.kits.MultipleAccountsInfo
+import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RequestConfiguration
@@ -13,4 +14,5 @@ interface RpcAccountRepository {
     suspend fun getProgramAccounts(publicKey: PublicKey, config: RequestConfiguration): List<ProgramAccount>
     suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo
+    suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
 }

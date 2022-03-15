@@ -4,9 +4,9 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenSupply
-import org.p2p.wallet.rpc.api.RpcApi
+import org.p2p.wallet.rpc.api.RpcTokenApi
 
-class RpcTokenRemoteRepository(private val rpcApi: RpcApi) : RpcTokenRepository {
+class RpcTokenRemoteRepository(private val rpcApi: RpcTokenApi) : RpcTokenRepository {
 
     override suspend fun getTokenAccountBalances(accounts: List<String>): List<Pair<String, TokenAccountBalance>> {
         val requestsBatch = accounts.map {

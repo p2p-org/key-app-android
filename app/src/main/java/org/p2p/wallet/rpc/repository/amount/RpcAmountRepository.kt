@@ -4,5 +4,4 @@ import java.math.BigInteger
 
 interface RpcAmountRepository {
     suspend fun getFees(commitment: String?): BigInteger
-    suspend fun getMinimumBalanceForRentExemption(dataLength: Int, useCache: Boolean = true): BigInteger
 }
