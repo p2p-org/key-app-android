@@ -5,12 +5,12 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_NAME
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
@@ -71,9 +71,9 @@ sealed class Token constructor(
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${total.scaleLong().toPlainString()} $tokenSymbol"
+                "${AmountUtils.format(total)} $tokenSymbol"
             } else {
-                total.scaleLong().toPlainString()
+                AmountUtils.format(total)
             }
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int {

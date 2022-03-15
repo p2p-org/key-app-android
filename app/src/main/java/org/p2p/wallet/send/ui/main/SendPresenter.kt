@@ -35,6 +35,7 @@ import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
@@ -520,7 +521,7 @@ class SendPresenter(
         val data = SendTotal(
             total = tokenAmount,
             totalUsd = usdAmount,
-            receive = "$tokenAmount ${sourceToken.tokenSymbol}",
+            receive = "${AmountUtils.format(tokenAmount)} ${sourceToken.tokenSymbol}",
             receiveUsd = tokenAmount.toUsd(sourceToken),
             fee = sendFee,
             sourceSymbol = sourceToken.tokenSymbol

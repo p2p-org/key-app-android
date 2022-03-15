@@ -46,6 +46,7 @@ import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
@@ -56,7 +57,6 @@ import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -467,7 +467,7 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = available.scaleLong().toString()
+        binding.availableTextView.text = AmountUtils.format(available)
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
@@ -483,11 +483,11 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
-        binding.aroundTextView.text = "$tokenValue $symbol"
+        binding.aroundTextView.text = "${AmountUtils.format(tokenValue)} $symbol"
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue)
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, AmountUtils.format(usdValue))
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
