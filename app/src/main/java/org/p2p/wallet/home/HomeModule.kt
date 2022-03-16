@@ -64,7 +64,7 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
             )
         }
-        factory { SearchInteractor(get(), get()) }
+        factory { SearchInteractor(get(), get(), get()) }
 
         factory { (token: Token.Active?) ->
             ReceiveSolanaPresenter(token, get(), get(), get(), get(), get(), get())
