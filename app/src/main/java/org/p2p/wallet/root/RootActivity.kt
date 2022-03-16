@@ -14,6 +14,7 @@ import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.debugdrawer.DebugDrawer
@@ -50,15 +51,16 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }
+
+        supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
     }
 
-    private fun logScreenOpenEvent(){
+    private fun logScreenOpenEvent() {
         val openedFragment = supportFragmentManager.findFragmentById(R.id.content) as? BaseFragment
         if (openedFragment != null) {
-            Timber.i("Opened fragment: ${supportFragmentManager.findFragmentById(R.id.content)}")
             analyticsInteractor.logScreenOpenEvent(openedFragment.getAnalyticsName())
         } else {
-            val findFragmentError = IllegalArgumentException(
+            val findFragmentError = ClassCastException(
                 "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.content)}"
             )
             Timber.w(findFragmentError)

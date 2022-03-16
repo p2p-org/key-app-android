@@ -20,3 +20,7 @@ inline fun <E> List<E>.ifNotEmpty(action: (originalList: List<E>) -> Unit): List
 }
 
 inline fun <reified Type> Gson.fromJsonReified(json: String): Type = fromJson(json, Type::class.java)
+
+fun Result<*>.invokeAndForget() {
+    getOrNull()
+}
