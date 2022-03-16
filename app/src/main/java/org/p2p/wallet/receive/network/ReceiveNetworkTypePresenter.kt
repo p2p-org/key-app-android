@@ -70,7 +70,7 @@ class ReceiveNetworkTypePresenter(
     override fun onBuySelected(isSelected: Boolean) {
         launch {
             try {
-                launchRenBtcSession()
+                view?.navigateToReceive(selectedNetworkType)
             } catch (e: Exception) {
                 Timber.e("Error on launching RenBtc session $e")
                 view?.showErrorMessage(e)
@@ -97,6 +97,12 @@ class ReceiveNetworkTypePresenter(
                         ?: throw IllegalStateException("No SOL account found")
                     createBtcWallet(sol)
                 } else {
+                    if (isRenBtcSessionActive()) {
+                        receiveAnalytics.logReceiveSettingBitcoin()
+                        view?.navigateToReceive(selectedNetworkType)
+                    } else {
+                        view?.showNetworkInfo(selectedNetworkType)
+                    }
                     launchRenBtcSession()
                 }
             } catch (e: Throwable) {
@@ -116,6 +122,11 @@ class ReceiveNetworkTypePresenter(
         } else {
             view?.showNetworkInfo(selectedNetworkType)
         }
+    }
+
+    private suspend fun isRenBtcSessionActive(): Boolean {
+        val session = renBtcInteractor.findActiveSession()
+        return session != null && session.isValid
     }
 
     private suspend fun createBtcWallet(sol: Token.Active) {
