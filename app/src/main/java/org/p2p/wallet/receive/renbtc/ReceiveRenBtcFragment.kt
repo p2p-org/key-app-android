@@ -36,7 +36,6 @@ class ReceiveRenBtcFragment :
     }
 
     override val statusBarColor: Int = R.color.backgroundButtonPrimary
-    override val statusBarDarkTint: Boolean = false
 
     override val presenter: ReceiveRenBtcContract.Presenter by inject()
     private val binding: FragmentRenBtcBinding by viewBinding()
@@ -44,6 +43,7 @@ class ReceiveRenBtcFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setLightStatusBar(false)
         analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
@@ -157,5 +157,10 @@ class ReceiveRenBtcFragment :
         showErrorDialog(e) {
             popBackStack()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(true)
     }
 }
