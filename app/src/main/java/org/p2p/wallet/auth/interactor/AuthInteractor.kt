@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.core.content.edit
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.HashingUtils
 import org.p2p.wallet.auth.model.BiometricStatus
@@ -16,15 +14,8 @@ import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
-import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.renbtc.RenTransactionManager
-import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.renbtc.service.RenVMService
-import org.p2p.wallet.updates.UpdatesManager
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
 private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
@@ -36,23 +27,16 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
  * If we decide to add pin code validation to the backend, we can remove one type hash
  * and make validation via pin code without decrypting hash
  * */
-
 class AuthInteractor(
-    private val context: Context,
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,
-    private val renBtcInteractor: RenBtcInteractor,
     private val sharedPreferences: SharedPreferences,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val biometricManager: BiometricManager,
-    private val mainLocalRepository: HomeLocalRepository,
-    private val updatesManager: UpdatesManager,
-    private val transactionManager: RenTransactionManager,
-    private val appScope: AppScope
+    private val dispatchers: CoroutineDispatchers,
 ) {
 
     // region signing in
-    suspend fun signInByPinCode(pinCode: String): SignInResult = withContext(Dispatchers.Default) {
+    suspend fun signInByPinCode(pinCode: String): SignInResult = withContext(dispatchers.computation) {
         val pinSalt = secureStorage.getBytes(KEY_PIN_CODE_SALT)
             ?: throw IllegalStateException("Pin salt does not exist")
         val pinHash = HashingUtils.generatePbkdf2Hex(pinCode, pinSalt)
@@ -64,7 +48,7 @@ class AuthInteractor(
         }
     }
 
-    suspend fun signInByBiometric(cipher: DecodeCipher): SignInResult = withContext(Dispatchers.Default) {
+    suspend fun signInByBiometric(cipher: DecodeCipher): SignInResult = withContext(dispatchers.computation) {
         val pinHash = secureStorage.getString(KEY_PIN_CODE_BIOMETRIC_HASH, cipher)
             ?: throw IllegalStateException("Pin hash does not exist for biometric sign in")
 
@@ -88,7 +72,7 @@ class AuthInteractor(
         secureStorage.saveBytes(KEY_PIN_CODE_SALT, salt)
     }
 
-    suspend fun resetPin(pinCode: String, cipher: EncodeCipher? = null) = withContext(Dispatchers.Default) {
+    suspend fun resetPin(pinCode: String, cipher: EncodeCipher? = null) = withContext(dispatchers.computation) {
         val salt = HashingUtils.generateSalt()
         val hash = HashingUtils.generatePbkdf2Hex(pinCode, salt)
 
@@ -165,31 +149,6 @@ class AuthInteractor(
 
     fun disableBiometricSignIn() {
         secureStorage.remove(KEY_PIN_CODE_BIOMETRIC_HASH)
-    }
-
-    suspend fun logout() {
-        updatesManager.stop()
-        sharedPreferences.edit { clear() }
-        tokenKeyProvider.clear()
-        secureStorage.clear()
-        transactionManager.stop()
-        mainLocalRepository.clear()
-        renBtcInteractor.clearSession()
-        IntercomService.logout()
-        RenVMService.stopService(context)
-    }
-
-    fun clear() {
-        appScope.launch {
-            sharedPreferences.edit { clear() }
-            secureStorage.clear()
-            tokenKeyProvider.clear()
-            mainLocalRepository.clear()
-            updatesManager.stop()
-            transactionManager.stop()
-            renBtcInteractor.clearSession()
-            RenVMService.stopService(context)
-        }
     }
 
     fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED

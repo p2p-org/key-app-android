@@ -6,12 +6,13 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.auth.repository.UsernameRemoteRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.repository.UsernameRemoteRepository
+import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
@@ -34,12 +35,13 @@ object AuthModule {
     fun create() = module {
         single { BiometricManager.from(get()) }
 
-        factory { AuthInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory { AuthInteractor(get(), get(), get(), get(), get()) }
+        factory { AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
         factory { FileRepository(get()) }
         factory { SecurityKeyPresenter(get(), get(), get(), get()) } bind SecurityKeyContract.Presenter::class
-        factory { CreatePinPresenter(get(), get(), get(), get()) } bind CreatePinContract.Presenter::class
-        factory { SignInPinPresenter(get(), get(), get(), get()) } bind SignInPinContract.Presenter::class
+        factory { CreatePinPresenter(get(), get(), get(), get(), get()) } bind CreatePinContract.Presenter::class
+        factory { SignInPinPresenter(get(), get(), get(), get(), get()) } bind SignInPinContract.Presenter::class
         factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
         factory { AuthDonePresenter(get()) } bind AuthDoneContract.Presenter::class
 

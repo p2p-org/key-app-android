@@ -1,0 +1,17 @@
+package org.p2p.wallet.utils
+
+import com.google.gson.Gson
+import org.p2p.wallet.R
+
+fun <R> unsafeLazy(initializer: () -> R): Lazy<R> = lazy(LazyThreadSafetyMode.NONE, initializer)
+
+inline fun <reified R> List<*>.findInstance(): R? {
+    return find { it is R }
+        ?.let { it as R }
+}
+
+inline fun <E> List<E>.ifSizeNot(expectedSize: Int, defaultValue: () -> List<E>): List<E> {
+    return if (this.size != expectedSize) defaultValue.invoke() else this
+}
+
+inline fun <reified Type> Gson.fromJsonReified(json: String): Type = fromJson(json, Type::class.java)

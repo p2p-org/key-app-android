@@ -62,27 +62,39 @@ class HistoryPresenter(
         paginationEnded = false
 
         launch {
-            try {
-                view?.showPagingState(PagingState.InitialLoading)
+            view?.showPagingState(PagingState.InitialLoading)
 
-                val history = historyInteractor.getHistory(token.publicKey, null, PAGE_SIZE)
-                if (history.isEmpty()) {
-                    paginationEnded = true
-                } else {
-                    transactions.addAll(history)
-                    view?.showHistory(transactions)
-                }
-
-                view?.showPagingState(PagingState.Idle)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error getting transaction history")
-                if (e is EmptyDataException) {
-                    view?.showPagingState(PagingState.Idle)
-                    if (transactions.isEmpty()) view?.showHistory(emptyList())
-                } else {
-                    view?.showPagingState(PagingState.Error(e))
-                }
+            kotlin.runCatching {
+                historyInteractor.getHistory(
+                    tokenPublicKey = token.publicKey,
+                    before = null,
+                    limit = PAGE_SIZE
+                )
             }
+                .onSuccess(::handleLoadHistorySuccess)
+                .onFailure(::handleLoadHistoryFailure)
+        }
+    }
+
+    private fun handleLoadHistorySuccess(historyTransactions: List<HistoryTransaction>) {
+        if (historyTransactions.isEmpty()) {
+            paginationEnded = true
+        } else {
+            transactions.addAll(historyTransactions)
+            view?.showHistory(transactions)
+        }
+
+        view?.showPagingState(PagingState.Idle)
+    }
+
+    private fun handleLoadHistoryFailure(e: Throwable) {
+        Timber.e(e, "Error getting transaction history")
+
+        if (e is EmptyDataException) {
+            view?.showPagingState(PagingState.Idle)
+            if (transactions.isEmpty()) view?.showHistory(emptyList())
+        } else {
+            view?.showPagingState(PagingState.Error(e))
         }
     }
 
