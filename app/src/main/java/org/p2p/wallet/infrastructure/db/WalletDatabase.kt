@@ -34,7 +34,7 @@ import org.p2p.wallet.renbtc.db.SessionEntity
         UnknownTransactionEntity::class
     ],
     version = DATABASE_VERSION,
-    exportSchema = true
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class WalletDatabase : RoomDatabase() {
@@ -47,10 +47,10 @@ abstract class WalletDatabase : RoomDatabase() {
     abstract fun tokenDao(): TokenDao
     abstract fun sessionDao(): SessionDao
 
-    abstract val createAccountTransactionsDao: CreateAccountTransactionsDao
-    abstract val closeAccountTransactionsDao: CloseAccountTransactionsDao
-    abstract val swapTransactionsDao: SwapTransactionsDao
-    abstract val transferTransactionsDao: TransferTransactionsDao
-    abstract val renBtcBurnOrMintTransactionsDao: RenBtcBurnOrMintTransactionsDao
-    abstract val unknownTransactionsDao: UnknownTransactionsDao
+    abstract fun createAccountTransactionsDao(): CreateAccountTransactionsDao
+    abstract fun closeAccountTransactionsDao(): CloseAccountTransactionsDao
+    abstract fun swapTransactionsDao(): SwapTransactionsDao
+    abstract fun transferTransactionsDao(): TransferTransactionsDao
+    abstract fun renBtcBurnOrMintTransactionsDao(): RenBtcBurnOrMintTransactionsDao
+    abstract fun unknownTransactionsDao(): UnknownTransactionsDao
 }

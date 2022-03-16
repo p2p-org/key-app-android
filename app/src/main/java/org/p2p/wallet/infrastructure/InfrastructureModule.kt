@@ -20,6 +20,8 @@ import org.p2p.wallet.history.db.dao.TransferTransactionsDao
 import org.p2p.wallet.history.db.dao.UnknownTransactionsDao
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_NAME
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.dispatchers.DefaultDispatchers
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
@@ -42,12 +44,12 @@ object InfrastructureModule : InjectionModule {
 
         single { get<WalletDatabase>().tokenDao() }
         single { get<WalletDatabase>().sessionDao() }
-        single { get<WalletDatabase>().closeAccountTransactionsDao }
-        single { get<WalletDatabase>().createAccountTransactionsDao }
-        single { get<WalletDatabase>().swapTransactionsDao }
-        single { get<WalletDatabase>().transferTransactionsDao }
-        single { get<WalletDatabase>().renBtcBurnOrMintTransactionsDao }
-        single { get<WalletDatabase>().unknownTransactionsDao }
+        single { get<WalletDatabase>().closeAccountTransactionsDao() }
+        single { get<WalletDatabase>().createAccountTransactionsDao() }
+        single { get<WalletDatabase>().swapTransactionsDao() }
+        single { get<WalletDatabase>().transferTransactionsDao() }
+        single { get<WalletDatabase>().renBtcBurnOrMintTransactionsDao() }
+        single { get<WalletDatabase>().unknownTransactionsDao() }
 
         single {
             val allTransactionDaos: List<TransactionDao<*>> = listOf(
@@ -87,5 +89,7 @@ object InfrastructureModule : InjectionModule {
         }
 
         single { AppNotificationManager(get()) }
+
+        single { DefaultDispatchers() } bind CoroutineDispatchers::class
     }
 }

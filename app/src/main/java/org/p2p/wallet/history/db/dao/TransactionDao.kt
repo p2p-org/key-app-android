@@ -17,9 +17,9 @@ import org.p2p.wallet.history.db.entities.UnknownTransactionEntity
 @Dao
 abstract class TransactionDao<TRANSACTION : TransactionEntity>(private val tableName: String) {
     @RawQuery
-    abstract suspend fun getTransactionsByQuery(query: SupportSQLiteQuery): List<TRANSACTION>
+    protected abstract fun getTransactionsByQuery(query: SupportSQLiteQuery): List<TRANSACTION>
 
-    suspend fun getTransactionsBySignature(signatures: List<String>): List<TRANSACTION> {
+    fun getTransactionsBySignature(signatures: List<String>): List<TRANSACTION> {
         val signaturesListInSql = signatures.joinToString(separator = ",") { "\'$it\'" }
         return getTransactionsByQuery(
             SimpleSQLiteQuery(
@@ -30,7 +30,15 @@ abstract class TransactionDao<TRANSACTION : TransactionEntity>(private val table
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertTransaction(entity: TRANSACTION)
+    abstract fun insertTransactions(entities: List<TRANSACTION>)
+
+    @RawQuery
+    protected abstract fun deleteAll(query: SupportSQLiteQuery): Int
+
+    //language=RoomSql
+    fun deleteAll() {
+        deleteAll(SimpleSQLiteQuery("DELETE * FROM $tableName"))
+    }
 }
 
 @Dao

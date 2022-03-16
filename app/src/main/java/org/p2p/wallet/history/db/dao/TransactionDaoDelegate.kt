@@ -8,50 +8,55 @@ import org.p2p.wallet.history.db.entities.TransactionEntity
 import org.p2p.wallet.history.db.entities.TransferTransactionEntity
 import org.p2p.wallet.history.db.entities.UnknownTransactionEntity
 import org.p2p.wallet.utils.findInstance
-import timber.log.Timber
 
 class TransactionDaoDelegate(
     private val transactionDao: List<TransactionDao<*>>
 ) {
 
-    suspend fun getTransactions(signatures: List<String>): List<TransactionEntity> {
-        return transactionDao
-            .map { daoImpl -> daoImpl.getTransactionsBySignature(signatures) }
-            .flatten()
+    fun getTransactions(signatures: List<String>): List<TransactionEntity> {
+        return transactionDao.flatMap { daoImpl ->
+            daoImpl.getTransactionsBySignature(signatures)
+        }
     }
 
-    suspend fun insertTransaction(entity: TransactionEntity) {
-        insertEntity(entity)
+    fun insertTransactions(entities: List<TransactionEntity>) {
+        entities.groupBy { it.javaClass }
+            .forEach { (key: Class<TransactionEntity>, value: List<TransactionEntity>) ->
+                insertEntityByClass(key, value)
+            }
     }
 
-    private suspend fun insertEntity(entity: TransactionEntity) {
-        when (entity) {
-            is CreateAccountTransactionEntity -> {
+    private fun insertEntityByClass(
+        entityClass: Class<TransactionEntity>,
+        entitiesList: List<TransactionEntity>
+    ) {
+        when (entityClass) {
+            CreateAccountTransactionEntity::class.java -> {
                 transactionDao.findInstance<CreateAccountTransactionsDao>()
-                    ?.insertTransaction(entity)
+                    ?.insertTransactions(entitiesList.filterIsInstance<CreateAccountTransactionEntity>())
             }
-            is CloseAccountTransactionEntity -> {
+            CloseAccountTransactionEntity::class.java -> {
                 transactionDao.findInstance<CloseAccountTransactionsDao>()
-                    ?.insertTransaction(entity)
+                    ?.insertTransactions(entitiesList.filterIsInstance<CloseAccountTransactionEntity>())
             }
-            is RenBtcBurnOrMintTransactionEntity -> {
+            RenBtcBurnOrMintTransactionEntity::class.java -> {
                 transactionDao.findInstance<RenBtcBurnOrMintTransactionsDao>()
-                    ?.insertTransaction(entity)
+                    ?.insertTransactions(entitiesList.filterIsInstance<RenBtcBurnOrMintTransactionEntity>())
             }
-            is SwapTransactionEntity -> {
+            SwapTransactionEntity::class.java -> {
                 transactionDao.findInstance<SwapTransactionsDao>()
-                    ?.insertTransaction(entity)
+                    ?.insertTransactions(entitiesList.filterIsInstance<SwapTransactionEntity>())
             }
-            is TransferTransactionEntity -> {
+            TransferTransactionEntity::class.java -> {
                 transactionDao.findInstance<TransferTransactionsDao>()
-                    ?.insertTransaction(entity)
+                    ?.insertTransactions(entitiesList.filterIsInstance<TransferTransactionEntity>())
             }
-            is UnknownTransactionEntity -> {
+            UnknownTransactionEntity::class.java -> {
                 transactionDao.findInstance<UnknownTransactionsDao>()
-                    ?.insertTransaction(entity)
+                    ?.insertTransactions(entitiesList.filterIsInstance<UnknownTransactionEntity>())
             }
         }
-
-        Timber.i("Inserted entity: ${entity.commonInformation.transactionDetailsType}")
     }
+
+    fun deleteAll() = transactionDao.forEach(TransactionDao<*>::deleteAll)
 }
