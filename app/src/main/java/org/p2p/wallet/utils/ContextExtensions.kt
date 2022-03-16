@@ -48,7 +48,7 @@ fun Context.shareText(value: String) {
     startActivity(Intent.createChooser(shareIntent, "Share Text"))
 }
 
-fun Context.shareScreenShoot(image: File, providedText: String = "Save Screenshot") {
+fun Context.shareScreenShot(image: File, providedText: String = "Save Screenshot") {
     val uri = FileProvider.getUriForFile(this, this.packageName + ".provider", image)
     val intent = Intent().apply {
         action = Intent.ACTION_SEND

@@ -38,10 +38,10 @@ class QrView @JvmOverloads constructor(
                 context.toast(R.string.main_receive_address_copied)
             }
             saveButton.setOnClickListener {
-                showSnapshotAnimation(QRCodeAction.SAVE)
+                showSnapshotAnimation(QrCodeAction.SAVE)
             }
             shareButton.setOnClickListener {
-                showSnapshotAnimation(QRCodeAction.SHARE)
+                showSnapshotAnimation(QrCodeAction.SHARE)
             }
             copyButton.setOnClickListener {
                 context.copyToClipBoard(qrValue.toString())
@@ -85,7 +85,7 @@ class QrView @JvmOverloads constructor(
         binding.progressBar.isVisible = isLoading
     }
 
-    private fun showSnapshotAnimation(action: QRCodeAction) {
+    private fun showSnapshotAnimation(action: QrCodeAction) {
         val animation = AlphaAnimation(1.0f, 0.0f)
         animation.duration = 200L
         animation.fillAfter = true
@@ -113,15 +113,15 @@ class QrView @JvmOverloads constructor(
         binding.root.startAnimation(animation)
     }
 
-    private fun onSnapshotReady(bitmap: Bitmap, action: QRCodeAction) {
+    private fun onSnapshotReady(bitmap: Bitmap, action: QrCodeAction) {
         val qrValue = binding.valueTextView.text.toString()
         when (action) {
-            QRCodeAction.SHARE -> onShareClickListener?.invoke(qrValue, bitmap)
-            QRCodeAction.SAVE -> onSaveClickListener?.invoke(qrValue, bitmap)
+            QrCodeAction.SHARE -> onShareClickListener?.invoke(qrValue, bitmap)
+            QrCodeAction.SAVE -> onSaveClickListener?.invoke(qrValue, bitmap)
         }
     }
 
-    enum class QRCodeAction {
+    enum class QrCodeAction {
         SHARE, SAVE
     }
 }

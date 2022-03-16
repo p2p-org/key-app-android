@@ -14,7 +14,7 @@ interface UsernameContract {
         fun renderQr(qrBitmap: Bitmap)
         fun showAddress(address: String)
         fun showToastMessage(@StringRes messageRes: Int)
-        fun showShareQr(qrValue: String, qrImage: File)
+        fun showShareQr(qrImage: File, qrValue: String)
     }
 
     interface Presenter : MvpPresenter<View> {

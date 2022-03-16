@@ -26,7 +26,7 @@ import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.shareScreenShoot
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import java.io.File
@@ -129,8 +129,8 @@ class ReceiveSolanaFragment :
         showUrlInCustomTabs(url)
     }
 
-    override fun showShareQr(qrValue: String, qrImage: File) {
-        requireContext().shareScreenShoot(qrImage, qrValue)
+    override fun showShareQr(qrImage: File, qrValue: String) {
+        requireContext().shareScreenShot(qrImage, qrValue)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {

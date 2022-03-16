@@ -20,7 +20,7 @@ import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.shareScreenShoot
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
@@ -149,7 +149,7 @@ class RenBTCFragment :
         }
     }
 
-    override fun showShareQr(qrValue: String, qrImage: File) {
-        requireContext().shareScreenShoot(qrImage, qrValue)
+    override fun showShareQr(qrImage: File, qrValue: String) {
+        requireContext().shareScreenShot(qrImage, qrValue)
     }
 }

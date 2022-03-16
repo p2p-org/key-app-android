@@ -64,8 +64,8 @@ class SecurityKeyPresenter(
 
     override fun createScreenShootFile(bitmap: Bitmap) {
         try {
-            val file = fileRepository.takeScreenShot(bitmap) ?: return
-            view?.shareScreenShoot(file)
+            val file = fileRepository.saveBitmapAsFile(bitmap) ?: return
+            view?.shareScreenShot(file)
         } catch (e: Exception) {
             view?.showErrorMessage(e)
         }

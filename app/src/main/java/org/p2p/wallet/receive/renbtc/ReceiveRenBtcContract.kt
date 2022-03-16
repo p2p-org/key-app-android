@@ -20,7 +20,7 @@ interface ReceiveRenBtcContract {
         fun showNetwork()
         fun showBrowser(url: String)
         fun showStatuses()
-        fun showShareQr(qrValue: String, qrImage: File)
+        fun showShareQr(qrImage: File, qrValue: String)
     }
 
     interface Presenter : MvpPresenter<View> {
