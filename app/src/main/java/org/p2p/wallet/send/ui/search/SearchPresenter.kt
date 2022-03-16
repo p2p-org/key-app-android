@@ -90,8 +90,8 @@ class SearchPresenter(
             PublicKey(address)
         } catch (e: Throwable) {
             showNotFound()
-            null
-        } ?: return
+            return
+        }
 
         val result = searchInteractor.searchByAddress(publicKey.toBase58())
         view?.showMessage(R.string.send_account_found)
