@@ -1,5 +1,6 @@
 package org.p2p.wallet.common.mvp
 
+import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.showErrorDialog
@@ -14,7 +15,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>() :
         showErrorDialog(e)
     }
 
-    override fun showErrorMessage(messageResId: Int) {
+    override fun showErrorMessage(@StringRes messageResId: Int) {
         showErrorDialog(messageRes = messageResId)
     }
 

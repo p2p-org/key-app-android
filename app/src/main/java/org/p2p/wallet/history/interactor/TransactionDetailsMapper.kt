@@ -26,15 +26,17 @@ import org.p2p.wallet.history.db.entities.embedded.TransactionTypeEntity
 import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class TransactionDetailsMapper(
-    private val confirmedTransactionParser: ConfirmedTransactionParser
+    private val confirmedTransactionParser: ConfirmedTransactionParser,
+    private val gson: Gson
 ) {
-    fun mapDtoToDomain(confirmedTransactions: List<ConfirmedTransactionParsed>): List<TransactionDetails> {
+    fun mapNetworkToDomain(confirmedTransactions: List<ConfirmedTransactionParsed>): List<TransactionDetails> {
         val resultTransactions = mutableListOf<TransactionDetails>()
 
         confirmedTransactions.forEach { confirmedTransaction ->
-            val parsedTransactions = confirmedTransactionParser.parseToTransactionDetails(confirmedTransaction)
+            val parsedTransactions = confirmedTransactionParser.parseDetails(confirmedTransaction)
 
             val swapTransaction = parsedTransactions.firstOrNull { it is SwapDetails }
             if (swapTransaction != null) {
@@ -71,9 +73,11 @@ class TransactionDetailsMapper(
                 resultTransactions.add(unknownTransaction)
                 return@forEach
             }
+
+            Timber.i("unknown transactions type, skipping ($parsedTransactions)")
         }
 
-        return resultTransactions.toList()
+        return resultTransactions.toList() // 19
     }
 
     fun mapEntityToDomain(entities: List<TransactionEntity>): List<TransactionDetails> {
@@ -143,7 +147,7 @@ class TransactionDetailsMapper(
                         it.identifiers.signature,
                         it.commonInformation.blockTimeSec,
                         it.identifiers.blockId,
-                        Gson().fromJsonReified<Map<String, Any>>(it.rawData)
+                        gson.fromJsonReified<Map<String, Any>>(it.rawData)
                     )
                 }
             }
@@ -217,12 +221,12 @@ class TransactionDetailsMapper(
                     UnknownTransactionEntity(
                         identifiers = identifiers,
                         commonInformation = commonInformation,
-                        rawData = Gson().toJson(it.info),
+                        rawData = gson.toJson(it.info),
                         data = it.data.orEmpty(),
                     )
                 }
                 else -> {
-                    Timber.w(
+                    Timber.e(
                         IllegalArgumentException("Unknown type for mapping from domain: ${it.javaClass.simpleName}")
                     )
                     null
@@ -233,9 +237,9 @@ class TransactionDetailsMapper(
 
     private fun TransactionDetails.toCommonInformation(): CommonTransactionInformationEntity {
         return CommonTransactionInformationEntity(
-            blockTimeSec = this.getBlockTimeInMillis() / 1000,
+            blockTimeSec = TimeUnit.MILLISECONDS.toSeconds(this.getBlockTimeInMillis()),
             transactionDetailsType = this.type?.toEntity() ?: TransactionTypeEntity.UNKNOWN,
-            information = Gson().toJson(this.info)
+            information = gson.toJson(this.info)
         )
     }
 

@@ -7,7 +7,7 @@ import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
     private val rpcRepository: RpcRepository,
-    private val historyTransactionsRepository: HistoryTransactionsRepository,
+    private val historyTransactionsRepository: TransactionsHistoryRepository,
 ) {
 
     suspend fun getConfirmedTransaction(tokenPublicKey: String, transactionId: String): HistoryTransaction? {

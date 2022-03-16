@@ -7,9 +7,8 @@ import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParser
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.HistoryTransactionMapper
-import org.p2p.wallet.history.interactor.HistoryTransactionsRepository
-import org.p2p.wallet.history.interactor.HistoryTransactionsRepositoryImpl
 import org.p2p.wallet.history.interactor.TransactionDetailsMapper
+import org.p2p.wallet.history.interactor.TransactionsHistoryRepository
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.HistoryRepository
@@ -56,16 +55,17 @@ object HistoryModule : InjectionModule {
         factory { HistoryRemoteRepository(compareApi = get()) } bind HistoryRepository::class
 
         factory { ConfirmedTransactionParser }
-        factory { TransactionDetailsMapper(confirmedTransactionParser = get()) }
+        factory { TransactionDetailsMapper(confirmedTransactionParser = get(), gson = get()) }
         factory { HistoryTransactionMapper(userLocalRepository = get()) }
         single {
-            HistoryTransactionsRepositoryImpl(
+            TransactionsHistoryRepository(
                 rpcRepository = get(),
                 tokenKeyProvider = get(),
                 transactionDaoDelegate = get(),
                 transactionDetailsMapper = get(),
-                historyTransactionMapper = get()
+                historyTransactionMapper = get(),
+                dispatchers = get()
             )
-        } bind HistoryTransactionsRepository::class
+        }
     }
 }

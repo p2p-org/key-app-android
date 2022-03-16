@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.keyboardIsVisible
@@ -42,7 +43,7 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
         showErrorDialog(e)
     }
 
-    override fun showErrorMessage(messageResId: Int) {
+    override fun showErrorMessage(@StringRes messageResId: Int) {
         showErrorDialog(messageRes = messageResId)
     }
 

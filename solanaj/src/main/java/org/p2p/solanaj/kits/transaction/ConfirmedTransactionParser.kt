@@ -13,7 +13,7 @@ object ConfirmedTransactionParser {
 
     private var details = mutableListOf<TransactionDetails>()
 
-    fun parseToTransactionDetails(transaction: ConfirmedTransactionParsed): List<TransactionDetails> {
+    fun parseDetails(transaction: ConfirmedTransactionParsed): List<TransactionDetails> {
         details = ArrayList()
         val parsedTransaction = transaction.transaction ?: return emptyList()
 
