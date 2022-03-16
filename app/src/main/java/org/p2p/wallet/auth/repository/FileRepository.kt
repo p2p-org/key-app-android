@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.text.format.DateFormat
 import org.p2p.wallet.R
 import java.io.BufferedOutputStream
 import java.io.File
@@ -24,13 +23,8 @@ class FileRepository(private val context: Context) {
         pdfFolder = File(rootFolder, "pdf")
     }
 
-    @Throws(IOException::class)
-    fun saveQr(name: String, bitmap: Bitmap) {
-        val stream: OutputStream = generateOutputStream(name)
-            ?: throw IllegalStateException("Couldn't save qr image")
-
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        stream.close()
+    fun saveQr(name: String, bitmap: Bitmap): File? {
+        return takeScreenShot(bitmap, name)
     }
 
     fun savePdf(fileName: String, bytes: ByteArray): File {
@@ -47,6 +41,7 @@ class FileRepository(private val context: Context) {
 
     private fun ensurePdfFolderExists() = pdfFolder.mkdirs()
 
+    // TODO remove if not needed!
     private fun generateOutputStream(name: String): OutputStream? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val resolver = context.contentResolver
@@ -67,17 +62,17 @@ class FileRepository(private val context: Context) {
             FileOutputStream(File(pathName))
         }
 
-    fun takeScreenShot(bitmap: Bitmap): File? {
-        val date = Date()
-        val format = DateFormat.format("MM-dd-yyyy_hh:mm:ss", date)
+    fun takeScreenShot(bitmap: Bitmap, name: String? = null): File? {
+        val fileName = name ?: Date().toString()
         try {
-            val mainDir =
-                File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), context.getString(R.string.app_name))
+            val mainDir = File(
+                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                context.getString(R.string.app_name)
+            )
             if (!mainDir.exists()) {
-                val mkdir = mainDir.mkdir()
+                mainDir.mkdir()
             }
-
-            val stringPath = mainDir.absolutePath + "/$date" + ".jpeg"
+            val stringPath = mainDir.absolutePath + "/$fileName" + ".png"
             val imageFile = File(stringPath)
             val fos = FileOutputStream(imageFile)
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)

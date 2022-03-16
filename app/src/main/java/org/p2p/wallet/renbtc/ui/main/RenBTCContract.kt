@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import java.io.File
 
 interface RenBTCContract {
 
@@ -19,6 +20,7 @@ interface RenBTCContract {
         fun showNetwork()
         fun showBrowser(url: String)
         fun showStatuses()
+        fun showShareQr(qrValue: String, qrImage: File)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -26,7 +28,7 @@ interface RenBTCContract {
         fun checkActiveSession(context: Context)
         fun startNewSession(context: Context)
         fun cancelTimer()
-        fun saveQr(name: String, bitmap: Bitmap)
+        fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean = false)
         fun onNetworkClicked()
         fun onBrowserClicked(publicKey: String)
         fun onStatusReceivedClicked()

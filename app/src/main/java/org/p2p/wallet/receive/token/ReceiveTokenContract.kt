@@ -5,6 +5,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.home.model.Token
+import java.io.File
 
 interface ReceiveTokenContract {
 
@@ -16,11 +17,12 @@ interface ReceiveTokenContract {
         fun showQrLoading(isLoading: Boolean)
         fun showToastMessage(resId: Int)
         fun showNetwork()
+        fun showShareQr(qrValue: String, qrImage: File)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
-        fun saveQr(name: String, bitmap: Bitmap)
+        fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean = false)
         fun onNetworkClicked()
     }
 }

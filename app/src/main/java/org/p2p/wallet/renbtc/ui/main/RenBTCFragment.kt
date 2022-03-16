@@ -20,10 +20,12 @@ import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.shareScreenShoot
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import java.io.File
 
 class RenBTCFragment :
     BaseMvpFragment<RenBTCContract.View, RenBTCContract.Presenter>(R.layout.fragment_ren_btc),
@@ -51,6 +53,9 @@ class RenBTCFragment :
 
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
+            }
+            receiveCardView.setOnShareQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage, shareAfter = true)
             }
             receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()
@@ -142,5 +147,9 @@ class RenBTCFragment :
         showErrorDialog(e) {
             popBackStack()
         }
+    }
+
+    override fun showShareQr(qrValue: String, qrImage: File) {
+        requireContext().shareScreenShoot(qrImage, qrValue)
     }
 }

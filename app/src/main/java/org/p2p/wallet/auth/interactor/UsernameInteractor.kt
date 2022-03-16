@@ -9,6 +9,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import java.io.File
 
 private const val KEY_USERNAME = "KEY_USERNAME"
 
@@ -46,7 +47,7 @@ class UsernameInteractor(
         return username?.let { Username(it) }
     }
 
-    fun saveQr(name: String, bitmap: Bitmap) = fileLocalRepository.saveQr(name, bitmap)
+    fun saveQr(name: String, bitmap: Bitmap): File? = fileLocalRepository.saveQr(name, bitmap)
 
     suspend fun resolveUsername(name: String): List<ResolveUsername> =
         usernameRepository.resolve(name)
