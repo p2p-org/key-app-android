@@ -19,6 +19,6 @@ interface SearchContract {
     interface Presenter : MvpPresenter<View> {
         fun search(target: Target)
         fun loadInitialData()
-        fun onSearchResultClick(searchResult: SearchResult)
+        fun onSearchResultClick(result: SearchResult)
     }
 }

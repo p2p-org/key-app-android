@@ -54,9 +54,9 @@ class SearchPresenter(
         }
     }
 
-    override fun onSearchResultClick(searchResult: SearchResult) {
-        if (searchInteractor.isOwnPublicKey(searchResult.address)) view?.showMessage(R.string.main_send_to_yourself_error)
-        else view?.submitSearchResult(searchResult)
+    override fun onSearchResultClick(result: SearchResult) {
+        if (searchInteractor.isOwnPublicKey(result.address)) view?.showMessage(R.string.main_send_to_yourself_error)
+        else view?.submitSearchResult(result)
     }
 
     private suspend fun validate(target: Target) {
