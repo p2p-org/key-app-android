@@ -96,8 +96,8 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
         socketStateListener?.onClosed(
             code,
             "Connection closed by " +
-                (if (remote) "remote peer" else "us")
-                + " Code: " + code + " Reason: " + reason
+                (if (remote) "remote peer" else "us") +
+                " Code: " + code + " Reason: " + reason
         )
     }
 
