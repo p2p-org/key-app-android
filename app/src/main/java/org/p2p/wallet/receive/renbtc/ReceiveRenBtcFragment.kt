@@ -20,10 +20,12 @@ import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import java.io.File
 
 class ReceiveRenBtcFragment :
     BaseMvpFragment<ReceiveRenBtcContract.View, ReceiveRenBtcContract.Presenter>(R.layout.fragment_receive_ren_btc),
@@ -67,8 +69,8 @@ class ReceiveRenBtcFragment :
                     )
                 )
             }
-            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
-                presenter.saveQr(name, qrImage)
+            receiveCardView.setOnShareQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage, shareAfter = true)
             }
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
             receiveCardView.setFaqVisibility(isVisible = false)
@@ -86,6 +88,11 @@ class ReceiveRenBtcFragment :
         presenter.subscribe()
         presenter.checkActiveSession(requireContext())
         presenter.startNewSession(requireContext())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(true)
     }
 
     override fun onDestroyView() {
@@ -159,8 +166,7 @@ class ReceiveRenBtcFragment :
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        setLightStatusBar(true)
+    override fun showShareQr(qrImage: File, qrValue: String) {
+        requireContext().shareScreenShot(qrImage, qrValue)
     }
 }

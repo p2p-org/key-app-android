@@ -21,9 +21,11 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.io.File
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
@@ -51,7 +53,7 @@ class ReceiveTokenFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setLightStatusBar(false)
+        setLightStatusBar(isLight = false)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getString(R.string.receive_token_name, token.tokenName)
@@ -74,6 +76,9 @@ class ReceiveTokenFragment :
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
             }
+            receiveCardView.setOnShareQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage, shareAfter = true)
+            }
             receiveCardView.setQrWatermark(token.iconUrl)
             receiveCardView.showQrLoading(false)
             receiveCardView.setFaqVisibility(false)
@@ -86,6 +91,11 @@ class ReceiveTokenFragment :
             }
         }
         presenter.loadData()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(isLight = true)
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
@@ -138,8 +148,7 @@ class ReceiveTokenFragment :
         )
     }
 
-    override fun onStop() {
-        super.onStop()
-        setLightStatusBar(true)
+    override fun showShareQr(qrImage: File, qrValue: String) {
+        requireContext().shareScreenShot(qrImage, qrValue)
     }
 }
