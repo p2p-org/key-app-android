@@ -100,11 +100,11 @@ public class SolanaChain {
                 .getAddress();
         byte[] sHash = Hash.generateSHash();
         PublicKey tokenMint = getSPLTokenPubkey();
-        PublicKey mintAuthority = PublicKey.Companion.findProgramAddress(Arrays.asList(tokenMint.toByteArray()), program)
+        PublicKey mintAuthority = PublicKey.Companion.findProgramAddress(Arrays.asList(tokenMint.asByteArray()), program)
                 .getAddress();
         PublicKey recipientTokenAccount = getAssociatedTokenAddress(address);
 
-        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, recipientTokenAccount.toByteArray(), nHash);
+        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, recipientTokenAccount.asByteArray(), nHash);
         PublicKey mintLogAccount = PublicKey.Companion.findProgramAddress(Arrays.asList(Hash.keccak256(renVMMessage)), program)
                 .getAddress();
 
@@ -130,7 +130,7 @@ public class SolanaChain {
     public String findMintByDepositDetails(byte[] nHash, byte[] pHash, byte[] to, String amount) throws Exception {
         PublicKey program = resolveTokenGatewayContract();
         byte[] sHash = Hash.generateSHash();
-        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, new PublicKey(to).toByteArray(), nHash);
+        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, new PublicKey(to).asByteArray(), nHash);
         PublicKey mintLogAccount = PublicKey.Companion.findProgramAddress(Arrays.asList(Hash.keccak256(renVMMessage)), program)
                 .getAddress();
 
