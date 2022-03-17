@@ -9,8 +9,7 @@ import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.rpc.api.RpcTransactionApi
 
 class RpcTransactionRemoteRepository(
-    private val rpcApi: RpcTransactionApi,
-    private val rpcPoolApi: RpcTransactionApi
+    private val rpcApi: RpcTransactionApi
 ) : RpcTransactionRepository {
 
     override suspend fun sendTransaction(transaction: Transaction): String {
@@ -73,6 +72,7 @@ class RpcTransactionRemoteRepository(
         } else return ""
     }
 
+    // TODO change base url dynamically
     override suspend fun getConfirmedTransactions(
         signatures: List<String>
     ): List<ConfirmedTransactionParsed> {
@@ -83,6 +83,6 @@ class RpcTransactionRemoteRepository(
             RpcRequest("getConfirmedTransaction", params)
         }
 
-        return rpcPoolApi.getConfirmedTransactions(requestsBatch).map { it.result }
+        return rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
     }
 }

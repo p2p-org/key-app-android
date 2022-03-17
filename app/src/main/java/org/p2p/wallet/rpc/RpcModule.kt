@@ -1,14 +1,11 @@
 package org.p2p.wallet.rpc
 
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import org.p2p.wallet.rpc.api.RpcAmountApi
-import org.p2p.wallet.rpc.api.RpcApiBuilder
 import org.p2p.wallet.rpc.api.RpcBalanceApi
 import org.p2p.wallet.rpc.api.RpcBlockHashApi
 import org.p2p.wallet.rpc.api.RpcSignatureApi
@@ -36,93 +33,59 @@ import org.p2p.wallet.rpc.repository.token.RpcTokenRemoteRepository
 import org.p2p.wallet.rpc.repository.token.RpcTokenRepository
 import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRemoteRepository
 import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRepository
+import retrofit2.Retrofit
 
 object RpcModule : InjectionModule {
 
+    const val RPC_QUALIFIER = "RPC_QUALIFIER"
+
     override fun create() = module {
-        // Rpc account api
         factory {
-            val environment = get<EnvironmentManager>().loadEnvironment()
-            val interceptor = ServerErrorInterceptor(get())
-            val builder = RpcApiBuilder.with(this).set(environment)
-                .addInterceptor(interceptor)
-            val accountApi = builder.load(RpcAccountApi::class.java)
-            RpcAccountRemoteRepository(accountApi)
+            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcAccountApi::class.java)
+            RpcAccountRemoteRepository(api)
         } bind RpcAccountRepository::class
 
-        // Rpc amount api
         factory {
-            val environment = get<EnvironmentManager>().loadEnvironment()
-            val interceptor = ServerErrorInterceptor(get())
-            val builder = RpcApiBuilder.with(this).set(environment)
-                .addInterceptor(interceptor)
-            val amountApi = builder.load(RpcAmountApi::class.java)
-            RpcAmountRemoteRepository(amountApi)
+            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcAmountApi::class.java)
+            RpcAmountRemoteRepository(api)
         } bind RpcAmountRepository::class
 
         single { RpcAmountInMemoryRepository() } bind RpcAmountLocalRepository::class
 
         factory { RpcAmountInteractor(get(), get()) }
 
-        // Rpc balance api
         factory {
-            val environment = get<EnvironmentManager>().loadEnvironment()
-            val interceptor = ServerErrorInterceptor(get())
-            val builder = RpcApiBuilder.with(this).set(environment)
-                .addInterceptor(interceptor)
-            val balanceApi = builder.load(RpcBalanceApi::class.java)
-            RpcBalanceRemoteRepository(balanceApi)
+            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcBalanceApi::class.java)
+            RpcBalanceRemoteRepository(api)
         } bind RpcBalanceRepository::class
 
         single { RpcBalanceInMemoryRepository() } bind RpcBalanceLocalRepository::class
 
         factory { RpcBalanceInteractor(get(), get()) }
 
-        // Rpc blockhash api
         factory {
-            val environment = get<EnvironmentManager>().loadEnvironment()
-            val interceptor = ServerErrorInterceptor(get())
-            val builder = RpcApiBuilder.with(this).set(environment)
-                .addInterceptor(interceptor)
-            val balanceApi = builder.load(RpcBlockHashApi::class.java)
-            RpcBlockHashRemoteRepository(balanceApi)
+            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcBlockHashApi::class.java)
+            RpcBlockHashRemoteRepository(api)
         } bind RpcBlockHashRepository::class
 
-        // Rpc signature api
         factory {
-            val environment = get<EnvironmentManager>().loadEnvironment()
-            val interceptor = ServerErrorInterceptor(get())
-            val builder = RpcApiBuilder.with(this).set(environment)
-                .addInterceptor(interceptor)
-            val signatureApi = builder.load(RpcSignatureApi::class.java)
-            RpcSignatureRemoteRepository(signatureApi)
+            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcSignatureApi::class.java)
+            RpcSignatureRemoteRepository(api)
         } bind RpcSignatureRepository::class
 
-        // Rpc token api
-
         factory {
-            val environment = get<EnvironmentManager>().loadEnvironment()
-            val interceptor = ServerErrorInterceptor(get())
-            val builder = RpcApiBuilder.with(this).set(environment)
-                .addInterceptor(interceptor)
-            val tokenApi = builder.load(RpcTokenApi::class.java)
-            RpcTokenRemoteRepository(tokenApi)
+            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcTokenApi::class.java)
+            RpcTokenRemoteRepository(api)
         } bind RpcTokenRepository::class
 
         factory {
-            val environment = get<EnvironmentManager>().loadEnvironment()
-            val interceptor = ServerErrorInterceptor(get())
-            val builder = RpcApiBuilder.with(this).set(environment)
-                .addInterceptor(interceptor)
-            val transactionApi = builder.load(RpcTransactionApi::class.java)
-            val poolTransactionApi = builder.set(Environment.RPC_POOL).load(RpcTransactionApi::class.java)
-            RpcTransactionRemoteRepository(rpcApi = transactionApi, rpcPoolApi = poolTransactionApi)
+            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcTransactionApi::class.java)
+            RpcTransactionRemoteRepository(api)
         } bind RpcTransactionRepository::class
 
         factory {
             CloseInteractor(get(), get(), get())
         }
-
         factory {
             TransactionInteractor(get(), get(), get(), get())
         }
