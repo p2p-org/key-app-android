@@ -3,7 +3,7 @@ package org.p2p.wallet.rpc.repository.transaction
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 
-interface RpcTransactionRepository {
+interface RpcHistoryRepository {
     suspend fun sendTransaction(transaction: Transaction): String
     suspend fun simulateTransaction(transaction: Transaction): String
     suspend fun sendTransaction(serializedTransaction: String): String

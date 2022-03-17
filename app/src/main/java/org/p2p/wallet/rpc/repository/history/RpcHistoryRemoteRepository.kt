@@ -6,11 +6,11 @@ import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.utils.crypto.Base64Utils
-import org.p2p.wallet.rpc.api.RpcTransactionApi
+import org.p2p.wallet.rpc.api.RpcHistoryApi
 
-class RpcTransactionRemoteRepository(
-    private val rpcApi: RpcTransactionApi
-) : RpcTransactionRepository {
+class RpcHistoryRemoteRepository(
+    private val rpcApi: RpcHistoryApi
+) : RpcHistoryRepository {
 
     override suspend fun sendTransaction(transaction: Transaction): String {
         val serializedTransaction = transaction.serialize()
