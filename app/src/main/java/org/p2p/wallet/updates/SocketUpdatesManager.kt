@@ -82,19 +82,14 @@ class SocketUpdatesManager private constructor(
     }
 
     override fun subscribeToTransaction(signature: String) {
-        client?.signatureSubscribe(
-            signature,
-            object : NotificationEventListener {
-                override fun onNotificationEvent(data: Any?) {
-                    launch(Dispatchers.Default) {
-                        Timber.tag("SOCKET").d("Event received, data = $data")
-                        updateHandlers.forEach {
-                            it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature)
-                        }
-                    }
+        client?.signatureSubscribe(signature) { data ->
+            launch(Dispatchers.Default) {
+                Timber.tag("SOCKET").d("Event received, data = $data")
+                updateHandlers.forEach {
+                    it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature)
                 }
             }
-        )
+        }
     }
 
     override fun unsubscribeFromTransaction(signature: String) {

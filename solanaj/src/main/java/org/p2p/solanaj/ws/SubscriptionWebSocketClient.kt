@@ -14,16 +14,39 @@ import org.p2p.solanaj.model.types.RpcResponse
 import java.net.URI
 import java.net.URISyntaxException
 
-// TODO: Refactor this class, move to kotlin, handle 1006 error, maybe ping/pong issue
+// TODO: Refactor this class, handle 1006 error, maybe ping/pong issue
 class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) {
-    private inner class SubscriptionParams constructor(
-        var request: RpcRequest,
-        var listener: NotificationEventListener
-    )
+
+    companion object {
+        private var instance: SubscriptionWebSocketClient? = null
+        private var socketStateListener: SocketStateListener? = null
+        fun getInstance(endpoint: String?, stateListener: SocketStateListener?): SubscriptionWebSocketClient? {
+            val endpointURI: URI
+            val serverURI: URI
+            socketStateListener = stateListener
+            try {
+                endpointURI = URI(endpoint)
+                serverURI = URI(if (endpointURI.scheme === "https") "wss" else "ws" + "://" + endpointURI.host)
+            } catch (e: URISyntaxException) {
+                throw IllegalArgumentException(e)
+            }
+            Log.d("SOCKET", "Creating connection, uri: " + serverURI + " + host: " + endpointURI.host)
+            if (instance == null) {
+                instance = SubscriptionWebSocketClient(serverURI)
+            }
+            if (instance?.isOpen == false) {
+                instance?.connect()
+            }
+            return instance
+        }
+    }
 
     private val subscriptions = mutableMapOf<String, SubscriptionParams>()
     private val subscriptionIds = mutableMapOf<String, Long?>()
     private val subscriptionListeners = mutableMapOf<Long, NotificationEventListener>()
+
+    private val moshiBuilder = Moshi.Builder()
+
     fun ping() {
         try {
             if (instance?.isOpen == true) instance?.sendPing()
@@ -58,7 +81,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
     override fun onMessage(message: String) {
         Log.d("SOCKET", "New message received: $message")
-        val resultAdapter = Moshi.Builder().build()
+        val resultAdapter = moshiBuilder.build()
             .adapter<RpcResponse<Long>>(Types.newParameterizedType(RpcResponse::class.java, Long::class.java))
         try {
             resultAdapter.fromJson(message)?.also { rpcResult ->
@@ -72,17 +95,18 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
                         subscriptions.remove(rpcResultId)
                     }
                 } else {
-                    val notificationResultAdapter = Moshi.Builder().build().adapter(RpcNotificationResult::class.java)
+                    val notificationResultAdapter = moshiBuilder.build().adapter(RpcNotificationResult::class.java)
                     notificationResultAdapter.fromJson(message)?.let { result ->
                         val listener = subscriptionListeners[result.params.subscription]
                         val value = result.params.result.value as Map<*, *>
                         when (result.method) {
-                            "signatureNotification" -> listener!!.onNotificationEvent(
+                            "signatureNotification" -> listener?.onNotificationEvent(
                                 SignatureNotification(
                                     value["err"]
                                 )
                             )
-                            "accountNotification" -> listener!!.onNotificationEvent(value)
+                            "accountNotification" -> listener?.onNotificationEvent(value)
+                            else -> Unit
                         }
                     }
                 }
@@ -108,7 +132,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
     private fun updateSubscriptions() {
         if (isOpen && subscriptions.isNotEmpty()) {
-            val rpcRequestJsonAdapter = Moshi.Builder().build().adapter(
+            val rpcRequestJsonAdapter = moshiBuilder.build().adapter(
                 RpcRequest::class.java
             )
             for (sub in subscriptions.values) {
@@ -117,27 +141,8 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
         }
     }
 
-    companion object {
-        private var instance: SubscriptionWebSocketClient? = null
-        private var socketStateListener: SocketStateListener? = null
-        fun getInstance(endpoint: String?, stateListener: SocketStateListener?): SubscriptionWebSocketClient? {
-            val endpointURI: URI
-            val serverURI: URI
-            socketStateListener = stateListener
-            try {
-                endpointURI = URI(endpoint)
-                serverURI = URI(if (endpointURI.scheme === "https") "wss" else "ws" + "://" + endpointURI.host)
-            } catch (e: URISyntaxException) {
-                throw IllegalArgumentException(e)
-            }
-            Log.d("SOCKET", "Creating connection, uri: " + serverURI + " + host: " + endpointURI.host)
-            if (instance == null) {
-                instance = SubscriptionWebSocketClient(serverURI)
-            }
-            if (instance?.isOpen == false) {
-                instance?.connect()
-            }
-            return instance
-        }
-    }
+    private inner class SubscriptionParams constructor(
+        var request: RpcRequest,
+        var listener: NotificationEventListener
+    )
 }
