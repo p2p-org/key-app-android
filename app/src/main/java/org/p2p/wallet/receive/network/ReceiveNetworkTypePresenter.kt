@@ -80,7 +80,7 @@ class ReceiveNetworkTypePresenter(
                     Environment.DEVNET -> Constants.REN_BTC_DEVNET_MINT
                     else -> Constants.REN_BTC_DEVNET_MINT_ALTERNATE
                 }
-                tokenInteractor.open(mintAddress)
+                tokenInteractor.openTokenAccount(mintAddress)
                 view?.navigateToReceive(selectedNetworkType)
             } catch (e: Exception) {
                 Timber.e("Error on launching RenBtc session $e")

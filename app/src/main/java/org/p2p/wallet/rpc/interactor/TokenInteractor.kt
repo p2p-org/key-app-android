@@ -13,7 +13,7 @@ class TokenInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun close(addressToClose: String): String {
+    suspend fun closeTokenAccount(addressToClose: String): String {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
         val instruction = TokenProgram.closeAccountInstruction(
             TokenProgram.PROGRAM_ID,
@@ -34,7 +34,7 @@ class TokenInteractor(
         return rpcRepository.sendTransaction(transaction)
     }
 
-    suspend fun open(
+    suspend fun openTokenAccount(
         mintAddress: String
     ): String {
 
@@ -46,7 +46,6 @@ class TokenInteractor(
             mintAddress = mintAddress
         )
 
-        // get address
         val toPublicKey = splDestinationAddress.destinationAddress
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
@@ -59,14 +58,14 @@ class TokenInteractor(
             feePayer
         )
 
-        val transaction = Transaction()
-        transaction.addInstruction(instruction)
-
-        val recentBlockHash = rpcRepository.getRecentBlockhash()
-        transaction.recentBlockHash = recentBlockHash.recentBlockhash
-
         val signers = Account(tokenKeyProvider.secretKey)
-        transaction.sign(signers)
+        val recentBlockHash = rpcRepository.getRecentBlockhash()
+
+        val transaction = Transaction().apply {
+            addInstruction(instruction)
+            setRecentBlockHash(recentBlockHash.recentBlockhash)
+            sign(signers)
+        }
 
         return rpcRepository.sendTransaction(transaction)
     }

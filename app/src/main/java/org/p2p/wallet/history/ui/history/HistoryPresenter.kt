@@ -212,7 +212,7 @@ class HistoryPresenter(
     override fun closeAccount() {
         launch {
             try {
-                tokenInteractor.close(token.publicKey)
+                tokenInteractor.closeTokenAccount(token.publicKey)
                 view?.showErrorSnackBar(R.string.details_account_closed_successfully)
             } catch (e: Throwable) {
                 Timber.e(e, "Error closing account: ${token.publicKey}")
