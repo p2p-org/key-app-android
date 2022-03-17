@@ -1,14 +1,18 @@
 package org.p2p.wallet.receive.network
 
 import kotlinx.coroutines.launch
+import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.toLamports
@@ -21,7 +25,9 @@ class ReceiveNetworkTypePresenter(
     private val userInteractor: UserInteractor,
     private val transactionAmountInteractor: TransactionAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val tokenInteractor: TokenInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
+    private val environmentManager: EnvironmentManager,
     networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
@@ -70,6 +76,11 @@ class ReceiveNetworkTypePresenter(
     override fun onBuySelected(isSelected: Boolean) {
         launch {
             try {
+                val mintAddress = when (environmentManager.loadEnvironment()) {
+                    Environment.DEVNET -> Constants.REN_BTC_DEVNET_MINT
+                    else -> Constants.REN_BTC_DEVNET_MINT_ALTERNATE
+                }
+                tokenInteractor.open(mintAddress)
                 view?.navigateToReceive(selectedNetworkType)
             } catch (e: Exception) {
                 Timber.e("Error on launching RenBtc session $e")
