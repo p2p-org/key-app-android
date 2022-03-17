@@ -20,9 +20,6 @@ import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.amount.RpcAmountInMemoryRepository
 import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountLocalRepository
-import org.p2p.wallet.rpc.repository.balance.RpcBalanceInMemoryRepository
-import org.p2p.wallet.rpc.repository.balance.RpcBalanceInteractor
-import org.p2p.wallet.rpc.repository.balance.RpcBalanceLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRemoteRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRemoteRepository
@@ -58,10 +55,6 @@ object RpcModule : InjectionModule {
             val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcBalanceApi::class.java)
             RpcBalanceRemoteRepository(api)
         } bind RpcBalanceRepository::class
-
-        single { RpcBalanceInMemoryRepository() } bind RpcBalanceLocalRepository::class
-
-        factory { RpcBalanceInteractor(get(), get()) }
 
         factory {
             val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcBlockHashApi::class.java)

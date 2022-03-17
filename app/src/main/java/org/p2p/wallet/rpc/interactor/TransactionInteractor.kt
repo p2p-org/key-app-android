@@ -8,6 +8,7 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRepository
 import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRepository
 import org.p2p.wallet.utils.toPublicKey
@@ -17,7 +18,7 @@ import java.math.BigInteger
 class TransactionInteractor(
     private val rpcBlockHashRepository: RpcBlockHashRepository,
     private val rpcTransactionRepository: RpcTransactionRepository,
-    private val transactionAmountInteractor: TransactionAmountInteractor,
+    private val rpcAmountInteractor: RpcAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -29,7 +30,7 @@ class TransactionInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null
     ): PreparedTransaction {
-        val actualLamportsPerSignature = lamportsPerSignature ?: transactionAmountInteractor.getLamportsPerSignature()
+        val actualLamportsPerSignature = lamportsPerSignature ?: rpcAmountInteractor.getLamportsPerSignature()
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)

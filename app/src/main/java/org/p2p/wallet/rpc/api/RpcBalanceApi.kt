@@ -20,10 +20,4 @@ interface RpcBalanceApi {
         @Body rpcRequest: List<RpcRequest>,
         @Url url: String = ""
     ): List<CommonResponse<RpcResultTypes.ValueLong>>
-
-    @POST
-    suspend fun getMinimumBalanceForRentExemption(
-        @Body rpcRequest: RpcRequest,
-        @Url url: String = ""
-    ): CommonResponse<Long>
 }

@@ -7,7 +7,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
@@ -19,7 +19,7 @@ import java.math.BigInteger
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
     private val userInteractor: UserInteractor,
-    private val transactionAmountInteractor: TransactionAmountInteractor,
+    private val transactionAmountInteractor: RpcAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val receiveAnalytics: ReceiveAnalytics,
     networkType: NetworkType
@@ -119,7 +119,7 @@ class ReceiveNetworkTypePresenter(
     }
 
     private suspend fun createBtcWallet(sol: Token.Active) {
-        val btcMinPrice = transactionAmountInteractor.getMinBalanceForRentExemption()
+        val btcMinPrice = transactionAmountInteractor.getMinBalanceForRentExemption().toBigInteger()
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - btcMinPrice) >= BigInteger.ZERO
         if (isAmountEnough) {

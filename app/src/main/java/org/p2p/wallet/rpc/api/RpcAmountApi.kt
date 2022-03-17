@@ -14,4 +14,10 @@ interface RpcAmountApi {
         @Body rpcRequest: RpcRequest,
         @Url url: String = ""
     ): CommonResponse<FeesResponse>
+
+    @POST
+    suspend fun getMinimumBalanceForRentExemption(
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = ""
+    ): CommonResponse<Long>
 }

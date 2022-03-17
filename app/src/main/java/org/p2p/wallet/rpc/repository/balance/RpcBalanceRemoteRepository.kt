@@ -24,10 +24,4 @@ class RpcBalanceRemoteRepository(private val rpcApi: RpcBalanceApi) : RpcBalance
                 requestsBatch[index].params!!.first() as String to response.result.value.toBigInteger()
             }
     }
-
-    override suspend fun getMinimumBalanceForRentExemption(dataLength: Int): Long {
-        val params = listOf(dataLength)
-        val rpcRequest = RpcRequest("getMinimumBalanceForRentExemption", params)
-        return rpcApi.getMinimumBalanceForRentExemption(rpcRequest).result
-    }
 }

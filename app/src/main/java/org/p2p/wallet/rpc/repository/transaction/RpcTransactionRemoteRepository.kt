@@ -1,11 +1,11 @@
 package org.p2p.wallet.rpc.repository.transaction
 
-import android.util.Base64
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.rpc.api.RpcTransactionApi
 
 class RpcTransactionRemoteRepository(
@@ -15,8 +15,7 @@ class RpcTransactionRemoteRepository(
     override suspend fun sendTransaction(transaction: Transaction): String {
         val serializedTransaction = transaction.serialize()
 
-        val base64Trx = Base64
-            .encodeToString(serializedTransaction, Base64.DEFAULT)
+        val base64Trx = Base64Utils.encode(serializedTransaction)
             .replace("\n", "")
 
         val params = mutableListOf<Any>()
@@ -31,8 +30,7 @@ class RpcTransactionRemoteRepository(
     override suspend fun simulateTransaction(transaction: Transaction): String {
         val serializedTransaction = transaction.serialize()
 
-        val base64Trx = Base64
-            .encodeToString(serializedTransaction, Base64.DEFAULT)
+        val base64Trx = Base64Utils.encode(serializedTransaction)
             .replace("\n", "")
 
         val params = mutableListOf<Any>()
@@ -44,7 +42,9 @@ class RpcTransactionRemoteRepository(
         val result = rpcApi.simulateTransaction(rpcRequest).result
         if (result.value.error != null) {
             throw IllegalStateException("Transaction simulation failed: ${result.value.linedLogs()}")
-        } else return ""
+        } else {
+            return ""
+        }
     }
 
     override suspend fun sendTransaction(serializedTransaction: String): String {
@@ -69,7 +69,9 @@ class RpcTransactionRemoteRepository(
         val result = rpcApi.simulateTransaction(rpcRequest).result
         if (result.value.error != null) {
             throw IllegalStateException("Transaction simulation failed: ${result.value.linedLogs()}")
-        } else return ""
+        } else {
+            return ""
+        }
     }
 
     // TODO change base url dynamically

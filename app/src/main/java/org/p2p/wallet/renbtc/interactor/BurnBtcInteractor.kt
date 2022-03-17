@@ -2,8 +2,6 @@ package org.p2p.wallet.renbtc.interactor
 
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,14 +10,16 @@ import org.p2p.solanaj.kits.renBridge.BurnAndRelease
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.solanaj.rpc.RpcException
-import org.p2p.wallet.rpc.repository.balance.RpcBalanceInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
+import org.p2p.wallet.utils.fromLamports
+import org.p2p.wallet.utils.scaleMedium
 import java.math.BigDecimal
 import java.math.BigInteger
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager,
-    private val rpcBalanceInteractor: RpcBalanceInteractor
+    private val rpcBalanceInteractor: RpcAmountInteractor
 ) {
 
     companion object {
@@ -55,7 +55,7 @@ class BurnBtcInteractor(
     }
 
     suspend fun getBurnFee(): BigDecimal {
-        val fee = rpcBalanceInteractor.getMinimumBalanceForRentExemption(BURN_FEE_LENGTH, useCache = true)
+        val fee = rpcBalanceInteractor.getMinBalanceForRentExemption(BURN_FEE_LENGTH, useCache = true)
         return fee.toBigInteger().fromLamports().add(BigDecimal("0.000005")).scaleMedium()
     }
 

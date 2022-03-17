@@ -9,7 +9,7 @@ class RpcAmountRemoteRepository(
     private val rpcApi: RpcAmountApi
 ) : RpcAmountRepository {
 
-    override suspend fun getFees(commitment: String?): BigInteger {
+    override suspend fun getLamportsForSignature(commitment: String?): BigInteger {
         val params = commitment?.let {
             val config = RequestConfiguration(commitment = it)
             listOf(config)
@@ -17,5 +17,11 @@ class RpcAmountRemoteRepository(
         val rpcRequest = RpcRequest("getFees", params)
         val response = rpcApi.getFees(rpcRequest).result
         return BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
+    }
+
+    override suspend fun getMinimumBalanceForRentExemption(dataLength: Int): Long {
+        val params = listOf(dataLength)
+        val rpcRequest = RpcRequest("getMinimumBalanceForRentExemption", params)
+        return rpcApi.getMinimumBalanceForRentExemption(rpcRequest).result
     }
 }

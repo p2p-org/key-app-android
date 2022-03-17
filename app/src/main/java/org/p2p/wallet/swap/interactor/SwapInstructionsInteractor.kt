@@ -7,13 +7,13 @@ import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
+import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class SwapInstructionsInteractor(
-    private val rpcAmountRepository: RpcBalanceRepository,
+    private val rpcAmountInteractor: RpcAmountInteractor,
     private val orcaAddressInteractor: TransactionAddressInteractor
 ) {
 
@@ -84,7 +84,7 @@ class SwapInstructionsInteractor(
         amount: BigInteger,
         payer: PublicKey
     ): AccountInstructions {
-        val minBalanceForRentExemption = rpcAmountRepository.getMinimumBalanceForRentExemption(
+        val minBalanceForRentExemption = rpcAmountInteractor.getMinBalanceForRentExemption(
             TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
         )
 
