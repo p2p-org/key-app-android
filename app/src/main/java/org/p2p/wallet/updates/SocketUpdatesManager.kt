@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import org.p2p.solanaj.ws.NotificationEventListener
 import org.p2p.solanaj.ws.SocketStateListener
 import org.p2p.solanaj.ws.SubscriptionWebSocketClient
 import org.p2p.wallet.common.di.AppScope
@@ -81,19 +82,26 @@ class SocketUpdatesManager private constructor(
     }
 
     override fun subscribeToTransaction(signature: String) {
-        client?.signatureSubscribe(signature) { data ->
-            launch(Dispatchers.Default) {
-                Timber.tag("SOCKET").d("Event received, data = $data")
-                updateHandlers.forEach { it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature) }
+        client?.signatureSubscribe(
+            signature,
+            object : NotificationEventListener {
+                override fun onNotificationEvent(data: Any?) {
+                    launch(Dispatchers.Default) {
+                        Timber.tag("SOCKET").d("Event received, data = $data")
+                        updateHandlers.forEach {
+                            it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature)
+                        }
+                    }
+                }
             }
-        }
+        )
     }
 
     override fun unsubscribeFromTransaction(signature: String) {
         // TODO: unsubscribe from transaction
     }
 
-    override fun onWebsocketPong() {
+    override fun onWebSocketPong() {
 //        Timber.tag("SOCKET").d("PONG")
     }
 

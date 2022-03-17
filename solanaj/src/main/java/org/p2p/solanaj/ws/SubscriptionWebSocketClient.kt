@@ -1,176 +1,143 @@
-package org.p2p.solanaj.ws;
+package org.p2p.solanaj.ws
 
-import android.util.Log;
-
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
-
-import org.java_websocket.WebSocket;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.framing.Framedata;
-import org.java_websocket.handshake.ServerHandshake;
-import org.p2p.solanaj.model.types.RpcNotificationResult;
-import org.p2p.solanaj.model.types.RpcRequest;
-import org.p2p.solanaj.model.types.RpcResponse;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.util.Log
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import org.java_websocket.WebSocket
+import org.java_websocket.client.WebSocketClient
+import org.java_websocket.exceptions.WebsocketNotConnectedException
+import org.java_websocket.framing.Framedata
+import org.java_websocket.handshake.ServerHandshake
+import org.p2p.solanaj.model.types.RpcNotificationResult
+import org.p2p.solanaj.model.types.RpcRequest
+import org.p2p.solanaj.model.types.RpcResponse
+import java.net.URI
+import java.net.URISyntaxException
 
 // TODO: Refactor this class, move to kotlin, handle 1006 error, maybe ping/pong issue
-public class SubscriptionWebSocketClient extends WebSocketClient {
+class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) {
+    private inner class SubscriptionParams constructor(
+        var request: RpcRequest,
+        var listener: NotificationEventListener
+    )
 
-    private class SubscriptionParams {
-        RpcRequest request;
-        NotificationEventListener listener;
-
-        SubscriptionParams(RpcRequest request, NotificationEventListener listener) {
-            this.request = request;
-            this.listener = listener;
-        }
-    }
-
-    private static SubscriptionWebSocketClient instance;
-
-    private final Map<String, SubscriptionParams> subscriptions = new HashMap<>();
-    private final Map<String, Long> subscriptionIds = new HashMap<>();
-    private final Map<Long, NotificationEventListener> subscriptionLinsteners = new HashMap<>();
-
-    private static SocketStateListener socketStateListener;
-
-    public static SubscriptionWebSocketClient getInstance(String endpoint, SocketStateListener stateListener) {
-        URI endpointURI;
-        URI serverURI;
-
-        socketStateListener = stateListener;
-
+    private val subscriptions = mutableMapOf<String, SubscriptionParams>()
+    private val subscriptionIds = mutableMapOf<String, Long?>()
+    private val subscriptionListeners = mutableMapOf<Long, NotificationEventListener>()
+    fun ping() {
         try {
-            endpointURI = new URI(endpoint);
-            serverURI = new URI(endpointURI.getScheme() == "https" ? "wss" : "ws" + "://" + endpointURI.getHost());
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
+            if (instance?.isOpen == true) instance?.sendPing()
+        } catch (error: WebsocketNotConnectedException) {
+            Log.e("SOCKET", "Error on ping socket", error)
         }
-
-        Log.d("SOCKET", "Creating connection, uri: " + serverURI + " + host: " + endpointURI.getHost());
-        if (instance == null) {
-            instance = new SubscriptionWebSocketClient(serverURI);
-        }
-
-        if (!instance.isOpen()) {
-            instance.connect();
-        }
-
-        return instance;
     }
 
-    public SubscriptionWebSocketClient(URI serverURI) {
-        super(serverURI);
+    fun accountSubscribe(key: String, listener: NotificationEventListener) {
+        val rpcRequest = RpcRequest("accountSubscribe", mutableListOf(key))
+        subscriptions[rpcRequest.id] = SubscriptionParams(rpcRequest, listener)
+        subscriptionIds[rpcRequest.id] = null
+        updateSubscriptions()
     }
 
-    public void ping() {
-        if (instance.isOpen()) instance.sendPing();
+    fun signatureSubscribe(signature: String, listener: NotificationEventListener) {
+        val rpcRequest = RpcRequest("signatureSubscribe", mutableListOf(signature))
+        subscriptions[rpcRequest.id] = SubscriptionParams(rpcRequest, listener)
+        subscriptionIds[rpcRequest.id] = null
+        updateSubscriptions()
     }
 
-    public void accountSubscribe(String key, NotificationEventListener listener) {
-        List<Object> params = new ArrayList<Object>();
-        params.add(key);
-
-        RpcRequest rpcRequest = new RpcRequest("accountSubscribe", params);
-
-        subscriptions.put(rpcRequest.getId(), new SubscriptionParams(rpcRequest, listener));
-        subscriptionIds.put(rpcRequest.getId(), null);
-
-        updateSubscriptions();
+    override fun onWebsocketPong(socket: WebSocket, framedata: Framedata) {
+        super.onWebsocketPong(socket, framedata)
+        socketStateListener?.onWebSocketPong()
     }
 
-    public void signatureSubscribe(String signature, NotificationEventListener listener) {
-        List<Object> params = new ArrayList<Object>();
-        params.add(signature);
-
-        RpcRequest rpcRequest = new RpcRequest("signatureSubscribe", params);
-
-        subscriptions.put(rpcRequest.getId(), new SubscriptionParams(rpcRequest, listener));
-        subscriptionIds.put(rpcRequest.getId(), null);
-
-        updateSubscriptions();
+    override fun onOpen(handshakedata: ServerHandshake) {
+        socketStateListener?.onConnected()
+        updateSubscriptions()
     }
 
-    @Override
-    public void onWebsocketPong(WebSocket conn, Framedata f) {
-        super.onWebsocketPong(conn, f);
-        socketStateListener.onWebsocketPong();
-    }
-
-    @Override
-    public void onOpen(ServerHandshake handshakedata) {
-        socketStateListener.onConnected();
-        updateSubscriptions();
-    }
-
-    @SuppressWarnings({"rawtypes"})
-    @Override
-    public void onMessage(String message) {
-        Log.d("SOCKET", "New message received: " + message);
-        JsonAdapter<RpcResponse<Long>> resultAdapter = new Moshi.Builder().build()
-                .adapter(Types.newParameterizedType(RpcResponse.class, Long.class));
-
+    override fun onMessage(message: String) {
+        Log.d("SOCKET", "New message received: $message")
+        val resultAdapter = Moshi.Builder().build()
+            .adapter<RpcResponse<Long>>(Types.newParameterizedType(RpcResponse::class.java, Long::class.java))
         try {
-            RpcResponse<Long> rpcResult = resultAdapter.fromJson(message);
-            String rpcResultId = rpcResult.getId();
-            if (rpcResultId != null) {
-                if (subscriptionIds.containsKey(rpcResultId)) {
-                    subscriptionIds.put(rpcResultId, rpcResult.getResult());
-                    subscriptionLinsteners.put(rpcResult.getResult(), subscriptions.get(rpcResultId).listener);
-                    subscriptions.remove(rpcResultId);
-                }
-            } else {
-                JsonAdapter<RpcNotificationResult> notificationResultAdapter = new Moshi.Builder().build()
-                        .adapter(RpcNotificationResult.class);
-                RpcNotificationResult result = notificationResultAdapter.fromJson(message);
-                NotificationEventListener listener = subscriptionLinsteners.get(result.getParams().getSubscription());
-
-                Map value = (Map) result.getParams().getResult().getValue();
-
-                switch (result.getMethod()) {
-                    case "signatureNotification":
-                        listener.onNotificationEvent(new SignatureNotification(value.get("err")));
-                        break;
-                    case "accountNotification":
-                        listener.onNotificationEvent(value);
-                        break;
+            resultAdapter.fromJson(message)?.also { rpcResult ->
+                val rpcResultId = rpcResult.id
+                if (rpcResultId != null) {
+                    if (subscriptionIds.containsKey(rpcResultId)) {
+                        subscriptionIds[rpcResultId] = rpcResult.result
+                        subscriptions[rpcResultId]?.listener?.let { listener ->
+                            subscriptionListeners[rpcResult.result] = listener
+                        }
+                        subscriptions.remove(rpcResultId)
+                    }
+                } else {
+                    val notificationResultAdapter = Moshi.Builder().build().adapter(RpcNotificationResult::class.java)
+                    notificationResultAdapter.fromJson(message)?.let { result ->
+                        val listener = subscriptionListeners[result.params.subscription]
+                        val value = result.params.result.value as Map<*, *>
+                        when (result.method) {
+                            "signatureNotification" -> listener!!.onNotificationEvent(
+                                SignatureNotification(
+                                    value["err"]
+                                )
+                            )
+                            "accountNotification" -> listener!!.onNotificationEvent(value)
+                        }
+                    }
                 }
             }
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (ex: Exception) {
+            Log.e("SOCKET", "Error on socket message", ex)
         }
     }
 
-    @Override
-    public void onClose(int code, String reason, boolean remote) {
-        socketStateListener.onClosed(
-                code,
-                "Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason
-        );
+    override fun onClose(code: Int, reason: String, remote: Boolean) {
+        socketStateListener?.onClosed(
+            code,
+            "Connection closed by "
+                + (if (remote) "remote peer" else "us")
+                + " Code: " + code + " Reason: " + reason
+        )
     }
 
-    @Override
-    public void onError(Exception ex) {
-        ex.printStackTrace();
-        socketStateListener.onFailed(ex);
+    override fun onError(ex: Exception) {
+        Log.e("SOCKET", "Error on socket working", ex)
+        socketStateListener?.onFailed(ex)
     }
 
-    private void updateSubscriptions() {
-        if (isOpen() && subscriptions.size() > 0) {
-            JsonAdapter<RpcRequest> rpcRequestJsonAdapter = new Moshi.Builder().build().adapter(RpcRequest.class);
-
-            for (SubscriptionParams sub : subscriptions.values()) {
-                send(rpcRequestJsonAdapter.toJson(sub.request));
+    private fun updateSubscriptions() {
+        if (isOpen && subscriptions.isNotEmpty()) {
+            val rpcRequestJsonAdapter = Moshi.Builder().build().adapter(
+                RpcRequest::class.java
+            )
+            for (sub in subscriptions.values) {
+                send(rpcRequestJsonAdapter.toJson(sub.request))
             }
         }
     }
 
-} 
+    companion object {
+        private var instance: SubscriptionWebSocketClient? = null
+        private var socketStateListener: SocketStateListener? = null
+        fun getInstance(endpoint: String?, stateListener: SocketStateListener?): SubscriptionWebSocketClient? {
+            val endpointURI: URI
+            val serverURI: URI
+            socketStateListener = stateListener
+            try {
+                endpointURI = URI(endpoint)
+                serverURI = URI(if (endpointURI.scheme === "https") "wss" else "ws" + "://" + endpointURI.host)
+            } catch (e: URISyntaxException) {
+                throw IllegalArgumentException(e)
+            }
+            Log.d("SOCKET", "Creating connection, uri: " + serverURI + " + host: " + endpointURI.host)
+            if (instance == null) {
+                instance = SubscriptionWebSocketClient(serverURI)
+            }
+            if (instance?.isOpen == false) {
+                instance?.connect()
+            }
+            return instance
+        }
+    }
+}
