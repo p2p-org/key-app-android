@@ -95,8 +95,8 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     override fun onClose(code: Int, reason: String, remote: Boolean) {
         socketStateListener?.onClosed(
             code,
-            "Connection closed by "
-                + (if (remote) "remote peer" else "us")
+            "Connection closed by " +
+                (if (remote) "remote peer" else "us")
                 + " Code: " + code + " Reason: " + reason
         )
     }
