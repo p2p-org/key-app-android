@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -20,6 +21,10 @@ import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
+import org.p2p.wallet.common.ui.widget.SnackBar
+import org.p2p.wallet.common.ui.widget.SnackBarView
+import org.p2p.wallet.databinding.WidgetBottomSheetSnackbarBinding
 
 fun View.requireActivity(): AppCompatActivity {
     var context: Context = context
@@ -87,9 +92,9 @@ fun View.hideKeyboard() {
     }
 }
 
-fun View?.findSuitableParent(): ViewGroup? {
+fun View?.findSuitableParent(): ViewGroup {
     var view = this
-    var fallback: ViewGroup? = null
+    var fallback: ViewGroup = view as ViewGroup
     do {
         if (view is CoordinatorLayout) {
             return view
@@ -165,3 +170,31 @@ fun View.getColor(@ColorRes colorRes: Int): Int =
 
 fun Fragment.getColor(@ColorRes colorRes: Int): Int =
     requireContext().getColor(colorRes)
+
+fun Fragment.snackbar(action: (SnackBar) -> Unit) {
+    val viewGroup = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+    viewGroup.snackbar(action)
+}
+
+fun AppCompatActivity.snackbar(action: (SnackBar) -> Unit) {
+    val viewGroup = findViewById<View>(android.R.id.content) as ViewGroup
+    viewGroup.snackbar(action)
+}
+
+fun ViewGroup.snackbar(action: (SnackBar) -> Unit) {
+    val parent = findSuitableParent()
+    val binding =
+        WidgetBottomSheetSnackbarBinding.inflate(
+            LayoutInflater.from(context), parent, false
+        )
+
+    val lp = CoordinatorLayout.LayoutParams(
+        CoordinatorLayout.LayoutParams.MATCH_PARENT,
+        CoordinatorLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+        bottomMargin = dip(24)
+    }
+    action.invoke(binding.snackbar)
+    binding.snackbar.layoutParams = lp
+    SnackBarView(this, binding.snackbar).apply { duration = Snackbar.LENGTH_SHORT }.show()
+}

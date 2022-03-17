@@ -20,7 +20,7 @@ import java.math.BigDecimal
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
+class RenBtcBuyBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_PRICE_IN_SOL = "EXTRA_PRICE_IN_SOL"
@@ -51,11 +51,6 @@ class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            progressButton.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
-                dismissAllowingStateLoss()
-            }
-
             val feeUsd = if (priceInUsd != null) "~$$priceInUsd" else getString(R.string.common_not_available)
             topTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
             amountTextView.text = priceInSol.toString()
@@ -77,8 +72,17 @@ class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
                 append(SpanUtils.setTextBold(session, remainTime))
             }
             infoTextView.text = attentionText
+
+            progressButton.setOnClickListener {
+                onBuySelected()
+            }
         }
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+
+    private fun onBuySelected() {
+        setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
+        dismissAllowingStateLoss()
+    }
 }

@@ -2,13 +2,17 @@ package org.p2p.wallet.common.mvp
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
-import androidx.annotation.DrawableRes
+import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
@@ -18,16 +22,16 @@ import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
-import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
-import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
+import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
+import org.p2p.wallet.utils.getColor
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -35,6 +39,8 @@ private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMA
 abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), BaseFragmentContract {
 
     private val analyticsInteractor: AnalyticsInteractor by inject()
+
+    protected open val statusBarColor: Int = R.color.backgroundPrimary
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -52,6 +58,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         if (analyticsName.isNotEmpty()) {
             analyticsInteractor.logScreenOpenEvent(analyticsName)
         }
+        setStatusBarColor(statusBarColor)
     }
 
     override fun overrideEnterAnimation(@AnimRes animation: Int) {
@@ -62,13 +69,31 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         overrideAnimation(animation, EXTRA_OVERRIDDEN_EXIT_ANIMATION)
     }
 
-    protected fun showSnackbar(message: String, @DrawableRes iconRes: Int?) {
-        SnackBarView.make(requireView(), message, iconRes)?.show()
-    }
-
     private fun overrideAnimation(@AnimRes animation: Int, extraKey: String) {
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
     }
+
+    private fun setStatusBarColor(@ColorRes colorResId: Int) {
+        val window = requireActivity().window ?: return
+        with(window) {
+            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            statusBarColor = resources.getColor(colorResId, requireActivity().theme)
+        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+    }
+
+     /*
+        Change status bar and its icons color
+        isLight = true - white status bar, dark icons
+        isLight = false - dark status bar, white icons
+        Don't forget to reset status bar color on fragment destroy to restore previous color
+     */
+    protected fun setLightStatusBar(isLight: Boolean) {
+        val window = requireActivity().window
+        val decorView = window.decorView
+        WindowInsetsControllerCompat(window, decorView).isAppearanceLightStatusBars = isLight
+    }
+
     // TODO add another screens
     fun getAnalyticsName() = when (this) {
         is CreateWalletFragment -> ScreenName.OnBoarding.WALLET_CREATE

@@ -36,6 +36,7 @@ android {
             buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
             buildConfigField("String", "amplitudeKey", apikeyProperties['amplitudeKey'])
         } else {
+            logger.quiet "apikey.properties is not found, using empty keys!"
             buildConfigField("String", "rpcPoolApiKey", "\"\"")
             buildConfigField("String", "moonpayKey", "\"\"")
             buildConfigField("String", "comparePublicKey", "\"\"")
@@ -57,7 +58,7 @@ android {
                     keyAlias properties['keyAlias']
                     keyPassword properties['keyPassword']
                 } else {
-                    println 'Unable to read signing.properties, using defaults'
+                    logger.quiet 'Unable to read signing.properties, using defaults'
                 }
             }
         }

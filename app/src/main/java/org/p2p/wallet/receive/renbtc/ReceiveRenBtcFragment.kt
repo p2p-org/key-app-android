@@ -17,8 +17,6 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -37,18 +35,17 @@ class ReceiveRenBtcFragment :
         fun create() = ReceiveRenBtcFragment()
     }
 
+    override val statusBarColor: Int = R.color.backgroundButtonPrimary
+
     override val presenter: ReceiveRenBtcContract.Presenter by inject()
     private val binding: FragmentRenBtcBinding by viewBinding()
     private val analyticsInteractor: AnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setLightStatusBar(false)
         analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN)
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                progressButton.fitMargin { Edge.BottomArc }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
             statusView.setOnClickListener {
@@ -160,5 +157,10 @@ class ReceiveRenBtcFragment :
         showErrorDialog(e) {
             popBackStack()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(true)
     }
 }

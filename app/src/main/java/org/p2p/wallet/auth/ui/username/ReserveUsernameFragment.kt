@@ -24,8 +24,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.InputTextView
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -64,10 +62,6 @@ class ReserveUsernameFragment :
         initGeetestUtils()
 
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                usernameButton.fitMargin { Edge.BottomArc }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
             skipTextView.text = buildClickableText()

@@ -182,6 +182,11 @@ class SendPresenter(
         inputAmount = amount
 
         val token = token ?: return
+        val totalAvailable = when (mode) {
+            is CurrencyMode.Usd -> token.totalInUsd
+            is CurrencyMode.Token -> token.total.scaleLong()
+        } ?: return
+        view?.setMaxButtonVisibility(inputAmount != totalAvailable.toString())
         calculateRenBtcFeeIfNeeded()
         calculateData(token)
     }
@@ -258,7 +263,7 @@ class SendPresenter(
         view?.showInputValue(totalAvailable)
 
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
-        view?.showSnackbarMessage(message, R.drawable.ic_done)
+        view?.showSuccessSnackBar(message)
         setNewSourceAmount(totalAvailable.toString())
     }
 
@@ -535,7 +540,7 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(SendFee.RenBtcFee(fee, sourceToken))
+            calculateTotal(SendFee.RenBtcFee(fee, sourceToken, sourceToken.tokenSymbol))
         }
     }
 
@@ -563,7 +568,7 @@ class SendPresenter(
             fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
         }
 
-        fee = SendFee.SolanaFee(feeAmount, feePayer)
+        fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
         view?.showAccountFeeView(fee)
 
         calculateTotal(fee)
@@ -629,11 +634,16 @@ class SendPresenter(
 
     private fun setButtonEnabled(amount: BigDecimal, total: BigDecimal) {
         val isMoreThanBalance = amount.isMoreThan(total)
+        val isMaxAmount = amount == total
         val isNotZero = !amount.isZero()
         val isValidAddress = isAddressValid(target?.address)
         val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
 
-        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
+        val availableColor = when {
+            isMoreThanBalance -> R.color.systemErrorMain
+            isMaxAmount -> R.color.systemSuccessMain
+            else -> R.color.textIconSecondary
+        }
         view?.updateAvailableTextColor(availableColor)
         view?.showButtonEnabled(isEnabled)
     }

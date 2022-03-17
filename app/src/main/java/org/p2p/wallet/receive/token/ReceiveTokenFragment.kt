@@ -15,11 +15,10 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
@@ -42,6 +41,8 @@ class ReceiveTokenFragment :
         )
     }
 
+    override val statusBarColor: Int = R.color.backgroundButtonPrimary
+
     private val binding: FragmentReceiveTokenBinding by viewBinding()
     override val presenter: ReceiveTokenContract.Presenter by inject {
         parametersOf(token)
@@ -50,13 +51,14 @@ class ReceiveTokenFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setLightStatusBar(false)
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.Top }
-                coordinator.fit { Edge.Bottom }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
-            titleTextView.text = getString(R.string.receive_you_can_receive_token_message, token.tokenSymbol)
+            toolbar.title = getString(R.string.receive_token_name, token.tokenName)
+            val message = getString(R.string.receive_you_can_receive_token_message, token.tokenSymbol)
+            val boldText = getString(R.string.receive_token_name_lower_case, token.tokenSymbol)
+            titleTextView.text = SpanUtils.setTextBold(message, boldText)
+
             directAdressTopTextView.text = getString(R.string.receive_direct_token_address, token.tokenSymbol)
             mintAddressTopTextView.text = getString(R.string.receive_token_mint_address, token.tokenSymbol)
 
@@ -134,5 +136,10 @@ class ReceiveTokenFragment :
                 NetworkType.SOLANA, REQUEST_KEY, BUNDLE_KEY_NETWORK_TYPE
             )
         )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setLightStatusBar(true)
     }
 }

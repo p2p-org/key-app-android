@@ -1,12 +1,15 @@
 package org.p2p.wallet.send.ui.main
 
 import android.annotation.SuppressLint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface.BOLD
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
@@ -33,9 +36,9 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
-import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
-import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
+import org.p2p.wallet.send.ui.network.EXTRA_NETWORK
+import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
@@ -43,13 +46,12 @@ import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.getColor
@@ -145,11 +147,6 @@ class SendFragment :
 
     private fun setupViews() {
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                scrollView.fit { Edge.BottomArc }
-            }
-
             if (backStackEntryCount() > 1) {
                 toolbar.setNavigationIcon(R.drawable.ic_back)
                 toolbar.setNavigationOnClickListener { popBackStack() }
@@ -332,6 +329,8 @@ class SendFragment :
                 return
             }
 
+            val tokenSymbol = fee.sourceTokenSymbol
+            accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
             accountInfoTextView.isVisible = true
             accountCardView.isVisible = true
 
@@ -359,12 +358,11 @@ class SendFragment :
 
     override fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean) {
         val tokenAmount = "$amount $symbol"
-        val (message, iconRes) = if (isSuccess) {
-            getString(R.string.send_transaction_success, tokenAmount) to R.drawable.ic_done
+        if (isSuccess) {
+            showSuccessSnackBar(getString(R.string.send_transaction_success, tokenAmount))
         } else {
-            getString(R.string.send_transaction_error, tokenAmount) to R.drawable.ic_close_red
+            showErrorSnackBar(getString(R.string.send_transaction_error, tokenAmount))
         }
-        showSnackbar(message, iconRes)
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {
@@ -431,8 +429,12 @@ class SendFragment :
 
     override fun showInputValue(value: BigDecimal) {
         val textValue = "$value"
-        binding.amountEditText.setText(textValue)
-        binding.amountEditText.setSelection(textValue.length)
+        with(binding.amountEditText) {
+            setText(textValue)
+            setSelection(
+                text.toString().length
+            )
+        }
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -447,6 +449,10 @@ class SendFragment :
         }
     }
 
+    override fun setMaxButtonVisibility(isVisible: Boolean) {
+        binding.maxTextView.isVisible = isVisible
+    }
+
     override fun showSearchLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
     }
@@ -455,8 +461,9 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(getColor(availableColor))
+    override fun updateAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
+        setTextColor(getColor(availableColor))
+        setTextDrawableColor(availableColor)
     }
 
     @SuppressLint("SetTextI18n")
@@ -481,7 +488,7 @@ class SendFragment :
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue)
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, AmountUtils.format(usdValue))
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
@@ -501,5 +508,14 @@ class SendFragment :
     private fun checkClipBoard() {
         val clipBoardData = requireContext().getClipBoardText()
         binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
+    }
+
+    private fun TextView.setTextDrawableColor(@ColorRes color: Int) {
+        compoundDrawables.filterNotNull().forEach {
+            it.colorFilter = PorterDuffColorFilter(
+                getColor(color),
+                PorterDuff.Mode.SRC_IN
+            )
+        }
     }
 }

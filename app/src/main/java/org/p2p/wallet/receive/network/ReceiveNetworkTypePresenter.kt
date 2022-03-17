@@ -28,6 +28,8 @@ class ReceiveNetworkTypePresenter(
 
     private var selectedNetworkType: NetworkType = networkType
 
+    private val tokensValidForBuy = listOf("SOL", "USDC")
+
     override fun load() {
         view?.setCheckState(selectedNetworkType)
     }
@@ -50,16 +52,29 @@ class ReceiveNetworkTypePresenter(
     }
 
     override fun onTopupSelected(isSelected: Boolean) {
-        if (isSelected) {
-            // TODO implement topup
-        } else {
+        if (!isSelected) {
             view?.close()
+            return
+        }
+        launch {
+            try {
+                val tokensForBuy = userInteractor.getTokensForBuy(tokensValidForBuy)
+                view?.showTokensForBuy(tokensForBuy)
+                return@launch
+            } catch (e: Exception) {
+                view?.showErrorMessage(e)
+            }
         }
     }
 
     override fun onBuySelected(isSelected: Boolean) {
-        if (isSelected) {
-            view?.navigateToReceive(selectedNetworkType)
+        launch {
+            try {
+                launchRenBtcSession()
+            } catch (e: Exception) {
+                Timber.e("Error on launching RenBtc session $e")
+                view?.showErrorMessage(e)
+            }
         }
     }
 
@@ -82,7 +97,7 @@ class ReceiveNetworkTypePresenter(
                         ?: throw IllegalStateException("No SOL account found")
                     createBtcWallet(sol)
                 } else {
-                    onWalletExists()
+                    launchRenBtcSession()
                 }
             } catch (e: Throwable) {
                 Timber.e("Error on switch network: $e")
@@ -93,7 +108,7 @@ class ReceiveNetworkTypePresenter(
         }
     }
 
-    private suspend fun onWalletExists() {
+    private suspend fun launchRenBtcSession() {
         val session = renBtcInteractor.findActiveSession()
         if (session != null && session.isValid) {
             receiveAnalytics.logReceiveSettingBitcoin()
