@@ -9,14 +9,14 @@ object PublicKeyValidator {
     @Throws(IllegalArgumentException::class)
     fun validate(publicKey: String) {
         require(Regex(REGEX).matches(publicKey) && Base58Utils.decode(publicKey).size == PublicKey.PUBLIC_KEY_LENGTH) {
-            { "Invalid public key input[String]" }
+            "Invalid public key input[String]"
         }
     }
 
     @Throws(IllegalArgumentException::class)
     fun validate(publicKey: ByteArray) {
         require(Regex(REGEX).matches(Base58Utils.encode(publicKey)) && publicKey.size == PublicKey.PUBLIC_KEY_LENGTH) {
-            { "Invalid public key input[ByteArray]" }
+            "Invalid public key input[ByteArray]"
         }
     }
 }
