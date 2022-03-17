@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import org.p2p.solanaj.ws.NotificationEventListener
 import org.p2p.solanaj.ws.SocketStateListener
 import org.p2p.solanaj.ws.SubscriptionWebSocketClient
 import org.p2p.wallet.common.di.AppScope
