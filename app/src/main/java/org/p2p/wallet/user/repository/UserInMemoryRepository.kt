@@ -70,7 +70,7 @@ class UserInMemoryRepository : UserLocalRepository {
     private fun setResult(key: String) {
         val result = TokenListData(
             searchText = key,
-            result = searchTextByTokens[DEFAULT_TOKEN_KEY].orEmpty()
+            result = searchTextByTokens[key].orEmpty()
         )
         tokensSearchResultFlow.value = result
     }

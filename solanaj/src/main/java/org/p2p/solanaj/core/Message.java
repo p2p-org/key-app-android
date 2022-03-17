@@ -1,14 +1,11 @@
 package org.p2p.solanaj.core;
 
-import android.util.Log;
+import org.bitcoinj.core.Base58;
+import org.p2p.solanaj.utils.ShortvecEncoding;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bitcoinj.core.Base58;
-
-import org.p2p.solanaj.utils.ShortvecEncoding;
 
 public class Message {
     private class MessageHeader {
@@ -133,7 +130,7 @@ public class Message {
 
         ByteBuffer accountKeysBuff = ByteBuffer.allocate(accountKeysSize * PublicKey.PUBLIC_KEY_LENGTH);
         for (AccountMeta accountMeta : keysList) {
-            accountKeysBuff.put(accountMeta.getPublicKey().toByteArray());
+            accountKeysBuff.put(accountMeta.getPublicKey().asByteArray());
 
             if (accountMeta.isSigner()) {
                 messageHeader.numRequiredSignatures += 1;

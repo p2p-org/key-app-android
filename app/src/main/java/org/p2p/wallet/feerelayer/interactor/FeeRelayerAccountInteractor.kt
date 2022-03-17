@@ -109,7 +109,7 @@ class FeeRelayerAccountInteractor(
     private fun findAddress(owner: PublicKey, key: String): PublicKey =
         PublicKey
             .findProgramAddress(
-                seeds = listOf(owner.toByteArray(), key.toByteArray()),
+                seeds = listOf(owner.asByteArray(), key.toByteArray()),
                 programId = FeeRelayerProgram.getProgramId(isMainnet = true)
             )
             .address
@@ -117,7 +117,7 @@ class FeeRelayerAccountInteractor(
     fun getTransitTokenAccountAddress(owner: PublicKey, mint: PublicKey): PublicKey =
         PublicKey
             .findProgramAddress(
-                seeds = listOf(owner.toByteArray(), mint.toByteArray(), "transit".toByteArray()),
+                seeds = listOf(owner.asByteArray(), mint.asByteArray(), "transit".toByteArray()),
                 programId = FeeRelayerProgram.getProgramId(isMainnet = true)
             )
             .address

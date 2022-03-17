@@ -38,9 +38,9 @@ public class TokenProgram {
         bos.write(INSTRUCTION_INDEX_INITIALIZE_MINT);
         bos.write(decimals);
         try {
-            bos.write(authority.toByteArray());
+            bos.write(authority.asByteArray());
             bos.write(freezeAuthority == null ? 0 : 1);
-            bos.write(freezeAuthority != null ? freezeAuthority.toByteArray() : new byte[PublicKey.PUBLIC_KEY_LENGTH]);
+            bos.write(freezeAuthority != null ? freezeAuthority.asByteArray() : new byte[PublicKey.PUBLIC_KEY_LENGTH]);
         } catch (IOException e) {
             e.printStackTrace();
         }
