@@ -8,28 +8,28 @@ import org.p2p.solanaj.utils.TweetNaclFast
 import java.io.ByteArrayOutputStream
 
 class PublicKey {
-    private var pubkey: ByteArray
+    private var publicKey: ByteArray
 
-    constructor(pubkey: String) {
-        PublicKeyValidator.validate(pubkey)
-        this.pubkey = Base58.decode(pubkey)
+    constructor(publicKey: String) {
+        PublicKeyValidator.validate(publicKey)
+        this.publicKey = Base58.decode(publicKey)
     }
 
-    constructor(pubkey: ByteArray) {
-        PublicKeyValidator.validate(pubkey)
-        this.pubkey = pubkey
+    constructor(publicKey: ByteArray) {
+        PublicKeyValidator.validate(publicKey)
+        this.publicKey = publicKey
     }
 
-    fun toByteArray(): ByteArray {
-        return pubkey
+    fun asByteArray(): ByteArray {
+        return publicKey.copyOf()
     }
 
     fun toBase58(): String {
-        return Base58.encode(pubkey)
+        return Base58.encode(publicKey)
     }
 
     fun equals(pubkey: PublicKey): Boolean {
-        return this.pubkey.contentEquals(pubkey.toByteArray())
+        return this.publicKey.contentEquals(pubkey.asByteArray())
     }
 
     override fun toString(): String {
@@ -52,7 +52,7 @@ class PublicKey {
                 require(seed.size <= 32) { "Max seed length exceeded" }
                 buffer.write(seed)
             }
-            buffer.write(programId.toByteArray())
+            buffer.write(programId.asByteArray())
             buffer.write("ProgramDerivedAddress".toByteArray())
             val hash = Sha256Hash.hash(buffer.toByteArray())
             if (TweetNaclFast.is_on_curve(hash) != 0) {

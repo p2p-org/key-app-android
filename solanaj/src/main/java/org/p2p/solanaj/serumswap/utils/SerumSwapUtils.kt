@@ -23,7 +23,7 @@ object SerumSwapUtils {
                 val bos = ByteArrayOutputStream()
                 ByteUtils.uint64ToByteStreamLE(nonce.toLong().toBigInteger(), bos)
                 return PublicKey.createProgramAddress(
-                    seeds = listOf(marketPublicKey.toByteArray(), bos.toByteArray()),
+                    seeds = listOf(marketPublicKey.asByteArray(), bos.toByteArray()),
                     programId = dexProgramId
                 )
             } catch (e: Exception) {
