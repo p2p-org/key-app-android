@@ -11,6 +11,7 @@ import org.p2p.wallet.utils.Constants.SOL_NAME
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
@@ -74,6 +75,13 @@ sealed class Token constructor(
                 "${AmountUtils.format(total)} $tokenSymbol"
             } else {
                 AmountUtils.format(total)
+            }
+
+        fun getTotal(includeSymbol: Boolean = false): String =
+            if (includeSymbol) {
+                "${total.scaleLong().toPlainString()} $tokenSymbol"
+            } else {
+                total.scaleLong().toPlainString()
             }
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int {
