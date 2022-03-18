@@ -14,7 +14,6 @@ import org.p2p.solanaj.model.types.RpcResponse
 import java.net.URI
 import java.net.URISyntaxException
 
-// TODO: Refactor this class, handle 1006 error, maybe ping/pong issue
 class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) {
 
     companion object {
@@ -45,7 +44,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     private val subscriptionIds = mutableMapOf<String, Long?>()
     private val subscriptionListeners = mutableMapOf<Long, NotificationEventListener>()
 
-    private val moshiBuilder = Moshi.Builder()
+    private val moshi = Moshi.Builder().build()
 
     fun ping() {
         try {
@@ -81,8 +80,9 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
     override fun onMessage(message: String) {
         Log.d("SOCKET", "New message received: $message")
-        val resultAdapter = moshiBuilder.build()
-            .adapter<RpcResponse<Long>>(Types.newParameterizedType(RpcResponse::class.java, Long::class.java))
+        val resultAdapter = moshi.adapter<RpcResponse<Long>>(
+            Types.newParameterizedType(RpcResponse::class.java, Long::class.java)
+        )
         try {
             resultAdapter.fromJson(message)?.also { rpcResult ->
                 rpcResult.id?.let { resultId ->
@@ -110,7 +110,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
     private fun updateSubscriptions() {
         if (isOpen && subscriptions.isNotEmpty()) {
-            val rpcRequestJsonAdapter = moshiBuilder.build().adapter(
+            val rpcRequestJsonAdapter = moshi.adapter(
                 RpcRequest::class.java
             )
             for (sub in subscriptions.values) {
@@ -130,24 +130,34 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     }
 
     private fun handleNotificationMessage(message: String) {
-        val notificationResultAdapter = moshiBuilder.build().adapter(RpcNotificationResult::class.java)
+        val notificationResultAdapter = moshi.adapter(RpcNotificationResult::class.java)
         notificationResultAdapter.fromJson(message)?.let { result ->
             val listener = subscriptionListeners[result.params.subscription]
             val value = result.params.result.value as Map<*, *>
-            when (result.method) {
-                "signatureNotification" -> listener?.onNotificationEvent(
+            when (NotificationType.valueOf(result.method)) {
+                NotificationType.SIGNATURE -> listener?.onNotificationEvent(
                     SignatureNotification(
                         value["err"]
                     )
                 )
-                "accountNotification" -> listener?.onNotificationEvent(value)
-                else -> Unit
+                NotificationType.ACCOUNT -> listener?.onNotificationEvent(value)
             }
         }
     }
 
-    private inner class SubscriptionParams constructor(
+    private class SubscriptionParams(
         var request: RpcRequest,
         var listener: NotificationEventListener
     )
+
+    enum class NotificationType(val type: String) {
+        SIGNATURE("signatureNotification"),
+        ACCOUNT("accountNotification");
+
+        companion object {
+            fun valueOf(type: String): NotificationType? {
+                return values().find { it.type == type }
+            }
+        }
+    }
 }
