@@ -20,7 +20,8 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
-import org.p2p.wallet.rpc.RpcModule.RPC_QUALIFIER
+import org.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
+import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -52,11 +53,12 @@ object NetworkModule : InjectionModule {
             val moonPayApiUrl = get<Context>().getString(R.string.moonpayBaseUrl)
             getRetrofit(moonPayApiUrl, "Moonpay", MoonpayErrorInterceptor(get()))
         }
-        single(named(RPC_QUALIFIER)) {
+        single(named(RPC_RETROFIT_QUALIFIER)) {
             val environment = get<EnvironmentManager>().loadEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(rpcApiUrl, "Rpc", RpcInterceptor(get(), get()))
         }
+        single { ServerErrorInterceptor(get()) }
     }
 
     fun Scope.getRetrofit(

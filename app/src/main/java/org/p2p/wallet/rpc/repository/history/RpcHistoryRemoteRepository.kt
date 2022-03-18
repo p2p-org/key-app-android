@@ -1,4 +1,4 @@
-package org.p2p.wallet.rpc.repository.transaction
+package org.p2p.wallet.rpc.repository.history
 
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
@@ -74,7 +74,6 @@ class RpcHistoryRemoteRepository(
         }
     }
 
-    // TODO change base url dynamically
     override suspend fun getConfirmedTransactions(
         signatures: List<String>
     ): List<ConfirmedTransactionParsed> {

@@ -16,7 +16,7 @@ import org.p2p.wallet.history.model.TransactionConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
-import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
@@ -24,7 +24,7 @@ import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
     private val rpcSignatureRepository: RpcSignatureRepository,
-    private val rpcTransactionRepository: RpcTransactionRepository,
+    private val rpcTransactionRepository: RpcHistoryRepository,
     private val rpcAccountRepository: RpcAccountRepository,
     private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider

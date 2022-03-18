@@ -1,23 +1,16 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
+import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
-import org.json.JSONTokener
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerError
-import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import timber.log.Timber
-import java.io.IOException
 
 private const val BASE_URL_REGEX = "^.+?[^/:](?=[?/]|\$)/"
 
@@ -25,7 +18,7 @@ private const val BASE_URL_REGEX = "^.+?[^/:](?=[?/]|\$)/"
 class RpcInterceptor(
     private val gson: Gson,
     environmentManager: EnvironmentManager
-) : Interceptor {
+) : ServerErrorInterceptor(gson) {
 
     private var currentEnvironment = environmentManager.loadEnvironment()
 
@@ -45,108 +38,39 @@ class RpcInterceptor(
         }
     }
 
+    private val requestBuffer = Buffer()
     private fun createRpcRequest(chain: Interceptor.Chain): Request {
         val request = chain.request()
+
+        val json = getRequestJson(request)
         val newBuilder = request.newBuilder()
+        var newUrl = extractNewUrl(request.url)
 
-        val currentUrl = request.url.toString()
-        val oldBaseUrl = BASE_URL_REGEX.toRegex().find(currentUrl)?.value.toString()
-
-        val newUrl = currentUrl.replace(oldBaseUrl, getBaseUrl(currentEnvironment))
-
+        // Refactor this
+        if (json.getString("method") == "getConfirmedTransaction") {
+            newUrl = extractNewUrl(request.url, Environment.RPC_POOL)
+        }
         return newBuilder.url(newUrl).build()
     }
 
-    private fun handleResponse(response: Response): Response {
-        val responseBody = try {
-            response.body!!.string()
-        } catch (e: Exception) {
-            throw IOException("Error parsing response body", e)
-        }
-
-        if (responseBody.isEmpty()) {
-            throw EmptyDataException("Data is empty")
-        }
-
-        return try {
-            when (val data = JSONTokener(responseBody).nextValue()) {
-                is JSONObject -> parseObject(data, response, responseBody)
-                is JSONArray -> parseArray(data, response, responseBody)
-                else -> createResponse(response, responseBody)
-            }
-        } catch (e: JSONException) {
-            throw IllegalStateException("Error parsing data", e)
-        }
-    }
-
-    private fun parseArray(
-        data: JSONArray,
-        response: Response,
-        responseBody: String
-    ): Response {
-        val firstItem = data.get(0) as JSONObject
-        val result = firstItem.optJSONObject("result")
-        return if (result != null) {
-            createResponse(response, responseBody)
+    private fun getRequestJson(request: Request): JSONObject {
+        request.body?.writeTo(requestBuffer)
+        val requestBodyString = requestBuffer.readUtf8()
+        return if (requestBodyString.startsWith("[")) {
+            val jsonArray = JSONArray(requestBodyString)
+            jsonArray.getJSONObject(0)
         } else {
-            throw extractException(responseBody)
+            JSONObject(requestBodyString)
         }
     }
 
-    private fun parseObject(
-        data: JSONObject,
-        response: Response,
-        responseBody: String
-    ): Response {
-        val error = data.optString("error")
-        return if (error.isNullOrEmpty()) {
-            /*
-            * We have a case when result is an empty array, we should show empty state in the UI
-            * Making custom exception and not showing error on exactly this exception
-            * Temporary hack
-            *  */
-            val result = data.optJSONArray("result")
-            if (result?.length() == 0) {
-                throw EmptyDataException("Empty data received from the server")
-            } else {
-                createResponse(response, responseBody)
-            }
-        } else {
-            throw extractException(responseBody)
-        }
+    private fun extractNewUrl(url: HttpUrl, environment: Environment = currentEnvironment): String {
+        val currentUrl = url.toString()
+        val oldBaseUrl = BASE_URL_REGEX.toRegex().find(currentUrl)?.value.toString()
+        return currentUrl.replace(oldBaseUrl, getBaseUrl(environment))
     }
 
-    private fun createResponse(response: Response, responseBody: String): Response =
-        response.newBuilder().body(responseBody.toResponseBody()).build()
-
-    private fun extractException(bodyString: String): Throwable = try {
-        val fullMessage = JSONObject(bodyString).toString(1)
-
-        Timber.tag("ServerErrorInterceptor").d("Handling exception: $fullMessage")
-
-        val serverError = gson.fromJson(bodyString, ServerError::class.java)
-
-        val errorMessage = serverError.error.data.getErrorLog() ?: serverError.error.message
-        ServerException(
-            errorCode = serverError.error.code,
-            fullMessage = fullMessage,
-            errorMessage = errorMessage
-        )
-    } catch (e: Throwable) {
-        IOException("Error reading response error body", e)
-    }
-
-    private fun extractGeneralException(bodyString: String): Throwable = try {
-        ServerException(
-            errorCode = ErrorCode.SERVER_ERROR,
-            fullMessage = bodyString,
-            errorMessage = null
-        )
-    } catch (e: Throwable) {
-        IOException("Error reading response error body: $bodyString", e)
-    }
-
-    private fun getBaseUrl(environment: Environment) = when (environment) {
+    private fun getBaseUrl(environment: Environment): String = when (environment) {
         Environment.MAINNET -> environment.endpoint
         Environment.SOLANA -> environment.endpoint
         Environment.DEVNET -> environment.endpoint

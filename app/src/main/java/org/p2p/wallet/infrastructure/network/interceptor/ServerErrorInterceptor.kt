@@ -16,7 +16,7 @@ import timber.log.Timber
 import java.io.IOException
 
 // todo: Update validation
-class ServerErrorInterceptor(
+open class ServerErrorInterceptor(
     private val gson: Gson
 ) : Interceptor {
 
@@ -30,7 +30,7 @@ class ServerErrorInterceptor(
         }
     }
 
-    private fun handleResponse(response: Response): Response {
+    protected fun handleResponse(response: Response): Response {
         val responseBody = try {
             response.body!!.string()
         } catch (e: Exception) {
@@ -52,7 +52,7 @@ class ServerErrorInterceptor(
         }
     }
 
-    private fun parseArray(
+    protected fun parseArray(
         data: JSONArray,
         response: Response,
         responseBody: String
@@ -66,7 +66,7 @@ class ServerErrorInterceptor(
         }
     }
 
-    private fun parseObject(
+    protected fun parseObject(
         data: JSONObject,
         response: Response,
         responseBody: String
@@ -89,10 +89,10 @@ class ServerErrorInterceptor(
         }
     }
 
-    private fun createResponse(response: Response, responseBody: String): Response =
+    protected fun createResponse(response: Response, responseBody: String): Response =
         response.newBuilder().body(responseBody.toResponseBody()).build()
 
-    private fun extractException(bodyString: String): Throwable = try {
+    protected fun extractException(bodyString: String): Throwable = try {
         val fullMessage = JSONObject(bodyString).toString(1)
 
         Timber.tag("ServerErrorInterceptor").d("Handling exception: $fullMessage")
@@ -109,7 +109,7 @@ class ServerErrorInterceptor(
         IOException("Error reading response error body", e)
     }
 
-    private fun extractGeneralException(bodyString: String): Throwable = try {
+    protected fun extractGeneralException(bodyString: String): Throwable = try {
         ServerException(
             errorCode = ErrorCode.SERVER_ERROR,
             fullMessage = bodyString,

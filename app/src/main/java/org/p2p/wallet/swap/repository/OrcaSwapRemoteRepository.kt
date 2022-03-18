@@ -1,15 +1,15 @@
 package org.p2p.wallet.swap.repository
 
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.rpc.repository.token.RpcTokenRepository
-import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.utils.toPublicKey
 
 class OrcaSwapRemoteRepository(
-    private val rpcTransactionRepository: RpcTransactionRepository,
-    private val rpcTokenRepository: RpcTokenRepository,
+    private val rpcTransactionRepository: RpcHistoryRepository,
+    private val rpcTokenRepository: RpcBalanceRepository,
     private val updatesManager: UpdatesManager
 ) : OrcaSwapRepository {
 

@@ -9,9 +9,9 @@ import org.p2p.wallet.rpc.api.RpcAmountApi
 import org.p2p.wallet.rpc.api.RpcBalanceApi
 import org.p2p.wallet.rpc.api.RpcBlockHashApi
 import org.p2p.wallet.rpc.api.RpcSignatureApi
-import org.p2p.wallet.rpc.api.RpcTokenApi
-import org.p2p.wallet.rpc.api.RpcTransactionApi
+import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.rpc.interactor.CloseInteractor
+import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRemoteRepository
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
@@ -26,24 +26,22 @@ import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRemoteRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRemoteRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
-import org.p2p.wallet.rpc.repository.token.RpcTokenRemoteRepository
-import org.p2p.wallet.rpc.repository.token.RpcTokenRepository
-import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRemoteRepository
-import org.p2p.wallet.rpc.repository.transaction.RpcTransactionRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRemoteRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import retrofit2.Retrofit
 
 object RpcModule : InjectionModule {
 
-    const val RPC_QUALIFIER = "RPC_QUALIFIER"
+    const val RPC_RETROFIT_QUALIFIER = "RPC_RETROFIT_QUALIFIER"
 
     override fun create() = module {
         factory {
-            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcAccountApi::class.java)
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAccountApi::class.java)
             RpcAccountRemoteRepository(api)
         } bind RpcAccountRepository::class
 
         factory {
-            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcAmountApi::class.java)
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAmountApi::class.java)
             RpcAmountRemoteRepository(api)
         } bind RpcAmountRepository::class
 
@@ -52,29 +50,24 @@ object RpcModule : InjectionModule {
         factory { RpcAmountInteractor(get(), get()) }
 
         factory {
-            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcBalanceApi::class.java)
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBalanceApi::class.java)
             RpcBalanceRemoteRepository(api)
         } bind RpcBalanceRepository::class
 
         factory {
-            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcBlockHashApi::class.java)
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBlockHashApi::class.java)
             RpcBlockHashRemoteRepository(api)
         } bind RpcBlockHashRepository::class
 
         factory {
-            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcSignatureApi::class.java)
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcSignatureApi::class.java)
             RpcSignatureRemoteRepository(api)
         } bind RpcSignatureRepository::class
 
         factory {
-            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcTokenApi::class.java)
-            RpcTokenRemoteRepository(api)
-        } bind RpcTokenRepository::class
-
-        factory {
-            val api = get<Retrofit>(named(RPC_QUALIFIER)).create(RpcTransactionApi::class.java)
-            RpcTransactionRemoteRepository(api)
-        } bind RpcTransactionRepository::class
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java)
+            RpcHistoryRemoteRepository(api)
+        } bind RpcHistoryRepository::class
 
         factory {
             CloseInteractor(get(), get(), get())
@@ -82,5 +75,6 @@ object RpcModule : InjectionModule {
         factory {
             TransactionInteractor(get(), get(), get(), get())
         }
+        factory { TokenInteractor(get(), get(), get(), get()) }
     }
 }
