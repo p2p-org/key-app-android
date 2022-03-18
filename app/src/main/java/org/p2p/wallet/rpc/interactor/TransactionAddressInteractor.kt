@@ -24,10 +24,6 @@ class TransactionAddressInteractor(
     suspend fun validateAddress(destinationAddress: PublicKey, mintAddress: String): AddressValidation {
         val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
 
-        if (destinationAddress.toBase58().length < PublicKey.PUBLIC_KEY_LENGTH) {
-            return AddressValidation.WrongWallet
-        }
-
         if (destinationAddress.equals(userPublicKey)) {
             return AddressValidation.Error(R.string.main_send_to_yourself_error)
         }

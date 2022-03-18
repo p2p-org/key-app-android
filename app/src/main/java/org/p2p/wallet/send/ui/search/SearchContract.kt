@@ -13,10 +13,12 @@ interface SearchContract {
         fun showResult(result: List<SearchResult>)
         fun showMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)
+        fun submitSearchResult(searchResult: SearchResult)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun search(target: Target)
         fun loadInitialData()
+        fun onSearchResultClick(result: SearchResult)
     }
 }

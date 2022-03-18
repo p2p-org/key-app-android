@@ -54,13 +54,19 @@ class ReceiveTokenPresenter(
         }
     }
 
-    override fun saveQr(name: String, bitmap: Bitmap) {
+    override fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean) {
         launch {
             try {
-                usernameInteractor.saveQr(name, bitmap)
-                view?.showToastMessage(R.string.auth_saved)
-            } catch (e: Exception) {
-                Timber.e("Error on saving QR: $e")
+                val savedFile = usernameInteractor.saveQr(name, bitmap)
+                if (shareAfter) {
+                    savedFile?.let {
+                        view?.showShareQr(it, name)
+                    } ?: Timber.e("Error on saving QR file == null")
+                } else {
+                    view?.showToastMessage(R.string.auth_saved)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on saving QR")
                 view?.showErrorMessage(e)
             }
         }

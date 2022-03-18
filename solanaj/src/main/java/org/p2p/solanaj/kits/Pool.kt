@@ -17,7 +17,7 @@ object Pool {
             get() {
                 return try {
                     findProgramAddress(
-                        listOf(address.toByteArray()),
+                        listOf(address.asByteArray()),
                         swapProgramId
                     )
                         .address

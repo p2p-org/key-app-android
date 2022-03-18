@@ -541,7 +541,7 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(SendFee.RenBtcFee(fee, sourceToken))
+            calculateTotal(SendFee.RenBtcFee(fee, sourceToken, sourceToken.tokenSymbol))
         }
     }
 
@@ -569,7 +569,7 @@ class SendPresenter(
             fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
         }
 
-        fee = SendFee.SolanaFee(feeAmount, feePayer)
+        fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
         view?.showAccountFeeView(fee)
 
         calculateTotal(fee)

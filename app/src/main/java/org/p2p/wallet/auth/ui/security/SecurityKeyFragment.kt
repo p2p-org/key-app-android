@@ -28,7 +28,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.toast
-import org.p2p.wallet.utils.shareScreenShoot
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
@@ -159,8 +159,8 @@ class SecurityKeyFragment :
         }
     }
 
-    override fun shareScreenShoot(file: File) {
-        requireContext().shareScreenShoot(file)
+    override fun shareScreenShot(file: File) {
+        requireContext().shareScreenShot(file)
     }
 
     override fun copyToClipboard(keys: List<String>) {
