@@ -95,11 +95,10 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
     }
 
     override fun onClose(code: Int, reason: String, remote: Boolean) {
+        val closedFrom = if (remote) "remote peer" else "us"
         socketStateListener?.onClosed(
             code,
-            "Connection closed by " +
-                (if (remote) "remote peer" else "us") +
-                " Code: " + code + " Reason: " + reason
+            "Connection closed by $closedFrom Code: $code Reason: $reason"
         )
     }
 
@@ -156,7 +155,11 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
 
         companion object {
             fun valueOf(type: String): NotificationType? {
-                return values().find { it.type == type }
+                return values().find { it.type == type }.also {
+                    if (it == null) {
+                        Log.e("NotificationType", "Unknown result method $type")
+                    }
+                }
             }
         }
     }
