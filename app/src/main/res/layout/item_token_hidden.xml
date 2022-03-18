@@ -5,30 +5,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/backgroundSecondary"
     app:draggedItem="@id/contentView"
     app:leftItem="@id/sendImageView"
     app:rightItem="@id/exposeImageView"
     app:swipeDirection="left|right">
 
     <ImageView
-        android:id="@+id/exposeImageView"
-        android:layout_width="64dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="end|center_vertical"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="20dp"
-        android:src="@drawable/ic_show"
-        tools:ignore="ContentDescription" />
-
-    <ImageView
         android:id="@+id/sendImageView"
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:layout_gravity="start|center_vertical"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@color/backgroundActivePrimary"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:padding="20dp"
         android:src="@drawable/ic_send_blue"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/exposeImageView"
+        android:layout_width="64dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end|center_vertical"
+        android:background="@color/backgroundSecondary"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:padding="20dp"
+        android:src="@drawable/ic_show"
         tools:ignore="ContentDescription" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
