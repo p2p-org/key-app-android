@@ -27,11 +27,6 @@ package org.p2p.wallet.common.ui.recycler;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Point;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.GestureDetectorCompat;
-import androidx.core.view.ViewCompat;
-import androidx.customview.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -40,6 +35,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.p2p.wallet.R;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.core.view.ViewCompat;
+import androidx.customview.widget.ViewDragHelper;
 
 /**
  * This project provides an opportunity to perform swipe for any layout,
@@ -115,7 +117,7 @@ public class SwipeLayout extends FrameLayout {
     /**
      * Sensitivity of automatic closing of the main view
      */
-    private double autoOpenSpeed;
+    private final double autoOpenSpeed;
 
     /**
      * Disable intercept touch event for draggable view
@@ -127,11 +129,13 @@ public class SwipeLayout extends FrameLayout {
     private GestureDetectorCompat gestureDetector;
     private int draggingViewLeft;
     private int horizontalWidth;
+    private final float draggedViewRadius;
+    private final float draggedViewElevation;
     private boolean isLeftOpen;
     private boolean isRightOpen;
-    private int staticRightViewId;
-    private int staticLeftViewId;
-    private int draggedViewId;
+    private final int staticRightViewId;
+    private final int staticLeftViewId;
+    private final int draggedViewId;
     private View draggedView;
     private View staticRightView;
     private View staticLeftView;
@@ -155,6 +159,8 @@ public class SwipeLayout extends FrameLayout {
         autoOpenSpeed = typedArray.getInt(R.styleable.SwipeLayout_autoMovingSensitivity, DEFAULT_AUTO_OPEN_SPEED);
         rightDragViewPadding = (int) typedArray.getDimension(R.styleable.SwipeLayout_rightDragViewPadding, 0);
         leftDragViewPadding = (int) typedArray.getDimension(R.styleable.SwipeLayout_leftDragViewPadding, 0);
+        draggedViewRadius = typedArray.getDimension(R.styleable.SwipeLayout_draggedItemCornerRadius, 0f);
+        draggedViewElevation = typedArray.getDimension(R.styleable.SwipeLayout_draggedItemElevation, 0f);
 
         parametersAdjustment();
         typedArray.recycle();
@@ -633,6 +639,7 @@ public class SwipeLayout extends FrameLayout {
     private GestureDetector.OnGestureListener gestureDetectorCallBack = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            // here
             if (getParent() != null) {
                 getParent().requestDisallowInterceptTouchEvent(true);
             }
@@ -649,6 +656,8 @@ public class SwipeLayout extends FrameLayout {
             if (isIdleAfterMoving(state)) {
                 updateState();
             }
+
+            updateDraggedView(state);
 
             currentDraggingState = state;
         }
@@ -1024,8 +1033,23 @@ public class SwipeLayout extends FrameLayout {
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
+    private void updateDraggedView(int state) {
+        if (!(draggedView instanceof CardView)) return;
+
+        CardView draggedCardView = (CardView) draggedView;
+
+        if (state == ViewDragHelper.STATE_DRAGGING) {
+            draggedCardView.setRadius(draggedViewRadius);
+            draggedCardView.setCardElevation(draggedViewElevation);
+        } else if (state == ViewDragHelper.STATE_IDLE && !(isLeftOpen || isRightOpen)) {
+            draggedCardView.setRadius(0f);
+            draggedCardView.setCardElevation(0f);
+        }
+    }
+
     public interface SwipeActionsListener {
         void onOpen(int direction, boolean isContinuous);
+
         void onClose();
     }
 }
