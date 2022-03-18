@@ -300,8 +300,8 @@ class SendPresenter(
         launch {
             try {
                 sendAnalytics.logSendShowDetailsPressed()
-                val (maxAvailable, remaining) = sendInteractor.getFreeTransactionsInfo()
-                view?.showFeeLimitsDialog(maxAvailable, remaining)
+                val freeTransactionsInfo = sendInteractor.getFreeTransactionsInfo()
+                view?.showFeeLimitsDialog(freeTransactionsInfo.maxUsage, freeTransactionsInfo.remaining)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading free transactions info")
             }
