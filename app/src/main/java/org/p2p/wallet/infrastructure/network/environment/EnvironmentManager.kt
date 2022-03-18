@@ -63,6 +63,7 @@ class EnvironmentManager(
     }
 
     private fun parse(url: String): Environment = when (url) {
+        // url = https//api.mainnet-beta.solana.com/ -> api.mainnet-beta.solana.com/
         Environment.MAINNET.endpoint -> Environment.MAINNET
         Environment.DEVNET.endpoint -> Environment.DEVNET
         Environment.SOLANA.endpoint -> Environment.SOLANA
