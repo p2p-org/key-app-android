@@ -61,6 +61,12 @@ class OrcaSwapInteractor(
         feePayerToken = newToken
     }
 
+    suspend fun getFreeTransactionsInfo(): Pair<Int, Int> {
+        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        val remaining = freeTransactionFeeLimit.maxUsage - freeTransactionFeeLimit.currentUsage
+        return freeTransactionFeeLimit.maxUsage to remaining
+    }
+
     suspend fun initialize() {
         feeRelayerInteractor.load()
     }
