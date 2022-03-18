@@ -37,7 +37,7 @@ class SwapTransactionEntity(
 @Entity
 class SwapAEntity(
     @ColumnInfo(name = COLUMN_MINT_A)
-    val mint: String,
+    val mint: String?,
 
     @ColumnInfo(name = COLUMN_AMOUNT_A)
     val amount: String,
@@ -59,7 +59,7 @@ class SwapAEntity(
 @Entity
 class SwapBEntity(
     @ColumnInfo(name = COLUMN_MINT_B)
-    val mint: String,
+    val mint: String?,
 
     @ColumnInfo(name = COLUMN_AMOUNT_B)
     val amount: String,

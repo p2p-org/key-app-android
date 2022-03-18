@@ -37,7 +37,7 @@ abstract class TransactionDao<TRANSACTION : TransactionEntity>(private val table
 
     //language=RoomSql
     fun deleteAll() {
-        deleteAll(SimpleSQLiteQuery("DELETE * FROM $tableName"))
+        deleteAll(SimpleSQLiteQuery("DELETE FROM $tableName"))
     }
 }
 

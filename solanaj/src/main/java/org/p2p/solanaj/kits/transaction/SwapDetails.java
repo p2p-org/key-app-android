@@ -1,5 +1,7 @@
 package org.p2p.solanaj.kits.transaction;
 
+import androidx.annotation.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,7 +14,9 @@ public class SwapDetails extends TransactionDetails {
             "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8"
     );
 
+    @Nullable
     private final String mintA;
+    @Nullable
     private final String mintB;
     private final String amountA;
     private final String amountB;
@@ -29,10 +33,10 @@ public class SwapDetails extends TransactionDetails {
             long fee,
             String source,
             String destination,
-            String amountA,
-            String amountB,
-            String mintA,
-            String mintB,
+            @Nullable String amountA,
+            @Nullable String amountB,
+            @Nullable String mintA,
+            @Nullable String mintB,
             String alternateSource,
             String alternateDestination
     ) {
@@ -58,10 +62,12 @@ public class SwapDetails extends TransactionDetails {
         return this;
     }
 
+    @Nullable
     public String getMintA() {
         return mintA;
     }
 
+    @Nullable
     public String getMintB() {
         return mintB;
     }

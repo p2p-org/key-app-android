@@ -30,8 +30,8 @@ class HistoryTransactionMapper(
                 is BurnOrMintDetails -> parseBurnAndMintDetails(transaction, userPublicKey)
                 is TransferDetails -> parseTransferDetails(transaction, tokenPublicKey, userPublicKey)
                 is CloseAccountDetails -> parseCloseDetails(transaction)
-                is CreateAccountDetails -> TransactionConverter.fromNetwork(transaction)
-                is UnknownDetails -> TransactionConverter.fromNetwork(transaction)
+                is CreateAccountDetails -> TransactionConverter.mapCreateAccountTransactionToHistory(transaction)
+                is UnknownDetails -> TransactionConverter.mapUnknownTransactionToHistory(transaction)
                 else -> throw IllegalStateException("Unknown transaction details $transaction")
             }
         }
@@ -52,7 +52,7 @@ class HistoryTransactionMapper(
 
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
         val sourceRate = userLocalRepository.getPriceByToken(sourceData.symbol)
-        return TransactionConverter.fromNetwork(
+        return TransactionConverter.mapSwapTransactionToHistory(
             response = details,
             sourceData = sourceData,
             destinationData = destinationData,
@@ -109,20 +109,20 @@ class HistoryTransactionMapper(
         val mint = if (transfer.isSimpleTransfer) Constants.WRAPPED_SOL_MINT else transfer.mint
         val source = userLocalRepository.findTokenData(mint.orEmpty()) ?: return null
 
-        return TransactionConverter.fromNetwork(transfer, source, directPublicKey, publicKey, rate)
+        return TransactionConverter.mapTransferTransactionToHistory(transfer, source, directPublicKey, publicKey, rate)
     }
 
     private fun parseBurnAndMintDetails(details: BurnOrMintDetails, userPublicKey: String): HistoryTransaction {
         val symbol = findSymbol(details.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
-        return TransactionConverter.fromNetwork(details, userPublicKey, rate)
+        return TransactionConverter.mapBurnOrMintTransactionToHistory(details, userPublicKey, rate)
     }
 
     private fun parseCloseDetails(
         details: CloseAccountDetails
     ): HistoryTransaction {
         val symbol = findSymbol(details.mint)
-        return TransactionConverter.fromNetwork(details, symbol)
+        return TransactionConverter.mapCloseAccountTransactionToHistory(details, symbol)
     }
 
     private fun findSymbol(mint: String?): String {

@@ -58,5 +58,7 @@ class TransactionDaoDelegate(
         }
     }
 
-    fun deleteAll() = transactionDao.forEach(TransactionDao<*>::deleteAll)
+    fun deleteAll() {
+        transactionDao.forEach(TransactionDao<*>::deleteAll)
+    }
 }

@@ -21,7 +21,7 @@ import java.math.BigDecimal
 object TransactionConverter {
 
     /* Swap transaction */
-    fun fromNetwork(
+    fun mapSwapTransactionToHistory(
         response: SwapDetails,
         sourceData: TokenData,
         destinationData: TokenData,
@@ -68,7 +68,7 @@ object TransactionConverter {
         )
 
     /* Burn or mint transaction */
-    fun fromNetwork(
+    fun mapBurnOrMintTransactionToHistory(
         response: BurnOrMintDetails,
         userPublicKey: String,
         rate: TokenPrice?
@@ -101,7 +101,7 @@ object TransactionConverter {
     }
 
     /* Transfer transaction */
-    fun fromNetwork(
+    fun mapTransferTransactionToHistory(
         response: TransferDetails,
         tokenData: TokenData,
         directPublicKey: String,
@@ -145,7 +145,7 @@ object TransactionConverter {
     }
 
     /* Create account transaction */
-    fun fromNetwork(response: CreateAccountDetails): HistoryTransaction =
+    fun mapCreateAccountTransactionToHistory(response: CreateAccountDetails): HistoryTransaction =
         HistoryTransaction.CreateAccount(
             signature = response.signature,
             blockNumber = response.slot,
@@ -157,7 +157,7 @@ object TransactionConverter {
         )
 
     /* Close account transaction */
-    fun fromNetwork(response: CloseAccountDetails, symbol: String): HistoryTransaction =
+    fun mapCloseAccountTransactionToHistory(response: CloseAccountDetails, symbol: String): HistoryTransaction =
         HistoryTransaction.CloseAccount(
             signature = response.signature,
             blockNumber = response.slot,
@@ -171,7 +171,7 @@ object TransactionConverter {
         )
 
     /* Unknown transaction */
-    fun fromNetwork(
+    fun mapUnknownTransactionToHistory(
         response: UnknownDetails
     ): HistoryTransaction =
         HistoryTransaction.Unknown(
