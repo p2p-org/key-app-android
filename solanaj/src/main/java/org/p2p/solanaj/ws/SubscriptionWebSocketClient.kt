@@ -85,31 +85,9 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
             .adapter<RpcResponse<Long>>(Types.newParameterizedType(RpcResponse::class.java, Long::class.java))
         try {
             resultAdapter.fromJson(message)?.also { rpcResult ->
-                val rpcResultId = rpcResult.id
-                if (rpcResultId != null) {
-                    if (subscriptionIds.containsKey(rpcResultId)) {
-                        subscriptionIds[rpcResultId] = rpcResult.result
-                        subscriptions[rpcResultId]?.listener?.let { listener ->
-                            subscriptionListeners[rpcResult.result] = listener
-                        }
-                        subscriptions.remove(rpcResultId)
-                    }
-                } else {
-                    val notificationResultAdapter = moshiBuilder.build().adapter(RpcNotificationResult::class.java)
-                    notificationResultAdapter.fromJson(message)?.let { result ->
-                        val listener = subscriptionListeners[result.params.subscription]
-                        val value = result.params.result.value as Map<*, *>
-                        when (result.method) {
-                            "signatureNotification" -> listener?.onNotificationEvent(
-                                SignatureNotification(
-                                    value["err"]
-                                )
-                            )
-                            "accountNotification" -> listener?.onNotificationEvent(value)
-                            else -> Unit
-                        }
-                    }
-                }
+                rpcResult.id?.let { resultId ->
+                    addResultAndNotify(resultId, rpcResult)
+                } ?: handleNotificationMessage(message)
             }
         } catch (ex: Exception) {
             Log.e("SOCKET", "Error on socket message", ex)
@@ -137,6 +115,33 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
             )
             for (sub in subscriptions.values) {
                 send(rpcRequestJsonAdapter.toJson(sub.request))
+            }
+        }
+    }
+
+    private fun addResultAndNotify(resultId: String, rpcResult: RpcResponse<Long>) {
+        if (subscriptionIds.containsKey(resultId)) {
+            subscriptionIds[resultId] = rpcResult.result
+            subscriptions[resultId]?.listener?.let { listener ->
+                subscriptionListeners[rpcResult.result] = listener
+            }
+            subscriptions.remove(resultId)
+        }
+    }
+
+    private fun handleNotificationMessage(message: String) {
+        val notificationResultAdapter = moshiBuilder.build().adapter(RpcNotificationResult::class.java)
+        notificationResultAdapter.fromJson(message)?.let { result ->
+            val listener = subscriptionListeners[result.params.subscription]
+            val value = result.params.result.value as Map<*, *>
+            when (result.method) {
+                "signatureNotification" -> listener?.onNotificationEvent(
+                    SignatureNotification(
+                        value["err"]
+                    )
+                )
+                "accountNotification" -> listener?.onNotificationEvent(value)
+                else -> Unit
             }
         }
     }
