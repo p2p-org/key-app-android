@@ -157,7 +157,7 @@ class SubscriptionWebSocketClient(serverURI: URI?) : WebSocketClient(serverURI) 
             fun valueOf(type: String): NotificationType? {
                 return values().find { it.type == type }.also {
                     if (it == null) {
-                        Log.e("NotificationType", "Unknown result method $type")
+                        Log.e("NotificationType", "Unknown NotificationType: $type")
                     }
                 }
             }
