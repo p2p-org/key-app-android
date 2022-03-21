@@ -639,7 +639,6 @@ public class SwipeLayout extends FrameLayout {
     private GestureDetector.OnGestureListener gestureDetectorCallBack = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            // here
             if (getParent() != null) {
                 getParent().requestDisallowInterceptTouchEvent(true);
             }
@@ -1049,7 +1048,6 @@ public class SwipeLayout extends FrameLayout {
 
     public interface SwipeActionsListener {
         void onOpen(int direction, boolean isContinuous);
-
         void onClose();
     }
 }
