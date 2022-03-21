@@ -18,8 +18,8 @@ import timber.log.Timber
 
 class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRepository {
 
-    override suspend fun getAccountInfo(account: String): AccountInfo? {
-        return try {
+    override suspend fun getAccountInfo(account: String): AccountInfo? =
+        try {
             val params = listOf(
                 account,
                 RequestConfiguration(encoding = Encoding.BASE64.encoding)
@@ -30,7 +30,6 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
             Timber.w("`getAccountInfo` responded with empty data, returning null")
             null
         }
-    }
 
     override suspend fun getAccountsInfo(accounts: List<String>): List<Pair<String, AccountInfo>> {
         val requestsBatch = accounts.map {
@@ -39,8 +38,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         }
 
         return try {
-            api
-                .getAccountsInfo(requestsBatch)
+            api.getAccountsInfo(requestsBatch)
                 .mapIndexed { index, response ->
                     requestsBatch[index].params!!.first() as String to response.result
                 }
@@ -53,18 +51,16 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
     override suspend fun getProgramAccounts(
         publicKey: PublicKey,
         config: RequestConfiguration
-    ): List<ProgramAccount> {
-        return try {
-            val params = listOf(publicKey.toString(), config)
-            val rpcRequest = RpcRequest("getProgramAccounts", params)
-            val response = api.getProgramAccounts(rpcRequest)
+    ): List<ProgramAccount> = try {
+        val params = listOf(publicKey.toString(), config)
+        val rpcRequest = RpcRequest("getProgramAccounts", params)
+        val response = api.getProgramAccounts(rpcRequest)
 
-            // sometimes result can be null
-            response.result
-        } catch (e: EmptyDataException) {
-            Timber.w("`getProgramAccounts` responded with empty data, returning empty list")
-            emptyList()
-        }
+        // sometimes result can be null
+        response.result
+    } catch (e: EmptyDataException) {
+        Timber.w("`getProgramAccounts` responded with empty data, returning empty list")
+        emptyList()
     }
 
     override suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts {

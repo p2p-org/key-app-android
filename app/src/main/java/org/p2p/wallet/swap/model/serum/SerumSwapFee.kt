@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.model.serum
 
+import org.p2p.wallet.utils.emptyString
 import java.math.BigInteger
 
 data class SerumSwapFee(
@@ -9,6 +10,6 @@ data class SerumSwapFee(
 ) {
 
     constructor(stringValue: String) : this(
-        tokenSymbol = "", lamports = BigInteger.ZERO, stringValue = stringValue
+        tokenSymbol = emptyString(), lamports = BigInteger.ZERO, stringValue = stringValue
     )
 }

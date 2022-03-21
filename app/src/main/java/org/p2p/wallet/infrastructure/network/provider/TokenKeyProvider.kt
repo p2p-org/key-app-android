@@ -3,6 +3,7 @@ package org.p2p.wallet.infrastructure.network.provider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.wallet.utils.emptyString
 
 private const val KEY_PUBLIC_KEY = "KEY_PUBLIC_KEY"
 private const val KEY_SECRET_KEY = "KEY_SECRET_KEY"
@@ -38,7 +39,7 @@ class TokenKeyProvider(
             }
 
     fun clear() {
-        publicKey = ""
+        publicKey = emptyString()
         secretKey = byteArrayOf()
     }
 }

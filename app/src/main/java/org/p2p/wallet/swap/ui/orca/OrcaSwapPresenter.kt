@@ -31,6 +31,7 @@ import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.divideSafe
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isNotZero
@@ -232,7 +233,7 @@ class OrcaSwapPresenter(
 
         /* reversing amounts */
         sourceAmount = destinationAmount
-        destinationAmount = ""
+        destinationAmount = emptyString()
         view?.showTotal(null)
         view?.showNewAmount(sourceAmount)
         swapAnalytics.logSwapReversing(destinationToken?.tokenSymbol.orEmpty())
@@ -244,7 +245,7 @@ class OrcaSwapPresenter(
         swapAnalytics.logSwapGoingBack(
             tokenAName = sourceToken.tokenSymbol,
             tokenBName = destinationToken?.tokenSymbol.orEmpty(),
-            swapCurrency = "",
+            swapCurrency = emptyString(),
             swapSum = sourceAmount.toBigDecimalOrZero(),
             swapMax = isMaxClicked,
             swapUSD = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
@@ -295,7 +296,7 @@ class OrcaSwapPresenter(
                 val progress = ShowProgress(
                     title = R.string.swap_being_processed,
                     subTitle = subTitle,
-                    transactionId = ""
+                    transactionId = emptyString()
                 )
                 view?.showProgressDialog(progress)
                 swapAnalytics.logSwapProcessShown()

@@ -39,6 +39,7 @@ import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
@@ -436,7 +437,7 @@ class SendPresenter(
         val data = ShowProgress(
             title = R.string.send_transaction_being_processed,
             subTitle = "$tokenAmount ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
-            transactionId = ""
+            transactionId = emptyString()
         )
         view?.showProgressDialog(data)
 

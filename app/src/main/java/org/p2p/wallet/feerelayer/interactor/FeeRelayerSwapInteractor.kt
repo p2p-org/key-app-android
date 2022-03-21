@@ -19,7 +19,7 @@ import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
@@ -28,7 +28,7 @@ import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class FeeRelayerSwapInteractor(
-    private val rpcRepository: RpcBlockHashRepository,
+    private val rpcRepository: RpcBlockhashRepository,
     private val feeRelayerInstructionsInteractor: FeeRelayerInstructionsInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,

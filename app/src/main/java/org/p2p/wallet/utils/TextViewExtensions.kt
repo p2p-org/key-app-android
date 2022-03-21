@@ -7,7 +7,7 @@ import androidx.core.view.isVisible
 infix fun TextView.withTextOrGone(text: CharSequence?) {
     if (text.isNullOrEmpty()) {
         isVisible = false
-        this.text = ""
+        this.text = emptyString()
     } else {
         isVisible = true
         this.text = text
@@ -17,7 +17,7 @@ infix fun TextView.withTextOrGone(text: CharSequence?) {
 infix fun TextView.withTextOrInvisible(text: CharSequence?) {
     if (text.isNullOrEmpty()) {
         isInvisible = true
-        this.text = ""
+        this.text = emptyString()
     } else {
         isInvisible = false
         this.text = text

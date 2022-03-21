@@ -11,6 +11,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
+import org.p2p.wallet.utils.emptyString
 
 class UserInteractor(
     private val userRepository: UserRepository,
@@ -66,7 +67,7 @@ class UserInteractor(
         userLocalRepository.setTokenData(data)
     }
 
-    fun fetchTokens(searchText: String = "", count: Int, refresh: Boolean) {
+    fun fetchTokens(searchText: String = emptyString(), count: Int, refresh: Boolean) {
         userLocalRepository.fetchTokens(searchText, count, refresh)
     }
 

@@ -9,14 +9,14 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
-import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
 
 class TransactionInteractor(
-    private val rpcBlockHashRepository: RpcBlockHashRepository,
+    private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val rpcTransactionRepository: RpcHistoryRepository,
     private val rpcAmountInteractor: RpcAmountInteractor,
     private val tokenKeyProvider: TokenKeyProvider
@@ -34,7 +34,7 @@ class TransactionInteractor(
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)
-        transaction.recentBlockHash = recentBlockhash ?: rpcBlockHashRepository.getRecentBlockhash().recentBlockhash
+        transaction.recentBlockHash = recentBlockhash ?: rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
         transaction.feePayer = feePayer
 
         // calculate fee first
@@ -68,7 +68,7 @@ class TransactionInteractor(
     ): String {
         // get recentBlockhash
         val blockhash = if (recentBlockhash.isNullOrEmpty()) {
-            rpcBlockHashRepository.getRecentBlockhash().recentBlockhash
+            rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
         } else {
             recentBlockhash
         }

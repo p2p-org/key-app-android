@@ -7,10 +7,10 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import org.p2p.wallet.rpc.api.RpcAmountApi
 import org.p2p.wallet.rpc.api.RpcBalanceApi
-import org.p2p.wallet.rpc.api.RpcBlockHashApi
+import org.p2p.wallet.rpc.api.RpcBlockhashApi
 import org.p2p.wallet.rpc.api.RpcSignatureApi
 import org.p2p.wallet.rpc.api.RpcHistoryApi
-import org.p2p.wallet.rpc.interactor.CloseInteractor
+import org.p2p.wallet.rpc.interactor.CloseAccountInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRemoteRepository
@@ -22,8 +22,8 @@ import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRemoteRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRemoteRepository
-import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRemoteRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRemoteRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.rpc.repository.history.RpcHistoryRemoteRepository
@@ -35,12 +35,12 @@ object RpcModule : InjectionModule {
     const val RPC_RETROFIT_QUALIFIER = "RPC_RETROFIT_QUALIFIER"
 
     override fun create() = module {
-        factory {
+        single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAccountApi::class.java)
             RpcAccountRemoteRepository(api)
         } bind RpcAccountRepository::class
 
-        factory {
+        single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAmountApi::class.java)
             RpcAmountRemoteRepository(api)
         } bind RpcAmountRepository::class
@@ -49,28 +49,28 @@ object RpcModule : InjectionModule {
 
         factory { RpcAmountInteractor(get(), get()) }
 
-        factory {
+        single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBalanceApi::class.java)
             RpcBalanceRemoteRepository(api)
         } bind RpcBalanceRepository::class
 
-        factory {
-            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBlockHashApi::class.java)
-            RpcBlockHashRemoteRepository(api)
-        } bind RpcBlockHashRepository::class
+        single {
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBlockhashApi::class.java)
+            RpcBlockhashRemoteRepository(api)
+        } bind RpcBlockhashRepository::class
 
-        factory {
+        single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcSignatureApi::class.java)
             RpcSignatureRemoteRepository(api)
         } bind RpcSignatureRepository::class
 
-        factory {
+        single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java)
             RpcHistoryRemoteRepository(api)
         } bind RpcHistoryRepository::class
 
         factory {
-            CloseInteractor(get(), get(), get())
+            CloseAccountInteractor(get(), get(), get())
         }
         factory {
             TransactionInteractor(get(), get(), get(), get())

@@ -39,6 +39,7 @@ import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -171,7 +172,7 @@ class OrcaSwapFragment :
                 destinationImageView.setImageResource(R.drawable.ic_question)
                 destinationTextView.setText(R.string.main_select)
                 destinationAvailableTextView.isVisible = false
-                destinationAvailableTextView.text = ""
+                destinationAvailableTextView.text = emptyString()
             }
         }
     }
@@ -207,10 +208,10 @@ class OrcaSwapFragment :
                 receiveUsdTextView.text = data.receiveAtLeastUsd
                 destinationAmountTextView.text = data.destinationAmount
             } else {
-                receiveAtLeastLabelTextView.text = ""
-                receiveTextView.text = ""
-                receiveUsdTextView.text = ""
-                destinationAmountTextView.text = ""
+                receiveAtLeastLabelTextView.text = emptyString()
+                receiveTextView.text = emptyString()
+                receiveUsdTextView.text = emptyString()
+                destinationAmountTextView.text = emptyString()
             }
         }
     }

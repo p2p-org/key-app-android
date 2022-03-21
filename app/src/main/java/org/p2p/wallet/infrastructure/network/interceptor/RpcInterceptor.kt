@@ -45,28 +45,35 @@ open class RpcInterceptor(
         }
     }
 
-    private val requestBuffer = Buffer()
     private fun createRpcRequest(chain: Interceptor.Chain): Request {
         val request = chain.request()
 
         val json = getRequestJson(request)
 
-        // Refactor this
         val url = request.url
 
-        val httpUrl = if (json.getString("method") == "getConfirmedTransaction") {
-            url.newBuilder().host(getBaseUrl(Environment.RPC_POOL)).build()
+        val environmentUrl = if (json.getString("method") == "getConfirmedTransaction") {
+            Environment.RPC_POOL
         } else {
-            url.newBuilder().host(getBaseUrl(currentEnvironment)).build()
+            currentEnvironment
         }
 
-        return request.newBuilder().url(httpUrl).build()
+        val httpUrl = url.newBuilder()
+            .host(getBaseUrl(environmentUrl))
+            .build()
+
+        return request.newBuilder()
+            .url(httpUrl)
+            .build()
     }
 
     private fun getRequestJson(request: Request): JSONObject {
+        val requestBuffer = Buffer()
+
         request.body?.writeTo(requestBuffer)
 
         val requestBodyString = requestBuffer.readUtf8()
+
         return if (requestBodyString.startsWith("[")) {
             val jsonArray = JSONArray(requestBodyString)
             jsonArray.getJSONObject(0)
@@ -76,23 +83,14 @@ open class RpcInterceptor(
     }
 
     private fun getBaseUrl(environment: Environment): String {
-        val endpoint = when (environment) {
-            Environment.MAINNET -> environment.endpoint
-            Environment.SOLANA -> environment.endpoint
-            Environment.DEVNET -> environment.endpoint
-            Environment.RPC_POOL -> {
-                val rpcPoolApiKey = BuildConfig.rpcPoolApiKey
-                if (rpcPoolApiKey.isNotBlank()) {
-                    "${Environment.RPC_POOL.endpoint}$rpcPoolApiKey/"
-                } else {
-                    Environment.RPC_POOL.endpoint
-                }
-            }
+        var uri = Uri.parse(environment.endpoint)
+        if (environment == Environment.RPC_POOL) {
+            uri = uri.buildUpon().encodedPath(BuildConfig.rpcPoolApiKey).build()
         }
-        return Uri.parse(endpoint).host ?: throw IllegalStateException("Host not found")
+        return uri.host ?: throw IllegalStateException("Host cannot be null ${uri.host}")
     }
 
-    protected fun handleResponse(response: Response): Response {
+    private fun handleResponse(response: Response): Response {
         val responseBody = try {
             response.body!!.string()
         } catch (e: Exception) {

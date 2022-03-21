@@ -20,6 +20,7 @@ import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
@@ -211,5 +212,5 @@ class HistoryInteractor(
     }
 
     private fun findSymbol(mint: String): String =
-        if (mint.isNotEmpty()) userLocalRepository.findTokenData(mint)?.symbol.orEmpty() else ""
+        if (mint.isNotEmpty()) userLocalRepository.findTokenData(mint)?.symbol.orEmpty() else emptyString()
 }

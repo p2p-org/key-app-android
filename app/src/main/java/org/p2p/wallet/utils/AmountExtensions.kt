@@ -14,7 +14,7 @@ private const val SCALE_VALUE_MEDIUM = 6
 private const val SCALE_VALUE_LONG = 9
 
 fun String.toBigDecimalOrZero(): BigDecimal {
-    val removedZeros = this.replace("(?<=\\d)\\.?0+(?![\\d\\.])", "")
+    val removedZeros = this.replace("(?<=\\d)\\.?0+(?![\\d\\.])", emptyString())
     return removedZeros.toBigDecimalOrNull() ?: BigDecimal.ZERO
 }
 

@@ -4,13 +4,13 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.blockhash.RpcBlockHashRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.utils.toPublicKey
 
 class TokenInteractor(
     private val rpcRepository: RpcHistoryRepository,
-    private val rpcBlockHashRepository: RpcBlockHashRepository,
+    private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -27,7 +27,7 @@ class TokenInteractor(
         val transaction = Transaction()
         transaction.addInstruction(instruction)
 
-        val recentBlockhash = rpcBlockHashRepository.getRecentBlockhash()
+        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
         transaction.recentBlockHash = recentBlockhash.recentBlockhash
 
         val signers = Account(tokenKeyProvider.secretKey)
@@ -61,7 +61,7 @@ class TokenInteractor(
         )
 
         val signers = Account(tokenKeyProvider.secretKey)
-        val recentBlockHash = rpcBlockHashRepository.getRecentBlockhash()
+        val recentBlockHash = rpcBlockhashRepository.getRecentBlockhash()
 
         val transaction = Transaction().apply {
             addInstruction(instruction)

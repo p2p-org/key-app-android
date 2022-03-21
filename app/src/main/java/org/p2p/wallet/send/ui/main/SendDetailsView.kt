@@ -15,6 +15,7 @@ import org.p2p.wallet.databinding.WidgetSendDetailsBinding
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -48,7 +49,7 @@ class SendDetailsView @JvmOverloads constructor(
                 totalFeeTextView.tag = null
                 showExpanded(false, data)
                 headerView.isEnabled = false
-                totalSourceTextView.text = ""
+                totalSourceTextView.text = emptyString()
                 headerView.setOnClickListener(null)
                 return@with
             }
