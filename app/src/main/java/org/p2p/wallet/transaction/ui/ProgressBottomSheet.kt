@@ -167,8 +167,8 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         }
     }
 
-    private fun setResultAndDismiss(result: Bundle = bundleOf(EXTRA_RESULT_KEY_DISMISS to null)) {
-        setFragmentResult(requestKey, result)
+    private fun setResultAndDismiss() {
+        setFragmentResult(requestKey, bundleOf(EXTRA_RESULT_KEY_DISMISS to null))
         dismissAllowingStateLoss()
     }
 }
