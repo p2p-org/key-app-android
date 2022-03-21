@@ -3,12 +3,14 @@ package org.p2p.wallet.history
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParser
+import org.p2p.solanaj.kits.transaction.parser.ConfirmedTransactionRootParser
+import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
+import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.interactor.HistoryTransactionMapper
-import org.p2p.wallet.history.interactor.TransactionDetailsMapper
-import org.p2p.wallet.history.interactor.TransactionsHistoryRepository
+import org.p2p.wallet.history.repository.HistoryTransactionMapper
+import org.p2p.wallet.history.repository.TransactionDetailsMapper
+import org.p2p.wallet.history.repository.TransactionsHistoryRepository
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.HistoryRepository
@@ -38,7 +40,7 @@ object HistoryModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 renBtcInteractor = get(),
-                closeInteractor = get()
+                tokenInteractor = get()
             )
         } bind HistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
@@ -54,7 +56,7 @@ object HistoryModule : InjectionModule {
     private fun Module.dataLayer() {
         factory { HistoryRemoteRepository(compareApi = get()) } bind HistoryRepository::class
 
-        factory { ConfirmedTransactionParser }
+        single { ConfirmedTransactionRootParser(OrcaSwapInstructionParser(), SerumSwapInstructionParser()) }
         factory { TransactionDetailsMapper(confirmedTransactionParser = get(), gson = get()) }
         factory { HistoryTransactionMapper(userLocalRepository = get()) }
         single {

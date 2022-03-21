@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.interactor
+package org.p2p.wallet.history.repository
 
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
@@ -11,7 +11,6 @@ import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.TransactionConverter
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants
 

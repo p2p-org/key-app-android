@@ -5,7 +5,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
+import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
@@ -14,7 +14,7 @@ import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
-import org.p2p.solanaj.model.types.SignatureInformation
+import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.model.types.TokenSupply
@@ -273,16 +273,13 @@ class RpcRemoteRepository(
         return rpcApi.getMultipleAccounts(rpcRequest).result
     }
 
-    /**
-     * The history is being fetched from main-net despite the selected network
-     * */
     override suspend fun getConfirmedSignaturesForAddress(
-        account: PublicKey,
+        userAccountAddress: PublicKey,
         before: String?,
         limit: Int
-    ): List<SignatureInformation> {
+    ): List<SignatureInformationResponse> {
         val params = listOf(
-            account.toString(),
+            userAccountAddress.toString(),
             ConfigObjects.ConfirmedSignFAddr2(before, limit)
         )
 
@@ -292,7 +289,7 @@ class RpcRemoteRepository(
 
     override suspend fun getConfirmedTransactions(
         signatures: List<String>
-    ): List<ConfirmedTransactionParsed> {
+    ): List<ConfirmedTransactionRootResponse> {
         val requestsBatch = signatures.map {
             val encoding = mapOf("encoding" to "jsonParsed")
             val params = listOf(it, encoding)

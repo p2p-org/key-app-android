@@ -1,10 +1,10 @@
-package org.p2p.wallet.history.interactor
+package org.p2p.wallet.history.repository
 
 import com.google.gson.Gson
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
-import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
-import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParser
+import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
+import org.p2p.solanaj.kits.transaction.parser.ConfirmedTransactionRootParser
 import org.p2p.solanaj.kits.transaction.CreateAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
@@ -23,20 +23,24 @@ import org.p2p.wallet.history.db.entities.UnknownTransactionEntity
 import org.p2p.wallet.history.db.entities.embedded.CommonTransactionInformationEntity
 import org.p2p.wallet.history.db.entities.embedded.TransactionIdentifiersEntity
 import org.p2p.wallet.history.db.entities.embedded.TransactionTypeEntity
-import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class TransactionDetailsMapper(
-    private val confirmedTransactionParser: ConfirmedTransactionParser,
+    private val confirmedTransactionParser: ConfirmedTransactionRootParser,
     private val gson: Gson
 ) {
-    fun mapNetworkToDomain(confirmedTransactions: List<ConfirmedTransactionParsed>): List<TransactionDetails> {
+    fun mapNetworkToDomain(
+        confirmedTransactionRoots: List<ConfirmedTransactionRootResponse>
+    ): List<TransactionDetails> {
         val resultTransactions = mutableListOf<TransactionDetails>()
 
-        confirmedTransactions.forEach { confirmedTransaction ->
-            val parsedTransactions = confirmedTransactionParser.parseDetails(confirmedTransaction)
+        confirmedTransactionRoots.forEach { confirmedTransaction ->
+            val parsedTransactions = confirmedTransactionParser.parse(
+                confirmedTransaction,
+                onErrorLogger = { Timber.w(it) }
+            )
 
             val swapTransaction = parsedTransactions.firstOrNull { it is SwapDetails }
             if (swapTransaction != null) {
@@ -74,10 +78,13 @@ class TransactionDetailsMapper(
                 return@forEach
             }
 
-            Timber.i("unknown transactions type, skipping ($parsedTransactions)")
+            val unknownTransactionTypeLogData =
+                "(parsedTransactions=$parsedTransactions;\nconfirmedTransaction=${confirmedTransaction.transaction}"
+            Timber.w("unknown transactions type, skipping $unknownTransactionTypeLogData")
         }
 
-        return resultTransactions.toList() // 19
+        Timber.d("Parsing finished: ${resultTransactions.size}; total=${confirmedTransactionRoots.size}")
+        return resultTransactions.toList()
     }
 
     fun mapEntityToDomain(entities: List<TransactionEntity>): List<TransactionDetails> {
@@ -85,69 +92,69 @@ class TransactionDetailsMapper(
             when (it) {
                 is CreateAccountTransactionEntity -> {
                     CreateAccountDetails(
-                        it.identifiers.signature,
-                        it.identifiers.blockId,
-                        it.commonInformation.blockTimeSec,
-                        it.fee,
+                        signature = it.identifiers.signature,
+                        slot = it.identifiers.blockId,
+                        blockTime = it.commonInformation.blockTimeSec,
+                        fee = it.fee,
                     )
                 }
                 is CloseAccountTransactionEntity -> {
                     CloseAccountDetails(
-                        it.identifiers.signature,
-                        it.commonInformation.blockTimeSec,
-                        it.identifiers.blockId,
-                        it.account,
-                        it.mint
+                        signature = it.identifiers.signature,
+                        blockTime = it.commonInformation.blockTimeSec,
+                        slot = it.identifiers.blockId,
+                        account = it.account,
+                        mint = it.mint
                     )
                 }
                 is RenBtcBurnOrMintTransactionEntity -> {
                     BurnOrMintDetails(
-                        it.identifiers.signature,
-                        it.commonInformation.blockTimeSec,
-                        it.identifiers.blockId,
-                        it.account,
-                        it.authority,
-                        it.amount,
-                        it.decimals,
-                        it.fee
+                        signature = it.identifiers.signature,
+                        blockTime = it.commonInformation.blockTimeSec,
+                        slot = it.identifiers.blockId,
+                        fee = it.fee,
+                        account = it.account,
+                        authority = it.authority,
+                        uiAmount = it.amount,
+                        _decimals = it.decimals,
                     )
                 }
                 is SwapTransactionEntity -> {
                     SwapDetails(
-                        it.identifiers.signature,
-                        it.commonInformation.blockTimeSec,
-                        it.identifiers.blockId,
-                        it.fee,
-                        it.aEntity.source.value,
-                        it.bEntity.destination.value,
-                        it.aEntity.amount,
-                        it.bEntity.amount,
-                        it.aEntity.mint,
-                        it.bEntity.mint,
-                        it.aEntity.alternateSource.value,
-                        it.bEntity.alternateDestination.value
+                        signature = it.identifiers.signature,
+                        blockTime = it.commonInformation.blockTimeSec,
+                        slot = it.identifiers.blockId,
+                        fee = it.fee,
+                        source = it.aEntity.source?.value,
+                        destination = it.bEntity.destination?.value,
+                        amountA = it.aEntity.amount,
+                        amountB = it.bEntity.amount,
+                        mintA = it.aEntity.mint,
+                        mintB = it.bEntity.mint,
+                        alternateSource = it.aEntity.alternateSource?.value,
+                        alternateDestination = it.bEntity.alternateDestination?.value
                     )
                 }
                 is TransferTransactionEntity -> {
                     TransferDetails(
-                        it.identifiers.signature,
-                        it.commonInformation.blockTimeSec,
-                        it.identifiers.blockId,
-                        it.destination.value,
-                        it.source.value,
-                        it.authority,
-                        it.mint,
-                        it.amount,
-                        it.decimals,
-                        it.fee
+                        signature = it.identifiers.signature,
+                        blockTime = it.commonInformation.blockTimeSec,
+                        slot = it.identifiers.blockId,
+                        typeStr = it.commonInformation.transactionDetailsType.typeStr,
+                        fee = it.fee,
+                        source = it.source?.value,
+                        destination = it.destination?.value,
+                        authority = it.authority,
+                        mint = it.mint,
+                        amount = it.amount,
+                        _decimals = it.decimals,
                     )
                 }
                 is UnknownTransactionEntity -> {
                     UnknownDetails(
-                        it.identifiers.signature,
-                        it.commonInformation.blockTimeSec,
-                        it.identifiers.blockId,
-                        gson.fromJsonReified<Map<String, Any>>(it.rawData)
+                        signature = it.identifiers.signature,
+                        blockTime = it.commonInformation.blockTimeSec,
+                        slot = it.identifiers.blockId
                     )
                 }
             }
@@ -180,7 +187,7 @@ class TransactionDetailsMapper(
                         commonInformation = commonInformation,
                         account = it.account,
                         authority = it.authority,
-                        amount = it.amount,
+                        amount = it.uiAmount,
                         decimals = it.decimals,
                         fee = it.fee
                     )
@@ -192,14 +199,14 @@ class TransactionDetailsMapper(
                         aEntity = SwapAEntity(
                             mint = it.mintA,
                             amount = it.amountA,
-                            source = it.source.toBase58Instance(),
-                            alternateSource = it.alternateSource.toBase58Instance()
+                            source = it.source?.toBase58Instance(),
+                            alternateSource = it.alternateSource?.toBase58Instance()
                         ),
                         bEntity = SwapBEntity(
                             mint = it.mintB,
                             amount = it.amountB,
-                            destination = it.destination.toBase58Instance(),
-                            alternateDestination = it.alternateDestination.toBase58Instance()
+                            destination = it.destination?.toBase58Instance(),
+                            alternateDestination = it.alternateDestination?.toBase58Instance()
                         ),
                         fee = it.fee
                     )
@@ -208,8 +215,8 @@ class TransactionDetailsMapper(
                     TransferTransactionEntity(
                         identifiers = identifiers,
                         commonInformation = commonInformation,
-                        source = it.source.toBase58Instance(),
-                        destination = it.destination.toBase58Instance(),
+                        source = it.source?.toBase58Instance(),
+                        destination = it.destination?.toBase58Instance(),
                         authority = it.authority.orEmpty(),
                         mint = it.mint,
                         amount = it.amount,
@@ -239,14 +246,13 @@ class TransactionDetailsMapper(
         return CommonTransactionInformationEntity(
             blockTimeSec = TimeUnit.MILLISECONDS.toSeconds(this.getBlockTimeInMillis()),
             transactionDetailsType = this.type?.toEntity() ?: TransactionTypeEntity.UNKNOWN,
-            information = gson.toJson(this.info)
         )
     }
 
     private fun TransactionDetails.toIdentifiers(): TransactionIdentifiersEntity {
         return TransactionIdentifiersEntity(
-            this.signature,
-            this.slot
+            signature = this.signature,
+            blockId = this.slot
         )
     }
 

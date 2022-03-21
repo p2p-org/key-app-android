@@ -12,13 +12,9 @@ class CommonTransactionInformationEntity(
     @ColumnInfo(name = COLUMN_TRANSACTION_TYPE)
     @TypeConverters(TransactionTypeEntity.Converter::class)
     val transactionDetailsType: TransactionTypeEntity,
-
-    @ColumnInfo(name = COLUMN_INFO)
-    val information: String?, // stored in json, cant store java.lang.Object here
 ) {
     companion object {
         const val COLUMN_BLOCK_TIME = "block_time"
         const val COLUMN_TRANSACTION_TYPE = "transaction_type"
-        const val COLUMN_INFO = "info"
     }
 }

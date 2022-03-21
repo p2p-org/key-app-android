@@ -1,9 +1,9 @@
 package org.p2p.solanaj.kits.transaction
 
 abstract class TransactionDetails(
-    open val signature: String,
+    val signature: String,
     private val blockTime: Long,
-    open val slot: Int
+    val slot: Int
 ) {
     abstract val type: TransactionDetailsType?
     abstract val info: Any?

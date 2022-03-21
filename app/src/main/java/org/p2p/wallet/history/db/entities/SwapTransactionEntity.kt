@@ -43,10 +43,10 @@ class SwapAEntity(
     val amount: String,
 
     @ColumnInfo(name = COLUMN_SOURCE)
-    val source: Base58String,
+    val source: Base58String?,
 
     @ColumnInfo(name = COLUMN_SOURCE_ALT)
-    val alternateSource: Base58String
+    val alternateSource: Base58String?
 ) {
     companion object {
         const val COLUMN_MINT_A = "mint_a"
@@ -65,10 +65,10 @@ class SwapBEntity(
     val amount: String,
 
     @ColumnInfo(name = COLUMN_DESTINATION)
-    val destination: Base58String,
+    val destination: Base58String?,
 
     @ColumnInfo(name = COLUMN_DESTINATION_ALT)
-    val alternateDestination: Base58String
+    val alternateDestination: Base58String?
 ) {
     companion object {
         const val COLUMN_MINT_B = "mint_b"

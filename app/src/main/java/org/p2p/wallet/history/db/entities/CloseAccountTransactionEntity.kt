@@ -17,10 +17,10 @@ class CloseAccountTransactionEntity(
     override val commonInformation: CommonTransactionInformationEntity,
 
     @ColumnInfo(name = COLUMN_ACCOUNT)
-    val account: String,
+    val account: String?,
 
     @ColumnInfo(name = COLUMN_MINT)
-    val mint: String
+    val mint: String?
 ) : TransactionEntity {
     companion object {
         const val TABLE_NAME = "close_account_transactions"

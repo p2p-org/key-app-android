@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.interactor
+package org.p2p.wallet.history.repository
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -68,14 +68,13 @@ class TransactionsHistoryRepository(
         val accountsInfoIds = fetchedTransactions
             .filterIsInstance<SwapDetails>()
             .flatMap { swapTransaction ->
-                listOf(
+                setOfNotNull(
                     swapTransaction.source,
                     swapTransaction.alternateSource,
                     swapTransaction.destination,
                     swapTransaction.alternateDestination
                 )
             }
-            .distinct()
 
         return if (accountsInfoIds.isNotEmpty()) {
             runBlocking { rpcRepository.getAccountsInfo(accountsInfoIds) }

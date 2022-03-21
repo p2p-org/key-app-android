@@ -17,13 +17,13 @@ class RenBtcBurnOrMintTransactionEntity(
     override val commonInformation: CommonTransactionInformationEntity,
 
     @ColumnInfo(name = COLUMN_ACCOUNT)
-    val account: String,
+    val account: String?,
 
     @ColumnInfo(name = COLUMN_AUTHORITY)
-    val authority: String,
+    val authority: String?,
 
     @ColumnInfo(name = COLUMN_AMOUNT)
-    val amount: String,
+    val amount: String?,
 
     @ColumnInfo(name = COLUMN_DECIMALS)
     val decimals: Int,

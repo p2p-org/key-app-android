@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.history.interactor.TransactionsHistoryRepository
+import org.p2p.wallet.history.repository.TransactionsHistoryRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
