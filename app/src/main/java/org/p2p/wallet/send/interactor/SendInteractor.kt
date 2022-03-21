@@ -10,6 +10,7 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -116,10 +117,8 @@ class SendInteractor(
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
-    suspend fun getFreeTransactionsInfo(): Pair<Int, Int> {
-        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val remaining = freeTransactionFeeLimit.maxUsage - freeTransactionFeeLimit.currentUsage
-        return freeTransactionFeeLimit.maxUsage to remaining
+    suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit {
+        return feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
     }
 
     suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult =
