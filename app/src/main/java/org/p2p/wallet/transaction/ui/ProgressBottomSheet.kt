@@ -49,9 +49,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
         fun hide(fragmentManager: FragmentManager) {
             val dialog = fragmentManager.findFragmentByTag(ProgressBottomSheet::javaClass.name)
-            if (dialog is ProgressBottomSheet) {
-                dialog.dismissAllowingStateLoss()
-            }
+            (dialog as? ProgressBottomSheet)?.dismissAllowingStateLoss()
         }
     }
 
@@ -85,15 +83,8 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
             transactionIdTextView.text = data.transactionId
 
-            secondaryButton.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(EXTRA_RESULT_KEY_SECONDARY to null))
-                dismissAllowingStateLoss()
-            }
-
             arrowImageView.setOnClickListener {
-                val result = bundleOf(EXTRA_RESULT_KEY_DISMISS to null)
-                setFragmentResult(requestKey, result)
-                dismissAllowingStateLoss()
+                setResultAndDismiss()
             }
         }
 
@@ -122,55 +113,32 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         }
     }
 
-    private fun handleError(state: TransactionState.Error) {
-        with(binding) {
-            titleTextView.text = state.message
-            progressBar.isVisible = false
-
-            transactionImageView.setImageResource(R.drawable.ic_error_transaction)
-            lineView.isVisible = true
-            lineView.setBackgroundColor(getColor(R.color.systemErrorMain))
-        }
-    }
-
     private fun handleSwapSuccess(state: TransactionState.SwapSuccess) {
-        with(binding) {
-            val message = getString(R.string.swap_successfully_format, state.fromToken, state.toToken)
-            titleTextView.text = message
-            progressBar.isVisible = false
-
-            transactionIdGroup.isVisible = true
-            transactionIdTextView.text = state.transaction.signature
-
-            transactionImageView.setImageResource(R.drawable.ic_success)
-            lineView.isVisible = true
-            lineView.setBackgroundColor(getColor(R.color.systemSuccessMain))
-
-            showButton.setOnClickListener {
-                val result = bundleOf(EXTRA_RESULT_KEY_PRIMARY to state.transaction)
-                setFragmentResult(requestKey, result)
-                dismissAllowingStateLoss()
-            }
-        }
+        val message = getString(R.string.swap_successfully_format, state.fromToken, state.toToken)
+        val signature = state.transaction.signature
+        setSuccessState(message, signature)
     }
 
     private fun handleSendSuccess(state: TransactionState.SendSuccess) {
+        val message = getString(R.string.send_successfully_format, state.sourceTokenSymbol)
+        val signature = state.transaction.signature
+        setSuccessState(message, signature)
+    }
+
+    private fun setSuccessState(message: String, signature: String) {
         with(binding) {
-            val message = getString(R.string.send_successfully_format, state.sourceTokenSymbol)
             titleTextView.text = message
             progressBar.isVisible = false
 
             transactionIdGroup.isVisible = true
-            transactionIdTextView.text = state.transaction.signature
+            transactionIdTextView.text = signature
 
             transactionImageView.setImageResource(R.drawable.ic_success)
             lineView.isVisible = true
             lineView.setBackgroundColor(getColor(R.color.systemSuccessMain))
 
-            showButton.setOnClickListener {
-                val result = bundleOf(EXTRA_RESULT_KEY_PRIMARY to state.transaction)
-                setFragmentResult(requestKey, result)
-                dismissAllowingStateLoss()
+            doneButton.setOnClickListener {
+                setResultAndDismiss()
             }
         }
     }
@@ -186,5 +154,21 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             transactionImageView.setImageResource(R.drawable.ic_pending)
             lineView.isVisible = false
         }
+    }
+
+    private fun handleError(state: TransactionState.Error) {
+        with(binding) {
+            titleTextView.text = state.message
+            progressBar.isVisible = false
+
+            transactionImageView.setImageResource(R.drawable.ic_error_transaction)
+            lineView.isVisible = true
+            lineView.setBackgroundColor(getColor(R.color.systemErrorMain))
+        }
+    }
+
+    private fun setResultAndDismiss(result: Bundle = bundleOf(EXTRA_RESULT_KEY_DISMISS to null)) {
+        setFragmentResult(requestKey, result)
+        dismissAllowingStateLoss()
     }
 }

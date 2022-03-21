@@ -113,31 +113,17 @@
         tools:text="k97y8u209j08fh98yu20uiei92jke...uiei" />
 
     <org.p2p.wallet.common.ui.widget.ProgressButton
-        android:id="@+id/showButton"
+        android:id="@+id/doneButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonDrawable="@drawable/ic_info"
         app:buttonDrawableTint="@color/textIconButtonPrimary"
-        app:buttonText="@string/details_show_transaction_details"
+        app:buttonText="@string/details_done"
         app:buttonTextColor="@color/textIconButtonPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/transactionIdTextView" />
 
-    <org.p2p.wallet.common.ui.widget.ProgressButton
-        android:id="@+id/secondaryButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonBackground="@drawable/bg_blue_stroke_rounded"
-        app:buttonDrawable="@drawable/ic_send_blue"
-        app:buttonText="@string/send_make_another_transaction"
-        app:buttonTextColor="@color/textIconActive"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/showButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

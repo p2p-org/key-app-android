@@ -433,8 +433,7 @@
     <string name="details_value">Value</string>
     <string name="details_paid_by_p2p">Paid by p2p.org</string>
     <string name="details_paid_by_p2p_brackets">(Paid by p2p.org)</string>
-    <string name="details_show_transaction_details">Show transaction details</string>
-    <string name="details_hide_transaction_details">Hide transaction details</string>
+    <string name="details_done">@string/common_done</string>
     <string name="details_info">Info</string>
     <string name="details_history">History</string>
     <string name="details_show_wallet_address">Show wallet address</string>
