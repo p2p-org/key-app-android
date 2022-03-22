@@ -2,6 +2,8 @@ package org.p2p.wallet.home.ui.select
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
@@ -16,14 +18,16 @@ import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.showSoftKeyboard
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+private const val QUERY_MIN_LENGTH = 2
 
-class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
+class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token), SearchView.OnQueryTextListener {
 
     companion object {
         fun create(tokens: List<Token>, requestKey: String, resultKey: String) = SelectTokenFragment()
@@ -53,6 +57,7 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
+            inflateSearchMenu(toolbar)
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokenRecyclerView.attachAdapter(tokenAdapter)
             tokenAdapter.setItems(tokens)
@@ -61,5 +66,33 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token) {
             tokenRecyclerView.isVisible = !isEmpty
             emptyTextView.isVisible = isEmpty
         }
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean = false
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        val searchText = newText.orEmpty()
+        if (searchText.length < QUERY_MIN_LENGTH) {
+            tokenAdapter.setItems(tokens)
+            return true
+        }
+        val filteredItems = tokens.filter {
+            it.tokenName.startsWith(searchText, ignoreCase = true) || it.tokenSymbol == newText
+        }
+        tokenAdapter.setItems(filteredItems)
+        return true
+    }
+
+    private fun inflateSearchMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_search)
+
+        val search = toolbar.menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as SearchView
+
+        searchView.apply {
+            this.onActionViewExpanded()
+            setOnQueryTextListener(this@SelectTokenFragment)
+        }
+        searchView.showSoftKeyboard()
     }
 }
