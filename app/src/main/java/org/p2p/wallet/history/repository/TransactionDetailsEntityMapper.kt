@@ -1,10 +1,7 @@
 package org.p2p.wallet.history.repository
 
-import com.google.gson.Gson
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
-import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
-import org.p2p.solanaj.kits.transaction.parser.ConfirmedTransactionRootParser
 import org.p2p.solanaj.kits.transaction.CreateAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
@@ -24,69 +21,8 @@ import org.p2p.wallet.history.db.entities.embedded.CommonTransactionInformationE
 import org.p2p.wallet.history.db.entities.embedded.TransactionIdentifiersEntity
 import org.p2p.wallet.history.db.entities.embedded.TransactionTypeEntity
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
-class TransactionDetailsMapper(
-    private val confirmedTransactionParser: ConfirmedTransactionRootParser,
-    private val gson: Gson
-) {
-    fun mapNetworkToDomain(
-        confirmedTransactionRoots: List<ConfirmedTransactionRootResponse>
-    ): List<TransactionDetails> {
-        val resultTransactions = mutableListOf<TransactionDetails>()
-
-        confirmedTransactionRoots.forEach { confirmedTransaction ->
-            val parsedTransactions = confirmedTransactionParser.parse(
-                confirmedTransaction,
-                onErrorLogger = { Timber.w(it) }
-            )
-
-            val swapTransaction = parsedTransactions.firstOrNull { it is SwapDetails }
-            if (swapTransaction != null) {
-                resultTransactions.add(swapTransaction)
-                return@forEach
-            }
-
-            val burnOrMintTransaction = parsedTransactions.firstOrNull { it is BurnOrMintDetails }
-            if (burnOrMintTransaction != null) {
-                resultTransactions.add(burnOrMintTransaction)
-                return@forEach
-            }
-
-            val transferTransaction = parsedTransactions.firstOrNull { it is TransferDetails }
-            if (transferTransaction != null) {
-                resultTransactions.add(transferTransaction)
-                return@forEach
-            }
-
-            val createTransaction = parsedTransactions.firstOrNull { it is CreateAccountDetails }
-            if (createTransaction != null) {
-                resultTransactions.add(createTransaction)
-                return@forEach
-            }
-
-            val closeTransaction = parsedTransactions.firstOrNull { it is CloseAccountDetails }
-            if (closeTransaction != null) {
-                resultTransactions.add(closeTransaction)
-                return@forEach
-            }
-
-            val unknownTransaction = parsedTransactions.firstOrNull { it is UnknownDetails }
-            if (unknownTransaction != null) {
-                resultTransactions.add(unknownTransaction)
-                return@forEach
-            }
-
-            val unknownTransactionTypeLogData =
-                "(parsedTransactions=$parsedTransactions;\nconfirmedTransaction=${confirmedTransaction.transaction}"
-            Timber.w("unknown transactions type, skipping $unknownTransactionTypeLogData")
-        }
-
-        Timber.d("Parsing finished: ${resultTransactions.size}; total=${confirmedTransactionRoots.size}")
-        return resultTransactions.toList()
-    }
-
+class TransactionDetailsEntityMapper {
     fun mapEntityToDomain(entities: List<TransactionEntity>): List<TransactionDetails> {
         return entities.map {
             when (it) {
@@ -162,7 +98,7 @@ class TransactionDetailsMapper(
     }
 
     fun mapDomainToEntity(transactions: List<TransactionDetails>): List<TransactionEntity> {
-        return transactions.mapNotNull {
+        return transactions.map {
             val commonInformation = it.toCommonInformation()
             val identifiers = it.toIdentifiers()
             when (it) {
@@ -228,15 +164,7 @@ class TransactionDetailsMapper(
                     UnknownTransactionEntity(
                         identifiers = identifiers,
                         commonInformation = commonInformation,
-                        rawData = gson.toJson(it.info),
-                        data = it.data.orEmpty(),
                     )
-                }
-                else -> {
-                    Timber.e(
-                        IllegalArgumentException("Unknown type for mapping from domain: ${it.javaClass.simpleName}")
-                    )
-                    null
                 }
             }
         }
@@ -244,8 +172,8 @@ class TransactionDetailsMapper(
 
     private fun TransactionDetails.toCommonInformation(): CommonTransactionInformationEntity {
         return CommonTransactionInformationEntity(
-            blockTimeSec = TimeUnit.MILLISECONDS.toSeconds(this.getBlockTimeInMillis()),
-            transactionDetailsType = this.type?.toEntity() ?: TransactionTypeEntity.UNKNOWN,
+            blockTimeSec = blockTimeSeconds,
+            transactionDetailsType = this.type.toEntity(),
         )
     }
 

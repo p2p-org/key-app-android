@@ -21,7 +21,7 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 
-object TransactionConverter {
+class HistoryTransactionConverter {
 
     /* Swap transaction */
     fun mapSwapTransactionToHistory(
@@ -39,40 +39,36 @@ object TransactionConverter {
             fee = response.fee.toBigInteger(),
             blockNumber = response.slot,
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+                Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
             amountA = response.amountA
-                ?.toBigInteger()
-                ?.fromLamports(sourceData.decimals)
-                ?.scaleLong()
-                ?: BigDecimal.ZERO,
+                .toBigDecimalFromLamports(sourceData.decimals)
+                .scaleLong(),
             amountB = response.amountB
-                ?.toBigInteger()
-                ?.fromLamports(destinationData.decimals)
-                ?.scaleLong()
-                ?: BigDecimal.ZERO,
+                .toBigDecimalFromLamports(destinationData.decimals)
+                .scaleLong(),
             amountSentInUsd = sourceRate?.let {
                 response.amountA
-                    ?.toBigInteger()
-                    ?.fromLamports(sourceData.decimals)
-                    ?.times(it.price)
-                    ?.scaleShort()
-                    ?: BigDecimal.ZERO
+                    .toBigDecimalFromLamports(sourceData.decimals)
+                    .times(it.price)
+                    .scaleShort()
             },
             amountReceivedInUsd = destinationRate?.let {
                 response.amountB
-                    ?.toBigInteger()
-                    ?.fromLamports(destinationData.decimals)
-                    ?.times(it.price)
-                    ?.scaleShort()
-                    ?: BigDecimal.ZERO
+                    .toBigDecimalFromLamports(destinationData.decimals)
+                    .times(it.price)
+                    .scaleShort()
             },
             sourceSymbol = sourceData.symbol,
             sourceIconUrl = sourceData.iconUrl.orEmpty(),
             destinationSymbol = destinationData.symbol,
             destinationIconUrl = destinationData.iconUrl.orEmpty()
         )
+
+    private fun String.toBigDecimalFromLamports(decimals: Int): BigDecimal =
+        toBigInteger()
+            .fromLamports(decimals)
 
     /* Burn or mint transaction */
     fun mapBurnOrMintTransactionToHistory(
@@ -81,7 +77,7 @@ object TransactionConverter {
         rate: TokenPrice?
     ): HistoryTransaction {
         val date = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+            Instant.ofEpochMilli(response.blockTimeMillis),
             ZoneId.systemDefault()
         )
 
@@ -101,7 +97,7 @@ object TransactionConverter {
             senderAddress = senderAddress.orEmpty(),
             fee = response.fee.toBigInteger(),
             totalInUsd = amount,
-            total = response.uiAmount?.toBigDecimalOrZero() ?: BigDecimal.ZERO,
+            total = response.uiAmount.toBigDecimalOrZero(),
             date = date,
             type = RenBtcType.BURN
         )
@@ -127,14 +123,15 @@ object TransactionConverter {
             response.source
         }
         val amount = rate?.price?.let {
-            BigDecimal(response.amount).toBigInteger()
+            response.amount.toBigDecimalOrZero()
+                .toBigInteger()
                 .fromLamports(response.decimals)
                 .scaleLong()
                 .times(it)
         }
 
         val date = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+            Instant.ofEpochMilli(response.blockTimeMillis),
             ZoneId.systemDefault()
         )
         return HistoryTransaction.Transfer(
@@ -146,7 +143,10 @@ object TransactionConverter {
             senderAddress = senderAddress.orEmpty(),
             tokenData = tokenData,
             totalInUsd = amount,
-            total = response.amount?.toBigInteger()?.fromLamports(response.decimals) ?: BigDecimal.ZERO,
+            total = response.amount
+                ?.toBigInteger()
+                ?.fromLamports(response.decimals)
+                ?: BigDecimal.ZERO,
             date = date
         )
     }
@@ -157,7 +157,7 @@ object TransactionConverter {
             signature = response.signature,
             blockNumber = response.slot,
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+                Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
             fee = response.fee.toBigInteger()
@@ -171,7 +171,7 @@ object TransactionConverter {
             account = response.account.orEmpty(),
             mint = response.mint.orEmpty(),
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+                Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
             tokenSymbol = symbol
@@ -184,7 +184,8 @@ object TransactionConverter {
         HistoryTransaction.Unknown(
             signature = response.signature,
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()), ZoneId.systemDefault()
+                Instant.ofEpochMilli(response.blockTimeMillis),
+                ZoneId.systemDefault()
             ),
             blockNumber = response.slot,
         )

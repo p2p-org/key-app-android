@@ -16,7 +16,7 @@ class TransactionsHistoryRepository(
     private val rpcRepository: RpcRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionDaoDelegate: TransactionDaoDelegate,
-    private val transactionDetailsMapper: TransactionDetailsMapper,
+    private val transactionDetailsMapper: TransactionDetailsEntityMapper,
     private val historyTransactionMapper: HistoryTransactionMapper,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -50,14 +50,13 @@ class TransactionsHistoryRepository(
 
     private fun getTransactionsFromNetwork(signatures: List<String>): List<TransactionDetails> {
         val confirmedTransactions = runBlocking { rpcRepository.getConfirmedTransactions(signatures) }
-        val transactionsFromRemote = transactionDetailsMapper.mapNetworkToDomain(confirmedTransactions)
 
-        val transactionsToSave = transactionsFromRemote
+        val transactionsToSave = confirmedTransactions
             .let { transactionDetailsMapper.mapDomainToEntity(it) }
 
         transactionDaoDelegate.insertTransactions(transactionsToSave)
 
-        return transactionsFromRemote
+        return confirmedTransactions
     }
 
     private fun getAccountsInfo(

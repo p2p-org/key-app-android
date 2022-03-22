@@ -11,6 +11,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.AppRestarter
@@ -95,6 +96,7 @@ class App : Application() {
             val trackers = TrackerFactory.create(this@App, BuildConfig.ANALYTICS_ENABLED)
             Analytics(trackers)
         } bind TrackerContract::class
+        single { createSolanjLogger() }
     }
 
     private fun restart() {
@@ -107,5 +109,19 @@ class App : Application() {
 
     private fun setupTimber() {
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+    }
+
+    private fun createSolanjLogger(): SolanjLogger = object : SolanjLogger {
+        override fun d(throwable: Throwable) = Timber.d(throwable)
+        override fun d(message: String) = Timber.d(message)
+        override fun d(throwable: Throwable, message: String?) = Timber.d(throwable, message)
+
+        override fun w(throwable: Throwable) = Timber.w(throwable)
+        override fun w(message: String) = Timber.w(message)
+        override fun w(throwable: Throwable, message: String?) = Timber.w(throwable, message)
+
+        override fun e(throwable: Throwable) = Timber.e(throwable)
+        override fun e(message: String) = Timber.e(message)
+        override fun e(throwable: Throwable, message: String?) = Timber.e(throwable, message)
     }
 }

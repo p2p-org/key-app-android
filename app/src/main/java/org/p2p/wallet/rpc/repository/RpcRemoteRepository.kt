@@ -5,7 +5,8 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
+import org.p2p.solanaj.kits.transaction.TransactionDetails
+import org.p2p.solanaj.kits.transaction.mapper.TransactionDetailsNetworkMapper
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
@@ -32,6 +33,7 @@ class RpcRemoteRepository(
     private val mainnetApi: RpcApi,
     private val rpcpoolRpcApi: RpcApi,
     private val testnetApi: RpcApi,
+    private val transactionDetailsMapper: TransactionDetailsNetworkMapper,
     environmentManager: EnvironmentManager,
     onlyMainnet: Boolean = false
 ) : RpcRepository {
@@ -289,7 +291,7 @@ class RpcRemoteRepository(
 
     override suspend fun getConfirmedTransactions(
         signatures: List<String>
-    ): List<ConfirmedTransactionRootResponse> {
+    ): List<TransactionDetails> {
         val requestsBatch = signatures.map {
             val encoding = mapOf("encoding" to "jsonParsed")
             val params = listOf(it, encoding)
@@ -297,6 +299,8 @@ class RpcRemoteRepository(
             RpcRequest("getConfirmedTransaction", params)
         }
 
-        return rpcpoolRpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
+        return rpcpoolRpcApi.getConfirmedTransactions(requestsBatch)
+            .map { it.result }
+            .let { transactionDetailsMapper.mapNetworkToDomain(it) }
     }
 }

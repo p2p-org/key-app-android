@@ -7,13 +7,13 @@ import org.p2p.solanaj.programs.SerumSwapProgram
 import java.lang.Exception
 import java.math.BigInteger
 
-class SerumSwapInstructionParser {
+internal class SerumSwapInstructionParser {
 
-    class SerumSwapParseError(message: String) : Exception(message)
+    internal class SerumSwapParseError(message: String) : Exception(message)
 
     fun isTransactionContainsSerumSwap(transactionRoot: ConfirmedTransactionRootResponse): Boolean {
         val instructions = transactionRoot.transaction?.message?.instructions.orEmpty()
-        return getSerumSwapInstructionIndex(instructions) != -1
+        return getSerumSwapInstruction(instructions) != null
     }
 
     fun parse(
@@ -23,12 +23,11 @@ class SerumSwapInstructionParser {
         val parsedTransaction = transactionRoot.transaction
             ?: return parseError("($signature) .transaction is null")
         val instructions = parsedTransaction.message.instructions
-        val swapInstructionIndex = getSerumSwapInstructionIndex(instructions)
 
         val preTokenBalances = transactionRoot.meta.preTokenBalances
 
         // get swapInstruction
-        val swapInstruction = instructions.getOrNull(swapInstructionIndex)
+        val swapInstruction = getSerumSwapInstruction(instructions)
             ?: return parseError("($signature) swapInstruction is null")
 
         // get all mints
@@ -118,8 +117,8 @@ class SerumSwapInstructionParser {
     }
 
     // Serum swap
-    private fun getSerumSwapInstructionIndex(instructions: List<InstructionResponse>): Int {
-        return instructions.indexOfLast { it.programId == SerumSwapProgram.serumSwapPID.toBase58() }
+    private fun getSerumSwapInstruction(instructions: List<InstructionResponse>): InstructionResponse? {
+        return instructions.lastOrNull { it.programId == SerumSwapProgram.serumSwapPID.toBase58() }
     }
 
     private fun isMintUsdx(mintValue: String?): Boolean {

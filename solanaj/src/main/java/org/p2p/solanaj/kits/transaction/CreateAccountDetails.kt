@@ -6,9 +6,5 @@ class CreateAccountDetails(
     blockTime: Long,
     val fee: Long
 ) : TransactionDetails(signature, blockTime, slot) {
-
-    override val info: Any
-        get() = this
-
     override val type = TransactionDetailsType.CREATE_ACCOUNT
 }

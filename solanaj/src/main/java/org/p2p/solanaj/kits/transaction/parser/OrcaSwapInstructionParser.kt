@@ -6,7 +6,8 @@ import org.p2p.solanaj.kits.transaction.network.meta.InnerInstructionDetailsResp
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import java.lang.Exception
 
-class OrcaSwapInstructionParser {
+private const val ZERO_AMOUNT = "0"
+internal class OrcaSwapInstructionParser {
 
     private class ParsedInstructionDetails(
         val rootInstruction: InstructionResponse,
@@ -20,7 +21,7 @@ class OrcaSwapInstructionParser {
         "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8", // main deprecated
     )
 
-    class OrcaSwapTransactionParseError(message: String) : Exception(message)
+    internal class OrcaSwapTransactionParseError(message: String) : Exception(message)
 
     fun isTransactionContainsOrcaSwap(transactionRoot: ConfirmedTransactionRootResponse): Boolean {
         val instructions = transactionRoot.transaction?.message?.instructions
@@ -108,15 +109,18 @@ class OrcaSwapInstructionParser {
         val postTokenBalances = transactionRoot.meta.postTokenBalances
             ?: return parseResultFailure("($signature) meta.postTokenBalances is null")
 
+        val sourceTokenBalance = postTokenBalances.firstOrNull()
+        val destinationTokenBalance = postTokenBalances.lastOrNull()
+
         val approveInstruction = transactionRoot.transaction
             ?.message
             ?.instructions
             ?.find { it.parsed?.type == "approve" }
             ?: return parseResultFailure("($signature) transaction.message.instructions doesn't contain 'approve' type")
 
-        val sourceMint = postTokenBalances.firstOrNull()?.mint
+        val sourceMint = sourceTokenBalance?.mint
             ?: return parseResultFailure("($signature) postTokenBalances[0].mint aka source is null")
-        val destinationMint = postTokenBalances.lastOrNull()?.mint
+        val destinationMint = destinationTokenBalance?.mint
             ?: return parseResultFailure("($signature) postTokenBalances[-1].mint aka destination is null")
 
         val source = approveInstruction.parsed?.info?.source
@@ -124,9 +128,13 @@ class OrcaSwapInstructionParser {
             ?.info
             ?.owner.takeIf { destinationMint == "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ" }
 
-        val sourceAmountAsString = approveInstruction.parsed?.info?.amount
-        val sourceAmount = sourceAmountAsString ?: postTokenBalances.firstOrNull()?.uiTokenAmountDetails?.amount ?: "0"
-        val destinationAmount = postTokenBalances.lastOrNull()?.uiTokenAmountDetails?.amount ?: "0"
+        val sourceAmount =
+            approveInstruction.parsed?.info?.amount
+                ?: sourceTokenBalance.uiTokenAmountDetails?.amount
+                ?: ZERO_AMOUNT
+        val destinationAmount =
+            destinationTokenBalance.uiTokenAmountDetails?.amount
+                ?: ZERO_AMOUNT
 
         return Result.success(
             SwapDetails(

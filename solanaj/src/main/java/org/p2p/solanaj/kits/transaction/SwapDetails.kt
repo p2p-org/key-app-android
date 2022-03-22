@@ -15,5 +15,4 @@ class SwapDetails(
     val alternateDestination: String?,
 ) : TransactionDetails(signature, blockTime, slot) {
     override val type: TransactionDetailsType = TransactionDetailsType.SWAP
-    override val info: Any = this
 }

@@ -4,7 +4,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
-import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
+import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
@@ -45,7 +45,7 @@ interface RpcRepository {
     /**
      * The history is being fetched from main-net despite the selected network
      * */
-    suspend fun getConfirmedTransactions(signatures: List<String>): List<ConfirmedTransactionRootResponse>
+    suspend fun getConfirmedTransactions(signatures: List<String>): List<TransactionDetails>
     suspend fun getConfirmedSignaturesForAddress(
         userAccountAddress: PublicKey,
         before: String?,

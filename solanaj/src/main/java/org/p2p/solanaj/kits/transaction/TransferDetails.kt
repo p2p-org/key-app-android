@@ -1,5 +1,7 @@
 package org.p2p.solanaj.kits.transaction
 
+private const val SOL_DECIMALS = 9
+
 class TransferDetails(
     signature: String,
     blockTime: Long,
@@ -14,15 +16,11 @@ class TransferDetails(
     private val _decimals: Int
 ) : TransactionDetails(signature, blockTime, slot) {
 
+    // if there is no decimals, then putting SOL decimals instead
     val decimals: Int
-        get() {
-            // if there is no decimals, then putting SOL decimals instead
-            return if (_decimals == 0) 9 else _decimals
-        }
+        get() = if (_decimals == 0) SOL_DECIMALS else _decimals
 
     val isSimpleTransfer: Boolean = typeStr == "transfer"
 
     override val type: TransactionDetailsType = TransactionDetailsType.TRANSFER
-
-    override val info: Any = this
 }

@@ -1,4 +1,4 @@
-package org.p2p.solanaj.kits.transaction.parser
+package org.p2p.solanaj.kits.transaction.mapper
 
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
@@ -9,18 +9,18 @@ import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionInfoDetailsResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
+import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
+import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
 import org.p2p.solanaj.programs.SystemProgram.SPL_TOKEN_PROGRAM_ID
-import java.math.BigInteger
 
-// todo: Parser should be refactored and optimized
 // Get some parsing info from here
 // https://github.com/p2p-org/solana-swift/blob/main/Sources/SolanaSwift/Helpers/TransactionParser.swift#L74-L86
-class ConfirmedTransactionRootParser(
+internal class ConfirmedTransactionRootMapper(
     private val orcaSwapInstructionParser: OrcaSwapInstructionParser,
     private val serumSwapInstructionParser: SerumSwapInstructionParser
 ) {
 
-    fun parse(
+    fun mapToDomain(
         transactionRoot: ConfirmedTransactionRootResponse,
         onErrorLogger: (Throwable) -> Unit
     ): List<TransactionDetails> {
@@ -51,8 +51,7 @@ class ConfirmedTransactionRootParser(
         transactionRoot: ConfirmedTransactionRootResponse,
         signature: String,
     ): List<TransactionDetails> {
-        return transactionRoot.transaction
-            ?.message
+        return transactionRoot.transaction?.message
             ?.instructions
             ?.mapNotNull { parseInstructionByType(signature, transactionRoot, it) }
             ?.toMutableList()
@@ -163,7 +162,7 @@ class ConfirmedTransactionRootParser(
             decimals = info.tokenAmount?.decimals?.toInt() ?: 0
         } else {
             mint = null
-            amount = info.lamports?.let { BigInteger.valueOf(it.toLong()).toString() } ?: info.amount
+            amount = info.lamports?.toLong()?.toBigInteger()?.toString() ?: info.amount
             decimals = 0
         }
         return TransferDetails(
@@ -187,14 +186,15 @@ class ConfirmedTransactionRootParser(
         parsedInfo: InstructionInfoDetailsResponse
     ): BurnOrMintDetails {
         val info = parsedInfo.info
+
         return BurnOrMintDetails(
-            signature,
-            transactionRoot.blockTime,
-            transactionRoot.slot,
-            transactionRoot.meta.fee,
-            info.account,
-            info.authority,
-            info.tokenAmount?.uiAmountString,
+            signature = signature,
+            blockTime = transactionRoot.blockTime,
+            slot = transactionRoot.slot,
+            fee = transactionRoot.meta.fee,
+            account = info.account,
+            authority = info.authority,
+            uiAmount = info.tokenAmount?.uiAmountString,
             _decimals = info.tokenAmount?.decimals?.toInt() ?: 0
         )
     }

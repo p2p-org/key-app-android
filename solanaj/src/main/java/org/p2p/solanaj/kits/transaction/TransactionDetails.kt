@@ -1,20 +1,18 @@
 package org.p2p.solanaj.kits.transaction
 
-abstract class TransactionDetails(
+import java.util.concurrent.TimeUnit
+
+sealed class TransactionDetails(
     val signature: String,
-    private val blockTime: Long,
+    val blockTimeSeconds: Long,
     val slot: Int
 ) {
-    abstract val type: TransactionDetailsType?
-    abstract val info: Any?
-    open val data: String?
-        get() = null
+    abstract val type: TransactionDetailsType
 
-    fun getBlockTimeInMillis(): Long {
-        /*
-         * Since blocktime is time of when the transaction was processed in SECONDS
-         * we are converting it into milliseconds
-         * */
-        return blockTime * 1000
-    }
+    /*
+    * Since blocktime is time of when the transaction was processed in SECONDS
+    * we are converting it into milliseconds
+    * */
+    val blockTimeMillis: Long
+        get() = TimeUnit.SECONDS.toMillis(blockTimeSeconds)
 }

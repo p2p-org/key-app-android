@@ -6,5 +6,4 @@ class UnknownDetails(
     slot: Int,
 ) : TransactionDetails(signature, blockTime, slot) {
     override val type: TransactionDetailsType = TransactionDetailsType.UNKNOWN
-    override val info: Any = this
 }

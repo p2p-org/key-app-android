@@ -3,17 +3,15 @@ package org.p2p.wallet.history
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.transaction.parser.ConfirmedTransactionRootParser
-import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
-import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.repository.HistoryTransactionMapper
-import org.p2p.wallet.history.repository.TransactionDetailsMapper
-import org.p2p.wallet.history.repository.TransactionsHistoryRepository
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.HistoryRepository
+import org.p2p.wallet.history.repository.HistoryTransactionConverter
+import org.p2p.wallet.history.repository.HistoryTransactionMapper
+import org.p2p.wallet.history.repository.TransactionDetailsEntityMapper
+import org.p2p.wallet.history.repository.TransactionsHistoryRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
 import org.p2p.wallet.history.ui.history.HistoryContract
@@ -56,9 +54,13 @@ object HistoryModule : InjectionModule {
     private fun Module.dataLayer() {
         factory { HistoryRemoteRepository(compareApi = get()) } bind HistoryRepository::class
 
-        single { ConfirmedTransactionRootParser(OrcaSwapInstructionParser(), SerumSwapInstructionParser()) }
-        factory { TransactionDetailsMapper(confirmedTransactionParser = get(), gson = get()) }
-        factory { HistoryTransactionMapper(userLocalRepository = get()) }
+        factory { TransactionDetailsEntityMapper() }
+        factory {
+            HistoryTransactionMapper(
+                userLocalRepository = get(),
+                historyTransactionConverter = HistoryTransactionConverter()
+            )
+        }
         single {
             TransactionsHistoryRepository(
                 rpcRepository = get(),

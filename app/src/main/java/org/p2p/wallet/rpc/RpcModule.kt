@@ -1,5 +1,6 @@
 package org.p2p.wallet.rpc
 
+import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.solanaj.rpc.Environment
@@ -17,7 +18,7 @@ import org.p2p.wallet.rpc.repository.RpcRepository
 
 object RpcModule : InjectionModule {
 
-    override fun create() = module {
+    override fun create(): Module = module {
         single {
             val serverErrorInterceptor = ServerErrorInterceptor(get())
             val serum = getRetrofit(Environment.SOLANA.endpoint, interceptor = serverErrorInterceptor)
@@ -39,7 +40,14 @@ object RpcModule : InjectionModule {
             val testnet = getRetrofit(Environment.DEVNET.endpoint, interceptor = serverErrorInterceptor)
             val testnetRpcApi = testnet.create(RpcApi::class.java)
 
-            RpcRemoteRepository(serumRpcApi, mainnetRpcApi, rpcpoolRpcApi, testnetRpcApi, get())
+            RpcRemoteRepository(
+                serumApi = serumRpcApi,
+                mainnetApi = mainnetRpcApi,
+                rpcpoolRpcApi = rpcpoolRpcApi,
+                testnetApi = testnetRpcApi,
+                transactionDetailsMapper = get(),
+                environmentManager = get()
+            )
         } bind RpcRepository::class
 
         factory { TokenInteractor(get(), get(), get()) }

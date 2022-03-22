@@ -8,5 +8,4 @@ class CloseAccountDetails(
     val mint: String?
 ) : TransactionDetails(signature, blockTime, slot) {
     override val type: TransactionDetailsType = TransactionDetailsType.CLOSE_ACCOUNT
-    override val info: Any = this
 }
