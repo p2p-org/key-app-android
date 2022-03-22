@@ -43,8 +43,6 @@ import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
@@ -117,17 +115,6 @@ class SendFragment :
                 result.containsKey(EXTRA_NETWORK) -> {
                     val ordinal = result.getInt(EXTRA_NETWORK, 0)
                     presenter.setNetworkDestination(NetworkType.values()[ordinal])
-                }
-                result.containsKey(EXTRA_RESULT_KEY_PRIMARY) -> {
-                    val transaction = result.getParcelable<HistoryTransaction>(EXTRA_RESULT_KEY_PRIMARY)
-                    if (transaction != null) {
-                        val state = TransactionDetailsLaunchState.History(transaction)
-                        popAndReplaceFragment(TransactionDetailsFragment.create(state))
-                    }
-                }
-                result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
-                    val sendFragment = create()
-                    popAndReplaceFragment(sendFragment)
                 }
                 result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
                     popBackStack()

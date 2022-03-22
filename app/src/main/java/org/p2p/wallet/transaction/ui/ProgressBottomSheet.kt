@@ -31,8 +31,6 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
-const val EXTRA_RESULT_KEY_PRIMARY = "EXTRA_RESULT_KEY_PRIMARY"
-const val EXTRA_RESULT_KEY_SECONDARY = "EXTRA_RESULT_KEY_SECONDARY"
 const val EXTRA_RESULT_KEY_DISMISS = "EXTRA_RESULT_KEY_DISMISS"
 
 class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {

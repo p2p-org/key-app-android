@@ -33,8 +33,6 @@ import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
@@ -128,17 +126,6 @@ class OrcaSwapFragment :
                 result.containsKey(EXTRA_SETTINGS) -> {
                     val settingsResult = result.getParcelable<OrcaSettingsResult>(EXTRA_SETTINGS)
                     if (settingsResult != null) presenter.setNewSettings(settingsResult)
-                }
-                result.containsKey(EXTRA_RESULT_KEY_PRIMARY) -> {
-                    val transaction = result.getParcelable<HistoryTransaction>(EXTRA_RESULT_KEY_PRIMARY)
-                    if (transaction != null) {
-                        val state = TransactionDetailsLaunchState.History(transaction)
-                        popAndReplaceFragment(TransactionDetailsFragment.create(state))
-                    }
-                }
-                result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
-                    val swapFragment = create()
-                    popAndReplaceFragment(swapFragment)
                 }
                 result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
                     popBackStack()
