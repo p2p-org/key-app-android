@@ -30,7 +30,7 @@ abstract class TransactionDao<TRANSACTION : TransactionEntity>(private val table
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insertTransactions(entities: List<TRANSACTION>)
+    abstract fun insertTransactions(entities: List<TRANSACTION>): List<Long>
 
     @RawQuery
     protected abstract fun deleteAll(query: SupportSQLiteQuery): Int

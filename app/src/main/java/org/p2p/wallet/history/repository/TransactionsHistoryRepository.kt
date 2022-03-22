@@ -11,6 +11,7 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.RpcRepository
 import org.p2p.wallet.utils.ifSizeNot
+import timber.log.Timber
 
 class TransactionsHistoryRepository(
     private val rpcRepository: RpcRepository,
@@ -22,25 +23,49 @@ class TransactionsHistoryRepository(
 ) {
     suspend fun getTransactionsHistory(
         tokenPublicKey: String,
-        signatures: List<String>
+        signatures: List<String>,
+        forceRefresh: Boolean
     ): List<HistoryTransaction> {
         return withContext(dispatchers.io) {
-            getTransactions(signatures, tokenPublicKey)
+            getTransactions(signatures, tokenPublicKey, forceRefresh)
         }
     }
 
-    private fun getTransactions(signatures: List<String>, tokenPublicKey: String): List<HistoryTransaction> {
-        return getTransactionsFromDatabase(signatures)
-            .ifSizeNot(signatures.size) { getTransactionsFromNetwork(signatures) }
-            .let { transactions ->
-                historyTransactionMapper.mapFromTransactionDetails(
-                    transactions = transactions,
-                    accountsInfo = getAccountsInfo(transactions),
-                    userPublicKey = tokenKeyProvider.publicKey,
-                    tokenPublicKey = tokenPublicKey
-                )
+    private fun getTransactions(
+        confirmedSignatures: List<String>,
+        tokenPublicKey: String,
+        forceRefresh: Boolean,
+    ): List<HistoryTransaction> {
+        if (forceRefresh) {
+            return getTransactionsFromNetwork(confirmedSignatures)
+                .also(::saveTransactionsToDatabase)
+                .mapToHistoryTransactions(tokenPublicKey)
+        }
+
+        return getTransactionsFromDatabase(confirmedSignatures)
+            .also {
+                if (it.isNotEmpty()) {
+                    Timber.i("History Transactions are found in cache for token: $tokenPublicKey")
+                }
             }
-            .sortedByDescending { it.date.toInstant().toEpochMilli() }
+            .ifSizeNot(confirmedSignatures.size) {
+                Timber.i(
+                    "History Transactions are not cached fully for token $tokenPublicKey: " +
+                        "expected=${confirmedSignatures.size} actual=${0}"
+                )
+                getTransactionsFromNetwork(confirmedSignatures)
+            }
+            .also(::saveTransactionsToDatabase)
+            .mapToHistoryTransactions(tokenPublicKey)
+    }
+
+    private fun List<TransactionDetails>.mapToHistoryTransactions(tokenPublicKey: String): List<HistoryTransaction> {
+        return historyTransactionMapper.mapTransactionDetailsToHistoryTransactions(
+            transactions = this,
+            accountsInfo = getAccountsInfo(this),
+            userPublicKey = tokenKeyProvider.publicKey,
+            tokenPublicKey = tokenPublicKey
+        )
     }
 
     private fun getTransactionsFromDatabase(signatures: List<String>): List<TransactionDetails> {
@@ -49,14 +74,14 @@ class TransactionsHistoryRepository(
     }
 
     private fun getTransactionsFromNetwork(signatures: List<String>): List<TransactionDetails> {
-        val confirmedTransactions = runBlocking { rpcRepository.getConfirmedTransactions(signatures) }
+        return runBlocking { rpcRepository.getConfirmedTransactions(signatures) }
+    }
 
-        val transactionsToSave = confirmedTransactions
+    private fun saveTransactionsToDatabase(transactionsFromRemote: List<TransactionDetails>) {
+        val transactionsToSave = transactionsFromRemote
             .let { transactionDetailsMapper.mapDomainToEntity(it) }
 
         transactionDaoDelegate.insertTransactions(transactionsToSave)
-
-        return confirmedTransactions
     }
 
     private fun getAccountsInfo(
@@ -64,6 +89,7 @@ class TransactionsHistoryRepository(
     ): List<Pair<String, AccountInfo>> {
         // Making one request for all accounts info and caching values locally
         // to avoid multiple requests when constructing transaction
+
         val accountsInfoIds = fetchedTransactions
             .filterIsInstance<SwapDetails>()
             .flatMap { swapTransaction ->

@@ -14,12 +14,18 @@ class HistoryInteractor(
     suspend fun getConfirmedTransaction(tokenPublicKey: String, transactionId: String): HistoryTransaction? {
         return historyTransactionsRepository.getTransactionsHistory(
             tokenPublicKey = tokenPublicKey,
-            signatures = listOf(transactionId)
+            signatures = listOf(transactionId),
+            forceRefresh = false
         )
             .firstOrNull()
     }
 
-    suspend fun getHistory(tokenPublicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
+    suspend fun getHistory(
+        tokenPublicKey: String,
+        before: String?,
+        limit: Int,
+        forceRefresh: Boolean
+    ): List<HistoryTransaction> {
         val signatures = rpcRepository.getConfirmedSignaturesForAddress(
             userAccountAddress = tokenPublicKey.toPublicKey(),
             before = before,
@@ -27,6 +33,6 @@ class HistoryInteractor(
         )
             .map(SignatureInformationResponse::signature)
 
-        return historyTransactionsRepository.getTransactionsHistory(tokenPublicKey, signatures)
+        return historyTransactionsRepository.getTransactionsHistory(tokenPublicKey, signatures, forceRefresh)
     }
 }

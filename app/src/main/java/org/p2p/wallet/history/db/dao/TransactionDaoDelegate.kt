@@ -8,6 +8,7 @@ import org.p2p.wallet.history.db.entities.TransactionEntity
 import org.p2p.wallet.history.db.entities.TransferTransactionEntity
 import org.p2p.wallet.history.db.entities.UnknownTransactionEntity
 import org.p2p.wallet.utils.findInstance
+import timber.log.Timber
 
 class TransactionDaoDelegate(
     private val transactionDao: List<TransactionDao<*>>
@@ -55,7 +56,9 @@ class TransactionDaoDelegate(
                 transactionDao.findInstance<UnknownTransactionsDao>()
                     ?.insertTransactions(entitiesList.filterIsInstance<UnknownTransactionEntity>())
             }
+            else -> null
         }
+            ?.also { Timber.d("${entityClass.simpleName} inserted: size=${it.size}") }
     }
 
     fun deleteAll() {

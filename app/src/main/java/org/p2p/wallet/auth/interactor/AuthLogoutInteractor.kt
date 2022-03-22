@@ -28,16 +28,18 @@ class AuthLogoutInteractor(
     private val appScope: AppScope,
 ) {
     suspend fun onUserLogout() {
-        updatesManager.stop()
-        sharedPreferences.edit { clear() }
-        tokenKeyProvider.clear()
-        secureStorage.clear()
-        transactionManager.stop()
-        mainLocalRepository.clear()
-        renBtcInteractor.clearSession()
-        transactionsHistoryRepository.deleteHistory()
-        IntercomService.logout()
-        RenVMService.stopService(context)
+        appScope.launch {
+            updatesManager.stop()
+            sharedPreferences.edit { clear() }
+            tokenKeyProvider.clear()
+            secureStorage.clear()
+            transactionManager.stop()
+            mainLocalRepository.clear()
+            renBtcInteractor.clearSession()
+            transactionsHistoryRepository.deleteHistory()
+            IntercomService.logout()
+            RenVMService.stopService(context)
+        }
     }
 
     fun clearAppData() {

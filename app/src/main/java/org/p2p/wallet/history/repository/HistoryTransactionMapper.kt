@@ -18,7 +18,7 @@ class HistoryTransactionMapper(
     private val userLocalRepository: UserLocalRepository,
     private val historyTransactionConverter: HistoryTransactionConverter
 ) {
-    fun mapFromTransactionDetails(
+    fun mapTransactionDetailsToHistoryTransactions(
         transactions: List<TransactionDetails>,
         accountsInfo: List<Pair<String, AccountInfo>>,
         userPublicKey: String,
@@ -35,6 +35,7 @@ class HistoryTransactionMapper(
                 else -> throw IllegalStateException("Unknown transaction details $transaction")
             }
         }
+            .sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
     private fun parseOrcaSwapDetails(

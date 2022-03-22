@@ -10,8 +10,8 @@ inline fun <reified R> List<*>.findInstance(): R? {
         ?.let { it as R }
 }
 
-inline fun <E> List<E>.ifSizeNot(expectedSize: Int, defaultValue: () -> List<E>): List<E> {
-    return if (this.size != expectedSize) defaultValue.invoke() else this
+inline fun <E> List<E>.ifSizeNot(expectedSize: Int, defaultValue: (originalList: List<E>) -> List<E>): List<E> {
+    return if (this.size != expectedSize) defaultValue.invoke(this) else this
 }
 
 inline fun <reified Type> Gson.fromJsonReified(json: String): Type = fromJson(json, Type::class.java)
