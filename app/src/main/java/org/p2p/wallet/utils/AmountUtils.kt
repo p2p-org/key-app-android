@@ -6,7 +6,11 @@ import java.util.Locale
 
 object AmountUtils {
 
-    private val formatter = NumberFormat.getInstance(Locale.US)
+    private const val MAX_FRACTION_DIGITS = 9
+
+    private val formatter = NumberFormat.getInstance(Locale.US).apply {
+        maximumFractionDigits = MAX_FRACTION_DIGITS
+    }
 
     /**
      * Adds thousands separator:
