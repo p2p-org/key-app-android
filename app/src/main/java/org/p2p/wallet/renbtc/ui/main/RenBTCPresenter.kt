@@ -97,7 +97,7 @@ class RenBTCPresenter(
 
     override fun onBrowserClicked(publicKey: String) {
         receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
-        val url = context.getString(R.string.solanaWalletExplorer, publicKey)
+        val url = context.getString(R.string.bitcoinExplorer, publicKey)
         view?.showBrowser(url)
     }
 
