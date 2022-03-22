@@ -68,12 +68,16 @@ class TransactionDetailsNetworkMapper {
 
             val unknownTransactionTypeLogData =
                 "(parsedTransactions=$parsedTransactions;\nconfirmedTransaction=${confirmedTransaction.transaction}"
-            SolanjLogger.w("TransactionDetailsNetworkMapper " +
-                "unknown transactions type, skipping $unknownTransactionTypeLogData")
+            SolanjLogger.w(
+                "TransactionDetailsNetworkMapper " +
+                    "unknown transactions type, skipping $unknownTransactionTypeLogData"
+            )
         }
 
-        SolanjLogger.d("TransactionDetailsNetworkMapper: " +
-            "Parsing finished: ${resultTransactions.size}; total=${confirmedTransactionRoots.size}")
+        SolanjLogger.d(
+            "TransactionDetailsNetworkMapper: " +
+                "Parsing finished: ${resultTransactions.size}; total=${confirmedTransactionRoots.size}"
+        )
         return resultTransactions.toList()
     }
 }
