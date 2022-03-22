@@ -42,6 +42,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
+        app:layout_constraintEnd_toStartOf="@id/usdValueTextView"
         app:layout_constraintStart_toEndOf="@id/tokenImageView"
         app:layout_constraintTop_toTopOf="@id/tokenImageView"
         tools:text="SOL" />
@@ -62,7 +63,7 @@
 
     <TextView
         android:id="@+id/totalTextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:singleLine="true"
