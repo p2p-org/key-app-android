@@ -13,6 +13,7 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import timber.log.Timber
 
@@ -40,7 +41,9 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         return try {
             api.getAccountsInfo(requestsBatch)
                 .mapIndexed { index, response ->
-                    requestsBatch[index].params!!.first() as String to response.result
+                    val key = (requestsBatch[index].params?.firstOrNull() as String)
+                    val value = response.result
+                    key to value
                 }
         } catch (e: EmptyDataException) {
             Timber.w("`getAccountsInfo` responded with empty data, returning null")
@@ -69,7 +72,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         programIdParam["programId"] = programId.toBase58()
 
         val encoding = HashMap<String, String>()
-        encoding["encoding"] = "jsonParsed"
+        encoding[RpcConstants.REQUEST_PARAMETER_KEY] = RpcConstants.REQUEST_PARAMETER_VALUE
 
         val params = listOf(
             owner,
@@ -85,7 +88,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         val keys = publicKeys.map { it.toBase58() }
 
         val encoding = HashMap<String, String>()
-        encoding["encoding"] = "jsonParsed"
+        encoding[RpcConstants.REQUEST_PARAMETER_KEY] = RpcConstants.REQUEST_PARAMETER_VALUE
 
         val params = listOf(
             keys,

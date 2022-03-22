@@ -16,7 +16,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
-import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
@@ -32,7 +32,7 @@ class SendInteractor(
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val transactionInteractor: TransactionInteractor,
-    private val amountInteractor: RpcAmountInteractor,
+    private val amountInteractor: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -79,7 +79,7 @@ class SendInteractor(
                 if (receiver.isNullOrEmpty()) return null
 
                 val lamportsPerSignature: BigInteger = amountInteractor.getLamportsPerSignature(null)
-                val minRentExemption: BigInteger = amountInteractor.getMinBalanceForRentExemption().toBigInteger()
+                val minRentExemption: BigInteger = amountInteractor.getMinBalanceForRentExemption()
 
                 var transactionFee: BigInteger = BigInteger.ZERO
 
@@ -273,7 +273,7 @@ class SendInteractor(
         val feePayer = feePayerPublicKey ?: account.publicKey
 
         val minRentExemption =
-            minBalanceForRentExemption ?: amountInteractor.getMinBalanceForRentExemption().toBigInteger()
+            minBalanceForRentExemption ?: amountInteractor.getMinBalanceForRentExemption()
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress.toPublicKey(),

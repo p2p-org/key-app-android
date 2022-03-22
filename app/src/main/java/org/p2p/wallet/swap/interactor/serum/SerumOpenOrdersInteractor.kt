@@ -13,11 +13,11 @@ import org.p2p.solanaj.serumswap.OpenOrders
 import org.p2p.solanaj.serumswap.OpenOrdersLayoutParser
 import org.p2p.solanaj.serumswap.Version
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
-import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import java.math.BigInteger
 
 class SerumOpenOrdersInteractor(
-    private val rpcAmountInteractor: RpcAmountInteractor,
+    private val rpcAmountInteractor: RpcAmountRepository,
     private val rpcAccountRepository: RpcAccountRepository
 ) {
 
@@ -33,7 +33,7 @@ class SerumOpenOrdersInteractor(
             minRentExemption.toLong()
         } else {
             val span = OpenOrders.getLayoutSpan(programId.toBase58())
-            rpcAmountInteractor.getMinBalanceForRentExemption(span.toInt())
+            rpcAmountInteractor.getMinBalanceForRentExemption(span.toInt()).toLong()
         }
 
         val order = Account()
@@ -89,7 +89,7 @@ class SerumOpenOrdersInteractor(
         )
     }
 
-    suspend fun getMinimumBalanceForRentExemption(programId: PublicKey): Long {
+    suspend fun getMinimumBalanceForRentExemption(programId: PublicKey): BigInteger {
         val span = OpenOrders.getLayoutSpan(programId.toBase58())
         return rpcAmountInteractor.getMinBalanceForRentExemption(span.toInt())
     }

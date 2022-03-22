@@ -6,6 +6,7 @@ import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.utils.emptyString
 
@@ -76,16 +77,14 @@ class RpcHistoryRemoteRepository(
         }
     }
 
-    private val parameterKey = "encoding"
-    private val parameterValue = "jsonParsed"
     override suspend fun getConfirmedTransactions(
         signatures: List<String>
     ): List<ConfirmedTransactionParsed> {
         val requestsBatch = signatures.map {
-            val encoding = mapOf(parameterKey to parameterValue)
+            val encoding = mapOf(RpcConstants.REQUEST_PARAMETER_KEY to RpcConstants.REQUEST_PARAMETER_VALUE)
             val params = listOf(it, encoding)
 
-            RpcRequest("getConfirmedTransaction", params)
+            RpcRequest(RpcConstants.GET_CONFIRMED_TRANSACTIONS, params)
         }
 
         return rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }

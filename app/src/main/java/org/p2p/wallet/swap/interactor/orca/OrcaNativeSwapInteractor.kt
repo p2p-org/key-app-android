@@ -8,7 +8,7 @@ import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.swap.model.OrcaInstructionsData
@@ -31,7 +31,7 @@ class OrcaNativeSwapInteractor(
     private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInstructionsInteractor: OrcaInstructionsInteractor,
     private val transactionStatusInteractor: TransactionStatusInteractor,
-    private val rpcAmountInteractor: RpcAmountInteractor,
+    private val rpcAmountInteractor: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -54,7 +54,7 @@ class OrcaNativeSwapInteractor(
             throw IllegalStateException("Cannot swap these tokens")
         }
 
-        val minRenExemption = rpcAmountInteractor.getMinBalanceForRentExemption().toBigInteger()
+        val minRenExemption = rpcAmountInteractor.getMinBalanceForRentExemption()
 
         return if (bestPoolsPair.size == 1) {
             swapDirect(

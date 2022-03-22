@@ -18,15 +18,20 @@ import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerError
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.rpc.RpcConstants
 import timber.log.Timber
 import java.io.IOException
 
 // todo: Update validation
+private const val GSON_KEY = "method"
+private const val GSON_VALUE = "getConfirmedTransaction"
+
 open class RpcInterceptor(
     private val gson: Gson,
     environmentManager: EnvironmentManager
 ) : Interceptor {
 
+    private val TAG = "RpcInterceptor"
     private var currentEnvironment = environmentManager.loadEnvironment()
 
     init {
@@ -52,11 +57,12 @@ open class RpcInterceptor(
 
         val url = request.url
 
-        val environmentUrl = if (json.getString("method") == "getConfirmedTransaction") {
-            Environment.RPC_POOL
-        } else {
-            currentEnvironment
-        }
+        val environmentUrl =
+            if (json?.getString(RpcConstants.REQUEST_METHOD_KEY) == RpcConstants.GET_CONFIRMED_TRANSACTIONS) {
+                Environment.RPC_POOL
+            } else {
+                currentEnvironment
+            }
 
         val httpUrl = url.newBuilder()
             .host(getBaseUrl(environmentUrl))
@@ -67,19 +73,25 @@ open class RpcInterceptor(
             .build()
     }
 
-    private fun getRequestJson(request: Request): JSONObject {
+    private fun getRequestJson(request: Request): JSONObject? {
         val requestBuffer = Buffer()
 
         request.body?.writeTo(requestBuffer)
 
         val requestBodyString = requestBuffer.readUtf8()
 
-        return if (requestBodyString.startsWith("[")) {
-            val jsonArray = JSONArray(requestBodyString)
-            jsonArray.getJSONObject(0)
-        } else {
-            JSONObject(requestBodyString)
+        val json: JSONObject = try {
+            when (val data = JSONTokener(requestBodyString).nextValue()) {
+                is JSONObject -> data
+                is JSONArray -> data.get(0) as JSONObject
+                else -> throw IllegalStateException("")
+            }
+        } catch (e: Exception) {
+            Timber.tag(TAG).e("Error on parsing json $e")
+            return null
         }
+
+        return json
     }
 
     private fun getBaseUrl(environment: Environment): String {

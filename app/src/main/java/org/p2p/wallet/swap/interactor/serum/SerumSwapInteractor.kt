@@ -693,14 +693,14 @@ class SerumSwapInteractor(
         val from = prepareOpenOrder(
             orders = null,
             market = fromMarket,
-            minRentExemption = BigInteger.valueOf(minRentExemption),
+            minRentExemption = minRentExemption,
             closeAfterward = CLOSE_ENABLED && close == true
         )
 
         val to = prepareOpenOrder(
             orders = null,
             market = toMarket,
-            minRentExemption = BigInteger.valueOf(minRentExemption),
+            minRentExemption =minRentExemption,
             closeAfterward = CLOSE_ENABLED && close == true
         )
 

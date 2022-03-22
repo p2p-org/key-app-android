@@ -17,9 +17,6 @@ import org.p2p.wallet.rpc.repository.amount.RpcAmountRemoteRepository
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.account.RpcAccountRemoteRepository
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
-import org.p2p.wallet.rpc.repository.amount.RpcAmountInMemoryRepository
-import org.p2p.wallet.rpc.repository.amount.RpcAmountInteractor
-import org.p2p.wallet.rpc.repository.amount.RpcAmountLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRemoteRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRemoteRepository
@@ -44,10 +41,6 @@ object RpcModule : InjectionModule {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAmountApi::class.java)
             RpcAmountRemoteRepository(api)
         } bind RpcAmountRepository::class
-
-        single { RpcAmountInMemoryRepository() } bind RpcAmountLocalRepository::class
-
-        factory { RpcAmountInteractor(get(), get()) }
 
         single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBalanceApi::class.java)
