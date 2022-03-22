@@ -44,6 +44,7 @@ import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
@@ -104,6 +105,9 @@ class OrcaSwapFragment :
             }
             swapDetails.setOnPayFeeClickListener {
                 presenter.loadDataForSettings()
+            }
+            swapDetails.setOnTransactionFeeClickListener {
+                presenter.onFeeLimitsClicked()
             }
             swapButton.setOnClickListener { presenter.swapOrConfirm() }
             amountEditText.focusAndShowKeyboard()
@@ -325,6 +329,13 @@ class OrcaSwapFragment :
         } else {
             ProgressBottomSheet.hide(parentFragmentManager)
         }
+    }
+
+    override fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int) {
+        showInfoDialog(
+            message = getString(R.string.main_free_transactions_info, maxTransactionsAvailable, remaining),
+            primaryButtonRes = R.string.common_understood
+        )
     }
 
     private fun setupAmountListener() {

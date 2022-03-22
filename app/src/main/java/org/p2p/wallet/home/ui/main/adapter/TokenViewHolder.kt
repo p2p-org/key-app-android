@@ -47,7 +47,7 @@ class TokenViewHolder(
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName
         valueTextView withTextOrGone token.getFormattedUsdTotal()
-        totalTextView.text = token.getFormattedTotal()
+        totalTextView.text = token.getTotal()
 
         hideImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
         hideImageView.setOnClickListener { listener.onHideClicked(token) }

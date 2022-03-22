@@ -4,6 +4,7 @@ import org.p2p.solanaj.core.FeeAmount
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
@@ -59,6 +60,10 @@ class OrcaSwapInteractor(
         if (newToken.publicKey.equals(feePayerToken)) return
 
         feePayerToken = newToken
+    }
+
+    suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit {
+        return feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
     }
 
     suspend fun initialize() {
