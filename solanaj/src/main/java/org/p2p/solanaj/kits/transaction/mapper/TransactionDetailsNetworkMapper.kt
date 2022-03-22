@@ -12,7 +12,7 @@ import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
 import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
 import org.p2p.solanaj.utils.SolanjLogger
 
-class TransactionDetailsNetworkMapper(private val logger: SolanjLogger) {
+class TransactionDetailsNetworkMapper {
 
     private val confirmedTransactionMapper = ConfirmedTransactionRootMapper(
         orcaSwapInstructionParser = OrcaSwapInstructionParser(),
@@ -27,7 +27,7 @@ class TransactionDetailsNetworkMapper(private val logger: SolanjLogger) {
         confirmedTransactionRoots.forEach { confirmedTransaction ->
             val parsedTransactions = confirmedTransactionMapper.mapToDomain(
                 transactionRoot = confirmedTransaction,
-                onErrorLogger = { logger.w(it) }
+                onErrorLogger = { SolanjLogger.w(it) }
             )
 
             val swapTransaction = parsedTransactions.firstOrNull { it is SwapDetails }
@@ -68,10 +68,12 @@ class TransactionDetailsNetworkMapper(private val logger: SolanjLogger) {
 
             val unknownTransactionTypeLogData =
                 "(parsedTransactions=$parsedTransactions;\nconfirmedTransaction=${confirmedTransaction.transaction}"
-            logger.w("unknown transactions type, skipping $unknownTransactionTypeLogData")
+            SolanjLogger.w("TransactionDetailsNetworkMapper " +
+                "unknown transactions type, skipping $unknownTransactionTypeLogData")
         }
 
-        logger.d("Parsing finished: ${resultTransactions.size}; total=${confirmedTransactionRoots.size}")
+        SolanjLogger.d("TransactionDetailsNetworkMapper: " +
+            "Parsing finished: ${resultTransactions.size}; total=${confirmedTransactionRoots.size}")
         return resultTransactions.toList()
     }
 }

@@ -3,6 +3,7 @@ package org.p2p.wallet.rpc
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.solanaj.kits.transaction.mapper.TransactionDetailsNetworkMapper
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.di.InjectionModule
@@ -45,7 +46,7 @@ object RpcModule : InjectionModule {
                 mainnetApi = mainnetRpcApi,
                 rpcpoolRpcApi = rpcpoolRpcApi,
                 testnetApi = testnetRpcApi,
-                transactionDetailsMapper = get(),
+                transactionDetailsMapper = TransactionDetailsNetworkMapper(),
                 environmentManager = get()
             )
         } bind RpcRepository::class

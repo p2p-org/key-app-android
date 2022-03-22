@@ -38,6 +38,7 @@ import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
 
 class App : Application() {
@@ -54,6 +55,8 @@ class App : Application() {
         AndroidThreeTen.init(this)
         DebugDrawer.init(this)
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
+
+        SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
     }
 
     private fun setupKoin() {
@@ -96,7 +99,6 @@ class App : Application() {
             val trackers = TrackerFactory.create(this@App, BuildConfig.ANALYTICS_ENABLED)
             Analytics(trackers)
         } bind TrackerContract::class
-        single { createSolanjLogger() }
     }
 
     private fun restart() {
@@ -109,19 +111,5 @@ class App : Application() {
 
     private fun setupTimber() {
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
-    }
-
-    private fun createSolanjLogger(): SolanjLogger = object : SolanjLogger {
-        override fun d(throwable: Throwable) = Timber.d(throwable)
-        override fun d(message: String) = Timber.d(message)
-        override fun d(throwable: Throwable, message: String?) = Timber.d(throwable, message)
-
-        override fun w(throwable: Throwable) = Timber.w(throwable)
-        override fun w(message: String) = Timber.w(message)
-        override fun w(throwable: Throwable, message: String?) = Timber.w(throwable, message)
-
-        override fun e(throwable: Throwable) = Timber.e(throwable)
-        override fun e(message: String) = Timber.e(message)
-        override fun e(throwable: Throwable, message: String?) = Timber.e(throwable, message)
     }
 }
