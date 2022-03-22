@@ -18,8 +18,7 @@ class RpcAmountRemoteRepository(
     override suspend fun getLamportsPerSignature(commitment: String?): BigInteger {
         val cachedLamports = lamportsPerSignature
         return if (cachedLamports != null) {
-            Timber
-                .tag(RpcAmountRemoteRepository::class.getFullName())
+            Timber.tag(RpcAmountRemoteRepository::class.getFullName())
                 .d("Getting from cache, lamportsPerSignature: $cachedLamports")
 
             cachedLamports
@@ -37,8 +36,7 @@ class RpcAmountRemoteRepository(
     override suspend fun getMinBalanceForRentExemption(dataLength: Int): BigInteger {
         val cachedBalance = rentExemptionCache[dataLength]
         return if (cachedBalance != null) {
-            Timber
-                .tag(RpcAmountRepository::class.getFullName())
+            Timber.tag(RpcAmountRepository::class.getFullName())
                 .d("Getting from cache: dataLength: $dataLength $cachedBalance")
             cachedBalance
         } else {

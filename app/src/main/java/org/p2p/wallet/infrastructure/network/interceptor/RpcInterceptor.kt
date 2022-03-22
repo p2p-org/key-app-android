@@ -57,8 +57,10 @@ open class RpcInterceptor(
 
         val url = request.url
 
+        val key = RpcConstants.REQUEST_METHOD_KEY
+        val value = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS
         val environmentUrl =
-            if (json?.getString(RpcConstants.REQUEST_METHOD_KEY) == RpcConstants.GET_CONFIRMED_TRANSACTIONS) {
+            if (json?.getString(key) == value) {
                 Environment.RPC_POOL
             } else {
                 currentEnvironment
@@ -84,7 +86,7 @@ open class RpcInterceptor(
             when (val data = JSONTokener(requestBodyString).nextValue()) {
                 is JSONObject -> data
                 is JSONArray -> data.get(0) as JSONObject
-                else -> throw IllegalStateException("")
+                else -> throw IllegalStateException("Unknown type of request body")
             }
         } catch (e: Exception) {
             Timber.tag(TAG).e("Error on parsing json $e")

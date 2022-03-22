@@ -81,10 +81,11 @@ class RpcHistoryRemoteRepository(
         signatures: List<String>
     ): List<ConfirmedTransactionParsed> {
         val requestsBatch = signatures.map {
-            val encoding = mapOf(RpcConstants.REQUEST_PARAMETER_KEY to RpcConstants.REQUEST_PARAMETER_VALUE)
+            val encoding =
+                mapOf(RpcConstants.REQUEST_PARAMETER_KEY_ENCODING to RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED)
             val params = listOf(it, encoding)
 
-            RpcRequest(RpcConstants.GET_CONFIRMED_TRANSACTIONS, params)
+            RpcRequest(RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params)
         }
 
         return rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }

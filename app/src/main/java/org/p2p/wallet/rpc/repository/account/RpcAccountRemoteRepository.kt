@@ -72,7 +72,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         programIdParam["programId"] = programId.toBase58()
 
         val encoding = HashMap<String, String>()
-        encoding[RpcConstants.REQUEST_PARAMETER_KEY] = RpcConstants.REQUEST_PARAMETER_VALUE
+        encoding[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
 
         val params = listOf(
             owner,
@@ -88,7 +88,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         val keys = publicKeys.map { it.toBase58() }
 
         val encoding = HashMap<String, String>()
-        encoding[RpcConstants.REQUEST_PARAMETER_KEY] = RpcConstants.REQUEST_PARAMETER_VALUE
+        encoding[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
 
         val params = listOf(
             keys,
