@@ -34,9 +34,4 @@
         <item name="android:textColor">@color/backgroundButtonPrimary</item>
     </style>
 
-    <style name="SearchView" parent="Widget.AppCompat.Light.SearchView">
-        <item name="android:suggestionRowLayout">@layout/item_search_bar</item>
-        <item name="android:textAppearance">@style/WalletTheme.TextAppearance.Regular20</item>
-    </style>
-
 </resources>

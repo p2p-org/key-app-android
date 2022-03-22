@@ -96,4 +96,3 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token), Search
         searchView.showSoftKeyboard()
     }
 }
-

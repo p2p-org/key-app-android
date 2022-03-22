@@ -12,7 +12,6 @@
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
         <item name="colorPrimary">@color/backgroundButtonPrimary</item>
         <item name="colorPrimaryDark">@color/backgroundPrimary</item>
-        <item name="searchViewStyle">@style/SearchView</item>
         <item name="colorSecondary">@color/backgroundDisabled</item>
         <item name="colorControlHighlight">@color/backgroundDisabled</item>
 
