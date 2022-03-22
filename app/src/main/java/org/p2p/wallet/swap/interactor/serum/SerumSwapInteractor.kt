@@ -700,7 +700,7 @@ class SerumSwapInteractor(
         val to = prepareOpenOrder(
             orders = null,
             market = toMarket,
-            minRentExemption =minRentExemption,
+            minRentExemption = minRentExemption,
             closeAfterward = CLOSE_ENABLED && close == true
         )
 
