@@ -42,6 +42,8 @@
         <attr name="autoMovingSensitivity" format="integer" />
         <attr name="rightDragViewPadding" format="dimension" />
         <attr name="leftDragViewPadding" format="dimension" />
+        <attr name="draggedItemCornerRadius" format="dimension" />
+        <attr name="draggedItemElevation" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="DoubleTextView">
