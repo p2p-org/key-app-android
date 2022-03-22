@@ -11,6 +11,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.AppRestarter
@@ -37,6 +38,7 @@ import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
 
 class App : Application() {
@@ -53,6 +55,8 @@ class App : Application() {
         AndroidThreeTen.init(this)
         DebugDrawer.init(this)
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
+
+        SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
     }
 
     private fun setupKoin() {

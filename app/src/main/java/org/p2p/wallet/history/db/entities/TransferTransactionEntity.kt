@@ -18,10 +18,10 @@ class TransferTransactionEntity(
     override val commonInformation: CommonTransactionInformationEntity,
 
     @ColumnInfo(name = COLUMN_SOURCE)
-    val source: Base58String,
+    val source: Base58String?,
 
     @ColumnInfo(name = COLUMN_DESTINATION)
-    val destination: Base58String,
+    val destination: Base58String?,
 
     @ColumnInfo(name = COLUMN_AUTHORITY)
     val authority: String?,
@@ -30,7 +30,7 @@ class TransferTransactionEntity(
     val mint: String?,
 
     @ColumnInfo(name = COLUMN_AMOUNT)
-    val amount: String,
+    val amount: String?,
 
     @ColumnInfo(name = COLUMN_DECIMALS)
     val decimals: Int,

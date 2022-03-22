@@ -2,14 +2,14 @@ package org.p2p.wallet.rpc.api
 
 import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import org.p2p.solanaj.kits.MultipleAccountsInfo
-import org.p2p.solanaj.kits.transaction.ConfirmedTransactionParsed
+import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.FeesResponse
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RecentBlockhash
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcResultTypes
-import org.p2p.solanaj.model.types.SignatureInformation
+import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.model.types.SimulateTransactionResponse
 import org.p2p.solanaj.model.types.TokenAccountBalance
 import org.p2p.solanaj.model.types.TokenAccounts
@@ -102,13 +102,13 @@ interface RpcApi {
     suspend fun getConfirmedSignaturesForAddress2(
         @Body rpcRequest: RpcRequest,
         @Url url: String = ""
-    ): CommonResponse<List<SignatureInformation>>
+    ): CommonResponse<List<SignatureInformationResponse>>
 
     @POST
     suspend fun getConfirmedTransactions(
         @Body rpcRequest: List<RpcRequest>,
         @Url url: String = ""
-    ): List<CommonResponse<ConfirmedTransactionParsed>>
+    ): List<CommonResponse<ConfirmedTransactionRootResponse>>
 
     @POST
     suspend fun getMinimumBalanceForRentExemption(

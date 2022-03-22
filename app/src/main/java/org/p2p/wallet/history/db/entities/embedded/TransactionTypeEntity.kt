@@ -6,6 +6,7 @@ enum class TransactionTypeEntity(val typeStr: String) {
     UNKNOWN("unknown"),
     SWAP("swap"),
     TRANSFER("transfer"),
+    TRANSFER_CHECKED("transferChecked"),
     REN_BTC_TRANSFER("transfer"),
     CREATE_ACCOUNT("create"),
     CLOSE_ACCOUNT("closeAccount");

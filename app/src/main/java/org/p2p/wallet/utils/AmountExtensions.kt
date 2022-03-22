@@ -13,9 +13,9 @@ private const val SCALE_VALUE_SHORT = 2
 private const val SCALE_VALUE_MEDIUM = 6
 private const val SCALE_VALUE_LONG = 9
 
-fun String.toBigDecimalOrZero(): BigDecimal {
-    val removedZeros = this.replace("(?<=\\d)\\.?0+(?![\\d\\.])", "")
-    return removedZeros.toBigDecimalOrNull() ?: BigDecimal.ZERO
+fun String?.toBigDecimalOrZero(): BigDecimal {
+    val removedZeros = this?.replace("(?<=\\d)\\.?0+(?![\\d\\.])", "")
+    return removedZeros?.toBigDecimalOrNull() ?: BigDecimal.ZERO
 }
 
 fun Int.toPowerValue(): BigDecimal =
