@@ -8,9 +8,6 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
-import org.koin.core.module.Module
-import org.koin.dsl.bind
-import org.koin.dsl.module
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
@@ -38,6 +35,8 @@ import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
 
+private const val CRASH_SERVICE_KEY_TASK_NUMBER = "task_number"
+
 class App : Application() {
 
     private val crashLoggingService: CrashLoggingService by inject()
@@ -49,6 +48,7 @@ class App : Application() {
         setupTimber()
 
         crashLoggingService.isLoggingEnabled = BuildConfig.CRASHLYTICS_ENABLED
+        crashLoggingService.setCustomKey(CRASH_SERVICE_KEY_TASK_NUMBER, BuildConfig.TASK_NUMBER)
 
         AppNotificationManager.createNotificationChannels(this)
         IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
@@ -100,8 +100,11 @@ class App : Application() {
     }
 
     private fun setupTimber() {
-        Timber.plant(
-            if (BuildConfig.DEBUG) Timber.DebugTree() else TimberCrashTree(crashLoggingService)
-        )
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+        // Always plant this tree
+        // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag
+        Timber.plant(TimberCrashTree(crashLoggingService))
     }
 }

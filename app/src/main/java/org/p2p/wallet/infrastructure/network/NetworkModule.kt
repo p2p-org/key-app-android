@@ -83,9 +83,12 @@ object NetworkModule : InjectionModule {
             .apply {
                 if (BuildConfig.DEBUG) {
                     addInterceptor(httpLoggingInterceptor(tag))
-                } else {
+                }
+
+                if (BuildConfig.CRASHLYTICS_ENABLED) {
                     addInterceptor(CrashHttpLoggingInterceptor())
                 }
+
                 if (interceptor != null) {
                     addInterceptor(interceptor)
                 }
