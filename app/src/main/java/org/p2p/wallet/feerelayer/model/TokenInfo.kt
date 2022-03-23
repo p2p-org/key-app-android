@@ -7,6 +7,5 @@ class TokenInfo(
     val mint: String
 ) {
 
-    val isSOL: Boolean
-        get() = WRAPPED_SOL_MINT == mint
+    val isSOL: Boolean = WRAPPED_SOL_MINT == mint
 }
