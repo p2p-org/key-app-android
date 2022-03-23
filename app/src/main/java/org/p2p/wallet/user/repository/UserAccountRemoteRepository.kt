@@ -2,11 +2,11 @@ package org.p2p.wallet.user.repository
 
 import org.koin.ext.getFullName
 import org.p2p.solanaj.model.types.AccountInfo
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import timber.log.Timber
 
 class UserAccountRemoteRepository(
-    private val rpcRepository: RpcRepository
+    private val rpcRepository: RpcAccountRepository
 ) : UserAccountRepository {
 
     private val cache = mutableMapOf<String, AccountInfo>()

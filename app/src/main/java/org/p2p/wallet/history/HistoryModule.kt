@@ -19,7 +19,7 @@ object HistoryModule : InjectionModule {
     override fun create(): Module = module {
 
         factory { HistoryRemoteRepository(get()) } bind HistoryRepository::class
-        factory { HistoryInteractor(get(), get(), get()) }
+        factory { HistoryInteractor(get(), get(), get(), get(), get()) }
         factory { (token: Token.Active) ->
             HistoryPresenter(
                 token,
