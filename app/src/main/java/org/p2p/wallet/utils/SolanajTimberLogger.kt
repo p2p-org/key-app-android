@@ -3,7 +3,7 @@ package org.p2p.wallet.utils
 import org.p2p.solanaj.utils.SolanjLogger
 import timber.log.Timber
 
-private const val SOLANAJ_TAG = "Solanaj module"
+private const val SOLANAJ_TAG = "SOLANAJ_MODULE"
 class SolanajTimberLogger : SolanjLogger.Logger {
 
     override fun d(throwable: Throwable) = Timber.tag(SOLANAJ_TAG).d(throwable)
