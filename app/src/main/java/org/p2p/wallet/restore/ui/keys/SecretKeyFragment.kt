@@ -27,6 +27,7 @@ import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
@@ -124,7 +125,7 @@ class SecretKeyFragment :
     }
 
     private fun clearError() {
-        binding.errorTextView.text = ""
+        binding.errorTextView.text = emptyString()
         binding.messageTextView.isVisible = true
     }
 

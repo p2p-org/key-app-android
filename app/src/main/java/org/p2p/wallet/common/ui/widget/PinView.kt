@@ -11,6 +11,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetPinViewBinding
+import org.p2p.wallet.utils.emptyString
 
 private const val PIN_CODE_LENGTH = 6
 private const val DELAY_MS = 50L
@@ -25,7 +26,7 @@ class PinView @JvmOverloads constructor(
     var onBiometricClicked: (() -> Unit)? = null
     var onResetClicked: (() -> Unit)? = null
 
-    private var pinCode: String = ""
+    private var pinCode: String = emptyString()
 
     private val pinHandler = Handler(Looper.getMainLooper())
 
@@ -94,7 +95,7 @@ class PinView @JvmOverloads constructor(
             progressBar.isVisible = true
 
             messageTextView.isVisible = false
-            messageTextView.text = ""
+            messageTextView.text = emptyString()
         }
     }
 
@@ -109,7 +110,7 @@ class PinView @JvmOverloads constructor(
     }
 
     fun clearPin() {
-        pinCode = ""
+        pinCode = emptyString()
         updateDots()
     }
 

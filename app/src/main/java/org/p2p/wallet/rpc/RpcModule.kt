@@ -1,50 +1,73 @@
 package org.p2p.wallet.rpc
 
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.rpc.api.RpcApi
-import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
-import org.p2p.wallet.infrastructure.network.interceptor.ServerErrorInterceptor
+import org.p2p.wallet.rpc.api.RpcAccountApi
+import org.p2p.wallet.rpc.api.RpcAmountApi
+import org.p2p.wallet.rpc.api.RpcBalanceApi
+import org.p2p.wallet.rpc.api.RpcBlockhashApi
+import org.p2p.wallet.rpc.api.RpcSignatureApi
+import org.p2p.wallet.rpc.api.RpcHistoryApi
+import org.p2p.wallet.rpc.interactor.CloseAccountInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
-import org.p2p.wallet.rpc.repository.RpcAmountRemoteRepository
-import org.p2p.wallet.rpc.repository.RpcAmountRepository
-import org.p2p.wallet.rpc.repository.RpcRemoteRepository
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRemoteRepository
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
+import org.p2p.wallet.rpc.repository.account.RpcAccountRemoteRepository
+import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRemoteRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRemoteRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
+import org.p2p.wallet.rpc.repository.signature.RpcSignatureRemoteRepository
+import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRemoteRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
+import retrofit2.Retrofit
 
 object RpcModule : InjectionModule {
 
+    const val RPC_RETROFIT_QUALIFIER = "RPC_RETROFIT_QUALIFIER"
+
     override fun create() = module {
         single {
-            val serverErrorInterceptor = ServerErrorInterceptor(get())
-            val serum = getRetrofit(Environment.SOLANA.endpoint, interceptor = serverErrorInterceptor)
-            val serumRpcApi = serum.create(RpcApi::class.java)
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAccountApi::class.java)
+            RpcAccountRemoteRepository(api)
+        } bind RpcAccountRepository::class
 
-            val mainnet = getRetrofit(Environment.MAINNET.endpoint, interceptor = serverErrorInterceptor)
-            val mainnetRpcApi = mainnet.create(RpcApi::class.java)
+        single {
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAmountApi::class.java)
+            RpcAmountRemoteRepository(api)
+        } bind RpcAmountRepository::class
 
-            /* This string is in gitignore and it's null when CI/CD runs some actions */
-            val rpcPoolApiKey = BuildConfig.rpcPoolApiKey
-            val baseUrl = if (rpcPoolApiKey.isNotBlank()) {
-                "${Environment.RPC_POOL.endpoint}$rpcPoolApiKey/"
-            } else {
-                Environment.RPC_POOL.endpoint
-            }
-            val rpcpool = getRetrofit(baseUrl, interceptor = serverErrorInterceptor)
-            val rpcpoolRpcApi = rpcpool.create(RpcApi::class.java)
+        single {
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBalanceApi::class.java)
+            RpcBalanceRemoteRepository(api)
+        } bind RpcBalanceRepository::class
 
-            val testnet = getRetrofit(Environment.DEVNET.endpoint, interceptor = serverErrorInterceptor)
-            val testnetRpcApi = testnet.create(RpcApi::class.java)
+        single {
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcBlockhashApi::class.java)
+            RpcBlockhashRemoteRepository(api)
+        } bind RpcBlockhashRepository::class
 
-            RpcRemoteRepository(serumRpcApi, mainnetRpcApi, rpcpoolRpcApi, testnetRpcApi, get())
-        } bind RpcRepository::class
+        single {
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcSignatureApi::class.java)
+            RpcSignatureRemoteRepository(api)
+        } bind RpcSignatureRepository::class
 
-        factory { TokenInteractor(get(), get(), get()) }
-        factory { TransactionInteractor(get(), get(), get()) }
+        single {
+            val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java)
+            RpcHistoryRemoteRepository(api)
+        } bind RpcHistoryRepository::class
 
-        single { RpcAmountRemoteRepository(get()) } bind RpcAmountRepository::class
+        factory {
+            CloseAccountInteractor(get(), get(), get())
+        }
+        factory {
+            TransactionInteractor(get(), get(), get(), get())
+        }
+        factory { TokenInteractor(get(), get(), get(), get()) }
     }
 }

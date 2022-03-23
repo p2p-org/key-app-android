@@ -9,7 +9,8 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT
@@ -23,7 +24,8 @@ class UserRemoteRepository(
     private val solanaApi: SolanaApi,
     private val compareApi: CompareApi,
     private val userLocalRepository: UserLocalRepository,
-    private val rpcRepository: RpcRepository,
+    private val rpcRepository: RpcAccountRepository,
+    private val rpcBalanceRepository: RpcBalanceRepository,
     private val environmentManager: EnvironmentManager
 ) : UserRepository {
 
@@ -92,7 +94,7 @@ class UserRemoteRepository(
         /*
          * Assuming that SOL is our default token, creating it manually
          * */
-        val solBalance = rpcRepository.getBalance(publicKey)
+        val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return@withContext result
         val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
         val token = Token.createSOL(

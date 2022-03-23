@@ -14,14 +14,19 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toPublicKey
 
 class HistoryInteractor(
-    private val rpcRepository: RpcRepository,
+    private val rpcSignatureRepository: RpcSignatureRepository,
+    private val rpcTransactionRepository: RpcHistoryRepository,
+    private val rpcAccountRepository: RpcAccountRepository,
     private val userLocalRepository: UserLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -30,7 +35,7 @@ class HistoryInteractor(
         parseTransactions(tokenPublicKey, listOf(transactionId)).firstOrNull()
 
     suspend fun getHistory(tokenPublicKey: String, before: String?, limit: Int): List<HistoryTransaction> {
-        val signatures = rpcRepository.getConfirmedSignaturesForAddress(
+        val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(
             tokenPublicKey.toPublicKey(), before, limit
         ).map { it.signature }
 
@@ -39,7 +44,7 @@ class HistoryInteractor(
 
     private suspend fun parseTransactions(tokenPublicKey: String, signatures: List<String>): List<HistoryTransaction> {
         val transactions = mutableListOf<TransactionDetails>()
-        rpcRepository.getConfirmedTransactions(signatures)
+        rpcTransactionRepository.getConfirmedTransactions(signatures)
             .forEach { response ->
                 val data = TransactionTypeParser.parse(response)
                 val swap = data.firstOrNull { it is SwapDetails }
@@ -98,7 +103,7 @@ class HistoryInteractor(
             .distinct()
 
         val accountsInfo = if (accountsInfoIds.isNotEmpty()) {
-            rpcRepository.getAccountsInfo(accountsInfoIds)
+            rpcAccountRepository.getAccountsInfo(accountsInfoIds)
         } else {
             emptyList()
         }
@@ -207,5 +212,5 @@ class HistoryInteractor(
     }
 
     private fun findSymbol(mint: String): String =
-        if (mint.isNotEmpty()) userLocalRepository.findTokenData(mint)?.symbol.orEmpty() else ""
+        if (mint.isNotEmpty()) userLocalRepository.findTokenData(mint)?.symbol.orEmpty() else emptyString()
 }
