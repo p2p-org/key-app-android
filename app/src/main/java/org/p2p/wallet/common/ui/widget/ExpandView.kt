@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetExpandViewBinding
 import org.p2p.wallet.utils.dip
+import org.p2p.wallet.utils.emptyString
 
 class ExpandView @JvmOverloads constructor(
     context: Context,
@@ -24,7 +25,7 @@ class ExpandView @JvmOverloads constructor(
 ) : LinearLayout(context, attributeSet, defStyleAttr) {
 
     private var isExpanded: Boolean = false
-    private var headerTitle: String = ""
+    private var headerTitle: String = emptyString()
     private var headerVisible: Boolean = true
     private var arrowVisible: Boolean = true
     private var contentPadding: Int = dip(16)
@@ -51,7 +52,7 @@ class ExpandView @JvmOverloads constructor(
 
     private fun initAttrs(attrs: TypedArray) {
         isExpanded = attrs.getBoolean(R.styleable.ExpandView_isExpanded, false)
-        headerTitle = attrs.getString(R.styleable.ExpandView_android_text) ?: ""
+        headerTitle = attrs.getString(R.styleable.ExpandView_android_text) ?: emptyString()
     }
 
     private fun setupHeader() {

@@ -10,7 +10,7 @@ import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
@@ -29,10 +29,10 @@ class OrcaSwapInteractor(
     private val feeRelayerSwapInteractor: FeeRelayerSwapInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val amountInteractor: TransactionAmountInteractor,
     private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
+    private val rpcAmountRepository: RpcAmountRepository,
     private val orcaNativeSwapInteractor: OrcaNativeSwapInteractor,
     private val environmentManager: EnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider
@@ -194,8 +194,8 @@ class OrcaSwapInteractor(
     ): Pair<BigInteger, List<BigInteger>> {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
-        val lamportsPerSignature = amountInteractor.getLamportsPerSignature()
-        val minRentExempt = amountInteractor.getMinBalanceForRentExemption()
+        val lamportsPerSignature = rpcAmountRepository.getLamportsPerSignature()
+        val minRentExempt = rpcAmountRepository.getMinBalanceForRentExemption()
 
         var transactionFees: BigInteger = BigInteger.ZERO
 

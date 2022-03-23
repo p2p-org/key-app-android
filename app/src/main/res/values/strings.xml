@@ -528,4 +528,6 @@
     <string name="seed_info_info">• If lost, no one can restore it\n• Keep it private, even from us</string>
     <string name="seed_info_where_i_can_find">Where I can find one?</string>
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
+    <string name="search_menu">Search</string>
+    <string name="search_for_a_token">Search for a token</string>
 </resources>

@@ -5,6 +5,7 @@ import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.emptyString
 
 private const val PAGE_SIZE = 20
 
@@ -14,7 +15,7 @@ class TokenListPresenter(
     private val analyticsInteractor: AnalyticsInteractor
 ) : BasePresenter<TokenListContract.View>(), TokenListContract.Presenter {
 
-    private var searchText = ""
+    private var searchText = emptyString()
     private var scrollToUp = false
 
     override fun attach(view: TokenListContract.View) {

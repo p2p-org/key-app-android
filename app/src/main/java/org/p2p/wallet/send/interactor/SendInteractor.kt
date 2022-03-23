@@ -15,9 +15,9 @@ import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
@@ -32,8 +32,8 @@ class SendInteractor(
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
-    private val amountInteractor: TransactionAmountInteractor,
     private val transactionInteractor: TransactionInteractor,
+    private val amountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -79,8 +79,8 @@ class SendInteractor(
             NetworkType.SOLANA -> {
                 if (receiver.isNullOrEmpty()) return null
 
-                val lamportsPerSignature: BigInteger = amountInteractor.getLamportsPerSignature()
-                val minRentExemption: BigInteger = amountInteractor.getMinBalanceForRentExemption()
+                val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
+                val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption()
 
                 var transactionFee: BigInteger = BigInteger.ZERO
 
@@ -271,7 +271,8 @@ class SendInteractor(
 
         val feePayer = feePayerPublicKey ?: account.publicKey
 
-        val minRentExemption = minBalanceForRentExemption ?: amountInteractor.getMinBalanceForRentExemption()
+        val minRentExemption =
+            minBalanceForRentExemption ?: amountRepository.getMinBalanceForRentExemption()
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress.toPublicKey(),
