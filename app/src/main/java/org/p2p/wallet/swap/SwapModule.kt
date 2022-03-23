@@ -67,7 +67,7 @@ object SwapModule : InjectionModule {
                 orcaRouteInteractor = get(),
                 orcaInfoInteractor = get(),
                 orcaPoolInteractor = get(),
-                rpcAmountInteractor = get(),
+                rpcAmountRepository = get(),
                 orcaNativeSwapInteractor = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get()
