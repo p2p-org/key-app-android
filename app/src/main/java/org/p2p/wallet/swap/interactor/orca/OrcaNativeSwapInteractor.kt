@@ -31,7 +31,7 @@ class OrcaNativeSwapInteractor(
     private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInstructionsInteractor: OrcaInstructionsInteractor,
     private val transactionStatusInteractor: TransactionStatusInteractor,
-    private val rpcAmountInteractor: RpcAmountRepository,
+    private val rpcAmountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -54,7 +54,7 @@ class OrcaNativeSwapInteractor(
             throw IllegalStateException("Cannot swap these tokens")
         }
 
-        val minRenExemption = rpcAmountInteractor.getMinBalanceForRentExemption()
+        val minRenExemption = rpcAmountRepository.getMinBalanceForRentExemption()
 
         return if (bestPoolsPair.size == 1) {
             swapDirect(

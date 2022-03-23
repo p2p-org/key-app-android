@@ -32,7 +32,7 @@ class OrcaSwapInteractor(
     private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
-    private val rpcAmountInteractor: RpcAmountRepository,
+    private val rpcAmountRepository: RpcAmountRepository,
     private val orcaNativeSwapInteractor: OrcaNativeSwapInteractor,
     private val environmentManager: EnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider
@@ -194,8 +194,8 @@ class OrcaSwapInteractor(
     ): Pair<BigInteger, List<BigInteger>> {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
-        val lamportsPerSignature = rpcAmountInteractor.getLamportsPerSignature()
-        val minRentExempt = rpcAmountInteractor.getMinBalanceForRentExemption()
+        val lamportsPerSignature = rpcAmountRepository.getLamportsPerSignature()
+        val minRentExempt = rpcAmountRepository.getMinBalanceForRentExemption()
 
         var transactionFees: BigInteger = BigInteger.ZERO
 

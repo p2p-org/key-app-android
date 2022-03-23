@@ -18,7 +18,7 @@ import org.p2p.wallet.utils.toPublicKey
 
 class FeeRelayerAccountInteractor(
     private val userAccountRepository: UserAccountRepository,
-    private val amountInteractor: RpcAmountRepository,
+    private val amountRepository: RpcAmountRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
     private val userInteractor: UserInteractor,
     private val tokenKeyProvider: TokenKeyProvider
@@ -33,13 +33,13 @@ class FeeRelayerAccountInteractor(
     suspend fun getRelayInfo(): RelayInfo = withContext(Dispatchers.IO) {
         if (relayInfo == null) {
             // get minimum token account balance
-            val minimumTokenAccountBalance = async { amountInteractor.getMinBalanceForRentExemption() }
+            val minimumTokenAccountBalance = async { amountRepository.getMinBalanceForRentExemption() }
             // get minimum relay account balance
-            val minimumRelayAccountBalance = async { amountInteractor.getMinBalanceForRentExemption(0) }
+            val minimumRelayAccountBalance = async { amountRepository.getMinBalanceForRentExemption(0) }
             // get fee payer address
             val feePayerAddress = async { feeRelayerRepository.getFeePayerPublicKey() }
             // get lamportsPerSignature
-            val lamportsPerSignature = async { amountInteractor.getLamportsPerSignature() }
+            val lamportsPerSignature = async { amountRepository.getLamportsPerSignature() }
 
             relayInfo = RelayInfo(
                 minimumTokenAccountBalance = minimumTokenAccountBalance.await(),
