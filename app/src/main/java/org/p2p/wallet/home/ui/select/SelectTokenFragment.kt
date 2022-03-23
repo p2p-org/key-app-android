@@ -9,9 +9,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.mvp.BaseFragment
+import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSelectTokenBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
@@ -25,9 +26,11 @@ import org.p2p.wallet.utils.withArgs
 private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
-private const val QUERY_MIN_LENGTH = 2
 
-class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token), SearchView.OnQueryTextListener {
+class SelectTokenFragment :
+    BaseMvpFragment<SelectTokenContract.View, SelectTokenContract.Presenter>(R.layout.fragment_select_token),
+    SelectTokenContract.View,
+    SearchView.OnQueryTextListener {
 
     companion object {
         fun create(tokens: List<Token>, requestKey: String, resultKey: String) = SelectTokenFragment()
@@ -38,12 +41,16 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token), Search
             )
     }
 
+    override val presenter: SelectTokenContract.Presenter by inject {
+        parametersOf(tokens)
+    }
+    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val binding: FragmentSelectTokenBinding by viewBinding()
+
     private val tokens: List<Token> by args(EXTRA_ALL_TOKENS)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val buyAnalytics: BuyAnalytics by inject()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
-    private val binding: FragmentSelectTokenBinding by viewBinding()
 
     private val tokenAdapter: SelectTokenAdapter by lazy {
         SelectTokenAdapter {
@@ -60,26 +67,22 @@ class SelectTokenFragment : BaseFragment(R.layout.fragment_select_token), Search
             inflateSearchMenu(toolbar)
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokenRecyclerView.attachAdapter(tokenAdapter)
-            tokenAdapter.setItems(tokens)
 
             val isEmpty = tokens.isEmpty()
             tokenRecyclerView.isVisible = !isEmpty
             emptyTextView.isVisible = isEmpty
+            presenter.load()
         }
+    }
+
+    override fun showTokens(items: List<Token>) {
+        tokenAdapter.setItems(items)
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean = false
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        val searchText = newText.orEmpty()
-        if (searchText.length < QUERY_MIN_LENGTH) {
-            tokenAdapter.setItems(tokens)
-            return true
-        }
-        val filteredItems = tokens.filter {
-            it.tokenName.startsWith(searchText, ignoreCase = true) || it.tokenSymbol == newText
-        }
-        tokenAdapter.setItems(filteredItems)
+    override fun onQueryTextChange(searchText: String): Boolean {
+        presenter.search(searchText)
         return true
     }
 
