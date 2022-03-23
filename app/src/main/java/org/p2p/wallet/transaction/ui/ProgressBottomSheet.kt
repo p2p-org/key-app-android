@@ -84,6 +84,9 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             arrowImageView.setOnClickListener {
                 setResultAndDismiss()
             }
+            doneButton.setOnClickListener {
+                setResultAndDismiss()
+            }
         }
 
         observeState()
@@ -134,10 +137,6 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             transactionImageView.setImageResource(R.drawable.ic_success)
             lineView.isVisible = true
             lineView.setBackgroundColor(getColor(R.color.systemSuccessMain))
-
-            doneButton.setOnClickListener {
-                setResultAndDismiss()
-            }
         }
     }
 
