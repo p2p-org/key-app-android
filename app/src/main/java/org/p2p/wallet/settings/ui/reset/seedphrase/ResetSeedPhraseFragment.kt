@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.os.bundleOf
@@ -84,7 +85,11 @@ class ResetSeedPhraseFragment :
                 keysRecyclerView.isVisible = true
                 phraseAdapter.addSecretKey(SecretKey())
             }
-            messageTextView.text = buildSeedInfoText()
+
+            messageTextView.apply {
+                text = buildSeedInfoText()
+                movementMethod = LinkMovementMethod.getInstance()
+            }
         }
 
         val itemsCount = phraseAdapter.itemCount
@@ -111,7 +116,14 @@ class ResetSeedPhraseFragment :
     }
 
     private fun buildSeedInfoText(): SpannableString {
-        val message = getString(R.string.auth_recover_info)
+        val seedInfo = getString(R.string.settings_what_is_a_security_key)
+
+        val message = StringBuilder().apply {
+            append(getString(R.string.auth_recover_info))
+            append("\n\n")
+            append(seedInfo)
+        }
+
         val span = SpannableString(message)
         val clickableSeedInfo = object : ClickableSpan() {
             override fun onClick(widget: View) {
@@ -123,7 +135,6 @@ class ResetSeedPhraseFragment :
                 ds.isUnderlineText = false
             }
         }
-        val seedInfo = getString(R.string.settings_what_is_a_security_key)
         val termsStart = span.indexOf(seedInfo)
         val termsEnd = span.indexOf(seedInfo) + seedInfo.length
         span.setSpan(clickableSeedInfo, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
