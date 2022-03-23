@@ -15,7 +15,7 @@ data class ErrorContent(
     val message: String,
 
     @SerializedName("data")
-    val data: ErrorData
+    val data: ErrorData?
 )
 
 data class ErrorData(

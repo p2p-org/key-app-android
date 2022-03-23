@@ -11,14 +11,14 @@ import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.utils.toPublicKey
 
 class FeeRelayerAccountInteractor(
     private val userAccountRepository: UserAccountRepository,
-    private val amountInteractor: TransactionAmountInteractor,
+    private val amountInteractor: RpcAmountRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
     private val userInteractor: UserInteractor,
     private val tokenKeyProvider: TokenKeyProvider
@@ -109,7 +109,7 @@ class FeeRelayerAccountInteractor(
     private fun findAddress(owner: PublicKey, key: String): PublicKey =
         PublicKey
             .findProgramAddress(
-                seeds = listOf(owner.toByteArray(), key.toByteArray()),
+                seeds = listOf(owner.asByteArray(), key.toByteArray()),
                 programId = FeeRelayerProgram.getProgramId(isMainnet = true)
             )
             .address
@@ -117,7 +117,7 @@ class FeeRelayerAccountInteractor(
     fun getTransitTokenAccountAddress(owner: PublicKey, mint: PublicKey): PublicKey =
         PublicKey
             .findProgramAddress(
-                seeds = listOf(owner.toByteArray(), mint.toByteArray(), "transit".toByteArray()),
+                seeds = listOf(owner.asByteArray(), mint.asByteArray(), "transit".toByteArray()),
                 programId = FeeRelayerProgram.getProgramId(isMainnet = true)
             )
             .address

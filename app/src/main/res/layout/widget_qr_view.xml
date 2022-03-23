@@ -38,6 +38,7 @@
             tools:src="@tools:sample/avatars" />
 
         <FrameLayout
+            android:id="@+id/watermarkImageViewBackground"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_gravity="center"
@@ -50,7 +51,9 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_sol"
                 app:cornerRadius="36dp" />
+
         </FrameLayout>
+
     </FrameLayout>
 
     <ProgressBar

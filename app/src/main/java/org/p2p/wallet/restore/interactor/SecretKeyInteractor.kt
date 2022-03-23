@@ -14,7 +14,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.model.SeedPhraseResult
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.fromLamports
@@ -29,7 +29,7 @@ private const val KEY_DERIVATION_PATH = "KEY_DERIVATION_PATH"
 class SecretKeyInteractor(
     private val authRepository: AuthRepository,
     private val userLocalRepository: UserLocalRepository,
-    private val rpcRepository: RpcRepository,
+    private val rpcRepository: RpcBalanceRepository,
     private val tokenProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences,
     private val usernameInteractor: UsernameInteractor,

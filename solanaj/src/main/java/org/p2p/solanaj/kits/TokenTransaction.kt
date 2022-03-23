@@ -81,7 +81,7 @@ object TokenTransaction {
         owner: PublicKey
     ): PublicKey {
         return findProgramAddress(
-            listOf(owner.toByteArray(), TokenProgram.PROGRAM_ID.toByteArray(), mint.toByteArray()),
+            listOf(owner.asByteArray(), TokenProgram.PROGRAM_ID.asByteArray(), mint.asByteArray()),
             TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID
         )
             .address

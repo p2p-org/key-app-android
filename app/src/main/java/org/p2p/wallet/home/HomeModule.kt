@@ -64,13 +64,13 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
             )
         }
-        factory { SearchInteractor(get(), get()) }
+        factory { SearchInteractor(get(), get(), get()) }
 
         factory { (token: Token.Active?) ->
             ReceiveSolanaPresenter(token, get(), get(), get(), get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (type: NetworkType) ->
-            ReceiveNetworkTypePresenter(get(), get(), get(), get(), get(), type)
+            ReceiveNetworkTypePresenter(get(), get(), get(), get(), get(), get(), get(), type)
         } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
             SendPresenter(

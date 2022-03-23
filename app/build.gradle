@@ -36,6 +36,7 @@ android {
             buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
             buildConfigField("String", "amplitudeKey", apikeyProperties['amplitudeKey'])
         } else {
+            logger.quiet "apikey.properties is not found, using empty keys!"
             buildConfigField("String", "rpcPoolApiKey", "\"\"")
             buildConfigField("String", "moonpayKey", "\"\"")
             buildConfigField("String", "comparePublicKey", "\"\"")
@@ -57,7 +58,7 @@ android {
                     keyAlias properties['keyAlias']
                     keyPassword properties['keyPassword']
                 } else {
-                    println 'Unable to read signing.properties, using defaults'
+                    logger.quiet 'Unable to read signing.properties, using defaults'
                 }
             }
         }
@@ -102,11 +103,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     buildFeatures {

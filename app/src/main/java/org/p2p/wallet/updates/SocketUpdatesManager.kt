@@ -15,6 +15,7 @@ import org.p2p.solanaj.ws.SocketStateListener
 import org.p2p.solanaj.ws.SubscriptionWebSocketClient
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.utils.NoOp
 import timber.log.Timber
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
@@ -84,18 +85,16 @@ class SocketUpdatesManager private constructor(
         client?.signatureSubscribe(signature) { data ->
             launch(Dispatchers.Default) {
                 Timber.tag("SOCKET").d("Event received, data = $data")
-                updateHandlers.forEach { it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature) }
+                updateHandlers.forEach {
+                    it.onUpdate(UpdateType.SIGNATURE_RECEIVED, signature)
+                }
             }
         }
     }
 
-    override fun unsubscribeFromTransaction(signature: String) {
-        // TODO: unsubscribe from transaction
-    }
+    override fun unsubscribeFromTransaction(signature: String) = NoOp
 
-    override fun onWebsocketPong() {
-//        Timber.tag("SOCKET").d("PONG")
-    }
+    override fun onWebSocketPong() = NoOp
 
     override fun onConnected() {
         Timber.tag("SOCKET").w("Socket client is successfully connected")

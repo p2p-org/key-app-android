@@ -16,7 +16,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetQrViewBinding
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.createBitmap
-import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.toast
 
 class QrView @JvmOverloads constructor(
@@ -26,7 +25,7 @@ class QrView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val binding = WidgetQrViewBinding.inflate(LayoutInflater.from(context), this)
-    var onShareClickListener: (() -> Unit)? = null
+    var onShareClickListener: ((String, Bitmap) -> Unit)? = null
     var onCopyClickListener: (() -> Unit)? = null
     var onSaveClickListener: ((String, Bitmap) -> Unit)? = null
 
@@ -39,11 +38,10 @@ class QrView @JvmOverloads constructor(
                 context.toast(R.string.main_receive_address_copied)
             }
             saveButton.setOnClickListener {
-                showSnapshotAnimation()
+                showSnapshotAnimation(QrCodeAction.SAVE)
             }
             shareButton.setOnClickListener {
-                context.shareText(qrValue.toString())
-                onShareClickListener?.invoke()
+                showSnapshotAnimation(QrCodeAction.SHARE)
             }
             copyButton.setOnClickListener {
                 context.copyToClipBoard(qrValue.toString())
@@ -70,6 +68,10 @@ class QrView @JvmOverloads constructor(
         binding.qrImageView.setImageBitmap(bitmap)
     }
 
+    fun hideWatermark() {
+        binding.watermarkImageViewBackground.isVisible = false
+    }
+
     fun setWatermarkIcon(@DrawableRes iconResId: Int) {
         binding.watermarkImageView.setImageResource(iconResId)
     }
@@ -83,7 +85,7 @@ class QrView @JvmOverloads constructor(
         binding.progressBar.isVisible = isLoading
     }
 
-    private fun showSnapshotAnimation() {
+    private fun showSnapshotAnimation(action: QrCodeAction) {
         val animation = AlphaAnimation(1.0f, 0.0f)
         animation.duration = 200L
         animation.fillAfter = true
@@ -101,7 +103,7 @@ class QrView @JvmOverloads constructor(
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-                onSnapshotReady(binding.root.createBitmap())
+                onSnapshotReady(binding.root.createBitmap(), action)
                 binding.actionContainer.isVisible = true
                 binding.logoImageView.isVisible = false
             }
@@ -111,8 +113,15 @@ class QrView @JvmOverloads constructor(
         binding.root.startAnimation(animation)
     }
 
-    private fun onSnapshotReady(bitmap: Bitmap) {
-        val name = binding.nameTextView.text.toString()
-        onSaveClickListener?.invoke(name, bitmap)
+    private fun onSnapshotReady(bitmap: Bitmap, action: QrCodeAction) {
+        val qrValue = binding.valueTextView.text.toString()
+        when (action) {
+            QrCodeAction.SHARE -> onShareClickListener?.invoke(qrValue, bitmap)
+            QrCodeAction.SAVE -> onSaveClickListener?.invoke(qrValue, bitmap)
+        }
+    }
+
+    enum class QrCodeAction {
+        SHARE, SAVE
     }
 }

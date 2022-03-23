@@ -8,6 +8,7 @@ import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 
 class ReserveUsernamePresenter(
@@ -18,7 +19,7 @@ class ReserveUsernamePresenter(
     ReserveUsernameContract.Presenter {
 
     private var checkUsernameJob: Job? = null
-    private var lastUsername: String = ""
+    private var lastUsername: String = emptyString()
 
     override fun checkUsername(username: String) {
         lastUsername = username

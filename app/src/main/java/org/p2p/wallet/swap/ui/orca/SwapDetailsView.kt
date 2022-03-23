@@ -170,6 +170,10 @@ class SwapDetailsView @JvmOverloads constructor(
         binding.slippageTextView.setOnClickListener { callback.invoke() }
     }
 
+    fun setOnTransactionFeeClickListener(callback: () -> Unit) {
+        binding.transactionFeeView.setOnClickListener { callback.invoke() }
+    }
+
     private fun buildTotalText(total: SwapTotal?): SpannableString {
         val totalAmount = if (total != null) {
             if (total.fee.isNullOrEmpty()) total.total else "${total.total} + ${total.fee}"

@@ -26,8 +26,10 @@ import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
+import java.io.File
 
 class ReceiveSolanaFragment :
     BaseMvpFragment<ReceiveSolanaContract.View, ReceiveSolanaContract.Presenter>(R.layout.fragment_receive_solana),
@@ -61,14 +63,15 @@ class ReceiveSolanaFragment :
                 analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.LIST)
                 replaceFragment(TokenListFragment.create())
             }
-            receiveCardView.setOnShareQrClickListener {
+            receiveCardView.setOnShareQrClickListener { qrValue, qrImage ->
+                presenter.saveQr(qrValue, qrImage, shareAfter = true)
                 receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
             }
             receiveCardView.setOnCopyQrClickListener {
                 receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
             }
-            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
-                presenter.saveQr(name, qrImage)
+            receiveCardView.setOnSaveQrClickListener { qrValue, qrImage ->
+                presenter.saveQr(qrValue, qrImage, shareAfter = true)
             }
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
         }
@@ -124,6 +127,10 @@ class ReceiveSolanaFragment :
 
     override fun showBrowser(url: String) {
         showUrlInCustomTabs(url)
+    }
+
+    override fun showShareQr(qrImage: File, qrValue: String) {
+        requireContext().shareScreenShot(qrImage, qrValue)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {

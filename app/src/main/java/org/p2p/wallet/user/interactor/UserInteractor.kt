@@ -8,15 +8,16 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
+import org.p2p.wallet.utils.emptyString
 
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: HomeLocalRepository,
-    private val rpcRepository: RpcRepository,
+    private val rpcRepository: RpcBalanceRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -66,7 +67,7 @@ class UserInteractor(
         userLocalRepository.setTokenData(data)
     }
 
-    fun fetchTokens(searchText: String = "", count: Int, refresh: Boolean) {
+    fun fetchTokens(searchText: String = emptyString(), count: Int, refresh: Boolean) {
         userLocalRepository.fetchTokens(searchText, count, refresh)
     }
 

@@ -47,10 +47,7 @@ class SearchFragment :
     private lateinit var textWatcher: TextWatcher
 
     private val searchAdapter: SearchAdapter by lazy {
-        SearchAdapter {
-            setFragmentResult(KEY_REQUEST_SEND, bundleOf(EXTRA_RESULT to it))
-            parentFragmentManager.popBackStack()
-        }
+        SearchAdapter(presenter::onSearchResultClick)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,5 +96,10 @@ class SearchFragment :
             binding.messageTextView.setText(textRes)
             binding.messageTextView.isVisible = true
         }
+    }
+
+    override fun submitSearchResult(searchResult: SearchResult) {
+        setFragmentResult(KEY_REQUEST_SEND, bundleOf(EXTRA_RESULT to searchResult))
+        parentFragmentManager.popBackStack()
     }
 }

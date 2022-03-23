@@ -45,7 +45,7 @@ public class LockAndMint {
     public String generateGatewayAddress() throws Exception {
         PublicKey sendTo = solanaChain.getAssociatedTokenAddress(session.destinationAddress);
         state.sendTo = sendTo;
-        String sendToHex = Hex.INSTANCE.encode(sendTo.toByteArray());
+        String sendToHex = Hex.INSTANCE.encode(sendTo.asByteArray());
         String tokenGatewayContractHex = Hex.INSTANCE.encode(Hash.generateSHash());
         byte[] gHash = Hash.generateGHash(sendToHex, tokenGatewayContractHex, Hex.INSTANCE.decode(session.nonce));
         state.gHash = gHash;

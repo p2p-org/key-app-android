@@ -14,7 +14,7 @@ interface SecurityKeyContract {
         fun navigateToVerify(keys: List<String>)
         fun captureKeys()
         fun showFile(file: File)
-        fun shareScreenShoot(file: File)
+        fun shareScreenShot(file: File)
     }
 
     interface Presenter : MvpPresenter<View> {

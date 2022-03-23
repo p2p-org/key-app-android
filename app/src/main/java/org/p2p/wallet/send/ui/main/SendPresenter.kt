@@ -35,10 +35,12 @@ import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
@@ -299,8 +301,8 @@ class SendPresenter(
         launch {
             try {
                 sendAnalytics.logSendShowDetailsPressed()
-                val (maxAvailable, remaining) = sendInteractor.getFreeTransactionsInfo()
-                view?.showFeeLimitsDialog(maxAvailable, remaining)
+                val freeTransactionsInfo = sendInteractor.getFreeTransactionsInfo()
+                view?.showFeeLimitsDialog(freeTransactionsInfo.maxUsage, freeTransactionsInfo.remaining)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading free transactions info")
             }
@@ -436,7 +438,7 @@ class SendPresenter(
         val data = ShowProgress(
             title = R.string.send_transaction_being_processed,
             subTitle = "$tokenAmount ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
-            transactionId = ""
+            transactionId = emptyString()
         )
         view?.showProgressDialog(data)
 
@@ -520,7 +522,7 @@ class SendPresenter(
         val data = SendTotal(
             total = tokenAmount,
             totalUsd = usdAmount,
-            receive = "$tokenAmount ${sourceToken.tokenSymbol}",
+            receive = "${AmountUtils.format(tokenAmount)} ${sourceToken.tokenSymbol}",
             receiveUsd = tokenAmount.toUsd(sourceToken),
             fee = sendFee,
             sourceSymbol = sourceToken.tokenSymbol
@@ -540,7 +542,7 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(SendFee.RenBtcFee(fee, sourceToken))
+            calculateTotal(SendFee.RenBtcFee(fee, sourceToken, sourceToken.tokenSymbol))
         }
     }
 
@@ -568,7 +570,7 @@ class SendPresenter(
             fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
         }
 
-        fee = SendFee.SolanaFee(feeAmount, feePayer)
+        fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
         view?.showAccountFeeView(fee, isSourceSOL = token?.isSOL == true)
 
         calculateTotal(fee)

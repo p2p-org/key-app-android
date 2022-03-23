@@ -52,23 +52,13 @@ jobs:
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_test_results
-      - android/save-gradle-cache
-      - android/save-build-cache
   build_and_publish:
     <<: *defaults
     steps:
       - checkout
-      - android/restore-gradle-cache
-      - android/restore-build-cache
-      - run:
-          name: "Assemble Feature Build"
-          command: ./gradlew assembleFeature
-      - store_artifacts:
-          path: "./app/build/outputs/mapping/feature/mapping.txt"
-          destination: artifact-file
       - run:
           name: "Distribute to Firebase App Distribution"
-          command: ./gradlew appDistributionUploadFeature
+          command: ./gradlew assembleFeature appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
 workflows:
@@ -86,10 +76,16 @@ workflows:
           requires:
             - android_lint
           context: feature
+      - approve-feature-build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /(^feature\/.+)/
       - build_and_publish:
-          requires:
-            - unit_tests
           context: feature
+          requires:
+            - approve-feature-build
           filters:
             branches:
               only:
@@ -97,16 +93,12 @@ workflows:
 
   lint_and_test:
     jobs:
-      - version_build:
+      - android_lint:
           context: feature
           filters:
             branches:
               only:
                 - develop
-      - android_lint:
-          requires:
-            - version_build
-          context: feature
       - unit_tests:
           requires:
             - android_lint
