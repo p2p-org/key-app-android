@@ -4,7 +4,11 @@ class Analytics(
     private val trackers: Set<TrackerContract>
 ) : TrackerContract {
 
-    override fun logEvent(event: String, params: Array<out Pair<String, Any>>?) {
+    override fun logEvent(event: String, params: Map<String, Any>) {
+        trackers.forEach { it.logEvent(event, params) }
+    }
+
+    override fun logEvent(event: String, params: Array<out Pair<String, Any>>) {
         trackers.forEach { it.logEvent(event, params) }
     }
 

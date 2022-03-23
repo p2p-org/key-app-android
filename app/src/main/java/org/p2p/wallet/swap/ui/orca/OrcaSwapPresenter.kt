@@ -256,13 +256,13 @@ class OrcaSwapPresenter(
         swapAnalytics.logSwapGoingBack(
             tokenAName = sourceToken.tokenSymbol,
             tokenBName = destinationToken?.tokenSymbol.orEmpty(),
-            swapCurrency = emptyString(),
+            swapCurrency = sourceToken.tokenSymbol,
             swapSum = sourceAmount.toBigDecimalOrZero(),
             swapMax = isMaxClicked,
             swapUSD = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
             priceSlippage = slippage.doubleValue,
             priceSlippageExact = false,
-            feesSource = SwapAnalytics.FeeSource.UNKNOWN
+            feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
         )
         view?.close()
     }
@@ -282,6 +282,15 @@ class OrcaSwapPresenter(
                 destinationAmountUsd = destinationAmountUsd.toString()
             )
             swapAnalytics.logSwapVerificationInvoked(AuthAnalytics.AuthType.BIOMETRIC)
+            swapAnalytics.logSwapUserConfirmed(
+                tokenAName = sourceToken.tokenSymbol,
+                tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+                swapSum = sourceAmount,
+                isSwapMax = isMaxClicked,
+                swapUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+                priceSlippage = slippage.doubleValue,
+                feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
+            )
             view?.showBiometricConfirmationPrompt(data)
         } else {
             swap()
@@ -300,6 +309,16 @@ class OrcaSwapPresenter(
 
         appScope.launch {
             try {
+                swapAnalytics.logSwapStarted(
+                    tokenAName = sourceToken.tokenSymbol,
+                    tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+                    swapSum = sourceAmount,
+                    isSwapMax = isMaxClicked,
+                    swapUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+                    priceSlippage = slippage.doubleValue,
+                    feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
+                )
+
                 val sourceTokenSymbol = sourceToken.tokenSymbol
                 val destinationTokenSymbol = destination.tokenSymbol
                 val subTitle =
@@ -321,16 +340,30 @@ class OrcaSwapPresenter(
 
                 when (data) {
                     is OrcaSwapResult.Finished -> {
+                        swapAnalytics.logSwapCompleted(
+                            tokenAName = sourceToken.tokenSymbol,
+                            tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+                            swapSum = sourceAmount,
+                            isSwapMax = isMaxClicked,
+                            swapUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+                            priceSlippage = slippage.doubleValue,
+                            feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
+                        )
+
                         val state = TransactionState.SwapSuccess(
-                            buildTransaction(destination, data.transactionId, data.destinationAddress),
-                            sourceTokenSymbol,
-                            destinationTokenSymbol
+                            transaction = buildTransaction(
+                                destination = destination,
+                                transactionId = data.transactionId,
+                                destinationAddress = data.destinationAddress
+                            ),
+                            fromToken = sourceTokenSymbol,
+                            toToken = destinationTokenSymbol
                         )
                         transactionManager.emitTransactionState(state)
                     }
-                    is OrcaSwapResult.InvalidInfoOrPair,
-                    is OrcaSwapResult.InvalidPool ->
+                    is OrcaSwapResult.InvalidInfoOrPair, is OrcaSwapResult.InvalidPool -> {
                         view?.showErrorMessage(R.string.error_general_message)
+                    }
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error swapping tokens")

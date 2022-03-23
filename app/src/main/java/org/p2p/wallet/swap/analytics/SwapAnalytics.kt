@@ -4,6 +4,7 @@ import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_CURRENCY
 import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_TOKEN_A
 import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_TOKEN_B
+import org.p2p.wallet.common.analytics.Events.SWAP_COMPLETED
 import org.p2p.wallet.common.analytics.Events.SWAP_CREATING_ANOTHER
 import org.p2p.wallet.common.analytics.Events.SWAP_GOING_BACK
 import org.p2p.wallet.common.analytics.Events.SWAP_PROCESS_SHOWN
@@ -15,6 +16,8 @@ import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_DETAILS
 import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_HISTORY
 import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_SETTINGS
 import org.p2p.wallet.common.analytics.Events.SWAP_SHOW_DETAILS_PRESSED
+import org.p2p.wallet.common.analytics.Events.SWAP_STARTED
+import org.p2p.wallet.common.analytics.Events.SWAP_USER_CONFIRMED
 import org.p2p.wallet.common.analytics.Events.SWAP_VERIFICATION_INVOKED
 import org.p2p.wallet.common.analytics.Events.SWAP_VIEWED
 import org.p2p.wallet.common.analytics.TrackerContract
@@ -211,6 +214,75 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
         )
     }
 
+    fun logSwapUserConfirmed(
+        tokenAName: String,
+        tokenBName: String,
+        swapSum: String,
+        isSwapMax: Boolean,
+        swapUsd: BigDecimal,
+        priceSlippage: Double,
+        feesSource: FeeSource
+    ) {
+        trackerContract.logEvent(
+            event = SWAP_USER_CONFIRMED,
+            params = mapOf(
+                "Token_A_Name" to tokenAName,
+                "Token_B_Name" to tokenBName,
+                "Swap_Sum" to swapSum,
+                "Swap_MAX" to if (isSwapMax) "True" else "False",
+                "Swap_USD" to swapUsd.toString(),
+                "Price_Slippage" to priceSlippage.toString(),
+                "Fees_Source" to feesSource.title
+            )
+        )
+    }
+
+    fun logSwapStarted(
+        tokenAName: String,
+        tokenBName: String,
+        swapSum: String,
+        isSwapMax: Boolean,
+        swapUsd: BigDecimal,
+        priceSlippage: Double,
+        feesSource: FeeSource
+    ) {
+        trackerContract.logEvent(
+            event = SWAP_STARTED,
+            params = mapOf(
+                "Token_A_Name" to tokenAName,
+                "Token_B_Name" to tokenBName,
+                "Swap_Sum" to swapSum,
+                "Swap_MAX" to if (isSwapMax) "True" else "False",
+                "Swap_USD" to swapUsd.toString(),
+                "Price_Slippage" to priceSlippage.toString(),
+                "Fees_Source" to feesSource.title
+            )
+        )
+    }
+
+    fun logSwapCompleted(
+        tokenAName: String,
+        tokenBName: String,
+        swapSum: String,
+        isSwapMax: Boolean,
+        swapUsd: BigDecimal,
+        priceSlippage: Double,
+        feesSource: FeeSource
+    ) {
+        trackerContract.logEvent(
+            event = SWAP_COMPLETED,
+            params = mapOf(
+                "Token_A_Name" to tokenAName,
+                "Token_B_Name" to tokenBName,
+                "Swap_Sum" to swapSum,
+                "Swap_MAX" to if (isSwapMax) "True" else "False",
+                "Swap_USD" to swapUsd.toString(),
+                "Price_Slippage" to priceSlippage,
+                "Fees_Source" to feesSource.title
+            )
+        )
+    }
+
     enum class SwapStatus(val title: String) {
         SUCCESS("Success"),
         PENDING("Pending"),
@@ -223,9 +295,7 @@ class SwapAnalytics(private val trackerContract: TrackerContract) {
         OTHER("Other");
 
         companion object {
-            fun getValueOf(tokenSymbol: String): FeeSource {
-                return if (tokenSymbol == "SOL") SOL else OTHER
-            }
+            fun getValueOf(tokenSymbol: String): FeeSource = if (tokenSymbol == "SOL") SOL else OTHER
         }
     }
 

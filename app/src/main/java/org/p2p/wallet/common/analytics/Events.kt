@@ -100,4 +100,7 @@ object Events {
     const val SWAP_CREATING_ANOTHER = "Swap_Creating_Another"
     const val SWAP_SHOWING_HISTORY = "Swap_Showing_History"
     const val SWAP_SHOWING_DETAILS = "Swap_Showing_Details"
+    const val SWAP_USER_CONFIRMED = "Swap_User_Confirmed"
+    const val SWAP_STARTED = "Swap_Started"
+    const val SWAP_COMPLETED = "Swap_Completed"
 }
