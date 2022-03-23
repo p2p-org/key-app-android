@@ -9,12 +9,14 @@ import org.p2p.wallet.history.db.dao.TransactionDaoDelegate
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.RpcRepository
+import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.utils.ifSizeNot
 import timber.log.Timber
 
 class TransactionsHistoryRepository(
-    private val rpcRepository: RpcRepository,
+    private val rpcAccountRepository: RpcAccountRepository,
+    private val rpcHistoryRepository: RpcHistoryRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionDaoDelegate: TransactionDaoDelegate,
     private val transactionDetailsMapper: TransactionDetailsEntityMapper,
@@ -74,7 +76,7 @@ class TransactionsHistoryRepository(
     }
 
     private fun getTransactionsFromNetwork(signatures: List<String>): List<TransactionDetails> {
-        return runBlocking { rpcRepository.getConfirmedTransactions(signatures) }
+        return runBlocking { rpcHistoryRepository.getConfirmedTransactions(signatures) }
     }
 
     private fun saveTransactionsToDatabase(transactionsFromRemote: List<TransactionDetails>) {
@@ -102,7 +104,7 @@ class TransactionsHistoryRepository(
             }
 
         return if (accountsInfoIds.isNotEmpty()) {
-            runBlocking { rpcRepository.getAccountsInfo(accountsInfoIds) }
+            runBlocking { rpcAccountRepository.getAccountsInfo(accountsInfoIds) }
         } else {
             emptyList()
         }

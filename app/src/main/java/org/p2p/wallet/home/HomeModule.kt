@@ -12,6 +12,8 @@ import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomePresenter
+import org.p2p.wallet.home.ui.select.SelectTokenContract
+import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.moonpay.api.MoonpayApi
 import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
@@ -59,7 +61,7 @@ object HomeModule : InjectionModule {
                 feeRelayerAccountInteractor = get(),
                 feeRelayerTopUpInteractor = get(),
                 orcaInfoInteractor = get(),
-                amountInteractor = get(),
+                amountRepository = get(),
                 transactionInteractor = get(),
                 tokenKeyProvider = get(),
             )
@@ -121,5 +123,7 @@ object HomeModule : InjectionModule {
                 get()
             )
         } bind ReceiveRenBtcContract.Presenter::class
+
+        factory { (tokens: List<Token>) -> SelectTokenPresenter(tokens) } bind SelectTokenContract.Presenter::class
     }
 }

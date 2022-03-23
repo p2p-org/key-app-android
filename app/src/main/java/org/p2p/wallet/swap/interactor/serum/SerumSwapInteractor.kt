@@ -22,6 +22,7 @@ import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.utils.Constants.SOL_MINT
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.isUsdx
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toLamports
@@ -272,7 +273,7 @@ class SerumSwapInteractor(
 //                isSimulation = isSimulation
 //            )
 //            transactionInteractor.sendTransaction(appTransaction)
-            return ""
+            return emptyString()
         } catch (e: Throwable) {
             throw e
             // TODO: catch error
@@ -692,14 +693,14 @@ class SerumSwapInteractor(
         val from = prepareOpenOrder(
             orders = null,
             market = fromMarket,
-            minRentExemption = BigInteger.valueOf(minRentExemption),
+            minRentExemption = minRentExemption,
             closeAfterward = CLOSE_ENABLED && close == true
         )
 
         val to = prepareOpenOrder(
             orders = null,
             market = toMarket,
-            minRentExemption = BigInteger.valueOf(minRentExemption),
+            minRentExemption = minRentExemption,
             closeAfterward = CLOSE_ENABLED && close == true
         )
 

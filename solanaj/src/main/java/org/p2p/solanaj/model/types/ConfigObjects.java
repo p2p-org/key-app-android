@@ -34,6 +34,7 @@ public class ConfigObjects {
         private String bytes;
 
         public Memcmp() {
+
         }
 
         public Memcmp(long offset, String bytes) {

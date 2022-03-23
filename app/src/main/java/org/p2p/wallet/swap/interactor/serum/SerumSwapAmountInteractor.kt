@@ -6,6 +6,7 @@ import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor.Companion.FEE_MU
 import org.p2p.wallet.swap.model.serum.SerumFeeType
 import org.p2p.wallet.swap.model.serum.SerumSwapFee
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toLamports
@@ -50,7 +51,7 @@ class SerumSwapAmountInteractor(
         )
 
         if (!isFeeRelayerEnabled) {
-            fees[SerumFeeType.DEFAULT] = SerumSwapFee("SOL", networkFee, "")
+            fees[SerumFeeType.DEFAULT] = SerumSwapFee("SOL", networkFee, emptyString())
             return fees
         }
 
@@ -73,7 +74,7 @@ class SerumSwapAmountInteractor(
         return if (lamports == null) {
             emptyMap()
         } else {
-            fees[SerumFeeType.DEFAULT] = SerumSwapFee(sourceToken.tokenSymbol, lamports, "")
+            fees[SerumFeeType.DEFAULT] = SerumSwapFee(sourceToken.tokenSymbol, lamports, emptyString())
             fees
         }
     }

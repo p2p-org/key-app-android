@@ -14,7 +14,7 @@ private const val SCALE_VALUE_MEDIUM = 6
 private const val SCALE_VALUE_LONG = 9
 
 fun String?.toBigDecimalOrZero(): BigDecimal {
-    val removedZeros = this?.replace("(?<=\\d)\\.?0+(?![\\d\\.])", "")
+    val removedZeros = this?.replace("(?<=\\d)\\.?0+(?![\\d\\.])", emptyString())
     return removedZeros?.toBigDecimalOrNull() ?: BigDecimal.ZERO
 }
 
@@ -59,5 +59,5 @@ fun BigInteger.isNotZero() = this.compareTo(BigInteger.ZERO) != 0
 fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 
-fun BigDecimal.asUsd(): String = "$$this"
+fun BigDecimal.asUsd(): String = "$${AmountUtils.format(this)}"
 fun BigDecimal.asApproximateUsd(): String = "~($${AmountUtils.format(this)})"

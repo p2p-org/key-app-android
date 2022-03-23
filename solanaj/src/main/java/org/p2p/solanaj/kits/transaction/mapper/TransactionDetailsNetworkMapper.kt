@@ -19,7 +19,7 @@ class TransactionDetailsNetworkMapper {
         serumSwapInstructionParser = SerumSwapInstructionParser()
     )
 
-    fun mapNetworkToDomain(
+    fun fromNetworkToDomain(
         confirmedTransactionRoots: List<ConfirmedTransactionRootResponse>
     ): List<TransactionDetails> {
         val resultTransactions = mutableListOf<TransactionDetails>()

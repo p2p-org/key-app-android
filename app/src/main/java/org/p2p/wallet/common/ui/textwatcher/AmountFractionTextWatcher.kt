@@ -4,6 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.emptyString
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
@@ -44,7 +45,7 @@ class AmountFractionTextWatcher(
 
     private val field = WeakReference(editText)
 
-    private var valueText: String by Delegates.observable("") { _, oldValue, newValue ->
+    private var valueText: String by Delegates.observable(emptyString()) { _, oldValue, newValue ->
         if (oldValue != newValue) onValueChanged.invoke(newValue)
     }
 

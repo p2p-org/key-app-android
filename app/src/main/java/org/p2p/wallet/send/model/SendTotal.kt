@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.model
 
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.asApproximateUsd
 import java.math.BigDecimal
 
@@ -37,7 +38,7 @@ class SendTotal constructor(
             if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
         }
 
-    val approxTotalUsd: String? get() = totalUsd?.let { "(~$$it)" }
+    val approxTotalUsd: String? get() = totalUsd?.asApproximateUsd()
 
     val fullReceive: String
         get() = if (approxReceive.isNotBlank()) "$receive $approxReceive" else receive
@@ -46,8 +47,8 @@ class SendTotal constructor(
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalFormatted: String
-        get() = "$total $sourceSymbol"
+        get() = "${AmountUtils.format(total)} $sourceSymbol"
 
     private val totalSum: String
-        get() = "${total + (fee?.fee ?: BigDecimal.ZERO)} $sourceSymbol"
+        get() = "${AmountUtils.format(total + (fee?.fee ?: BigDecimal.ZERO))} $sourceSymbol"
 }

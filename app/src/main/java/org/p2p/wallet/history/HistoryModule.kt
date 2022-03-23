@@ -25,7 +25,7 @@ object HistoryModule : InjectionModule {
 
         factory {
             HistoryInteractor(
-                rpcRepository = get(),
+                rpcSignatureRepository = get(),
                 historyTransactionsRepository = get()
             )
         }
@@ -63,7 +63,8 @@ object HistoryModule : InjectionModule {
         }
         single {
             TransactionsHistoryRepository(
-                rpcRepository = get(),
+                rpcAccountRepository = get(),
+                rpcHistoryRepository = get(),
                 tokenKeyProvider = get(),
                 transactionDaoDelegate = get(),
                 transactionDetailsMapper = get(),

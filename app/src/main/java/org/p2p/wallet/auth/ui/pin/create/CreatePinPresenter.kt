@@ -10,6 +10,7 @@ import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.analytics.AnalyticsInteractor
 import org.p2p.wallet.common.analytics.ScreenName
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -25,7 +26,7 @@ class CreatePinPresenter(
 ) : BasePresenter<CreatePinContract.View>(),
     CreatePinContract.Presenter {
 
-    private var createdPin = ""
+    private var createdPin = emptyString()
 
     override fun setPinCode(pinCode: String) {
         if (createdPin.isEmpty()) {
@@ -90,7 +91,7 @@ class CreatePinPresenter(
                 view?.onAuthFinished()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
-                createdPin = ""
+                createdPin = emptyString()
                 view?.showCreation()
                 view?.showErrorMessage(R.string.error_general_message)
                 view?.vibrate(VIBRATE_DURATION)

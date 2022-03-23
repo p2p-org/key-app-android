@@ -43,6 +43,7 @@ interface OrcaSwapContract {
         fun showSourceSelection(tokens: List<Token.Active>)
         fun showDestinationSelection(tokens: List<Token>)
         fun showError(@StringRes errorText: Int?)
+        fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int)
 
         fun showBiometricConfirmationPrompt(data: SwapConfirmData)
         fun close()
@@ -61,6 +62,7 @@ interface OrcaSwapContract {
         fun swap()
         fun calculateAvailableAmount()
         fun reverseTokens()
+        fun onFeeLimitsClicked()
         fun onBackPressed()
     }
 }
