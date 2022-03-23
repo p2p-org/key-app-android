@@ -49,7 +49,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 import java.math.BigDecimal
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
@@ -81,8 +80,6 @@ class OrcaSwapFragment :
     private var onBackPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Timber.d("onViewCreated()")
-
         super.onViewCreated(view, savedInstanceState)
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
             presenter.onBackPressed()
