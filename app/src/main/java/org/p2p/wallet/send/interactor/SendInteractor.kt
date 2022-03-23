@@ -156,18 +156,18 @@ class SendInteractor(
             amount = lamports,
         )
 
-        return if (feePayerToken.mintAddress != WRAPPED_SOL_MINT) {
-            // use fee relayer
-            feeRelayerInteractor.topUpAndRelayTransaction(
-                preparedTransaction = preparedTransaction,
-                payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
-            ).firstOrNull().orEmpty()
-        } else {
+        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             // send normally, paid by SOL
             transactionInteractor.serializeAndSend(
                 preparedTransaction = preparedTransaction,
                 isSimulation = false
             )
+        } else {
+            // use fee relayer
+            feeRelayerInteractor.topUpAndRelayTransaction(
+                preparedTransaction = preparedTransaction,
+                payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
+            ).firstOrNull().orEmpty()
         }
     }
 
@@ -197,22 +197,16 @@ class SendInteractor(
             throw IllegalStateException("You can not send tokens to yourself")
         }
 
-        val (feePayer, useFeeRelayer) = if (feePayerToken.isSOL) {
-            null to false
-        } else {
-            val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
-            feePayer to true
-        }
-
-        return if (token.isSOL) {
+        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             prepareNativeSol(
                 destinationAddress = receiver.toPublicKey(),
                 lamports = amount,
-                feePayerPublicKey = feePayer,
+                feePayerPublicKey = null,
                 recentBlockhash = recentBlockhash,
                 lamportsPerSignature = lamportsPerSignature
             )
         } else {
+            val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
             prepareSplToken(
                 mintAddress = token.mintAddress,
                 decimals = token.decimals,
@@ -220,7 +214,6 @@ class SendInteractor(
                 destinationAddress = receiver,
                 amount = amount,
                 feePayerPublicKey = feePayer,
-                transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
                 recentBlockhash = recentBlockhash,
                 lamportsPerSignature = lamportsPerSignature,
                 minBalanceForRentExemption = minRentExemption
@@ -261,7 +254,6 @@ class SendInteractor(
         fromPublicKey: String,
         destinationAddress: String,
         amount: BigInteger,
-        transferChecked: Boolean,
         feePayerPublicKey: PublicKey? = null,
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
@@ -305,25 +297,15 @@ class SendInteractor(
         }
 
         // send instruction
-        val instruction = if (transferChecked) {
-            TokenProgram.createTransferCheckedInstruction(
-                TokenProgram.PROGRAM_ID,
-                fromPublicKey.toPublicKey(),
-                mintAddress.toPublicKey(),
-                splDestinationAddress.destinationAddress,
-                account.publicKey,
-                amount,
-                decimals
-            )
-        } else {
-            TokenProgram.transferInstruction(
-                TokenProgram.PROGRAM_ID,
-                fromPublicKey.toPublicKey(),
-                toPublicKey,
-                account.publicKey,
-                amount
-            )
-        }
+        val instruction = TokenProgram.createTransferCheckedInstruction(
+            TokenProgram.PROGRAM_ID,
+            fromPublicKey.toPublicKey(),
+            mintAddress.toPublicKey(),
+            splDestinationAddress.destinationAddress,
+            account.publicKey,
+            amount,
+            decimals
+        )
 
         instructions += instruction
 
@@ -342,5 +324,15 @@ class SendInteractor(
         )
 
         return preparedTransaction to realDestination
+    }
+
+    /*
+    * When free transaction is not available and user is paying with sol,
+    * let him do this the normal way (don't use fee relayer)
+    * */
+    private suspend fun shouldUseNativeSwap(payingTokenMint: String): Boolean {
+        val noFreeTransactionsLeft = feeRelayerAccountInteractor.getFreeTransactionFeeLimit().remaining == 0
+        val isSol = payingTokenMint == WRAPPED_SOL_MINT
+        return noFreeTransactionsLeft && isSol
     }
 }

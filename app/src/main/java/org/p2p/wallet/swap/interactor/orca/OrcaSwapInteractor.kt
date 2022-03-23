@@ -79,7 +79,7 @@ class OrcaSwapInteractor(
         slippage: Slippage
     ): OrcaSwapResult {
 
-        return if (isNativeSwap(fromToken.publicKey, feePayerToken.mintAddress)) {
+        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             swapNative(
                 poolsPair = bestPoolsPair,
                 sourceAddress = fromToken.publicKey,
@@ -154,6 +154,7 @@ class OrcaSwapInteractor(
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val fee = feeRelayerSwapInteractor.calculateSwappingNetworkFees(
+            swapPools = null,
             sourceTokenMint = sourceToken.mintAddress,
             destinationTokenMint = destination.mintAddress,
             destinationAddress = destination.publicKey
@@ -266,11 +267,13 @@ class OrcaSwapInteractor(
         return feePayerLamports >= feeInPayingToken
     }
 
-    private fun isNativeSwap(
-        sourceAddress: String,
-        payingTokenMint: String?
-    ): Boolean {
-        val account = tokenKeyProvider.publicKey
-        return sourceAddress == account || payingTokenMint == WRAPPED_SOL_MINT
+    /*
+    * When free transaction is not available and user is paying with sol,
+    * let him do this the normal way (don't use fee relayer)
+    * */
+    private suspend fun shouldUseNativeSwap(payingTokenMint: String): Boolean {
+        val noFreeTransactionsLeft = feeRelayerAccountInteractor.getFreeTransactionFeeLimit().remaining == 0
+        val isSol = payingTokenMint == WRAPPED_SOL_MINT
+        return noFreeTransactionsLeft && isSol
     }
 }

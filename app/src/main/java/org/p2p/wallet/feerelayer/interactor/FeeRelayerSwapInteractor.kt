@@ -91,6 +91,7 @@ class FeeRelayerSwapInteractor(
     }
 
     suspend fun calculateSwappingNetworkFees(
+        swapPools: OrcaPoolsPair?,
         sourceTokenMint: String,
         destinationTokenMint: String,
         destinationAddress: String?
@@ -127,6 +128,11 @@ class FeeRelayerSwapInteractor(
         // when destination is native SOL
         if (destinationTokenMint == WRAPPED_SOL_MINT) {
             expectedFee.transaction += lamportsPerSignature
+        }
+
+        // in transitive swap, there will be situation when swapping from SOL -> SPL that needs spliting transaction to 2 transactions
+        if (swapPools?.size == 2 && sourceTokenMint == WRAPPED_SOL_MINT && destinationAddress == null) {
+            expectedFee.transaction += lamportsPerSignature * BigInteger.valueOf(2L)
         }
 
         return expectedFee
@@ -169,7 +175,7 @@ class FeeRelayerSwapInteractor(
         if (sourceToken.mint == WRAPPED_SOL_MINT) {
             sourceWSOLNewAccount = Account()
             val createAccountInstruction = SystemProgram.createAccount(
-                feePayerAddress,
+                userAuthorityAddress,
                 sourceWSOLNewAccount.publicKey,
                 (inputAmount + minimumTokenAccountBalance).toLong()
             )
@@ -370,12 +376,8 @@ class FeeRelayerSwapInteractor(
             return preparedParams!!
         }
 
-        val tradableTopUpPoolsPair = orcaPoolInteractor.getTradablePoolsPairs(
-            fromMint = payingFeeToken.mint,
-            toMint = WRAPPED_SOL_MINT
-        )
-
         val swappingFee = calculateSwappingNetworkFees(
+            swapPools = swapPools,
             sourceTokenMint = sourceToken.mint,
             destinationTokenMint = destinationTokenMint,
             destinationAddress = destinationAddress
@@ -384,10 +386,15 @@ class FeeRelayerSwapInteractor(
         // TOP UP
         val topUpPreparedParam: TopUpPreparedParams?
 
-        if (relayAccount.balance != null && relayAccount.balance >= swappingFee.total) {
+        if (payingFeeToken.isSOL || (relayAccount.balance != null && relayAccount.balance >= swappingFee.total)) {
             topUpPreparedParam = null
         } else {
             // Get real amounts needed for topping up
+            val tradableTopUpPoolsPair = orcaPoolInteractor.getTradablePoolsPairs(
+                fromMint = payingFeeToken.mint,
+                toMint = WRAPPED_SOL_MINT
+            )
+
             val topUpAmount = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(swappingFee).total
 
             val expectedFee = feeRelayerTopUpInteractor.calculateExpectedFeeForTopUp(
