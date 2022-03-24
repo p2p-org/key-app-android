@@ -44,7 +44,9 @@ android {
             buildConfigField("String", "intercomAppId", "\"\"")
             buildConfigField("String", "amplitudeKey", "\"\"")
         }
-
+        buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
+        buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+        buildConfigField("boolean", "IS_PROD", "false")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
 
         javaCompileOptions {
@@ -78,9 +80,6 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-debug"
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
-            buildConfigField("boolean", "IS_PROD", "false")
         }
 
         feature {
@@ -91,10 +90,6 @@ android {
             shrinkResources true
             versionNameSuffix ".$VERSION_BUILD-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
-            buildConfigField("boolean", "IS_PROD", "false")
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
