@@ -39,4 +39,15 @@
         android:text="Enable auto update"
         tools:ignore="HardcodedText" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/enableProdEnvSwitch"
+        style="@style/WalletTheme.TextAppearance.Regular16"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:checked="true"
+        android:paddingHorizontal="16dp"
+        android:text="Enable prod env simulation"
+        tools:ignore="HardcodedText" />
+
 </LinearLayout>

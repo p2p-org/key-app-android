@@ -41,7 +41,15 @@ object SettingsModule : InjectionModule {
         factory { ResetPinPresenter(get(), get(), get()) } bind ResetPinContract.Presenter::class
         factory { AppearancePresenter(get()) } bind AppearanceContract.Presenter::class
         factory { ResetSeedPhrasePresenter(get(), get()) } bind ResetSeedPhraseContract.Presenter::class
-        factory { SettingsNetworkPresenter(get(), get(), get(), get()) } bind SettingsNetworkContract.Presenter::class
+        factory {
+            SettingsNetworkPresenter(
+                context = get(),
+                sharedPreferences = get(),
+                mainLocalRepository = get(),
+                environmentManager = get(),
+                analytics = get()
+            )
+        } bind SettingsNetworkContract.Presenter::class
         factory { SettingsZeroBalancesPresenter(get()) } bind SettingsZeroBalanceContract.Presenter::class
     }
 }
