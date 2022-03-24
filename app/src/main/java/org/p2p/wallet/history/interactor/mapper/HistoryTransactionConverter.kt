@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.repository
+package org.p2p.wallet.history.interactor.mapper
 
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails

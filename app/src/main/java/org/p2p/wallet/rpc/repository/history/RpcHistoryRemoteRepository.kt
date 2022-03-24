@@ -1,19 +1,15 @@
 package org.p2p.wallet.rpc.repository.history
 
 import org.p2p.solanaj.core.Transaction
-import org.p2p.solanaj.kits.transaction.TransactionDetails
-import org.p2p.solanaj.kits.transaction.mapper.TransactionDetailsNetworkMapper
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.utils.crypto.Base64Utils
-import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.utils.emptyString
 
 class RpcHistoryRemoteRepository(
-    private val rpcApi: RpcHistoryApi,
-    private val transactionDetailsNetworkMapper: TransactionDetailsNetworkMapper
+    private val rpcApi: RpcHistoryApi
 ) : RpcHistoryRepository {
 
     override suspend fun sendTransaction(transaction: Transaction): String {
@@ -77,21 +73,5 @@ class RpcHistoryRemoteRepository(
         } else {
             return emptyString()
         }
-    }
-
-    override suspend fun getConfirmedTransactions(
-        signatures: List<String>
-    ): List<TransactionDetails> {
-        val requestsBatch = signatures.map {
-            val encoding =
-                mapOf(RpcConstants.REQUEST_PARAMETER_KEY_ENCODING to RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED)
-            val params = listOf(it, encoding)
-
-            RpcRequest(RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params)
-        }
-
-        return rpcApi.getConfirmedTransactions(requestsBatch)
-            .map { it.result }
-            .let { transactionDetailsNetworkMapper.fromNetworkToDomain(it) }
     }
 }

@@ -1,22 +1,28 @@
 package org.p2p.wallet.history
 
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.solanaj.kits.transaction.mapper.TransactionDetailsNetworkMapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
+import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.repository.HistoryRemoteRepository
-import org.p2p.wallet.history.repository.HistoryRepository
-import org.p2p.wallet.history.repository.HistoryTransactionConverter
-import org.p2p.wallet.history.repository.HistoryTransactionMapper
-import org.p2p.wallet.history.repository.TransactionDetailsEntityMapper
-import org.p2p.wallet.history.repository.TransactionsHistoryRepository
+import org.p2p.wallet.history.repository.TransactionDetailsDatabaseRepository
+import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
+import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
+import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
+import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.rpc.RpcModule
+import org.p2p.wallet.rpc.api.RpcHistoryApi
+import retrofit2.Retrofit
 
 object HistoryModule : InjectionModule {
 
@@ -24,9 +30,20 @@ object HistoryModule : InjectionModule {
         dataLayer()
 
         factory {
+            HistoryTransactionMapper(
+                userLocalRepository = get(),
+                historyTransactionConverter = HistoryTransactionConverter(),
+                dispatchers = get()
+            )
+        }
+        factory {
             HistoryInteractor(
                 rpcSignatureRepository = get(),
-                historyTransactionsRepository = get()
+                rpcAccountRepository = get(),
+                transactionsRemoteRepository = get(),
+                transactionsLocalRepository = get(),
+                tokenKeyProvider = get(),
+                historyTransactionMapper = get()
             )
         }
         factory { (token: Token.Active) ->
@@ -52,25 +69,24 @@ object HistoryModule : InjectionModule {
     }
 
     private fun Module.dataLayer() {
-        factory { HistoryRemoteRepository(compareApi = get()) } bind HistoryRepository::class
-
-        factory { TransactionDetailsEntityMapper() }
-        factory {
-            HistoryTransactionMapper(
-                userLocalRepository = get(),
-                historyTransactionConverter = HistoryTransactionConverter()
-            )
-        }
+        factory { TransactionDetailsEntityMapper(get()) }
         single {
-            TransactionsHistoryRepository(
-                rpcAccountRepository = get(),
-                rpcHistoryRepository = get(),
-                tokenKeyProvider = get(),
-                transactionDaoDelegate = get(),
-                transactionDetailsMapper = get(),
-                historyTransactionMapper = get(),
-                dispatchers = get()
+            TransactionDetailsDatabaseRepository(
+                daoDelegate = get(),
+                mapper = get()
             )
-        }
+        } bind TransactionDetailsLocalRepository::class
+
+        factory { TransactionDetailsNetworkMapper() }
+        single {
+            val api = get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER))
+                .create(RpcHistoryApi::class.java)
+
+            TransactionDetailsRpcRepository(
+                rpcApi = api,
+                dispatchers = get(),
+                transactionDetailsNetworkMapper = get()
+            )
+        } bind TransactionDetailsRemoteRepository::class
     }
 }

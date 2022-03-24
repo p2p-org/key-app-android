@@ -1,5 +1,6 @@
-package org.p2p.wallet.history.repository
+package org.p2p.wallet.history.repository.local.mapper
 
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.CreateAccountDetails
@@ -8,23 +9,26 @@ import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetailsType
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
-import org.p2p.wallet.history.db.entities.CloseAccountTransactionEntity
-import org.p2p.wallet.history.db.entities.CreateAccountTransactionEntity
-import org.p2p.wallet.history.db.entities.RenBtcBurnOrMintTransactionEntity
-import org.p2p.wallet.history.db.entities.SwapAEntity
-import org.p2p.wallet.history.db.entities.SwapBEntity
-import org.p2p.wallet.history.db.entities.SwapTransactionEntity
-import org.p2p.wallet.history.db.entities.TransactionEntity
-import org.p2p.wallet.history.db.entities.TransferTransactionEntity
-import org.p2p.wallet.history.db.entities.UnknownTransactionEntity
-import org.p2p.wallet.history.db.entities.embedded.CommonTransactionInformationEntity
-import org.p2p.wallet.history.db.entities.embedded.TransactionIdentifiersEntity
-import org.p2p.wallet.history.db.entities.embedded.TransactionTypeEntity
+import org.p2p.wallet.history.repository.local.db.entities.CloseAccountTransactionEntity
+import org.p2p.wallet.history.repository.local.db.entities.CreateAccountTransactionEntity
+import org.p2p.wallet.history.repository.local.db.entities.RenBtcBurnOrMintTransactionEntity
+import org.p2p.wallet.history.repository.local.db.entities.SwapAEntity
+import org.p2p.wallet.history.repository.local.db.entities.SwapBEntity
+import org.p2p.wallet.history.repository.local.db.entities.SwapTransactionEntity
+import org.p2p.wallet.history.repository.local.db.entities.TransactionEntity
+import org.p2p.wallet.history.repository.local.db.entities.TransferTransactionEntity
+import org.p2p.wallet.history.repository.local.db.entities.UnknownTransactionEntity
+import org.p2p.wallet.history.repository.local.db.entities.embedded.CommonTransactionInformationEntity
+import org.p2p.wallet.history.repository.local.db.entities.embedded.TransactionIdentifiersEntity
+import org.p2p.wallet.history.repository.local.db.entities.embedded.TransactionTypeEntity
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.toBase58Instance
 
-class TransactionDetailsEntityMapper {
-    fun mapEntityToDomain(entities: List<TransactionEntity>): List<TransactionDetails> {
-        return entities.map {
+class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatchers) {
+    suspend fun fromEntityToDomain(
+        entities: List<TransactionEntity>
+    ): List<TransactionDetails> = withContext(dispatchers.io) {
+        entities.map {
             when (it) {
                 is CreateAccountTransactionEntity -> {
                     CreateAccountDetails(
@@ -97,8 +101,10 @@ class TransactionDetailsEntityMapper {
         }
     }
 
-    fun mapDomainToEntity(transactions: List<TransactionDetails>): List<TransactionEntity> {
-        return transactions.map {
+    suspend fun fromDomainToEntity(
+        transactions: List<TransactionDetails>
+    ): List<TransactionEntity> = withContext(dispatchers.io) {
+        transactions.map {
             val commonInformation = it.toCommonInformation()
             val identifiers = it.toIdentifiers()
             when (it) {
@@ -184,13 +190,11 @@ class TransactionDetailsEntityMapper {
         )
     }
 
-    private fun TransactionDetailsType.toEntity(): TransactionTypeEntity {
-        return when (this) {
-            TransactionDetailsType.CREATE_ACCOUNT -> TransactionTypeEntity.CREATE_ACCOUNT
-            TransactionDetailsType.UNKNOWN -> TransactionTypeEntity.UNKNOWN
-            TransactionDetailsType.SWAP -> TransactionTypeEntity.SWAP
-            TransactionDetailsType.TRANSFER -> TransactionTypeEntity.TRANSFER
-            TransactionDetailsType.CLOSE_ACCOUNT -> TransactionTypeEntity.CLOSE_ACCOUNT
-        }
+    private fun TransactionDetailsType.toEntity(): TransactionTypeEntity = when (this) {
+        TransactionDetailsType.CREATE_ACCOUNT -> TransactionTypeEntity.CREATE_ACCOUNT
+        TransactionDetailsType.UNKNOWN -> TransactionTypeEntity.UNKNOWN
+        TransactionDetailsType.SWAP -> TransactionTypeEntity.SWAP
+        TransactionDetailsType.TRANSFER -> TransactionTypeEntity.TRANSFER
+        TransactionDetailsType.CLOSE_ACCOUNT -> TransactionTypeEntity.CLOSE_ACCOUNT
     }
 }

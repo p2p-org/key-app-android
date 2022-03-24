@@ -1,11 +1,11 @@
-package org.p2p.wallet.history.db.entities
+package org.p2p.wallet.history.repository.local.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.p2p.wallet.history.db.entities.embedded.CommonTransactionInformationEntity
-import org.p2p.wallet.history.db.entities.embedded.TransactionIdentifiersEntity
+import org.p2p.wallet.history.repository.local.db.entities.embedded.CommonTransactionInformationEntity
+import org.p2p.wallet.history.repository.local.db.entities.embedded.TransactionIdentifiersEntity
 import org.p2p.wallet.utils.Base58String
 
 @Entity(tableName = TransferTransactionEntity.TABLE_NAME)

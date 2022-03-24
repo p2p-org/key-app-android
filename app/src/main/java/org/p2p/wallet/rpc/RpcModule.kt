@@ -4,7 +4,6 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.transaction.mapper.TransactionDetailsNetworkMapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import org.p2p.wallet.rpc.api.RpcAmountApi
@@ -61,7 +60,7 @@ object RpcModule : InjectionModule {
 
         single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java)
-            RpcHistoryRemoteRepository(api, TransactionDetailsNetworkMapper())
+            RpcHistoryRemoteRepository(api)
         } bind RpcHistoryRepository::class
 
         factory {

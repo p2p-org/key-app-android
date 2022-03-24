@@ -10,14 +10,14 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.common.glide.GlideManager
-import org.p2p.wallet.history.db.dao.CloseAccountTransactionsDao
-import org.p2p.wallet.history.db.dao.CreateAccountTransactionsDao
-import org.p2p.wallet.history.db.dao.RenBtcBurnOrMintTransactionsDao
-import org.p2p.wallet.history.db.dao.SwapTransactionsDao
-import org.p2p.wallet.history.db.dao.TransactionDao
-import org.p2p.wallet.history.db.dao.TransactionDaoDelegate
-import org.p2p.wallet.history.db.dao.TransferTransactionsDao
-import org.p2p.wallet.history.db.dao.UnknownTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.CloseAccountTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.CreateAccountTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.RenBtcBurnOrMintTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.SwapTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.TransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.TransactionsDaoDelegate
+import org.p2p.wallet.history.repository.local.db.dao.TransferTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.UnknownTransactionsDao
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_NAME
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -52,7 +52,7 @@ object InfrastructureModule : InjectionModule {
         single { get<WalletDatabase>().unknownTransactionsDao() }
 
         single {
-            val allTransactionDaos: List<TransactionDao<*>> = listOf(
+            val allTransactionDaos: List<TransactionsDao<*>> = listOf(
                 get<CloseAccountTransactionsDao>(),
                 get<CreateAccountTransactionsDao>(),
                 get<SwapTransactionsDao>(),
@@ -60,7 +60,7 @@ object InfrastructureModule : InjectionModule {
                 get<RenBtcBurnOrMintTransactionsDao>(),
                 get<UnknownTransactionsDao>(),
             )
-            TransactionDaoDelegate(allTransactionDaos)
+            TransactionsDaoDelegate(allTransactionDaos)
         }
 
         single {

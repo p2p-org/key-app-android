@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.db.entities.embedded
+package org.p2p.wallet.history.repository.local.db.entities.embedded
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

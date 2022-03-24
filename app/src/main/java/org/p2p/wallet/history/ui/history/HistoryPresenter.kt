@@ -65,7 +65,7 @@ class HistoryPresenter(
             view?.showPagingState(PagingState.InitialLoading)
 
             kotlin.runCatching {
-                historyInteractor.getHistory(
+                historyInteractor.getAllHistoryTransactions(
                     tokenPublicKey = token.publicKey,
                     before = null,
                     limit = PAGE_SIZE,
@@ -107,7 +107,7 @@ class HistoryPresenter(
             try {
                 view?.showRefreshing(true)
                 transactions.clear()
-                val history = historyInteractor.getHistory(token.publicKey, null, PAGE_SIZE, true)
+                val history = historyInteractor.getAllHistoryTransactions(token.publicKey, null, PAGE_SIZE, true)
                 if (history.isEmpty()) {
                     paginationEnded = true
                 } else {
@@ -140,7 +140,12 @@ class HistoryPresenter(
                 view?.showPagingState(PagingState.Loading)
 
                 val lastSignature = transactions.lastOrNull()?.signature
-                val history = historyInteractor.getHistory(token.publicKey, lastSignature, PAGE_SIZE, false)
+                val history = historyInteractor.getAllHistoryTransactions(
+                    tokenPublicKey = token.publicKey,
+                    before = lastSignature,
+                    limit = PAGE_SIZE,
+                    forceRefresh = false
+                )
                 if (history.isEmpty()) {
                     paginationEnded = true
                 } else {

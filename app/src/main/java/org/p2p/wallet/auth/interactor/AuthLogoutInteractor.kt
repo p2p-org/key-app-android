@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.history.repository.TransactionsHistoryRepository
+import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
@@ -24,7 +24,7 @@ class AuthLogoutInteractor(
     private val mainLocalRepository: HomeLocalRepository,
     private val updatesManager: UpdatesManager,
     private val transactionManager: RenTransactionManager,
-    private val transactionsHistoryRepository: TransactionsHistoryRepository,
+    private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
     private val appScope: AppScope,
 ) {
     suspend fun onUserLogout() {
@@ -36,7 +36,7 @@ class AuthLogoutInteractor(
             transactionManager.stop()
             mainLocalRepository.clear()
             renBtcInteractor.clearSession()
-            transactionsHistoryRepository.deleteHistory()
+            transactionDetailsLocalRepository.deleteAll()
             IntercomService.logout()
             RenVMService.stopService(context)
         }
@@ -51,7 +51,7 @@ class AuthLogoutInteractor(
             updatesManager.stop()
             transactionManager.stop()
             renBtcInteractor.clearSession()
-            transactionsHistoryRepository.deleteHistory()
+            transactionDetailsLocalRepository.deleteAll()
             RenVMService.stopService(context)
         }
     }

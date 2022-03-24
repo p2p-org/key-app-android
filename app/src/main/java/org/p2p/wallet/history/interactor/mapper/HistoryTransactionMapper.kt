@@ -1,5 +1,6 @@
-package org.p2p.wallet.history.repository
+package org.p2p.wallet.history.interactor.mapper
 
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
@@ -11,20 +12,22 @@ import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants
 
 class HistoryTransactionMapper(
     private val userLocalRepository: UserLocalRepository,
-    private val historyTransactionConverter: HistoryTransactionConverter
+    private val historyTransactionConverter: HistoryTransactionConverter,
+    private val dispatchers: CoroutineDispatchers,
 ) {
-    fun mapTransactionDetailsToHistoryTransactions(
+    suspend fun mapTransactionDetailsToHistoryTransactions(
         transactions: List<TransactionDetails>,
         accountsInfo: List<Pair<String, AccountInfo>>,
         userPublicKey: String,
         tokenPublicKey: String
-    ): List<HistoryTransaction> {
-        return transactions.mapNotNull { transaction ->
+    ): List<HistoryTransaction> = withContext(dispatchers.io) {
+        transactions.mapNotNull { transaction ->
             when (transaction) {
                 is SwapDetails -> parseOrcaSwapDetails(transaction, accountsInfo, userPublicKey)
                 is BurnOrMintDetails -> parseBurnAndMintDetails(transaction, userPublicKey)

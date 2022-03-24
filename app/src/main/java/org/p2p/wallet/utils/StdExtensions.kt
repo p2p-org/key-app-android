@@ -14,4 +14,9 @@ inline fun <E> List<E>.ifSizeNot(expectedSize: Int, defaultValue: (originalList:
     return if (this.size != expectedSize) defaultValue.invoke(this) else this
 }
 
+inline fun <E> List<E>.ifNotEmpty(action: (originalList: List<E>) -> Unit): List<E> {
+    if (isNotEmpty()) action.invoke(this)
+    return this
+}
+
 inline fun <reified Type> Gson.fromJsonReified(json: String): Type = fromJson(json, Type::class.java)
