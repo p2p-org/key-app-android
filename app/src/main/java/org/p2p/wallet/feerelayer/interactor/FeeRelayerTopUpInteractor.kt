@@ -23,6 +23,7 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.retryRequest
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
@@ -80,15 +81,17 @@ class FeeRelayerTopUpInteractor(
             transferAuthoritySignature = ownerSignature
         )
 
-        return feeRelayerRepository.relayTopUpSwap(
-            userSourceTokenAccountPubkey = sourceToken.address,
-            sourceTokenMintPubkey = sourceToken.mint,
-            userAuthorityPubkey = owner.publicKey.toBase58(),
-            swapData = swapData,
-            feeAmount = expectedFee,
-            signatures = topUpSignatures,
-            blockhash = blockhash.recentBlockhash
-        )
+        return retryRequest {
+            feeRelayerRepository.relayTopUpSwap(
+                userSourceTokenAccountPubkey = sourceToken.address,
+                sourceTokenMintPubkey = sourceToken.mint,
+                userAuthorityPubkey = owner.publicKey.toBase58(),
+                swapData = swapData,
+                feeAmount = expectedFee,
+                signatures = topUpSignatures,
+                blockhash = blockhash.recentBlockhash
+            )
+        }
     }
 
     suspend fun prepareForTopUp(
@@ -158,10 +161,6 @@ class FeeRelayerTopUpInteractor(
 
         // transaction is totally free
         if (neededAmount.total.isZero()) {
-            return neededAmount
-        }
-
-        if (neededAmount.transaction.isZero() && neededAmount.accountBalances.isZero()) {
             return neededAmount
         }
 

@@ -197,22 +197,28 @@ class SendInteractor(
             throw IllegalStateException("You can not send tokens to yourself")
         }
 
-        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
+        val (feePayer, useFeeRelayer) = if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
+            null to false
+        } else {
+            feeRelayerAccountInteractor.getFeePayerPublicKey() to true
+        }
+
+        return if (token.isSOL) {
             prepareNativeSol(
                 destinationAddress = receiver.toPublicKey(),
                 lamports = amount,
-                feePayerPublicKey = null,
+                feePayerPublicKey = feePayer,
                 recentBlockhash = recentBlockhash,
                 lamportsPerSignature = lamportsPerSignature
             )
         } else {
-            val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
             prepareSplToken(
                 mintAddress = token.mintAddress,
                 decimals = token.decimals,
                 fromPublicKey = sender,
                 destinationAddress = receiver,
                 amount = amount,
+                transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
                 feePayerPublicKey = feePayer,
                 recentBlockhash = recentBlockhash,
                 lamportsPerSignature = lamportsPerSignature,
@@ -254,6 +260,7 @@ class SendInteractor(
         fromPublicKey: String,
         destinationAddress: String,
         amount: BigInteger,
+        transferChecked: Boolean,
         feePayerPublicKey: PublicKey? = null,
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null,
@@ -297,15 +304,25 @@ class SendInteractor(
         }
 
         // send instruction
-        val instruction = TokenProgram.createTransferCheckedInstruction(
-            TokenProgram.PROGRAM_ID,
-            fromPublicKey.toPublicKey(),
-            mintAddress.toPublicKey(),
-            splDestinationAddress.destinationAddress,
-            account.publicKey,
-            amount,
-            decimals
-        )
+        val instruction = if (transferChecked) {
+            TokenProgram.createTransferCheckedInstruction(
+                TokenProgram.PROGRAM_ID,
+                fromPublicKey.toPublicKey(),
+                mintAddress.toPublicKey(),
+                splDestinationAddress.destinationAddress,
+                account.publicKey,
+                amount,
+                decimals
+            )
+        } else {
+            TokenProgram.transferInstruction(
+                TokenProgram.PROGRAM_ID,
+                fromPublicKey.toPublicKey(),
+                toPublicKey,
+                account.publicKey,
+                amount
+            )
+        }
 
         instructions += instruction
 
