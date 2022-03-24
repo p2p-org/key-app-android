@@ -86,10 +86,8 @@ class ResetSeedPhraseFragment :
                 phraseAdapter.addSecretKey(SecretKey())
             }
 
-            messageTextView.apply {
-                text = buildSeedInfoText()
-                movementMethod = LinkMovementMethod.getInstance()
-            }
+            messageTextView.text = buildSeedInfoText()
+            messageTextView.movementMethod = LinkMovementMethod.getInstance()
         }
 
         val itemsCount = phraseAdapter.itemCount
@@ -118,7 +116,7 @@ class ResetSeedPhraseFragment :
     private fun buildSeedInfoText(): SpannableString {
         val seedInfo = getString(R.string.settings_what_is_a_security_key)
 
-        val message = StringBuilder().apply {
+        val message = buildString {
             append(getString(R.string.auth_recover_info))
             append("\n\n")
             append(seedInfo)
