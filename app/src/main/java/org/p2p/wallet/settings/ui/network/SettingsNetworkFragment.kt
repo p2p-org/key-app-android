@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.RadioGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import org.p2p.wallet.R
 import org.koin.android.ext.android.inject
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsNetworkBinding
 import org.p2p.wallet.utils.args
@@ -66,7 +67,7 @@ class SettingsNetworkFragment :
         presenter.setNewEnvironment(environment)
     }
 
-    override fun showEnvironment(environment: Environment) {
+    override fun showEnvironment(environment: Environment, isProd: Boolean) {
         val checkedId = when (environment) {
             Environment.SOLANA -> R.id.solanaButton
             Environment.MAINNET -> R.id.mainnetButton
@@ -74,9 +75,12 @@ class SettingsNetworkFragment :
             Environment.DEVNET -> R.id.devnetButton
         }
 
-        binding.networksGroup.setOnCheckedChangeListener(null)
-        binding.networksGroup.check(checkedId)
-        binding.networksGroup.setOnCheckedChangeListener(this)
+        binding.devnetButton.isVisible = !isProd
+        binding.networksGroup.apply {
+            setOnCheckedChangeListener(null)
+            check(checkedId)
+            setOnCheckedChangeListener(this@SettingsNetworkFragment)
+        }
     }
 
     override fun onNetworkChanged(newName: String) {

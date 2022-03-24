@@ -1,14 +1,15 @@
 package org.p2p.wallet.settings.ui.network
 
 import android.content.Context
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.renbtc.service.RenVMService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
+import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.renbtc.service.RenVMService
 import timber.log.Timber
 
 class SettingsNetworkPresenter(
@@ -40,7 +41,7 @@ class SettingsNetworkPresenter(
 
     override fun loadData() {
         val environment = environmentManager.loadEnvironment()
-        view?.showEnvironment(environment)
+        view?.showEnvironment(environment, BuildConfig.IS_PROD)
     }
 
     override fun save() {

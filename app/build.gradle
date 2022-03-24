@@ -80,6 +80,7 @@ android {
             versionNameSuffix ".$VERSION_BUILD-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
             buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+            buildConfigField("boolean", "IS_PROD", "false")
         }
 
         feature {
@@ -93,6 +94,7 @@ android {
 
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
             buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+            buildConfigField("boolean", "IS_PROD", "false")
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
@@ -108,6 +110,7 @@ android {
 
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
             buildConfigField("boolean", "ANALYTICS_ENABLED", "true")
+            buildConfigField("boolean", "IS_PROD", "true")
         }
     }
 
