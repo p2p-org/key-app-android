@@ -37,10 +37,14 @@ class FeeRelayerInterceptor(
             }
             val fullMessage = JSONObject(formattedBody).toString(1)
             val serverError = gson.fromJson(formattedBody, FeeRelayerServerError::class.java)
+            val error = ErrorConverter.fromFeeRelayer(
+                serverError.code,
+                serverError.data?.clientError?.firstOrNull().orEmpty()
+            )
             return ServerException(
-                errorCode = ErrorTypeConverter.fromFeeRelayer(serverError.data?.type ?: FeeRelayerErrorType.UNKNOWN),
+                errorCode = ErrorTypeConverter.fromFeeRelayer(error),
                 fullMessage = fullMessage,
-                errorMessage = serverError.message
+                errorMessage = error.message ?: serverError.message
             )
         } catch (e: Throwable) {
             throw IOException("Error reading response error body", e)
