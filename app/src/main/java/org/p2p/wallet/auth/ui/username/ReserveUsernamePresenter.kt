@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
@@ -14,7 +14,7 @@ import timber.log.Timber
 class ReserveUsernamePresenter(
     private val usernameInteractor: UsernameInteractor,
     private val analytics: OnBoardingAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<ReserveUsernameContract.View>(),
     ReserveUsernameContract.Presenter {
 

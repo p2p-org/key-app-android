@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.analytics.repository
+package org.p2p.wallet.common.analytics.repository
 
 interface AnalyticsLocalRepository {
 

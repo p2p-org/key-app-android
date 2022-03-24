@@ -15,8 +15,8 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentResetSeedPhraseBinding
 import org.p2p.wallet.restore.model.SecretKey
@@ -42,7 +42,7 @@ class ResetSeedPhraseFragment :
 
     override val presenter: ResetSeedPhraseContract.Presenter by inject()
     private val binding: FragmentResetSeedPhraseBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
 
@@ -63,7 +63,7 @@ class ResetSeedPhraseFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_RESET)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.PIN_RESET)
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 popBackStack()

@@ -17,8 +17,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import org.p2p.wallet.utils.PixelCopy
@@ -45,14 +45,14 @@ class SecurityKeyFragment :
     override val presenter: SecurityKeyContract.Presenter by inject()
 
     private val binding: FragmentSecurityKeyBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val keysAdapter: KeysAdapter by lazy {
         KeysAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.CREATE_MANUAL)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.CREATE_MANUAL)
         binding.run {
             toolbar.setNavigationOnClickListener { popBackStack() }
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
@@ -87,7 +87,7 @@ class SecurityKeyFragment :
         val clickableTermsOfUse = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 presenter.openTermsOfUse()
-                analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.TERMS_OF_USE)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.TERMS_OF_USE)
             }
 
             override fun updateDrawState(ds: TextPaint) {

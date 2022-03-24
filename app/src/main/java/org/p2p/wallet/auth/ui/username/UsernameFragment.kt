@@ -6,7 +6,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
@@ -31,7 +31,7 @@ class UsernameFragment :
 
     private val binding: FragmentUsernameBinding by viewBinding()
     private val receiveAnalytics: ReceiveAnalytics by inject()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

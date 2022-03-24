@@ -15,8 +15,8 @@ import org.p2p.wallet.utils.withArgs
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListFragment
@@ -49,18 +49,18 @@ class ReceiveSolanaFragment :
         parametersOf(token)
     }
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.SOLANA)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.SOLANA)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()
             }
             receiveCardView.setOnFaqClickListener {
-                analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.LIST)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.LIST)
                 replaceFragment(TokenListFragment.create())
             }
             receiveCardView.setOnShareQrClickListener { qrValue, qrImage ->

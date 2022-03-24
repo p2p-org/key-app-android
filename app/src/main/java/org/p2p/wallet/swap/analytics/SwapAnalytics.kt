@@ -1,29 +1,29 @@
 package org.p2p.wallet.swap.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_CURRENCY
-import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_TOKEN_A
-import org.p2p.wallet.common.analytics.Events.SWAP_CHANGING_TOKEN_B
-import org.p2p.wallet.common.analytics.Events.SWAP_COMPLETED
-import org.p2p.wallet.common.analytics.Events.SWAP_CREATING_ANOTHER
-import org.p2p.wallet.common.analytics.Events.SWAP_GOING_BACK
-import org.p2p.wallet.common.analytics.Events.SWAP_PROCESS_SHOWN
-import org.p2p.wallet.common.analytics.Events.SWAP_REVERSING
-import org.p2p.wallet.common.analytics.Events.SWAP_REVIEWING
-import org.p2p.wallet.common.analytics.Events.SWAP_REVIEWING_HELP_CLOSED
-import org.p2p.wallet.common.analytics.Events.SWAP_SETTING_SETTINGS
-import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_DETAILS
-import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_HISTORY
-import org.p2p.wallet.common.analytics.Events.SWAP_SHOWING_SETTINGS
-import org.p2p.wallet.common.analytics.Events.SWAP_SHOW_DETAILS_PRESSED
-import org.p2p.wallet.common.analytics.Events.SWAP_STARTED
-import org.p2p.wallet.common.analytics.Events.SWAP_USER_CONFIRMED
-import org.p2p.wallet.common.analytics.Events.SWAP_VERIFICATION_INVOKED
-import org.p2p.wallet.common.analytics.Events.SWAP_VIEWED
-import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_CURRENCY
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_COMPLETED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CREATING_ANOTHER
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_GOING_BACK
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_PROCESS_SHOWN
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_REVERSING
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_REVIEWING
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_REVIEWING_HELP_CLOSED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SETTING_SETTINGS
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_DETAILS
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_HISTORY
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_SETTINGS
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOW_DETAILS_PRESSED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_STARTED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_USER_CONFIRMED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VERIFICATION_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VIEWED
 import java.math.BigDecimal
 
-class SwapAnalytics(private val trackerContract: TrackerContract) {
+class SwapAnalytics(private val trackerContract: Analytics) {
 
     fun logSwapViewed(lastScreenName: String) {
         trackerContract.logEvent(

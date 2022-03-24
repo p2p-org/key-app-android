@@ -4,7 +4,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -58,7 +58,7 @@ class OrcaSwapPresenter(
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val swapAnalytics: SwapAnalytics,
     private val transactionManager: TransactionManager
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {

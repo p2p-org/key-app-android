@@ -1,6 +1,6 @@
-package org.p2p.wallet.common.analytics
+package org.p2p.wallet.common.analytics.constants
 
-object Events {
+object EventNames {
 
     const val BROWSE_TOKEN_LIST_VIEWED = "Token_List_Viewed"
     const val BROWSE_TOKEN_LIST_SCROLLED = "Token_List_Scrolled"

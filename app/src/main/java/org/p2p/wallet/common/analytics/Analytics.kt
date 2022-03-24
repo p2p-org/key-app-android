@@ -1,18 +1,21 @@
 package org.p2p.wallet.common.analytics
 
-class Analytics(
-    private val trackers: Set<TrackerContract>
-) : TrackerContract {
+import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
 
-    override fun logEvent(event: String, params: Map<String, Any>) {
+/**
+ * Single entry point that behaves like a proxy for all AnalyticsTracker impl`s
+ */
+class Analytics(private val trackers: Set<AnalyticsTracker>) {
+
+    fun logEvent(event: String, params: Map<String, Any> = emptyMap()) {
         trackers.forEach { it.logEvent(event, params) }
     }
 
-    override fun logEvent(event: String, params: Array<out Pair<String, Any>>) {
+    fun logEvent(event: String, params: Array<out Pair<String, Any>>) {
         trackers.forEach { it.logEvent(event, params) }
     }
 
-    override fun setUserProperty(key: String, value: String) {
+    fun setUserProperty(key: String, value: String) {
         trackers.forEach { it.setUserProperty(key, value) }
     }
 
@@ -20,19 +23,19 @@ class Analytics(
         setUserProperty(key, if (value) "TRUE" else "FALSE")
     }
 
-    override fun setUserPropertyOnce(key: String, value: String) {
+    fun setUserPropertyOnce(key: String, value: String) {
         trackers.forEach { it.setUserPropertyOnce(key, value) }
     }
 
-    override fun incrementUserProperty(property: String, byValue: Int) {
+    fun incrementUserProperty(property: String, byValue: Int) {
         trackers.forEach { it.incrementUserProperty(property, byValue) }
     }
 
-    override fun setUserId(userId: String?) {
+    fun setUserId(userId: String?) {
         trackers.forEach { it.setUserId(userId) }
     }
 
-    override fun appendToArray(property: String, value: Int) {
+    fun appendToArray(property: String, value: Int) {
         trackers.forEach { it.appendToArray(property, value) }
     }
 }

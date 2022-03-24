@@ -8,8 +8,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.model.SettingsRow
@@ -41,7 +41,7 @@ class SettingsFragment :
 
     private val binding: FragmentSettingsBinding by viewBinding()
     private val adapter = SettingsAdapter(::onItemClickListener, ::onLogoutClickListener)
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,7 +73,7 @@ class SettingsFragment :
     }
 
     override fun showReserveUsername() {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.USERNAME_RESERVE)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.USERNAME_RESERVE)
         replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
     }
 
@@ -99,15 +99,15 @@ class SettingsFragment :
             R.string.settings_username -> presenter.onUsernameClicked()
 
             R.string.settings_wallet_pin -> {
-                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_RESET)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.PIN_RESET)
                 replaceFragment(ResetPinFragment.create(REQUEST_KEY, BUNDLE_KEY_IS_PIN_CHANGED))
             }
             R.string.settings_app_security -> {
-                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.SECURITY)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.SECURITY)
                 replaceFragment(SecurityFragment.create())
             }
             R.string.settings_network -> {
-                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.NETWORK)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.NETWORK)
                 addFragment(
                     SettingsNetworkFragment.create(REQUEST_KEY, BUNDLE_KEY_NEW_NETWORK_NAME),
                     enter = 0,
@@ -117,7 +117,7 @@ class SettingsFragment :
                 )
             }
             R.string.settings_zero_balances -> {
-                analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.ZERO_BALANCES)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.ZERO_BALANCES)
                 addFragment(
                     SettingsZeroBalanceFragment.create(REQUEST_KEY, BUNDLE_KEY_IS_ZERO_BALANCE_VISIBLE),
                     enter = 0,

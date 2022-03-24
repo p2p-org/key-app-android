@@ -3,8 +3,8 @@ package org.p2p.wallet.auth.ui.verify
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import kotlin.random.Random
@@ -16,7 +16,7 @@ private const val KEY_SIZE = 24
 class VerifySecurityKeyPresenter(
     private val secretKeyInteractor: SecretKeyInteractor,
     private val onBoardingAnalytics: OnBoardingAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<VerifySecurityKeyContract.View>(),
     VerifySecurityKeyContract.Presenter {
 
@@ -26,7 +26,7 @@ class VerifySecurityKeyPresenter(
     private val generatedTuples = mutableListOf<SecurityKeyTuple>()
 
     override fun load(selectedKeys: List<String>, shuffle: Boolean) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.SEED_VERIFY)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.SEED_VERIFY)
         launch {
             view?.showLoading(true)
             phrases.addAll(selectedKeys)
@@ -132,7 +132,7 @@ class VerifySecurityKeyPresenter(
                 view?.navigateToReserve()
                 return@launch
             }
-            onBoardingAnalytics.logWalletCreated(lastScreenName = ScreenName.OnBoarding.CREATE_MANUAL)
+            onBoardingAnalytics.logWalletCreated(lastScreenName = ScreenNames.OnBoarding.CREATE_MANUAL)
             view?.showKeysDoesNotMatchError()
             onBoardingAnalytics.logBackingUpRenew()
         }.invokeOnCompletion {

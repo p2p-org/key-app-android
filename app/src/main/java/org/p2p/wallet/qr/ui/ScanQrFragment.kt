@@ -21,8 +21,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.send.analytics.SendAnalytics
 
 class ScanQrFragment :
@@ -39,7 +39,7 @@ class ScanQrFragment :
 
     private var successCallback: ((String) -> Unit)? = null
     private val binding: FragmentScanQrBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private var isPermissionsRequested = false
     private var isCameraStarted = false
     private var onBackPressedCallback: OnBackPressedCallback? = null
@@ -62,7 +62,7 @@ class ScanQrFragment :
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
             onBackPressed()
         }
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.QR_CAMERA)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.QR_CAMERA)
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
             closeImageView.setOnClickListener { onBackPressed() }

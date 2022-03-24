@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.analytics
+package org.p2p.wallet.common.analytics.trackers
 
 import android.app.Application
 import com.amplitude.api.Amplitude
@@ -7,7 +7,7 @@ import org.json.JSONObject
 import org.p2p.wallet.BuildConfig
 import timber.log.Timber
 
-class AmplitudeTracker(app: Application) : TrackerContract {
+class AmplitudeTracker(app: Application) : AnalyticsTracker {
 
     private val amplitude =
         Amplitude.getInstance()
