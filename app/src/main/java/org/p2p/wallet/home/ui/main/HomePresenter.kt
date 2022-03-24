@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.ui.main
 
-import android.content.SharedPreferences
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
