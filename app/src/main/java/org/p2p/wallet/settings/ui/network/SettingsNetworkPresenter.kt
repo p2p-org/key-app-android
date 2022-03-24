@@ -1,13 +1,11 @@
 package org.p2p.wallet.settings.ui.network
 
 import android.content.Context
-import android.content.SharedPreferences
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.common.AppSettings
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.debugdrawer.KEY_IS_PROD
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
@@ -16,7 +14,7 @@ import timber.log.Timber
 
 class SettingsNetworkPresenter(
     private val context: Context,
-    private val sharedPreferences: SharedPreferences,
+    private val appSettings: AppSettings,
     private val mainLocalRepository: HomeLocalRepository,
     private val environmentManager: EnvironmentManager,
     private val analytics: BrowseAnalytics
@@ -44,7 +42,7 @@ class SettingsNetworkPresenter(
 
     override fun loadData() {
         val environment = environmentManager.loadEnvironment()
-        view?.showEnvironment(environment, sharedPreferences.getBoolean(KEY_IS_PROD, BuildConfig.IS_PROD))
+        view?.showEnvironment(environment, appSettings.isProd)
     }
 
     override fun save() {

@@ -8,9 +8,9 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.AppSettings
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
-import org.p2p.wallet.debugdrawer.KEY_POLLING_ENABLED
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
@@ -29,13 +29,12 @@ private const val DELAY_MS = 10000L
 private const val BANNER_START_INDEX = 2
 
 class HomePresenter(
+    private val appSettings: AppSettings,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider
-
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     companion object {
@@ -201,7 +200,7 @@ class HomePresenter(
             try {
                 while (true) {
                     delay(DELAY_MS)
-                    val isPollingEnabled = sharedPreferences.getBoolean(KEY_POLLING_ENABLED, true)
+                    val isPollingEnabled = appSettings.isPoolingEnabled
                     if (isPollingEnabled) {
                         userInteractor.loadUserTokensAndUpdateData()
                         Timber.d("Successfully updated loaded tokens")

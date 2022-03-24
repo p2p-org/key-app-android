@@ -10,7 +10,12 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
+import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.AnalyticsModule
+import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.TrackerFactory
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.TimberCrashTree
 import org.p2p.wallet.debugdrawer.DebugDrawer
