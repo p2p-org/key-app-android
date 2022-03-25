@@ -31,12 +31,21 @@ class HistoryAdapter(
     private val currentItems = mutableListOf<HistoryItem>()
     private val pagingController = HistoryAdapterPagingController(this)
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setTransactions(newTransactions: List<HistoryTransaction>) {
-        val old = ArrayList(currentItems)
+        // force notifyDataSetChanged
+        // to fix jumping into the middle because of DiffUtil
+        if (currentItems.size == 0) {
+            currentItems.addAll(newTransactions.mapToItems())
+            notifyDataSetChanged()
+            return
+        }
+
+        val oldItems = ArrayList(currentItems)
         currentItems.clear()
         currentItems.addAll(newTransactions.mapToItems())
 
-        DiffUtil.calculateDiff(getDiffCallback(old, currentItems))
+        DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
             .dispatchUpdatesTo(this)
     }
 

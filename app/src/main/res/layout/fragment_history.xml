@@ -116,6 +116,7 @@
                 android:clipToPadding="false"
                 android:orientation="vertical"
                 android:paddingTop="24dp"
+                android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_transaction" />
 
