@@ -560,7 +560,7 @@ class SendPresenter(
         )
 
         if (fees == null) {
-            view?.showAccountFeeView(fee = null, isSourceSOL = token?.isSOL == true)
+            view?.showAccountFeeView(fee = null)
             return
         }
 
@@ -571,7 +571,7 @@ class SendPresenter(
         }
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
-        view?.showAccountFeeView(fee, isSourceSOL = token?.isSOL == true)
+        view?.showAccountFeeView(fee)
 
         calculateTotal(fee)
     }
