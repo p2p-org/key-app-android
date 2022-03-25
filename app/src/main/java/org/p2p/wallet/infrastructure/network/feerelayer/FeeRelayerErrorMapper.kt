@@ -3,7 +3,7 @@ package org.p2p.wallet.infrastructure.network.feerelayer
 import org.p2p.wallet.utils.emptyString
 import java.util.Locale
 
-object ErrorConverter {
+object FeeRelayerErrorMapper {
 
     private const val programFailed = "Program failed to complete: "
     private const val programError = "Program log: Error: "
@@ -25,11 +25,11 @@ object ErrorConverter {
     fun fromFeeRelayer(code: Int, rawError: String): FeeRelayerError {
         val logRegex = Regex("\"(?:Program|Transfer:) [^\"]+\"")
         val matches = logRegex.findAll(rawError)
-        val logs = matches.map { match ->
+        val logs = matches.flatMap { match ->
             match.groupValues.map { value ->
                 value.replace("\"", "")
             }
-        }.toList().flatten()
+        }.toList()
         val currentLog = logs.findFirstValidLog(errorPrefixes)
 
         val codeRegex = Regex("$codePrefix-?\\d+")
@@ -38,8 +38,7 @@ object ErrorConverter {
                 it.groupValues
             }.toList()
             .flatten()
-            .firstOrNull()
-            .toString()
+            .firstOrNull()?.toString().orEmpty()
             .replace(codePrefix, emptyString())
             .toIntOrNull()
         return FeeRelayerError(
@@ -61,14 +60,8 @@ object ErrorConverter {
         }
     }
 
-    private fun List<String>.findFirstValidLog(prefixes: List<String>): String? {
-        forEach { log ->
-            if (log.containsAnyOf(prefixes)) {
-                return log
-            }
-        }
-        return null
-    }
+    private fun List<String>.findFirstValidLog(prefixes: List<String>): String? =
+        firstOrNull { it.containsAnyOf(prefixes) }
 
     private fun escapeAndCapitalizeFirstCharOfLog(log: String?): String? {
         return log.escapePrefixes(escapePrefixes)?.replaceFirstChar {
@@ -88,10 +81,5 @@ object ErrorConverter {
         return resultMessage
     }
 
-    private fun String.containsAnyOf(keywords: List<String>): Boolean {
-        for (keyword in keywords) {
-            if (contains(keyword)) return true
-        }
-        return false
-    }
+    private fun String.containsAnyOf(keywords: List<String>): Boolean = keywords.any { contains(it) }
 }

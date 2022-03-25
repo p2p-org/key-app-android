@@ -37,7 +37,7 @@ class FeeRelayerInterceptor(
             }
             val fullMessage = JSONObject(formattedBody).toString(1)
             val serverError = gson.fromJson(formattedBody, FeeRelayerServerError::class.java)
-            val error = ErrorConverter.fromFeeRelayer(
+            val error = FeeRelayerErrorMapper.fromFeeRelayer(
                 serverError.code,
                 serverError.data?.clientError?.firstOrNull().orEmpty()
             )

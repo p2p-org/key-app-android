@@ -11,11 +11,15 @@ object ErrorTypeConverter {
         return when (error.type) {
             FeeRelayerErrorType.SLIPPAGE_LIMIT -> ErrorCode.SLIPPAGE_LIMIT
             FeeRelayerErrorType.INSUFFICIENT_FUNDS -> ErrorCode.INSUFFICIENT_FUNDS
-            else -> when (error.code) {
-                INVALID_TRANSACTION_ERROR_CODE -> ErrorCode.INVALID_TRANSACTION
-                TRANSACTION_SIMULATION_FAILED_ERROR_CODE -> ErrorCode.TRANSACTION_SIMULATION_FAILED
-                else -> ErrorCode.SERVER_ERROR
-            }
+            else -> fromFeeRelayerErrorCode(error.code)
+        }
+    }
+
+    private fun fromFeeRelayerErrorCode(errorCode: Int): ErrorCode {
+        return when (errorCode) {
+            INVALID_TRANSACTION_ERROR_CODE -> ErrorCode.INVALID_TRANSACTION
+            TRANSACTION_SIMULATION_FAILED_ERROR_CODE -> ErrorCode.TRANSACTION_SIMULATION_FAILED
+            else -> ErrorCode.SERVER_ERROR
         }
     }
 
