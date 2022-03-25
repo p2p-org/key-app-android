@@ -34,11 +34,13 @@ object FeeRelayerErrorMapper {
 
         val codeRegex = Regex("$codePrefix-?\\d+")
         val feeRelayerCode = codeRegex.findAll(rawError)
-            .map {
+            .flatMap {
                 it.groupValues
-            }.toList()
-            .flatten()
-            .firstOrNull()?.toString().orEmpty()
+            }
+            .toList()
+            .firstOrNull()
+            ?.toString()
+            .orEmpty()
             .replace(codePrefix, emptyString())
             .toIntOrNull()
         return FeeRelayerError(
