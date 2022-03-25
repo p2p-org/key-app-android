@@ -140,16 +140,16 @@ class HistoryPresenter(
                 view?.showPagingState(PagingState.Loading)
 
                 val lastSignature = transactions.lastOrNull()?.signature
-                val history = historyInteractor.getAllHistoryTransactions(
+                val newHistoryPage = historyInteractor.getAllHistoryTransactions(
                     tokenPublicKey = token.publicKey,
                     before = lastSignature,
                     limit = PAGE_SIZE,
                     forceRefresh = false
                 )
-                if (history.isEmpty()) {
+                if (newHistoryPage.isEmpty()) {
                     paginationEnded = true
                 } else {
-                    transactions.addAll(history)
+                    transactions.addAll(newHistoryPage)
                     view?.showHistory(transactions)
                 }
 
@@ -223,7 +223,7 @@ class HistoryPresenter(
                 }
             }
 
-            view?.showDetails(transaction)
+            view?.openTransactionDetailsScreen(transaction)
         }
     }
 

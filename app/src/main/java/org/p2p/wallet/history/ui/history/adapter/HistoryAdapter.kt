@@ -1,82 +1,66 @@
 package org.p2p.wallet.history.ui.history.adapter
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameAs
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.ui.history.adapter.holders.DateViewHolder
+import org.p2p.wallet.history.ui.history.adapter.holders.EmptyViewHolder
+import org.p2p.wallet.history.ui.history.adapter.holders.ErrorViewHolder
+import org.p2p.wallet.history.ui.history.adapter.holders.HistoryTransactionViewHolder
+import org.p2p.wallet.history.ui.history.adapter.holders.ProgressViewHolder
+import org.p2p.wallet.history.ui.history.adapter.holders.TransactionViewHolder
+import org.p2p.wallet.utils.NoOp
+
+private const val TRANSACTION_VIEW_TYPE = 1
+private const val HISTORY_EMPTY_VIEW_TYPE = 2
+private const val HISTORY_DATE_VIEW_TYPE = 3
+private const val PROGRESS_VIEW_TYPE = 4
+private const val ERROR_VIEW_TYPE = 5
 
 class HistoryAdapter(
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
     private val onRetryClicked: () -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
 
-    companion object {
-        private val noAdditionalItemRequiredState = listOf(PagingState.Idle)
+    private val currentItems = mutableListOf<HistoryItem>()
+    private val pagingController = HistoryAdapterPagingController(this)
+
+    fun setTransactions(newTransactions: List<HistoryTransaction>) {
+        val old = ArrayList(currentItems)
+        currentItems.clear()
+        currentItems.addAll(newTransactions.mapToItems())
+
+        DiffUtil.calculateDiff(getDiffCallback(old, currentItems))
+            .dispatchUpdatesTo(this)
     }
 
-    private var data: MutableList<HistoryItem> = mutableListOf()
-    private var pagingState: PagingState = PagingState.Idle
-
-    fun setTransactions(new: List<HistoryTransaction>) {
-        val old = ArrayList(data)
-        data.clear()
-        data.addAll(mapTransactions(new))
-        DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)
-    }
-
-    fun setPagingState(newState: PagingState) {
-        if (pagingState::class.java == newState::class.java) return
-        val shouldHasExtraItem = stateRequiresExtraItem(newState)
-        val hasExtraItem = stateRequiresExtraItem(pagingState)
-
-        pagingState = newState
-
-        // since item count is a function - cache its value.
-        val count = itemCount
-        when {
-            hasExtraItem && shouldHasExtraItem -> notifyItemChanged(count - 1)
-            hasExtraItem && !shouldHasExtraItem -> notifyItemRemoved(count - 1)
-            !hasExtraItem && shouldHasExtraItem -> notifyItemInserted(count)
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        when (viewType) {
-            R.layout.item_transaction -> TransactionViewHolder(parent, onTransactionClicked)
-            R.layout.item_history_empty -> EmptyViewHolder(parent)
-            R.layout.item_history_date -> DateViewHolder(parent)
-            R.layout.item_progress -> ProgressViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionViewHolder {
+        return when (viewType) {
+            TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, onTransactionClicked)
+            HISTORY_EMPTY_VIEW_TYPE -> EmptyViewHolder(parent)
+            HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
+            PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)
             else -> ErrorViewHolder(parent)
         }
+    }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: HistoryTransactionViewHolder, position: Int) {
         when (holder) {
-            is TransactionViewHolder -> holder.onBind(data[position] as HistoryItem.TransactionItem)
-            is DateViewHolder -> holder.onBind(data[position] as HistoryItem.DateItem)
-            is ErrorViewHolder -> {
-                val item = pagingState as? PagingState.Error
-                if (item != null) {
-                    holder.onBind(item.e.message.orEmpty(), onRetryClicked)
-                } else {
-                    holder.onBind(R.string.error_general_message, onRetryClicked)
-                }
-            }
-            is ProgressViewHolder -> {
-                // do nothing
-            }
-            is EmptyViewHolder -> {
-                // do nothing
-            }
+            is TransactionViewHolder -> holder.onBind(currentItems[position] as HistoryItem.TransactionItem)
+            is DateViewHolder -> holder.onBind(currentItems[position] as HistoryItem.DateItem)
+            is ErrorViewHolder -> holder.onBind(pagingController.currentPagingState, onRetryClicked)
+            else -> NoOp
         }
     }
 
     override fun getItemId(position: Int): Long {
-        return when (val item = if (position < data.size) data[position] else null) {
+        return when (val item = currentItems.getOrNull(position)) {
             is HistoryItem.TransactionItem -> item.transaction.signature.hashCode().toLong()
             is HistoryItem.DateItem -> item.date.hashCode().toLong()
             is HistoryItem.Empty -> position.hashCode().toLong()
@@ -84,40 +68,49 @@ class HistoryAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int = when {
-        !stateRequiresExtraItem(pagingState) || position < itemCount - 1 -> getAdapterViewType(position)
-        pagingState is PagingState.Loading || pagingState is PagingState.InitialLoading -> R.layout.item_progress
-        else -> R.layout.item_error
-    }
+    override fun getItemViewType(position: Int): Int {
+        val preLastItemPosition = itemCount - 1
 
-    override fun getItemCount(): Int =
-        data.size + if (stateRequiresExtraItem(pagingState)) 1 else 0
-
-    private fun stateRequiresExtraItem(state: PagingState) = state !in noAdditionalItemRequiredState
-
-    private fun getAdapterViewType(position: Int): Int = when (data[position]) {
-        is HistoryItem.DateItem -> R.layout.item_history_date
-        is HistoryItem.TransactionItem -> R.layout.item_transaction
-        is HistoryItem.Empty -> R.layout.item_history_empty
-    }
-
-    private fun mapTransactions(new: List<HistoryTransaction>): List<HistoryItem> =
-        new.withIndex().flatMap { (i, transaction) ->
-            when {
-                i > 0 && new[i - 1].date.isSameDayAs(transaction.date) ->
-                    listOf(HistoryItem.TransactionItem(transaction))
-                else ->
-                    listOf(
-                        HistoryItem.DateItem(transaction.date),
-                        HistoryItem.TransactionItem(transaction)
-                    )
-            }
+        // todo: refactor to AdapterDelegate
+        //  and create item list with progress item inside instead of implicitly adding it here
+        return when {
+            !pagingController.stateRequiresLoadingItem() || position < preLastItemPosition -> getAdapterViewType(
+                position
+            )
+            pagingController.isPagingInProgress() -> PROGRESS_VIEW_TYPE
+            else -> ERROR_VIEW_TYPE
         }
+    }
+
+    override fun getItemCount(): Int {
+        val additionalItemSize = if (pagingController.stateRequiresLoadingItem()) 1 else 0
+        return currentItems.size + additionalItemSize
+    }
+
+    private fun getAdapterViewType(position: Int): Int {
+        return when (currentItems[position]) {
+            is HistoryItem.DateItem -> HISTORY_DATE_VIEW_TYPE
+            is HistoryItem.TransactionItem -> TRANSACTION_VIEW_TYPE
+            is HistoryItem.Empty -> HISTORY_EMPTY_VIEW_TYPE
+        }
+    }
+
+    private fun List<HistoryTransaction>.mapToItems(): List<HistoryItem> = flatMapIndexed { i, transaction ->
+        val isCurrentAndPreviousTransactionOnSameDay = i > 0 && get(i - 1).date.isSameDayAs(transaction.date)
+        if (isCurrentAndPreviousTransactionOnSameDay) {
+            listOf(HistoryItem.TransactionItem(transaction))
+        } else {
+            listOf(
+                HistoryItem.DateItem(transaction.date),
+                HistoryItem.TransactionItem(transaction)
+            )
+        }
+    }
 
     private fun getDiffCallback(
         oldList: List<HistoryItem>,
         newList: List<HistoryItem>
-    ) = object : DiffUtil.Callback() {
+    ): DiffUtil.Callback = object : DiffUtil.Callback() {
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
@@ -127,7 +120,8 @@ class HistoryAdapter(
                     oldItem.transaction.signature == newItem.transaction.signature
                 oldItem is HistoryItem.DateItem && newItem is HistoryItem.DateItem ->
                     oldItem.date.isSameAs(newItem.date)
-                else -> oldItem == newItem
+                else ->
+                    oldItem == newItem
             }
         }
 
@@ -140,5 +134,9 @@ class HistoryAdapter(
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
+    }
+
+    fun setPagingState(newState: PagingState) {
+        pagingController.setPagingState(newState)
     }
 }
