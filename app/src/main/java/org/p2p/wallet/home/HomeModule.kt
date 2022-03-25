@@ -55,7 +55,7 @@ object HomeModule : InjectionModule {
         /* Cached data exists, therefore creating singleton */
         single {
             HomePresenter(
-                appSettings = get(),
+                appFeatureFlags = get(),
                 updatesManager = get(),
                 userInteractor = get(),
                 settingsInteractor = get(),

@@ -44,9 +44,9 @@ android {
             buildConfigField("String", "intercomAppId", "\"\"")
             buildConfigField("String", "amplitudeKey", "\"\"")
         }
-        buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
+        buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
-        buildConfigField("boolean", "IS_PROD", "false")
+        buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
 
         javaCompileOptions {
@@ -80,6 +80,7 @@ android {
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-debug"
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
         }
 
         feature {
@@ -103,9 +104,8 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
             buildConfigField("boolean", "ANALYTICS_ENABLED", "true")
-            buildConfigField("boolean", "IS_PROD", "true")
+            buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
         }
     }
 

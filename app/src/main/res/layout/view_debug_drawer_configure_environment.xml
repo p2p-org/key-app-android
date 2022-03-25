@@ -47,7 +47,7 @@
         android:layout_marginTop="8dp"
         android:checked="true"
         android:paddingHorizontal="16dp"
-        android:text="Enable prod env simulation"
+        android:text="Enable DevNet env"
         tools:ignore="HardcodedText" />
 
 </LinearLayout>

@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.AppSettings
+import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.home.model.Banner
@@ -28,7 +28,7 @@ private const val DELAY_MS = 10000L
 private const val BANNER_START_INDEX = 2
 
 class HomePresenter(
-    private val appSettings: AppSettings,
+    private val appFeatureFlags: AppFeatureFlags,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
@@ -199,7 +199,7 @@ class HomePresenter(
             try {
                 while (true) {
                     delay(DELAY_MS)
-                    val isPollingEnabled = appSettings.isPoolingEnabled
+                    val isPollingEnabled = appFeatureFlags.isPollingEnabled
                     if (isPollingEnabled) {
                         userInteractor.loadUserTokensAndUpdateData()
                         Timber.d("Successfully updated loaded tokens")

@@ -67,7 +67,7 @@ class SettingsNetworkFragment :
         presenter.setNewEnvironment(environment)
     }
 
-    override fun showEnvironment(environment: Environment, isProd: Boolean) {
+    override fun showEnvironment(environment: Environment, isDevnetEnabled: Boolean) {
         val checkedId = when (environment) {
             Environment.SOLANA -> R.id.solanaButton
             Environment.MAINNET -> R.id.mainnetButton
@@ -75,7 +75,7 @@ class SettingsNetworkFragment :
             Environment.DEVNET -> R.id.devnetButton
         }
 
-        binding.devnetButton.isVisible = !isProd
+        binding.devnetButton.isVisible = isDevnetEnabled
         binding.networksGroup.apply {
             setOnCheckedChangeListener(null)
             check(checkedId)

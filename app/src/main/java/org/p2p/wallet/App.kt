@@ -11,6 +11,7 @@ import org.koin.core.context.startKoin
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.analytics.TrackerContract

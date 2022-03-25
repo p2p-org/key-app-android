@@ -7,7 +7,7 @@ import org.p2p.solanaj.rpc.Environment
 interface SettingsNetworkContract {
 
     interface View : MvpView {
-        fun showEnvironment(environment: Environment, isProd: Boolean)
+        fun showEnvironment(environment: Environment, isDevnetEnabled: Boolean)
         fun onNetworkChanged(newName: String)
     }
 

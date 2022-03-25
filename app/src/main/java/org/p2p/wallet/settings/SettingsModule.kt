@@ -44,7 +44,7 @@ object SettingsModule : InjectionModule {
         factory {
             SettingsNetworkPresenter(
                 context = get(),
-                appSettings = get(),
+                appFeatureFlags = get(),
                 mainLocalRepository = get(),
                 environmentManager = get(),
                 analytics = get()
