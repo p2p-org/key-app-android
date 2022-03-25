@@ -46,7 +46,7 @@ class TransactionDetailsPresenter(
                  * therefore we are giving some time to make our request not fail
                  * */
                 delay(DELAY_IN_MS)
-                val details = historyInteractor.getConfirmedTransaction(state.transactionId, state.transactionId)
+                val details = historyInteractor.getHistoryTransaction(state.transactionId, state.transactionId)
 
                 if (details != null) {
                     handleHistory(details)

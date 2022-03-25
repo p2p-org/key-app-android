@@ -3,12 +3,12 @@ package org.p2p.solanaj.model.types
 import com.google.gson.annotations.SerializedName
 import java.util.AbstractMap
 
-data class SignatureInformation constructor(
+data class SignatureInformationResponse constructor(
     @SerializedName("memo")
     val memo: Any?,
 
     @SerializedName("err")
-    val err: Any?,
+    val transactionFailure: Any?,
 
     @SerializedName("signature")
     val signature: String,

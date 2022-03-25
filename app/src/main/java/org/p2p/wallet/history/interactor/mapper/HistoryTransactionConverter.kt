@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.model
+package org.p2p.wallet.history.interactor.mapper
 
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
@@ -6,6 +6,9 @@ import org.p2p.solanaj.kits.transaction.CreateAccountDetails
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.RenBtcType
+import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.fromLamports
@@ -18,10 +21,10 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 
-object TransactionConverter {
+class HistoryTransactionConverter {
 
     /* Swap transaction */
-    fun fromNetwork(
+    fun mapSwapTransactionToHistory(
         response: SwapDetails,
         sourceData: TokenData,
         destinationData: TokenData,
@@ -32,32 +35,28 @@ object TransactionConverter {
         HistoryTransaction.Swap(
             signature = response.signature,
             sourceAddress = sourcePublicKey,
-            destinationAddress = response.destination,
+            destinationAddress = response.destination.orEmpty(),
             fee = response.fee.toBigInteger(),
             blockNumber = response.slot,
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+                Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
             amountA = response.amountA
-                .toBigInteger()
-                .fromLamports(sourceData.decimals)
+                .toBigDecimalFromLamports(sourceData.decimals)
                 .scaleLong(),
             amountB = response.amountB
-                .toBigInteger()
-                .fromLamports(destinationData.decimals)
+                .toBigDecimalFromLamports(destinationData.decimals)
                 .scaleLong(),
             amountSentInUsd = sourceRate?.let {
                 response.amountA
-                    .toBigInteger()
-                    .fromLamports(sourceData.decimals)
+                    .toBigDecimalFromLamports(sourceData.decimals)
                     .times(it.price)
                     .scaleShort()
             },
             amountReceivedInUsd = destinationRate?.let {
                 response.amountB
-                    .toBigInteger()
-                    .fromLamports(destinationData.decimals)
+                    .toBigDecimalFromLamports(destinationData.decimals)
                     .times(it.price)
                     .scaleShort()
             },
@@ -67,19 +66,23 @@ object TransactionConverter {
             destinationIconUrl = destinationData.iconUrl.orEmpty()
         )
 
+    private fun String.toBigDecimalFromLamports(decimals: Int): BigDecimal =
+        toBigInteger()
+            .fromLamports(decimals)
+
     /* Burn or mint transaction */
-    fun fromNetwork(
+    fun mapBurnOrMintTransactionToHistory(
         response: BurnOrMintDetails,
         userPublicKey: String,
         rate: TokenPrice?
     ): HistoryTransaction {
         val date = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+            Instant.ofEpochMilli(response.blockTimeMillis),
             ZoneId.systemDefault()
         )
 
         val amount = rate?.price?.let {
-            BigDecimal(response.amount)
+            BigDecimal(response.uiAmount)
                 .scaleMedium()
                 .times(it)
                 .scaleShort()
@@ -90,18 +93,18 @@ object TransactionConverter {
         return HistoryTransaction.BurnOrMint(
             signature = response.signature,
             blockNumber = response.slot,
-            destination = destination,
-            senderAddress = senderAddress,
+            destination = destination.orEmpty(),
+            senderAddress = senderAddress.orEmpty(),
             fee = response.fee.toBigInteger(),
             totalInUsd = amount,
-            total = response.amount.toBigDecimalOrZero(),
+            total = response.uiAmount.toBigDecimalOrZero(),
             date = date,
             type = RenBtcType.BURN
         )
     }
 
     /* Transfer transaction */
-    fun fromNetwork(
+    fun mapTransferTransactionToHistory(
         response: TransferDetails,
         tokenData: TokenData,
         directPublicKey: String,
@@ -120,64 +123,69 @@ object TransactionConverter {
             response.source
         }
         val amount = rate?.price?.let {
-            BigDecimal(response.amount).toBigInteger()
+            response.amount.toBigDecimalOrZero()
+                .toBigInteger()
                 .fromLamports(response.decimals)
                 .scaleLong()
                 .times(it)
         }
 
         val date = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+            Instant.ofEpochMilli(response.blockTimeMillis),
             ZoneId.systemDefault()
         )
         return HistoryTransaction.Transfer(
             signature = response.signature,
             blockNumber = response.slot,
-            destination = if (isSend) response.destination else publicKey,
+            destination = if (isSend) response.destination.orEmpty() else publicKey,
             fee = response.fee.toBigInteger(),
             type = if (isSend) TransferType.SEND else TransferType.RECEIVE,
-            senderAddress = senderAddress,
+            senderAddress = senderAddress.orEmpty(),
             tokenData = tokenData,
             totalInUsd = amount,
-            total = response.amount.toBigInteger().fromLamports(response.decimals),
+            total = response.amount
+                ?.toBigInteger()
+                ?.fromLamports(response.decimals)
+                ?: BigDecimal.ZERO,
             date = date
         )
     }
 
     /* Create account transaction */
-    fun fromNetwork(response: CreateAccountDetails): HistoryTransaction =
+    fun mapCreateAccountTransactionToHistory(response: CreateAccountDetails): HistoryTransaction =
         HistoryTransaction.CreateAccount(
             signature = response.signature,
             blockNumber = response.slot,
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+                Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
             fee = response.fee.toBigInteger()
         )
 
     /* Close account transaction */
-    fun fromNetwork(response: CloseAccountDetails, symbol: String): HistoryTransaction =
+    fun mapCloseAccountTransactionToHistory(response: CloseAccountDetails, symbol: String): HistoryTransaction =
         HistoryTransaction.CloseAccount(
             signature = response.signature,
             blockNumber = response.slot,
-            account = response.account,
-            mint = response.mint,
+            account = response.account.orEmpty(),
+            mint = response.mint.orEmpty(),
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()),
+                Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
             tokenSymbol = symbol
         )
 
     /* Unknown transaction */
-    fun fromNetwork(
+    fun mapUnknownTransactionToHistory(
         response: UnknownDetails
     ): HistoryTransaction =
         HistoryTransaction.Unknown(
             signature = response.signature,
             date = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(response.getBlockTimeInMillis()), ZoneId.systemDefault()
+                Instant.ofEpochMilli(response.blockTimeMillis),
+                ZoneId.systemDefault()
             ),
             blockNumber = response.slot,
         )
