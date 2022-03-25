@@ -28,7 +28,7 @@ class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
 
             enableProdEnvSwitch.isChecked = appFeatureFlags.isDevnetEnabled
             enableProdEnvSwitch.setOnCheckedChangeListener { _, isChecked ->
-                appFeatureFlags.setIsProd(isChecked)
+                appFeatureFlags.setIsDevnetEnabled(isChecked)
             }
         }
 

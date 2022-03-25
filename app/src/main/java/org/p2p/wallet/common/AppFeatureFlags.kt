@@ -19,7 +19,7 @@ class AppFeatureFlags(private val sharedPreferences: SharedPreferences) {
     val isDevnetEnabled: Boolean
         get() = sharedPreferences.getBoolean(KEY_DEV_NET_ENABLED, BuildConfig.KEY_DEV_NET_ENABLED)
 
-    fun setIsProd(isProd: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_DEV_NET_ENABLED, isProd) }
+    fun setIsDevnetEnabled(isDevnetEnabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_DEV_NET_ENABLED, isDevnetEnabled) }
     }
 }
