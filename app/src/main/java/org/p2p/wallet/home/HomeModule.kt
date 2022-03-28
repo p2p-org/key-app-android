@@ -53,7 +53,16 @@ object HomeModule : InjectionModule {
         factory { HomeDatabaseRepository(get()) } bind HomeLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { HomePresenter(get(), get(), get(), get(), get(), get()) } bind HomeContract.Presenter::class
+        factory {
+            HomePresenter(
+                updatesManager = get(),
+                userInteractor = get(),
+                settingsInteractor = get(),
+                usernameInteractor = get(),
+                sharedPreferences = get(),
+                tokenKeyProvider = get()
+            )
+        } bind HomeContract.Presenter::class
         single {
             SendInteractor(
                 addressInteractor = get(),

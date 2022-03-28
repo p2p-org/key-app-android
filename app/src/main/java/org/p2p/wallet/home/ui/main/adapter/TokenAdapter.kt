@@ -17,7 +17,7 @@ class TokenAdapter(
 
     fun setItems(new: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
         this.isZerosHidden = isZerosHidden
-        val old = ArrayList(data)
+        val old = data.toMutableList()
         data.clear()
         data.addAll(mapGroups(new, state))
         DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)

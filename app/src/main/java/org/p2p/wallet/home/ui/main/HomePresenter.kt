@@ -64,7 +64,7 @@ class HomePresenter(
         updatesManager.start()
         loadData()
         username = usernameInteractor.getUsername()
-        IntercomService.signIn(tokenKeyProvider.publicKey) {}
+        IntercomService.signIn(tokenKeyProvider.publicKey)
     }
 
     override fun onBuyClicked() {
@@ -175,6 +175,7 @@ class HomePresenter(
     private fun loadData() {
         if (tokens.isNotEmpty()) {
             startPolling()
+            showTokens(tokens)
             return
         }
 
