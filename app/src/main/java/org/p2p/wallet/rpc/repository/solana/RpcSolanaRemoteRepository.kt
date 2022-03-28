@@ -63,16 +63,17 @@ class RpcSolanaRemoteRepository(
         return result
     }
 
-    override suspend fun getQueryMint(params: HashMap<String, String>): ResponseQueryTxMint =
-        api.queryMint(RpcRequest2(method = "ren_queryTx", params = params)).result
+    override suspend fun getQueryMint(baseUrl: String, params: HashMap<String, String>): ResponseQueryTxMint =
+        api.queryMint(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_queryTx", params = params)).result
 
-    override suspend fun getQueryBlockState(): ResponseQueryBlockState =
-        api.queryBlockState(RpcRequest2(method = "ren_queryBlockState", emptyMap())).result
+    override suspend fun getQueryBlockState(baseUrl: String): ResponseQueryBlockState =
+        api.queryBlockState(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_queryBlockState", emptyMap())).result
 
-    override suspend fun getQueryConfig(): ResponseQueryConfig =
-        api.queryConfig(RpcRequest2(method = "ren_queryConfig", params = emptyMap())).result
+    override suspend fun getQueryConfig(baseUrl: String): ResponseQueryConfig =
+        api.queryConfig(url = baseUrl, rpcReuest = RpcRequest2(method = "ren_queryConfig", params = emptyMap())).result
 
     override suspend fun submitTx(
+        baseUrl: String,
         hash: String,
         mintTx: ParamsSubmitMint.MintTransactionInput,
         selector: String
@@ -80,7 +81,7 @@ class RpcSolanaRemoteRepository(
         val submitMint = ParamsSubmitMint(hash, mintTx, selector)
         val params = hashMapOf<String, Any>()
         params["tx"] = submitMint
-        return api.submitTx(RpcRequest2(method = "ren_submitTx", params = params)).result
+        return api.submitTx(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_submitTx", params = params)).result
     }
 
     override suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo {

@@ -62,7 +62,7 @@ object NetworkModule : InjectionModule {
         single(named(RPC_SOLANA_RETROFIT_QUALIFIER)) {
             val environment = get<EnvironmentManager>().loadRpcEnvironment()
             val rpcApiUrl = environment.endpoint
-            getRetrofit(rpcApiUrl, "RpcSolana", RpcSolanaInterceptor(get(), get()))
+            getRetrofit(rpcApiUrl, "RpcSolana", RpcSolanaInterceptor(get()))
         }
     }
 

@@ -80,7 +80,7 @@ object RpcModule : InjectionModule {
 
         factory { RpcSolanaInteractor(get(), get(), get<AppScope>()) }
 
-        factory { RenVMProvider(get()) }
+        factory { RenVMProvider(get(), get()) }
 
         single {
             val api = get<Retrofit>(named(RPC_SOLANA_RETROFIT_QUALIFIER)).create(RpcSolanaApi::class.java)

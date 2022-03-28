@@ -2,7 +2,6 @@ package org.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
 import okhttp3.Interceptor
-import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.json.JSONArray
@@ -13,7 +12,6 @@ import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerError
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import timber.log.Timber
 import java.io.IOException
 
@@ -21,23 +19,12 @@ import java.io.IOException
 private const val GSON_KEY = "method"
 private const val GSON_VALUE = "getConfirmedTransaction"
 
-open class RpcSolanaInterceptor(
-    private val gson: Gson,
-    environmentManager: EnvironmentManager
-) : Interceptor {
+open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
 
     private val TAG = "RpcInterceptor"
-    private var currentEnvironment = environmentManager.loadRpcEnvironment()
-
-    init {
-        environmentManager.setOnRpcEnvironmentListener { newEnvironment ->
-            currentEnvironment = newEnvironment
-        }
-    }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request = createRpcRequest(chain)
-        val response = chain.proceed(request)
+        val response = chain.proceed(chain.request().newBuilder().header("Content-Type", "application/json").build())
         return if (response.isSuccessful) {
             handleResponse(response)
         } else {
@@ -45,18 +32,11 @@ open class RpcSolanaInterceptor(
         }
     }
 
-    private fun createRpcRequest(chain: Interceptor.Chain): Request {
-        val request = chain.request()
-
-        return request.newBuilder()
-            .header("Content-Type", "application/json")
-            .url(currentEnvironment.endpoint)
-            .build()
-    }
-
     private fun handleResponse(response: Response): Response {
         val responseBody = try {
-            response.body!!.string()
+            val body = response.body!!.string()
+            Timber.tag("RpcSolanaInterceptor").d(body.toString())
+            body
         } catch (e: Exception) {
             throw IOException("Error parsing response body", e)
         }
