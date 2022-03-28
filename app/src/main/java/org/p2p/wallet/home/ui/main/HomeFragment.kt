@@ -153,7 +153,7 @@ class HomeFragment :
         when (bannerId) {
             R.string.main_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
-                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP, isSkipStepEnabled = false))
             }
             R.string.main_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
