@@ -8,14 +8,14 @@ class HistoryAdapterPagingController(
     var currentPagingState: PagingState = PagingState.Idle
 
     private companion object {
-        private val noAdditionalItemRequiredState = listOf(PagingState.Idle)
+        private val noAdditionalItemRequiredState = listOf(PagingState.Idle, PagingState.InitialLoading)
     }
 
     fun setPagingState(newState: PagingState) {
         if (currentPagingState == newState) return
 
-        val shouldHasExtraItem = stateRequiresLoadingItem(newState)
-        val hasExtraItem = stateRequiresLoadingItem(currentPagingState)
+        val shouldHasExtraItem = isPagingRequiresLoadingItem(newState)
+        val hasExtraItem = isPagingRequiresLoadingItem(currentPagingState)
 
         currentPagingState = newState
         // since item count is a function - cache its value.
@@ -27,9 +27,10 @@ class HistoryAdapterPagingController(
         }
     }
 
-    fun stateRequiresLoadingItem(state: PagingState = currentPagingState): Boolean =
+    fun isPagingRequiresLoadingItem(state: PagingState = currentPagingState): Boolean =
         state !in noAdditionalItemRequiredState
 
-    fun isPagingInProgress(): Boolean =
-        currentPagingState is PagingState.Loading || currentPagingState is PagingState.InitialLoading
+    fun isPagingInLoadingState(): Boolean = currentPagingState.run {
+        this is PagingState.Loading
+    }
 }

@@ -126,6 +126,8 @@ class HistoryFragment :
     }
 
     private fun RecyclerView.setupHistoryList() {
+        layoutManager = LinearLayoutManager(requireContext())
+
         attachAdapter(historyAdapter)
         clearOnScrollListeners()
 
@@ -138,10 +140,6 @@ class HistoryFragment :
 
     override fun showError(@StringRes resId: Int, argument: String) {
         showErrorDialog(getString(resId, argument))
-    }
-
-    override fun showLoading(isLoading: Boolean) {
-        binding.progressView.isVisible = isLoading
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

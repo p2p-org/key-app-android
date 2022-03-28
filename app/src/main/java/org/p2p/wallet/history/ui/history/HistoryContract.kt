@@ -10,7 +10,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 interface HistoryContract {
 
     interface View : MvpView {
-        fun showLoading(isLoading: Boolean)
         fun showHistory(transactions: List<HistoryTransaction>)
         fun showActions(items: List<ActionButtonsView.ActionButton>)
         fun showPagingState(newState: PagingState)

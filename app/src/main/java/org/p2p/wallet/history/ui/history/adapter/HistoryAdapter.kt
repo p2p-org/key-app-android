@@ -33,7 +33,7 @@ class HistoryAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setTransactions(newTransactions: List<HistoryTransaction>) {
-        // force notifyDataSetChanged
+        // force notifyDataSetChanged on first load
         // to fix jumping into the middle because of DiffUtil
         if (currentItems.size == 0) {
             currentItems.addAll(newTransactions.mapToItems())
@@ -82,21 +82,24 @@ class HistoryAdapter(
 
         // todo: refactor to AdapterDelegate
         //  and create item list with progress item inside instead of implicitly adding it here
+        //  DISCUSS ON ANDROID MEETING
+        val isTransactionItemViewType =
+            !pagingController.isPagingRequiresLoadingItem() || position < preLastItemPosition
+        val isLoadingItemViewType =
+            pagingController.isPagingInLoadingState()
         return when {
-            !pagingController.stateRequiresLoadingItem() || position < preLastItemPosition -> getAdapterViewType(
-                position
-            )
-            pagingController.isPagingInProgress() -> PROGRESS_VIEW_TYPE
+            isTransactionItemViewType -> getTransactionItemViewType(position)
+            isLoadingItemViewType -> PROGRESS_VIEW_TYPE
             else -> ERROR_VIEW_TYPE
         }
     }
 
     override fun getItemCount(): Int {
-        val additionalItemSize = if (pagingController.stateRequiresLoadingItem()) 1 else 0
+        val additionalItemSize = if (pagingController.isPagingRequiresLoadingItem()) 1 else 0
         return currentItems.size + additionalItemSize
     }
 
-    private fun getAdapterViewType(position: Int): Int {
+    private fun getTransactionItemViewType(position: Int): Int {
         return when (currentItems[position]) {
             is HistoryItem.DateItem -> HISTORY_DATE_VIEW_TYPE
             is HistoryItem.TransactionItem -> TRANSACTION_VIEW_TYPE

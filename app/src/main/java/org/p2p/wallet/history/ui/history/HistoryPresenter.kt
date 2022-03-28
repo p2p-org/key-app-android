@@ -62,7 +62,7 @@ class HistoryPresenter(
         paginationEnded = false
 
         launch {
-            view?.showPagingState(PagingState.InitialLoading)
+            view?.showPagingState(PagingState.Loading)
 
             kotlin.runCatching {
                 historyInteractor.getAllHistoryTransactions(
