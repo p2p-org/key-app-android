@@ -96,7 +96,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     }
 
     // TODO add another screens
-    fun getAnalyticsName() = when (this) {
+    fun getAnalyticsName(): String = when (this) {
         is CreateWalletFragment -> ScreenName.OnBoarding.WALLET_CREATE
         is SecretKeyFragment -> ScreenName.OnBoarding.IMPORT_MANUAL
         is SecurityKeyFragment -> ScreenName.OnBoarding.CREATE_MANUAL
