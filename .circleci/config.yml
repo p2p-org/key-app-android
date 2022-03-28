@@ -48,7 +48,7 @@ jobs:
           name: "Generate build version, multiplying build number to 100, to fit 100_000 build number format"
           command: |
             ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM * 100}
-            echo "Set build version to ${CIRCLE_BUILD_NUM* 100}"
+            echo "Set build version to ${CIRCLE_BUILD_NUM * 100}"
       - store_artifacts:
           path: "./app/gradle.properties"
           destination: gradle.properties
