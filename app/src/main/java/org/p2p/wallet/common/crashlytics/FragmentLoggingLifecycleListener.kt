@@ -8,7 +8,7 @@ import timber.log.Timber
 
 class FragmentLoggingLifecycleListener : FragmentManager.FragmentLifecycleCallbacks() {
     private fun logLifecycleAction(fragment: Fragment, action: String) {
-        Timber.i("LIFECYCLE ${fragment.javaClass.name}: $action")
+        Timber.i("LIFECYCLE ${fragment.javaClass.simpleName}: $action")
     }
 
     override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {

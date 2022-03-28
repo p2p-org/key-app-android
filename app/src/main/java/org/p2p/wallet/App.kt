@@ -35,8 +35,6 @@ import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
 
-private const val CRASH_SERVICE_KEY_TASK_NUMBER = "task_number"
-
 class App : Application() {
 
     private val crashLoggingService: CrashLoggingService by inject()
@@ -48,7 +46,7 @@ class App : Application() {
         setupTimber()
 
         crashLoggingService.isLoggingEnabled = BuildConfig.CRASHLYTICS_ENABLED
-        crashLoggingService.setCustomKey(CRASH_SERVICE_KEY_TASK_NUMBER, BuildConfig.TASK_NUMBER)
+        crashLoggingService.setCustomKey(BuildConfig.TASK_NUMBER, "")
 
         AppNotificationManager.createNotificationChannels(this)
         IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
