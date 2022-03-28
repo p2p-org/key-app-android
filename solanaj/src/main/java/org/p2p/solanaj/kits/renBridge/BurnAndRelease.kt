@@ -21,7 +21,12 @@ class BurnAndRelease(
     private var nonceBuffer: ByteArray = byteArrayOf()
     private var recepient: String = ""
 
-    suspend fun submitBurnTransaction(account: PublicKey, amount: String, recepient: String, signer: Account): BurnDetails {
+    suspend fun submitBurnTransaction(
+        account: PublicKey,
+        amount: String,
+        recepient: String,
+        signer: Account
+    ): BurnDetails {
         this.recepient = recepient
         return rpcSolanaInteractor.submitBurn(account, amount, recepient, signer)
     }

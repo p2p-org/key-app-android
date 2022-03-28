@@ -23,7 +23,7 @@ class LockAndMint(
 ) {
 
     companion object {
-        //TODO destinationAddress
+        // TODO destinationAddress
         fun buildSession(
             renVMProvider: RenVMProvider,
             session: Session,
@@ -171,7 +171,8 @@ class LockAndMint(
         fun isValid(): Boolean {
             val dayInMillis = TimeUnit.DAYS.toMillis(1)
             val currentTime = System.currentTimeMillis()
-            /* We should subtract one day from expiry time to make it valid  */return currentTime < expiryTime - dayInMillis
+            /* We should subtract one day from expiry time to make it valid  */
+            return currentTime < expiryTime - dayInMillis
         }
     }
 

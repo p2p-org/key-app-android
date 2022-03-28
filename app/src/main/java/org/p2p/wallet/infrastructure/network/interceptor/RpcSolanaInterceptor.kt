@@ -1,24 +1,19 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
-import android.net.Uri
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okio.Buffer
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerError
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.rpc.RpcConstants
 import timber.log.Timber
 import java.io.IOException
 

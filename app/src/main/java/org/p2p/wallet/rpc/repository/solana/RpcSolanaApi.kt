@@ -7,7 +7,6 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcRequest2
-import org.p2p.solanaj.model.types.SignatureInformation
 import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import org.p2p.wallet.utils.emptyString
 import retrofit2.http.Body
@@ -26,8 +25,7 @@ interface RpcSolanaApi {
     suspend fun getConfirmedSignatureForAddress(
         @Body rpcRequest: RpcRequest,
         @Url url: String = emptyString()
-    ): CommonResponse<List<AbstractMap<String,Any?>>>
-
+    ): CommonResponse<List<AbstractMap<String, Any?>>>
 
     @POST
     suspend fun queryMint(

@@ -16,4 +16,3 @@ interface RpcAccountRepository {
     suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo
     suspend fun getPools(account: PublicKey): List<Pool.PoolInfo>
 }
-

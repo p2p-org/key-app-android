@@ -12,7 +12,6 @@ import org.p2p.solanaj.kits.renBridge.GatewayRegistryData
 import org.p2p.solanaj.kits.renBridge.RenProgram
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Base64Utils
@@ -166,7 +165,7 @@ class RpcSolanaInteractor(
             val signatures = rpcSolanaRepository.getConfirmedSignaturesForAddress(mintLogAccount, 1)
             signature = signatures.get(0).signature
         } catch (e: Exception) {
-            //TODO provide exception logging
+            // TODO provide exception logging
         }
         return signature
     }

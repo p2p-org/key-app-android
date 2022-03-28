@@ -8,7 +8,6 @@ private const val GATEWAY_STATE_DATA_LENGTH = 1 + 20 + 32 + ByteUtils.UINT_64_LE
 
 class BurnDetails {
 
-
     var confirmedSignature: String = ""
     var nonce: BigInteger = BigInteger.ZERO
     var recepient: String = ""
@@ -34,8 +33,4 @@ class BurnDetails {
         private val underlyingDecimals: Int
             get() = readByte().toInt()
     }
-
-
-
-
 }
