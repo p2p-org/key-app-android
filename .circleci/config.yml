@@ -26,18 +26,6 @@ defaults: &defaults
     tag: 2021.10.1
 
 jobs:
-  version_build:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: "Generate build version"
-          command: |
-            ./gradlew setVersionBuild -Pversion=$CIRCLE_BUILD_NUM
-            echo "Set build version to $CIRCLE_BUILD_NUM"
-      - store_artifacts:
-          path: "./app/gradle.properties"
-          destination: gradle.properties
   android_lint:
     <<: *defaults
     steps:
@@ -56,6 +44,14 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run:
+          name: "Generate build version"
+          command: |
+            ./gradlew setVersionBuild -Pversion=$CIRCLE_BUILD_NUM
+            echo "Set build version to $CIRCLE_BUILD_NUM"
+      - store_artifacts:
+          path: "./app/gradle.properties"
+          destination: gradle.properties
       - run:
           name: "Distribute to Firebase App Distribution"
           command: ./gradlew assembleFeature appDistributionUploadFeature
@@ -103,3 +99,20 @@ workflows:
           requires:
             - android_lint
           context: feature
+
+  build_develop_publish:
+    jobs:
+      - approve-feature-build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - develop
+              - build_and_publish:
+                  context: develop
+                  requires:
+                    - approve-feature-build
+                  filters:
+                    branches:
+                      only:
+                        - develop
