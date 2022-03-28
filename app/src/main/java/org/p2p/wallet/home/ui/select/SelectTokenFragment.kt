@@ -1,17 +1,17 @@
 package org.p2p.wallet.home.ui.select
 
-import android.os.Bundle
-import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSelectTokenBinding
 import org.p2p.wallet.home.model.Token
@@ -44,13 +44,13 @@ class SelectTokenFragment :
     override val presenter: SelectTokenContract.Presenter by inject {
         parametersOf(tokens)
     }
-    private val analyticsInteractor: AnalyticsInteractor by inject()
-    private val binding: FragmentSelectTokenBinding by viewBinding()
 
     private val tokens: List<Token> by args(EXTRA_ALL_TOKENS)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val buyAnalytics: BuyAnalytics by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val binding: FragmentSelectTokenBinding by viewBinding()
 
     private val tokenAdapter: SelectTokenAdapter by lazy {
         SelectTokenAdapter {

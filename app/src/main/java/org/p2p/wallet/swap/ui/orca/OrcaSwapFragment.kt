@@ -17,8 +17,8 @@ import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.AmountFractionTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
@@ -75,7 +75,7 @@ class OrcaSwapFragment :
         parametersOf(token)
     }
     private val binding: FragmentSwapOrcaBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private var onBackPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -263,7 +263,7 @@ class OrcaSwapFragment :
     }
 
     override fun showError(@StringRes errorText: Int?) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.ERROR)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.ERROR)
         binding.swapDetails.showError(errorText)
     }
 
@@ -302,7 +302,7 @@ class OrcaSwapFragment :
     }
 
     override fun showDestinationSelection(tokens: List<Token>) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.CURRENCY_B)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.CURRENCY_B)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,
@@ -331,7 +331,7 @@ class OrcaSwapFragment :
 
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
-            analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.PROCESSING)
+            analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.PROCESSING)
             ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SWAP)
         } else {
             ProgressBottomSheet.hide(parentFragmentManager)

@@ -1,19 +1,19 @@
 package org.p2p.wallet.root
 
+import androidx.activity.addCallback
+import androidx.core.view.isVisible
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
-import androidx.activity.addCallback
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
@@ -34,7 +34,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
     override val presenter: RootContract.Presenter by inject()
     private val adminAnalytics: AdminAnalytics by inject()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)

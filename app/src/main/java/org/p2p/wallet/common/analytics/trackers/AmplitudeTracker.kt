@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.analytics
+package org.p2p.wallet.common.analytics.trackers
 
 import android.app.Application
 import com.amplitude.api.Amplitude
@@ -7,13 +7,14 @@ import org.json.JSONObject
 import org.p2p.wallet.BuildConfig
 import timber.log.Timber
 
-class AmplitudeTracker(app: Application) : TrackerContract {
+class AmplitudeTracker(app: Application) : AnalyticsTracker {
 
-    private val amplitude = Amplitude.getInstance()
-        .initialize(app, BuildConfig.amplitudeKey)
-        .trackSessionEvents(true)
-        .enableForegroundTracking(app)
-        .setMinTimeBetweenSessionsMillis((30 * 60 * 1000).toLong())
+    private val amplitude =
+        Amplitude.getInstance()
+            .initialize(app, BuildConfig.amplitudeKey)
+            .trackSessionEvents(true)
+            .enableForegroundTracking(app)
+            .setMinTimeBetweenSessionsMillis((30 * 60 * 1000).toLong())
 
     override fun setUserProperty(key: String, value: String) {
         val userProperties = JSONObject()
@@ -26,16 +27,20 @@ class AmplitudeTracker(app: Application) : TrackerContract {
         amplitude.identify(Identify().setOnce(key, value))
     }
 
-    override fun logEvent(event: String, params: Array<out Pair<String, Any>>?) {
-        if (params == null) {
+    override fun logEvent(event: String, params: Map<String, Any>) {
+        if (params.isEmpty()) {
             amplitude.logEvent(event)
-        } else {
-            try {
-                amplitude.logEvent(event, JSONObject(params.toMap()))
-            } catch (e: NullPointerException) {
-                Timber.w(e, "Unable to put key - value into json")
-            }
+            return
         }
+        try {
+            amplitude.logEvent(event, JSONObject(params))
+        } catch (e: NullPointerException) {
+            Timber.w(e, "Unable to put key - value into json")
+        }
+    }
+
+    override fun logEvent(event: String, params: Array<out Pair<String, Any>>) {
+        logEvent(event, params.toMap())
     }
 
     override fun incrementUserProperty(property: String, byValue: Int) {

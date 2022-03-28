@@ -1,8 +1,8 @@
 package org.p2p.wallet
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext

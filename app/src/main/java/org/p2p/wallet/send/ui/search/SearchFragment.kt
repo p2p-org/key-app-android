@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSearchBinding
 import org.p2p.wallet.send.model.SearchResult
@@ -43,7 +43,7 @@ class SearchFragment :
         parametersOf(usernames)
     }
     private val binding: FragmentSearchBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private lateinit var textWatcher: TextWatcher
 
     private val searchAdapter: SearchAdapter by lazy {
@@ -52,7 +52,7 @@ class SearchFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.RECIPIENT_ADDRESS)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.RECIPIENT_ADDRESS)
         with(binding) {
             backImageView.setOnClickListener { popBackStack() }
             clearImageView.setOnClickListener { searchEditText.text.clear() }

@@ -1,6 +1,6 @@
-package org.p2p.wallet.common.analytics
+package org.p2p.wallet.common.analytics.constants
 
-object ScreenName {
+object ScreenNames {
 
     object OnBoarding {
         const val WALLET_CREATE = "Wallet_Create"

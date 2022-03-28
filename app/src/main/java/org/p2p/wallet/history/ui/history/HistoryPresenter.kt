@@ -4,7 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
@@ -27,7 +27,7 @@ class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
     private val renBtcInteractor: RenBtcInteractor,
     private val tokenInteractor: TokenInteractor
