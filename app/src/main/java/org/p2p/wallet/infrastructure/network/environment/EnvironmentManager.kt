@@ -5,11 +5,13 @@ import android.content.SharedPreferences
 import android.net.Uri
 import androidx.core.content.edit
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
+private const val KEY_RPC_BASE_URL = "KEY_RPC_BASE_URL"
 
 class EnvironmentManager(
     private val context: Context,
@@ -17,6 +19,7 @@ class EnvironmentManager(
 ) {
 
     private var onChanged: ((Environment) -> Unit)? = null
+    private var onRpcChanged: ((RpcEnvironment) -> Unit)? = null
 
     fun isDevnet(): Boolean = loadEnvironment() == Environment.DEVNET
 
@@ -52,13 +55,26 @@ class EnvironmentManager(
         this.onChanged = onChanged
     }
 
+    fun setOnRpcEnvironmentListener(onChanged: (RpcEnvironment) -> Unit) {
+        this.onRpcChanged = onChanged
+    }
+
     fun loadEnvironment(): Environment {
         val url = sharedPreferences.getString(KEY_BASE_URL, Environment.RPC_POOL.endpoint).orEmpty()
         return parse(url)
     }
 
+    fun loadRpcEnvironment(): RpcEnvironment {
+        val baseUrl = sharedPreferences.getString(KEY_BASE_URL, Environment.RPC_POOL.endpoint).orEmpty()
+        return parseRpc(baseUrl)
+    }
+
     fun saveEnvironment(newEnvironment: Environment) {
         sharedPreferences.edit { putString(KEY_BASE_URL, newEnvironment.endpoint) }
+
+        val newRpcEnvironment = parseRpc(newEnvironment.endpoint)
+        sharedPreferences.edit { putString(KEY_RPC_BASE_URL, newRpcEnvironment.endpoint) }
+        onRpcChanged?.invoke(newRpcEnvironment)
         onChanged?.invoke(newEnvironment)
     }
 
@@ -68,5 +84,11 @@ class EnvironmentManager(
         Environment.SOLANA.endpoint -> Environment.SOLANA
         Environment.RPC_POOL.endpoint -> Environment.RPC_POOL
         else -> throw IllegalStateException("Unknown endpoint $url")
+    }
+
+    private fun parseRpc(url: String): RpcEnvironment = if (Environment.DEVNET.endpoint == url) {
+        RpcEnvironment.DEVNET
+    } else {
+        RpcEnvironment.MAINNET
     }
 }

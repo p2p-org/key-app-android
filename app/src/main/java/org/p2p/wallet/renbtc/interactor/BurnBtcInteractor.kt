@@ -7,9 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.kits.renBridge.BurnAndRelease
-import org.p2p.solanaj.kits.renBridge.NetworkConfig
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.kits.renBridge.LockAndMint
+import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
 import org.p2p.solanaj.rpc.RpcException
+import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
@@ -19,7 +20,9 @@ import java.math.BigInteger
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager,
-    private val rpcAmountRepository: RpcAmountRepository
+    private val rpcAmountRepository: RpcAmountRepository,
+    private val renVMProvider: RenVMProvider,
+    private val solanaChain: RpcSolanaInteractor,
 ) {
 
     companion object {
@@ -30,7 +33,11 @@ class BurnBtcInteractor(
     suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(Dispatchers.IO) {
         val signer = tokenKeyProvider.publicKey.toPublicKey()
         val signerSecretKey = tokenKeyProvider.secretKey
-        val burnAndRelease = BurnAndRelease(getNetworkConfig())
+        val burnAndRelease = BurnAndRelease(
+            renVMProvider = renVMProvider,
+            rpcSolanaInteractor = solanaChain,
+            state = LockAndMint.State()
+        )
 
         val burnDetails = burnAndRelease.submitBurnTransaction(
             signer,
@@ -59,12 +66,4 @@ class BurnBtcInteractor(
         val fee = rpcAmountRepository.getMinBalanceForRentExemption(BURN_FEE_LENGTH)
         return fee.fromLamports().add(BURN_FEE_VALUE.toBigDecimal()).scaleMedium()
     }
-
-    private fun getNetworkConfig(): NetworkConfig =
-        when (environmentManager.loadEnvironment()) {
-            Environment.DEVNET -> NetworkConfig.DEVNET()
-            Environment.RPC_POOL,
-            Environment.MAINNET,
-            Environment.SOLANA -> NetworkConfig.MAINNET()
-        }
 }

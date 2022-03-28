@@ -87,7 +87,7 @@ class RenVMService : Service(), CoroutineScope {
         checkJob = launch {
             try {
                 val session = renBtcInteractor.findActiveSession()
-                if (session != null && session.isValid) {
+                if (session != null && session.isValid()) {
                     renBtcInteractor.startSession(session)
                     renBtcInteractor.startPolling(session)
                 }

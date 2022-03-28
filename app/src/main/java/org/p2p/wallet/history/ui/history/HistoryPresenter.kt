@@ -166,7 +166,7 @@ class HistoryPresenter(
                 }
                 is HistoryTransaction.Transfer -> {
                     val renBtcSession = renBtcInteractor.findActiveSession()
-                    val isRenBtcSessionActive = renBtcSession != null && renBtcSession.isValid
+                    val isRenBtcSessionActive = renBtcSession != null && renBtcSession.isValid()
 
                     if (transaction.isSend) {
                         val sendNetwork =

@@ -4,8 +4,6 @@ import org.p2p.solanaj.core.PublicKey;
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider;
 import org.p2p.solanaj.model.types.AccountInfo;
 import org.p2p.solanaj.rpc.Environment;
-import org.p2p.solanaj.rpc.RpcApi;
-import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.RpcException;
 
 import java.util.Arrays;

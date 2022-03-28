@@ -127,7 +127,7 @@ class ReceiveNetworkTypePresenter(
 
     private suspend fun launchRenBtcSession() {
         val session = renBtcInteractor.findActiveSession()
-        if (session != null && session.isValid) {
+        if (session != null && session.isValid()) {
             receiveAnalytics.logReceiveSettingBitcoin()
             view?.navigateToReceive(selectedNetworkType)
         } else {
@@ -137,7 +137,7 @@ class ReceiveNetworkTypePresenter(
 
     private suspend fun isRenBtcSessionActive(): Boolean {
         val session = renBtcInteractor.findActiveSession()
-        return session != null && session.isValid
+        return session != null && session.isValid()
     }
 
     private suspend fun createBtcWallet(sol: Token.Active) {

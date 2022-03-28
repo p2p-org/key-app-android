@@ -4,7 +4,6 @@ import org.bitcoinj.core.Base58;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.p2p.solanaj.core.PublicKey;
-import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.utils.Utils;
 import org.robolectric.RobolectricTestRunner;
 

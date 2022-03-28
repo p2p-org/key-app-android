@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -58,6 +60,7 @@ class App : Application() {
     private fun setupKoin() {
         GlobalContext.stopKoin()
         startKoin {
+            androidLogger(level = Level.ERROR)
             androidContext(this@App)
             modules(
                 listOf(

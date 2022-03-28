@@ -8,8 +8,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
-import org.p2p.solanaj.kits.renBridge.NetworkConfig
+import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.model.RenTransaction
@@ -30,7 +31,9 @@ private const val SESSION_POLLING_DELAY = 5000L
 
 class RenTransactionManager(
     private val renBTCRemoteRepository: RenRemoteRepository,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: EnvironmentManager,
+    private val renVMProvider: RenVMProvider,
+    private val solanaChain: RpcSolanaInteractor,
 ) {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -45,14 +48,26 @@ class RenTransactionManager(
 
     private var queuedTransactions = mutableListOf<RenTransaction>()
 
-    fun initializeSession(existingSession: LockAndMint.Session?, signer: String): LockAndMint.Session {
-        val networkConfig = getNetworkConfig()
-        lockAndMint = if (existingSession == null || !existingSession.isValid) {
+    suspend fun initializeSession(existingSession: LockAndMint.Session?, signer: String): LockAndMint.Session {
+        lockAndMint = if (existingSession == null || !existingSession.isValid()) {
+            val session = LockAndMint.Session(signer.toPublicKey())
             Timber.tag(REN_TAG).d("No existing session found, building new one")
-            LockAndMint.buildSession(networkConfig, signer.toPublicKey())
+            LockAndMint.buildSession(
+                renVMProvider = renVMProvider,
+                session = session,
+                solanaChain = solanaChain,
+                state = LockAndMint.State(),
+                environment = environmentManager.loadRpcEnvironment()
+            )
         } else {
             Timber.tag(REN_TAG).d("Active session found, fetching information")
-            LockAndMint.getSession(networkConfig, existingSession)
+            LockAndMint.getSession(
+                renVMProvider = renVMProvider,
+                session = existingSession,
+                solanaChain = solanaChain,
+                state = LockAndMint.State(),
+                environment = environmentManager.loadRpcEnvironment()
+            )
         }
 
         val gatewayAddress = lockAndMint.generateGatewayAddress()
@@ -61,7 +76,7 @@ class RenTransactionManager(
         val fee = lockAndMint.estimateTransactionFee()
         Timber.tag(REN_TAG).d("Fee calculated: $fee")
 
-        val session = lockAndMint.session
+        val session = lockAndMint.getSession()
         return session
     }
 
@@ -72,7 +87,7 @@ class RenTransactionManager(
         val environment = environmentManager.loadEnvironment()
 
         /* Caching value, since it's being called multiple times inside the loop */
-        while (session.isValid) {
+        while (session.isValid()) {
             pollPaymentData(environment, session, secretKey)
             delay(SESSION_POLLING_DELAY)
         }
@@ -168,12 +183,4 @@ class RenTransactionManager(
             launch { it.execute() }
         }
     }
-
-    private fun getNetworkConfig(): NetworkConfig =
-        when (environmentManager.loadEnvironment()) {
-            Environment.DEVNET -> NetworkConfig.DEVNET()
-            Environment.RPC_POOL,
-            Environment.MAINNET,
-            Environment.SOLANA -> NetworkConfig.MAINNET()
-        }
 }

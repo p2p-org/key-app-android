@@ -112,7 +112,7 @@ class RenBTCPresenter(
     }
 
     private fun handleSession(session: LockAndMint.Session?) {
-        if (session != null && session.isValid) {
+        if (session != null && session.isValid()) {
             val remaining = session.expiryTime - System.currentTimeMillis()
             val fee = calculateFee(session)
             view?.showActiveState(session.gatewayAddress, remaining.toDateString(), fee.toString())
