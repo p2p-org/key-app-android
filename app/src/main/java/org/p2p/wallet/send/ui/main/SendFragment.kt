@@ -8,12 +8,14 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -196,6 +198,20 @@ class SendFragment :
 
             sendDetailsView.setOnPaidClickListener {
                 presenter.onFeeClicked()
+            }
+
+            val originalTextSize = amountEditText.textSize
+
+            // Use invisible auto size textView to handle editText text size
+            amountEditText.doOnTextChanged { text, _, _, _ ->
+                autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
+                amountEditText.post {
+                    val textSize =
+                        if (text.isNullOrBlank()) originalTextSize
+                        else autoSizeHelperTextView.textSize
+
+                    amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+                }
             }
         }
     }

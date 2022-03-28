@@ -4,12 +4,15 @@ import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -80,36 +83,8 @@ class OrcaSwapFragment :
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
             presenter.onBackPressed()
         }
-        with(binding) {
-            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
-            toolbar.setOnMenuItemClickListener { menu ->
-                if (menu.itemId == R.id.settingsMenuItem) {
-                    presenter.loadDataForSettings()
-                    return@setOnMenuItemClickListener true
-                }
-                return@setOnMenuItemClickListener false
-            }
-            sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
-            destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-            destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-            availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
-            maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
 
-            setupAmountListener()
-
-            exchangeImageView.setOnClickListener { presenter.reverseTokens() }
-            swapDetails.setOnSlippageClickListener {
-                presenter.loadDataForSettings()
-            }
-            swapDetails.setOnPayFeeClickListener {
-                presenter.loadDataForSettings()
-            }
-            swapDetails.setOnTransactionFeeClickListener {
-                presenter.onFeeLimitsClicked()
-            }
-            swapButton.setOnClickListener { presenter.swapOrConfirm() }
-            amountEditText.focusAndShowKeyboard()
-        }
+        setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SWAP,
@@ -135,6 +110,51 @@ class OrcaSwapFragment :
         }
 
         presenter.loadInitialData()
+    }
+
+    private fun setupViews() = with(binding) {
+        toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
+        toolbar.setOnMenuItemClickListener { menu ->
+            if (menu.itemId == R.id.settingsMenuItem) {
+                presenter.loadDataForSettings()
+                return@setOnMenuItemClickListener true
+            }
+            return@setOnMenuItemClickListener false
+        }
+        sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+        destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+        destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+        availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
+        maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
+
+        setupAmountListener()
+
+        exchangeImageView.setOnClickListener { presenter.reverseTokens() }
+        swapDetails.setOnSlippageClickListener {
+            presenter.loadDataForSettings()
+        }
+        swapDetails.setOnPayFeeClickListener {
+            presenter.loadDataForSettings()
+        }
+        swapDetails.setOnTransactionFeeClickListener {
+            presenter.onFeeLimitsClicked()
+        }
+        swapButton.setOnClickListener { presenter.swapOrConfirm() }
+        amountEditText.focusAndShowKeyboard()
+
+        val originalTextSize = amountEditText.textSize
+
+        // Use invisible auto size textView to handle editText text size
+        amountEditText.doOnTextChanged { text, _, _, _ ->
+            autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
+            amountEditText.post {
+                val textSize =
+                    if (text.isNullOrBlank()) originalTextSize
+                    else autoSizeHelperTextView.textSize
+
+                amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+            }
+        }
     }
 
     override fun onStop() {
