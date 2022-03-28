@@ -108,11 +108,11 @@ workflows:
             branches:
               only:
                 - develop
-              - build_and_publish:
-                  context: develop
-                  requires:
-                    - approve-feature-build
-                  filters:
-                    branches:
-                      only:
-                        - develop
+      - build_and_publish:
+          context: develop
+          requires:
+            - approve-feature-build
+          filters:
+            branches:
+              only:
+                - develop
