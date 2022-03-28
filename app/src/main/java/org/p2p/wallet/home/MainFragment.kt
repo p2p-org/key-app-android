@@ -59,7 +59,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         }
 
         if (fragments.isEmpty) {
-            childFragmentManager.fragments.forEach { fragment ->
+            requireActivity().supportFragmentManager.fragments.forEach { fragment ->
                 when (fragment) {
                     is HomeFragment -> fragments.put(R.id.itemHome, fragment)
                     is SendFragment -> fragments.put(R.id.itemSend, fragment)
