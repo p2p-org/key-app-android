@@ -12,8 +12,8 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -59,7 +59,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         }
 
         if (fragments.isEmpty) {
-            requireActivity().supportFragmentManager.fragments.forEach { fragment ->
+            childFragmentManager.fragments.forEach { fragment ->
                 when (fragment) {
                     is HomeFragment -> fragments.put(R.id.itemHome, fragment)
                     is SendFragment -> fragments.put(R.id.itemSend, fragment)

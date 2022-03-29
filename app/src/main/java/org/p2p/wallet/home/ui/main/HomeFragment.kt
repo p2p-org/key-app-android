@@ -57,7 +57,6 @@ class HomeFragment :
     private val browseAnalytics: BrowseAnalytics by inject()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         with(binding) {
             val commonTitle = getString(R.string.app_name)
             val beta = getString(R.string.common_beta)
