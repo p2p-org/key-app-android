@@ -40,7 +40,7 @@ class GoogleFirebaseCrashlytics(
     override fun setUserId(userId: CrashLoggingService.UserId) {
         when (userId) {
             is CrashLoggingService.UserId.Filled -> crashlytics.setUserId(userId.value)
-            is CrashLoggingService.UserId.NotSet -> crashlytics.setUserId("")
+            is CrashLoggingService.UserId.NotSet -> crashlytics.setUserId("-")
         }
     }
 

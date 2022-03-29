@@ -40,3 +40,8 @@
 # GeeTest SDK has already been obfuscated, please do not obfuscate it again
 -dontwarn com.geetest.sdk.**
 -keep class com.geetest.sdk.**{*;}
+
+-keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
+-keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
+-keep public class org.p2p.wallet.common.crashlytics.TimberCrashTree
+-keep public class org.p2p.wallet.common.crashlytics.CrashHttpLoggingInterceptor
