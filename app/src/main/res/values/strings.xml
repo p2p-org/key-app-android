@@ -357,6 +357,7 @@
     <string name="send_transaction_error">%s send didn\'t complete!</string>
     <string name="send_successfully_format">%s was sent successfully</string>
     <string name="send_using_max_amount">Using the maximum %s amount</string>
+    <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
