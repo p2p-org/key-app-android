@@ -1,26 +1,26 @@
 package org.p2p.wallet.send.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.Events.SEND_CHANGING_CURRENCY
-import org.p2p.wallet.common.analytics.Events.SEND_CHANGING_TOKEN
-import org.p2p.wallet.common.analytics.Events.SEND_CHOOSING_RECEIPT
-import org.p2p.wallet.common.analytics.Events.SEND_CREATING_ANOTHER
-import org.p2p.wallet.common.analytics.Events.SEND_GOING_BACK
-import org.p2p.wallet.common.analytics.Events.SEND_PASTING
-import org.p2p.wallet.common.analytics.Events.SEND_PROCESS_SHOWN
-import org.p2p.wallet.common.analytics.Events.SEND_QR_GOING_BACK
-import org.p2p.wallet.common.analytics.Events.SEND_QR_SCANNING
-import org.p2p.wallet.common.analytics.Events.SEND_RESOLVED_AUTO
-import org.p2p.wallet.common.analytics.Events.SEND_RESOLVED_MANUALLY
-import org.p2p.wallet.common.analytics.Events.SEND_REVIEWING
-import org.p2p.wallet.common.analytics.Events.SEND_SHOWING_DETAILS
-import org.p2p.wallet.common.analytics.Events.SEND_SHOW_DETAIL_PRESSED
-import org.p2p.wallet.common.analytics.Events.SEND_VERIFICATION_INVOKED
-import org.p2p.wallet.common.analytics.Events.SEND_VIEWED
-import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHANGING_CURRENCY
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHANGING_TOKEN
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHOOSING_RECEIPT
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CREATING_ANOTHER
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_GOING_BACK
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PASTING
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PROCESS_SHOWN
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_QR_GOING_BACK
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_QR_SCANNING
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_RESOLVED_AUTO
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_RESOLVED_MANUALLY
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_REVIEWING
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_SHOWING_DETAILS
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_SHOW_DETAIL_PRESSED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VERIFICATION_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VIEWED
 import java.math.BigDecimal
 
-class SendAnalytics(private val tracker: TrackerContract) {
+class SendAnalytics(private val tracker: Analytics) {
 
     fun logSendViewed(lastScreenName: String) {
         tracker.logEvent(

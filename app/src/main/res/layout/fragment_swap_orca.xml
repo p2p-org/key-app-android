@@ -129,24 +129,41 @@
                     app:layout_constraintTop_toTopOf="@id/sourceTextView"
                     tools:ignore="ContentDescription" />
 
+                <TextView
+                    android:id="@+id/autoSizeHelperTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="36dp"
+                    android:autoSizeMinTextSize="12sp"
+                    android:autoSizeTextType="uniform"
+                    android:maxLines="1"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@id/downImageView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1"
+                    app:layout_constraintStart_toEndOf="@id/downImageView"
+                    app:layout_constraintTop_toTopOf="@id/downImageView" />
+
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/amountEditText"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="36dp"
                     android:background="@android:color/transparent"
                     android:digits="0123456789."
-                    android:gravity="end"
+                    android:gravity="center_vertical|end"
                     android:hint="@string/main_swap_hint"
                     android:imeOptions="actionDone"
                     android:inputType="numberDecimal"
-                    android:singleLine="true"
+                    android:maxLength="20"
+                    android:maxLines="1"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
                     android:textColorHint="@color/textIconSecondary"
                     app:layout_constraintBottom_toBottomOf="@id/downImageView"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1"
                     app:layout_constraintStart_toEndOf="@id/downImageView"
                     app:layout_constraintTop_toTopOf="@id/downImageView" />
 

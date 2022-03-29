@@ -12,7 +12,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.api.CompareApi
 import org.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEOUT_SECONDS
 import org.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
-import org.p2p.wallet.infrastructure.network.NetworkModule.createLoggingInterceptor
+import org.p2p.wallet.infrastructure.network.NetworkModule.httpLoggingInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -35,7 +35,7 @@ object UserModule : InjectionModule {
         single(named(CRYPTO_COMPARE_QUALIFIER)) {
             val client = createOkHttpClient()
                 .addInterceptor(CompareTokenInterceptor())
-                .apply { if (BuildConfig.DEBUG) addInterceptor(createLoggingInterceptor("CryptoCompare")) }
+                .apply { if (BuildConfig.DEBUG) addInterceptor(httpLoggingInterceptor("CryptoCompare")) }
                 .build()
 
             Retrofit.Builder()

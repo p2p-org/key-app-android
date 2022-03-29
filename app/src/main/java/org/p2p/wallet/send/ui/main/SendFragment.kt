@@ -8,17 +8,19 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
@@ -86,13 +88,13 @@ class SendFragment :
     }
     private val glideManager: GlideManager by inject()
     private val binding: FragmentSendBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val address: String? by args(EXTRA_ADDRESS)
     private val token: Token? by args(EXTRA_TOKEN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.MAIN)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.MAIN)
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -197,11 +199,25 @@ class SendFragment :
             sendDetailsView.setOnPaidClickListener {
                 presenter.onFeeClicked()
             }
+
+            val originalTextSize = amountEditText.textSize
+
+            // Use invisible auto size textView to handle editText text size
+            amountEditText.doOnTextChanged { text, _, _, _ ->
+                autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
+                amountEditText.post {
+                    val textSize =
+                        if (text.isNullOrBlank()) originalTextSize
+                        else autoSizeHelperTextView.textSize
+
+                    amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+                }
+            }
         }
     }
 
     override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.CONFIRMATION)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.CONFIRMATION)
         SendConfirmBottomSheet.show(this, data) { presenter.send() }
     }
 
@@ -219,12 +235,12 @@ class SendFragment :
 
     // TODO: remove add fragment
     override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.NETWORK)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.NETWORK)
         addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.FEE_CURRENCY)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.FEE_CURRENCY)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN),
             enter = R.anim.slide_up,
@@ -482,7 +498,7 @@ class SendFragment :
     }
 
     override fun showWrongWalletError() {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.ERROR)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.ERROR)
         ErrorBottomSheet.show(
             fragment = this,
             iconRes = R.drawable.ic_wallet_error,

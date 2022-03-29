@@ -45,6 +45,8 @@ android {
             buildConfigField("String", "amplitudeKey", "\"\"")
         }
 
+        buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
@@ -81,6 +83,7 @@ android {
         }
 
         feature {
+            applicationIdSuffix ".feature"
             debuggable true
             signingConfig signingConfigs.debug
             minifyEnabled true
@@ -88,12 +91,16 @@ android {
             versionNameSuffix ".$VERSION_BUILD-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
             buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
+            }
+
+            firebaseCrashlytics {
+                mappingFileUploadEnabled true
             }
         }
 

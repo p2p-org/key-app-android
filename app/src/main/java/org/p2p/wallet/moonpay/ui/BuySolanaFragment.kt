@@ -9,8 +9,8 @@ import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
@@ -41,7 +41,7 @@ class BuySolanaFragment :
     private val token: Token by args(EXTRA_TOKEN)
 
     private val binding: FragmentBuySolanaBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
@@ -50,7 +50,7 @@ class BuySolanaFragment :
         backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
         }
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Buy.SOL)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.SOL)
         with(binding) {
             toolbar.title = getString(R.string.buy_token_on_moonpay, token.tokenSymbol)
             toolbar.setNavigationOnClickListener { popBackStack() }

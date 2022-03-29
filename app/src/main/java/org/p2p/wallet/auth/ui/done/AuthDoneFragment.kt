@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentAuthDoneBinding
 import org.p2p.wallet.home.MainFragment
@@ -22,11 +22,11 @@ class AuthDoneFragment :
 
     override val presenter: AuthDoneContract.Presenter by inject()
     private val binding: FragmentAuthDoneBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.WELCOME_NEW)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.WELCOME_NEW)
         with(binding) {
 
             finishButton.clipToOutline = true

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
@@ -27,7 +27,7 @@ class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
     private val renBtcInteractor: RenBtcInteractor,
     private val tokenInteractor: TokenInteractor
@@ -62,7 +62,7 @@ class HistoryPresenter(
         paginationEnded = false
 
         launch {
-            view?.showPagingState(PagingState.InitialLoading)
+            view?.showPagingState(PagingState.Loading)
 
             kotlin.runCatching {
                 historyInteractor.getAllHistoryTransactions(
@@ -140,16 +140,16 @@ class HistoryPresenter(
                 view?.showPagingState(PagingState.Loading)
 
                 val lastSignature = transactions.lastOrNull()?.signature
-                val history = historyInteractor.getAllHistoryTransactions(
+                val newHistoryPage = historyInteractor.getAllHistoryTransactions(
                     tokenPublicKey = token.publicKey,
                     before = lastSignature,
                     limit = PAGE_SIZE,
                     forceRefresh = false
                 )
-                if (history.isEmpty()) {
+                if (newHistoryPage.isEmpty()) {
                     paginationEnded = true
                 } else {
-                    transactions.addAll(history)
+                    transactions.addAll(newHistoryPage)
                     view?.showHistory(transactions)
                 }
 
@@ -223,7 +223,7 @@ class HistoryPresenter(
                 }
             }
 
-            view?.showDetails(transaction)
+            view?.openTransactionDetailsScreen(transaction)
         }
     }
 

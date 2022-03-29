@@ -7,8 +7,8 @@ import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -22,7 +22,7 @@ class CreatePinPresenter(
     private val authLogoutInteractor: AuthLogoutInteractor,
     private val adminAnalytics: AdminAnalytics,
     private val analytics: OnBoardingAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<CreatePinContract.View>(),
     CreatePinContract.Presenter {
 
@@ -38,7 +38,7 @@ class CreatePinPresenter(
         if (pinCode != createdPin) {
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
-            adminAnalytics.logPinRejected(ScreenName.OnBoarding.PIN_CONFIRM)
+            adminAnalytics.logPinRejected(ScreenNames.OnBoarding.PIN_CONFIRM)
             return
         }
 

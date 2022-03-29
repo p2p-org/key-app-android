@@ -1,34 +1,32 @@
 package org.p2p.wallet.auth.analytics
 
-import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKING_UP_COPYING
-import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKING_UP_RENEW
-import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKING_UP_SAVING
-import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKUP_ERROR
-import org.p2p.wallet.common.analytics.Events.ONBOARD_BACKUP_MANUALLY
-import org.p2p.wallet.common.analytics.Events.ONBOARD_BIO_APPROVED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_BIO_REJECTED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_CREATE_MANUAL_INVOKED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_CREATE_SEED_INVOKED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_MANY_WALLETS_FOUND
-import org.p2p.wallet.common.analytics.Events.ONBOARD_NO_WALLET_FOUND
-import org.p2p.wallet.common.analytics.Events.ONBOARD_PUSH_APPROVED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_PUSH_REJECTED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_RESTORE_GOOGLE_INVOKED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_RESTORE_MANUAL_INVOKED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_CREATED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_RESTORING
-import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_SWIPED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_SPLASH_VIEWED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_USERNAME_RESERVED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_USERNAME_SAVED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_USERNAME_SKIPPED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_WALLET_CREATED
-import org.p2p.wallet.common.analytics.Events.ONBOARD_WALLET_RESTORED
-import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BACKING_UP_COPYING
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BACKING_UP_RENEW
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BACKING_UP_SAVING
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BACKUP_ERROR
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BACKUP_MANUALLY
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BIO_APPROVED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BIO_REJECTED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_MANUAL_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_SEED_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_MANY_WALLETS_FOUND
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_NO_WALLET_FOUND
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_APPROVED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_REJECTED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_GOOGLE_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_MANUAL_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_CREATED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_RESTORING
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_SWIPED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_VIEWED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_RESERVED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SAVED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SKIPPED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_CREATED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_RESTORED
 
-class OnBoardingAnalytics(
-    private val tracker: TrackerContract
-) {
+class OnBoardingAnalytics(private val tracker: Analytics) {
     fun logSplashViewed(campaignName: String) {
         tracker.logEvent(
             ONBOARD_SPLASH_VIEWED,
