@@ -13,7 +13,7 @@ import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcRequest2
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
-import org.p2p.solanaj.model.types.SignatureInformation
+import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
@@ -46,7 +46,7 @@ class RpcSolanaRemoteRepository(
     override suspend fun getConfirmedSignaturesForAddress(
         mintLogAccount: PublicKey,
         limit: Int
-    ): List<SignatureInformation> {
+    ): List<SignatureInformationResponse> {
         val params = arrayListOf<Any>().apply {
             add(mintLogAccount.toString())
             add(ConfigObjects.ConfirmedSignFAddr2(limit))
@@ -55,9 +55,9 @@ class RpcSolanaRemoteRepository(
             RpcRequest(method = "getConfirmedSignaturesForAddress2", params = params)
         ).result
 
-        val result = arrayListOf<SignatureInformation>().apply {
+        val result = arrayListOf<SignatureInformationResponse>().apply {
             for (item in rawResult) {
-                add(SignatureInformation(item))
+                add(SignatureInformationResponse(item))
             }
         }
         return result

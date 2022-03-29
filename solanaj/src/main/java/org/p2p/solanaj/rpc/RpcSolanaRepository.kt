@@ -9,7 +9,7 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryConfig
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.model.types.AccountInfo
-import org.p2p.solanaj.model.types.SignatureInformation
+import org.p2p.solanaj.model.types.SignatureInformationResponse
 
 interface RpcSolanaRepository {
     suspend fun getQueryMint(baseUrl: String = "", txHash: String): ResponseQueryTxMint
@@ -24,5 +24,8 @@ interface RpcSolanaRepository {
 
     suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo
     suspend fun sendTransaction(transaction: Transaction, signer: Account): String
-    suspend fun getConfirmedSignaturesForAddress(mintLogAccount: PublicKey, limit: Int): List<SignatureInformation>
+    suspend fun getConfirmedSignaturesForAddress(
+        mintLogAccount: PublicKey,
+        limit: Int
+    ): List<SignatureInformationResponse>
 }

@@ -11,7 +11,7 @@ import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import java.io.File
 
-private const val KEY_USERNAME = "KEY_USERNAME"
+const val KEY_USERNAME = "KEY_USERNAME"
 
 class UsernameInteractor(
     private val usernameRepository: UsernameRepository,

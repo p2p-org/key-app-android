@@ -1,21 +1,19 @@
 package org.p2p.wallet.auth.analytics
 
-import org.p2p.wallet.common.analytics.Events.ADMIN_APP_CLOSED
-import org.p2p.wallet.common.analytics.Events.ADMIN_APP_OPENED
-import org.p2p.wallet.common.analytics.Events.ADMIN_PASSWORD_CREATED
-import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_CREATED
-import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_REJECTED
-import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_RESET_INVOKED
-import org.p2p.wallet.common.analytics.Events.ADMIN_PIN_RESET_VALIDATED
-import org.p2p.wallet.common.analytics.Events.ADMIN_PUSH_RECEIVED
-import org.p2p.wallet.common.analytics.Events.ADMIN_SIGNED_OUT
-import org.p2p.wallet.common.analytics.Events.ADMIN_SIGN_OUT
-import org.p2p.wallet.common.analytics.Events.ADMIN_SNACKBAR_RECEIVED
-import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_APP_CLOSED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_APP_OPENED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_PASSWORD_CREATED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_PIN_CREATED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_PIN_REJECTED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_PIN_RESET_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_PIN_RESET_VALIDATED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_PUSH_RECEIVED
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_SIGNED_OUT
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_SIGN_OUT
+import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_SNACKBAR_RECEIVED
 
-class AdminAnalytics(
-    private val tracker: TrackerContract
-) {
+class AdminAnalytics(private val tracker: Analytics) {
 
     fun logAppOpened(source: AppOpenSource) {
         tracker.logEvent(ADMIN_APP_OPENED, arrayOf(Pair("Source_Open", source.title)))

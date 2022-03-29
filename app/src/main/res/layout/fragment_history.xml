@@ -116,6 +116,7 @@
                 android:clipToPadding="false"
                 android:orientation="vertical"
                 android:paddingTop="24dp"
+                android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 tools:listitem="@layout/item_transaction" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -129,11 +130,5 @@
             android:background="@drawable/bg_buttons"
             app:layout_constraintTop_toBottomOf="@id/emptyStateLayout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <org.p2p.wallet.common.ui.widget.ProgressView
-        android:id="@+id/progressView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

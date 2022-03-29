@@ -433,8 +433,6 @@
     <string name="details_value">Value</string>
     <string name="details_paid_by_p2p">Paid by p2p.org</string>
     <string name="details_paid_by_p2p_brackets">(Paid by p2p.org)</string>
-    <string name="details_show_transaction_details">Show transaction details</string>
-    <string name="details_hide_transaction_details">Hide transaction details</string>
     <string name="details_info">Info</string>
     <string name="details_history">History</string>
     <string name="details_show_wallet_address">Show wallet address</string>
@@ -530,4 +528,6 @@
     <string name="seed_info_info">• If lost, no one can restore it\n• Keep it private, even from us</string>
     <string name="seed_info_where_i_can_find">Where I can find one?</string>
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
+    <string name="search_menu">Search</string>
+    <string name="search_for_a_token">Search for a token</string>
 </resources>

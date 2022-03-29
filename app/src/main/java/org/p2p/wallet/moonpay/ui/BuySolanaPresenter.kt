@@ -4,7 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
@@ -31,7 +31,7 @@ class BuySolanaPresenter(
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
     private val buyAnalytics: BuyAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     private var calculationJob: Job? = null

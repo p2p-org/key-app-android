@@ -31,3 +31,12 @@ ext.featureChangelog = {
             "Release Notes:\n" +
             branchChangelog()
 }
+
+ext.taskNumber = {
+    List<String> branchNameWithSemi = branchName().split('-')
+    String taskNumber = branchFullName() // P2PW-????-* | develop | master | release
+    if (branchNameWithSemi.size() >= 2) {
+        taskNumber = branchNameWithSemi.get(0) + "-" + branchNameWithSemi.get(1)
+    }
+    return taskNumber
+}

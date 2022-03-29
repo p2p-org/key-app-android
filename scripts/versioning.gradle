@@ -18,7 +18,8 @@ task incrementVersionPatch(group: 'versioning', description: 'Increments patch v
 task setVersionBuild(group: 'versioning', description: 'Sets build version') {
     doLast {
         ant.propertyfile(file: 'gradle.properties') {
-            entry(key: 'VERSION_BUILD', value: version)
+            int buildNumber = VERSION_BUILD as Integer + version.toInteger()
+            entry(key: 'VERSION_BUILD', value: buildNumber)
         }
     }
 }

@@ -20,8 +20,8 @@ import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
@@ -32,14 +32,13 @@ import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.getColor
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
 
 abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), BaseFragmentContract {
 
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     protected open val statusBarColor: Int = R.color.backgroundPrimary
 
@@ -96,23 +95,23 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     }
 
     // TODO add another screens
-    fun getAnalyticsName() = when (this) {
-        is CreateWalletFragment -> ScreenName.OnBoarding.WALLET_CREATE
-        is SecretKeyFragment -> ScreenName.OnBoarding.IMPORT_MANUAL
-        is SecurityKeyFragment -> ScreenName.OnBoarding.CREATE_MANUAL
-        is CreatePinFragment -> ScreenName.OnBoarding.PIN_CREATE
-        is SeedInfoFragment -> ScreenName.OnBoarding.SEED_INFO
-        is VerifySecurityKeyFragment -> ScreenName.OnBoarding.SEED_VERIFY
-        is DerivableAccountsFragment -> ScreenName.OnBoarding.DERIVATION
-        is ReserveUsernameFragment -> ScreenName.OnBoarding.USERNAME_RESERVE
-        is AuthDoneFragment -> ScreenName.OnBoarding.WELCOME_NEW_USERNAME
-        is HomeFragment -> ScreenName.Main.MAIN_COINS
-        is SettingsFragment -> ScreenName.Settings.MAIN
-        is UsernameFragment -> ScreenName.Settings.USERCARD
-        is SecurityFragment -> ScreenName.Settings.SECURITY
-        is SettingsNetworkFragment -> ScreenName.Settings.NETWORK
-        is NetworkSelectionFragment -> ScreenName.Send.NETWORK
-        is OrcaSwapFragment -> ScreenName.Swap.MAIN
+    fun getAnalyticsName(): String = when (this) {
+        is CreateWalletFragment -> ScreenNames.OnBoarding.WALLET_CREATE
+        is SecretKeyFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
+        is SecurityKeyFragment -> ScreenNames.OnBoarding.CREATE_MANUAL
+        is CreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
+        is SeedInfoFragment -> ScreenNames.OnBoarding.SEED_INFO
+        is VerifySecurityKeyFragment -> ScreenNames.OnBoarding.SEED_VERIFY
+        is DerivableAccountsFragment -> ScreenNames.OnBoarding.DERIVATION
+        is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
+        is AuthDoneFragment -> ScreenNames.OnBoarding.WELCOME_NEW_USERNAME
+        is HomeFragment -> ScreenNames.Main.MAIN_COINS
+        is SettingsFragment -> ScreenNames.Settings.MAIN
+        is UsernameFragment -> ScreenNames.Settings.USERCARD
+        is SecurityFragment -> ScreenNames.Settings.SECURITY
+        is SettingsNetworkFragment -> ScreenNames.Settings.NETWORK
+        is NetworkSelectionFragment -> ScreenNames.Send.NETWORK
+        is OrcaSwapFragment -> ScreenNames.Swap.MAIN
         else -> emptyString()
     }
 }
