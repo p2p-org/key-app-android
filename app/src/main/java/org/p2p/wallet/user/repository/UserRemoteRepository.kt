@@ -60,7 +60,7 @@ class UserRemoteRepository(
         userLocalRepository.setTokenPrices(prices)
 
         // Map accounts to List<Token.Active>
-        return@withContext mapAccountsToTokens(publicKey, accounts)
+        mapAccountsToTokens(publicKey, accounts)
     }
 
     private suspend fun loadTokensPrices(tokens: Set<String>, targetCurrency: String): List<TokenPrice> {
