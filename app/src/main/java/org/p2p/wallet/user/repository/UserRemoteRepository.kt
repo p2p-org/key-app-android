@@ -127,12 +127,6 @@ class UserRemoteRepository(
         return tokens + solToken
     }
 
-    override suspend fun getRate(sourceSymbol: String, destinationSymbol: String): TokenPrice? {
-        val json = compareApi.getPrice(sourceSymbol, destinationSymbol)
-        val price = json.getAsJsonPrimitive(destinationSymbol)?.asBigDecimal
-        return price?.let { TokenPrice(sourceSymbol, price.scaleMedium()) }
-    }
-
     private fun mapDevnetRenBTC(account: Account): Token.Active? {
         if (environmentManager.loadEnvironment() != Environment.DEVNET) return null
         val token = userLocalRepository.findTokenData(REN_BTC_DEVNET_MINT)
