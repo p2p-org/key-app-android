@@ -1,7 +1,8 @@
 -dontwarn org.p2p.wallet.**
 
--keepclassmembers class * implements androidx.viewbinding.ViewBinding {
-    public ** bind(...);
+-keepclassmembers class ** implements androidx.viewbinding.ViewBinding {
+   public static *** inflate(...);
+   public static *** bind(***);
 }
 
 # GSON
