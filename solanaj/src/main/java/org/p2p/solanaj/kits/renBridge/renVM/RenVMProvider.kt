@@ -12,12 +12,11 @@ import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Base64UrlUtils
 import java.math.BigInteger
 
-private const val PARAM_KEY_TX_HASH = "txHash"
-const val PARAM_KEY_TX = ""
+private const val PARAM_KEY_TX_HASH = ""
 
 const val MINT_TRANSACTION_INPUT =
-    "aHQBEVgedhqiYDUtzYKdu1Qg1fc781PEV4D1gLsuzfpHNwH8yK2A2BuZK4uZoMC6pp8o7G" +
-        "WQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1"
+    "aHQBEVgedhqiYDUtzYKdu1Qg1fc781PEV4D1gLsuzfpHNwH8yK2A2BuZK4uZoMC6" +
+        "pp8o7GWQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1"
 
 class RenVMProvider(
     private val rpcSolanaApi: RpcSolanaRepository,
@@ -29,34 +28,23 @@ class RenVMProvider(
         const val BURN_SELECTOR = "BTC/fromSolana"
     }
 
-    private var emptyParams = hashMapOf<String, Any>()
+    @Throws(RpcException::class)
+    suspend fun getQueryMint(txHash: String): ResponseQueryTxMint =
+        rpcSolanaApi.getQueryMint(environment.lightNode, txHash)
 
     @Throws(RpcException::class)
-    suspend fun getQueryMint(txHash: String): ResponseQueryTxMint {
-        val params = hashMapOf<String, String>()
-        params[PARAM_KEY_TX_HASH] = txHash
-        return rpcSolanaApi.getQueryMint(baseUrl = environment.lightNode, params = params)
-    }
+    suspend fun getQueryBlockState(): ResponseQueryBlockState =
+        rpcSolanaApi.getQueryBlockState(baseUrl = environment.lightNode)
 
     @Throws(RpcException::class)
-    suspend fun getQueryBlockState(): ResponseQueryBlockState {
-        return rpcSolanaApi.getQueryBlockState(baseUrl = environment.lightNode)
-    }
-
-    @Throws(RpcException::class)
-    suspend fun getQueryConfig(): ResponseQueryConfig {
-        return rpcSolanaApi.getQueryConfig(baseUrl = environment.lightNode)
-    }
+    suspend fun getQueryConfig(): ResponseQueryConfig = rpcSolanaApi.getQueryConfig(baseUrl = environment.lightNode)
 
     @Throws(RpcException::class)
     suspend fun submitTx(
         hash: String,
         mintTx: ParamsSubmitMint.MintTransactionInput,
         selector: String
-    ): ResponseSubmitTxMint {
-
-        return rpcSolanaApi.submitTx(environment.lightNode, hash, mintTx, selector)
-    }
+    ): ResponseSubmitTxMint = rpcSolanaApi.submitTx(environment.lightNode, hash, mintTx, selector)
 
     @Throws(RpcException::class)
     suspend fun selectPublicKey(): ByteArray {

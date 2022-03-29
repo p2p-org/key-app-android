@@ -18,7 +18,7 @@ class LockAndMint(
     private val renVMProvider: RenVMProvider,
     private val session: Session,
     private val solanaChain: RpcSolanaInteractor,
-    private val state: LockAndMint.State = State(),
+    private val state: State = State(),
     private val rpcEnvironment: RpcEnvironment
 ) {
 

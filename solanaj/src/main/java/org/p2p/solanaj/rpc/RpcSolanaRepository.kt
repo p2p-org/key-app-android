@@ -12,7 +12,7 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.SignatureInformation
 
 interface RpcSolanaRepository {
-    suspend fun getQueryMint(baseUrl: String = "", params: HashMap<String, String>): ResponseQueryTxMint
+    suspend fun getQueryMint(baseUrl: String = "", txHash: String): ResponseQueryTxMint
     suspend fun getQueryBlockState(baseUrl: String = ""): ResponseQueryBlockState
     suspend fun getQueryConfig(baseUrl: String = ""): ResponseQueryConfig
     suspend fun submitTx(

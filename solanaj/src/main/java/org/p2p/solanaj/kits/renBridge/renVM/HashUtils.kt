@@ -22,15 +22,16 @@ object HashUtils {
             out.write(marshalString(version))
             out.write(marshalString(selector))
 
-            val marshalledMintTransactionInput =
-                MINT_TRANSACTION_INPUT
+            val marshalledMintTransactionInput = MINT_TRANSACTION_INPUT
             out.write(Base58.decode(marshalledMintTransactionInput))
 
             out.write(marshalBytes(Utils.fromURLBase64(mintTx.txid)))
-            out.write(ByteUtils.uint32ToByteArrayBE(mintTx.txid.toLong()))
+            out.write(ByteUtils.uint32ToByteArrayBE(mintTx.txindex.toLong()))
             out.write(Utils.amountToUint256ByteArrayBE(mintTx.amount))
             out.write(byteArrayOf(0, 0, 0, 0))
             out.write(Utils.fromURLBase64(mintTx.phash))
+            out.write(marshalString(mintTx.to))
+            out.write(Utils.fromURLBase64(mintTx.nonce))
             out.write(Utils.fromURLBase64(mintTx.nhash))
             out.write(marshalBytes(Utils.fromURLBase64(mintTx.gpubkey)))
             out.write(Utils.fromURLBase64(mintTx.ghash))
@@ -40,11 +41,11 @@ object HashUtils {
         return Hash.sha256(out.toByteArray())
     }
 
-    fun marshalString(src: String): ByteArray {
+    private fun marshalString(src: String): ByteArray {
         return marshalBytes(src.toByteArray())
     }
 
-    fun marshalBytes(byteArray: ByteArray): ByteArray {
+    private fun marshalBytes(byteArray: ByteArray): ByteArray {
         val out = ByteArray(ByteUtils.UINT_32_LENGTH + byteArray.size)
         val uint32Array = ByteUtils.uint32ToByteArrayBE(byteArray.size.toLong())
         System.arraycopy(uint32Array, 0, out, 0, ByteUtils.UINT_32_LENGTH)

@@ -63,8 +63,11 @@ class RpcSolanaRemoteRepository(
         return result
     }
 
-    override suspend fun getQueryMint(baseUrl: String, params: HashMap<String, String>): ResponseQueryTxMint =
-        api.queryMint(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_queryTx", params = params)).result
+    override suspend fun getQueryMint(baseUrl: String, txHash: String): ResponseQueryTxMint {
+        val params = hashMapOf<String, Any>()
+        params["txHash"] = txHash
+        return api.queryMint(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_queryTx", params = params)).result
+    }
 
     override suspend fun getQueryBlockState(baseUrl: String): ResponseQueryBlockState =
         api.queryBlockState(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_queryBlockState", emptyMap())).result

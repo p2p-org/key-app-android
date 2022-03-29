@@ -1,5 +1,6 @@
 package org.p2p.wallet.renbtc.interactor
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flattenMerge
@@ -50,18 +51,18 @@ class RenBtcInteractor(
         databaseRepository.clearSessionData()
     }
 
-    suspend fun generateSession(): LockAndMint.Session {
+    suspend fun generateSession(): LockAndMint.Session = with(Dispatchers.IO) {
         databaseRepository.clearSessionData()
         val session = renTransactionManager.initializeSession(null, tokenKeyProvider.publicKey)
         setSessionSate(RenBtcSession.Active(session))
-        return session
+        session
     }
 
-    suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session {
+    suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session = with(Dispatchers.IO) {
         databaseRepository.clearSessionData()
         val session = renTransactionManager.initializeSession(session, tokenKeyProvider.publicKey)
         setSessionSate(RenBtcSession.Active(session))
-        return session
+        session
     }
 
     suspend fun startPolling(session: LockAndMint.Session) {

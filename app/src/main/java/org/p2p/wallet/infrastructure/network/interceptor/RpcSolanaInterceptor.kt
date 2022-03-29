@@ -2,8 +2,10 @@ package org.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
 import okhttp3.Interceptor
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -24,32 +26,49 @@ open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
     private val TAG = "RpcInterceptor"
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val response = chain.proceed(chain.request().newBuilder().header("Content-Type", "application/json").build())
+        val request = chain.request().newBuilder().header("Content-Type", "application/json").build()
+        Timber.tag("RpcInterceptor").d("Request = ${getRequestJson(request)}")
+        val response = chain.proceed(request)
+        val responseString = response.body?.string().orEmpty()
+        Timber.tag(TAG).d(responseString)
         return if (response.isSuccessful) {
-            handleResponse(response)
+            handleResponse(response, responseString)
         } else {
-            throw extractGeneralException(response.body!!.string())
+            throw extractGeneralException(responseString)
         }
     }
 
-    private fun handleResponse(response: Response): Response {
-        val responseBody = try {
-            val body = response.body!!.string()
-            Timber.tag("RpcSolanaInterceptor").d(body.toString())
-            body
+    private fun getRequestJson(request: Request): JSONObject? {
+        val requestBuffer = Buffer()
+
+        request.body?.writeTo(requestBuffer)
+
+        val requestBodyString = requestBuffer.readUtf8()
+
+        val json: JSONObject = try {
+            when (val data = JSONTokener(requestBodyString).nextValue()) {
+                is JSONObject -> data
+                is JSONArray -> data.get(0) as JSONObject
+                else -> throw IllegalStateException("Unknown type of request body")
+            }
         } catch (e: Exception) {
-            throw IOException("Error parsing response body", e)
+            Timber.tag(TAG).e("Error on parsing json $e")
+            return null
         }
 
-        if (responseBody.isEmpty()) {
+        return json
+    }
+
+    private fun handleResponse(response: Response, responseString: String): Response {
+        if (responseString.isEmpty()) {
             throw EmptyDataException("Data is empty")
         }
 
         return try {
-            when (val data = JSONTokener(responseBody).nextValue()) {
-                is JSONObject -> parseObject(data, response, responseBody)
-                is JSONArray -> parseArray(data, response, responseBody)
-                else -> createResponse(response, responseBody)
+            when (val data = JSONTokener(responseString).nextValue()) {
+                is JSONObject -> parseObject(data, response, responseString)
+                is JSONArray -> parseArray(data, response, responseString)
+                else -> createResponse(response, responseString)
             }
         } catch (e: JSONException) {
             throw IllegalStateException("Error parsing data", e)
