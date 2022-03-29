@@ -37,7 +37,7 @@ class TokenButtonViewHolder(
 
         if (item.isHiddenTokens) {
             val isHidden = item.state is VisibilityState.Hidden
-            val rotationValue = if (isHidden) 180f else 0f
+            val rotationValue = if (isHidden) 0f else 180f
             arrowImageView
                 .animate()
                 .rotation(rotationValue)

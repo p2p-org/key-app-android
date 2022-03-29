@@ -11,14 +11,14 @@ import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.common.AppRestarter
 import timber.log.Timber
 
 object DebugDrawer : KoinComponent {
 
     private val appRestarter: AppRestarter by inject()
-    private val authInteractor: AuthInteractor by inject()
+    private val authLogoutInteractor: AuthLogoutInteractor by inject()
 
     fun init(application: Application) {
         val lumberYard = LumberYard.getInstance(application)
@@ -51,7 +51,7 @@ object DebugDrawer : KoinComponent {
 
     private fun getDefaultModules(): Array<DebugModuleAdapter> {
         val restartCallback = { appRestarter.restartApp() }
-        val clearDataCallback = { authInteractor.clear() }
+        val clearDataCallback = { authLogoutInteractor.clearAppData() }
 
         return arrayOf(
             ConfigurationModule(),

@@ -1,18 +1,19 @@
 package org.p2p.wallet.auth.ui.pin.signin
 
 import android.os.CountDownTimer
-import org.p2p.wallet.auth.interactor.AuthInteractor
-import org.p2p.wallet.auth.model.BiometricStatus
-import org.p2p.wallet.auth.model.SignInResult
-import org.p2p.wallet.common.crypto.keystore.DecodeCipher
-import org.p2p.wallet.common.mvp.BasePresenter
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
+import org.p2p.wallet.auth.model.BiometricStatus
+import org.p2p.wallet.auth.model.SignInResult
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.crypto.keystore.DecodeCipher
+import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import javax.crypto.Cipher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 private const val PIN_CODE_ATTEMPT_COUNT = 3
@@ -22,9 +23,10 @@ private const val TIMER_INTERVAL = 1000L
 
 class SignInPinPresenter(
     private val authInteractor: AuthInteractor,
+    private val authLogoutInteractor: AuthLogoutInteractor,
     private val adminAnalytics: AdminAnalytics,
     private val authAnalytics: AuthAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<SignInPinContract.View>(), SignInPinContract.Presenter {
 
     private var wrongPinCounter = 0
@@ -77,7 +79,7 @@ class SignInPinPresenter(
     override fun logout() {
         timer?.cancel()
         launch {
-            authInteractor.logout()
+            authLogoutInteractor.onUserLogout()
             view?.onLogout()
         }
     }

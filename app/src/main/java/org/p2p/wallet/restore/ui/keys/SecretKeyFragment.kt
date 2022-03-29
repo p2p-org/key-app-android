@@ -18,8 +18,8 @@ import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
 import org.p2p.wallet.restore.model.SecretKey
@@ -47,7 +47,7 @@ class SecretKeyFragment :
 
     override val presenter: SecretKeyContract.Presenter by inject()
     private val binding: FragmentSecretKeyBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val phraseAdapter: SecretPhraseAdapter by lazy {
         SecretPhraseAdapter {
@@ -58,7 +58,7 @@ class SecretKeyFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.IMPORT_MANUAL)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.IMPORT_MANUAL)
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 it.hideKeyboard()
@@ -139,7 +139,7 @@ class SecretKeyFragment :
         val clickableTermsOfUse = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 presenter.openTermsOfUse()
-                analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.TERMS_OF_USE)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.TERMS_OF_USE)
             }
 
             override fun updateDrawState(ds: TextPaint) {

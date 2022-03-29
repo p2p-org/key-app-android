@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
-import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -16,7 +16,7 @@ import org.p2p.wallet.settings.model.SettingsRow
 
 class SettingsPresenter(
     private val usernameInteractor: UsernameInteractor,
-    private val authInteractor: AuthInteractor,
+    private val authLogoutInteractor: AuthLogoutInteractor,
     private val environmentManager: EnvironmentManager,
     private val appRestarter: AppRestarter,
     private val analytics: ReceiveAnalytics,
@@ -39,7 +39,7 @@ class SettingsPresenter(
 
     override fun logout() {
         launch {
-            authInteractor.logout()
+            authLogoutInteractor.onUserLogout()
             adminAnalytics.logSignedOut()
             appRestarter.restartApp()
         }

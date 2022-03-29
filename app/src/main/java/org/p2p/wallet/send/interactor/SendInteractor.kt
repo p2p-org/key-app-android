@@ -33,7 +33,7 @@ class SendInteractor(
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val transactionInteractor: TransactionInteractor,
-    private val amountInteractor: RpcAmountRepository,
+    private val amountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -79,8 +79,8 @@ class SendInteractor(
             NetworkType.SOLANA -> {
                 if (receiver.isNullOrEmpty() || token.isSOL) return null
 
-                val lamportsPerSignature: BigInteger = amountInteractor.getLamportsPerSignature(null)
-                val minRentExemption: BigInteger = amountInteractor.getMinBalanceForRentExemption()
+                val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
+                val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption()
 
                 var transactionFee: BigInteger = BigInteger.ZERO
 
@@ -272,7 +272,7 @@ class SendInteractor(
         val feePayer = feePayerPublicKey ?: account.publicKey
 
         val minRentExemption =
-            minBalanceForRentExemption ?: amountInteractor.getMinBalanceForRentExemption()
+            minBalanceForRentExemption ?: amountRepository.getMinBalanceForRentExemption()
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress.toPublicKey(),

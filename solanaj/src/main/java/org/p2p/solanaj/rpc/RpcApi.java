@@ -10,7 +10,7 @@ import org.p2p.solanaj.model.types.ProgramAccount;
 import org.p2p.solanaj.model.types.RecentBlockhash;
 import org.p2p.solanaj.model.types.RpcResultTypes;
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig;
-import org.p2p.solanaj.model.types.SignatureInformation;
+import org.p2p.solanaj.model.types.SignatureInformationResponse;
 import org.p2p.solanaj.utils.crypto.Base64Utils;
 
 import java.util.AbstractMap;
@@ -74,7 +74,7 @@ public class RpcApi {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public List<SignatureInformation> getConfirmedSignaturesForAddress2(PublicKey account, int limit)
+    public List<SignatureInformationResponse> getConfirmedSignaturesForAddress2(PublicKey account, int limit)
             throws RpcException {
         List<Object> params = new ArrayList<Object>();
 
@@ -83,9 +83,9 @@ public class RpcApi {
 
         List<AbstractMap> rawResult = client.call("getConfirmedSignaturesForAddress2", params, List.class);
 
-        List<SignatureInformation> result = new ArrayList<SignatureInformation>();
+        List<SignatureInformationResponse> result = new ArrayList<SignatureInformationResponse>();
         for (AbstractMap item : rawResult) {
-            result.add(new SignatureInformation(item));
+            result.add(new SignatureInformationResponse(item));
         }
 
         return result;

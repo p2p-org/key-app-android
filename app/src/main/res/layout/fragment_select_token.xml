@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/ic_close"
+            app:navigationIcon="@drawable/ic_back"
             app:title="@string/main_select_token"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
@@ -28,7 +28,7 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            tools:listitem="@layout/item_token" />
+            tools:listitem="@layout/item_token_simple" />
 
         <TextView
             android:id="@+id/emptyTextView"

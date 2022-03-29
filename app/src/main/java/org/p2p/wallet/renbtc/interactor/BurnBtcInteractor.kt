@@ -19,7 +19,7 @@ import java.math.BigInteger
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager,
-    private val rpcBalanceInteractor: RpcAmountRepository
+    private val rpcAmountRepository: RpcAmountRepository
 ) {
 
     companion object {
@@ -56,7 +56,7 @@ class BurnBtcInteractor(
     }
 
     suspend fun getBurnFee(): BigDecimal {
-        val fee = rpcBalanceInteractor.getMinBalanceForRentExemption(BURN_FEE_LENGTH)
+        val fee = rpcAmountRepository.getMinBalanceForRentExemption(BURN_FEE_LENGTH)
         return fee.fromLamports().add(BURN_FEE_VALUE.toBigDecimal()).scaleMedium()
     }
 

@@ -12,8 +12,8 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -26,7 +26,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
 
     private val binding: FragmentMainBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     companion object {
         fun create(): MainFragment = MainFragment()
@@ -50,7 +50,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
             bottomNavigation.setOnItemSelectedListener {
                 if (it.itemId == R.id.itemFeedback) {
                     IntercomService.showMessenger()
-                    analyticsInteractor.logScreenOpenEvent(ScreenName.Main.MAIN_FEEDBACK)
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
                     return@setOnItemSelectedListener false
                 }
                 navigate(it.itemId)
@@ -74,15 +74,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         if (!fragments.containsKey(itemId)) {
             val fragment = when (Tabs.fromTabId(itemId)) {
                 Tabs.HOME -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenName.Main.MAIN_COINS)
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_COINS)
                     HomeFragment.create()
                 }
                 Tabs.SEND -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenName.Send.MAIN)
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.MAIN)
                     SendFragment.create()
                 }
                 Tabs.SETTINGS -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.MAIN)
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
                     SettingsFragment.create()
                 }
             }

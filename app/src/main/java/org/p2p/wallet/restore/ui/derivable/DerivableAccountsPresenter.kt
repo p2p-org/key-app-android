@@ -4,7 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
@@ -42,9 +42,9 @@ class DerivableAccountsPresenter(
                 allAccounts += accounts
                 filterAccountsByPath(path)
                 if (allAccounts.size > 1) {
-                    analytics.logManyWalletFound(ScreenName.OnBoarding.IMPORT_MANUAL)
+                    analytics.logManyWalletFound(ScreenNames.OnBoarding.IMPORT_MANUAL)
                 } else {
-                    analytics.logNoWalletFound(ScreenName.OnBoarding.IMPORT_MANUAL)
+                    analytics.logNoWalletFound(ScreenNames.OnBoarding.IMPORT_MANUAL)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading derivable accounts")
@@ -61,7 +61,7 @@ class DerivableAccountsPresenter(
                 view?.showLoading(true)
                 val keys = secretKeys.map { it.text }
                 secretKeyInteractor.createAndSaveAccount(path, keys)
-                analytics.logWalletRestored(ScreenName.OnBoarding.IMPORT_MANUAL)
+                analytics.logWalletRestored(ScreenNames.OnBoarding.IMPORT_MANUAL)
                 val usernameExists = usernameInteractor.usernameExists()
                 if (usernameExists) {
                     view?.navigateToCreatePin()

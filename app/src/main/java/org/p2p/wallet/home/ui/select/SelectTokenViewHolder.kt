@@ -14,6 +14,7 @@ import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.utils.dip
+import java.util.Locale
 
 class SelectTokenViewHolder(
     binding: ItemTokenSimpleBinding,
@@ -40,7 +41,8 @@ class SelectTokenViewHolder(
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView
     private val nameTextView = binding.nameTextView
-    private val valueTextView = binding.valueTextView
+    private val symbolTextView = binding.symbolTextView
+    private val usdValueTextView = binding.usdValueTextView
     private val totalTextView = binding.totalTextView
 
     fun onBind(item: Token) {
@@ -55,18 +57,19 @@ class SelectTokenViewHolder(
         }
 
         nameTextView.text = item.getFormattedName()
+        symbolTextView.text = item.tokenSymbol.uppercase(Locale.getDefault())
         wrappedImageView.isVisible = item.isWrapped
         itemView.setOnClickListener { onItemClicked(item) }
 
         when (item) {
             is Token.Active -> {
-                valueTextView.text = item.getFormattedUsdTotal()
-                totalTextView.text = item.getFormattedTotal()
-                valueTextView.isVisible = true
+                usdValueTextView.text = item.getFormattedUsdTotal()
+                totalTextView.text = item.getFormattedTotal(includeSymbol = true)
+                usdValueTextView.isVisible = true
                 totalTextView.isVisible = true
             }
             is Token.Other -> {
-                valueTextView.isVisible = false
+                usdValueTextView.isVisible = false
                 totalTextView.isVisible = false
             }
         }

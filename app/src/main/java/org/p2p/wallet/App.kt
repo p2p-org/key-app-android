@@ -1,23 +1,18 @@
 package org.p2p.wallet
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import androidx.appcompat.app.AppCompatDelegate
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
-import org.koin.core.module.Module
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
-import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.common.analytics.TrackerContract
-import org.p2p.wallet.common.analytics.TrackerFactory
-import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.crashlytics.CrashLoggingService
+import org.p2p.wallet.common.crashlytics.TimberCrashTree
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
@@ -37,22 +32,32 @@ import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
+
+private const val CRASH_SERVICE_KEY_TASK_NUMBER = "task_number"
 
 class App : Application() {
 
+    private val crashLoggingService: CrashLoggingService by inject()
+
     override fun onCreate() {
         super.onCreate()
-        setupTimber()
         setupKoin()
 
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(BuildConfig.CRASHLYTICS_ENABLED)
+        setupTimber()
+
+        crashLoggingService.isLoggingEnabled = BuildConfig.CRASHLYTICS_ENABLED
+        crashLoggingService.setCustomKey(CRASH_SERVICE_KEY_TASK_NUMBER, BuildConfig.TASK_NUMBER)
 
         AppNotificationManager.createNotificationChannels(this)
         IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
         AndroidThreeTen.init(this)
         DebugDrawer.init(this)
+
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
+
+        SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
     }
 
     private fun setupKoin() {
@@ -77,35 +82,29 @@ class App : Application() {
                     InfrastructureModule.create(),
                     TransactionModule.create(),
                     AnalyticsModule.create(),
-                    createAppModule()
+                    AppModule.create(application = this@App, restartAction = ::restart)
                 )
             )
         }
     }
 
-    private fun createAppModule(): Module = module {
-        single { AppScope() }
-        single {
-            AppRestarter {
-                restart()
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            }
-        } bind AppRestarter::class
-        single {
-            val trackers = TrackerFactory.create(this@App, BuildConfig.ANALYTICS_ENABLED)
-            Analytics(trackers)
-        } bind TrackerContract::class
-    }
-
     private fun restart() {
         setupKoin()
+
         RootActivity
             .createIntent(this, action = RootActivity.ACTION_RESTART)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             .let { startActivity(it) }
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+        // Always plant this tree
+        // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag
+        Timber.plant(TimberCrashTree(crashLoggingService))
     }
 }

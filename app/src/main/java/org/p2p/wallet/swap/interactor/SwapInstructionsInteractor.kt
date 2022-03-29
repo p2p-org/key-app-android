@@ -13,7 +13,7 @@ import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class SwapInstructionsInteractor(
-    private val rpcAmountInteractor: RpcAmountRepository,
+    private val rpcAmountRepository: RpcAmountRepository,
     private val orcaAddressInteractor: TransactionAddressInteractor
 ) {
 
@@ -84,7 +84,7 @@ class SwapInstructionsInteractor(
         amount: BigInteger,
         payer: PublicKey
     ): AccountInstructions {
-        val minBalanceForRentExemption = rpcAmountInteractor.getMinBalanceForRentExemption(
+        val minBalanceForRentExemption = rpcAmountRepository.getMinBalanceForRentExemption(
             TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
         )
 

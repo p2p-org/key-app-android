@@ -9,7 +9,7 @@ import org.p2p.solanaj.core.TransactionInstruction;
 import org.p2p.solanaj.kits.TokenTransaction;
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint;
 import org.p2p.solanaj.model.types.AccountInfo;
-import org.p2p.solanaj.model.types.SignatureInformation;
+import org.p2p.solanaj.model.types.SignatureInformationResponse;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.utils.ByteUtils;
@@ -143,7 +143,7 @@ public class SolanaChain {
                 return signature;
             }
 
-            List<SignatureInformation> signatures = client.getApi().getConfirmedSignaturesForAddress2(mintLogAccount,
+            List<SignatureInformationResponse> signatures = client.getApi().getConfirmedSignaturesForAddress2(mintLogAccount,
                     1);
             signature = signatures.get(0).getSignature();
         } catch (Exception e) {

@@ -29,9 +29,21 @@ task clean(type: Delete) {
 }
 
 task installGitHook(type: Copy) {
-    from new File(rootProject.rootDir, 'scripts/pre-commit')
-    into { new File(rootProject.rootDir, '.git/hooks') }
-    fileMode 0777
+    def useGitHooks = use_git_hooks
+    if (rootProject.file('local.properties').exists()) {
+        def localProperties = new Properties()
+        localProperties.load(new FileInputStream(rootProject.file('local.properties')))
+        useGitHooks = localProperties.getOrDefault('use_git_hooks', use_git_hooks)
+    }
+
+    logger.quiet "use_git_hooks=$useGitHooks"
+    if (useGitHooks) {
+        from rootProject.file('scripts/pre-commit')
+        into rootProject.file('.git/hooks')
+        fileMode 0777
+    } else {
+        rootProject.file('.git/hooks/pre-commit').delete()
+    }
 }
 
 tasks.getByPath(':app:preBuild').dependsOn installGitHook

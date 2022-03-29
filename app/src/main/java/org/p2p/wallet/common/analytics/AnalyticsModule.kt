@@ -6,8 +6,9 @@ import org.koin.dsl.module
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
-import org.p2p.wallet.auth.analytics.repository.AnalyticsInMemoryRepository
-import org.p2p.wallet.auth.analytics.repository.AnalyticsLocalRepository
+import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
+import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
@@ -23,7 +24,7 @@ object AnalyticsModule : InjectionModule {
         factory { ReceiveAnalytics(get()) }
         factory { BuyAnalytics(get()) }
         factory { SwapAnalytics(get()) }
-        factory { AnalyticsInteractor(get(), get()) }
+        factory { ScreensAnalyticsInteractor(get(), get()) }
         factory { OnBoardingAnalytics(get()) }
         factory { BrowseAnalytics(get()) }
         factory { SendAnalytics(get()) }

@@ -6,8 +6,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
@@ -68,7 +68,7 @@ class SendPresenter(
     private val settingsInteractor: SettingsInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
     private val transactionManager: TransactionManager,
     private val resources: Resources
@@ -447,7 +447,7 @@ class SendPresenter(
             token = token,
             lamports = lamports
         )
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.SUCCESS)
         val transaction = buildTransaction(result)
         val state = TransactionState.SendSuccess(transaction, token.tokenSymbol)
         transactionManager.emitTransactionState(state)

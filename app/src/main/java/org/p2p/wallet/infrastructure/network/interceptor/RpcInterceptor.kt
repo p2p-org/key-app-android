@@ -154,7 +154,7 @@ open class RpcInterceptor(
             *  */
             val result = data.optJSONArray("result")
             if (result?.length() == 0) {
-                throw EmptyDataException("Empty data received from the server")
+                throw EmptyDataException("Empty data received from the server: $data")
             } else {
                 createResponse(response, responseBody)
             }

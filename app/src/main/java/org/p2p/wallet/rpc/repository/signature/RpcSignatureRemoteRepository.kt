@@ -3,18 +3,18 @@ package org.p2p.wallet.rpc.repository.signature
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.solanaj.model.types.SignatureInformation
+import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.wallet.rpc.api.RpcSignatureApi
 
 class RpcSignatureRemoteRepository(private val rpcPoolApi: RpcSignatureApi) : RpcSignatureRepository {
 
     override suspend fun getConfirmedSignaturesForAddress(
-        account: PublicKey,
+        userAccountAddress: PublicKey,
         before: String?,
         limit: Int
-    ): List<SignatureInformation> {
+    ): List<SignatureInformationResponse> {
         val params = listOf(
-            account.toString(),
+            userAccountAddress.toString(),
             ConfigObjects.ConfirmedSignFAddr2(before, limit)
         )
 

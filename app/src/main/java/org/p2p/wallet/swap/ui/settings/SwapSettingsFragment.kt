@@ -12,8 +12,8 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
 import org.p2p.wallet.home.model.Token
@@ -63,12 +63,12 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
     }
 
     private val binding: FragmentSwapSettingsBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private lateinit var validateWatcher: TextWatcher
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.SETTINGS)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.SETTINGS)
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 updateSettings()
