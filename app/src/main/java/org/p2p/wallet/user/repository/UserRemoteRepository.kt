@@ -1,6 +1,5 @@
 package org.p2p.wallet.user.repository
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
 import org.p2p.solanaj.rpc.Environment
@@ -8,6 +7,7 @@ import org.p2p.wallet.home.api.CompareApi
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.model.TokenPrice
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
@@ -27,7 +27,8 @@ class UserRemoteRepository(
     private val userLocalRepository: UserLocalRepository,
     private val rpcRepository: RpcAccountRepository,
     private val rpcBalanceRepository: RpcBalanceRepository,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: EnvironmentManager,
+    private val dispatchers: CoroutineDispatchers
 ) : UserRepository {
 
     companion object {
@@ -47,7 +48,7 @@ class UserRemoteRepository(
     /**
      * Load user tokens and their prices
      */
-    override suspend fun loadUserTokens(publicKey: String): List<Token.Active> = withContext(Dispatchers.IO) {
+    override suspend fun loadUserTokens(publicKey: String): List<Token.Active> = withContext(dispatchers.io) {
         val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
         // Get token symbols from user accounts plus SOL
