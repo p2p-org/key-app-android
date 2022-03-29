@@ -12,7 +12,6 @@ private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 class UserInMemoryRepository : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
-    private val tokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
     private val tokensSearchResultFlow = MutableStateFlow<TokenListData>(TokenListData())
     private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
@@ -74,6 +73,7 @@ class UserInMemoryRepository : UserLocalRepository {
         )
         tokensSearchResultFlow.value = result
     }
+
     private fun loadMoreTokensBySearchText(searchText: String, newSearchTokensSize: Int) {
         val searchResult = findTokensBySearchText(searchText)
         searchTextByTokens[searchText] = searchResult.take(newSearchTokensSize)

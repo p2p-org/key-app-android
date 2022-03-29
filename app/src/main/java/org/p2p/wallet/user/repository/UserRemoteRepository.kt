@@ -16,6 +16,7 @@ import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.scaleMedium
@@ -32,6 +33,7 @@ class UserRemoteRepository(
     companion object {
         private const val API_CHUNKED_COUNT = 30
         private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
+        private const val BALANCE_CURRENCY = "USD"
     }
 
     override suspend fun loadAllTokens(): List<TokenData> =
@@ -42,69 +44,87 @@ class UserRemoteRepository(
                 chunkedList.map { TokenConverter.fromNetwork(it) }
             }
 
-    override suspend fun loadTokensPrices(tokens: List<String>, targetCurrency: String): List<TokenPrice> =
-        withContext(Dispatchers.IO) {
-            val result = mutableListOf<TokenPrice>()
-            tokens
-                .chunked(API_CHUNKED_COUNT)
-                .map { list ->
-                    /**
-                     * CompareApi cannot resolve more than 30 token prices at once,
-                     * therefore we are splitting the tokenlist
-                     * */
-                    val json = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
-                    val response = json.get("Response")
-                    if (response?.asString == "Error") {
-                        throw IllegalStateException("Cannot get rates")
+    /**
+     * Load user tokens and their prices
+     */
+    override suspend fun loadUserTokens(publicKey: String): List<Token.Active> = withContext(Dispatchers.IO) {
+        val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
+
+        // Get token symbols from user accounts plus SOL
+        val tokenSymbols = accounts.mapNotNull {
+            userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
+        } + SOL_SYMBOL
+
+        // Load and save user tokens prices
+        val prices = loadTokensPrices(tokenSymbols.toSet(), BALANCE_CURRENCY)
+        userLocalRepository.setTokenPrices(prices)
+
+        // Map accounts to List<Token.Active>
+        return@withContext mapAccountsToTokens(publicKey, accounts)
+    }
+
+    private suspend fun loadTokensPrices(tokens: Set<String>, targetCurrency: String): List<TokenPrice> {
+        val prices = mutableListOf<TokenPrice>()
+
+        tokens.chunked(API_CHUNKED_COUNT)
+            .map { list ->
+                /**
+                 * CompareApi cannot resolve more than 30 token prices at once,
+                 * therefore we are splitting the tokenlist
+                 * */
+                val json = compareApi.getMultiPrice(list.joinToString(","), targetCurrency)
+                val response = json.get("Response")
+                if (response?.asString == "Error") {
+                    throw IllegalStateException("Cannot get rates")
+                }
+                list.forEach { symbol ->
+                    val tokenObject = json.getAsJsonObject(symbol.uppercase())
+                    if (tokenObject != null) {
+                        val price = tokenObject.getAsJsonPrimitive(USD_READABLE_SYMBOL).asBigDecimal
+                        prices.add(TokenPrice(symbol, price.scaleMedium()))
                     }
-                    list.forEach { symbol ->
-                        val tokenObject = json.getAsJsonObject(symbol.uppercase())
-                        if (tokenObject != null) {
-                            val price = tokenObject.getAsJsonPrimitive(USD_READABLE_SYMBOL).asBigDecimal
-                            result.add(TokenPrice(symbol, price.scaleMedium()))
-                        }
-                    }
                 }
-
-            return@withContext result
-        }
-
-    // TODO: 17.02.2022 save user tokens to local storage [P2PW-1315]
-    override suspend fun loadTokens(publicKey: String): List<Token.Active> = withContext(Dispatchers.IO) {
-        val response = rpcRepository.getTokenAccountsByOwner(publicKey)
-        val result = response.accounts
-            .mapNotNull {
-                val mintAddress = it.account.data.parsed.info.mint
-
-                if (mintAddress == REN_BTC_DEVNET_MINT) {
-                    return@mapNotNull mapDevnetRenBTC(it)
-                }
-
-                if (mintAddress == WRAPPED_SOL_MINT) {
-                    // Hiding Wrapped Sol account because we are adding native SOL lower
-                    return@mapNotNull null
-                }
-
-                val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-                val price = userLocalRepository.getPriceByToken(token.symbol)
-                TokenConverter.fromNetwork(it, token, price)
             }
-            .toMutableList()
+
+        return prices
+    }
+
+    private suspend fun mapAccountsToTokens(publicKey: String, accounts: List<Account>): List<Token.Active> {
+        val tokens = accounts.mapNotNull {
+            val mintAddress = it.account.data.parsed.info.mint
+
+            if (mintAddress == REN_BTC_DEVNET_MINT) {
+                return@mapNotNull mapDevnetRenBTC(it)
+            }
+
+            if (mintAddress == WRAPPED_SOL_MINT) {
+                // Hiding Wrapped Sol account because we are adding native SOL lower
+                return@mapNotNull null
+            }
+
+            val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
+            val price = userLocalRepository.getPriceByToken(token.symbol)
+            TokenConverter.fromNetwork(it, token, price)
+        }
 
         /*
          * Assuming that SOL is our default token, creating it manually
          * */
+        return addSolToken(publicKey, tokens)
+    }
+
+    private suspend fun addSolToken(publicKey: String, tokens: List<Token.Active>): List<Token.Active> {
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
-        val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return@withContext result
+        val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
         val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
-        val token = Token.createSOL(
+        val solToken = Token.createSOL(
             publicKey = publicKey,
             tokenData = tokenData,
             amount = solBalance,
             exchangeRate = solPrice?.getScaledValue()
         )
-        result.add(0, token)
-        return@withContext result
+
+        return tokens + solToken
     }
 
     override suspend fun getRate(sourceSymbol: String, destinationSymbol: String): TokenPrice? {

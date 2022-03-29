@@ -38,10 +38,6 @@ class HomePresenter(
 
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
-    companion object {
-        private const val BALANCE_CURRENCY = "USD"
-    }
-
     private var state: VisibilityState? = null
 
     private val tokens = mutableListOf<Token.Active>()
@@ -98,7 +94,6 @@ class HomePresenter(
         view?.showRefreshing(true)
         launch {
             try {
-                fetchRates()
                 userInteractor.loadUserTokensAndUpdateData()
             } catch (e: CancellationException) {
                 Timber.d("Loading tokens job cancelled")
@@ -108,15 +103,6 @@ class HomePresenter(
             } finally {
                 view?.showRefreshing(false)
             }
-        }
-    }
-
-    private suspend fun fetchRates() {
-        try {
-            userInteractor.loadTokenPrices(BALANCE_CURRENCY)
-        } catch (e: Throwable) {
-            Timber.e(e, "Error loading token prices")
-            view?.showErrorSnackBar(e.message ?: e.localizedMessage)
         }
     }
 
@@ -181,8 +167,6 @@ class HomePresenter(
         launch {
             try {
                 view?.showRefreshing(true)
-                /* We are waiting when tokenlist.json is being parsed and saved into the memory */
-                delay(1000L)
                 userInteractor.loadUserTokensAndUpdateData()
                 Timber.d("Successfully loaded tokens")
             } catch (e: CancellationException) {
