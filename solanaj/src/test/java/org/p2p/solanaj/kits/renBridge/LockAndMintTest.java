@@ -25,7 +25,4 @@ public class LockAndMintTest {
         assertEquals(1630627200000L, session.getExpiryTime());
         assertEquals("2020202020202020202020202020202020202020202020202020202034396236", session.getNonce());
     }
-
-
-
 }
