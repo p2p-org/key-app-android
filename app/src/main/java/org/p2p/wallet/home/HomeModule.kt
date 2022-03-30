@@ -61,7 +61,6 @@ object HomeModule : InjectionModule {
                 userInteractor = get(),
                 settingsInteractor = get(),
                 usernameInteractor = get(),
-                sharedPreferences = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper()

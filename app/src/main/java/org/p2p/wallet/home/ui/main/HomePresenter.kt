@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
 import kotlinx.coroutines.CancellationException
-import android.content.SharedPreferences
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,7 +25,6 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.CancellationException
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
@@ -39,7 +37,6 @@ class HomePresenter(
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val sharedPreferences: SharedPreferences,
     private val environmentManager: EnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper
@@ -247,7 +244,7 @@ class HomePresenter(
     }
 
     private suspend fun loadTokensOnPolling() {
-        val isPollingEnabled = sharedPreferences.getBoolean(KEY_POLLING_ENABLED, true)
+        val isPollingEnabled = appFeatureFlags.isPollingEnabled
         if (isPollingEnabled) {
             userInteractor.loadUserTokensAndUpdateLocal()
             Timber.d("Successfully auto-updated loaded tokens")
