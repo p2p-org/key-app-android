@@ -176,8 +176,7 @@ class OrcaSwapInteractor(
             accountCreationFeeUsd = accountCreationFeeUsd,
             transactionFee = transactionFee,
             transactionFeeUsd = transactionFeeUsd,
-            feePayerToken = feePayerToken.tokenSymbol,
-            totalLamports = fee.total + transactionNetworkFee
+            feePayerToken = feePayerToken.tokenSymbol
         )
     }
 
