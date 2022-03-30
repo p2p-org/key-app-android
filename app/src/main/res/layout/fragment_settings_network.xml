@@ -73,6 +73,7 @@
                 android:padding="12dp"
                 android:text="@string/node_devnet"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
+
         </RadioGroup>
 
         <LinearLayout

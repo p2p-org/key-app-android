@@ -56,11 +56,11 @@ object HomeModule : InjectionModule {
         /* Cached data exists, therefore creating singleton */
         single {
             HomePresenter(
+                appFeatureFlags = get(),
                 updatesManager = get(),
                 userInteractor = get(),
                 settingsInteractor = get(),
                 usernameInteractor = get(),
-                sharedPreferences = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper()

@@ -1,15 +1,15 @@
 package org.p2p.wallet.home.ui.main
 
-import android.content.SharedPreferences
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
-import org.p2p.wallet.debugdrawer.KEY_POLLING_ENABLED
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
@@ -25,7 +25,6 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.CancellationException
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
@@ -33,11 +32,11 @@ private val TOKENS_VALID_FOR_BUY = setOf("SOL", "USDC")
 private const val BALANCE_CURRENCY = "USD"
 
 class HomePresenter(
+    private val appFeatureFlags: AppFeatureFlags,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val sharedPreferences: SharedPreferences,
     private val environmentManager: EnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper
@@ -245,7 +244,7 @@ class HomePresenter(
     }
 
     private suspend fun loadTokensOnPolling() {
-        val isPollingEnabled = sharedPreferences.getBoolean(KEY_POLLING_ENABLED, true)
+        val isPollingEnabled = appFeatureFlags.isPollingEnabled
         if (isPollingEnabled) {
             userInteractor.loadUserTokensAndUpdateLocal()
             Timber.d("Successfully auto-updated loaded tokens")
