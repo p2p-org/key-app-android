@@ -44,6 +44,7 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
@@ -349,13 +350,13 @@ class SendPresenter(
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
         view?.showWrongAddressTarget(result.address.cutEnd())
-        view?.showAccountFeeView(fee = null)
+        view?.showAccountFeeView()
     }
 
     private fun handleIdleTarget() {
         view?.showIdleTarget()
         view?.showTotal(data = null)
-        view?.showAccountFeeView(fee = null)
+        view?.showAccountFeeView()
 
         fee = null
         calculateTotal(sendFee = null)
@@ -388,7 +389,7 @@ class SendPresenter(
             is CheckAddressResult.AccountExists,
             is CheckAddressResult.InvalidAddress -> {
                 calculateTotal(sendFee = null)
-                view?.showAccountFeeView(fee = null)
+                view?.showAccountFeeView()
             }
         }
     }
@@ -577,7 +578,7 @@ class SendPresenter(
         )
 
         if (fees == null) {
-            view?.showAccountFeeView(fee = null)
+            view?.showAccountFeeView()
             return
         }
 
@@ -588,8 +589,10 @@ class SendPresenter(
         }
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
-        view?.showAccountFeeView(fee)
-
+        view?.showAccountFeeView(
+            fee = fee,
+            notEnoughFunds = fee?.feePayerToken?.totalInUsd.orZero() < fee?.feeUsd.orZero()
+        )
         calculateTotal(fee)
     }
 

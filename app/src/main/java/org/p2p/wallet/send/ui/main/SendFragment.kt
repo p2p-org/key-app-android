@@ -19,8 +19,8 @@ import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
@@ -323,7 +323,7 @@ class SendFragment :
         }
     }
 
-    override fun showAccountFeeView(fee: SendFee?) {
+    override fun showAccountFeeView(fee: SendFee?, notEnoughFunds: Boolean) {
         with(binding) {
             if (fee == null) {
                 accountCardView.isVisible = false
@@ -338,8 +338,17 @@ class SendFragment :
 
             val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
             accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
-            accountFeeValueTextView.text = fee.formattedFee
-            glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
+            if (notEnoughFunds) {
+                accountImageView.setBackgroundResource(R.drawable.bg_error_rounded)
+                accountImageView.setImageResource(R.drawable.ic_error)
+                accountFeeValueTextView.text = getString(R.string.send_not_enough_funds)
+                accountFeeValueTextView.setTextColor(getColor(R.color.systemErrorMain))
+            } else {
+                accountImageView.background = null
+                accountFeeValueTextView.text = fee.formattedFee
+                accountFeeValueTextView.setTextColor(getColor(R.color.textIconPrimary))
+                glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
+            }
         }
     }
 
