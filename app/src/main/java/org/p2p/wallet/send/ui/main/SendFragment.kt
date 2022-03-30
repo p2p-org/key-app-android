@@ -348,7 +348,6 @@ class SendFragment :
     }
 
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
-
         addFragment(
             target = SelectTokenFragment.create(feePayerTokens, KEY_REQUEST_SEND, EXTRA_FEE_PAYER),
             enter = R.anim.slide_up,

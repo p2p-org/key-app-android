@@ -142,6 +142,7 @@ class SendPresenter(
         calculateRenBtcFeeIfNeeded(hideTotal = true)
         calculateData(newToken)
         checkAddress(target?.address)
+        updateMaxButtonVisibility(newToken)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
     }
 
