@@ -4,4 +4,7 @@
     <dimen name="min_banner_width">300dp</dimen>
     <dimen name="max_banner_width">350dp</dimen>
     <dimen name="action_button_views_height">80dp</dimen>
+
+    <!--    because of the toolbar, last element is cropped in the list-->
+    <dimen name="history_transaction_list_last_item_padding">56dp</dimen>
 </resources>

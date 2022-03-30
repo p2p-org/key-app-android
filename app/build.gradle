@@ -98,6 +98,10 @@ android {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
             }
+
+            firebaseCrashlytics {
+                mappingFileUploadEnabled true
+            }
         }
 
         release {

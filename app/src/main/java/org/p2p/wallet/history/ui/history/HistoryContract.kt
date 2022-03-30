@@ -10,13 +10,12 @@ import org.p2p.wallet.history.model.HistoryTransaction
 interface HistoryContract {
 
     interface View : MvpView {
-        fun showLoading(isLoading: Boolean)
         fun showHistory(transactions: List<HistoryTransaction>)
         fun showActions(items: List<ActionButtonsView.ActionButton>)
         fun showPagingState(newState: PagingState)
         fun showRefreshing(isRefreshing: Boolean)
         fun showError(@StringRes resId: Int, argument: String)
-        fun showDetails(transaction: HistoryTransaction)
+        fun openTransactionDetailsScreen(transaction: HistoryTransaction)
     }
 
     interface Presenter : MvpPresenter<View> {
