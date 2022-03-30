@@ -16,11 +16,13 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64Utils
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 
 class RpcSolanaRemoteRepository(
     private val api: RpcSolanaApi,
-    private val blockHashRepository: RpcBlockhashRepository
+    private val blockHashRepository: RpcBlockhashRepository,
+    private val environmentManager: EnvironmentManager
 ) : RpcSolanaRepository {
 
     override suspend fun sendTransaction(transaction: Transaction, signer: Account): String {
@@ -63,24 +65,41 @@ class RpcSolanaRemoteRepository(
         return result
     }
 
-    override suspend fun getQueryMint(baseUrl: String, txHash: String): ResponseQueryTxMint {
+    override suspend fun getQueryMint(txHash: String): ResponseQueryTxMint {
+        val baseUrl = environmentManager.loadRpcEnvironment().lightNode
         val params = hashMapOf<String, Any>()
         params["txHash"] = txHash
         return api.queryMint(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_queryTx", params = params)).result
     }
 
-    override suspend fun getQueryBlockState(baseUrl: String): ResponseQueryBlockState =
-        api.queryBlockState(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_queryBlockState", emptyMap())).result
+    override suspend fun getQueryBlockState(): ResponseQueryBlockState {
+        val baseUrl = environmentManager.loadRpcEnvironment().lightNode
+        return api.queryBlockState(
+            url = baseUrl,
+            rpcRequest = RpcRequest2(
+                method = "ren_queryBlockState",
+                params = emptyMap()
+            )
+        ).result
+    }
 
-    override suspend fun getQueryConfig(baseUrl: String): ResponseQueryConfig =
-        api.queryConfig(url = baseUrl, rpcReuest = RpcRequest2(method = "ren_queryConfig", params = emptyMap())).result
+    override suspend fun getQueryConfig(): ResponseQueryConfig {
+        val baseUrl = environmentManager.loadRpcEnvironment().lightNode
+        return api.queryConfig(
+            url = baseUrl,
+            rpcReuest = RpcRequest2(
+                method = "ren_queryConfig",
+                params = emptyMap()
+            )
+        ).result
+    }
 
     override suspend fun submitTx(
-        baseUrl: String,
         hash: String,
         mintTx: ParamsSubmitMint.MintTransactionInput,
         selector: String
     ): ResponseSubmitTxMint {
+        val baseUrl = environmentManager.loadRpcEnvironment().lightNode
         val submitMint = ParamsSubmitMint(hash, mintTx, selector)
         val params = hashMapOf<String, Any>()
         params["tx"] = submitMint
@@ -92,7 +111,6 @@ class RpcSolanaRemoteRepository(
             add(stateKey.toString())
             add(RpcSendTransactionConfig())
         }
-
         return api.getAccountInfo(RpcRequest(method = "getAccountInfo", params = params)).result
     }
 }

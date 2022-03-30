@@ -2,10 +2,8 @@ package org.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
 import okhttp3.Interceptor
-import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okio.Buffer
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -27,7 +25,6 @@ open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder().header("Content-Type", "application/json").build()
-        Timber.tag("RpcInterceptor").d("Request = ${getRequestJson(request)}")
         val response = chain.proceed(request)
         val responseString = response.body?.string().orEmpty()
         Timber.tag(TAG).d(responseString)
@@ -36,27 +33,6 @@ open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
         } else {
             throw extractGeneralException(responseString)
         }
-    }
-
-    private fun getRequestJson(request: Request): JSONObject? {
-        val requestBuffer = Buffer()
-
-        request.body?.writeTo(requestBuffer)
-
-        val requestBodyString = requestBuffer.readUtf8()
-
-        val json: JSONObject = try {
-            when (val data = JSONTokener(requestBodyString).nextValue()) {
-                is JSONObject -> data
-                is JSONArray -> data.get(0) as JSONObject
-                else -> throw IllegalStateException("Unknown type of request body")
-            }
-        } catch (e: Exception) {
-            Timber.tag(TAG).e("Error on parsing json $e")
-            return null
-        }
-
-        return json
     }
 
     private fun handleResponse(response: Response, responseString: String): Response {
@@ -118,7 +94,7 @@ open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
     private fun extractException(bodyString: String): Throwable = try {
         val fullMessage = JSONObject(bodyString).toString(1)
 
-        Timber.tag("ServerErrorInterceptor").d("Handling exception: $fullMessage")
+        Timber.tag("RpcSolanaInterceptor").d("Handling exception: $fullMessage")
 
         val serverError = gson.fromJson(bodyString, ServerError::class.java)
 

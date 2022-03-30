@@ -19,29 +19,25 @@ class LockAndMint(
     private val session: Session,
     private val solanaChain: RpcSolanaInteractor,
     private val state: State = State(),
-    private val rpcEnvironment: RpcEnvironment
 ) {
 
     companion object {
-        // TODO destinationAddress
         fun buildSession(
             renVMProvider: RenVMProvider,
             session: Session,
             solanaChain: RpcSolanaInteractor,
-            state: State,
-            environment: RpcEnvironment
-        ) = LockAndMint(renVMProvider, session, solanaChain, state, environment)
+            state: State
+        ) = LockAndMint(renVMProvider, session, solanaChain, state)
 
         fun getSession(
             renVMProvider: RenVMProvider,
             session: Session,
             solanaChain: RpcSolanaInteractor,
-            state: State,
-            environment: RpcEnvironment
-        ): LockAndMint = LockAndMint(renVMProvider, session, solanaChain, state, environment)
+            state: State
+        ): LockAndMint = LockAndMint(renVMProvider, session, solanaChain, state)
     }
 
-    suspend fun generateGatewayAddress(): String {
+    suspend fun generateGatewayAddress(environment: RpcEnvironment): String {
         val sendTo = solanaChain.getAssociatedTokenAddress(session.destinationAddress)
         state.sendTo = sendTo
 
@@ -54,7 +50,7 @@ class LockAndMint(
         state.gPubKey = gPubKey
 
         val gatewayAddress =
-            Script.createAddressByteArray(Hash.hash160(gPubKey), gHash, byteArrayOf(rpcEnvironment.p2shPrefix.toByte()))
+            Script.createAddressByteArray(Hash.hash160(gPubKey), gHash, byteArrayOf(environment.p2shPrefix.toByte()))
 
         session.gatewayAddress = Base58.encode(gatewayAddress)
         return session.gatewayAddress

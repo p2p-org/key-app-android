@@ -78,17 +78,13 @@ object RpcModule : InjectionModule {
         }
         factory { TokenInteractor(get(), get(), get(), get()) }
 
-        factory { RpcSolanaInteractor(get(), get(), get<AppScope>()) }
+        factory { RpcSolanaInteractor(get(), get<EnvironmentManager>().loadRpcEnvironment(), get<AppScope>()) }
 
-        factory { RenVMProvider(get(), get()) }
+        factory { RenVMProvider(get()) }
 
         single {
             val api = get<Retrofit>(named(RPC_SOLANA_RETROFIT_QUALIFIER)).create(RpcSolanaApi::class.java)
-            RpcSolanaRemoteRepository(api, get())
+            RpcSolanaRemoteRepository(api, get(), get())
         } bind RpcSolanaRepository::class
-
-        factory {
-            get<EnvironmentManager>().loadRpcEnvironment()
-        }
     }
 }

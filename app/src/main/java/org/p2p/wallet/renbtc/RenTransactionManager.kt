@@ -55,8 +55,7 @@ class RenTransactionManager(
                 renVMProvider = renVMProvider,
                 session = session,
                 solanaChain = solanaChain,
-                state = LockAndMint.State(),
-                environment = environmentManager.loadRpcEnvironment()
+                state = LockAndMint.State()
             )
         } else {
             Timber.tag(REN_TAG).d("Active session found, fetching information")
@@ -64,12 +63,11 @@ class RenTransactionManager(
                 renVMProvider = renVMProvider,
                 session = existingSession,
                 solanaChain = solanaChain,
-                state = LockAndMint.State(),
-                environment = environmentManager.loadRpcEnvironment()
+                state = LockAndMint.State()
             )
         }
 
-        val gatewayAddress = lockAndMint.generateGatewayAddress()
+        val gatewayAddress = lockAndMint.generateGatewayAddress(environmentManager.loadRpcEnvironment())
         Timber.tag(REN_TAG).d("Gateway address generated: $gatewayAddress")
 
         val fee = lockAndMint.estimateTransactionFee()

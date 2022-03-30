@@ -1,5 +1,6 @@
 package org.p2p.solanaj.kits.renBridge.renVM
 
+import android.util.Log
 import org.bitcoinj.core.Base58
 import org.p2p.solanaj.kits.renBridge.renVM.types.ParamsSubmitMint
 import org.p2p.solanaj.utils.ByteUtils
@@ -36,7 +37,7 @@ object HashUtils {
             out.write(marshalBytes(Utils.fromURLBase64(mintTx.gpubkey)))
             out.write(Utils.fromURLBase64(mintTx.ghash))
         } catch (e: IOException) {
-            // TODO provide log error here
+            Log.e("HashUtils","Error on hashing transaction mint $e")
         }
         return Hash.sha256(out.toByteArray())
     }

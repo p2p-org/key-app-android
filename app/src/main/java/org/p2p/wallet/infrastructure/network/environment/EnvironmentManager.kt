@@ -19,7 +19,6 @@ class EnvironmentManager(
 ) {
 
     private var onChanged: ((Environment) -> Unit)? = null
-    private var onRpcChanged: ((RpcEnvironment) -> Unit)? = null
 
     fun isDevnet(): Boolean = loadEnvironment() == Environment.DEVNET
 
@@ -55,26 +54,22 @@ class EnvironmentManager(
         this.onChanged = onChanged
     }
 
-    fun setOnRpcEnvironmentListener(onChanged: (RpcEnvironment) -> Unit) {
-        this.onRpcChanged = onChanged
-    }
-
     fun loadEnvironment(): Environment {
         val url = sharedPreferences.getString(KEY_BASE_URL, Environment.RPC_POOL.endpoint).orEmpty()
         return parse(url)
     }
 
-    fun loadRpcEnvironment(): RpcEnvironment {
-        val baseUrl = sharedPreferences.getString(KEY_BASE_URL, Environment.RPC_POOL.endpoint).orEmpty()
-        return parseRpc(baseUrl)
-    }
+    fun loadRpcEnvironment(): RpcEnvironment =
+        when (loadEnvironment()) {
+            Environment.DEVNET -> RpcEnvironment.DEVNET
+            else -> RpcEnvironment.MAINNET
+        }
 
     fun saveEnvironment(newEnvironment: Environment) {
         sharedPreferences.edit { putString(KEY_BASE_URL, newEnvironment.endpoint) }
 
         val newRpcEnvironment = parseRpc(newEnvironment.endpoint)
         sharedPreferences.edit { putString(KEY_RPC_BASE_URL, newRpcEnvironment.endpoint) }
-        onRpcChanged?.invoke(newRpcEnvironment)
         onChanged?.invoke(newEnvironment)
     }
 
