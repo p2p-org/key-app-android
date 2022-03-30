@@ -11,6 +11,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
+import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
@@ -60,7 +61,10 @@ object HomeModule : InjectionModule {
                 userInteractor = get(),
                 settingsInteractor = get(),
                 usernameInteractor = get(),
-                tokenKeyProvider = get()
+                sharedPreferences = get(),
+                environmentManager = get(),
+                tokenKeyProvider = get(),
+                homeElementItemMapper = HomeElementItemMapper()
             )
         } bind HomeContract.Presenter::class
         single {
