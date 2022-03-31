@@ -77,7 +77,7 @@ class SendInteractor(
                     feeInPayingToken = null
                 )
             NetworkType.SOLANA -> {
-                if (receiver.isNullOrEmpty()) return null
+                if (receiver.isNullOrEmpty() || token.isSOL) return null
 
                 val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
                 val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption()
