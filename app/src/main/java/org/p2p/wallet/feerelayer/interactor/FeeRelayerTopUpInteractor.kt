@@ -21,6 +21,7 @@ import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.retryRequest
@@ -130,7 +131,10 @@ class FeeRelayerTopUpInteractor(
     }
 
     // Calculate needed top up amount for expected fee
-    suspend fun calculateNeededTopUpAmount(expectedFee: FeeAmount): FeeAmount {
+    suspend fun calculateNeededTopUpAmount(
+        expectedFee: FeeAmount,
+        payingTokenMint: String?
+    ): FeeAmount {
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val neededAmount = expectedFee
@@ -164,37 +168,43 @@ class FeeRelayerTopUpInteractor(
             return neededAmount
         }
 
-        val minimumRelayAccountBalance = info.minimumRelayAccountBalance
-
         // check if relay account current balance can cover part of needed amount
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        val neededAmountWithoutCheckingRelayAccount = neededAmount
+
+        if (!relayAccount.isCreated) {
+            if (neededAmount.accountBalances > BigInteger.ZERO) {
+                neededAmount.accountBalances += info.lamportsPerSignature
+            } else {
+                neededAmount.transaction += info.lamportsPerSignature
+            }
+        }
+
         var relayAccountBalance = relayAccount.balance
 
         if (relayAccountBalance != null) {
 
-            if (relayAccountBalance < minimumRelayAccountBalance) {
-                neededAmount.transaction += minimumRelayAccountBalance - relayAccountBalance
-            } else {
-                relayAccountBalance -= minimumRelayAccountBalance
+            // if relayAccountBalance has enough balance to cover transaction fee
+            if (relayAccountBalance >= neededAmount.transaction) {
 
-                // if relayAccountBalance has enough balance to cover transaction fee
-                if (relayAccountBalance >= neededAmount.transaction) {
-                    neededAmount.transaction = BigInteger.ZERO
+                relayAccountBalance -= neededAmount.transaction
+                neededAmount.transaction = BigInteger.ZERO
 
-                    // if relayAccountBalance has enough balance to cover accountBalances fee too
-                    if (relayAccountBalance - neededAmount.transaction >= neededAmount.accountBalances) {
-                        neededAmount.accountBalances = BigInteger.ZERO
-                    } else {
-                        // Relay account balance can cover part of account creation fee
-                        neededAmount.accountBalances -= (relayAccountBalance - neededAmount.transaction)
-                    }
+                // if relayAccountBalance has enough balance to cover accountBalances fee too
+                if (relayAccountBalance - neededAmount.transaction >= neededAmount.accountBalances) {
+                    neededAmount.accountBalances = BigInteger.ZERO
                 } else {
-                    // if not, relayAccountBalance can cover part of transaction fee
-                    neededAmount.transaction -= relayAccountBalance
+                    // Relay account balance can cover part of account creation fee
+                    neededAmount.accountBalances -= relayAccountBalance
                 }
+            } else {
+                // if not, relayAccountBalance can cover part of transaction fee
+                neededAmount.transaction -= relayAccountBalance
             }
-        } else {
-            neededAmount.transaction += minimumRelayAccountBalance
+
+            if (neededAmount.total > BigInteger.ZERO && payingTokenMint == Constants.SOL_MINT) {
+                return neededAmountWithoutCheckingRelayAccount
+            }
         }
         return neededAmount
     }

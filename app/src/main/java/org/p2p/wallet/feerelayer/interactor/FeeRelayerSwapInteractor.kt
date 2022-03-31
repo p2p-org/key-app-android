@@ -395,7 +395,8 @@ class FeeRelayerSwapInteractor(
                 toMint = WRAPPED_SOL_MINT
             )
 
-            val topUpAmount = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(swappingFee).total
+            val topUpAmount =
+                feeRelayerTopUpInteractor.calculateNeededTopUpAmount(swappingFee, payingFeeToken.mint).total
 
             val expectedFee = feeRelayerTopUpInteractor.calculateExpectedFeeForTopUp(
                 relayAccount = relayAccount,

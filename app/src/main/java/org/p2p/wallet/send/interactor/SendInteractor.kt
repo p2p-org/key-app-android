@@ -67,7 +67,8 @@ class SendInteractor(
     suspend fun calculateFeesForFeeRelayer(
         token: Token.Active,
         receiver: String?,
-        networkType: NetworkType
+        networkType: NetworkType,
+        payingTokenMint: String?,
     ): FeeRelayerSendFee? {
 
         return when (networkType) {
@@ -104,7 +105,7 @@ class SendInteractor(
                     accountBalances = if (shouldCreateAccount) minRentExemption else BigInteger.ZERO
                 )
 
-                val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
+                val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee, payingTokenMint)
 
                 return FeeRelayerSendFee(
                     feeInSol = fees.total,

@@ -574,7 +574,8 @@ class SendPresenter(
         val fees = sendInteractor.calculateFeesForFeeRelayer(
             token = source,
             receiver = receiver,
-            networkType = networkType
+            networkType = networkType,
+            payingTokenMint = feePayer.mintAddress
         )
 
         if (fees == null) {
