@@ -54,7 +54,7 @@ object HomeModule : InjectionModule {
         factory { HomeDatabaseRepository(get()) } bind HomeLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single {
+        factory {
             HomePresenter(
                 appFeatureFlags = get(),
                 updatesManager = get(),
