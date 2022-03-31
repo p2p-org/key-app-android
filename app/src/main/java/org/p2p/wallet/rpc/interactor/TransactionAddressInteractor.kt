@@ -44,7 +44,7 @@ class TransactionAddressInteractor(
     ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
-            findSplTokenAddress(destinationAddress, mintAddress)
+            findSplTokenAddress(destinationAddress, mintAddress, useCache)
         } catch (e: IllegalStateException) {
             Timber.tag(ADDRESS_TAG).d("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
@@ -61,8 +61,12 @@ class TransactionAddressInteractor(
     }
 
     @Throws(IllegalStateException::class)
-    private suspend fun findSplTokenAddress(destinationAddress: PublicKey, mintAddress: String): PublicKey {
-        val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58())
+    private suspend fun findSplTokenAddress(
+        destinationAddress: PublicKey,
+        mintAddress: String,
+        useCache: Boolean
+    ): PublicKey {
+        val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58(), useCache)
 
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo)
