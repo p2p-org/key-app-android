@@ -29,6 +29,8 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        analytics.logSplashViewed()
+
         with(binding) {
             prepareAnimationAndStart()
             createButton.clipToOutline = true
