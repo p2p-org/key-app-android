@@ -27,7 +27,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_CREAT
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_RESTORED
 import org.p2p.wallet.utils.emptyString
 
-class OnBoardingAnalytics(private val tracker: Analytics) {
+class OnboardingAnalytics(private val tracker: Analytics) {
     fun logSplashViewed() {
         tracker.logEvent(
             event = ONBOARD_SPLASH_VIEWED,
