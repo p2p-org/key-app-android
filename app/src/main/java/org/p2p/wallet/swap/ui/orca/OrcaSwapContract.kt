@@ -24,7 +24,7 @@ interface OrcaSwapContract {
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
-        fun showFees(data: SwapFee?)
+        fun showFees(data: SwapFee)
         fun showFeePayerToken(feePayerTokenSymbol: String)
         fun showPrice(data: SwapPrice?)
         fun showTotal(data: SwapTotal?)

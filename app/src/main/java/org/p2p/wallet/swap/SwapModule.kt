@@ -70,7 +70,8 @@ object SwapModule : InjectionModule {
                 rpcAmountRepository = get(),
                 orcaNativeSwapInteractor = get(),
                 environmentManager = get(),
-                tokenKeyProvider = get()
+                tokenKeyProvider = get(),
+                userInteractor = get()
             )
         }
         single { OrcaInfoInteractor(get()) }

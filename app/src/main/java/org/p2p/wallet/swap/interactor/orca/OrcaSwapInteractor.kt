@@ -15,11 +15,13 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.model.orca.SwapFee
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.AmountInLamports
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.toLamports
+import org.p2p.wallet.utils.toLamportsValue
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.toUsd
 import java.math.BigDecimal
@@ -32,6 +34,7 @@ class OrcaSwapInteractor(
     private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
+    private val userInteractor: UserInteractor,
     private val rpcAmountRepository: RpcAmountRepository,
     private val orcaNativeSwapInteractor: OrcaNativeSwapInteractor,
     private val environmentManager: EnvironmentManager,
@@ -149,11 +152,11 @@ class OrcaSwapInteractor(
 
     suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
         sourceToken: Token.Active,
-        destination: Token
+        destination: Token,
     ): SwapFee {
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val fee = feeRelayerSwapInteractor.calculateSwappingNetworkFees(
+        val fee: FeeAmount = feeRelayerSwapInteractor.calculateSwappingNetworkFees(
             sourceTokenMint = sourceToken.mintAddress,
             destinationTokenMint = destination.mintAddress,
             destinationAddress = destination.publicKey
@@ -169,6 +172,10 @@ class OrcaSwapInteractor(
         val transactionFee = transactionNetworkFee.fromLamports(feePayerToken.decimals).scaleMedium()
         val transactionFeeUsd = transactionFee.toUsd(feePayerToken.usdRate)
 
+        val totalFee = AmountInLamports(fee.total + transactionNetworkFee)
+
+        updateFeePayerToken(totalFee, sourceToken)
+
         return SwapFee(
             isFreeTransactionAvailable = isFreeTransactionAvailable,
             accountCreationToken = accountCreationToken,
@@ -177,8 +184,41 @@ class OrcaSwapInteractor(
             transactionFee = transactionFee,
             transactionFeeUsd = transactionFeeUsd,
             feePayerToken = feePayerToken.tokenSymbol,
-            totalLamports = fee.total + transactionNetworkFee
+            totalInLamports = totalFee
         )
+    }
+
+    /**
+     * Check that fee payer token has enough funds to pay for the fee
+     * try check that fee can be paid with user SOL token, then check it with non-sol source token
+     */
+    private suspend fun updateFeePayerToken(
+        totalSwapFee: AmountInLamports,
+        sourceToken: Token.Active,
+    ) {
+        val newFeePayer = if (sourceToken.isSOL) {
+            // SOL-token fees can be paid with SOL token only
+            sourceToken
+        } else {
+            // non-SOL token fees can be paid with SOL token or non-SOL token
+            if (canUserPayFeeWithSol(totalSwapFee)) {
+                userInteractor.getUserTokens().find(Token.Active::isSOL)
+            } else {
+                // use non-sol token
+                sourceToken
+            }
+        }
+
+        newFeePayer?.let { setFeePayerToken(it) }
+    }
+
+    private suspend fun canUserPayFeeWithSol(totalSwapFee: AmountInLamports): Boolean {
+        // если у пользователя не хватает этих же токенов для полной оплаты fee
+        // пробуем оплатить через SOL
+        val userSolToken = userInteractor.getUserTokens().find(Token.Active::isSOL) ?: return false
+        val userSolTokenAmount = userSolToken.total.toLamportsValue(userSolToken.decimals)
+
+        return userSolTokenAmount >= totalSwapFee
     }
 
     // Get fees from current context
@@ -249,19 +289,17 @@ class OrcaSwapInteractor(
         return transactionFees to liquidityProviderFees
     }
 
-    suspend fun getFeesInPayingToken(
-        feeInSOL: BigInteger
-    ): BigInteger {
+    suspend fun getFeesInPayingToken(feeInSOL: AmountInLamports): AmountInLamports {
         if (feePayerToken.isSOL) return feeInSOL
 
         return feeRelayerInteractor.calculateFeeInPayingToken(
-            feeInSOL = FeeAmount(accountBalances = feeInSOL),
+            feeInSOL = FeeAmount(accountBalances = feeInSOL.amount),
             payingFeeTokenMint = feePayerToken.mintAddress
-        ).total
+        ).total.let { AmountInLamports(it) }
     }
 
-    suspend fun feePayerHasEnoughBalance(feeInSOL: BigInteger): Boolean {
-        val feePayerLamports = feePayerToken.total.toLamports(feePayerToken.decimals)
+    suspend fun feePayerHasEnoughBalance(feeInSOL: AmountInLamports): Boolean {
+        val feePayerLamports = feePayerToken.total.toLamportsValue(feePayerToken.decimals)
         val feeInPayingToken = getFeesInPayingToken(feeInSOL)
         return feePayerLamports >= feeInPayingToken
     }

@@ -227,7 +227,7 @@ class OrcaSwapFragment :
         }
     }
 
-    override fun showFees(data: SwapFee?) {
+    override fun showFees(data: SwapFee) {
         binding.swapDetails.showFee(data)
     }
 

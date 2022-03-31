@@ -402,13 +402,27 @@ class OrcaSwapPresenter(
             view?.showTotal(null)
             return
         }
-
-        fees = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
+        val swapFee = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
             sourceToken = source,
             destination = destination
         )
 
-        view?.showFees(fees)
+        val hasEnoughMoneyToPayFee = swapInteractor.feePayerHasEnoughBalance(swapFee.totalInLamports)
+
+        fees = swapFee
+        view?.apply {
+            if (hasEnoughMoneyToPayFee) {
+                updateButtonState(source)
+                showButtonEnabled(isEnabled = true)
+            } else {
+                showButtonText(R.string.swap_insufficient_balance)
+                showButtonEnabled(isEnabled = false)
+            }
+
+            val feePayerToken = swapInteractor.getFeePayerToken()
+            showFeePayerToken(feePayerToken.tokenSymbol)
+            showFees(swapFee)
+        }
     }
 
     private fun calculateAmount(source: Token.Active, destination: Token) {

@@ -66,13 +66,8 @@ class SwapDetailsView @JvmOverloads constructor(
         }
     }
 
-    fun showFee(data: SwapFee?) {
+    fun showFee(data: SwapFee) {
         with(binding) {
-            if (data == null) {
-                accountCreationFeeView.isVisible = false
-                return@with
-            }
-
             accountCreationFeeView.isVisible = isExpanded
 
             if (data.isFreeTransactionAvailable) {
@@ -159,7 +154,7 @@ class SwapDetailsView @JvmOverloads constructor(
 
     fun showError(@StringRes errorRes: Int?) {
         val error = errorRes?.let { context.getString(it) }
-        binding.errorTextView withTextOrGone error
+        binding.errorTextView.withTextOrGone(error)
     }
 
     fun setOnPayFeeClickListener(callback: () -> Unit) {

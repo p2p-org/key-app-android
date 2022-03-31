@@ -352,7 +352,7 @@
         <org.p2p.wallet.common.ui.widget.ProgressButton
             android:id="@+id/swapButton"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"

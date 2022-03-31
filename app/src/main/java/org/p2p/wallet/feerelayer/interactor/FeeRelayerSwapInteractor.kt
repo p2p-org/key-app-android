@@ -99,9 +99,9 @@ class FeeRelayerSwapInteractor(
             destinationTokenMint = destinationTokenMint,
             destinationAddress = destinationAddress
         )
-        val info = feeRelayerAccountInteractor.getRelayInfo()
-        val lamportsPerSignature = info.lamportsPerSignature
-        val minimumTokenAccountBalance = info.minimumTokenAccountBalance
+        val feeRelayerInfo = feeRelayerAccountInteractor.getRelayInfo()
+        val lamportsPerSignature = feeRelayerInfo.lamportsPerSignature
+        val minimumTokenAccountBalance = feeRelayerInfo.minimumTokenAccountBalance
 
         val needsCreateDestinationTokenAccount = destination.needsCreateDestinationTokenAccount
 
