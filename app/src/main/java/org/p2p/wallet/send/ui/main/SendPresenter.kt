@@ -534,14 +534,14 @@ class SendPresenter(
                 updateButton(
                     amount = tokenAmount,
                     total = sourceToken.total.scaleLong(),
-                    fee = data.fee?.fee ?: BigDecimal.ZERO
+                    fee = data.fee
                 )
             }
             is CurrencyMode.Usd -> {
                 updateButton(
                     amount = usdAmount,
-                    total = sourceToken.totalInUsd ?: BigDecimal.ZERO,
-                    fee = data.fee?.feeUsd ?: BigDecimal.ZERO
+                    total = sourceToken.totalInUsd.orZero(),
+                    fee = data.fee
                 )
             }
         }
@@ -589,9 +589,13 @@ class SendPresenter(
         }
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
+        val notEnoughFunds = when (mode) {
+            is CurrencyMode.Usd -> fee?.feePayerToken?.totalInUsd.orZero() < fee?.feeUsd.orZero()
+            is CurrencyMode.Token -> fee?.feePayerToken?.total.orZero() < fee?.fee.orZero()
+        }
         view?.showAccountFeeView(
             fee = fee,
-            notEnoughFunds = fee?.feePayerToken?.totalInUsd.orZero() < fee?.feeUsd.orZero()
+            notEnoughFunds = notEnoughFunds
         )
         calculateTotal(fee)
     }
@@ -635,9 +639,12 @@ class SendPresenter(
         setTargetResult(first)
     }
 
-    private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: BigDecimal) {
+    private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: SendFee?) {
         val isAmountMoreThanBalance = amount.isMoreThan(total)
-        val isAmountWithFeeMoreThanBalance = (amount + fee).isMoreThan(total)
+        val isAmountWithFeeMoreThanBalance = when (mode) {
+            is CurrencyMode.Usd -> fee?.feePayerToken?.totalInUsd.orZero() < amount + fee?.feeUsd.orZero()
+            is CurrencyMode.Token -> fee?.feePayerToken?.total.orZero() < amount + fee?.fee.orZero()
+        }
         val address = target?.address
         val isMaxAmount = amount == total
 
