@@ -1,22 +1,19 @@
 package org.p2p.wallet.debugdrawer
 
-import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.edit
 import io.palaima.debugdrawer.base.DebugModuleAdapter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.databinding.ViewDebugDrawerConfigureEnvironmentBinding
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-
-const val KEY_POLLING_ENABLED = "KEY_POLLING_ENABLED"
 
 class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
 
     private val environmentManager: EnvironmentManager by inject()
-    private val sharedPreferences: SharedPreferences by inject()
+    private val appFeatureFlags: AppFeatureFlags by inject()
 
     override fun onCreateView(inflater: LayoutInflater, parent: ViewGroup): View {
         val binding = ViewDebugDrawerConfigureEnvironmentBinding.inflate(inflater, parent, false)
@@ -24,9 +21,14 @@ class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
         val environment = environmentManager.loadEnvironment()
         with(binding) {
             urlTextView.text = environment.endpoint
-            enablePollingSwitch.isChecked = sharedPreferences.getBoolean(KEY_POLLING_ENABLED, true)
+            enablePollingSwitch.isChecked = appFeatureFlags.isPollingEnabled
             enablePollingSwitch.setOnCheckedChangeListener { _, isChecked ->
-                sharedPreferences.edit { putBoolean(KEY_POLLING_ENABLED, isChecked) }
+                appFeatureFlags.setPollingEnabled(isChecked)
+            }
+
+            enableProdEnvSwitch.isChecked = appFeatureFlags.isDevnetEnabled
+            enableProdEnvSwitch.setOnCheckedChangeListener { _, isChecked ->
+                appFeatureFlags.setIsDevnetEnabled(isChecked)
             }
         }
 

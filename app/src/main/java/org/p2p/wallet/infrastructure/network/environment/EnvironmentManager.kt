@@ -9,6 +9,7 @@ import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
+import kotlin.reflect.KClass
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
 private const val KEY_RPC_BASE_URL = "KEY_RPC_BASE_URL"
@@ -18,7 +19,11 @@ class EnvironmentManager(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    private var onChanged: ((Environment) -> Unit)? = null
+    fun interface EnvironmentManagerListener {
+        fun onEnvironmentChanged(newEnvironment: Environment)
+    }
+
+    private var listeners = mutableMapOf<String, EnvironmentManagerListener>()
 
     fun isDevnet(): Boolean = loadEnvironment() == Environment.DEVNET
 
@@ -50,8 +55,12 @@ class EnvironmentManager(
             .toString()
     }
 
-    fun setOnEnvironmentListener(onChanged: (Environment) -> Unit) {
-        this.onChanged = onChanged
+    fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
+        listeners[owner.simpleName.orEmpty()] = listener
+    }
+
+    fun removeEnvironmentListener(owner: KClass<*>) {
+        listeners.remove(owner.simpleName.orEmpty())
     }
 
     fun loadEnvironment(): Environment {
@@ -70,7 +79,7 @@ class EnvironmentManager(
 
         val newRpcEnvironment = parseRpc(newEnvironment.endpoint)
         sharedPreferences.edit { putString(KEY_RPC_BASE_URL, newRpcEnvironment.endpoint) }
-        onChanged?.invoke(newEnvironment)
+        listeners.values.forEach { it.onEnvironmentChanged(newEnvironment) }
     }
 
     private fun parse(url: String): Environment = when (url) {

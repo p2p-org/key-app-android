@@ -35,7 +35,7 @@ open class RpcInterceptor(
     private var currentEnvironment = environmentManager.loadEnvironment()
 
     init {
-        environmentManager.setOnEnvironmentListener { newEnvironment ->
+        environmentManager.addEnvironmentListener(this::class) { newEnvironment ->
             currentEnvironment = newEnvironment
         }
     }

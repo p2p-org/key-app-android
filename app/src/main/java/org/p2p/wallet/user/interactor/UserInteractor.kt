@@ -53,7 +53,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
+    suspend fun getBalance(address: String): Long = rpcRepository.getBalance(address)
 
     suspend fun loadTokenPrices(targetCurrency: String) {
         // TODO: 15.02.2022 replace TokenSymbols with user tokens from local storage [P2PW-1315]
@@ -73,22 +73,21 @@ class UserInteractor(
 
     fun getTokenListFlow() = userLocalRepository.getTokenListFlow()
 
-    suspend fun loadUserTokensAndUpdateData() {
-        val publicKey = tokenKeyProvider.publicKey
-        val newTokens = userRepository.loadTokens(publicKey)
+    suspend fun loadUserTokensAndUpdateLocal() {
+        val newTokens = userRepository.loadTokens(tokenKeyProvider.publicKey)
+        val cachedTokens = mainLocalRepository.getUserTokens()
 
-        val oldTokens = mainLocalRepository.getUserTokens()
+        updateLocalTokens(cachedTokens, newTokens)
+    }
+
+    private suspend fun updateLocalTokens(cachedTokens: List<Token.Active>, newTokens: List<Token.Active>) {
         mainLocalRepository.clear()
-        val result = newTokens.map { token ->
-            val old = oldTokens.find { it.publicKey == token.publicKey }
-            if (old != null) {
-                token.copy(visibility = old.visibility)
-            } else {
-                token
-            }
+        val newTokensToCache = newTokens.map { newToken ->
+            val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
+            newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
         }
 
-        mainLocalRepository.updateTokens(result)
+        mainLocalRepository.updateTokens(newTokensToCache)
     }
 
     suspend fun getUserTokens(): List<Token.Active> =
