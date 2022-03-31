@@ -39,7 +39,8 @@ class TransactionAddressInteractor(
 
     suspend fun findSplTokenAddressData(
         destinationAddress: PublicKey,
-        mintAddress: String
+        mintAddress: String,
+        useCache: Boolean = true
     ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
@@ -50,7 +51,7 @@ class TransactionAddressInteractor(
         }
 
         /* If account is not found, create one */
-        val accountInfo = userAccountRepository.getAccountInfo(associatedAddress.toBase58())
+        val accountInfo = userAccountRepository.getAccountInfo(associatedAddress.toBase58(), useCache)
         val value = accountInfo?.value
         val accountExists = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         return TransactionAddressData(
