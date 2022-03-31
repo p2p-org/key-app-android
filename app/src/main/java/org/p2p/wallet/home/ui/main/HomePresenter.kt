@@ -83,7 +83,7 @@ class HomePresenter(
             startPollingForTokens()
         }
 
-        IntercomService.signIn(tokenKeyProvider.publicKey) {}
+        IntercomService.signIn(tokenKeyProvider.publicKey)
 
         environmentManager.addEnvironmentListener(this::class) {
             refreshTokenAndPrices()
