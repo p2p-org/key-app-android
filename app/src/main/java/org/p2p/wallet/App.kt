@@ -1,11 +1,12 @@
 package org.p2p.wallet
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.p2p.solanaj.utils.SolanjLogger
@@ -61,6 +62,7 @@ class App : Application() {
     private fun setupKoin() {
         GlobalContext.stopKoin()
         startKoin {
+            androidLogger(level = org.koin.core.logger.Level.ERROR)
             androidContext(this@App)
             modules(
                 listOf(

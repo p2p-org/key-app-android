@@ -200,8 +200,9 @@ dependencies {
     // seed value
     implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
 
+    def koinVersion = '3.1.5'
     // https://github.com/InsertKoinIO/koin
-    implementation "io.insert-koin:koin-android:3.1.5"
+    implementation "io.insert-koin:koin-android:$koinVersion"
 
     // GeeTest
     implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
@@ -217,4 +218,10 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.5.1"
     // Coroutines support
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    // Koin Test features
+    testImplementation "io.insert-koin:koin-test:$koinVersion"
+    // Koin for JUnit 4
+    testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
+    // Mockito
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
 }
