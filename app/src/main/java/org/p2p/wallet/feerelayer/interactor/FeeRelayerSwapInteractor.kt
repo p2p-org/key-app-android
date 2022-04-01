@@ -45,11 +45,11 @@ class FeeRelayerSwapInteractor(
         sourceToken: TokenInfo,
         destinationTokenMint: String,
         destinationAddress: String?,
-        payingFeeToken: TokenInfo, // this should not be SOL here
+        payingFeeToken: TokenInfo,
         swapPools: OrcaPoolsPair,
         inputAmount: BigInteger,
         slippage: Double
-    ): PreparedTransaction {
+    ): Pair<List<PreparedTransaction>, BigInteger> {
         val info = feeRelayerAccountInteractor.getRelayInfo()
 
         val preparedParams = prepareForTopUpAndSwap(
@@ -150,7 +150,7 @@ class FeeRelayerSwapInteractor(
         needsCreateDestinationTokenAccount: Boolean,
         feePayerAddress: PublicKey,
         lamportsPerSignature: BigInteger
-    ): PreparedTransaction {
+    ): Pair<List<PreparedTransaction>, BigInteger> {
         val owner = Account(tokenKeyProvider.secretKey)
 
         val userAuthorityAddress = owner.publicKey
@@ -169,6 +169,7 @@ class FeeRelayerSwapInteractor(
         // forming transaction and count fees
         var accountCreationFee: BigInteger = BigInteger.ZERO
         val instructions = mutableListOf<TransactionInstruction>()
+        var additionalPaybackFee: BigInteger = BigInteger.ZERO
 
         // check source
         var sourceWSOLNewAccount: Account? = null
@@ -189,9 +190,11 @@ class FeeRelayerSwapInteractor(
                 userAuthorityAddress
             )
             instructions += initializeAccountInstruction
-
+            additionalPaybackFee += minimumTokenAccountBalance
             userSourceTokenAccountAddress = sourceWSOLNewAccount.publicKey
         }
+
+        var accountCreationTransaction: PreparedTransaction? = null
 
         // check destination
         var destinationNewAccount: Account? = null
@@ -214,6 +217,7 @@ class FeeRelayerSwapInteractor(
                 )
                 instructions += initializeAccountInstruction
                 userDestinationTokenAccountAddress = destinationNewAccount.publicKey
+                accountCreationFee += minimumTokenAccountBalance
             } else {
                 // For other token, create associated token address
                 val associatedAddress = TokenTransaction.getAssociatedTokenAddress(
@@ -229,10 +233,30 @@ class FeeRelayerSwapInteractor(
                     userAuthorityAddress,
                     feePayerAddress
                 )
-                instructions += createAssociatedTokenAccountInstruction
+
+                /*
+                * Case when user swaps SOL to non-created SPL
+                * Account creation may cause [Transaction too large] exception
+                * Therefore, we are splitting creation and transfer transactions to separate transactions
+                * First is creation
+                * Second is transfer
+                * */
+                if (sourceWSOLNewAccount != null) {
+                    accountCreationTransaction = prepareTransaction(
+                        instructions = listOf(createAssociatedTokenAccountInstruction),
+                        signers = listOf(owner),
+                        blockhash = blockhash,
+                        feePayerAddress = feePayerAddress,
+                        accountCreationFee = accountCreationFee,
+                        lamportsPerSignature = lamportsPerSignature
+                    )
+                } else {
+                    instructions += createAssociatedTokenAccountInstruction
+                    accountCreationFee += minimumTokenAccountBalance
+                }
+
                 userDestinationTokenAccountAddress = associatedAddress
             }
-            accountCreationFee += minimumTokenAccountBalance
         }
 
         // swap
@@ -307,13 +331,6 @@ class FeeRelayerSwapInteractor(
                 userAuthorityAddress
             )
             instructions += closeAccountInstruction
-
-            val transferInstruction = SystemProgram.transfer(
-                userAuthorityAddress,
-                feePayerAddress,
-                minimumTokenAccountBalance
-            )
-            instructions += transferInstruction
         }
 
         // close destination
@@ -336,17 +353,6 @@ class FeeRelayerSwapInteractor(
             accountCreationFee -= minimumTokenAccountBalance
         }
 
-        val transaction = Transaction()
-        transaction.addInstructions(instructions)
-        transaction.recentBlockHash = blockhash
-        transaction.feePayer = feePayerAddress
-
-        // calculate fee first
-        val expectedFee = FeeAmount(
-            transaction = transaction.calculateTransactionFee(lamportsPerSignature),
-            accountBalances = accountCreationFee
-        )
-
         // resign transaction
         val signers = mutableListOf(owner)
         if (sourceWSOLNewAccount != null) {
@@ -356,9 +362,22 @@ class FeeRelayerSwapInteractor(
         if (destinationNewAccount != null) {
             signers += destinationNewAccount
         }
-        transaction.sign(signers)
 
-        return PreparedTransaction(transaction, signers, expectedFee)
+        val transactions = mutableListOf<PreparedTransaction>()
+        if (accountCreationTransaction != null) {
+            transactions += accountCreationTransaction
+        }
+
+        transactions += prepareTransaction(
+            instructions = instructions,
+            signers = signers,
+            blockhash = blockhash,
+            feePayerAddress = feePayerAddress,
+            accountCreationFee = accountCreationFee,
+            lamportsPerSignature = lamportsPerSignature
+        )
+
+        return transactions to additionalPaybackFee
     }
 
     private suspend fun prepareForTopUpAndSwap(
@@ -469,5 +488,29 @@ class FeeRelayerSwapInteractor(
             userDestinationAccountOwnerAddress = userDestinationAccountOwnerAddress,
             needsCreateDestinationTokenAccount = addressData.shouldCreateAccount
         )
+    }
+
+    private fun prepareTransaction(
+        instructions: List<TransactionInstruction>,
+        signers: List<Account>,
+        blockhash: String,
+        feePayerAddress: PublicKey,
+        accountCreationFee: BigInteger,
+        lamportsPerSignature: BigInteger
+    ): PreparedTransaction {
+        val transaction = Transaction()
+        transaction.addInstructions(instructions)
+        transaction.recentBlockHash = blockhash
+        transaction.feePayer = feePayerAddress
+
+        // calculate fee first
+        val expectedFee = FeeAmount(
+            transaction = transaction.calculateTransactionFee(lamportsPerSignature),
+            accountBalances = accountCreationFee
+        )
+
+        transaction.sign(signers)
+
+        return PreparedTransaction(transaction, signers, expectedFee)
     }
 }

@@ -129,7 +129,7 @@ class OrcaSwapInteractor(
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
 
         val payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
-        val transaction = feeRelayerSwapInteractor.prepareSwapTransaction(
+        val (transactions, additionalPaybackFee) = feeRelayerSwapInteractor.prepareSwapTransaction(
             feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = TokenInfo(sourceAddress, sourceTokenMint),
             destinationTokenMint = destinationTokenMint,
@@ -140,7 +140,11 @@ class OrcaSwapInteractor(
             slippage = slippage,
         )
 
-        val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(transaction, payingFeeToken)
+        val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
+            preparedTransactions = transactions,
+            payingFeeToken = payingFeeToken,
+            additionalPaybackFee = additionalPaybackFee
+        )
             .firstOrNull().orEmpty()
 
         // todo: find destination address
