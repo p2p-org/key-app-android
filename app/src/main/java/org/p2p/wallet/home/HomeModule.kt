@@ -108,11 +108,12 @@ object HomeModule : InjectionModule {
         } bind SearchContract.Presenter::class
         factory { (token: Token) ->
             BuySolanaPresenter(
-                token,
-                get(),
-                androidContext().resources.getString(R.string.buy_min_error_format),
-                androidContext().resources.getString(R.string.buy_max_error_format),
-                get(), get()
+                token = token,
+                moonpayRepository = get(),
+                minBuyErrorFormat = androidContext().getString(R.string.buy_min_error_format),
+                maxBuyErrorFormat = androidContext().getString(R.string.buy_max_error_format),
+                buyAnalytics = get(),
+                analyticsInteractor = get()
             )
         } bind BuySolanaContract.Presenter::class
         factory { TokenListPresenter(get(), get(), get()) } bind TokenListContract.Presenter::class

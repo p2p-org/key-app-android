@@ -30,7 +30,10 @@ import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.updates.SocketUpdatesManager
 import org.p2p.wallet.updates.UpdateHandler
 import org.p2p.wallet.updates.UpdatesManager
+import java.security.KeyStore
 import java.util.concurrent.Executors
+
+private const val ANDROID_KEY_STORE = "AndroidKeyStore"
 
 object InfrastructureModule : InjectionModule {
 
@@ -71,7 +74,8 @@ object InfrastructureModule : InjectionModule {
         }
 
         single { EncoderDecoderMarshmallow(get()) } bind EncoderDecoder::class
-        single { KeyStoreWrapper(get()) }
+        single { KeyStore.getInstance(ANDROID_KEY_STORE) }
+        single { KeyStoreWrapper(encoderDecoder = get(), keyStore = get()) }
 
         factory { SecureStorage(get(), get()) } bind SecureStorageContract::class
 

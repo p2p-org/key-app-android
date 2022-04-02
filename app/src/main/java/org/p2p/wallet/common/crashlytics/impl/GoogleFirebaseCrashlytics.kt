@@ -2,20 +2,8 @@ package org.p2p.wallet.common.crashlytics.impl
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
-class GoogleFirebaseCrashlytics(
-    private val tokenKeyProvider: TokenKeyProvider
-) : CrashLoggingService {
-
-    init {
-        val currentUserPublicKey = kotlin.runCatching { tokenKeyProvider.publicKey }.getOrDefault("")
-        setUserId(CrashLoggingService.UserId(currentUserPublicKey))
-
-        tokenKeyProvider.registerListener { publicKey ->
-            setUserId(CrashLoggingService.UserId(publicKey))
-        }
-    }
+class GoogleFirebaseCrashlytics : CrashLoggingService {
 
     override var isLoggingEnabled: Boolean = false
         set(value) {

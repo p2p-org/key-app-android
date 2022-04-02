@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import org.p2p.wallet.R
 import org.p2p.wallet.root.RootActivity
 
@@ -35,7 +36,7 @@ class AppNotificationManager(
         )
     }
 
-    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val notificationManager = context.getSystemService<NotificationManager>()!!
 
     fun showSwapTransactionNotification(data: SwapTransactionNotification) {
         val intent = buildPushIntent(context)
