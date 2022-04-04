@@ -142,10 +142,8 @@ class OrcaSwapInteractor(
 
         val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
             preparedTransactions = transactions,
-            payingFeeToken = payingFeeToken,
-            additionalPaybackFee = additionalPaybackFee
-        )
-            .firstOrNull().orEmpty()
+            payingFeeToken = payingFeeToken
+        ).firstOrNull().orEmpty()
 
         // todo: find destination address
         return OrcaSwapResult.Finished(transactionId, destinationAddress.orEmpty())

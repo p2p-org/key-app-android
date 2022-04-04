@@ -91,7 +91,6 @@ class FeeRelayerInteractor(
     suspend fun topUpAndRelayTransaction(
         preparedTransactions: List<PreparedTransaction>,
         payingFeeToken: TokenInfo,
-        additionalPaybackFee: BigInteger
     ): List<String> {
         val expectedFee = FeeAmount(
             transaction = preparedTransactions
@@ -107,27 +106,17 @@ class FeeRelayerInteractor(
         )
 
         if (preparedTransactions.isEmpty()) throw IllegalStateException("Transactions cannot be empty!")
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
         val transactionId = if (preparedTransactions.size > 1) {
             relayTransaction(
-                preparedTransaction = preparedTransactions[0],
-                feePayerToken = payingFeeToken,
-                relayAccount = relayAccount,
-                additionalPaybackFee = additionalPaybackFee
+                preparedTransaction = preparedTransactions[0]
             )
 
             relayTransaction(
-                preparedTransaction = preparedTransactions[1],
-                feePayerToken = payingFeeToken,
-                relayAccount = relayAccount,
-                additionalPaybackFee = additionalPaybackFee
+                preparedTransaction = preparedTransactions[1]
             )
         } else {
             relayTransaction(
-                preparedTransaction = preparedTransactions[0],
-                feePayerToken = payingFeeToken,
-                relayAccount = relayAccount,
-                additionalPaybackFee = additionalPaybackFee
+                preparedTransaction = preparedTransactions[0]
             )
         }
 
@@ -196,51 +185,16 @@ class FeeRelayerInteractor(
 
     private suspend fun relayTransaction(
         preparedTransaction: PreparedTransaction,
-        feePayerToken: TokenInfo,
-        relayAccount: RelayAccount,
-        additionalPaybackFee: BigInteger
     ): List<String> {
-        val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = info.feePayerAddress
-        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
         // verify fee payer
         if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
             throw IllegalStateException("Invalid fee payer")
         }
 
-        // Calculate the fee to send back to feePayer
-        // Account creation fee (accountBalances) is a must-pay-back fee
-        var paybackFee = additionalPaybackFee + preparedTransaction.expectedFee.accountBalances
-
-        // The transaction fee, on the other hand, is only be paid if user used more than number of free transaction fee
-        if (!freeTransactionFeeLimit.isFreeTransactionFeeAvailable(preparedTransaction.expectedFee.transaction)) {
-            paybackFee += preparedTransaction.expectedFee.transaction
-        }
-
-        // transfer sol back to feerelayer's feePayer
-        val owner = Account(tokenKeyProvider.secretKey)
         val transaction = preparedTransaction.transaction
-        if (paybackFee > BigInteger.ZERO) {
-            if (feePayerToken.isSOL && relayAccount.balance.orZero() < paybackFee) {
-                val transferInstruction = SystemProgram.transfer(
-                    fromPublicKey = owner.publicKey,
-                    toPublicKey = feePayer,
-                    lamports = paybackFee
-                )
-                transaction.addInstruction(transferInstruction)
-            } else {
-                val createRelayTransferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
-                    programId = feeRelayerProgramId,
-                    userAuthority = owner.publicKey,
-                    userRelayAccount = relayAccount.publicKey,
-                    recipient = feePayer,
-                    amount = paybackFee
-                )
-                transaction.addInstruction(createRelayTransferSolInstruction)
-            }
-        }
 
         // resign transaction
         transaction.sign(preparedTransaction.signers)
