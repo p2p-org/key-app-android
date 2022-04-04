@@ -1,5 +1,7 @@
 package org.p2p.wallet.user.interactor
 
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenComparator
@@ -11,12 +13,15 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.emptyString
 
+private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
+
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: HomeLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val sharedPreferences: SharedPreferences
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
@@ -45,7 +50,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
+    suspend fun getBalance(address: String): Long = rpcRepository.getBalance(address)
 
     suspend fun loadAllTokensData() {
         val data = userRepository.loadAllTokens()
@@ -58,22 +63,27 @@ class UserInteractor(
 
     fun getTokenListFlow() = userLocalRepository.getTokenListFlow()
 
-    suspend fun loadUserTokensAndUpdateData() {
-        val publicKey = tokenKeyProvider.publicKey
-        val newTokens = userRepository.loadUserTokens(publicKey)
+    fun getHiddenTokensVisibility() = sharedPreferences.getBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, false)
 
-        val oldTokens = mainLocalRepository.getUserTokens()
+    fun setHiddenTokensVisibility(visible: Boolean) = sharedPreferences.edit {
+        putBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, visible)
+    }
+
+    suspend fun loadUserTokensAndUpdateLocal() {
+        val newTokens = userRepository.loadTokens(tokenKeyProvider.publicKey)
+        val cachedTokens = mainLocalRepository.getUserTokens()
+
+        updateLocalTokens(cachedTokens, newTokens)
+    }
+
+    private suspend fun updateLocalTokens(cachedTokens: List<Token.Active>, newTokens: List<Token.Active>) {
         mainLocalRepository.clear()
-        val result = newTokens.map { token ->
-            val old = oldTokens.find { it.publicKey == token.publicKey }
-            if (old != null) {
-                token.copy(visibility = old.visibility)
-            } else {
-                token
-            }
+        val newTokensToCache = newTokens.map { newToken ->
+            val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
+            newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
         }
 
-        mainLocalRepository.updateTokens(result)
+        mainLocalRepository.updateTokens(newTokensToCache)
     }
 
     suspend fun getUserTokens(): List<Token.Active> =

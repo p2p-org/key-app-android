@@ -6,8 +6,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
@@ -44,6 +44,7 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
@@ -142,6 +143,7 @@ class SendPresenter(
         calculateRenBtcFeeIfNeeded(hideTotal = true)
         calculateData(newToken)
         checkAddress(target?.address)
+        updateMaxButtonVisibility(newToken)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
     }
 
@@ -184,13 +186,17 @@ class SendPresenter(
         inputAmount = amount
 
         val token = token ?: return
+        updateMaxButtonVisibility(token)
+        calculateRenBtcFeeIfNeeded()
+        calculateData(token)
+    }
+
+    private fun updateMaxButtonVisibility(token: Token.Active) {
         val totalAvailable = when (mode) {
             is CurrencyMode.Usd -> token.totalInUsd
             is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
         view?.setMaxButtonVisibility(inputAmount != totalAvailable.toString())
-        calculateRenBtcFeeIfNeeded()
-        calculateData(token)
     }
 
     override fun setNetworkDestination(networkType: NetworkType) {
@@ -323,6 +329,7 @@ class SendPresenter(
             }
         }
         sendAnalytics.logSendChangingCurrency(sendCurrency)
+        updateMaxButtonVisibility(token)
         calculateData(token)
     }
 
@@ -343,13 +350,13 @@ class SendPresenter(
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
         view?.showWrongAddressTarget(result.address.cutEnd())
-        view?.showAccountFeeView(null)
+        view?.showAccountFeeView()
     }
 
     private fun handleIdleTarget() {
         view?.showIdleTarget()
         view?.showTotal(data = null)
-        view?.showAccountFeeView(fee = null)
+        view?.showAccountFeeView()
 
         fee = null
         calculateTotal(sendFee = null)
@@ -381,8 +388,8 @@ class SendPresenter(
                 calculateFeeRelayerFee(checkAddressResult.feePayerToken)
             is CheckAddressResult.AccountExists,
             is CheckAddressResult.InvalidAddress -> {
-                calculateTotal(null)
-                view?.showAccountFeeView(null)
+                calculateTotal(sendFee = null)
+                view?.showAccountFeeView()
             }
         }
     }
@@ -498,9 +505,6 @@ class SendPresenter(
         }
         view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
         view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_READABLE_SYMBOL)
-
-        updateButtonText(token)
-        setButtonEnabled(usdAmount, token.totalInUsd ?: BigDecimal.ZERO)
     }
 
     private fun calculateByToken(token: Token.Active) {
@@ -511,9 +515,6 @@ class SendPresenter(
         val total = token.total.scaleLong()
         view?.showUsdAroundValue(usdAround)
         view?.showAvailableValue(total, token.tokenSymbol)
-
-        updateButtonText(token)
-        setButtonEnabled(tokenAmount, total)
     }
 
     private fun calculateTotal(sendFee: SendFee?) {
@@ -527,6 +528,23 @@ class SendPresenter(
             fee = sendFee,
             sourceSymbol = sourceToken.tokenSymbol
         )
+
+        when (mode) {
+            is CurrencyMode.Token -> {
+                updateButton(
+                    amount = tokenAmount,
+                    total = sourceToken.total.scaleLong(),
+                    fee = data.fee?.fee ?: BigDecimal.ZERO
+                )
+            }
+            is CurrencyMode.Usd -> {
+                updateButton(
+                    amount = usdAmount,
+                    total = sourceToken.totalInUsd ?: BigDecimal.ZERO,
+                    fee = data.fee?.feeUsd ?: BigDecimal.ZERO
+                )
+            }
+        }
 
         view?.showTotal(data)
     }
@@ -560,7 +578,7 @@ class SendPresenter(
         )
 
         if (fees == null) {
-            view?.showAccountFeeView(null)
+            view?.showAccountFeeView()
             return
         }
 
@@ -571,8 +589,10 @@ class SendPresenter(
         }
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
-        view?.showAccountFeeView(fee)
-
+        view?.showAccountFeeView(
+            fee = fee,
+            notEnoughFunds = fee?.feePayerToken?.totalInUsd.orZero() < fee?.feeUsd.orZero()
+        )
         calculateTotal(fee)
     }
 
@@ -615,34 +635,33 @@ class SendPresenter(
         setTargetResult(first)
     }
 
-    private fun updateButtonText(source: Token.Active) {
-        val decimalAmount = inputAmount.toBigDecimalOrZero()
-        val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
+    private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: BigDecimal) {
+        val isAmountMoreThanBalance = amount.isMoreThan(total)
+        val isAmountWithFeeMoreThanBalance = (amount + fee).isMoreThan(total)
         val address = target?.address
+        val isMaxAmount = amount == total
+
+        val isNotZero = !amount.isZero()
+        val isValidAddress = isAddressValid(target?.address)
+        val isEnabled = isNotZero && !isAmountMoreThanBalance && !isAmountWithFeeMoreThanBalance && isValidAddress
 
         when {
-            isMoreThanBalance ->
+            isAmountWithFeeMoreThanBalance ->
+                view?.showButtonText(R.string.send_insufficient_funds)
+            isAmountMoreThanBalance ->
                 view?.showButtonText(R.string.swap_funds_not_enough)
-            decimalAmount.isZero() ->
+            amount.isZero() ->
                 view?.showButtonText(R.string.main_enter_the_amount)
             address.isNullOrBlank() ->
                 view?.showButtonText(R.string.send_enter_address)
             else -> {
-                val amount = "$tokenAmount ${token!!.tokenSymbol}"
-                view?.showButtonText(R.string.send_format, R.drawable.ic_send_simple, amount)
+                val amountToSend = "$tokenAmount ${token?.tokenSymbol.orEmpty()}"
+                view?.showButtonText(R.string.send_format, R.drawable.ic_send_simple, amountToSend)
             }
         }
-    }
-
-    private fun setButtonEnabled(amount: BigDecimal, total: BigDecimal) {
-        val isMoreThanBalance = amount.isMoreThan(total)
-        val isMaxAmount = amount == total
-        val isNotZero = !amount.isZero()
-        val isValidAddress = isAddressValid(target?.address)
-        val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
 
         val availableColor = when {
-            isMoreThanBalance -> R.color.systemErrorMain
+            isAmountMoreThanBalance -> R.color.systemErrorMain
             isMaxAmount -> R.color.systemSuccessMain
             else -> R.color.textIconSecondary
         }

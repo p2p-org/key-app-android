@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.ui.main
 
-import android.content.SharedPreferences
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -8,14 +7,15 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
-import org.p2p.wallet.debugdrawer.KEY_POLLING_ENABLED
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -24,89 +24,127 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 
-private const val DELAY_MS = 10000L
+private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
+private val TOKENS_VALID_FOR_BUY = setOf("SOL", "USDC")
+private const val BALANCE_CURRENCY = "USD"
 
 class HomePresenter(
+    private val appFeatureFlags: AppFeatureFlags,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val sharedPreferences: SharedPreferences,
-    private val tokenKeyProvider: TokenKeyProvider
-
+    private val environmentManager: EnvironmentManager,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val homeElementItemMapper: HomeElementItemMapper
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
-    private var state: VisibilityState? = null
-
-    private val tokens = mutableListOf<Token.Active>()
-    private val tokensValidForBuy = listOf("SOL", "USDC")
-
-    private var username: Username? = null
-
-    private var collectJob: Job? = null
-
-    private val actions = mutableListOf(
-        ActionButtonsView.ActionButton(R.string.main_buy, R.drawable.ic_plus),
-        ActionButtonsView.ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
-        ActionButtonsView.ActionButton(R.string.main_send, R.drawable.ic_send_medium),
-        ActionButtonsView.ActionButton(R.string.main_swap, R.drawable.ic_swap_medium)
+    private data class ViewState(
+        val tokens: List<Token.Active> = emptyList(),
+        val visibilityState: VisibilityState = VisibilityState.Hidden,
+        val username: Username? = null
     )
+
+    private var presenterState = ViewState()
+
+    private var userTokensFlowJob: Job? = null
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-        view.showActions(actions)
+
+        view.showActions(
+            listOf(
+                ActionButtonsView.ActionButton(R.string.main_buy, R.drawable.ic_plus),
+                ActionButtonsView.ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
+                ActionButtonsView.ActionButton(R.string.main_send, R.drawable.ic_send_medium),
+                ActionButtonsView.ActionButton(R.string.main_swap, R.drawable.ic_swap_medium)
+            )
+        )
+
         updatesManager.start()
-        loadData()
-        username = usernameInteractor.getUsername()
-        IntercomService.signIn(tokenKeyProvider.publicKey) {}
+
+        presenterState = presenterState.copy(
+            username = usernameInteractor.getUsername(),
+            visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
+        )
+
+        if (presenterState.tokens.isEmpty()) {
+            initialLoadTokens()
+        } else {
+            startPollingForTokens()
+        }
+
+        IntercomService.signIn(tokenKeyProvider.publicKey)
+
+        environmentManager.addEnvironmentListener(this::class) {
+            refreshTokenAndPrices()
+        }
     }
 
     override fun onBuyClicked() {
         launch {
-            val tokensForBuy = userInteractor.getTokensForBuy(tokensValidForBuy)
+            val tokensForBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
             view?.showTokensForBuy(tokensForBuy)
         }
     }
 
-    override fun collectData() {
-        collectJob?.cancel()
-        collectJob = launch {
-            userInteractor.getUserTokensFlow().collect { updatedTokens ->
-                when {
-                    isEmptyAccount(updatedTokens) -> {
-                        view?.showEmptyState(true)
-                    }
+    override fun subscribeToUserTokensFlow() {
+        userTokensFlowJob?.cancel()
+        userTokensFlowJob = launch {
+            userInteractor.getUserTokensFlow()
+                // emits two times when local tokens updated: with [] and actual list - strange
+                .collect { updatedTokens ->
+                    Timber.d("local tokens change arrived")
+                    presenterState = presenterState.copy(tokens = updatedTokens)
 
-                    updatedTokens.isNotEmpty() -> {
-                        view?.showEmptyState(false)
-                        tokens.clear()
-                        tokens += updatedTokens
-                        showTokens(updatedTokens.toMutableList())
+                    val isAccountEmpty = updatedTokens.run { size == 1 && first().isSOL && first().isZero }
+                    when {
+                        isAccountEmpty -> {
+                            view?.showEmptyState(isEmpty = true)
+                        }
+                        updatedTokens.isNotEmpty() -> {
+                            view?.showEmptyState(isEmpty = false)
+                            showTokensAndBalance()
+                        }
                     }
                 }
-            }
         }
     }
 
-    override fun refresh() {
-        view?.showRefreshing(true)
+    override fun refreshTokenAndPrices() {
         launch {
-            try {
-                userInteractor.loadUserTokensAndUpdateData()
-            } catch (e: CancellationException) {
-                Timber.d("Loading tokens job cancelled")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading user data")
-                view?.showErrorMessage(e)
-            } finally {
-                view?.showRefreshing(false)
-            }
+            view?.showRefreshing(isRefreshing = true)
+
+            runCatching { userInteractor.loadTokenPrices(BALANCE_CURRENCY) }
+                .onSuccess { Timber.d("refreshing prices is success") }
+                .onFailure { onTokenPricesLoadFailure(it) }
+                .getOrNull()
+                ?.runCatching { userInteractor.loadUserTokensAndUpdateLocal() }
+                ?.onSuccess { Timber.d("refreshing tokens is success") }
+                ?.onFailure { handleUserTokensUpdateFailure(it) }
+
+            view?.showRefreshing(isRefreshing = false)
         }
     }
 
-    override fun toggleVisibility(token: Token.Active) {
+    private fun onTokenPricesLoadFailure(error: Throwable) {
+        Timber.e(error, "Error loading token prices")
+        view?.showErrorSnackBar(error.message ?: error.localizedMessage)
+    }
+
+    private fun handleUserTokensUpdateFailure(error: Throwable) {
+        if (error is CancellationException) {
+            Timber.d("Loading tokens job cancelled")
+        } else {
+            Timber.e(error, "Error loading user data")
+            view?.showErrorMessage(error)
+        }
+    }
+
+    override fun toggleTokenVisibility(token: Token.Active) {
         launch {
             val visibility = when (token.visibility) {
                 TokenVisibility.SHOWN -> TokenVisibility.HIDDEN
@@ -122,78 +160,74 @@ class HomePresenter(
         }
     }
 
-    override fun toggleVisibilityState() {
-        state = when (state) {
-            is VisibilityState.Visible -> VisibilityState.Hidden
-            else -> VisibilityState.Visible
-        }
+    override fun toggleTokenVisibilityState() {
+        presenterState = presenterState.run { copy(visibilityState = visibilityState.toggle()) }
+        userInteractor.setHiddenTokensVisibility(presenterState.visibilityState.isVisible)
 
-        showTokens(tokens)
+        showTokensAndBalance()
     }
 
-    override fun clearCache() {
-        tokens.clear()
+    override fun clearTokensCache() {
+        presenterState = presenterState.copy(tokens = emptyList())
     }
 
-    private fun showTokens(tokens: MutableList<Token.Active>) {
-        val balance = sumBalance(tokens)
-        view?.showBalance(balance, username)
+    private fun showTokensAndBalance() {
+        Timber.d("showing tokens on screen")
+        val balance = getUserBalance()
+        view?.showBalance(balance, presenterState.username)
 
         /* Mapping elements according to visibility settings */
         val isZerosHidden = settingsInteractor.isZerosHidden()
-        val actualState = when (state) {
-            is VisibilityState.Hidden, null -> VisibilityState.Hidden
-            is VisibilityState.Visible -> VisibilityState.Visible
-        }
-        val mappedTokens = mapTokens(tokens, isZerosHidden, actualState)
+        val mappedTokens = buildList {
+            addAll(
+                homeElementItemMapper.mapToItem(
+                    tokens = presenterState.tokens,
+                    visibilityState = presenterState.visibilityState,
+                    isZerosHidden = isZerosHidden
+                )
+            )
 
-        /* Adding banners to the main list */
-        val banners = getBanners()
-        if (mappedTokens.size > BANNER_START_INDEX) {
-            mappedTokens.add(BANNER_START_INDEX, HomeElementItem.Banners(banners))
-        } else {
-            mappedTokens.add(HomeElementItem.Banners(banners))
-        }
-
-        view?.showTokens(mappedTokens, isZerosHidden, actualState)
-    }
-
-    private fun loadData() {
-        if (tokens.isNotEmpty()) {
-            startPolling()
-            return
-        }
-
-        launch {
-            try {
-                view?.showRefreshing(true)
-                userInteractor.loadUserTokensAndUpdateData()
-                Timber.d("Successfully loaded tokens")
-            } catch (e: CancellationException) {
-                Timber.w("Cancelled tokens remote update")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading tokens from remote")
-            } finally {
-                view?.showRefreshing(false)
-                startPolling()
+            // Adding banners to the main list
+            val banners = getBanners()
+            if (this.size > BANNER_START_INDEX) {
+                add(BANNER_START_INDEX, HomeElementItem.Banners(banners))
+            } else {
+                add(HomeElementItem.Banners(banners))
             }
         }
+
+        view?.showTokens(mappedTokens, isZerosHidden, presenterState.visibilityState)
     }
 
-    private fun startPolling() {
+    private fun initialLoadTokens() {
+        launch {
+            Timber.d("initial token loading")
+            view?.showRefreshing(isRefreshing = true)
+            // We are waiting when tokenlist.json is being parsed and saved into the memory
+            delay(1000L)
+            kotlin.runCatching { userInteractor.loadUserTokensAndUpdateLocal() }
+                .onSuccess {
+                    Timber.d("Successfully initial loaded tokens")
+                }
+                .onFailure {
+                    if (it is CancellationException) {
+                        Timber.i("Cancelled initial tokens remote update")
+                    } else {
+                        Timber.e(it, "Error initial loading tokens from remote")
+                    }
+                }
+
+            view?.showRefreshing(isRefreshing = false)
+            startPollingForTokens()
+        }
+    }
+
+    private fun startPollingForTokens() {
         launch {
             try {
                 while (true) {
-                    delay(DELAY_MS)
-                    val isPollingEnabled = sharedPreferences.getBoolean(KEY_POLLING_ENABLED, true)
-                    if (isPollingEnabled) {
-                        userInteractor.loadUserTokensAndUpdateData()
-                        Timber.d("Successfully updated loaded tokens")
-                    } else {
-                        Timber.d("Skipping tokens auto-update")
-                    }
-
-                    view?.showRefreshing(false)
+                    delay(POLLING_DELAY_MS)
+                    loadTokensOnPolling()
                 }
             } catch (e: CancellationException) {
                 Timber.w("Cancelled tokens remote update")
@@ -203,36 +237,23 @@ class HomePresenter(
         }
     }
 
-    private fun sumBalance(tokens: List<Token.Active>): BigDecimal =
-        tokens
+    private suspend fun loadTokensOnPolling() {
+        val isPollingEnabled = appFeatureFlags.isPollingEnabled
+        if (isPollingEnabled) {
+            userInteractor.loadUserTokensAndUpdateLocal()
+            Timber.d("Successfully auto-updated loaded tokens")
+        } else {
+            Timber.d("Skipping tokens auto-update")
+        }
+    }
+
+    private fun getUserBalance(): BigDecimal =
+        presenterState.tokens
             .mapNotNull { it.totalInUsd }
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
-    private fun mapTokens(
-        tokens: MutableList<Token.Active>,
-        isZerosHidden: Boolean,
-        state: VisibilityState
-    ): MutableList<HomeElementItem> =
-        tokens
-            .map { token ->
-                if (token.isSOL) return@map HomeElementItem.Shown(token)
-
-                when (token.visibility) {
-                    TokenVisibility.SHOWN -> HomeElementItem.Shown(token)
-                    TokenVisibility.HIDDEN -> HomeElementItem.Hidden(token, state)
-                    TokenVisibility.DEFAULT -> if (isZerosHidden && token.isZero) {
-                        HomeElementItem.Hidden(token, state)
-                    } else {
-                        HomeElementItem.Shown(token)
-                    }
-                }
-            }
-            .toMutableList()
-
     private fun getBanners(): List<Banner> {
-        val usernameExists = username != null
-
         val usernameBanner = Banner(
             R.string.main_username_banner_option,
             R.string.main_username_banner_action,
@@ -240,6 +261,7 @@ class HomePresenter(
             R.color.backgroundBanner
         )
 
+        val usernameExists = presenterState.username != null
         val feedbackBanner = Banner(
             R.string.main_feedback_banner_option,
             R.string.main_feedback_banner_action,
@@ -254,7 +276,4 @@ class HomePresenter(
             listOf(usernameBanner, feedbackBanner)
         }
     }
-
-    private fun isEmptyAccount(updatedTokens: List<Token.Active>) =
-        updatedTokens.size == 1 && updatedTokens.first().isSOL && updatedTokens.first().isZero
 }
