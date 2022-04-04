@@ -68,7 +68,7 @@ class HomePresenter(
 
         presenterState = presenterState.copy(
             username = usernameInteractor.getUsername(),
-            visibilityState = VisibilityState.fromBoolean(userInteractor.getHiddenTokensVisibility())
+            visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
         )
 
         if (presenterState.tokens.isEmpty()) {
@@ -162,7 +162,7 @@ class HomePresenter(
 
     override fun toggleTokenVisibilityState() {
         presenterState = presenterState.run { copy(visibilityState = visibilityState.toggle()) }
-        userInteractor.setHiddenTokensVisibility(presenterState.visibilityState.toBoolean())
+        userInteractor.setHiddenTokensVisibility(presenterState.visibilityState.isVisible)
 
         showTokensAndBalance()
     }
