@@ -41,10 +41,8 @@ class OrcaSwapInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    /* ktlint-disable */
     @JvmInline
     value class FeePayerUpdateResult(val isUpdated: Boolean)
-    /* ktlint-disable */
 
     /*
     * If transaction will need to create a new account,
@@ -198,7 +196,7 @@ class OrcaSwapInteractor(
     suspend fun updateFeePayerToken(
         totalSwapFee: AmountInLamports,
         sourceToken: Token.Active,
-    ) : FeePayerUpdateResult {
+    ): FeePayerUpdateResult {
         val newFeePayer = if (sourceToken.isSOL) {
             // SOL-token fees can be paid with SOL token only
             sourceToken
