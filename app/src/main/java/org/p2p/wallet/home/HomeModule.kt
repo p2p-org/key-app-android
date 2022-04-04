@@ -64,6 +64,7 @@ object HomeModule : InjectionModule {
                 amountRepository = get(),
                 transactionInteractor = get(),
                 tokenKeyProvider = get(),
+                userInteractor = get()
             )
         }
         factory { SearchInteractor(get(), get(), get()) }

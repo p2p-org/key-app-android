@@ -21,7 +21,11 @@ import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.AmountInLamports
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.orZeroLamports
+import org.p2p.wallet.utils.toLamportsValue
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
@@ -32,6 +36,7 @@ class SendInteractor(
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
+    private val userInteractor: UserInteractor,
     private val transactionInteractor: TransactionInteractor,
     private val amountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
@@ -65,24 +70,24 @@ class SendInteractor(
 
     // Fees calculator
     suspend fun calculateFeesForFeeRelayer(
-        token: Token.Active,
-        receiver: String?,
+        sourceToken: Token.Active,
+        receiverAddress: String?,
         networkType: NetworkType
     ): FeeRelayerSendFee? {
-
         return when (networkType) {
-            NetworkType.BITCOIN ->
+            NetworkType.BITCOIN -> {
                 FeeRelayerSendFee(
-                    feeInSol = BigInteger.valueOf(20000L),
-                    feeInPayingToken = null
+                    solFee = AmountInLamports(BigInteger.valueOf(20000L)),
+                    payingTokenFee = null
                 )
+            }
             NetworkType.SOLANA -> {
-                if (receiver.isNullOrEmpty()) return null
+                if (receiverAddress.isNullOrEmpty() || sourceToken.isSOL) return null
 
-                val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
-                val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption()
+                val lamportsPerSignature = AmountInLamports(amountRepository.getLamportsPerSignature(null))
+                val minRentExemption = AmountInLamports(amountRepository.getMinBalanceForRentExemption())
 
-                var transactionFee: BigInteger = BigInteger.ZERO
+                var transactionFee = AmountInLamports(BigInteger.ZERO)
 
                 // owner's signature
                 transactionFee += lamportsPerSignature
@@ -92,25 +97,54 @@ class SendInteractor(
                     transactionFee += lamportsPerSignature
                 }
 
-                val shouldCreateAccount = if (token.mintAddress != WRAPPED_SOL_MINT) {
+                val shouldCreateAccount = if (sourceToken.mintAddress != WRAPPED_SOL_MINT) {
                     addressInteractor.findSplTokenAddressData(
-                        mintAddress = token.mintAddress,
-                        destinationAddress = receiver.toPublicKey()
+                        mintAddress = sourceToken.mintAddress,
+                        destinationAddress = receiverAddress.toPublicKey()
                     ).shouldCreateAccount
-                } else false
+                } else {
+                    false
+                }
 
                 val expectedFee = FeeAmount(
-                    transaction = transactionFee,
-                    accountBalances = if (shouldCreateAccount) minRentExemption else BigInteger.ZERO
+                    transaction = transactionFee.amount,
+                    accountBalances = if (shouldCreateAccount) minRentExemption.amount else BigInteger.ZERO
                 )
 
                 val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
 
-                return FeeRelayerSendFee(
-                    feeInSol = fees.total,
-                    feeInPayingToken = getFeesInPayingToken(fees.total)
+                FeeRelayerSendFee(
+                    solFee = AmountInLamports(fees.total),
+                    payingTokenFee = AmountInLamports(getFeesInPayingToken(fees.total))
                 )
             }
+        }
+    }
+
+    fun getFeePayerToken(): Token.Active = feePayerToken
+
+    suspend fun switchFeePayerToSol() {
+        userInteractor.getUserTokens().find(Token.Active::isSOL)?.let {
+            setFeePayerToken(it)
+        }
+    }
+
+    fun switchFeePayerToNonSol(sourceToken: Token.Active) {
+        if (!sourceToken.isSOL) {
+            setFeePayerToken(sourceToken)
+        }
+    }
+
+    fun hasFeePayerEnoughFundsToPayFee(
+        sendFee: FeeRelayerSendFee?,
+    ): Boolean {
+        if (sendFee == null) return true
+
+        val feePayerTotalAmount = feePayerToken.total.toLamportsValue(feePayerToken.decimals)
+        return if (feePayerToken.isSOL) {
+            sendFee.solFee >= feePayerTotalAmount
+        } else {
+            sendFee.payingTokenFee.orZeroLamports() >= feePayerTotalAmount
         }
     }
 
@@ -134,7 +168,7 @@ class SendInteractor(
                 val accountAddress = address.destinationAddress.toBase58()
                 if (address.shouldCreateAccount) {
                     Timber.tag("Address").d("Account should be created: $accountAddress")
-                    CheckAddressResult.NewAccountNeeded(feePayerToken)
+                    CheckAddressResult.NewAccountNeeded
                 } else {
                     Timber.tag("Address").d("Account exists: $accountAddress")
                     CheckAddressResult.AccountExists

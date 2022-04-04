@@ -6,8 +6,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
@@ -18,6 +18,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.model.AddressValidation
+import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
@@ -285,7 +286,8 @@ class SendPresenter(
         launch {
             try {
                 sendInteractor.setFeePayerToken(feePayerToken)
-                calculateFeeRelayerFee(feePayerToken)
+                val fee = calculateFeeRelayerFee()
+                showFeeDetails(fee, feePayerToken)
             } catch (e: Throwable) {
                 Timber.e(e, "Error updating fee payer token")
             }
@@ -377,12 +379,21 @@ class SendPresenter(
 
     private suspend fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
         when (checkAddressResult) {
-            is CheckAddressResult.NewAccountNeeded ->
-                calculateFeeRelayerFee(checkAddressResult.feePayerToken)
-            is CheckAddressResult.AccountExists,
-            is CheckAddressResult.InvalidAddress -> {
-                calculateTotal(null)
-                view?.showAccountFeeView(null)
+            is CheckAddressResult.NewAccountNeeded -> {
+                val token = token ?: return
+                var fee = calculateFeeRelayerFee()
+
+                if (!sendInteractor.hasFeePayerEnoughFundsToPayFee(fee) && sendInteractor.getFeePayerToken().isSOL) {
+                    sendInteractor.switchFeePayerToNonSol(token)
+                }
+
+                // recalculate fee after fee payer switch
+                fee = calculateFeeRelayerFee()
+                showFeeDetails(fee, sendInteractor.getFeePayerToken())
+            }
+            is CheckAddressResult.AccountExists, is CheckAddressResult.InvalidAddress -> {
+                calculateTotal(sendFee = null)
+                view?.showAccountFeeView(fee = null)
             }
         }
     }
@@ -499,7 +510,7 @@ class SendPresenter(
         view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
         view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_READABLE_SYMBOL)
 
-        updateButtonText(token)
+        updateButtonText(token, sendFee = null)
         setButtonEnabled(usdAmount, token.totalInUsd ?: BigDecimal.ZERO)
     }
 
@@ -512,7 +523,7 @@ class SendPresenter(
         view?.showUsdAroundValue(usdAround)
         view?.showAvailableValue(total, token.tokenSymbol)
 
-        updateButtonText(token)
+        updateButtonText(token, sendFee = null)
         setButtonEnabled(tokenAmount, total)
     }
 
@@ -549,31 +560,41 @@ class SendPresenter(
     /*
     * Assume this to be called only if associated account address creation needed
     * */
-    private suspend fun calculateFeeRelayerFee(feePayer: Token.Active) {
+    private suspend fun calculateFeeRelayerFee(): FeeRelayerSendFee? {
         val source = token ?: throw IllegalStateException("Source token is null")
         val receiver = target?.address
 
-        val fees = sendInteractor.calculateFeesForFeeRelayer(
-            token = source,
-            receiver = receiver,
+        return sendInteractor.calculateFeesForFeeRelayer(
+            sourceToken = source,
+            receiverAddress = receiver,
             networkType = networkType
         )
+    }
+
+    private fun showFeeDetails(fees: FeeRelayerSendFee?, feePayerToken: Token.Active) {
+        val source = token ?: throw IllegalStateException("Source token is null")
 
         if (fees == null) {
-            view?.showAccountFeeView(null)
+            view?.showAccountFeeView(fee = null)
             return
         }
 
-        val feeAmount = if (!feePayer.isSOL && fees.feeInPayingToken != null) {
-            fees.feeInPayingToken.fromLamports(feePayer.decimals).scaleMedium()
+        val feeAmount = if (!feePayerToken.isSOL && fees.payingTokenFee != null) {
+            fees.payingTokenFee
         } else {
-            fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
+            fees.solFee
         }
+            .amount
+            .fromLamports(feePayerToken.decimals)
+            .scaleMedium()
 
-        fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
-        view?.showAccountFeeView(fee)
+        fee = SendFee.SolanaFee(feeAmount, feePayerToken, source.tokenSymbol)
+
+        view?.showAccountFeeView(fee = fee)
 
         calculateTotal(fee)
+
+        updateButtonText(source, fees)
     }
 
     private suspend fun searchByUsername(username: String) {
@@ -615,10 +636,19 @@ class SendPresenter(
         setTargetResult(first)
     }
 
-    private fun updateButtonText(source: Token.Active) {
+    private fun updateButtonText(source: Token.Active, sendFee: FeeRelayerSendFee?) {
         val decimalAmount = inputAmount.toBigDecimalOrZero()
         val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
         val address = target?.address
+
+        if (sendFee != null) {
+            val hasEnoughFundsToPayFee = sendInteractor.hasFeePayerEnoughFundsToPayFee(sendFee)
+            if (!hasEnoughFundsToPayFee) {
+                setButtonEnabled(decimalAmount, source.total, sendFee)
+                view?.showButtonText(R.string.swap_insufficient_balance)
+                return
+            }
+        }
 
         when {
             isMoreThanBalance ->
@@ -634,12 +664,15 @@ class SendPresenter(
         }
     }
 
-    private fun setButtonEnabled(amount: BigDecimal, total: BigDecimal) {
+    private fun setButtonEnabled(amount: BigDecimal, total: BigDecimal, fees: FeeRelayerSendFee? = null) {
         val isMoreThanBalance = amount.isMoreThan(total)
         val isMaxAmount = amount == total
         val isNotZero = !amount.isZero()
         val isValidAddress = isAddressValid(target?.address)
-        val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
+        val isEnabled = isNotZero &&
+            !isMoreThanBalance &&
+            isValidAddress &&
+            fees?.let { sendInteractor.hasFeePayerEnoughFundsToPayFee(it) } ?: true
 
         val availableColor = when {
             isMoreThanBalance -> R.color.systemErrorMain

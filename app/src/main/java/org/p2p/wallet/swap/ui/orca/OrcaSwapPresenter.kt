@@ -402,10 +402,19 @@ class OrcaSwapPresenter(
             view?.showTotal(null)
             return
         }
-        val swapFee = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
+        var swapFee = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
             sourceToken = source,
             destination = destination
         )
+
+        val feePayerUpdateResult = swapInteractor.updateFeePayerToken(swapFee.totalInLamports, sourceToken)
+        if (feePayerUpdateResult.isUpdated) {
+            // recalcuale fee with new fee payer
+            swapFee = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
+                sourceToken = source,
+                destination = destination
+            )
+        }
 
         val hasEnoughMoneyToPayFee = swapInteractor.feePayerHasEnoughBalance(swapFee.totalInLamports)
 

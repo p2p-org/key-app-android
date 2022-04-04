@@ -12,6 +12,10 @@ data class AmountInLamports(val amount: BigInteger) {
     }
 }
 
+fun AmountInLamports?.orZeroLamports(): AmountInLamports {
+    return AmountInLamports(BigInteger.ZERO)
+}
+
 fun BigDecimal.toLamportsValue(decimals: Int): AmountInLamports {
     return AmountInLamports(this, decimals)
 }

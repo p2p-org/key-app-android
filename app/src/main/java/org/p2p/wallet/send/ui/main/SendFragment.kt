@@ -19,8 +19,8 @@ import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
@@ -348,7 +348,6 @@ class SendFragment :
     }
 
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
-
         addFragment(
             target = SelectTokenFragment.create(feePayerTokens, KEY_REQUEST_SEND, EXTRA_FEE_PAYER),
             enter = R.anim.slide_up,
@@ -463,9 +462,11 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun updateAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
-        setTextColor(getColor(availableColor))
-        setTextDrawableColor(availableColor)
+    override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
+        with(binding.availableTextView) {
+            setTextColor(getColor(availableColor))
+            setTextDrawableColor(availableColor)
+        }
     }
 
     @SuppressLint("SetTextI18n")
