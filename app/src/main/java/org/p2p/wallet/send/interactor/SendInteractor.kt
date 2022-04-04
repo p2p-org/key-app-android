@@ -168,7 +168,9 @@ class SendInteractor(
             feeRelayerInteractor.topUpAndRelayTransaction(
                 preparedTransactions = listOf(preparedTransaction),
                 payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
-            ).firstOrNull().orEmpty()
+            )
+            .firstOrNull()
+            .orEmpty()
         }
     }
 
