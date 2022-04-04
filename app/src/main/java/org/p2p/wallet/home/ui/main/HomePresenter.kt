@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
 private val TOKENS_VALID_FOR_BUY = setOf("SOL", "USDC")
-private const val BALANCE_CURRENCY = "USD"
 
 class HomePresenter(
     private val appFeatureFlags: AppFeatureFlags,
@@ -80,7 +79,7 @@ class HomePresenter(
         IntercomService.signIn(tokenKeyProvider.publicKey)
 
         environmentManager.addEnvironmentListener(this::class) {
-            refreshTokenAndPrices()
+            refreshTokens()
         }
     }
 
@@ -114,25 +113,16 @@ class HomePresenter(
         }
     }
 
-    override fun refreshTokenAndPrices() {
+    override fun refreshTokens() {
         launch {
             view?.showRefreshing(isRefreshing = true)
 
-            runCatching { userInteractor.loadTokenPrices(BALANCE_CURRENCY) }
-                .onSuccess { Timber.d("refreshing prices is success") }
-                .onFailure { onTokenPricesLoadFailure(it) }
-                .getOrNull()
-                ?.runCatching { userInteractor.loadUserTokensAndUpdateLocal() }
-                ?.onSuccess { Timber.d("refreshing tokens is success") }
-                ?.onFailure { handleUserTokensUpdateFailure(it) }
+            runCatching { userInteractor.loadUserTokensAndUpdateLocal() }
+                .onSuccess { Timber.d("refreshing tokens is success") }
+                .onFailure { handleUserTokensUpdateFailure(it) }
 
             view?.showRefreshing(isRefreshing = false)
         }
-    }
-
-    private fun onTokenPricesLoadFailure(error: Throwable) {
-        Timber.e(error, "Error loading token prices")
-        view?.showErrorSnackBar(error.message ?: error.localizedMessage)
     }
 
     private fun handleUserTokensUpdateFailure(error: Throwable) {

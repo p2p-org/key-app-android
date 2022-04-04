@@ -70,7 +70,7 @@ class UserInteractor(
     }
 
     suspend fun loadUserTokensAndUpdateLocal() {
-        val newTokens = userRepository.loadTokens(tokenKeyProvider.publicKey)
+        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey)
         val cachedTokens = mainLocalRepository.getUserTokens()
 
         updateLocalTokens(cachedTokens, newTokens)
