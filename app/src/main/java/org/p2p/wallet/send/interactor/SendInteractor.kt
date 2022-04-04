@@ -30,6 +30,7 @@ import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
 
+private const val BITCOIN_FEE_LAMPORTS = 20_000L
 class SendInteractor(
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
@@ -77,7 +78,7 @@ class SendInteractor(
         return when (networkType) {
             NetworkType.BITCOIN -> {
                 FeeRelayerSendFee(
-                    solFee = AmountInLamports(BigInteger.valueOf(20000L)),
+                    solFee = AmountInLamports(BigInteger.valueOf(BITCOIN_FEE_LAMPORTS)),
                     payingTokenFee = null
                 )
             }

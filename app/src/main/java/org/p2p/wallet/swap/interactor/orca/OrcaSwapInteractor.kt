@@ -217,17 +217,24 @@ class OrcaSwapInteractor(
         }
     }
 
+    /**
+     * if user doesn't have enough non-sol source tokens to pay fee
+     * check if user has SOL tokens to pay instead
+     */
     private suspend fun canUserPayFeeWithSol(totalSwapFee: AmountInLamports): Boolean {
-        // если у пользователя не хватает этих же токенов для полной оплаты fee
-        // пробуем оплатить через SOL
         val userSolToken = userInteractor.getUserTokens().find(Token.Active::isSOL) ?: return false
         val userSolTokenAmount = userSolToken.total.toLamportsValue(userSolToken.decimals)
 
         return userSolTokenAmount >= totalSwapFee
     }
 
-    // Get fees from current context
-    // - Returns: transactions fees (fees for signatures), liquidity provider fees (fees in intermediary token?, fees in destination token)
+    //
+    // - Returns:
+    /**
+     * Get fees from current context
+     * @return transactions fees (fees for signatures),
+     * @return liquidity provider fees (fees in intermediary token?, fees in destination token)
+     */
     suspend fun getFees(
         myWalletsMints: List<String>,
         fromWalletPubkey: String,
