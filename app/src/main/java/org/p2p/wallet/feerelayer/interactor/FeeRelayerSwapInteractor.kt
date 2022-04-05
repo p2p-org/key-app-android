@@ -190,7 +190,9 @@ class FeeRelayerSwapInteractor(
                 userAuthorityAddress
             )
             instructions += initializeAccountInstruction
-            additionalPaybackFee += minimumTokenAccountBalance
+            if (!sourceToken.isSOL) {
+                additionalPaybackFee += minimumTokenAccountBalance
+            }
             userSourceTokenAccountAddress = sourceWSOLNewAccount.publicKey
         }
 
