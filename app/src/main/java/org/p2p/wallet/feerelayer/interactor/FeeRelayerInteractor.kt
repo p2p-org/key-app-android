@@ -56,7 +56,7 @@ class FeeRelayerInteractor(
     * */
     suspend fun load() = withContext(Dispatchers.IO) {
         feeRelayerAccountInteractor.getRelayInfo()
-        feeRelayerAccountInteractor.getUserRelayAccount(reuseCache = false)
+        feeRelayerAccountInteractor.getUserRelayAccount(useCache = false)
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
     }
 
