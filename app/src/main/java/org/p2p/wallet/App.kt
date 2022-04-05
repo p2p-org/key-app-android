@@ -122,9 +122,11 @@ class App : Application() {
             setCustomKey(BuildConfig.TASK_NUMBER, "")
 
             val currentUserPublicKey = kotlin.runCatching { tokenKeyProvider.publicKey }
-            setUserId(
-                CrashLoggingService.UserId(currentUserPublicKey.getOrDefault(""))
-            )
+            setUserId(CrashLoggingService.UserId(currentUserPublicKey.getOrDefault("")))
+
+            tokenKeyProvider.registerListener { newUserPublicKey ->
+                setUserId(CrashLoggingService.UserId(newUserPublicKey))
+            }
         }
     }
 }
