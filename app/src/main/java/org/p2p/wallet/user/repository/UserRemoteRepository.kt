@@ -46,23 +46,27 @@ class UserRemoteRepository(
             }
 
     /**
-     * Load user tokens and their prices
+     * Load user tokens
+     * @param fetchPrices if true then fetch prices as well
      */
-    override suspend fun loadUserTokens(publicKey: String): List<Token.Active> = withContext(dispatchers.io) {
-        val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
+    override suspend fun loadUserTokens(publicKey: String, fetchPrices: Boolean): List<Token.Active> =
+        withContext(dispatchers.io) {
+            val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
-        // Get token symbols from user accounts plus SOL
-        val tokenSymbols = accounts.mapNotNull {
-            userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
-        } + SOL_SYMBOL
+            // Get token symbols from user accounts plus SOL
+            val tokenSymbols = accounts.mapNotNull {
+                userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
+            } + SOL_SYMBOL
 
-        // Load and save user tokens prices
-        val prices = loadTokensPrices(tokenSymbols.toSet(), BALANCE_CURRENCY)
-        userLocalRepository.setTokenPrices(prices)
+            // Load and save user tokens prices
+            if (fetchPrices) {
+                val prices = loadTokensPrices(tokenSymbols.toSet(), BALANCE_CURRENCY)
+                userLocalRepository.setTokenPrices(prices)
+            }
 
-        // Map accounts to List<Token.Active>
-        mapAccountsToTokens(publicKey, accounts)
-    }
+            // Map accounts to List<Token.Active>
+            mapAccountsToTokens(publicKey, accounts)
+        }
 
     private suspend fun loadTokensPrices(tokens: Set<String>, targetCurrency: String): List<TokenPrice> {
         val prices = mutableListOf<TokenPrice>()

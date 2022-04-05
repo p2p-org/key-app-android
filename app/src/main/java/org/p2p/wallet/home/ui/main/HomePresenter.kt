@@ -117,7 +117,7 @@ class HomePresenter(
         launch {
             view?.showRefreshing(isRefreshing = true)
 
-            runCatching { userInteractor.loadUserTokensAndUpdateLocal() }
+            runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }
                 .onSuccess { Timber.d("refreshing tokens is success") }
                 .onFailure { handleUserTokensUpdateFailure(it) }
 
@@ -195,7 +195,7 @@ class HomePresenter(
             view?.showRefreshing(isRefreshing = true)
             // We are waiting when tokenlist.json is being parsed and saved into the memory
             delay(1000L)
-            kotlin.runCatching { userInteractor.loadUserTokensAndUpdateLocal() }
+            kotlin.runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }
                 .onSuccess {
                     Timber.d("Successfully initial loaded tokens")
                 }
@@ -230,7 +230,7 @@ class HomePresenter(
     private suspend fun loadTokensOnPolling() {
         val isPollingEnabled = appFeatureFlags.isPollingEnabled
         if (isPollingEnabled) {
-            userInteractor.loadUserTokensAndUpdateLocal()
+            userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = false)
             Timber.d("Successfully auto-updated loaded tokens")
         } else {
             Timber.d("Skipping tokens auto-update")

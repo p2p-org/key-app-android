@@ -5,5 +5,5 @@ import org.p2p.wallet.user.model.TokenData
 
 interface UserRepository {
     suspend fun loadAllTokens(): List<TokenData>
-    suspend fun loadUserTokens(publicKey: String): List<Token.Active>
+    suspend fun loadUserTokens(publicKey: String, fetchPrices: Boolean): List<Token.Active>
 }

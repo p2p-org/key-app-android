@@ -69,8 +69,8 @@ class UserInteractor(
         putBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, visible)
     }
 
-    suspend fun loadUserTokensAndUpdateLocal() {
-        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey)
+    suspend fun loadUserTokensAndUpdateLocal(fetchPrices: Boolean) {
+        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey, fetchPrices)
         val cachedTokens = mainLocalRepository.getUserTokens()
 
         updateLocalTokens(cachedTokens, newTokens)
