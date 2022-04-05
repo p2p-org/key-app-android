@@ -505,18 +505,17 @@ class FeeRelayerSwapInteractor(
         accountCreationFee: BigInteger,
         lamportsPerSignature: BigInteger
     ): PreparedTransaction {
-        val transaction = Transaction()
-        transaction.addInstructions(instructions)
-        transaction.recentBlockHash = blockhash
-        transaction.feePayer = feePayerAddress
-
+        val transaction = Transaction().apply {
+            addInstructions(instructions)
+            recentBlockHash = blockhash
+            feePayer = feePayerAddress
+            sign(signers)
+        }
         // calculate fee first
         val expectedFee = FeeAmount(
             transaction = transaction.calculateTransactionFee(lamportsPerSignature),
             accountBalances = accountCreationFee
         )
-
-        transaction.sign(signers)
 
         return PreparedTransaction(transaction, signers, expectedFee)
     }
