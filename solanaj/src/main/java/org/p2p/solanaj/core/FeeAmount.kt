@@ -9,4 +9,6 @@ data class FeeAmount(
 
     val total: BigInteger
         get() = transaction + accountBalances
+
+    fun copy(): FeeAmount = FeeAmount(transaction, accountBalances)
 }

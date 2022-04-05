@@ -17,6 +17,7 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.retryRequest
 import java.math.BigInteger
 
@@ -105,7 +106,7 @@ class FeeRelayerInteractor(
         if (preparedTransactions.isEmpty()) throw IllegalStateException("Transactions cannot be empty!")
         val transactionId = if (preparedTransactions.size > 1) {
             relayTransaction(
-                preparedTransaction = preparedTransactions[0]
+                preparedTransaction = preparedTransactions.first()
             )
 
             relayTransaction(
@@ -113,7 +114,7 @@ class FeeRelayerInteractor(
             )
         } else {
             relayTransaction(
-                preparedTransaction = preparedTransactions[0]
+                preparedTransaction = preparedTransactions.first()
             )
         }
 
@@ -147,7 +148,7 @@ class FeeRelayerInteractor(
             }
 
             // if not, make sure that relayAccountBalance is greater or equal to expected fee
-            (relayAccount.balance ?: BigInteger.ZERO) >= expectedFee.total -> {
+            relayAccount.balance.orZero() >= expectedFee.total -> {
                 // skip topup
                 return null
             }

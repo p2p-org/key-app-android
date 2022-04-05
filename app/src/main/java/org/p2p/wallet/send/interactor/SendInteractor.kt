@@ -169,8 +169,8 @@ class SendInteractor(
                 preparedTransactions = listOf(preparedTransaction),
                 payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
             )
-            .firstOrNull()
-            .orEmpty()
+                .firstOrNull()
+                .orEmpty()
         }
     }
 

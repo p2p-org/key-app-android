@@ -137,7 +137,7 @@ class FeeRelayerTopUpInteractor(
     ): FeeAmount {
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val neededAmount = expectedFee
+        val neededAmount = expectedFee.copy()
 
         // expected fees
         val expectedTopUpNetworkFee = BigInteger.valueOf(2L) * info.lamportsPerSignature
@@ -170,7 +170,7 @@ class FeeRelayerTopUpInteractor(
 
         // check if relay account current balance can cover part of needed amount
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-        val neededAmountWithoutCheckingRelayAccount = neededAmount
+        val neededAmountWithoutCheckingRelayAccount = neededAmount.copy()
 
         if (!relayAccount.isCreated) {
             if (neededAmount.accountBalances > BigInteger.ZERO) {
