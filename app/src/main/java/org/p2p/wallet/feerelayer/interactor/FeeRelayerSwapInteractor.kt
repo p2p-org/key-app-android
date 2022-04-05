@@ -190,6 +190,7 @@ class FeeRelayerSwapInteractor(
                 userAuthorityAddress
             )
             instructions += initializeAccountInstruction
+            // TODO: refactor this class. This hack is to prevent additional fee payment
             if (!sourceToken.isSOL || needsCreateDestinationTokenAccount) {
                 additionalPaybackFee += minimumTokenAccountBalance
             }

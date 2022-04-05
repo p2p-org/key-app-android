@@ -217,7 +217,7 @@ class FeeRelayerInteractor(
         // transfer sol back to feerelayer's feePayer
         val owner = Account(tokenKeyProvider.secretKey)
         val transaction = preparedTransaction.transaction
-        if (payingFeeToken.isSOL) {
+        if (payingFeeToken.isSOL && paybackFee.isNotZero()) {
             if (relayAccount.balance.orZero() < paybackFee) {
                 val instruction = SystemProgram.transfer(
                     fromPublicKey = owner.publicKey,
