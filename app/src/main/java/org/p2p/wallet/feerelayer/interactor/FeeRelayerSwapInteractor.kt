@@ -27,6 +27,8 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
+private const val TWO_TRANSACTIONS = 2L
+
 class FeeRelayerSwapInteractor(
     private val rpcRepository: RpcBlockhashRepository,
     private val feeRelayerInstructionsInteractor: FeeRelayerInstructionsInteractor,
@@ -132,7 +134,7 @@ class FeeRelayerSwapInteractor(
 
         // in transitive swap, there will be situation when swapping from SOL -> SPL that needs spliting transaction to 2 transactions
         if (swapPools?.size == 2 && sourceTokenMint == WRAPPED_SOL_MINT && destinationAddress == null) {
-            expectedFee.transaction += lamportsPerSignature * BigInteger.valueOf(2L)
+            expectedFee.transaction += lamportsPerSignature * TWO_TRANSACTIONS.toBigInteger()
         }
 
         return expectedFee
