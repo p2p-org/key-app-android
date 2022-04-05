@@ -190,7 +190,7 @@ class FeeRelayerSwapInteractor(
                 userAuthorityAddress
             )
             instructions += initializeAccountInstruction
-            if (!sourceToken.isSOL) {
+            if (!sourceToken.isSOL || needsCreateDestinationTokenAccount) {
                 additionalPaybackFee += minimumTokenAccountBalance
             }
             userSourceTokenAccountAddress = sourceWSOLNewAccount.publicKey
@@ -416,8 +416,10 @@ class FeeRelayerSwapInteractor(
                 toMint = WRAPPED_SOL_MINT
             )
 
-            val topUpAmount =
-                feeRelayerTopUpInteractor.calculateNeededTopUpAmount(swappingFee, payingFeeToken.mint).total
+            val topUpAmount = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(
+                swappingFee,
+                payingFeeToken.mint
+            ).total
 
             val expectedFee = feeRelayerTopUpInteractor.calculateExpectedFeeForTopUp(
                 relayAccount = relayAccount,
