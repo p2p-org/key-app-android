@@ -2,6 +2,7 @@ package org.p2p.wallet.feerelayer.interactor
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.wallet.feerelayer.model.TokenInfo
@@ -180,17 +181,40 @@ class FeeRelayerInteractor(
     }
 
     private suspend fun relayTransaction(
-        preparedTransaction: PreparedTransaction,
+        preparedTransaction: PreparedTransaction
     ): List<String> {
+        val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = info.feePayerAddress
+        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
         // verify fee payer
         if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
             throw IllegalStateException("Invalid fee payer")
         }
 
+        // Calculate the fee to send back to feePayer
+        // Account creation fee (accountBalances) is a must-pay-back fee
+        var paybackFee = preparedTransaction.expectedFee.accountBalances
+
+        // The transaction fee, on the other hand, is only be paid if user used more than number of free transaction fee
+        if (!freeTransactionFeeLimit.isFreeTransactionFeeAvailable(preparedTransaction.expectedFee.transaction)) {
+            paybackFee += preparedTransaction.expectedFee.transaction
+        }
+
+        // transfer sol back to feerelayer's feePayer
+        val owner = Account(tokenKeyProvider.secretKey)
         val transaction = preparedTransaction.transaction
+        if (paybackFee > BigInteger.ZERO) {
+            val createRelayTransferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
+                programId = feeRelayerProgramId,
+                userAuthority = owner.publicKey,
+                userRelayAccount = feeRelayerAccountInteractor.getUserRelayAddress(owner.publicKey),
+                recipient = feePayer,
+                amount = paybackFee
+            )
+            transaction.addInstruction(createRelayTransferSolInstruction)
+        }
 
         // resign transaction
         transaction.sign(preparedTransaction.signers)
