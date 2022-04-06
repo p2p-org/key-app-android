@@ -116,7 +116,7 @@ class FeeRelayerInteractor(
             relayTransaction(
                 preparedTransaction = preparedTransactions[1],
                 payingFeeToken = payingFeeToken,
-                additionalPaybackFee = additionalPaybackFee
+                additionalPaybackFee = BigInteger.ZERO
             )
         } else {
             relayTransaction(
