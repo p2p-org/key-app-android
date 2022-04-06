@@ -5,6 +5,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.crashlytics.CrashLoggingService
+import org.p2p.wallet.common.crashlytics.impl.GoogleFirebaseCrashlytics
 import org.p2p.wallet.common.di.AppScope
 
 object AppModule {
@@ -12,5 +14,7 @@ object AppModule {
         single { AppScope() }
         single { AppFeatureFlags(get()) }
         single { AppRestarter { restartAction.invoke() } } bind AppRestarter::class
+
+        single { GoogleFirebaseCrashlytics() } bind CrashLoggingService::class
     }
 }
