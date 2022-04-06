@@ -15,21 +15,20 @@ import org.p2p.wallet.infrastructure.network.data.ServerException
 import timber.log.Timber
 import java.io.IOException
 
-// todo: Update validation
-private const val GSON_KEY = "method"
-private const val GSON_VALUE = "getConfirmedTransaction"
-
 open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
 
-    private val TAG = "RpcInterceptor"
-
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request().newBuilder().header("Content-Type", "application/json").build()
+        val request = chain.request()
+            .newBuilder()
+            .header("Content-Type", "application/json")
+            .build()
+
         val response = chain.proceed(request)
-        val responseString = response.body?.string().orEmpty()
-        Timber.tag(TAG).d(responseString)
-        return if (response.isSuccessful) {
-            handleResponse(response, responseString)
+        val responseBody = response.body
+        val responseString = responseBody?.string().orEmpty()
+
+        if (response.isSuccessful) {
+            return handleResponse(response, responseString)
         } else {
             throw extractGeneralException(responseString)
         }
@@ -99,6 +98,7 @@ open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
         val serverError = gson.fromJson(bodyString, ServerError::class.java)
 
         val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
+
         ServerException(
             errorCode = serverError.error.code,
             fullMessage = fullMessage,

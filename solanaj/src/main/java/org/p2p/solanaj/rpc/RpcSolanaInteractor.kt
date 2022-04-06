@@ -19,8 +19,9 @@ import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.util.Arrays
 
-const val GatewayRegistryStateKey = "GatewayRegistryState"
-const val GatewayStateKey = "GatewayStateV0.1.4"
+private const val GatewayRegistryStateKey = "GatewayRegistryState"
+private const val GatewayStateKey = "GatewayStateV0.1.4"
+
 class RpcSolanaInteractor(
     private val rpcSolanaRepository: RpcSolanaRepository,
     private val rpcEnvironment: RpcEnvironment,
@@ -41,7 +42,7 @@ class RpcSolanaInteractor(
         }
     }
 
-    private fun resolveTokenGatewayContract(): PublicKey {
+    fun resolveTokenGatewayContract(): PublicKey {
         if (gatewayRegistryData == null && gatewayRegistryData?.gateways == null) {
             throw IllegalStateException("Chain not initialized")
         }
@@ -52,7 +53,7 @@ class RpcSolanaInteractor(
             ?: throw IllegalStateException("Gateway not found at index $index")
     }
 
-    private fun getSPLTokenPubkey(): PublicKey {
+    fun getSPLTokenPubkey(): PublicKey {
         val program = resolveTokenGatewayContract()
         val sHash = Base58.encode(Hash.generateSHash())
         val mint = program.let { PublicKey.findProgramAddress(listOf(Base58.decode(sHash)), it) }
@@ -134,9 +135,7 @@ class RpcSolanaInteractor(
             addInstructions(listOf(mintInstruction, secpInstruction))
         }
 
-        val signature = rpcSolanaRepository.sendTransaction(transaction, signer)
-
-        return signature
+        return rpcSolanaRepository.sendTransaction(transaction, signer)
     }
 
     suspend fun findMintByDepositDetails(
@@ -145,7 +144,6 @@ class RpcSolanaInteractor(
         to: ByteArray,
         amount: String
     ): String {
-
         val program = resolveTokenGatewayContract()
         val sHash = Hash.generateSHash()
         val publicKey = PublicKey(to).asByteArray()
@@ -224,7 +222,7 @@ class RpcSolanaInteractor(
         return burnDetails
     }
 
-    private fun buildRenVMMessage(
+    fun buildRenVMMessage(
         pHash: ByteArray,
         amount: String,
         token: ByteArray,

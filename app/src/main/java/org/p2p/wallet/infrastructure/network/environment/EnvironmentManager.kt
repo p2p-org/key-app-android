@@ -68,11 +68,11 @@ class EnvironmentManager(
         return parse(url)
     }
 
-    fun loadRpcEnvironment(): RpcEnvironment =
-        when (loadEnvironment()) {
-            Environment.DEVNET -> RpcEnvironment.DEVNET
-            else -> RpcEnvironment.MAINNET
-        }
+    fun loadRpcEnvironment(): RpcEnvironment = if (loadEnvironment() == Environment.DEVNET) {
+        RpcEnvironment.DEVNET
+    } else {
+        RpcEnvironment.MAINNET
+    }
 
     fun saveEnvironment(newEnvironment: Environment) {
         sharedPreferences.edit { putString(KEY_BASE_URL, newEnvironment.endpoint) }

@@ -49,10 +49,7 @@ class RpcSolanaRemoteRepository(
         mintLogAccount: PublicKey,
         limit: Int
     ): List<SignatureInformationResponse> {
-        val params = arrayListOf<Any>().apply {
-            add(mintLogAccount.toString())
-            add(ConfigObjects.ConfirmedSignFAddr2(limit))
-        }
+        val params = arrayListOf(mintLogAccount.toString(), ConfigObjects.ConfirmedSignFAddr2(limit))
         val rawResult = api.getConfirmedSignatureForAddress(
             RpcRequest(method = "getConfirmedSignaturesForAddress2", params = params)
         ).result
@@ -107,10 +104,7 @@ class RpcSolanaRemoteRepository(
     }
 
     override suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo {
-        val params = arrayListOf<Any>().apply {
-            add(stateKey.toString())
-            add(RpcSendTransactionConfig())
-        }
+        val params = arrayListOf(stateKey.toString(), RpcSendTransactionConfig())
         return api.getAccountInfo(RpcRequest(method = "getAccountInfo", params = params)).result
     }
 }

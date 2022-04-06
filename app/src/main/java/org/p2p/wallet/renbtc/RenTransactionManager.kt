@@ -6,6 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
 import org.p2p.solanaj.rpc.Environment
@@ -48,7 +49,7 @@ class RenTransactionManager(
     private var queuedTransactions = mutableListOf<RenTransaction>()
 
     suspend fun initializeSession(existingSession: LockAndMint.Session?, signer: String): LockAndMint.Session {
-        lockAndMint = if (existingSession == null || !existingSession.isValid()) {
+        lockAndMint = if (existingSession == null || !existingSession.isValid) {
             val session = LockAndMint.Session(signer.toPublicKey())
             Timber.tag(REN_TAG).d("No existing session found, building new one")
             LockAndMint.buildSession(
@@ -76,14 +77,14 @@ class RenTransactionManager(
         return lockAndMint.getSession()
     }
 
-    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = scope.launch {
+    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = withContext(scope.coroutineContext) {
         if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
         Timber.tag(REN_TAG).d("Starting blockstream polling")
 
         val environment = environmentManager.loadEnvironment()
 
         /* Caching value, since it's being called multiple times inside the loop */
-        while (session.isValid()) {
+        while (session.isValid) {
             pollPaymentData(environment, session, secretKey)
             delay(SESSION_POLLING_DELAY)
         }

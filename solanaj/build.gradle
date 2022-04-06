@@ -38,8 +38,10 @@ android {
         viewBinding true
     }
     testOptions {
-        unitTests.returnDefaultValues = true
-        unitTests.includeAndroidResources = true
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+        }
         animationsDisabled = true
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
@@ -72,5 +74,12 @@ dependencies {
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation 'junit:junit:4.13.2'
     // https://github.com/robolectric/robolectric
-    testImplementation "org.robolectric:robolectric:4.6.1"
+    testImplementation "org.robolectric:robolectric:4.7.3"
+
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
+    def koin_version= "3.1.5"
+    testImplementation "io.insert-koin:koin-test:$koin_version"
+    testImplementation "io.insert-koin:koin-test-junit5:$koin_version"
+
 }

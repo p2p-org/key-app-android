@@ -20,8 +20,8 @@ class GatewayRegistryData(private val data: ByteArray) : AbstractData(data, GATE
     }
 
     val isInitialized: Boolean = readByte().toInt() != 0
-    private val owner: PublicKey = readPublicKey()
-    private val count: Int = readUint64().toInt()
+    val owner: PublicKey = readPublicKey()
+    val count: Int = readUint64().toInt()
     val selectors = mutableListOf<String>()
     val gateways = mutableListOf<PublicKey>()
 

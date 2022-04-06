@@ -63,7 +63,7 @@ class RenVMProvider(
         txId: ByteArray
     ): String {
         val mintTx = createMintTransaction(txId, txIndex, gHash, gPubKey, nHash, nonce, pHash, to, amount)
-        val mintTransactionHash = HashUtils.hashTransactionMint(mintTx, selector)
+        val mintTransactionHash = mintTx.hashTransactionMint(selector)
         val hash = Utils.toURLBase64(mintTransactionHash)
 
         submitTx(hash, mintTx, selector)
@@ -93,7 +93,7 @@ class RenVMProvider(
             txIndex = txIndex,
             txId = txId
         )
-        val mintTxHash = HashUtils.hashTransactionMint(mintTx, selector)
+        val mintTxHash = mintTx.hashTransactionMint(selector)
         return Utils.toURLBase64(mintTxHash)
     }
 
