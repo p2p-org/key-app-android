@@ -61,12 +61,11 @@ class RenTransactionManager(
         val fee = lockAndMint.estimateTransactionFee()
         Timber.tag(REN_TAG).d("Fee calculated: $fee")
 
-        val session = lockAndMint.session
-        return session
+        return lockAndMint.session
     }
 
-    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) {
-        if (!this::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
+    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = withContext(scope.coroutineContext) {
+        if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
         Timber.tag(REN_TAG).d("Starting blockstream polling")
 
         val environment = environmentManager.loadEnvironment()
@@ -101,22 +100,20 @@ class RenTransactionManager(
         environment: Environment,
         session: LockAndMint.Session,
         secretKey: ByteArray
-    ) {
-        scope.launch {
-            Timber.tag(REN_TAG).d("Checking payment data by gateway address")
-            try {
-                val data = renBTCRemoteRepository.getPaymentData(environment, session.gatewayAddress)
-                handlePaymentData(data, secretKey)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error checking payment data")
-            }
+    ) = scope.launch {
+        Timber.tag(REN_TAG).d("Checking payment data by gateway address")
+        try {
+            val data = renBTCRemoteRepository.getPaymentData(environment, session.gatewayAddress)
+            handlePaymentData(data, secretKey)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error checking payment data")
         }
     }
 
     private suspend fun handlePaymentData(
         data: List<RenBTCPayment>,
         secretKey: ByteArray
-    ) = withContext(Dispatchers.IO) {
+    ) = scope.launch {
         Timber.tag(REN_TAG).d("Payment data received: ${data.size}")
 
         /*
@@ -135,7 +132,7 @@ class RenTransactionManager(
 
         /* Making sure we have transactions that should be executed */
         val awaitingTransactions = queuedTransactions.filter { it.isAwaiting() }
-        if (awaitingTransactions.isEmpty()) return@withContext
+        if (awaitingTransactions.isEmpty()) return@launch
 
         val executorsSize = executors.size
         Timber.tag(REN_TAG).d("Starting filter executors for finished one. Size: $executorsSize")
@@ -151,7 +148,7 @@ class RenTransactionManager(
         /* Making sure there are no any active executors, checking new executors size */
         if (executors.isNotEmpty()) {
             Timber.tag(REN_TAG).d("Filter finished, there are still active executors exist, waiting")
-            return@withContext
+            return@launch
         }
 
         Timber.tag(REN_TAG).d("No active executors, adding new transaction executor")
@@ -165,7 +162,7 @@ class RenTransactionManager(
          * Each transaction is being executed in separate coroutine
          * */
         executors.forEach {
-            launch { it.execute() }
+            scope.launch { it.execute() }
         }
     }
 
