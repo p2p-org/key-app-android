@@ -1,6 +1,7 @@
 package org.p2p.wallet.infrastructure.network.feerelayer
 
 import org.p2p.wallet.utils.emptyString
+import timber.log.Timber
 import java.util.Locale
 
 object FeeRelayerErrorMapper {
@@ -31,6 +32,7 @@ object FeeRelayerErrorMapper {
             }
         }.toList()
         val currentLog = logs.findFirstValidLog(errorPrefixes)
+        Timber.tag(FeeRelayerError::class.java.name).e("Error:\n${logs.joinToString("\n")}")
 
         val codeRegex = Regex("$codePrefix-?\\d+")
         val feeRelayerCode = codeRegex.findAll(rawError)

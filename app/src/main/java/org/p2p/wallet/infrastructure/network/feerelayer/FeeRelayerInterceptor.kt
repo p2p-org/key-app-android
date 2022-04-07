@@ -26,12 +26,10 @@ class FeeRelayerInterceptor(
     private fun extractException(bodyString: String, code: Int): Throwable {
         try {
             val formattedBody = bodyString.replace("\\\"Program [^\\\"]+\\\"", "")
-            Timber.tag("FeeRelayerInterceptor").e("Error received. Code: $code, error body: $formattedBody")
-
             if (formattedBody.isEmpty()) {
                 return ServerException(
                     errorCode = ErrorCode.SERVER_ERROR,
-                    fullMessage = "No error body",
+                    fullMessage = "No error body with code: $code",
                     errorMessage = null
                 )
             }
