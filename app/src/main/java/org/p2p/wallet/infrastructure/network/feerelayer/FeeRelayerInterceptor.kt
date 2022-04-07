@@ -6,7 +6,6 @@ import okhttp3.Response
 import org.json.JSONObject
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import timber.log.Timber
 import java.io.IOException
 
 class FeeRelayerInterceptor(

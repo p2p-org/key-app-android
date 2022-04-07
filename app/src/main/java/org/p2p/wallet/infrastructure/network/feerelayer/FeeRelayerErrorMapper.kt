@@ -32,7 +32,7 @@ object FeeRelayerErrorMapper {
             }
         }.toList()
         val currentLog = logs.findFirstValidLog(errorPrefixes)
-        Timber.tag(FeeRelayerError::class.java.name).e("Error:\n${logs.joinToString("\n")}")
+        Timber.tag(FeeRelayerError::class.java.name).e("Error: $code\n${logs.joinToString("\n")}")
 
         val codeRegex = Regex("$codePrefix-?\\d+")
         val feeRelayerCode = codeRegex.findAll(rawError)
