@@ -206,8 +206,10 @@ class SendPresenter(
     }
 
     override fun send() {
-        val token = token ?: throw IllegalStateException("Token cannot be null!")
-        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
+        val token = token ?: error("Token cannot be null!")
+        val address = target?.address ?: error("Target address cannot be null!")
+
+        sendAnalytics.logSendStarted(networkType, tokenAmount, token, fee, usdAmount, Target(address))
 
         when (networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
@@ -216,8 +218,10 @@ class SendPresenter(
     }
 
     override fun sendOrConfirm() {
-        val token = token ?: throw IllegalStateException("Token cannot be null!")
-        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
+        val token = token ?: error("Token cannot be null!")
+        val address = target?.address ?: error("Target address cannot be null!")
+
+        sendAnalytics.logUserConfirmedSend(networkType, tokenAmount, token, fee, usdAmount, Target(address))
 
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
@@ -227,14 +231,10 @@ class SendPresenter(
                 amountUsd = usdAmount.toString(),
                 destination = address
             )
-            val sendNetworkType = if (networkType == NetworkType.SOLANA) {
-                SendAnalytics.SendNetwork.SOLANA
-            } else {
-                SendAnalytics.SendNetwork.BITCOIN
-            }
+
             // TODO resolve [sendMax, sendFree,sendUsername]
             sendAnalytics.logSendReviewing(
-                sendNetwork = sendNetworkType,
+                sendNetwork = networkType,
                 sendCurrency = token.tokenSymbol,
                 sendSum = tokenAmount,
                 sendUSD = usdAmount,
@@ -260,7 +260,7 @@ class SendPresenter(
         }
     }
 
-    override fun loadAvailableValue() {
+    override fun setMaxSourceAmountValue() {
         val token = token ?: return
 
         val totalAvailable = when (mode) {
@@ -398,9 +398,12 @@ class SendPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val amount = tokenAmount.toLamports(token.decimals)
-                val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
+                val amountLamports = tokenAmount.toLamports(token.decimals)
+                val transactionId = burnBtcInteractor.submitBurnTransaction(address, amountLamports)
+
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
+                sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount, Target(address))
+
                 val transaction = buildTransaction(transactionId)
                 view?.showTransactionDetails(transaction)
                 view?.showTransactionStatusMessage(tokenAmount, token.tokenSymbol, isSuccess = true)
