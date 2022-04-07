@@ -64,7 +64,7 @@ class RenTransactionManager(
         return lockAndMint.session
     }
 
-    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = withContext(scope.coroutineContext) {
+    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = scope.launch {
         if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
         Timber.tag(REN_TAG).d("Starting blockstream polling")
 
