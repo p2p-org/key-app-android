@@ -1,13 +1,7 @@
-## Jira Ticket (Mandatory)
+#### Ticket
 
-https://p2pvalidator.atlassian.net/browse/
+[PWN-XXXX](https://p2pvalidator.atlassian.net/browse/XXXX)
 
-## Description of Work (Mandatory)
+#### Description
 
-[ what work was done in this ticket ]
-
-## Screenshots (Optional)
-
-Screenshot #1 | Screenshot #2 | Screenshot #3
-:------------:|:-------------:|:------------:
-[Paste Pic 1] | [Paste Pic 2] | [Paste Pic 3]
+What was done
