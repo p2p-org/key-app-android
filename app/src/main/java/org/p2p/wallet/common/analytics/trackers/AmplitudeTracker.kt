@@ -2,19 +2,23 @@ package org.p2p.wallet.common.analytics.trackers
 
 import android.app.Application
 import com.amplitude.api.Amplitude
+import com.amplitude.api.AmplitudeClient
 import com.amplitude.api.Identify
 import org.json.JSONObject
 import org.p2p.wallet.BuildConfig
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+
+private const val MIN_TIME_BETWEEN_SESSIONS_MIN = 30L
 
 class AmplitudeTracker(app: Application) : AnalyticsTracker {
 
-    private val amplitude =
+    private val amplitude: AmplitudeClient =
         Amplitude.getInstance()
             .initialize(app, BuildConfig.amplitudeKey)
             .trackSessionEvents(true)
             .enableForegroundTracking(app)
-            .setMinTimeBetweenSessionsMillis((30 * 60 * 1000).toLong())
+            .setMinTimeBetweenSessionsMillis(TimeUnit.MINUTES.toMillis(MIN_TIME_BETWEEN_SESSIONS_MIN))
 
     override fun setUserProperty(key: String, value: String) {
         val userProperties = JSONObject()
@@ -34,6 +38,7 @@ class AmplitudeTracker(app: Application) : AnalyticsTracker {
         }
         try {
             amplitude.logEvent(event, JSONObject(params))
+            Timber.d("logEvent($event) event sent using Amplitude")
         } catch (e: NullPointerException) {
             Timber.w(e, "Unable to put key - value into json")
         }
