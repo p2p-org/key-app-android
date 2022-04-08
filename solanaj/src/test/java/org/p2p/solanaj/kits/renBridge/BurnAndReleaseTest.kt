@@ -1,12 +1,10 @@
 package org.p2p.solanaj.kits.renBridge
 
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.component.inject
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
+import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.robolectric.RobolectricTestRunner
 import java.math.BigInteger
@@ -15,14 +13,14 @@ import kotlin.test.assertEquals
 @RunWith(RobolectricTestRunner::class)
 class BurnAndReleaseTest : KoinTest {
 
-    private val renVmProvider: RenVMProvider by inject()
+    private val renVmRepository: RenVMRepository by inject()
     private val rpcSolanaInteractor: RpcSolanaInteractor by inject()
     private val state = LockAndMint.State()
 
     @Test
     fun getBurnStateTest() {
         val burnAndRelease = BurnAndRelease(
-            renVMProvider = renVmProvider,
+            renVMProvider = renVmRepository,
             rpcSolanaInteractor = rpcSolanaInteractor,
             state = state
         )

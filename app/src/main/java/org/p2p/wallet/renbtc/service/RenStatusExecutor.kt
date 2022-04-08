@@ -57,7 +57,7 @@ class RenStatusExecutor(
     }
 
     private suspend fun handleStatus(response: ResponseQueryTxMint, secretKey: ByteArray) {
-        Timber.tag(REN_TAG).d("Hande status response: $response")
+        Timber.tag(REN_TAG).d("Handle status response: $response")
         val status = response.txStatus
         val transactionId = "TransactionId: ${transaction.statuses.lastOrNull()?.transactionId}"
         Timber

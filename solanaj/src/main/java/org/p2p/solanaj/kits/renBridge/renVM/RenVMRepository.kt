@@ -17,7 +17,7 @@ const val MINT_TRANSACTION_INPUT =
     "aHQBEVgedhqiYDUtzYKdu1Qg1fc781PEV4D1gLsuzfpHNwH8yK2A2BuZK4uZoMC6" +
         "pp8o7GWQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1"
 
-class RenVMProvider(
+class RenVMRepository(
     private val rpcSolanaApi: RpcSolanaRepository
 ) {
 

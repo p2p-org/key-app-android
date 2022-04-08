@@ -3,7 +3,7 @@ package org.p2p.solanaj.kits.renBridge
 import org.bitcoinj.core.Base58
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
+import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.kits.renBridge.script.Script
 import org.p2p.solanaj.rpc.RpcEnvironment
@@ -15,7 +15,7 @@ import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 
 class LockAndMint(
-    private val renVMProvider: RenVMProvider,
+    private val renVMRepository: RenVMRepository,
     private val session: Session,
     private val solanaChain: RpcSolanaInteractor,
     private val state: State = State(),
@@ -23,18 +23,18 @@ class LockAndMint(
 
     companion object {
         fun buildSession(
-            renVMProvider: RenVMProvider,
+            renVMRepository: RenVMRepository,
             session: Session,
             solanaChain: RpcSolanaInteractor,
             state: State
-        ) = LockAndMint(renVMProvider, session, solanaChain, state)
+        ) = LockAndMint(renVMRepository, session, solanaChain, state)
 
         fun getSession(
-            renVMProvider: RenVMProvider,
+            renVMRepository: RenVMRepository,
             session: Session,
             solanaChain: RpcSolanaInteractor,
             state: State
-        ): LockAndMint = LockAndMint(renVMProvider, session, solanaChain, state)
+        ): LockAndMint = LockAndMint(renVMRepository, session, solanaChain, state)
     }
 
     suspend fun generateGatewayAddress(environment: RpcEnvironment): String {
@@ -46,7 +46,7 @@ class LockAndMint(
         val gHash = Hash.generateGHash(sendToHex, tokenGatewayContractHex, Hex.decode(session.nonce))
         state.gHash = gHash
 
-        val gPubKey = renVMProvider.selectPublicKey()
+        val gPubKey = renVMRepository.selectPublicKey()
         state.gPubKey = gPubKey
 
         val gatewayAddress =
@@ -62,8 +62,8 @@ class LockAndMint(
         val nHash: ByteArray = Hash.generateNHash(nonce, txId, txIndex)
         val pHash: ByteArray = Hash.generatePHash()
 
-        val txHash = renVMProvider.getTxHash(
-            selector = RenVMProvider.MINT_SELECTOR,
+        val txHash = renVMRepository.getTxHash(
+            selector = RenVMRepository.MINT_SELECTOR,
             gHash = state.gHash,
             gPubKey = state.gPubKey,
             nHash = nHash,
@@ -86,8 +86,8 @@ class LockAndMint(
         return state
     }
 
-    suspend fun submitMintTransaction(): String = renVMProvider.submit(
-        selector = RenVMProvider.MINT_SELECTOR,
+    suspend fun submitMintTransaction(): String = renVMRepository.submit(
+        selector = RenVMRepository.MINT_SELECTOR,
         gHash = state.gHash,
         gPubKey = state.gPubKey,
         nHash = state.nHash,
@@ -103,15 +103,15 @@ class LockAndMint(
         val destination =
             session.destinationAddress ?: throw IllegalStateException("Destination address cannot be null")
 
-        val responseQueryMint = renVMProvider.getQueryMint(state.txHash)
+        val responseQueryMint = renVMRepository.getQueryMint(state.txHash)
         return solanaChain.submitMint(destination, signer, responseQueryMint)
     }
 
     suspend fun lockAndMint(txHash: String): ResponseQueryTxMint =
-        renVMProvider.getQueryMint(txHash)
+        renVMRepository.getQueryMint(txHash)
 
     suspend fun estimateTransactionFee(): BigInteger {
-        val fee = renVMProvider.estimateTransactionFee()
+        val fee = renVMRepository.estimateTransactionFee()
         session.fee = fee
         return fee
     }

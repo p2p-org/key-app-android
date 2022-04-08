@@ -6,9 +6,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
-import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
+import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
@@ -32,7 +31,7 @@ private const val SESSION_POLLING_DELAY = 5000L
 class RenTransactionManager(
     private val renBTCRemoteRepository: RenRemoteRepository,
     private val environmentManager: EnvironmentManager,
-    private val renVMProvider: RenVMProvider,
+    private val renVMRepository: RenVMRepository,
     private val solanaChain: RpcSolanaInteractor
 ) {
 
@@ -53,7 +52,7 @@ class RenTransactionManager(
             val session = LockAndMint.Session(signer.toPublicKey())
             Timber.tag(REN_TAG).d("No existing session found, building new one")
             LockAndMint.buildSession(
-                renVMProvider = renVMProvider,
+                renVMRepository = renVMRepository,
                 session = session,
                 solanaChain = solanaChain,
                 state = LockAndMint.State()
@@ -61,7 +60,7 @@ class RenTransactionManager(
         } else {
             Timber.tag(REN_TAG).d("Active session found, fetching information")
             LockAndMint.getSession(
-                renVMProvider = renVMProvider,
+                renVMRepository = renVMRepository,
                 session = existingSession,
                 solanaChain = solanaChain,
                 state = LockAndMint.State()
@@ -77,16 +76,18 @@ class RenTransactionManager(
         return lockAndMint.getSession()
     }
 
-    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = withContext(scope.coroutineContext) {
-        if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
-        Timber.tag(REN_TAG).d("Starting blockstream polling")
+    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) {
+        scope.launch {
+            if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
+            Timber.tag(REN_TAG).d("Starting blockstream polling")
 
-        val environment = environmentManager.loadEnvironment()
+            val environment = environmentManager.loadEnvironment()
 
-        /* Caching value, since it's being called multiple times inside the loop */
-        while (session.isValid) {
-            pollPaymentData(environment, session, secretKey)
-            delay(SESSION_POLLING_DELAY)
+            /* Caching value, since it's being called multiple times inside the loop */
+            while (session.isValid) {
+                pollPaymentData(environment, session, secretKey)
+                delay(SESSION_POLLING_DELAY)
+            }
         }
     }
 
@@ -110,74 +111,71 @@ class RenTransactionManager(
         queuedTransactions.clear()
     }
 
-    private fun pollPaymentData(
-        environment: Environment,
-        session: LockAndMint.Session,
-        secretKey: ByteArray
-    ) = scope.launch {
-        Timber.tag(REN_TAG).d("Checking payment data by gateway address")
-        try {
-            val data = renBTCRemoteRepository.getPaymentData(environment, session.gatewayAddress)
-            Timber.tag(REN_TAG).d("Fetched data = $data")
-            handlePaymentData(data, secretKey)
-        } catch (e: Throwable) {
-            Timber.e(e, "Error checking payment data")
+    private fun pollPaymentData(environment: Environment, session: LockAndMint.Session, secretKey: ByteArray) {
+        scope.launch {
+            Timber.tag(REN_TAG).d("Checking payment data by gateway address")
+            try {
+                val data = renBTCRemoteRepository.getPaymentData(environment, session.gatewayAddress)
+                Timber.tag(REN_TAG).d("Fetched data = $data")
+                handlePaymentData(data, secretKey)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error checking payment data")
+            }
         }
     }
 
-    private suspend fun handlePaymentData(
-        data: List<RenBTCPayment>,
-        secretKey: ByteArray
-    ) = scope.launch {
-        Timber.tag(REN_TAG).d("Payment data received: ${data.size}")
+    private suspend fun handlePaymentData(data: List<RenBTCPayment>, secretKey: ByteArray) {
+        scope.launch {
+            Timber.tag(REN_TAG).d("Payment data received: ${data.size}")
 
-        /*
-        * Filtering for duplicated transactions
-        * */
-        data.forEach { payment ->
-            val alreadyExists = queuedTransactions.any { it.transactionId == payment.transactionHash }
-            Timber.tag(REN_TAG).d("Transaction ${payment.transactionHash} is added or queued, skipping")
-            if (alreadyExists) return@forEach
+            /*
+            * Filtering for duplicated transactions
+            * */
+            data.forEach { payment ->
+                val alreadyExists = queuedTransactions.any { it.transactionId == payment.transactionHash }
+                Timber.tag(REN_TAG).d("Transaction ${payment.transactionHash} is added or queued, skipping")
+                if (alreadyExists) return@forEach
 
-            RenTransaction(
-                transactionId = payment.transactionHash,
-                payment = payment
-            ).also { queuedTransactions.add(it) }
-        }
-
-        /* Making sure we have transactions that should be executed */
-        val awaitingTransactions = queuedTransactions.filter { it.isAwaiting() }
-        if (awaitingTransactions.isEmpty()) return@launch
-
-        val executorsSize = executors.size
-        Timber.tag(REN_TAG).d("Starting filter executors for finished one. Size: $executorsSize")
-        /* Removing active executors to add new executor for new transaction */
-        if (executorsSize != 0) {
-            executors.removeAll {
-                val isFinished = it.isFinished()
-                Timber.tag(REN_TAG).d("Transaction ${it.getTransactionHash()} finished: $isFinished")
-                isFinished
+                RenTransaction(
+                    transactionId = payment.transactionHash,
+                    payment = payment
+                ).also { queuedTransactions.add(it) }
             }
-        }
 
-        /* Making sure there are no any active executors, checking new executors size */
-        if (executors.isNotEmpty()) {
-            Timber.tag(REN_TAG).d("Filter finished, there are still active executors exist, waiting")
-            return@launch
-        }
+            /* Making sure we have transactions that should be executed */
+            val awaitingTransactions = queuedTransactions.filter { it.isAwaiting() }
+            if (awaitingTransactions.isEmpty()) return@launch
 
-        Timber.tag(REN_TAG).d("No active executors, adding new transaction executor")
-        /* executors list includes only active or new transactions */
-        queuedTransactions.forEach { transaction ->
-            executors.add(RenStatusExecutor(lockAndMint, transaction, secretKey))
-        }
+            val executorsSize = executors.size
+            Timber.tag(REN_TAG).d("Starting filter executors for finished one. Size: $executorsSize")
+            /* Removing active executors to add new executor for new transaction */
+            if (executorsSize != 0) {
+                executors.removeAll {
+                    val isFinished = it.isFinished()
+                    Timber.tag(REN_TAG).d("Transaction ${it.getTransactionHash()} finished: $isFinished")
+                    isFinished
+                }
+            }
 
-        Timber.tag(REN_TAG).d("Starting execution, executors new count: ${executors.size}")
-        /*
-         * Each transaction is being executed in separate coroutine
-         * */
-        executors.forEach {
-            launch { it.execute() }
+            /* Making sure there are no any active executors, checking new executors size */
+            if (executors.isNotEmpty()) {
+                Timber.tag(REN_TAG).d("Filter finished, there are still active executors exist, waiting")
+                return@launch
+            }
+
+            Timber.tag(REN_TAG).d("No active executors, adding new transaction executor")
+            /* executors list includes only active or new transactions */
+            queuedTransactions.forEach { transaction ->
+                executors.add(RenStatusExecutor(lockAndMint, transaction, secretKey))
+            }
+
+            Timber.tag(REN_TAG).d("Starting execution, executors new count: ${executors.size}")
+            /*
+             * Each transaction is being executed in separate coroutine
+             * */
+            executors.forEach {
+                launch { it.execute() }
+            }
         }
     }
 }

@@ -1,9 +1,10 @@
 package org.p2p.wallet.rpc
 
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.renBridge.renVM.RenVMProvider
+import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.common.di.AppScope
@@ -39,7 +40,7 @@ object RpcModule : InjectionModule {
     const val RPC_RETROFIT_QUALIFIER = "RPC_RETROFIT_QUALIFIER"
     const val RPC_SOLANA_RETROFIT_QUALIFIER = "RPC_SOLANA_RETROFIT_QUALIFIER"
 
-    override fun create() = module {
+    override fun create(): Module = module {
         single {
             val api = get<Retrofit>(named(RPC_RETROFIT_QUALIFIER)).create(RpcAccountApi::class.java)
             RpcAccountRemoteRepository(api)
@@ -80,7 +81,7 @@ object RpcModule : InjectionModule {
 
         factory { RpcSolanaInteractor(get(), get<EnvironmentManager>().loadRpcEnvironment(), get<AppScope>()) }
 
-        factory { RenVMProvider(get()) }
+        factory { RenVMRepository(get()) }
 
         single {
             val api = get<Retrofit>(named(RPC_SOLANA_RETROFIT_QUALIFIER)).create(RpcSolanaApi::class.java)
