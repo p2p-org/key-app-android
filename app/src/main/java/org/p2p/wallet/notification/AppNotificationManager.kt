@@ -10,81 +10,101 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import org.p2p.wallet.R
 import org.p2p.wallet.root.RootActivity
+import java.util.UUID
 
-private const val P2P_WALLET_CHANNEL_ID = "P2P_WALLET_CHANNEL_ID"
+private const val P2P_WALLET_NOTIFICATION_CHANNEL_ID = "P2P_WALLET_CHANNEL_ID"
+private const val P2P_WALLET_NOTIFICATION_CHANNEL_NAME = "P2P Wallet"
 
-class AppNotificationManager(
-    private val context: Context
-) {
+private const val NOTIFICATION_MANAGER_REQUEST_CODE = 1
 
+class AppNotificationManager(private val context: Context) {
     companion object {
         fun createNotificationChannels(context: Context) {
             val channels = getNotificationChannels()
             val notificationManager = NotificationManagerCompat.from(context)
-            for (channel in channels) {
-                notificationManager.createNotificationChannel(channel)
-            }
+            channels.forEach { channel -> notificationManager.createNotificationChannel(channel) }
         }
 
         @RequiresApi(Build.VERSION_CODES.O)
-        private fun getNotificationChannels() = listOf(
-            NotificationChannel(P2P_WALLET_CHANNEL_ID, "P2P Swap", NotificationManager.IMPORTANCE_DEFAULT)
+        private fun getNotificationChannels(): Set<NotificationChannel> = setOf(
+            NotificationChannel(
+                P2P_WALLET_NOTIFICATION_CHANNEL_ID,
+                P2P_WALLET_NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
         )
     }
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     fun showSwapTransactionNotification(data: SwapTransactionNotification) {
-        val intent = buildPushIntent(context)
-        val contentIntent = PendingIntent.getActivity(
-            context,
-            1,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        val contentIntent = createPendingContentIntent()
 
-        val notification = NotificationCompat.Builder(context, P2P_WALLET_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_logo)
+        val notification = createDefaultNotificationBuilder(contentIntent)
             .setContentTitle(context.getString(R.string.main_send_success))
-            .setContentIntent(contentIntent)
             .setContentText(data.buildShortText(context))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setVibrate(data.vibration)
             .setSound(data.sound)
-            .setAutoCancel(true)
             .build()
 
         notificationManager.notify(data.notificationId, notification)
     }
 
     fun showErrorTransactionNotification(data: ErrorTransactionNotification) {
-        val intent = buildPushIntent(context)
-        val contentIntent = PendingIntent.getActivity(
-            context,
-            1,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        val contentIntent = createPendingContentIntent()
 
-        val notification = NotificationCompat.Builder(context, P2P_WALLET_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_logo)
+        val notification = createDefaultNotificationBuilder(contentIntent)
             .setContentTitle(data.buildTitleText(context))
-            .setContentIntent(contentIntent)
             .setContentText(data.message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setVibrate(data.vibration)
             .setSound(data.sound)
-            .setAutoCancel(true)
             .build()
 
         notificationManager.notify(data.notificationId, notification)
     }
 
+    fun showFcmPushNotification(data: FcmPushNotificationData) {
+        val contentIntent = createPendingContentIntent()
+
+        val notification = createDefaultNotificationBuilder(contentIntent)
+            .setContentTitle(data.title)
+            .setContentText(data.body)
+            .build()
+
+        notificationManager.notify(
+            // todo: replace with correct id in PWN-3113
+            UUID.randomUUID().toString().hashCode(),
+            notification
+        )
+    }
+
+    private fun createDefaultNotificationBuilder(contentIntent: PendingIntent?): NotificationCompat.Builder =
+        NotificationCompat.Builder(context, P2P_WALLET_NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_logo)
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+    private fun createPendingContentIntent(): PendingIntent? {
+        val pushIntent = buildPushIntent(context)
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        return PendingIntent.getActivity(
+            context,
+            NOTIFICATION_MANAGER_REQUEST_CODE,
+            pushIntent,
+            flags
+        )
+    }
+
     private fun buildPushIntent(context: Context): Intent {
-        val activityManager = ContextCompat.getSystemService(context, ActivityManager::class.java)
-        return activityManager?.appTasks?.firstOrNull()?.taskInfo?.baseIntent ?: RootActivity.createIntent(context)
+        val activityManager = context.getSystemService<ActivityManager>()
+        return activityManager?.appTasks
+            ?.firstOrNull()
+            ?.taskInfo
+            ?.baseIntent
+            ?: RootActivity.createIntent(context)
     }
 }

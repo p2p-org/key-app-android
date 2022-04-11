@@ -26,6 +26,7 @@ import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
 import org.p2p.wallet.notification.AppNotificationManager
+import org.p2p.wallet.push_notifications.PushTokenRepository
 import org.p2p.wallet.updates.SocketUpdatesManager
 import org.p2p.wallet.updates.UpdateHandler
 import org.p2p.wallet.updates.UpdatesManager
@@ -91,5 +92,7 @@ object InfrastructureModule : InjectionModule {
         single { AppNotificationManager(get()) }
 
         single { DefaultDispatchers() } bind CoroutineDispatchers::class
+
+        single { PushTokenRepository() }
     }
 }

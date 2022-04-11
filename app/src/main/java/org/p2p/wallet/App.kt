@@ -13,6 +13,7 @@ import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.TimberCrashTree
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
@@ -21,6 +22,7 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
+import org.p2p.wallet.push_notifications.PushTokenRepository
 import org.p2p.wallet.qr.QrModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
@@ -34,10 +36,13 @@ import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class App : Application() {
 
     private val crashLoggingService: CrashLoggingService by inject()
+    private val appScope: AppScope by inject()
+    private val pushTokenRepository: PushTokenRepository by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -56,6 +61,10 @@ class App : Application() {
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
 
         SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
+
+        if (BuildConfig.DEBUG) {
+            logFirebaseDevicePushToken()
+        }
     }
 
     private fun setupKoin() {
@@ -104,5 +113,13 @@ class App : Application() {
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag
         Timber.plant(TimberCrashTree(crashLoggingService))
+    }
+
+    private fun logFirebaseDevicePushToken() {
+        appScope.launch {
+            kotlin.runCatching { pushTokenRepository.getPushToken().value }
+                .onSuccess { Timber.tag("App:device_token").d(it) }
+                .onFailure { Timber.e(it) }
+        }
     }
 }
