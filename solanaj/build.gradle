@@ -76,10 +76,14 @@ dependencies {
     // https://github.com/robolectric/robolectric
     testImplementation "org.robolectric:robolectric:4.7.3"
 
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
     def koin_version= "3.1.5"
     testImplementation "io.insert-koin:koin-test:$koin_version"
     testImplementation "io.insert-koin:koin-test-junit5:$koin_version"
+
+    //https://github.com/mockito/mockito-kotlin
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    testImplementation "org.mockito:mockito-inline:3.8.0"
+    testImplementation "org.assertj:assertj-core:3.22.0"
 
 }

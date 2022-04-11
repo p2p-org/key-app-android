@@ -66,7 +66,11 @@ class RpcSolanaRemoteRepository(
     override suspend fun getQueryConfig(): ResponseQueryConfig {
         val baseUrl = environmentManager.loadRpcEnvironment().lightNode
         val rpcRequest = RpcRequest2(method = "ren_queryConfig", params = emptyMap())
-        return api.queryConfig(url = baseUrl, rpcReuest = rpcRequest).result
+
+        return api.queryConfig(
+            url = baseUrl,
+            rpcReuest = rpcRequest
+        ).result
     }
 
     override suspend fun submitTx(
@@ -78,8 +82,10 @@ class RpcSolanaRemoteRepository(
         val baseUrl = environmentManager.loadRpcEnvironment().lightNode
         val submitMint = ParamsSubmitMint(hash, mintTx, selector)
         val params = hashMapOf<String, Any>("tx" to submitMint)
-
-        return api.submitTx(url = baseUrl, rpcRequest = RpcRequest2(method = "ren_submitTx", params = params)).result
+        return api.submitTx(
+            url = baseUrl,
+            rpcRequest = RpcRequest2(method = "ren_submitTx", params = params)
+        ).result
     }
 
     override suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo {

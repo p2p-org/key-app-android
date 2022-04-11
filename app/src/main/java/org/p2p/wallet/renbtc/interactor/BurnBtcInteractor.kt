@@ -89,7 +89,11 @@ class BurnBtcInteractor(
         val pHash = Hash.generatePHash()
         val sHash = Hash.generateSHash("BTC/toBitcoin")
         val gHash =
-            Hash.generateGHash(Hex.encode(Utils.addressToBytes(burnDetails.recepient)), Hex.encode(sHash), nonceBuffer)
+            Hash.generateGHash(
+                Hex.encode(Utils.addressToBytes(burnDetails.recepient)),
+                Hex.encode(sHash),
+                nonceBuffer
+            )
 
         val txHash = renVMRepository.getTxHash(
             selector = RenVMRepository.BURN_SELECTOR,
