@@ -15,9 +15,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.root.RootActivity
 import java.util.UUID
 
-private const val P2P_WALLET_CHANNEL_ID = "P2P_WALLET_CHANNEL_ID"
+private const val P2P_WALLET_NOTIFICATION_CHANNEL_ID = "P2P_WALLET_CHANNEL_ID"
+private const val P2P_WALLET_NOTIFICATION_CHANNEL_NAME = "P2P Wallet"
+
 private const val NOTIFICATION_MANAGER_REQUEST_CODE = 1
-private const val P2P_NOTIFICATION_CHANNEL_NAME = "P2P_Wallet"
 
 class AppNotificationManager(private val context: Context) {
     companion object {
@@ -30,8 +31,8 @@ class AppNotificationManager(private val context: Context) {
         @RequiresApi(Build.VERSION_CODES.O)
         private fun getNotificationChannels(): Set<NotificationChannel> = setOf(
             NotificationChannel(
-                P2P_WALLET_CHANNEL_ID,
-                P2P_NOTIFICATION_CHANNEL_NAME,
+                P2P_WALLET_NOTIFICATION_CHANNEL_ID,
+                P2P_WALLET_NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT
             )
         )
@@ -81,7 +82,7 @@ class AppNotificationManager(private val context: Context) {
     }
 
     private fun createDefaultNotificationBuilder(contentIntent: PendingIntent?): NotificationCompat.Builder =
-        NotificationCompat.Builder(context, P2P_WALLET_CHANNEL_ID)
+        NotificationCompat.Builder(context, P2P_WALLET_NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_logo)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
