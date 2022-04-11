@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.annotation.RawRes
 import androidx.core.view.isVisible
 import android.widget.VideoView
@@ -14,6 +15,7 @@ import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentOnboardingBinding
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -43,6 +45,10 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
                 analytics.logSplashRestored()
                 runAfterAnimation { replaceFragment(SecretKeyFragment.create()) }
             }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            popBackStack()
         }
     }
 

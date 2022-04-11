@@ -44,7 +44,9 @@ android {
             buildConfigField("String", "intercomAppId", "\"\"")
             buildConfigField("String", "amplitudeKey", "\"\"")
         }
-
+        buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+        buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
+        buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
 
         javaCompileOptions {
@@ -79,7 +81,6 @@ android {
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
         }
 
         feature {
@@ -91,8 +92,7 @@ android {
             versionNameSuffix ".$VERSION_BUILD-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
@@ -110,8 +110,8 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "true")
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+            buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
         }
     }
 

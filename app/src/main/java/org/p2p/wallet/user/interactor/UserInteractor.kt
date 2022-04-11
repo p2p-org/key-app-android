@@ -1,11 +1,12 @@
 package org.p2p.wallet.user.interactor
 
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.home.api.TokenSymbols
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
@@ -13,12 +14,15 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.emptyString
 
+private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
+
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: HomeLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val sharedPreferences: SharedPreferences
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
@@ -53,7 +57,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: String) = rpcRepository.getBalance(address)
+    suspend fun getBalance(address: String): Long = rpcRepository.getBalance(address)
 
     suspend fun loadTokenPrices(targetCurrency: String) {
         // TODO: 15.02.2022 replace TokenSymbols with user tokens from local storage [P2PW-1315]
@@ -73,22 +77,21 @@ class UserInteractor(
 
     fun getTokenListFlow() = userLocalRepository.getTokenListFlow()
 
-    suspend fun loadUserTokensAndUpdateData() {
-        val publicKey = tokenKeyProvider.publicKey
-        val newTokens = userRepository.loadTokens(publicKey)
+    suspend fun loadUserTokensAndUpdateLocal() {
+        val newTokens = userRepository.loadTokens(tokenKeyProvider.publicKey)
+        val cachedTokens = mainLocalRepository.getUserTokens()
 
-        val oldTokens = mainLocalRepository.getUserTokens()
+        updateLocalTokens(cachedTokens, newTokens)
+    }
+
+    private suspend fun updateLocalTokens(cachedTokens: List<Token.Active>, newTokens: List<Token.Active>) {
         mainLocalRepository.clear()
-        val result = newTokens.map { token ->
-            val old = oldTokens.find { it.publicKey == token.publicKey }
-            if (old != null) {
-                token.copy(visibility = old.visibility)
-            } else {
-                token
-            }
+        val newTokensToCache = newTokens.map { newToken ->
+            val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
+            newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
         }
 
-        mainLocalRepository.updateTokens(result)
+        mainLocalRepository.updateTokens(newTokensToCache)
     }
 
     suspend fun getUserTokens(): List<Token.Active> =
@@ -98,6 +101,9 @@ class UserInteractor(
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
 
-    suspend fun getPriceByToken(sourceSymbol: String, destinationSymbol: String): TokenPrice? =
-        userRepository.getRate(sourceSymbol, destinationSymbol)
+    fun getHiddenTokensVisibility() = sharedPreferences.getBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, false)
+
+    fun setHiddenTokensVisibility(visible: Boolean) = sharedPreferences.edit {
+        putBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, visible)
+    }
 }

@@ -5,10 +5,9 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import kotlin.properties.ReadOnlyProperty
 
-@Suppress("UNUSED") // Since receiver restricts this function usage bounds
-inline fun <reified T : ViewBinding> Fragment.viewBinding(
-    noinline binder: (Fragment) -> T = FragmentViewBinder(T::class.java)::bind
-): ReadOnlyProperty<Fragment, T> = FragmentViewBindingPropertyDelegate(binder)
+inline fun <reified VB : ViewBinding> Fragment.viewBinding(): ReadOnlyProperty<Any?, VB> {
+    return FragmentViewBindingPropertyDelegate(this, VB::class)
+}
 
 @Suppress("UNUSED") // Since receiver restricts this function usage bounds
 inline fun <reified T : ViewBinding> ComponentActivity.viewBinding(
