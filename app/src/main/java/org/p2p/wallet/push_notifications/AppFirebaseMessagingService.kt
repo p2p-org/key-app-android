@@ -1,11 +1,9 @@
 package org.p2p.wallet.push_notifications
 
-import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.wallet.R
 import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.FcmPushNotificationData
