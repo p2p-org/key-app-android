@@ -11,12 +11,14 @@ import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.TransactionDetailsDatabaseRepository
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
+import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetContract
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetPresenter
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
@@ -62,12 +64,22 @@ object HistoryModule : InjectionModule {
         } bind TokenHistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsPresenter(
+                resources = get(),
+                theme = get(),
                 state = state,
                 userLocalRepository = get(),
-                context = get(),
                 historyInteractor = get()
             )
         } bind TransactionDetailsContract.Presenter::class
+        factory { (state: TransactionDetailsLaunchState) ->
+            TransactionDetailsBottomSheetPresenter(
+                resources = get(),
+                theme = get(),
+                state = state,
+                userLocalRepository = get(),
+                historyInteractor = get()
+            )
+        } bind TransactionDetailsBottomSheetContract.Presenter::class
     }
 
     private fun Module.dataLayer() {

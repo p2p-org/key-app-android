@@ -1,7 +1,6 @@
-package org.p2p.wallet.history.ui.details
+package org.p2p.wallet.history.ui.detailsbottomsheet
 
 import android.content.res.Resources
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.toDateTimeString
@@ -16,18 +15,16 @@ import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.cutMiddle
 import timber.log.Timber
 
-private const val DELAY_IN_MS = 5000L
-
-class TransactionDetailsPresenter(
+class TransactionDetailsBottomSheetPresenter(
     private val resources: Resources,
     private val theme: Resources.Theme,
     private val state: TransactionDetailsLaunchState,
     private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor
-) : BasePresenter<TransactionDetailsContract.View>(),
-    TransactionDetailsContract.Presenter {
+) : BasePresenter<TransactionDetailsBottomSheetContract.View>(),
+    TransactionDetailsBottomSheetContract.Presenter {
 
-    override fun attach(view: TransactionDetailsContract.View) {
+    override fun attach(view: TransactionDetailsBottomSheetContract.View) {
         super.attach(view)
         load()
     }
@@ -43,10 +40,7 @@ class TransactionDetailsPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                /* The new transaction is not being committed in blockchain yet, it requires some time to add our transaction,
-                 * therefore we are giving some time to make our request not fail
-                 * */
-                delay(DELAY_IN_MS)
+
                 val details = historyInteractor.getHistoryTransaction(state.transactionId, state.transactionId)
 
                 if (details != null) {
@@ -76,7 +70,6 @@ class TransactionDetailsPresenter(
 
     private fun parseSwap(transaction: HistoryTransaction.Swap) {
         val title = transaction.getTitle()
-        view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
         view?.showStatus(transaction.status)
 
@@ -101,7 +94,6 @@ class TransactionDetailsPresenter(
 
     private fun parseTransfer(transaction: HistoryTransaction.Transfer) {
         val title = transaction.getTitle(resources)
-        view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
         view?.showStatus(transaction.status)
 
@@ -141,7 +133,6 @@ class TransactionDetailsPresenter(
 
     private fun parseBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
         val title = resources.getString(transaction.getTitle())
-        view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
 
         val isBurn = transaction.isBurn

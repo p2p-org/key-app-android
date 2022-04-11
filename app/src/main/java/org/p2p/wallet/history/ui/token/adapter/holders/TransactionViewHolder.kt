@@ -128,7 +128,7 @@ class TransactionViewHolder(
             timeTextView.text = transaction.date.toTimeString()
             valueTextView withTextOrGone transaction.getValue()
             totalTextView.text = transaction.getTotal()
-            totalTextView.setTextColor(transaction.getTextColor(valueTextView.context))
+            totalTextView.setTextColor(valueTextView.context.getColor(transaction.getTextColor()))
         }
     }
 
