@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.ui.history.adapter.holders
+package org.p2p.wallet.history.ui.token.adapter.holders
 
 import android.view.ViewGroup
 import org.p2p.wallet.R

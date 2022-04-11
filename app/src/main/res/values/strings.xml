@@ -240,6 +240,7 @@
     <string name="main_empty_title">Top up your account to get started</string>
     <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
     <string name="home_main">Wallet</string>
+    <string name="home_history">History</string>
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>

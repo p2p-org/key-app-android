@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.ui.history.adapter
+package org.p2p.wallet.history.ui.token.adapter
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
@@ -9,12 +9,12 @@ import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.ui.history.adapter.holders.DateViewHolder
-import org.p2p.wallet.history.ui.history.adapter.holders.EmptyViewHolder
-import org.p2p.wallet.history.ui.history.adapter.holders.ErrorViewHolder
-import org.p2p.wallet.history.ui.history.adapter.holders.HistoryTransactionViewHolder
-import org.p2p.wallet.history.ui.history.adapter.holders.ProgressViewHolder
-import org.p2p.wallet.history.ui.history.adapter.holders.TransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.EmptyViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
 import org.p2p.wallet.utils.NoOp
 
 private const val TRANSACTION_VIEW_TYPE = 1

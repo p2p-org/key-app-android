@@ -19,6 +19,8 @@ import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
+import org.p2p.wallet.history.ui.token.TokenHistoryContract
+import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.rpc.api.RpcHistoryApi
@@ -47,7 +49,7 @@ object HistoryModule : InjectionModule {
             )
         }
         factory { (token: Token.Active) ->
-            HistoryPresenter(
+            TokenHistoryPresenter(
                 token = token,
                 historyInteractor = get(),
                 receiveAnalytics = get(),
@@ -57,7 +59,7 @@ object HistoryModule : InjectionModule {
                 renBtcInteractor = get(),
                 tokenInteractor = get()
             )
-        } bind HistoryContract.Presenter::class
+        } bind TokenHistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsPresenter(
                 state = state,
@@ -88,5 +90,7 @@ object HistoryModule : InjectionModule {
                 transactionDetailsNetworkMapper = get()
             )
         } bind TransactionDetailsRemoteRepository::class
+
+        factory { HistoryPresenter() } bind HistoryContract.Presenter::class
     }
 }
