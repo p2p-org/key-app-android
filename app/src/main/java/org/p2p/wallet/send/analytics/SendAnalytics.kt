@@ -24,7 +24,6 @@ import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VIEWED
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.send.model.Target
 import java.math.BigDecimal
 
 class SendAnalytics(private val tracker: Analytics) {
@@ -215,7 +214,6 @@ class SendAnalytics(private val tracker: Analytics) {
         sendToken: Token.Active,
         fee: SendFee?,
         usdAmount: BigDecimal,
-        target: Target
     ) {
         tracker.logEvent(
             event = SEND_USER_CONFIRMED,
@@ -226,7 +224,6 @@ class SendAnalytics(private val tracker: Analytics) {
                 "Send_MAX" to (sendAmount == sendToken.total),
                 "Send_USD" to usdAmount,
                 "Send_Free" to (fee == null),
-                "Send_Username" to (target.validation == Target.Validation.USERNAME),
                 "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )
@@ -238,7 +235,6 @@ class SendAnalytics(private val tracker: Analytics) {
         sendToken: Token.Active,
         fee: SendFee?,
         usdAmount: BigDecimal,
-        target: Target
     ) {
         tracker.logEvent(
             event = SEND_STARTED,
@@ -249,7 +245,6 @@ class SendAnalytics(private val tracker: Analytics) {
                 "Send_MAX" to (sendAmount == sendToken.total),
                 "Send_USD" to usdAmount,
                 "Send_Free" to (fee == null),
-                "Send_Username" to (target.validation == Target.Validation.USERNAME),
                 "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )
@@ -261,7 +256,6 @@ class SendAnalytics(private val tracker: Analytics) {
         sendToken: Token.Active,
         fee: SendFee?,
         usdAmount: BigDecimal,
-        target: Target
     ) {
         tracker.logEvent(
             event = SEND_COMPLETED,
@@ -272,7 +266,6 @@ class SendAnalytics(private val tracker: Analytics) {
                 "Send_MAX" to (sendAmount == sendToken.total),
                 "Send_USD" to usdAmount,
                 "Send_Free" to (fee == null),
-                "Send_Username" to (target.validation == Target.Validation.USERNAME),
                 "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )

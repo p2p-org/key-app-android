@@ -209,7 +209,7 @@ class SendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = target?.address ?: error("Target address cannot be null!")
 
-        sendAnalytics.logSendStarted(networkType, tokenAmount, token, fee, usdAmount, Target(address))
+        sendAnalytics.logSendStarted(networkType, tokenAmount, token, fee, usdAmount)
 
         when (networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
@@ -221,7 +221,7 @@ class SendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = target?.address ?: error("Target address cannot be null!")
 
-        sendAnalytics.logUserConfirmedSend(networkType, tokenAmount, token, fee, usdAmount, Target(address))
+        sendAnalytics.logUserConfirmedSend(networkType, tokenAmount, token, fee, usdAmount)
 
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
@@ -402,7 +402,7 @@ class SendPresenter(
                 val transactionId = burnBtcInteractor.submitBurnTransaction(address, amountLamports)
 
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
-                sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount, Target(address))
+                sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
 
                 val transaction = buildTransaction(transactionId)
                 view?.showTransactionDetails(transaction)
