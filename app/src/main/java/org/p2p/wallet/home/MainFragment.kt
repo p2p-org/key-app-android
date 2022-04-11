@@ -16,6 +16,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
+import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.send.ui.main.SendFragment
@@ -62,6 +63,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
             childFragmentManager.fragments.forEach { fragment ->
                 when (fragment) {
                     is HomeFragment -> fragments.put(R.id.itemHome, fragment)
+                    is HistoryFragment -> fragments.put(R.id.itemHistory, fragment)
                     is SendFragment -> fragments.put(R.id.itemSend, fragment)
                     is SettingsFragment -> fragments.put(R.id.itemSettings, fragment)
                 }
@@ -76,6 +78,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                 Tabs.HOME -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_COINS)
                     HomeFragment.create()
+                }
+
+                Tabs.HISTORY -> {
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
+                    HistoryFragment.create()
                 }
                 Tabs.SEND -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.MAIN)
@@ -133,6 +140,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
 
 private enum class Tabs(val tabId: Int) {
     HOME(R.id.itemHome),
+    HISTORY(R.id.itemHistory),
     SEND(R.id.itemSend),
     SETTINGS(R.id.itemSettings);
 

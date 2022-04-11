@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.ui.history.adapter.holders
+package org.p2p.wallet.history.ui.token.adapter.holders
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.PictureDrawable
