@@ -1,10 +1,8 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
-import android.text.SpannableString
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
 import org.p2p.wallet.transaction.model.TransactionStatus
 
 interface TransactionDetailsBottomSheetContract {

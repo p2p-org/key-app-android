@@ -1,6 +1,5 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
-import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
