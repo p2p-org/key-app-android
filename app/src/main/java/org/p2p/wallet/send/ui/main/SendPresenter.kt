@@ -430,7 +430,9 @@ class SendPresenter(
                         view?.showErrorMessage(validation.messageRes)
                         view?.showProgressDialog(null)
                     }
-                    is AddressValidation.Valid -> handleValidAddress(token, destinationAddress, lamports)
+                    is AddressValidation.Valid -> {
+                        handleValidAddress(token, destinationAddress, lamports)
+                    }
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
@@ -461,6 +463,7 @@ class SendPresenter(
         val transaction = buildTransaction(result)
         val state = TransactionState.SendSuccess(transaction, token.tokenSymbol)
         transactionManager.emitTransactionState(state)
+        sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =
