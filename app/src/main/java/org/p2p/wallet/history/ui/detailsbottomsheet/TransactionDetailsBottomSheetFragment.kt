@@ -1,14 +1,14 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
-import android.text.SpannableString
-import androidx.annotation.StringRes
+import android.os.Bundle
+import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
-import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
 import org.p2p.wallet.databinding.DialogTransactionDetailsBinding
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.transaction.model.TransactionStatus
@@ -22,7 +22,6 @@ import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
-import org.p2p.wallet.utils.withTextOrInvisible
 
 private const val EXTRA_STATE = "EXTRA_STATE"
 
@@ -53,6 +52,15 @@ class TransactionDetailsBottomSheetFragment :
         parametersOf(state)
     }
 
+    override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+
+    override fun onStart() {
+        super.onStart()
+        BottomSheetBehavior.from(requireView().parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
     override fun showError(messageId: Int) {
         showInfoDialog(
             titleRes = R.string.error_general_title,
@@ -75,34 +83,20 @@ class TransactionDetailsBottomSheetFragment :
             TransactionStatus.ERROR -> R.color.systemErrorMain
         }
 
-        binding.statusColorView.setBackgroundColor(getColor(color))
-    }
-
-    override fun showSourceInfo(iconContainer: DrawableContainer, primaryInfo: String, secondaryInfo: String?) {
-        with(binding) {
-            iconContainer.applyTo(sourceImageView)
-            sourceTextView.text = primaryInfo
-            sourceSecondaryTextView withTextOrInvisible secondaryInfo
-        }
-    }
-
-    override fun showDestinationInfo(iconContainer: DrawableContainer, primaryInfo: String, secondaryInfo: String?) {
-        with(binding) {
-            iconContainer.applyTo(destinationImageView)
-            destinationTextView.text = primaryInfo
-            destinationSecondaryTextView withTextOrInvisible secondaryInfo
-        }
+        binding.statusTextView.setTextColor(getColor(color))
     }
 
     override fun showSignature(signature: String) {
         with(binding) {
-            transactionIdTitleTextView.setOnClickListener {
+            transactionIdTextView.setOnClickListener {
                 requireContext().copyToClipBoard(signature)
                 toast(R.string.common_copied)
             }
             transactionIdTextView.text = signature.cutEnd()
-            explorerView.clipToOutline = true
-            explorerView.setOnClickListener {
+            doneButton.setOnClickListener {
+                dismiss()
+            }
+            detailsButton.setOnClickListener {
                 val url = getString(R.string.solanaExplorer, signature)
                 showUrlInCustomTabs(url)
             }
@@ -111,13 +105,13 @@ class TransactionDetailsBottomSheetFragment :
 
     override fun showAddresses(source: String, destination: String) {
         with(binding) {
-            sourceTitleTextView.setOnClickListener {
+            sourceAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(source)
                 toast(R.string.common_copied)
             }
             sourceAddressTextView.text = source
 
-            destinationTitleTextView.setOnClickListener {
+            destinationAddressTextView.setOnClickListener {
                 requireContext().copyToClipBoard(destination)
                 toast(R.string.common_copied)
             }
@@ -125,31 +119,28 @@ class TransactionDetailsBottomSheetFragment :
         }
     }
 
-    override fun showAmount(@StringRes label: Int, amount: CharSequence) {
+    override fun showAmount(amountToken: String, amountUsd: String?) {
         with(binding) {
-            amountLabelTextView.setText(label)
-            amountTextView.text = amount
+            amountTextTokenView.text = amountToken
+            amountTextUsdView.text = amountUsd
+            amountTextUsdView.isVisible = amountUsd != null
         }
-    }
-
-    override fun showLiquidityProviderFees(sourceFee: SpannableString, destinationFee: SpannableString) {
-        // todo: add fees
     }
 
     override fun showFee(renBtcFee: String?) {
         with(binding) {
             if (renBtcFee.isNullOrEmpty()) {
-                feesTextView.text = getString(R.string.send_free_transaction)
-                feesTextView.setTextColor(getColor(R.color.systemSuccessMain))
-                freeTextView.isVisible = true
+                feesTextView.text = getString(R.string.transaction_details_fee_free)
+                feesTextView.setTextColor(getColor(R.color.textIconActive))
             } else {
+                feesTextView.setTextColor(getColor(R.color.textIconPrimary))
                 feesTextView.text = renBtcFee
             }
         }
     }
 
     override fun showBlockNumber(blockNumber: String?) {
-        binding.blockNumberTextView withTextOrGone blockNumber
+        binding.blockNumberTextView withTextOrGone (blockNumber)
         binding.blockNumberTitleTextView.isVisible = !blockNumber.isNullOrEmpty()
     }
 
