@@ -3,6 +3,8 @@ package org.p2p.wallet.history.ui.history
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.databinding.FragmentHistoryBinding
+import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class HistoryFragment :
     BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
@@ -13,4 +15,5 @@ class HistoryFragment :
     companion object {
         fun create() = HistoryFragment()
     }
+    private val binding: FragmentHistoryBinding by viewBinding()
 }
