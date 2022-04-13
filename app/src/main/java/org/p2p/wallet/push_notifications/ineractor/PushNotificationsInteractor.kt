@@ -14,14 +14,16 @@ private const val DEVICE_TOKEN = "device_token"
 private const val DEVICE_INFO = "device_info"
 private const val CLIENT_ID = "client_id"
 
-class NotificationServiceInteractor(
+class PushNotificationsInteractor(
     private val notificationServiceRepository: NotificationServiceRepository,
     private val pushTokenRepository: PushTokenRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences,
 ) {
 
-    suspend fun updateDeviceToken(deviceToken: String): DeviceToken {
+    suspend fun updateDeviceToken(): DeviceToken {
+        val deviceToken = pushTokenRepository.getPushToken().value
+
         sharedPreferences.edit { putString(KEY_DEVICE_TOKEN, deviceToken) }
 
         val deviceInfo = DeviceInfo(

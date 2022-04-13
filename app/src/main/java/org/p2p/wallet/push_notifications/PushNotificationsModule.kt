@@ -4,7 +4,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.push_notifications.api.NotificationServiceApi
-import org.p2p.wallet.push_notifications.ineractor.NotificationServiceInteractor
+import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
 import org.p2p.wallet.push_notifications.repository.NotificationServiceRemoteRepository
 import org.p2p.wallet.push_notifications.repository.NotificationServiceRepository
 import retrofit2.Retrofit
@@ -22,7 +22,7 @@ object PushNotificationsModule : InjectionModule {
         }
 
         factory {
-            NotificationServiceInteractor(get(), get(), get())
+            PushNotificationsInteractor(get(), get(), get(), get())
         }
     }
 }

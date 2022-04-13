@@ -5,7 +5,6 @@ import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import org.p2p.wallet.push_notifications.model.DeviceToken
 import org.p2p.wallet.utils.emptyString
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.POST
 import retrofit2.http.Url
 
@@ -17,7 +16,7 @@ interface NotificationServiceApi {
         @Url url: String = emptyString()
     ): CommonResponse<DeviceToken>
 
-    @DELETE
+    @POST
     suspend fun deleteDeviceToken(
         @Body rpcRequest: RpcRequest2,
         @Url url: String = emptyString()
