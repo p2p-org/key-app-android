@@ -16,6 +16,7 @@ class NotificationServiceRemoteRepository(
             method = METHOD_ADD_DEVICE,
             params = params
         )
+
         return api.sendDeviceToken(request).result
     }
 
