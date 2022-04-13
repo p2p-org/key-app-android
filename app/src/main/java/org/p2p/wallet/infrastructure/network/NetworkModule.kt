@@ -20,6 +20,7 @@ import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import retrofit2.Retrofit
@@ -51,10 +52,16 @@ object NetworkModule : InjectionModule {
             val moonPayApiUrl = get<Context>().getString(R.string.moonpayBaseUrl)
             getRetrofit(moonPayApiUrl, "Moonpay", MoonpayErrorInterceptor(get()))
         }
+
         single(named(RPC_RETROFIT_QUALIFIER)) {
             val environment = get<EnvironmentManager>().loadEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(rpcApiUrl, "Rpc", RpcInterceptor(get(), get()))
+        }
+
+        single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
+            val endpoint = get<Context>().getString(R.string.notification_service_url)
+            getRetrofit(endpoint, "NotificationService", RpcInterceptor(get(), get()))
         }
     }
 

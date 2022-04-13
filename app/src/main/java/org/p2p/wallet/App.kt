@@ -1,9 +1,10 @@
 package org.p2p.wallet
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext
@@ -22,7 +23,8 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
-import org.p2p.wallet.push_notifications.PushTokenRepository
+import org.p2p.wallet.push_notifications.PushNotificationsModule
+import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.qr.QrModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
@@ -36,7 +38,6 @@ import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class App : Application() {
 
@@ -75,6 +76,7 @@ class App : Application() {
                 listOf(
                     AuthModule.create(),
                     RootModule.create(),
+                    PushNotificationsModule.create(),
                     BackupModule.create(),
                     UserModule.create(),
                     HomeModule.create(),
