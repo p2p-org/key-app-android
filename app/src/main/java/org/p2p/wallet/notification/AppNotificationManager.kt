@@ -81,7 +81,7 @@ class AppNotificationManager(private val context: Context) {
 
     private fun createDefaultNotificationBuilder(contentIntent: PendingIntent?): NotificationCompat.Builder =
         NotificationCompat.Builder(context, P2P_WALLET_NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_white_transparent)
+            .setSmallIcon(R.drawable.ic_app_notification)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
