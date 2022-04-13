@@ -35,18 +35,17 @@ class HistoryAdapter(
     fun setTransactions(newTransactions: List<HistoryTransaction>) {
         // force notifyDataSetChanged on first load
         // to fix jumping into the middle because of DiffUtil
-        if (currentItems.size == 0) {
-            currentItems.addAll(newTransactions.mapToItems())
+        if (currentItems.isEmpty()) {
+            currentItems += newTransactions.mapToItems()
             notifyDataSetChanged()
-            return
+        } else {
+            val oldItems = ArrayList(currentItems)
+            currentItems.clear()
+            currentItems += newTransactions.mapToItems()
+
+            DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
+                .dispatchUpdatesTo(this)
         }
-
-        val oldItems = ArrayList(currentItems)
-        currentItems.clear()
-        currentItems.addAll(newTransactions.mapToItems())
-
-        DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
-            .dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionViewHolder {
@@ -114,6 +113,7 @@ class HistoryAdapter(
         } else {
             listOf(
                 HistoryItem.DateItem(transaction.date),
+                // todo map items according to state
                 HistoryItem.TransactionItem(transaction)
             )
         }
