@@ -1,10 +1,10 @@
 package org.p2p.wallet.infrastructure.network
 
-import android.content.Context
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
@@ -49,7 +49,7 @@ object NetworkModule : InjectionModule {
         single { ConnectionStateProvider(get()) }
 
         single(named(MOONPAY_QUALIFIER)) {
-            val moonPayApiUrl = get<Context>().getString(R.string.moonpayBaseUrl)
+            val moonPayApiUrl = androidContext().getString(R.string.moonpayBaseUrl)
             getRetrofit(moonPayApiUrl, "Moonpay", MoonpayErrorInterceptor(get()))
         }
 
@@ -60,7 +60,7 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
-            val endpoint = get<Context>().getString(R.string.notification_service_url)
+            val endpoint = androidContext().getString(R.string.notification_service_url)
             getRetrofit(endpoint, "NotificationService", RpcInterceptor(get(), get()))
         }
     }
