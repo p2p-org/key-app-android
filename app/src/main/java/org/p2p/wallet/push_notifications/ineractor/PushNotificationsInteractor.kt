@@ -50,7 +50,6 @@ class PushNotificationsInteractor(
             CLIENT_ID to tokenKeyProvider.publicKey
         )
 
-        pushTokenRepository.deletePushToken()
         deviceTokenRepository.deleteDeviceToken(params)
     }
 }

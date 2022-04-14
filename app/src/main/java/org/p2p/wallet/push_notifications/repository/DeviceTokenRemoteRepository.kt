@@ -23,7 +23,7 @@ class DeviceTokenRemoteRepository(
     override suspend fun deleteDeviceToken(params: Map<String, Any>): DeviceToken {
         val request = RpcRequest2(
             method = METHOD_DELETE_DEVICE,
-            params
+            params = params
         )
 
         return api.deleteDeviceToken(request).result

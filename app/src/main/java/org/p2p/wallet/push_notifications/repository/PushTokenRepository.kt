@@ -18,11 +18,4 @@ class PushTokenRepository {
             .addOnCanceledListener { continuation.cancel() }
             .addOnFailureListener { continuation.resumeWithException(it) }
     }
-
-    suspend fun deletePushToken(): Unit = suspendCancellableCoroutine { continuation ->
-        firebaseMessaging.deleteToken()
-            .addOnSuccessListener { continuation.resume(Unit) }
-            .addOnCanceledListener { continuation.cancel() }
-            .addOnFailureListener { continuation.resumeWithException(it) }
-    }
 }
