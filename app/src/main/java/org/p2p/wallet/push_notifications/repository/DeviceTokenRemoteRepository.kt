@@ -7,9 +7,9 @@ import org.p2p.wallet.push_notifications.model.DeviceToken
 private const val METHOD_ADD_DEVICE = "add_device"
 private const val METHOD_DELETE_DEVICE = "delete_device"
 
-class NotificationServiceRemoteRepository(
+class DeviceTokenRemoteRepository(
     private val api: NotificationServiceApi
-) : NotificationServiceRepository {
+) : DeviceTokenRepository {
 
     override suspend fun sendDeviceToken(params: Map<String, Any>): DeviceToken {
         val request = RpcRequest2(

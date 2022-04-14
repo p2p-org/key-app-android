@@ -6,7 +6,7 @@ import androidx.core.content.edit
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.push_notifications.model.DeviceInfo
 import org.p2p.wallet.push_notifications.model.DeviceToken
-import org.p2p.wallet.push_notifications.repository.NotificationServiceRepository
+import org.p2p.wallet.push_notifications.repository.DeviceTokenRepository
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
@@ -15,7 +15,7 @@ private const val DEVICE_INFO = "device_info"
 private const val CLIENT_ID = "client_id"
 
 class PushNotificationsInteractor(
-    private val notificationServiceRepository: NotificationServiceRepository,
+    private val deviceTokenRepository: DeviceTokenRepository,
     private val pushTokenRepository: PushTokenRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences,
@@ -38,7 +38,7 @@ class PushNotificationsInteractor(
             CLIENT_ID to tokenKeyProvider.publicKey
         )
 
-        return notificationServiceRepository.sendDeviceToken(params)
+        return deviceTokenRepository.sendDeviceToken(params)
     }
 
     suspend fun deleteDeviceToken() {
@@ -51,6 +51,6 @@ class PushNotificationsInteractor(
         )
 
         pushTokenRepository.deletePushToken()
-        notificationServiceRepository.deleteDeviceToken(params)
+        deviceTokenRepository.deleteDeviceToken(params)
     }
 }
