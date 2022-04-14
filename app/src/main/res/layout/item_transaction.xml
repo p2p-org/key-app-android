@@ -30,7 +30,7 @@
             android:layout_height="18dp"
             android:layout_gravity="bottom|end"
             android:visibility="gone"
-            tools:src="@drawable/ic_empty"
+            tools:src="@drawable/ic_state_pending"
             tools:visibility="visible" />
 
     </FrameLayout>
