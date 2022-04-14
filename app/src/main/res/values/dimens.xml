@@ -7,4 +7,6 @@
 
     <!--    because of the toolbar, last element is cropped in the list-->
     <dimen name="history_transaction_list_last_item_padding">56dp</dimen>
+    <dimen name="history_transaction_item_height">44dp</dimen>
+    <dimen name="history_transaction_image_size">44dp</dimen>
 </resources>
