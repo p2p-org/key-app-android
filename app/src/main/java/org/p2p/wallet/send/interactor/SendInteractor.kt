@@ -26,6 +26,8 @@ import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
 
+private const val SEND_TAG = "SEND"
+
 class SendInteractor(
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
@@ -36,10 +38,6 @@ class SendInteractor(
     private val amountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
-
-    companion object {
-        private const val SEND_TAG = "SEND"
-    }
 
     /*
     * If transaction will need to create a new account,
@@ -57,7 +55,7 @@ class SendInteractor(
     }
 
     fun setFeePayerToken(newToken: Token.Active) {
-        if (!this::feePayerToken.isInitialized) throw IllegalStateException("PayToken is not initialized")
+        if (!this::feePayerToken.isInitialized) error("PayToken is not initialized")
         if (newToken.publicKey.equals(feePayerToken)) return
 
         feePayerToken = newToken
@@ -117,9 +115,8 @@ class SendInteractor(
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
-    suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit {
-        return feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-    }
+    suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit =
+        feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
     suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult =
         try {
@@ -161,7 +158,9 @@ class SendInteractor(
             feeRelayerInteractor.topUpAndRelayTransaction(
                 preparedTransaction = preparedTransaction,
                 payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
-            ).firstOrNull().orEmpty()
+            )
+                .firstOrNull()
+                .orEmpty()
         } else {
             // send normally, paid by SOL
             transactionInteractor.serializeAndSend(
@@ -194,7 +193,7 @@ class SendInteractor(
         val sender = token.publicKey
 
         if (sender == receiver) {
-            throw IllegalStateException("You can not send tokens to yourself")
+            error("You can not send tokens to yourself")
         }
 
         val (feePayer, useFeeRelayer) = if (feePayerToken.isSOL) {

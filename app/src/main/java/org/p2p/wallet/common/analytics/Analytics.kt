@@ -1,5 +1,6 @@
 package org.p2p.wallet.common.analytics
 
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
 
 /**
@@ -7,12 +8,16 @@ import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
  */
 class Analytics(private val trackers: Set<AnalyticsTracker>) {
 
+    private val shouldAddDebugSuffix: Boolean = BuildConfig.DEBUG
+
     fun logEvent(event: String, params: Map<String, Any> = emptyMap()) {
-        trackers.forEach { it.logEvent(event, params) }
+        val modifiedEventName = if (shouldAddDebugSuffix) "${event}_debug" else event
+        trackers.forEach { it.logEvent(modifiedEventName, params) }
     }
 
     fun logEvent(event: String, params: Array<out Pair<String, Any>>) {
-        trackers.forEach { it.logEvent(event, params) }
+        val modifiedEventName = if (shouldAddDebugSuffix) "${event}_debug" else event
+        trackers.forEach { it.logEvent(modifiedEventName, params) }
     }
 
     fun setUserProperty(key: String, value: String) {
