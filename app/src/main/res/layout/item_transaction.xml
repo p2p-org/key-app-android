@@ -8,17 +8,32 @@
     android:background="@color/backgroundPrimary"
     android:orientation="horizontal">
 
-    <org.p2p.wallet.common.ui.widget.RoundedImageView
-        android:id="@+id/tokenImageView"
-        android:layout_width="@dimen/history_transaction_image_size"
-        android:layout_height="@dimen/history_transaction_image_size"
+    <FrameLayout
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:layout_marginVertical="12dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/bg_app_rounded"
-        android:padding="12dp"
-        android:src="@drawable/ic_transaction_send"
-        app:cornerRadius="12dp"
-        tools:visibility="visible" />
+        android:layout_marginStart="16dp">
+
+        <org.p2p.wallet.common.ui.widget.RoundedImageView
+            android:id="@+id/transactionTokenImageView"
+            android:layout_width="@dimen/history_transaction_image_size"
+            android:layout_height="@dimen/history_transaction_image_size"
+            android:background="@drawable/bg_token_rounded"
+            android:padding="12dp"
+            android:src="@drawable/ic_transaction_send"
+            app:cornerRadius="12dp"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/transactionStatus"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="bottom|end"
+            android:visibility="gone"
+            tools:src="@drawable/ic_empty"
+            tools:visibility="visible" />
+
+    </FrameLayout>
 
     <include
         android:id="@+id/transactionData"
