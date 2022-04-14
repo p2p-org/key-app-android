@@ -20,6 +20,13 @@ class TransactionsDaoDelegate(
         }
     }
 
+    suspend fun deleteTransactions(signatures: List<String>): Boolean {
+        transactionDao.forEach { daoImpl ->
+            daoImpl.deleteTransactionBySignature(signatures)
+        }
+        return true
+    }
+
     suspend fun insertTransactions(entities: List<TransactionEntity>) {
         entities.groupBy { it.javaClass }
             .forEach { (key: Class<TransactionEntity>, value: List<TransactionEntity>) ->

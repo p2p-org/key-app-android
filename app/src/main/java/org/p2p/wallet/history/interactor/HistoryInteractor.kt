@@ -34,7 +34,7 @@ class HistoryInteractor(
             .firstOrNull()
     }
 
-    suspend fun getAllHistoryTransactions(
+    suspend fun loadTransactionHistory(
         tokenPublicKey: String,
         before: String?,
         limit: Int,
@@ -72,6 +72,16 @@ class HistoryInteractor(
             }
             .also { transactionsLocalRepository.saveTransactions(it) }
             .mapToHistoryTransactions(tokenPublicKey)
+    }
+
+    private fun getTransactionHistory2(
+        tokenPublicKey: String,
+        signatures: List<String>,
+        forceNetwork: Boolean
+    ): List<HistoryTransaction> {
+        if (forceNetwork) {
+        }
+        return emptyList()
     }
 
     private suspend fun List<TransactionDetails>.mapToHistoryTransactions(
