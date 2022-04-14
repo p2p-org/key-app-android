@@ -83,7 +83,6 @@ class TransactionViewHolder(
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
 
-
                 addressTextView.text = transaction.getInfo()
                 timeTextView.text = transaction.date.toTimeString()
             }
@@ -96,7 +95,6 @@ class TransactionViewHolder(
             with(transactionData) {
                 valueTextView.isVisible = true
                 totalTextView.isVisible = true
-
 
                 addressTextView.text = transaction.getAddress()
                 timeTextView.text = transaction.date.toTimeString()
