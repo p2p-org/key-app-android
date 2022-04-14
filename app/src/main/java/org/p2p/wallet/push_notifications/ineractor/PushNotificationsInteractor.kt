@@ -10,9 +10,6 @@ import org.p2p.wallet.push_notifications.repository.DeviceTokenRepository
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
-private const val DEVICE_TOKEN = "device_token"
-private const val DEVICE_INFO = "device_info"
-private const val CLIENT_ID = "client_id"
 
 class PushNotificationsInteractor(
     private val deviceTokenRepository: DeviceTokenRepository,
@@ -22,9 +19,9 @@ class PushNotificationsInteractor(
 ) {
 
     suspend fun updateDeviceToken(): DeviceToken {
-        val deviceToken = pushTokenRepository.getPushToken().value
+        val token = pushTokenRepository.getPushToken().value
 
-        sharedPreferences.edit { putString(KEY_DEVICE_TOKEN, deviceToken) }
+        sharedPreferences.edit { putString(KEY_DEVICE_TOKEN, token) }
 
         val deviceInfo = DeviceInfo(
             osName = "Android",
@@ -32,24 +29,24 @@ class PushNotificationsInteractor(
             deviceModel = Build.MANUFACTURER + ' ' + Build.MODEL
         )
 
-        val params = mapOf(
-            DEVICE_TOKEN to deviceToken,
-            DEVICE_INFO to deviceInfo,
-            CLIENT_ID to tokenKeyProvider.publicKey
+        val deviceToken = DeviceToken(
+            deviceToken = token,
+            deviceInfo = deviceInfo,
+            clientId = tokenKeyProvider.publicKey
         )
 
-        return deviceTokenRepository.sendDeviceToken(params)
+        return deviceTokenRepository.sendDeviceToken(deviceToken)
     }
 
     suspend fun deleteDeviceToken() {
-        val deviceToken = sharedPreferences.getString(KEY_DEVICE_TOKEN, null) ?: return
+        val token = sharedPreferences.getString(KEY_DEVICE_TOKEN, null) ?: return
         sharedPreferences.edit { remove(KEY_DEVICE_TOKEN) }
 
-        val params = mapOf(
-            DEVICE_TOKEN to deviceToken,
-            CLIENT_ID to tokenKeyProvider.publicKey
+        val deviceToken = DeviceToken(
+            deviceToken = token,
+            clientId = tokenKeyProvider.publicKey
         )
 
-        deviceTokenRepository.deleteDeviceToken(params)
+        deviceTokenRepository.deleteDeviceToken(deviceToken)
     }
 }

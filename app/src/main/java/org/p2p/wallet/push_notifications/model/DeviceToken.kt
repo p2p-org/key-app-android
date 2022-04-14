@@ -6,9 +6,9 @@ data class DeviceToken(
     @SerializedName("device_token")
     val deviceToken: String,
     @SerializedName("device_info")
-    val deviceInfo: DeviceInfo,
+    val deviceInfo: DeviceInfo? = null,
     @SerializedName("client_id")
     val clientId: String,
     @SerializedName("timestamp")
-    val timestamp: String
+    val timestamp: String? = null
 )
