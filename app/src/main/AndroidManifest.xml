@@ -53,6 +53,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_app_notification" />
+
         <service
             android:name=".push_notifications.AppFirebaseMessagingService"
             android:exported="false">

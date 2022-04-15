@@ -36,7 +36,10 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
         message.notification?.let {
             appNotificationManager.showFcmPushNotification(
-                FcmPushNotificationData(it.title.orEmpty(), it.body.orEmpty(), 0)
+                FcmPushNotificationData(
+                    title = it.title.orEmpty(),
+                    body = it.body.orEmpty()
+                )
             )
         }
     }

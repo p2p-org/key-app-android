@@ -38,7 +38,8 @@ class AppNotificationManager(private val context: Context) {
         )
     }
 
-    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     fun showSwapTransactionNotification(data: SwapTransactionNotification) {
         val contentIntent = createPendingContentIntent()
@@ -74,16 +75,13 @@ class AppNotificationManager(private val context: Context) {
             .setContentText(data.body)
             .build()
 
-        notificationManager.notify(
-            // todo: replace with correct id in PWN-3113
-            UUID.randomUUID().toString().hashCode(),
-            notification
-        )
+        val notificationId = UUID.randomUUID().toString().hashCode()
+        notificationManager.notify(notificationId, notification)
     }
 
     private fun createDefaultNotificationBuilder(contentIntent: PendingIntent?): NotificationCompat.Builder =
         NotificationCompat.Builder(context, P2P_WALLET_NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_logo)
+            .setSmallIcon(R.drawable.ic_app_notification)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
