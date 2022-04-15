@@ -10,7 +10,6 @@ import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
