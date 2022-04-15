@@ -1,38 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/backgroundPrimary"
     android:orientation="horizontal">
 
-    <FrameLayout
-        android:id="@+id/swapView"
+    <org.p2p.wallet.common.ui.widget.TransactionSwapImage
+        android:id="@+id/transactionTokenImageView"
         android:layout_width="@dimen/history_transaction_image_size"
         android:layout_height="@dimen/history_transaction_image_size"
         android:layout_marginVertical="12dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/bg_token_swap_rounded">
-
-        <org.p2p.wallet.common.ui.widget.RoundedImageView
-            android:id="@+id/sourceImageView"
-            android:layout_width="29dp"
-            android:layout_height="29dp"
-            android:layout_gravity="top"
-            app:cornerRadius="12dp"
-            tools:src="@tools:sample/avatars" />
-
-        <org.p2p.wallet.common.ui.widget.RoundedImageView
-            android:id="@+id/destinationImageView"
-            android:layout_width="29dp"
-            android:layout_height="29dp"
-            android:layout_gravity="end|bottom"
-            app:cornerRadius="12dp"
-            tools:src="@tools:sample/avatars" />
-
-    </FrameLayout>
+        android:layout_marginStart="16dp" />
 
     <include
         android:id="@+id/transactionData"
