@@ -65,7 +65,7 @@ fun <T : Fragment> FragmentActivity.popBackStackTo(target: KClass<T>, inclusive:
 fun Fragment.popAndReplaceFragment(
     target: Fragment,
     popTo: KClass<out Fragment>? = null,
-    @IdRes containerId: Int = R.id.content,
+    @IdRes containerId: Int = R.id.fragmentContainer,
     addToBackStack: Boolean = true,
     inclusive: Boolean = false,
     @AnimRes enter: Int = R.anim.nav_enter,
@@ -102,7 +102,7 @@ fun Fragment.popAndReplaceFragment(
 
 fun Fragment.addFragment(
     target: Fragment,
-    @IdRes containerId: Int = R.id.content,
+    @IdRes containerId: Int = R.id.fragmentContainer,
     addToBackStack: Boolean = true,
     @AnimRes enter: Int = R.anim.nav_enter,
     @AnimRes exit: Int = R.anim.nav_exit,
@@ -120,7 +120,7 @@ fun Fragment.addFragment(
 
 fun Fragment.replaceFragment(
     target: Fragment,
-    @IdRes containerId: Int = R.id.content,
+    @IdRes containerId: Int = R.id.fragmentContainer,
     addToBackStack: Boolean = true,
     @AnimRes enter: Int = R.anim.nav_enter,
     @AnimRes exit: Int = R.anim.nav_exit,

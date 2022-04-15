@@ -66,7 +66,7 @@ class SignInPinFragment :
     }
 
     override fun onSignInSuccess() {
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        popAndReplaceFragment(MainFragment.create(), inclusive = true, containerId = R.id.content)
     }
 
     override fun onLogout() {

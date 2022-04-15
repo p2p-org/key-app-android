@@ -59,7 +59,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         }
 
         if (fragments.isEmpty) {
-            requireActivity().supportFragmentManager.fragments.forEach { fragment ->
+            childFragmentManager.fragments.forEach { fragment ->
                 when (fragment) {
                     is HomeFragment -> fragments.put(R.id.itemHome, fragment)
                     is HistoryFragment -> fragments.put(R.id.itemHistory, fragment)
@@ -96,7 +96,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         }
 
         val prevFragmentId = binding.bottomNavigation.selectedItemId
-        requireActivity().supportFragmentManager.commit(allowStateLoss = false) {
+        childFragmentManager.commit(allowStateLoss = false) {
             if (prevFragmentId != itemId) {
                 if (fragments[prevFragmentId] != null && !fragments[prevFragmentId]!!.isAdded) {
                     remove(fragments[prevFragmentId]!!)
@@ -105,7 +105,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                 }
             }
             val nextFragmentTag = fragments[itemId]!!.javaClass.name + "_" + itemId
-            if (requireActivity().supportFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
+            if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
 
                 if (fragments[itemId]!!.isAdded) {
                     return
