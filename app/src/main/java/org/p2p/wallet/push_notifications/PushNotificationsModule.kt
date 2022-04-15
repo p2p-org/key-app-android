@@ -22,7 +22,7 @@ object PushNotificationsModule : InjectionModule {
         }
 
         factory {
-            PushNotificationsInteractor(get(), get(), get(), get())
+            PushNotificationsInteractor(get(), get(), get(), get(), get())
         }
     }
 }
