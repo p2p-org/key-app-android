@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
+import androidx.collection.forEach
 import androidx.collection.set
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import org.koin.android.ext.android.inject
@@ -20,6 +22,7 @@ import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class MainFragment : BaseFragment(R.layout.fragment_main) {
@@ -35,11 +38,20 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
-                navigate(R.id.itemHome)
-                binding.bottomNavigation.menu[0].isChecked = true
+            // Get all fragments in stack
+            val fragments = requireActivity().supportFragmentManager.fragments
+            // Cause Glide library add [Magic fragment in stack] we need to add plus one
+            if (fragments.size > 2) {
+                // Cause our popBackStack implementation pop fragment from
+                requireActivity().popBackStack()
             } else {
-                requireActivity().finish()
+                // Here Main Fragment has a focus and we change logic to control out bottom navigation
+                if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
+                    navigate(R.id.itemHome)
+                    binding.bottomNavigation.menu[0].isChecked = true
+                } else {
+                    requireActivity().finish()
+                }
             }
         }
     }
@@ -104,7 +116,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                     hide(fragments[prevFragmentId]!!)
                 }
             }
-            val nextFragmentTag = fragments[itemId]!!.javaClass.name + "_" + itemId
+            val nextFragmentTag = fragments[itemId]!!.javaClass.name
             if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
 
                 if (fragments[itemId]!!.isAdded) {
@@ -122,6 +134,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                     show(fragments[itemId]!!)
                 }
             }
+        }
+
+        // Attach to listen our backstack at first launch our Glide fragment not yet in back stack
+        // so we assume that if fragments size less or equals 2 our
+        // MainFragment in front of us so we show our bottom navigation
+        // otherwise hide it
+        requireActivity().supportFragmentManager.addOnBackStackChangedListener {
+            val fragmentsSize = requireActivity().supportFragmentManager.fragments.size
+            binding.bottomNavigation.isVisible = fragmentsSize <= 2
         }
     }
 
