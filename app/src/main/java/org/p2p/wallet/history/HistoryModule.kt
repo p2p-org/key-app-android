@@ -91,6 +91,16 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsRemoteRepository::class
 
-        factory { HistoryPresenter(get(), get()) } bind HistoryContract.Presenter::class
+        factory {
+            HistoryPresenter(
+                historyInteractor = get(),
+                tokenKeyProvider = get(),
+                renBtcInteractor = get(),
+                receiveAnalytics = get(),
+                swapAnalytics = get(),
+                analyticsInteractor = get(),
+                sendAnalytics = get()
+            )
+        } bind HistoryContract.Presenter::class
     }
 }

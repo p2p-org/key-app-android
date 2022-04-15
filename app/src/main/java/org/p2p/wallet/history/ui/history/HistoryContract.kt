@@ -9,9 +9,11 @@ interface HistoryContract {
     interface View : MvpView {
         fun showPagingState(state: PagingState)
         fun showHistory(items: List<HistoryTransaction>)
+        fun openTransactionDetailsScreen(transaction: HistoryTransaction)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadHistory(isRefresh: Boolean = false)
+        fun onItemClicked(transaction: HistoryTransaction)
     }
 }
