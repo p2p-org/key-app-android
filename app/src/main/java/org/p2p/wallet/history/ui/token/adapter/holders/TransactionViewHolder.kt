@@ -8,10 +8,8 @@ import org.p2p.wallet.common.date.toTimeString
 import org.p2p.wallet.databinding.ItemTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
-import org.p2p.wallet.utils.withImageOrGone
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
 
@@ -36,7 +34,7 @@ class TransactionViewHolder(
 
     private fun showBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
         with(binding) {
-            transactionTokenImageView.setImageResource(transaction.getIcon())
+            transactionTokenImageView.setTransactionIcon(transaction.getIcon())
             with(transactionData) {
                 addressTextView.text = transaction.signature.cutMiddle()
                 timeTextView.text = transaction.date.toTimeString()
@@ -48,7 +46,7 @@ class TransactionViewHolder(
 
     private fun showUnknownTransaction(transaction: HistoryTransaction.Unknown) {
         with(binding) {
-            transactionTokenImageView.setImageResource(R.drawable.ic_no_money)
+            transactionTokenImageView.setTransactionIcon(R.drawable.ic_no_money)
             with(transactionData) {
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
@@ -65,7 +63,7 @@ class TransactionViewHolder(
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
 
-                transactionTokenImageView.setImageResource(R.drawable.ic_wallet_gray)
+                transactionTokenImageView.setTransactionIcon(R.drawable.ic_wallet_gray)
                 addressTextView.text = transaction.signature.cutMiddle()
             }
         }
@@ -74,7 +72,7 @@ class TransactionViewHolder(
     @SuppressLint("SetTextI18n")
     private fun showCloseTransaction(transaction: HistoryTransaction.CloseAccount) {
         with(binding) {
-            transactionTokenImageView.setImageResource(R.drawable.ic_trash)
+            transactionTokenImageView.setTransactionIcon(R.drawable.ic_trash)
             with(transactionData) {
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
@@ -87,7 +85,7 @@ class TransactionViewHolder(
 
     private fun showTransferTransaction(transaction: HistoryTransaction.Transfer) {
         with(binding) {
-            transactionTokenImageView.setImageResource(transaction.getIcon())
+            transactionTokenImageView.setTransactionIcon(transaction.getIcon())
             with(transactionData) {
                 valueTextView.isVisible = true
                 totalTextView.isVisible = true
@@ -102,17 +100,6 @@ class TransactionViewHolder(
     }
 
     private fun setStatus(transaction: HistoryTransaction) {
-        val iconRes = if (transaction is HistoryTransaction.Transfer) {
-            getStatusIcon(transaction.status)
-        } else {
-            null
-        }
-        binding.transactionStatus.withImageOrGone(iconRes)
-    }
-
-    private fun getStatusIcon(status: TransactionStatus): Int? = when (status) {
-        TransactionStatus.PENDING -> R.drawable.ic_state_pending
-        TransactionStatus.ERROR -> R.drawable.ic_state_error
-        else -> null
+        binding.transactionTokenImageView.setStatus(transaction)
     }
 }

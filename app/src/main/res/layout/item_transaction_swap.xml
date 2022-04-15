@@ -18,16 +18,16 @@
 
         <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/sourceImageView"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
             android:layout_gravity="top"
             app:cornerRadius="12dp"
             tools:src="@tools:sample/avatars" />
 
         <org.p2p.wallet.common.ui.widget.RoundedImageView
             android:id="@+id/destinationImageView"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
             android:layout_gravity="end|bottom"
             app:cornerRadius="12dp"
             tools:src="@tools:sample/avatars" />
