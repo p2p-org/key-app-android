@@ -10,6 +10,7 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
@@ -25,10 +26,12 @@ class AuthLogoutInteractor(
     private val updatesManager: UpdatesManager,
     private val transactionManager: RenTransactionManager,
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
+    private val pushNotificationsInteractor: PushNotificationsInteractor,
     private val appScope: AppScope,
 ) {
     suspend fun onUserLogout() {
         appScope.launch {
+            pushNotificationsInteractor.deleteDeviceToken()
             updatesManager.stop()
             sharedPreferences.edit { clear() }
             tokenKeyProvider.clear()

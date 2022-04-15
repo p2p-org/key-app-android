@@ -22,4 +22,7 @@
     <string name="blockstreamUrl">https://blockstream.info/</string>
 
     <string name="p2pWebBaseUrl">https://raw.githubusercontent.com/p2p-org/p2p-wallet-web/develop/src/app/contexts/swap/orca-commons/data/json/</string>
+
+    <!--- TODO: Stub -->
+    <string name="notification_service_url">https://our_host:64111/api/v1/</string>
 </resources>
