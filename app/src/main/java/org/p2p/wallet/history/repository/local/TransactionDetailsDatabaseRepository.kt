@@ -19,11 +19,6 @@ class TransactionDetailsDatabaseRepository(
         )
     }
 
-    override suspend fun deleteTransactions(signatures: List<String>): Boolean {
-        daoDelegate.deleteTransactions(signatures)
-        return true
-    }
-
     override suspend fun deleteAll() {
         daoDelegate.deleteAll()
     }

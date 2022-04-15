@@ -91,6 +91,6 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsRemoteRepository::class
 
-        factory { HistoryPresenter() } bind HistoryContract.Presenter::class
+        factory { HistoryPresenter(get(), get()) } bind HistoryContract.Presenter::class
     }
 }

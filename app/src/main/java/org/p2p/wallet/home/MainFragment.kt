@@ -9,7 +9,6 @@ import androidx.collection.set
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.lifecycle.Lifecycle
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -60,7 +59,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         }
 
         if (fragments.isEmpty) {
-            childFragmentManager.fragments.forEach { fragment ->
+            requireActivity().supportFragmentManager.fragments.forEach { fragment ->
                 when (fragment) {
                     is HomeFragment -> fragments.put(R.id.itemHome, fragment)
                     is HistoryFragment -> fragments.put(R.id.itemHistory, fragment)
@@ -97,17 +96,17 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         }
 
         val prevFragmentId = binding.bottomNavigation.selectedItemId
-        childFragmentManager.commit(allowStateLoss = true) {
+        requireActivity().supportFragmentManager.commit(allowStateLoss = false) {
             if (prevFragmentId != itemId) {
                 if (fragments[prevFragmentId] != null && !fragments[prevFragmentId]!!.isAdded) {
                     remove(fragments[prevFragmentId]!!)
                 } else if (fragments[prevFragmentId] != null) {
                     hide(fragments[prevFragmentId]!!)
-                    setMaxLifecycle(fragments[prevFragmentId]!!, Lifecycle.State.CREATED)
                 }
             }
             val nextFragmentTag = fragments[itemId]!!.javaClass.name + "_" + itemId
-            if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
+            if (requireActivity().supportFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
+
                 if (fragments[itemId]!!.isAdded) {
                     return
                 }
@@ -121,7 +120,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                     add(R.id.fragmentContainer, fragments[itemId]!!, nextFragmentTag)
                 } else {
                     show(fragments[itemId]!!)
-                    setMaxLifecycle(fragments[itemId]!!, Lifecycle.State.RESUMED)
                 }
             }
         }

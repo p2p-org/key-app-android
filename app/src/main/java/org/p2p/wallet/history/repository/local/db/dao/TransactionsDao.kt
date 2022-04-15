@@ -19,23 +19,12 @@ abstract class TransactionsDao<TRANSACTION : TransactionEntity>(private val tabl
     @RawQuery
     protected abstract suspend fun getTransactionsByQuery(query: SupportSQLiteQuery): List<TRANSACTION>
 
-    @RawQuery
-    protected abstract suspend fun deleteTransactionByQuery(query: SupportSQLiteQuery)
-
     suspend fun getTransactionsBySignature(signatures: List<String>): List<TRANSACTION> {
         val signaturesListInSql = signatures.joinToString(separator = ",") { "\'$it\'" }
         return getTransactionsByQuery(
             //language=RoomSql
             SimpleSQLiteQuery("SELECT * FROM $tableName WHERE signature in ($signaturesListInSql)")
         )
-    }
-
-    suspend fun deleteTransactionBySignature(signatures: List<String>): Boolean {
-        val signaturesListInSQl = signatures.joinToString(separator = ",") { "\'it\'" }
-        deleteTransactionByQuery(
-            SimpleSQLiteQuery("DELETE * FROM $tableName WHERE signature in ($signaturesListInSQl)")
-        )
-        return true
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

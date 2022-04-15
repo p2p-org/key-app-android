@@ -5,6 +5,5 @@ import org.p2p.solanaj.kits.transaction.TransactionDetails
 interface TransactionDetailsLocalRepository {
     suspend fun saveTransactions(transactionDetails: List<TransactionDetails>)
     suspend fun getTransactions(signatures: List<String>): List<TransactionDetails>
-    suspend fun deleteTransactions(signatures: List<String>): Boolean
     suspend fun deleteAll()
 }
