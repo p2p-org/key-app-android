@@ -8,8 +8,10 @@ import org.p2p.wallet.common.date.toTimeString
 import org.p2p.wallet.databinding.ItemTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+import org.p2p.wallet.utils.withImageOrGone
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
 
@@ -28,6 +30,7 @@ class TransactionViewHolder(
             is HistoryTransaction.Unknown -> showUnknownTransaction(item.transaction)
             else -> Timber.e("Unsupported transaction type for this ViewHolder: $item")
         }
+        setStatus(item.transaction)
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
     }
 
@@ -96,5 +99,20 @@ class TransactionViewHolder(
                 totalTextView.setTextColor(transaction.getTextColor(valueTextView.context))
             }
         }
+    }
+
+    private fun setStatus(transaction: HistoryTransaction) {
+        val iconRes = if (transaction is HistoryTransaction.Transfer) {
+            getStatusIcon(transaction.status)
+        } else {
+            null
+        }
+        binding.transactionStatus.withImageOrGone(iconRes)
+    }
+
+    private fun getStatusIcon(status: TransactionStatus): Int? = when (status) {
+        TransactionStatus.PENDING -> R.drawable.ic_state_pending
+        TransactionStatus.ERROR -> R.drawable.ic_state_error
+        else -> null
     }
 }
