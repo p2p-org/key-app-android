@@ -11,6 +11,7 @@ import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -28,7 +29,7 @@ class HistoryFragment :
     private val binding: FragmentHistoryBinding by viewBinding()
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
-            onTransactionClicked = {},
+            onTransactionClicked = presenter::onItemClicked,
             onRetryClicked = {}
         )
     }
@@ -61,5 +62,17 @@ class HistoryFragment :
         val isEmpty = items.isEmpty()
         binding.emptyStateLayout.isVisible = isEmpty
         binding.historyRecyclerView.isVisible = !isEmpty
+    }
+
+    override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {
+        when (transaction) {
+            is HistoryTransaction.Swap,
+            is HistoryTransaction.Transfer,
+            is HistoryTransaction.BurnOrMint -> {
+                val state = TransactionDetailsLaunchState.History(transaction)
+                // TODO PWN-3253 show details here
+            }
+            else -> Timber.e("Unsupported transaction type: $transaction")
+        }
     }
 }
