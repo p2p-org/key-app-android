@@ -36,14 +36,16 @@ class HistoryFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.tag("________").d("onViewCreate")
         with(binding) {
-            // refreshLayout.setOnRefreshListener { presenter.loadHistory(isRefresh = true) }
-
             val scrollListener = EndlessScrollListener(
                 layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
                 loadNextPage = { presenter.loadHistory(false) }
             )
+
+            refreshLayout.setOnRefreshListener {
+                presenter.loadHistory(isRefresh = true)
+                scrollListener.reset()
+            }
             historyRecyclerView.addOnScrollListener(scrollListener)
             historyRecyclerView.adapter = adapter
         }
@@ -53,15 +55,16 @@ class HistoryFragment :
     override fun showPagingState(state: PagingState) {
         adapter.setPagingState(state)
         binding.shimmerView.isVisible = state == PagingState.InitialLoading
+        binding.refreshLayout.isRefreshing = state is PagingState.Loading && state.isRefresh
+        binding.refreshLayout.isVisible = state != PagingState.InitialLoading
     }
 
     override fun showHistory(items: List<HistoryTransaction>) {
-        Timber.tag("_____").d("Loaded items = ${items.size}")
         adapter.setTransactions(items)
 
-        val isEmpty = items.isEmpty()
-        binding.emptyStateLayout.isVisible = isEmpty
-        binding.historyRecyclerView.isVisible = !isEmpty
+        val isHistoryEmpty = items.isEmpty()
+        binding.emptyStateLayout.isVisible = isHistoryEmpty
+        binding.historyRecyclerView.isVisible = !isHistoryEmpty
     }
 
     override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {

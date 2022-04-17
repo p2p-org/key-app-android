@@ -56,12 +56,12 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     private fun logScreenOpenEvent() {
-        val openedFragment = supportFragmentManager.findFragmentById(R.id.content) as? BaseFragment
+        val openedFragment = supportFragmentManager.findFragmentById(R.id.rootContainer) as? BaseFragment
         if (openedFragment != null) {
             analyticsInteractor.logScreenOpenEvent(openedFragment.getAnalyticsName())
         } else {
             val findFragmentError = ClassCastException(
-                "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.content)}"
+                "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.rootContainer)}"
             )
             Timber.w(findFragmentError)
         }

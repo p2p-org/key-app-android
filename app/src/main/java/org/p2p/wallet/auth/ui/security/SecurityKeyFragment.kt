@@ -23,9 +23,9 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import org.p2p.wallet.utils.PixelCopy
 import org.p2p.wallet.utils.PixelCopyListener
+import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.shareScreenShot
@@ -132,7 +132,7 @@ class SecurityKeyFragment :
     }
 
     override fun navigateToVerify(keys: List<String>) {
-        replaceFragment(VerifySecurityKeyFragment.create(keys))
+        replaceFragment(VerifySecurityKeyFragment.create(keys), containerId = R.id.rootContainer)
     }
 
     override fun captureKeys() {

@@ -59,7 +59,7 @@ class VerifySecurityKeyFragment :
     }
 
     override fun navigateToReserve() {
-        replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE))
+        replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE), containerId = R.id.rootContainer)
     }
 
     override fun showKeysDoesNotMatchError() {

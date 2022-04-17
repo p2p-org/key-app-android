@@ -83,11 +83,11 @@ class DerivableAccountsFragment :
     }
 
     override fun navigateToCreatePin() {
-        replaceFragment(CreatePinFragment.create())
+        replaceFragment(CreatePinFragment.create(), containerId = R.id.rootContainer)
     }
 
     override fun navigateToReserveUsername() {
-        replaceFragment(ReserveUsernameFragment.create(PIN_CODE))
+        replaceFragment(ReserveUsernameFragment.create(PIN_CODE), containerId = R.id.rootContainer)
     }
 
     override fun showLoading(isLoading: Boolean) {

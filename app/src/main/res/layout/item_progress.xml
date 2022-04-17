@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.facebook.shimmer.ShimmerFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="100dp">
+    app:shimmer_auto_start="true">
 
-    <ProgressBar
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:orientation="vertical">
 
-</FrameLayout>
+        <include layout="@layout/item_history_shimmer" />
+
+        <include layout="@layout/item_history_shimmer" />
+
+        <include layout="@layout/item_history_shimmer" />
+
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

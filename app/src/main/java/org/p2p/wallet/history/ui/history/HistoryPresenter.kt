@@ -29,6 +29,7 @@ class HistoryPresenter(
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private val publicKey = tokenKeyProvider.publicKey
+    private var isPagingEnded = false
 
     private var transactions by Delegates.observable<List<HistoryTransaction>>(emptyList()) { _, _, newValue ->
         view?.showHistory(items = newValue)
@@ -37,22 +38,29 @@ class HistoryPresenter(
 
     override fun loadHistory(isRefresh: Boolean) {
         launch {
-            if (transactions.isEmpty()) {
-                view?.showPagingState(PagingState.InitialLoading)
-            } else {
-                view?.showPagingState(PagingState.Loading)
+            if (isRefresh) {
+                transactions = emptyList()
+                isPagingEnded = false
             }
-            val lastSignature = transactions.lastOrNull()?.signature
+            val pagingState: PagingState = when {
+                transactions.isEmpty() && !isRefresh -> {
+                    PagingState.InitialLoading
+                }
+                else ->
+                    PagingState.Loading(isRefresh)
+            }
+            view?.showPagingState(pagingState)
+            val lastLoadedSignature = transactions.lastOrNull()?.signature
             runCatching {
                 historyInteractor.getTransactionHistory2(
                     tokenPublicKey = publicKey,
                     forceNetwork = isRefresh,
                     limit = PAGE_SIZE,
-                    lastSignature = lastSignature
+                    lastSignature = lastLoadedSignature
                 )
             }
-                .onSuccess(::onSuccess)
-                .onFailure(::onFailure)
+                .onSuccess(::onTransactionLoadSuccess)
+                .onFailure(::onTransactionLoadFailure)
         }
     }
 
@@ -115,14 +123,17 @@ class HistoryPresenter(
         }
     }
 
-    private fun onSuccess(items: List<HistoryTransaction>) {
+    private fun onTransactionLoadSuccess(items: List<HistoryTransaction>) {
         transactions = transactions + items
     }
 
-    private fun onFailure(e: Throwable) {
+    private fun onTransactionLoadFailure(e: Throwable) {
         Timber.e("Error getting transaction history")
         if (e is EmptyDataException) {
-            transactions = transactions.toMutableList()
+            if (transactions.isEmpty()) {
+                view?.showHistory(transactions)
+            }
+            isPagingEnded = true
         } else {
             view?.showPagingState(PagingState.Error(e))
         }

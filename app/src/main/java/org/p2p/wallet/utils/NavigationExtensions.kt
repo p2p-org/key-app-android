@@ -139,7 +139,7 @@ fun Fragment.replaceFragment(
 
 fun FragmentActivity.replaceFragment(
     target: Fragment,
-    @IdRes containerId: Int = R.id.content,
+    @IdRes containerId: Int = R.id.rootContainer,
     addToBackStack: Boolean = true
 ) = whenStateAtLeast(Lifecycle.State.STARTED) {
     hideKeyboard()
@@ -151,7 +151,7 @@ fun FragmentActivity.replaceFragment(
 
 fun FragmentActivity.addFragment(
     target: Fragment,
-    @IdRes containerId: Int = R.id.content,
+    @IdRes containerId: Int = R.id.rootContainer,
     addToBackStack: Boolean = true,
     @AnimRes enter: Int = R.anim.nav_enter,
     @AnimRes exit: Int = R.anim.nav_exit,

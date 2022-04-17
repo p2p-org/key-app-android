@@ -23,50 +23,57 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold16" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/historyRecyclerView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:orientation="vertical"
-        android:paddingTop="24dp"
-        android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_transaction" />
+        android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/emptyStateLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="320dp"
-            android:src="@drawable/ic_history_empty_placeholder"
-            tools:ignore="contentDescription" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingTop="24dp"
+            android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_transaction" />
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/emptyStateLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/receive_no_transactions_yet"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Bold28" />
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:text="@string/receive_no_transactions_yet_message"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:src="@drawable/ic_history_empty_placeholder"
+                tools:ignore="contentDescription" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/receive_no_transactions_yet"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Bold28" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:text="@string/receive_no_transactions_yet_message"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+
+        </LinearLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
     <com.facebook.shimmer.ShimmerFrameLayout

@@ -86,11 +86,11 @@ class ReserveUsernameFragment :
     }
 
     override fun navigateToPinCode() {
-        replaceFragment(CreatePinFragment.create())
+        replaceFragment(CreatePinFragment.create(), containerId = R.id.rootContainer)
     }
 
     override fun navigateToUsername() {
-        popAndReplaceFragment(UsernameFragment.create())
+        popAndReplaceFragment(UsernameFragment.create(), containerId = R.id.rootContainer)
     }
 
     override fun showIdleState() {

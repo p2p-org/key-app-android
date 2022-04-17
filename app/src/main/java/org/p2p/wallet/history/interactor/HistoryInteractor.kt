@@ -83,12 +83,12 @@ class HistoryInteractor(
         if (forceNetwork) {
             transactionsLocalRepository.deleteAll()
         }
-
         val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(
             userAccountAddress = tokenPublicKey.toPublicKey(),
             before = lastSignature,
             limit = limit
-        ).map(SignatureInformationResponse::signature)
+        )
+            .map(SignatureInformationResponse::signature)
 
         val localTransactions = transactionsLocalRepository.getTransactions(signatures)
 
