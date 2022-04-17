@@ -75,11 +75,11 @@ class HistoryInteractor(
     }
 
     suspend fun getTransactionHistory2(
-        tokenPublicKey: String,
         forceNetwork: Boolean,
         limit: Int,
         lastSignature: String? = null
     ): List<HistoryTransaction> {
+        val tokenPublicKey = tokenKeyProvider.publicKey
         if (forceNetwork) {
             transactionsLocalRepository.deleteAll()
         }

@@ -7,7 +7,6 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
@@ -20,7 +19,6 @@ private const val PAGE_SIZE = 20
 
 class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val renBtcInteractor: RenBtcInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
@@ -28,7 +26,6 @@ class HistoryPresenter(
     private val sendAnalytics: SendAnalytics
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
-    private val publicKey = tokenKeyProvider.publicKey
     private var isPagingEnded = false
 
     private var transactions by Delegates.observable<List<HistoryTransaction>>(emptyList()) { _, _, newValue ->
@@ -53,7 +50,6 @@ class HistoryPresenter(
             val lastLoadedSignature = transactions.lastOrNull()?.signature
             runCatching {
                 historyInteractor.getTransactionHistory2(
-                    tokenPublicKey = publicKey,
                     forceNetwork = isRefresh,
                     limit = PAGE_SIZE,
                     lastSignature = lastLoadedSignature
