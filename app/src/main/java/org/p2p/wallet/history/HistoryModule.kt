@@ -94,7 +94,6 @@ object HistoryModule : InjectionModule {
         factory {
             HistoryPresenter(
                 historyInteractor = get(),
-                tokenKeyProvider = get(),
                 renBtcInteractor = get(),
                 receiveAnalytics = get(),
                 swapAnalytics = get(),

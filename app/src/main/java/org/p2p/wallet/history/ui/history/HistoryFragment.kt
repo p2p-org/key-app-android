@@ -17,6 +17,9 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 
+private const val DISABLED_STATE_ALPHA = 0.3f
+private const val ENABLED_STATE_ALPHA = 0.3f
+
 class HistoryFragment :
     BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
     HistoryContract.View {
@@ -27,9 +30,15 @@ class HistoryFragment :
 
     override val presenter: HistoryContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
+
+    private var isRefreshing = false
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
-            onTransactionClicked = presenter::onItemClicked,
+            onTransactionClicked = {
+                if (!isRefreshing) {
+                    presenter.onItemClicked(it)
+                }
+            },
             onRetryClicked = {}
         )
     }
@@ -53,10 +62,18 @@ class HistoryFragment :
     }
 
     override fun showPagingState(state: PagingState) {
+        isRefreshing = state is PagingState.Loading && state.isRefresh
         adapter.setPagingState(state)
-        binding.shimmerView.isVisible = state == PagingState.InitialLoading
-        binding.refreshLayout.isRefreshing = state is PagingState.Loading && state.isRefresh
-        binding.refreshLayout.isVisible = state != PagingState.InitialLoading
+        with(binding) {
+            shimmerView.isVisible = state == PagingState.InitialLoading
+            refreshLayout.isRefreshing = state is PagingState.Loading && state.isRefresh
+            refreshLayout.isVisible = state != PagingState.InitialLoading
+            historyRecyclerView.alpha = if (isRefreshing) {
+                DISABLED_STATE_ALPHA
+            } else {
+                ENABLED_STATE_ALPHA
+            }
+        }
     }
 
     override fun showHistory(items: List<HistoryTransaction>) {
