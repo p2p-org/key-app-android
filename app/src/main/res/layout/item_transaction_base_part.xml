@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:ellipsize="end"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="@color/textIconPrimary"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.common.date.isSameAs
 import org.p2p.wallet.common.date.isSameDayAs
+import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -26,6 +27,7 @@ private const val PROGRESS_VIEW_TYPE = 4
 private const val ERROR_VIEW_TYPE = 5
 
 class HistoryAdapter(
+    private val glideManager: GlideManager,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
     private val onRetryClicked: () -> Unit
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
@@ -53,7 +55,7 @@ class HistoryAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionViewHolder {
         return when (viewType) {
             TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, onTransactionClicked)
-            TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, onTransactionClicked)
+            TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, glideManager, onTransactionClicked)
             HISTORY_EMPTY_VIEW_TYPE -> EmptyViewHolder(parent)
             HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)

@@ -2,24 +2,22 @@ package org.p2p.wallet.common.ui.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetTransactionImageBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withImageOrGone
 
-class TransactionImage @JvmOverloads constructor(
+class TransactionImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val binding = WidgetTransactionImageBinding.inflate(
-        LayoutInflater.from(context), this
-    )
+    private val binding = inflateViewBinding<WidgetTransactionImageBinding>()
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TransactionImage)
