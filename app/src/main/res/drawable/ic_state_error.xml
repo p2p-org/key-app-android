@@ -5,7 +5,7 @@
     android:viewportWidth="18"
     android:viewportHeight="18">
     <path
-        android:fillColor="#FF6600"
+        android:fillColor="@color/systemWarningSecondary"
         android:pathData="M9,0.5L9,0.5A8.5,8.5 0,0 1,17.5 9L17.5,9A8.5,8.5 0,0 1,9 17.5L9,17.5A8.5,8.5 0,0 1,0.5 9L0.5,9A8.5,8.5 0,0 1,9 0.5z"
         android:strokeWidth="1"
         android:strokeColor="#ffffff" />

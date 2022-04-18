@@ -7,7 +7,7 @@ import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.databinding.WidgetTransactionSwapImageBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-private const val IMAGE_SIZE = 29
+private const val IMAGE_SIZE = 28
 
 class TransactionSwapImageView @JvmOverloads constructor(
     context: Context,
