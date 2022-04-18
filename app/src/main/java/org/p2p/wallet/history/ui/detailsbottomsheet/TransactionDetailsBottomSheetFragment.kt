@@ -1,6 +1,7 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -60,7 +61,7 @@ class TransactionDetailsBottomSheetFragment :
         }
     }
 
-    override fun showError(messageId: Int) {
+    override fun showError(@StringRes messageId: Int) {
         showInfoDialog(
             titleRes = R.string.error_general_title,
             messageRes = messageId,
