@@ -100,7 +100,7 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 transactionManager = get(),
-                resources = androidContext().resources
+                resources = get()
             )
         } bind SendContract.Presenter::class
         factory { (usernames: List<SearchResult>) ->
