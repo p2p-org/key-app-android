@@ -130,9 +130,9 @@ class TransactionDetailsPresenter(
         val usdTotal = "(${transaction.getFormattedAmount()})"
         val total = "${transaction.getFormattedTotal()} $usdTotal"
         val amount = SpanUtils.highlightText(
-            total,
-            usdTotal,
-            resources.getColor(R.color.textIconSecondary, theme)
+            commonText = total,
+            highlightedText = usdTotal,
+            color = resources.getColor(R.color.textIconSecondary, theme)
         )
         view?.showAmount(R.string.details_received, amount)
         view?.showFee(null)
@@ -169,9 +169,9 @@ class TransactionDetailsPresenter(
         val usdTotal = "(${transaction.getFormattedAmount()})"
         val total = "${transaction.getFormattedTotal()} $usdTotal"
         val amount = SpanUtils.highlightText(
-            total,
-            usdTotal,
-            resources.getColor(R.color.textIconSecondary, theme)
+            commonText = total,
+            highlightedText = usdTotal,
+            color = resources.getColor(R.color.textIconSecondary, theme)
         )
         view?.showAmount(R.string.details_received, amount)
         view?.showFee(null)
