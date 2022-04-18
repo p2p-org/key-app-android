@@ -78,7 +78,7 @@
         android:layout_marginTop="36dp"
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonDrawable="@drawable/ic_done"
+        app:buttonDrawableStart="@drawable/ic_done"
         app:buttonDrawableTint="@color/textIconButtonPrimary"
         app:buttonText="@string/receive_understand"
         app:buttonTextColor="@color/textIconButtonPrimary"

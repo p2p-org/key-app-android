@@ -80,7 +80,7 @@
             android:foreground="?selectableItemBackground"
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:buttonDrawable="@drawable/ic_wallet_white"
+            app:buttonDrawableStart="@drawable/ic_wallet_white"
             app:buttonText="@string/auth_create_new_wallet"
             app:buttonTextColor="@color/white"
             app:layout_constraintBottom_toTopOf="@id/loginButton"
@@ -95,7 +95,7 @@
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             app:buttonBackground="@drawable/bg_blue_stroke_rounded"
-            app:buttonDrawable="@drawable/ic_user"
+            app:buttonDrawableStart="@drawable/ic_user"
             app:buttonText="@string/auth_have_wallet"
             app:buttonTextColor="@color/backgroundButtonPrimary"
             app:layout_constraintBottom_toBottomOf="parent" />

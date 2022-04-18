@@ -46,18 +46,20 @@ class SecretKeyFragment :
     SecretKeyContract.View {
 
     companion object {
-        fun create() = SecretKeyFragment()
+        fun create(): SecretKeyFragment = SecretKeyFragment()
     }
 
     override val presenter: SecretKeyContract.Presenter by inject()
     private val binding: FragmentSecretKeyBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val phraseAdapter: SecretPhraseAdapter by lazy {
-        SecretPhraseAdapter {
-            presenter.setNewKeys(it)
-            clearError()
-        }
+    private val phraseAdapter: SecretPhraseAdapter by unsafeLazy {
+        SecretPhraseAdapter(
+            onSeedPhraseChanged = { keys ->
+                presenter.setNewKeys(keys)
+                clearError()
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,26 +75,32 @@ class SecretKeyFragment :
                 presenter.verifySeedPhrase()
             }
 
-            keysRecyclerView.layoutManager = FlexboxLayoutManager(requireContext()).also {
-                it.flexDirection = FlexDirection.ROW
-                it.justifyContent = JustifyContent.FLEX_START
-            }
-            keysRecyclerView.attachAdapter(phraseAdapter)
+            initKeysList()
 
             phraseTextView.isVisible = false
-            keysRecyclerView.isVisible = true
-            phraseAdapter.addSecretKey(SecretKey())
 
             questionTextView.setOnClickListener {
                 replaceFragment(SeedInfoFragment.create())
             }
-            keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
+
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
         }
 
-        val itemsCount = phraseAdapter.itemCount
-        setButtonEnabled(itemsCount != 0)
+        setButtonEnabled(phraseAdapter.itemCount != 0)
+    }
+
+    private fun FragmentSecretKeyBinding.initKeysList() {
+        keysRecyclerView.layoutManager = FlexboxLayoutManager(requireContext()).also {
+            it.flexDirection = FlexDirection.ROW
+            it.justifyContent = JustifyContent.FLEX_START
+        }
+        keysRecyclerView.attachAdapter(phraseAdapter)
+        keysRecyclerView.isVisible = true
+
+        phraseAdapter.addSecretKey(SecretKey())
+
+        keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
