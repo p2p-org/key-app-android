@@ -18,7 +18,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 
 private const val DISABLED_STATE_ALPHA = 0.3f
-private const val ENABLED_STATE_ALPHA = 0.3f
+private const val ENABLED_STATE_ALPHA = 1f
 
 class HistoryFragment :
     BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
