@@ -43,7 +43,7 @@ object AuthModule {
         factory { CreatePinPresenter(get(), get(), get(), get(), get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get(), get(), get(), get(), get()) } bind SignInPinContract.Presenter::class
         factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
-        factory { AuthDonePresenter(get(), get()) } bind AuthDoneContract.Presenter::class
+        factory { AuthDonePresenter(get(), get(), get()) } bind AuthDoneContract.Presenter::class
 
         // reserving username
         factory { UsernameInteractor(get(), get(), get(), get()) }

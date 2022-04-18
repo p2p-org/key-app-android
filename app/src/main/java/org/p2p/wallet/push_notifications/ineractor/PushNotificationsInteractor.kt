@@ -4,14 +4,13 @@ import android.content.SharedPreferences
 import android.os.Build
 import androidx.core.content.edit
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.push_notifications.model.DeviceInfo
 import org.p2p.wallet.push_notifications.model.DeviceToken
 import org.p2p.wallet.push_notifications.repository.DeviceTokenRepository
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
+import timber.log.Timber
 
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
 private const val TOKEN_SEND_RETRY_DELAY_MS = 60000L
@@ -21,11 +20,12 @@ class PushNotificationsInteractor(
     private val deviceTokenRepository: DeviceTokenRepository,
     private val pushTokenRepository: PushTokenRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val sharedPreferences: SharedPreferences,
-    private val appScope: AppScope
+    private val sharedPreferences: SharedPreferences
 ) {
 
     suspend fun updateDeviceToken(retries: Int = RETRIES_NUMBER) {
+        if (retries < 0) return
+
         val token = pushTokenRepository.getPushToken().value
 
         sharedPreferences.edit { putString(KEY_DEVICE_TOKEN, token) }
@@ -45,14 +45,7 @@ class PushNotificationsInteractor(
         try {
             deviceTokenRepository.sendDeviceToken(deviceToken)
         } catch (e: ServerException) {
-            retryTokenSend(retries)
-        }
-    }
-
-    private fun retryTokenSend(retries: Int) {
-        if (retries < 1) return
-
-        appScope.launch {
+            Timber.e(e, "Error sending device token $token to server")
             delay(TOKEN_SEND_RETRY_DELAY_MS)
             updateDeviceToken(retries - 1)
         }
