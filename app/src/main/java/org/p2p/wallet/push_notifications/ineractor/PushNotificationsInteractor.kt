@@ -14,7 +14,8 @@ import org.p2p.wallet.push_notifications.repository.DeviceTokenRepository
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
-private const val TOKEN_SEND_RETRY_DELAY = 60000L // ms
+private const val TOKEN_SEND_RETRY_DELAY_MS = 60000L
+private const val RETRIES_NUMBER = 1
 
 class PushNotificationsInteractor(
     private val deviceTokenRepository: DeviceTokenRepository,
@@ -24,7 +25,7 @@ class PushNotificationsInteractor(
     private val appScope: AppScope
 ) {
 
-    suspend fun updateDeviceToken(retries: Int = 1) {
+    suspend fun updateDeviceToken(retries: Int = RETRIES_NUMBER) {
         val token = pushTokenRepository.getPushToken().value
 
         sharedPreferences.edit { putString(KEY_DEVICE_TOKEN, token) }
@@ -52,7 +53,7 @@ class PushNotificationsInteractor(
         if (retries < 1) return
 
         appScope.launch {
-            delay(TOKEN_SEND_RETRY_DELAY)
+            delay(TOKEN_SEND_RETRY_DELAY_MS)
             updateDeviceToken(retries - 1)
         }
     }
