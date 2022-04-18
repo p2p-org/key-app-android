@@ -126,7 +126,8 @@ class SendInteractor(
             } else {
                 val address = addressInteractor.findSplTokenAddressData(
                     destinationAddress = destinationAddress,
-                    mintAddress = token.mintAddress
+                    mintAddress = token.mintAddress,
+                    useCache = false
                 )
                 val accountAddress = address.destinationAddress.toBase58()
                 if (address.shouldCreateAccount) {
