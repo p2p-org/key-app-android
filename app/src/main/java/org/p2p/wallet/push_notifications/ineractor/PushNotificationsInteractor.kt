@@ -14,7 +14,7 @@ import timber.log.Timber
 
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
 private const val TOKEN_SEND_RETRY_DELAY_MS = 60000L
-private const val RETRIES_NUMBER = 1
+private const val DEFAULT_RETRIES_NUMBER = 1
 
 class PushNotificationsInteractor(
     private val deviceTokenRepository: DeviceTokenRepository,
@@ -23,7 +23,7 @@ class PushNotificationsInteractor(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun updateDeviceToken(retries: Int = RETRIES_NUMBER) {
+    suspend fun updateDeviceToken(retries: Int = DEFAULT_RETRIES_NUMBER) {
         if (retries < 0) return
 
         val token = pushTokenRepository.getPushToken().value
