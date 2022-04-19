@@ -3,11 +3,6 @@ package org.p2p.wallet.infrastructure.network.feerelayer
 enum class FeeRelayerErrorType(val stringValue: String) {
     PARSE_HASH_ERROR("ParseHashError"),
     PARSE_PUBKEY_ERROR("ParsePubkeyError"),
-    PARSE_KEYPAIR_ERROR("ParseKeypairError"),
-    PARSE_SIGNATURE_ERROR("ParseSignatureError"),
-    WRONG_SIGNATURE("WrongSignature"),
-    SIGNER_ERROR("SignerError"),
-    CLIENT_ERROR("ClientError"),
     PROGRAM_ERROR("ProgramError"),
     TOO_SMALL_AMOUNT("TooSmallAmount"),
     NOT_ENOUGH_BALANCE("NotEnoughBalance "),
@@ -20,6 +15,16 @@ enum class FeeRelayerErrorType(val stringValue: String) {
     FEE_CALCULATOR_NOT_FOUND("FeeCalculatorNotFound"),
     NOT_ENOUGH_OUT_AMOUNT("NotEnoughOutAmount"),
     UNKNOWN_SWAP_PROGRAM_ID("UnknownSwapProgramId"),
+    SWAP_AUTHORITIES_DO_NOT_MATCH("SwapAuthoritiesDoNotMatch"),
+    SWAP_METHODS_DO_NOT_MATCH("SwapMethodsDoNotMatch"),
+    UNSUPPORTED_SWAP_METHOD("UnsupportedSwapMethod"),
+    WRONG_SOURCE_TOKEN_ACCOUNT("WrongSourceTokenAccount"),
+    FREE_FEE_LIMIT_EXCEEDED("FreeFeeLimitExceeded"),
+    ACCESS_DATA_ERROR("AccessDataError"),
+
+    SLIPPAGE_LIMIT("SlippageLimit"),
+    INSUFFICIENT_FUNDS("InsufficientFunds"),
+    MAXIMUM_NUMBER_OF_INSTRUCTIONS_ALLOWED_EXCEEDED("MaximumNumberOfInstructionsAllowedExceeded"),
 
     UNKNOWN("UnknownError");
 }
