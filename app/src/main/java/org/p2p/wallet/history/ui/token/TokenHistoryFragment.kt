@@ -22,7 +22,7 @@ import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -38,6 +38,7 @@ import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 import kotlin.math.absoluteValue
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
@@ -172,11 +173,11 @@ class TokenHistoryFragment :
             is HistoryTransaction.Transfer,
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
-                replaceFragment(TransactionDetailsFragment.create(state))
+                TransactionDetailsBottomSheetFragment.show(
+                    parentFragmentManager, state
+                )
             }
-            else -> {
-                // todo: add support of other transactions
-            }
+            else -> Timber.e("Unsupported transactionType: $transaction")
         }
     }
 }

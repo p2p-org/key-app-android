@@ -1,8 +1,8 @@
 package org.p2p.wallet.history.model
 
-import android.content.Context
+import android.content.res.Resources
 import android.os.Parcelable
-import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import kotlinx.parcelize.IgnoredOnParcel
@@ -90,12 +90,11 @@ sealed class HistoryTransaction(
         @DrawableRes
         fun getIcon(): Int = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
 
-        fun getTitle(context: Context): String =
-            if (isSend) {
-                context.getString(R.string.details_transfer_format, tokenData.symbol, destination.cutMiddle())
-            } else {
-                context.getString(R.string.details_transfer_format, destination.cutMiddle(), tokenData.symbol)
-            }
+        fun getTitle(resources: Resources): String = if (isSend) {
+            resources.getString(R.string.details_transfer_format, tokenData.symbol, destination.cutMiddle())
+        } else {
+            resources.getString(R.string.details_transfer_format, destination.cutMiddle(), tokenData.symbol)
+        }
 
         fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
 
@@ -103,20 +102,18 @@ sealed class HistoryTransaction(
 
         fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
 
-        @ColorInt
-        fun getTextColor(context: Context) =
-            if (isSend) {
-                context.getColor(R.color.textIconPrimary)
-            } else {
-                context.getColor(R.color.systemSuccessMain)
-            }
+        @ColorRes
+        fun getTextColor() = if (isSend) {
+            R.color.textIconPrimary
+        } else {
+            R.color.systemSuccessMain
+        }
 
-        fun getFormattedTotal(scaleMedium: Boolean = false): String =
-            if (scaleMedium) {
-                "${total.scaleMedium().toPlainString()} ${tokenData.symbol}"
-            } else {
-                "${total.scaleLong().toPlainString()} ${tokenData.symbol}"
-            }
+        fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
+            "${total.scaleMedium().toPlainString()} ${tokenData.symbol}"
+        } else {
+            "${total.scaleLong().toPlainString()} ${tokenData.symbol}"
+        }
 
         fun getFormattedAmount(): String? = totalInUsd?.let { "~$${totalInUsd.scaleShort()}" }
     }
