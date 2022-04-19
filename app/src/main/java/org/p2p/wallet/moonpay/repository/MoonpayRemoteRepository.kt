@@ -1,10 +1,12 @@
 package org.p2p.wallet.moonpay.repository
 
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.moonpay.api.MoonpayApi
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
+import org.p2p.wallet.utils.Constants
 import java.math.BigDecimal
 
 class MoonpayRemoteRepository(
@@ -15,12 +17,12 @@ class MoonpayRemoteRepository(
     override suspend fun getCurrency(
         baseCurrencyAmount: String?,
         quoteCurrencyAmount: String?,
-        quoteCurrencyCode: String,
+        tokenToBuy: Token,
         baseCurrencyCode: String
     ): MoonpayBuyResult =
         try {
             val response = api.getBuyCurrency(
-                quoteCurrencyCode = quoteCurrencyCode,
+                quoteCurrencyCode = tokenToBuy.tokenSymbolForMoonPay,
                 apiKey = apiKey,
                 baseCurrencyAmount = baseCurrencyAmount,
                 quoteCurrencyAmount = quoteCurrencyAmount,
@@ -35,8 +37,18 @@ class MoonpayRemoteRepository(
             }
         }
 
-    override suspend fun getCurrencyAskPrice(quoteCurrencyCode: String): BigDecimal {
-        val response = api.getCurrencyAskPrice(quoteCurrencyCode, apiKey)
+    override suspend fun getCurrencyAskPrice(tokenToGetPrice: Token): BigDecimal {
+        val response = api.getCurrencyAskPrice(tokenToGetPrice.tokenSymbolForMoonPay, apiKey)
         return response.usd
     }
+
+    private val Token.tokenSymbolForMoonPay: String
+        get() {
+            val tokenLowercase = tokenSymbol.lowercase()
+            return if (isUSDC) {
+                "${tokenLowercase}_${Constants.SOL_SYMBOL.lowercase()}"
+            } else {
+                tokenLowercase
+            }
+        }
 }

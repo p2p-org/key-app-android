@@ -13,6 +13,7 @@ import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.isZero
@@ -48,7 +49,7 @@ class BuySolanaPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val price = moonpayRepository.getCurrencyAskPrice(token.tokenSymbol.lowercase()).scaleShort()
+                val price = moonpayRepository.getCurrencyAskPrice(token).scaleShort()
                 view?.showTokenPrice("$USD_SYMBOL$price")
                 if (isSwapped) {
                     updateViewWithData()
@@ -130,7 +131,7 @@ class BuySolanaPresenter(
                 val result = moonpayRepository.getCurrency(
                     baseCurrencyAmount = amountInCurrency,
                     quoteCurrencyAmount = amountInTokens,
-                    quoteCurrencyCode = token.getTokenSymbolForMoonPay(),
+                    tokenToBuy = token,
                     baseCurrencyCode = baseCurrencyCode
                 )
                 when (result) {
@@ -178,26 +179,33 @@ class BuySolanaPresenter(
             view?.showData(data).also { this.data = data }
             view?.showMessage(null)
         } else {
-            val isUsd = currency.code == USD_READABLE_SYMBOL.lowercase()
-            val suffixPrefix = if (isUsd) USD_SYMBOL else currency.code.uppercase()
-            val amountIsLower = amountBigDecimal < currency.minAmount
-            val amountForFormatter = if (amountIsLower) {
-                currency.minAmount
+            val isCurrencyUsd = currency.code == USD_READABLE_SYMBOL.lowercase()
+            val suffixPrefix = if (isCurrencyUsd) {
+                USD_SYMBOL
             } else {
-                currency.maxAmount
+                currency.code.run {
+                    // USDC from moonpay comes with _SOL suffix, so remove it
+                    if (contains(USDC_SYMBOL, ignoreCase = true)) removeSuffix("_$SOL_SYMBOL") else this
+                }
+                    .uppercase()
             }
+            val amountIsLower = amountBigDecimal < currency.minAmount
+            val amountForFormatter =
+                if (amountIsLower) {
+                    currency.minAmount
+                } else {
+                    currency.maxAmount
+                }
             val suffixPrefixWithAmount =
-                if (isUsd) {
+                if (isCurrencyUsd) {
                     "$suffixPrefix$amountForFormatter"
                 } else {
                     "$amountForFormatter $suffixPrefix"
                 }
+
+            val errorMessageRaw = if (amountIsLower) minBuyErrorFormat else maxBuyErrorFormat
             view?.showMessage(
-                if (amountIsLower) {
-                    minBuyErrorFormat
-                } else {
-                    maxBuyErrorFormat
-                }.format(suffixPrefixWithAmount)
+                errorMessageRaw.format(suffixPrefixWithAmount)
             )
         }
     }
@@ -214,14 +222,5 @@ class BuySolanaPresenter(
         )
         view?.showData(clearedData)
         view?.showMessage(null)
-    }
-
-    private fun Token.getTokenSymbolForMoonPay(): String {
-        val tokenLowercase = token.tokenSymbol.lowercase()
-        return if (token.isUSDC) {
-            "${tokenLowercase}_${SOL_SYMBOL.lowercase()}"
-        } else {
-            tokenLowercase
-        }
     }
 }

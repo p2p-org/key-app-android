@@ -35,9 +35,7 @@ class BuySolanaFragment :
         )
     }
 
-    override val presenter: BuySolanaContract.Presenter by inject {
-        parametersOf(token)
-    }
+    override val presenter: BuySolanaContract.Presenter by inject { parametersOf(token) }
     private val token: Token by args(EXTRA_TOKEN)
 
     private val binding: FragmentBuySolanaBinding by viewBinding()
@@ -132,7 +130,6 @@ class BuySolanaFragment :
         } else {
             "${prefixSuffixSymbol}0"
         }
-        payEditText.text = payEditText.text
     }
 
     private fun installPrefixWatcher(
