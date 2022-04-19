@@ -3,7 +3,7 @@ package org.p2p.wallet.moonpay.model
 import org.p2p.wallet.utils.Constants
 import java.math.BigDecimal
 
-data class BuyData(
+data class BuyViewData(
     val tokenSymbol: String,
     val currencySymbol: String,
     val price: BigDecimal,

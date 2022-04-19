@@ -22,14 +22,14 @@ data class BuyCurrency(
         networkFeeAmount = response.networkFeeAmount,
         totalAmount = response.totalAmount,
         baseCurrency = Currency(
-            response.baseCurrency.code,
-            response.baseCurrency.minBuyAmount,
-            response.baseCurrency.maxBuyAmount
+            code = response.baseCurrency.code,
+            minAmount = response.baseCurrency.minBuyAmount,
+            maxAmount = response.baseCurrency.maxBuyAmount
         ),
         quoteCurrency = Currency(
-            response.currency.code,
-            response.currency.minBuyAmount,
-            response.currency.maxBuyAmount
+            code = response.currency.code,
+            minAmount = response.currency.minBuyAmount,
+            maxAmount = response.currency.maxBuyAmount
         )
     )
 

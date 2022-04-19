@@ -2,13 +2,13 @@ package org.p2p.wallet.moonpay.ui
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.moonpay.model.BuyData
+import org.p2p.wallet.moonpay.model.BuyViewData
 
 interface BuySolanaContract {
 
     interface View : MvpView {
         fun showTokenPrice(price: String)
-        fun showData(data: BuyData)
+        fun showData(viewData: BuyViewData)
         fun showLoading(isLoading: Boolean)
         fun showMessage(message: String?)
         fun navigateToMoonpay(amount: String)
@@ -18,7 +18,7 @@ interface BuySolanaContract {
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
-        fun setBuyAmount(amount: String, delayEnabled: Boolean = true)
+        fun setBuyAmount(amount: String, isDelayEnabled: Boolean = true)
         fun onContinueClicked()
         fun onSwapClicked()
         fun onBackPressed()
