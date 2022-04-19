@@ -92,4 +92,9 @@
         <attr name="android:text" />
         <attr name="isExpanded" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="TransactionImage">
+        <attr name="statusIconPadding" format="dimension" />
+    </declare-styleable>
+
 </resources>

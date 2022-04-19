@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -27,8 +28,11 @@ class HistoryFragment :
 
     override val presenter: HistoryContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
+
+    private val glideManager: GlideManager by inject()
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
+            glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
             onRetryClicked = {}
         )
