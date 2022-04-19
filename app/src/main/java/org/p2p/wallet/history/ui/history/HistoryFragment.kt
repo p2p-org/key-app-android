@@ -58,12 +58,10 @@ class HistoryFragment :
     }
 
     override fun showPagingState(state: PagingState) {
-        val isRefreshing = state is PagingState.Loading && state.isRefresh
         adapter.setPagingState(state)
         with(binding) {
             shimmerView.isVisible = state == PagingState.InitialLoading
             refreshLayout.isVisible = state != PagingState.InitialLoading
-            refreshLayoutProgressPlaceholder.isVisible = isRefreshing
         }
     }
 
@@ -89,7 +87,8 @@ class HistoryFragment :
         }
     }
 
-    override fun showRefreshing(isRefreshing: Boolean) {
-        binding.refreshLayout.isRefreshing = isRefreshing
+    override fun showRefreshing(isRefreshing: Boolean) = with(binding) {
+        refreshLayout.isRefreshing = isRefreshing
+        refreshLayoutProgressPlaceholder.isVisible = isRefreshing
     }
 }
