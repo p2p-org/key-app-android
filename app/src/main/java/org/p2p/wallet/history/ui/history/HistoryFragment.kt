@@ -13,6 +13,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -76,7 +77,9 @@ class HistoryFragment :
             is HistoryTransaction.Transfer,
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
-                // TODO PWN-3253 show details here
+                TransactionDetailsBottomSheetFragment.show(
+                    parentFragmentManager, state
+                )
             }
             else -> Timber.e("Unsupported transaction type: $transaction")
         }

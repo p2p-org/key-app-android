@@ -21,8 +21,8 @@
 
             <org.p2p.wallet.common.ui.widget.RoundedImageView
                 android:id="@+id/tokenImageView"
-                android:layout_width="@dimen/transaction_view_image_size"
-                android:layout_height="@dimen/transaction_view_image_size"
+                android:layout_width="@dimen/history_transaction_image_size"
+                android:layout_height="@dimen/history_transaction_image_size"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="16dp"
