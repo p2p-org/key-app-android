@@ -36,7 +36,7 @@ class HistoryPresenter(
     override fun loadHistory(isRefresh: Boolean) {
         launch {
             if (isRefresh) {
-                //transactions = emptyList()
+                transactions = emptyList()
                 isPagingEnded = false
             }
             val pagingState: PagingState = when {

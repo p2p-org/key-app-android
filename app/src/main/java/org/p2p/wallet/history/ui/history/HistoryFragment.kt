@@ -80,7 +80,6 @@ class HistoryFragment :
             is HistoryTransaction.Transfer,
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
-                replaceFragment(TransactionDetailsFragment.create(state))
                 // TODO PWN-3253 show details here
             }
             else -> Timber.e("Unsupported transaction type: $transaction")
