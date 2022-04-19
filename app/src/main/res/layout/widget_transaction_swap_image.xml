@@ -18,6 +18,7 @@
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_gravity="top"
+        android:layout_margin="2dp"
         app:cornerRadius="8dp"
         tools:src="@tools:sample/avatars" />
 
@@ -26,6 +27,7 @@
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_gravity="end|bottom"
+        android:layout_margin="2dp"
         app:cornerRadius="8dp"
         tools:src="@tools:sample/avatars" />
 
