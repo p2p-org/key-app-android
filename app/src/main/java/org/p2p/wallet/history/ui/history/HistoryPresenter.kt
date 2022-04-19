@@ -89,6 +89,7 @@ class HistoryPresenter(
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
         } catch (e: Throwable) {
+            view?.showPagingState(PagingState.Error(e))
             Timber.e(e, "Error getting transaction history")
         } catch (e: EmptyDataException) {
             transactions = emptyList()

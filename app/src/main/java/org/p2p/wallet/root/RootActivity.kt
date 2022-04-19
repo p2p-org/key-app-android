@@ -56,14 +56,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }
-        supportFragmentManager.addOnBackStackChangedListener {
-            val fragmentsSize = supportFragmentManager.fragments.size
-            binding.rootContainer.isVisible = fragmentsSize <= 2
-
-            Timber.tag("____")
-                .d("Fragments size = ${fragmentsSize}\n isForegroundVisible = ${binding.rootContainer.isVisible}")
-        }
-
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
     }
 

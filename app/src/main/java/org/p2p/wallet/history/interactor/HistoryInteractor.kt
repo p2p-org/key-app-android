@@ -81,6 +81,7 @@ class HistoryInteractor(
     ): List<HistoryTransaction> {
         val tokenPublicKey = tokenKeyProvider.publicKey
         if (forceNetwork) {
+            lastTransactionSignature = null
             transactionsLocalRepository.deleteAll()
         }
         val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(

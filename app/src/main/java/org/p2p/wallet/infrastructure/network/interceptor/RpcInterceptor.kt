@@ -67,7 +67,6 @@ open class RpcInterceptor(
             .host(getBaseUrl(environmentUrl))
             .build()
 
-        Timber.tag(TAG).d("Request url = $httpUrl")
         return request.newBuilder()
             .url(httpUrl)
             .build()

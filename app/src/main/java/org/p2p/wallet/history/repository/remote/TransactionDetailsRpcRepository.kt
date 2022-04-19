@@ -25,13 +25,12 @@ class TransactionDetailsRpcRepository(
             RpcRequest(method = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params = params)
         }
 
-        val response = rpcApi.getConfirmedTransactions(requestsBatch)
+        return rpcApi.getConfirmedTransactions(requestsBatch)
             .map { it.result }
             .let {
                 withContext(dispatchers.io) {
                     transactionDetailsNetworkMapper.fromNetworkToDomain(it)
                 }
             }
-        return response
     }
 }
