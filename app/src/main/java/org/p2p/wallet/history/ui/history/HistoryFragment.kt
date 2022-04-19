@@ -12,9 +12,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
