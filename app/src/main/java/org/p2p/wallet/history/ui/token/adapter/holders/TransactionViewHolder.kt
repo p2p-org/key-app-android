@@ -9,7 +9,7 @@ import org.p2p.wallet.databinding.ItemTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.viewbinding.context
+import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -95,7 +95,7 @@ class TransactionViewHolder(
                 timeTextView.text = transaction.date.toTimeString()
                 valueTextView withTextOrGone (transaction.getValue())
                 totalTextView.text = transaction.getTotal()
-                totalTextView.setTextColor(transaction.getTextColor(context))
+                totalTextView.setTextColor(getColor(transaction.getTextColor()))
             }
         }
     }
