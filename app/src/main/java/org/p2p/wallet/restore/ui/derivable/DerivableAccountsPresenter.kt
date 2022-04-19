@@ -2,7 +2,7 @@ package org.p2p.wallet.restore.ui.derivable
 
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -16,7 +16,7 @@ class DerivableAccountsPresenter(
     private val secretKeys: List<SecretKey>,
     private val secretKeyInteractor: SecretKeyInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val analytics: OnBoardingAnalytics
+    private val analytics: OnboardingAnalytics
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 

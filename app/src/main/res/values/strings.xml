@@ -30,6 +30,7 @@
     <string name="common_stay">Stay</string>
     <string name="common_close_account">Close account</string>
     <string name="common_commas">…</string>
+    <string name="common_transaction_details">Transaction details</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -49,6 +50,8 @@
     <string name="error_opening_file">Couldn\'t open the file</string>
     <string name="error_rates_error">Cannot get rates</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
+    <string name="error_insufficient_funds">Insufficient funds</string>
+    <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
@@ -296,7 +299,7 @@
     <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
-    <string name="receive_no_transactions_yet_message">After first transaction you\nwill be able to view it here</string>
+    <string name="receive_no_transactions_yet_message">After first transaction you will be\nable to view it here</string>
     <string name="receive_btc_buy_info">• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b> You can choose\n\t\twhich currency to pay in below.</string>
     <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
     <string name="receive_topup_your_account">Top up your account</string>
@@ -339,7 +342,7 @@
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
     <string name="send_account_creation_fee">Account creation fee</string>
     <string name="send_account_creation_info">This address does not appear to have a %s account. You have to pay a one-time fee to create a %s account for this address. You can choose which currency to pay in below.</string>
-    <string name="send_transaction_details">Transaction details</string>
+    <string name="send_transaction_details">@string/common_transaction_details</string>
     <string name="send_receive_title">Receive</string>
     <string name="send_transaction_being_processed">The transaction is being processed</string>
     <string name="send_make_another_transaction">Make another transaction</string>
@@ -444,6 +447,18 @@
     <string name="details_transfer_format">%1$s → %2$s</string>
     <string name="details_account_closed_successfully">Account is successfully closed!</string>
     <string name="details_transaction_not_found">Transaction is not found</string>
+
+    <!--TransactionDetails-->
+    <string name="transaction_details_transaction_id">Transaction ID</string>
+    <string name="transaction_details_from">From</string>
+    <string name="transaction_details_to">To</string>
+    <string name="transaction_details_status">Status</string>
+    <string name="transaction_details_fee">Fee</string>
+    <string name="transaction_details_fee_free">Free by p2p.org</string>
+    <string name="transaction_details_number">Block number</string>
+
+    <string name="transaction_details_done_button">@string/common_done</string>
+    <string name="transaction_details_details_button">@string/common_transaction_details</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>

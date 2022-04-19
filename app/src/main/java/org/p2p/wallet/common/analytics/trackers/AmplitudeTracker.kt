@@ -31,21 +31,21 @@ class AmplitudeTracker(app: Application) : AnalyticsTracker {
         amplitude.identify(Identify().setOnce(key, value))
     }
 
-    override fun logEvent(event: String, params: Map<String, Any>) {
+    override fun logEvent(eventName: String, params: Map<String, Any>) {
         if (params.isEmpty()) {
-            amplitude.logEvent(event)
+            amplitude.logEvent(eventName)
             return
         }
         try {
-            amplitude.logEvent(event, JSONObject(params))
-            Timber.d("logEvent($event) event sent using Amplitude")
+            amplitude.logEvent(eventName, JSONObject(params))
+            Timber.d("logEvent($eventName) event sent using Amplitude")
         } catch (e: NullPointerException) {
             Timber.w(e, "Unable to put key - value into json")
         }
     }
 
-    override fun logEvent(event: String, params: Array<out Pair<String, Any>>) {
-        logEvent(event, params.toMap())
+    override fun logEvent(eventName: String, params: Array<out Pair<String, Any>>) {
+        logEvent(eventName, params.toMap())
     }
 
     override fun incrementUserProperty(property: String, byValue: Int) {

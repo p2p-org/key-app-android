@@ -1,13 +1,26 @@
 package org.p2p.wallet.infrastructure.network.feerelayer
 
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
+import org.p2p.wallet.infrastructure.network.data.INVALID_TRANSACTION_ERROR_CODE
+import org.p2p.wallet.infrastructure.network.data.TRANSACTION_SIMULATION_FAILED_ERROR_CODE
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorType
 
 object ErrorTypeConverter {
 
-    fun fromFeeRelayer(errorType: FeeRelayerErrorType): ErrorCode {
-        // TODO: Add implementation
-        return ErrorCode.SERVER_ERROR
+    fun fromFeeRelayer(error: FeeRelayerError): ErrorCode {
+        return when (error.type) {
+            FeeRelayerErrorType.SLIPPAGE_LIMIT -> ErrorCode.SLIPPAGE_LIMIT
+            FeeRelayerErrorType.INSUFFICIENT_FUNDS -> ErrorCode.INSUFFICIENT_FUNDS
+            else -> fromFeeRelayerErrorCode(error.code)
+        }
+    }
+
+    private fun fromFeeRelayerErrorCode(errorCode: Int): ErrorCode {
+        return when (errorCode) {
+            INVALID_TRANSACTION_ERROR_CODE -> ErrorCode.INVALID_TRANSACTION
+            TRANSACTION_SIMULATION_FAILED_ERROR_CODE -> ErrorCode.TRANSACTION_SIMULATION_FAILED
+            else -> ErrorCode.SERVER_ERROR
+        }
     }
 
     fun fromMoonpay(errorType: MoonpayErrorType): ErrorCode {

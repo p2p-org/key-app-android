@@ -92,7 +92,7 @@ class SecretKeyFragment :
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
-        replaceFragment(DerivableAccountsFragment.create(secretKeys), containerId = R.id.rootContainer)
+        replaceFragment(DerivableAccountsFragment.create(secretKeys))
     }
 
     override fun setButtonEnabled(isEnabled: Boolean) {

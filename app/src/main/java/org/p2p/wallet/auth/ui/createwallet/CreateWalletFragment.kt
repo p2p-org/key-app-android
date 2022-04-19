@@ -28,7 +28,7 @@ class CreateWalletFragment : BaseFragment(R.layout.fragment_create_wallet) {
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             progressButton.setOnClickListener {
-                replaceFragment(SecurityKeyFragment.create(), containerId = R.id.rootContainer)
+                replaceFragment(SecurityKeyFragment.create())
             }
         }
     }

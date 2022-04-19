@@ -1,5 +1,7 @@
 package org.p2p.wallet.history.ui.history
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -7,6 +9,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
@@ -23,40 +26,73 @@ class HistoryPresenter(
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
+    private val environmentManager: EnvironmentManager,
     private val sendAnalytics: SendAnalytics
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private var isPagingEnded = false
+    private var refreshJob: Job? = null
+    private var pagingJob: Job? = null
 
     private var transactions by Delegates.observable<List<HistoryTransaction>>(emptyList()) { _, _, newValue ->
         view?.showHistory(items = newValue)
-        view?.showPagingState(PagingState.Idle)
     }
 
-    override fun loadHistory(isRefresh: Boolean) {
+    override fun attach(view: HistoryContract.View) {
+        super.attach(view)
+        environmentManager.addEnvironmentListener(this::class) {
+            refreshHistory()
+        }
+    }
+
+    override fun refreshHistory() {
+        isPagingEnded = false
+        refreshJob?.cancel()
+
+        refreshJob = launch {
+            view?.showRefreshing(isRefreshing = true)
+            fetchHistory(isRefresh = true)
+            view?.showRefreshing(isRefreshing = false)
+        }
+    }
+
+    override fun loadNextHistoryPage() {
+        if (isPagingEnded) return
+
+        pagingJob?.cancel()
+        pagingJob = launch {
+            view?.showPagingState(PagingState.Loading)
+            fetchHistory()
+            view?.showPagingState(PagingState.Idle)
+        }
+    }
+
+    override fun loadHistory() {
+        if (transactions.isNotEmpty()) {
+            transactions = transactions
+            return
+        }
         launch {
-            if (isRefresh) {
-                transactions = emptyList()
-                isPagingEnded = false
+            view?.showPagingState(PagingState.InitialLoading)
+            fetchHistory()
+            view?.showPagingState(PagingState.Idle)
+        }
+    }
+
+    private suspend fun fetchHistory(isRefresh: Boolean = false) {
+        try {
+            transactions = if (isRefresh) {
+                historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
+            } else {
+                transactions + historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
             }
-            val pagingState: PagingState = when {
-                transactions.isEmpty() && !isRefresh -> {
-                    PagingState.InitialLoading
-                }
-                else ->
-                    PagingState.Loading(isRefresh)
-            }
-            view?.showPagingState(pagingState)
-            val lastLoadedSignature = transactions.lastOrNull()?.signature
-            runCatching {
-                historyInteractor.getTransactionHistory2(
-                    forceNetwork = isRefresh,
-                    limit = PAGE_SIZE,
-                    lastSignature = lastLoadedSignature
-                )
-            }
-                .onSuccess(::onTransactionLoadSuccess)
-                .onFailure(::onTransactionLoadFailure)
+        } catch (e: CancellationException) {
+            Timber.w(e, "Cancelled history next page load")
+        } catch (e: Throwable) {
+            view?.showPagingState(PagingState.Error(e))
+            Timber.e(e, "Error getting transaction history")
+        } catch (e: EmptyDataException) {
+            transactions = emptyList()
         }
     }
 
@@ -81,9 +117,9 @@ class HistoryPresenter(
                     if (transaction.isSend) {
                         val sendNetwork =
                             if (isRenBtcSessionActive) {
-                                SendAnalytics.SendNetwork.BITCOIN
+                                SendAnalytics.AnalyticsSendNetwork.BITCOIN
                             } else {
-                                SendAnalytics.SendNetwork.SOLANA
+                                SendAnalytics.AnalyticsSendNetwork.SOLANA
                             }
                         sendAnalytics.logSendShowingDetails(
                             sendStatus = SendAnalytics.SendStatus.SUCCESS,
@@ -116,22 +152,6 @@ class HistoryPresenter(
             }
 
             view?.openTransactionDetailsScreen(transaction)
-        }
-    }
-
-    private fun onTransactionLoadSuccess(items: List<HistoryTransaction>) {
-        transactions = transactions + items
-    }
-
-    private fun onTransactionLoadFailure(e: Throwable) {
-        Timber.e("Error getting transaction history")
-        if (e is EmptyDataException) {
-            if (transactions.isEmpty()) {
-                view?.showHistory(transactions)
-            }
-            isPagingEnded = true
-        } else {
-            view?.showPagingState(PagingState.Error(e))
         }
     }
 }

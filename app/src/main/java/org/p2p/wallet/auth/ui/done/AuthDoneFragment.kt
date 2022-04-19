@@ -31,7 +31,7 @@ class AuthDoneFragment :
 
             finishButton.clipToOutline = true
             finishButton.setOnClickListener {
-                popAndReplaceFragment(MainFragment.create(), inclusive = true, containerId = R.id.rootContainer)
+                popAndReplaceFragment(MainFragment.create(), inclusive = true)
             }
         }
 

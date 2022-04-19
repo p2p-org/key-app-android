@@ -62,7 +62,7 @@ class TokenHistoryPresenter(
         paginationEnded = false
 
         launch {
-            view?.showPagingState(PagingState.Loading())
+            view?.showPagingState(PagingState.Loading)
 
             kotlin.runCatching {
                 historyInteractor.loadTransactionHistory(
@@ -137,7 +137,7 @@ class TokenHistoryPresenter(
         pagingJob?.cancel()
         pagingJob = launch {
             try {
-                view?.showPagingState(PagingState.Loading())
+                view?.showPagingState(PagingState.Loading)
 
                 val lastSignature = transactions.lastOrNull()?.signature
                 val newHistoryPage = historyInteractor.loadTransactionHistory(
@@ -189,9 +189,9 @@ class TokenHistoryPresenter(
                     if (transaction.isSend) {
                         val sendNetwork =
                             if (isRenBtcSessionActive) {
-                                SendAnalytics.SendNetwork.BITCOIN
+                                SendAnalytics.AnalyticsSendNetwork.BITCOIN
                             } else {
-                                SendAnalytics.SendNetwork.SOLANA
+                                SendAnalytics.AnalyticsSendNetwork.SOLANA
                             }
                         sendAnalytics.logSendShowingDetails(
                             sendStatus = SendAnalytics.SendStatus.SUCCESS,

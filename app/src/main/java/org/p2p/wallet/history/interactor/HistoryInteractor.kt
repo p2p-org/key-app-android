@@ -24,6 +24,7 @@ class HistoryInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyTransactionMapper: HistoryTransactionMapper
 ) {
+    private var lastTransactionSignature: String? = null
 
     suspend fun getHistoryTransaction(tokenPublicKey: String, transactionId: String): HistoryTransaction? {
         return getTransactionHistory(
@@ -77,18 +78,20 @@ class HistoryInteractor(
     suspend fun getTransactionHistory2(
         forceNetwork: Boolean,
         limit: Int,
-        lastSignature: String? = null
     ): List<HistoryTransaction> {
         val tokenPublicKey = tokenKeyProvider.publicKey
         if (forceNetwork) {
+            lastTransactionSignature = null
             transactionsLocalRepository.deleteAll()
         }
         val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(
             userAccountAddress = tokenPublicKey.toPublicKey(),
-            before = lastSignature,
+            before = lastTransactionSignature,
             limit = limit
         )
             .map(SignatureInformationResponse::signature)
+
+        lastTransactionSignature = signatures.lastOrNull()
 
         val localTransactions = transactionsLocalRepository.getTransactions(signatures)
 

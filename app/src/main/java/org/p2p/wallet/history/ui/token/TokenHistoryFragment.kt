@@ -12,6 +12,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -21,7 +22,7 @@ import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -37,6 +38,7 @@ import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 import kotlin.math.absoluteValue
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
@@ -55,8 +57,11 @@ class TokenHistoryFragment :
 
     private val tokenForHistory: Token.Active by args(EXTRA_TOKEN)
 
+    private val glideManager: GlideManager by inject()
+
     private val historyAdapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
+            glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
             onRetryClicked = presenter::fetchNextPage
         )
@@ -168,11 +173,11 @@ class TokenHistoryFragment :
             is HistoryTransaction.Transfer,
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
-                replaceFragment(TransactionDetailsFragment.create(state))
+                TransactionDetailsBottomSheetFragment.show(
+                    parentFragmentManager, state
+                )
             }
-            else -> {
-                // todo: add support of other transactions
-            }
+            else -> Timber.e("Unsupported transactionType: $transaction")
         }
     }
 }

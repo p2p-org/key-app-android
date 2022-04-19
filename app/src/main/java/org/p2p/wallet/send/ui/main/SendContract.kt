@@ -62,7 +62,7 @@ interface SendContract {
         fun sendOrConfirm()
         fun loadInitialData()
         fun loadTokensForSelection()
-        fun loadAvailableValue()
+        fun setMaxSourceAmountValue()
         fun loadCurrentNetwork()
         fun loadFeePayerTokens()
         fun setSourceToken(newToken: Token.Active)

@@ -6,12 +6,14 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -28,8 +30,10 @@ class HistoryFragment :
     override val presenter: HistoryContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
 
+    private val glideManager: GlideManager by inject()
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
+            glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
             onRetryClicked = {}
         )
@@ -40,11 +44,11 @@ class HistoryFragment :
         with(binding) {
             val scrollListener = EndlessScrollListener(
                 layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
-                loadNextPage = { presenter.loadHistory(false) }
+                loadNextPage = { presenter.loadNextHistoryPage() }
             )
 
             refreshLayout.setOnRefreshListener {
-                presenter.loadHistory(isRefresh = true)
+                presenter.refreshHistory()
                 scrollListener.reset()
             }
             historyRecyclerView.addOnScrollListener(scrollListener)
@@ -58,7 +62,6 @@ class HistoryFragment :
         adapter.setPagingState(state)
         with(binding) {
             shimmerView.isVisible = state == PagingState.InitialLoading
-            refreshLayout.isRefreshing = state is PagingState.Loading && state.isRefresh
             refreshLayout.isVisible = state != PagingState.InitialLoading
             refreshLayoutProgressPlaceholder.isVisible = isRefreshing
         }
@@ -78,9 +81,15 @@ class HistoryFragment :
             is HistoryTransaction.Transfer,
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
-                // TODO PWN-3253 show details here
+                TransactionDetailsBottomSheetFragment.show(
+                    parentFragmentManager, state
+                )
             }
             else -> Timber.e("Unsupported transaction type: $transaction")
         }
+    }
+
+    override fun showRefreshing(isRefreshing: Boolean) {
+        binding.refreshLayout.isRefreshing = isRefreshing
     }
 }

@@ -29,7 +29,9 @@ class TransactionDetailsNetworkMapper {
                 transactionRoot = confirmedTransaction,
                 onErrorLogger = { SolanjLogger.w(it) }
             )
-
+            parsedTransactions.forEach {
+                it.error = confirmedTransaction.meta.error?.instructionError
+            }
             val swapTransaction = parsedTransactions.firstOrNull { it is SwapDetails }
             if (swapTransaction != null) {
                 resultTransactions.add(swapTransaction)
