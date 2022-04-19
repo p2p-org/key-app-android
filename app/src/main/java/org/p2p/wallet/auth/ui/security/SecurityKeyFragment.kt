@@ -132,7 +132,7 @@ class SecurityKeyFragment :
     }
 
     override fun navigateToVerify(keys: List<String>) {
-        replaceFragment(VerifySecurityKeyFragment.create(keys), containerId = R.id.rootContainer)
+        replaceFragment(VerifySecurityKeyFragment.create(keys))
     }
 
     override fun captureKeys() {

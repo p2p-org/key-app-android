@@ -82,7 +82,7 @@ class CreatePinFragment :
     }
 
     override fun onAuthFinished() {
-        popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true, containerId = R.id.rootContainer)
+        popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
     }
 
     override fun onPinCreated() {

@@ -28,6 +28,7 @@ sealed class HistoryTransaction(
 
     abstract val signature: String
     abstract val blockNumber: Int?
+    abstract val status: TransactionStatus
 
     protected fun getSymbol(isSend: Boolean): String = if (isSend) "-" else "+"
 
@@ -38,6 +39,7 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val date: ZonedDateTime,
         override val blockNumber: Int?,
+        override val status: TransactionStatus,
         val sourceAddress: String,
         val destinationAddress: String,
         val fee: BigInteger,
@@ -49,7 +51,6 @@ sealed class HistoryTransaction(
         val sourceIconUrl: String,
         val destinationSymbol: String,
         val destinationIconUrl: String,
-        val status: TransactionStatus = TransactionStatus.COMPLETED
     ) : HistoryTransaction(date) {
 
         fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
@@ -72,6 +73,7 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val date: ZonedDateTime,
         override val blockNumber: Int?,
+        override val status: TransactionStatus,
         val type: TransferType,
         val senderAddress: String,
         val tokenData: TokenData,
@@ -79,7 +81,6 @@ sealed class HistoryTransaction(
         val total: BigDecimal,
         val destination: String,
         val fee: BigInteger,
-        val status: TransactionStatus = TransactionStatus.COMPLETED
     ) : HistoryTransaction(date) {
 
         @IgnoredOnParcel
@@ -125,6 +126,7 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val date: ZonedDateTime,
         override val blockNumber: Int,
+        override val status: TransactionStatus,
         val destination: String,
         val senderAddress: String,
         val type: RenBtcType,
@@ -162,6 +164,7 @@ sealed class HistoryTransaction(
         override val date: ZonedDateTime,
         override val signature: String,
         override val blockNumber: Int,
+        override val status: TransactionStatus,
         val fee: BigInteger
     ) : HistoryTransaction(date)
 
@@ -170,6 +173,7 @@ sealed class HistoryTransaction(
         override val date: ZonedDateTime,
         override val signature: String,
         override val blockNumber: Int,
+        override val status: TransactionStatus,
         val account: String,
         val mint: String,
         val tokenSymbol: String,
@@ -182,7 +186,8 @@ sealed class HistoryTransaction(
     data class Unknown(
         override val signature: String,
         override val date: ZonedDateTime,
-        override val blockNumber: Int
+        override val blockNumber: Int,
+        override val status: TransactionStatus
     ) : HistoryTransaction(date)
 
     @Suppress("MagicNumber")

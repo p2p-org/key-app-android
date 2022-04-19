@@ -36,11 +36,11 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             createButton.clipToOutline = true
             createButton.setOnClickListener {
                 analytics.logSplashCreating()
-                runAfterAnimation { replaceFragment(CreateWalletFragment.create(), containerId = R.id.rootContainer) }
+                runAfterAnimation { replaceFragment(CreateWalletFragment.create()) }
             }
             loginButton.setOnClickListener {
                 analytics.logSplashRestored()
-                runAfterAnimation { replaceFragment(SecretKeyFragment.create(), containerId = R.id.rootContainer) }
+                runAfterAnimation { replaceFragment(SecretKeyFragment.create()) }
             }
         }
 

@@ -43,11 +43,11 @@ class HistoryFragment :
         with(binding) {
             val scrollListener = EndlessScrollListener(
                 layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
-                loadNextPage = { presenter.loadHistory(false) }
+                loadNextPage = { presenter.loadNextHistoryPage() }
             )
 
             refreshLayout.setOnRefreshListener {
-                presenter.loadHistory(isRefresh = true)
+                presenter.refreshHistory()
                 scrollListener.reset()
             }
             historyRecyclerView.addOnScrollListener(scrollListener)
@@ -59,7 +59,6 @@ class HistoryFragment :
     override fun showPagingState(state: PagingState) {
         adapter.setPagingState(state)
         binding.shimmerView.isVisible = state == PagingState.InitialLoading
-        binding.refreshLayout.isRefreshing = state is PagingState.Loading && state.isRefresh
         binding.refreshLayout.isVisible = state != PagingState.InitialLoading
     }
 
@@ -81,5 +80,9 @@ class HistoryFragment :
             }
             else -> Timber.e("Unsupported transaction type: $transaction")
         }
+    }
+
+    override fun showRefreshing(isRefreshing: Boolean) {
+        binding.refreshLayout.isRefreshing = isRefreshing
     }
 }
