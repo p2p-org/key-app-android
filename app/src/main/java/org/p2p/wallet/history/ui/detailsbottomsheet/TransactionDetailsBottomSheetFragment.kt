@@ -8,6 +8,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTransactionDetailsBinding
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -48,6 +49,8 @@ class TransactionDetailsBottomSheetFragment :
 
     private val binding: DialogTransactionDetailsBinding by viewBinding()
 
+    private val glideManager: GlideManager by inject()
+
     override val presenter: TransactionDetailsBottomSheetContract.Presenter by inject {
         parametersOf(state)
     }
@@ -71,6 +74,29 @@ class TransactionDetailsBottomSheetFragment :
         )
     }
 
+    override fun showTransferView(iconRes: Int) = with(binding) {
+        transactionSwapImageView.isVisible = false
+        with(transactionImageView) {
+            isVisible = true
+            setTransactionIcon(iconRes)
+        }
+    }
+
+    override fun showSwapView(
+        sourceIconUrl: String,
+        destinationIconUrl: String
+    ) = with(binding) {
+        transactionImageView.isVisible = false
+        with(transactionSwapImageView) {
+            isVisible = true
+            setSourceAndDestinationImages(
+                glideManager,
+                sourceIconUrl,
+                destinationIconUrl
+            )
+        }
+    }
+
     override fun showDate(date: String) {
         binding.dateTextView.text = date
     }
@@ -83,6 +109,7 @@ class TransactionDetailsBottomSheetFragment :
             TransactionStatus.ERROR -> R.color.systemErrorMain
         }
 
+        binding.transactionImageView.setStatus(status)
         binding.statusTextView.setTextColor(getColor(color))
     }
 

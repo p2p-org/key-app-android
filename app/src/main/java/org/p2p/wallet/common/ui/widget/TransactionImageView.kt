@@ -6,7 +6,6 @@ import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetTransactionImageBinding
-import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withImageOrGone
@@ -34,16 +33,11 @@ class TransactionImageView @JvmOverloads constructor(
         binding.transactionTokenImageView.setImageResource(iconRes)
     }
 
-    fun setStatus(transaction: HistoryTransaction) {
-        val iconRes = if (transaction is HistoryTransaction.Transfer) {
-            getStatusIcon(transaction.status)
-        } else {
-            null
-        }
-        binding.transactionStatus.withImageOrGone(iconRes)
+    fun setStatus(status: TransactionStatus?) {
+        binding.transactionStatus.withImageOrGone(getStatusIcon(status))
     }
 
-    private fun getStatusIcon(status: TransactionStatus): Int? = when (status) {
+    private fun getStatusIcon(status: TransactionStatus?): Int? = when (status) {
         TransactionStatus.PENDING -> R.drawable.ic_state_pending
         TransactionStatus.ERROR -> R.drawable.ic_state_error
         else -> null
