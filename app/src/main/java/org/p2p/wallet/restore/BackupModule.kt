@@ -14,13 +14,30 @@ object BackupModule : InjectionModule {
 
     override fun create() = module {
         factory {
-            SecretKeyInteractor(get(), get(), get(), get(), get(), get(), get())
+            SecretKeyInteractor(
+                authRepository = get(),
+                userLocalRepository = get(),
+                rpcRepository = get(),
+                tokenProvider = get(),
+                sharedPreferences = get(),
+                usernameInteractor = get(),
+                adminAnalytics = get()
+            )
         }
         factory<SecretKeyContract.Presenter> {
-            SecretKeyPresenter(androidContext().resources, get(), get())
+            SecretKeyPresenter(
+                resources = androidContext().resources,
+                secretKeyInteractor = get(),
+                fileRepository = get()
+            )
         }
         factory<DerivableAccountsContract.Presenter> { (secretKeys: List<SecretKey>) ->
-            DerivableAccountsPresenter(secretKeys, get(), get(), get())
+            DerivableAccountsPresenter(
+                secretKeys = secretKeys,
+                secretKeyInteractor = get(),
+                usernameInteractor = get(),
+                analytics = get()
+            )
         }
     }
 }
