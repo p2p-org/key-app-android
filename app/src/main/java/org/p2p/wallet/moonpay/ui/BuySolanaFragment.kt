@@ -140,6 +140,10 @@ class BuySolanaFragment :
         } else {
             "${prefixSuffixSymbol}0"
         }
+
+        // update edit text with already entered text
+        // to emit PrefixSuffixTextWatcher
+        payEditText.text = payEditText.text
     }
 
     private fun installPrefixWatcher(

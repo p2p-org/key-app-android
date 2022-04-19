@@ -1,6 +1,7 @@
 package org.p2p.wallet.home
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
@@ -15,6 +16,7 @@ import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.moonpay.api.MoonpayApi
+import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.moonpay.ui.BuySolanaContract
@@ -44,27 +46,23 @@ object HomeModule : InjectionModule {
     const val MOONPAY_QUALIFIER = "api.moonpay.com"
 
     override fun create() = module {
+        initDataLayer()
+        initDomainLayer()
+        initPresentationLayer()
+    }
+
+    private fun Module.initDataLayer() {
+        factory { MoonpayApiMapper() }
         factory<MoonpayRepository> {
             val api = get<Retrofit>(named(MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
             val apiKey = BuildConfig.moonpayKey
-            MoonpayRemoteRepository(api, apiKey)
+            MoonpayRemoteRepository(api, apiKey, get())
         }
 
         factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
+    }
 
-        /* Cached data exists, therefore creating singleton */
-        factory<HomeContract.Presenter> {
-            HomePresenter(
-                appFeatureFlags = get(),
-                updatesManager = get(),
-                userInteractor = get(),
-                settingsInteractor = get(),
-                usernameInteractor = get(),
-                environmentManager = get(),
-                tokenKeyProvider = get(),
-                homeElementItemMapper = HomeElementItemMapper()
-            )
-        }
+    private fun Module.initDomainLayer() {
         single {
             SendInteractor(
                 addressInteractor = get(),
@@ -84,6 +82,23 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get()
             )
         }
+    }
+
+    private fun Module.initPresentationLayer() {
+        /* Cached data exists, therefore creating singleton */
+        factory<HomeContract.Presenter> {
+            HomePresenter(
+                appFeatureFlags = get(),
+                updatesManager = get(),
+                userInteractor = get(),
+                settingsInteractor = get(),
+                usernameInteractor = get(),
+                environmentManager = get(),
+                tokenKeyProvider = get(),
+                homeElementItemMapper = HomeElementItemMapper()
+            )
+        }
+
         factory<ReceiveSolanaContract.Presenter> { (token: Token.Active?) ->
             ReceiveSolanaPresenter(
                 defaultToken = token,
@@ -129,7 +144,7 @@ object HomeModule : InjectionModule {
         }
         factory<BuySolanaContract.Presenter> { (token: Token) ->
             BuySolanaPresenter(
-                token = token,
+                tokenToBuy = token,
                 moonpayRepository = get(),
                 minBuyErrorFormat = androidContext().getString(R.string.buy_min_error_format),
                 maxBuyErrorFormat = androidContext().resources.getString(R.string.buy_max_error_format),
@@ -164,6 +179,8 @@ object HomeModule : InjectionModule {
             )
         }
 
-        factory<SelectTokenContract.Presenter> { (tokens: List<Token>) -> SelectTokenPresenter(tokens) }
+        factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
+            SelectTokenPresenter(tokens)
+        }
     }
 }
