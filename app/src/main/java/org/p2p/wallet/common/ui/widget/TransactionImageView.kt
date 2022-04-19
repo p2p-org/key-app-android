@@ -19,12 +19,19 @@ class TransactionImageView @JvmOverloads constructor(
     private val binding = inflateViewBinding<WidgetTransactionImageBinding>()
 
     init {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TransactionImage)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TransactionImageView)
 
-        val statusIconPadding = typedArray.getDimensionPixelSize(
-            R.styleable.TransactionImage_statusIconPadding,
-            0
+        val statusIconSize = typedArray.getDimensionPixelSize(
+            R.styleable.TransactionImageView_statusIconSize,
+            resources.getDimensionPixelSize(R.dimen.history_transaction_image_icon_size)
         )
+
+        with(binding.transactionStatus) {
+            layoutParams = layoutParams.also {
+                it.height = statusIconSize
+                it.width = statusIconSize
+            }
+        }
 
         typedArray.recycle()
     }

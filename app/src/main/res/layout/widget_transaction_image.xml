@@ -20,8 +20,8 @@
 
     <ImageView
         android:id="@+id/transactionStatus"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="@dimen/history_transaction_image_icon_size"
+        android:layout_height="@dimen/history_transaction_image_icon_size"
         android:layout_gravity="bottom|end"
         android:visibility="gone"
         tools:src="@drawable/ic_state_pending"

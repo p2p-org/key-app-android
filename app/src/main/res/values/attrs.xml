@@ -93,8 +93,12 @@
         <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="TransactionImage">
-        <attr name="statusIconPadding" format="dimension" />
+    <declare-styleable name="TransactionImageView">
+        <attr name="statusIconSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="TransactionSwapImageView">
+        <attr name="tokenIconSize" format="dimension" />
     </declare-styleable>
 
 </resources>

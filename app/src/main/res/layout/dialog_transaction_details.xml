@@ -28,7 +28,8 @@
                 android:layout_marginBottom="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:statusIconSize="@dimen/history_transaction_details_image_icon_size" />
 
             <org.p2p.wallet.common.ui.widget.TransactionSwapImageView
                 android:id="@+id/transactionSwapImageView"
@@ -40,7 +41,8 @@
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tokenIconSize="@dimen/history_transaction_details_image_token_icon_size" />
 
             <TextView
                 android:id="@+id/amountTextTokenView"
