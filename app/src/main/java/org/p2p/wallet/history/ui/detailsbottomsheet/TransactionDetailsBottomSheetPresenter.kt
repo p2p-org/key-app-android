@@ -1,6 +1,5 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
-import android.content.res.Resources
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.toDateTimeString
@@ -8,14 +7,10 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.user.repository.UserLocalRepository
 import timber.log.Timber
 
 class TransactionDetailsBottomSheetPresenter(
-    private val resources: Resources,
-    private val theme: Resources.Theme,
     private val state: TransactionDetailsLaunchState,
-    private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor
 ) : BasePresenter<TransactionDetailsBottomSheetContract.View>(),
     TransactionDetailsBottomSheetContract.Presenter {
@@ -74,6 +69,7 @@ class TransactionDetailsBottomSheetPresenter(
             showAmount(total, usdTotal)
             showFee()
             showBlockNumber(transaction.getBlockNumber())
+            showSwapView(transaction.sourceIconUrl, transaction.destinationIconUrl)
         }
     }
 
@@ -90,6 +86,7 @@ class TransactionDetailsBottomSheetPresenter(
             showAmount(total, usdTotal)
             showFee()
             showBlockNumber(transaction.getBlockNumber())
+            showTransferView(transaction.getIcon())
         }
     }
 
@@ -105,6 +102,7 @@ class TransactionDetailsBottomSheetPresenter(
             showAmount(total, usdTotal)
             showFee()
             showBlockNumber(transaction.getBlockNumber())
+            showTransferView(transaction.getIcon())
         }
     }
 }

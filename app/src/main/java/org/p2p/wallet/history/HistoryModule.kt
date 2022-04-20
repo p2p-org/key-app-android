@@ -73,10 +73,7 @@ object HistoryModule : InjectionModule {
         } bind TransactionDetailsContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsBottomSheetPresenter(
-                resources = get(),
-                theme = get(),
                 state = state,
-                userLocalRepository = get(),
                 historyInteractor = get()
             )
         } bind TransactionDetailsBottomSheetContract.Presenter::class
