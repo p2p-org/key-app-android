@@ -51,6 +51,7 @@ class PushNotificationsInteractor(
             updateDeviceToken(retries - 1)
         } catch (e: Throwable) {
             // todo: Delete this catch after using real NotificationService
+            // https://p2pvalidator.atlassian.net/browse/PWN-3355
         }
     }
 
