@@ -33,6 +33,7 @@ import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
@@ -87,8 +88,13 @@ class SendFragment :
         parametersOf(token)
     }
     private val glideManager: GlideManager by inject()
+
     private val binding: FragmentSendBinding by viewBinding()
+
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+
+    private val sendAnalytics: SendAnalytics by inject()
+
     private val address: String? by args(EXTRA_ADDRESS)
     private val token: Token? by args(EXTRA_TOKEN)
 
@@ -176,11 +182,11 @@ class SendFragment :
             }
 
             availableTextView.setOnClickListener {
-                presenter.loadAvailableValue()
+                presenter.setMaxSourceAmountValue()
             }
 
             maxTextView.setOnClickListener {
-                presenter.loadAvailableValue()
+                presenter.setMaxSourceAmountValue()
             }
 
             aroundTextView.setOnClickListener {
@@ -218,7 +224,7 @@ class SendFragment :
 
     override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.CONFIRMATION)
-        SendConfirmBottomSheet.show(this, data) { presenter.send() }
+        SendConfirmBottomSheet.show(this, data, onConfirmed = { presenter.send() })
     }
 
     override fun showScanner() {

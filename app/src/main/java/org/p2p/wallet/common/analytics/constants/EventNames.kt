@@ -83,6 +83,9 @@ object EventNames {
     const val SEND_CREATING_ANOTHER = "Send_Creating_Another"
     const val SEND_SHOW_DETAIL_PRESSED = "Send_Show_Details_Pressed"
     const val SEND_SHOWING_DETAILS = "Send_Showing_Details"
+    const val SEND_USER_CONFIRMED = "Send_User_Confirmed"
+    const val SEND_STARTED = "Send_Started"
+    const val SEND_COMPLETED = "Send_Completed"
 
     const val SWAP_VIEWED = "Swap_Viewed"
     const val SWAP_CHANGING_TOKEN_A = "Swap_Changing_Token_A"
