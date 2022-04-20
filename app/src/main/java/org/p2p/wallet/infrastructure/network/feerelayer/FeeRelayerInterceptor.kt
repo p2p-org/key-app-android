@@ -6,7 +6,6 @@ import okhttp3.Response
 import org.json.JSONObject
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import timber.log.Timber
 import java.io.IOException
 
 class FeeRelayerInterceptor(
@@ -26,21 +25,23 @@ class FeeRelayerInterceptor(
     private fun extractException(bodyString: String, code: Int): Throwable {
         try {
             val formattedBody = bodyString.replace("\\\"Program [^\\\"]+\\\"", "")
-            Timber.tag("FeeRelayerInterceptor").e("Error received. Code: $code, error body: $formattedBody")
-
             if (formattedBody.isEmpty()) {
                 return ServerException(
                     errorCode = ErrorCode.SERVER_ERROR,
-                    fullMessage = "No error body",
+                    fullMessage = "No error body with code: $code",
                     errorMessage = null
                 )
             }
             val fullMessage = JSONObject(formattedBody).toString(1)
             val serverError = gson.fromJson(formattedBody, FeeRelayerServerError::class.java)
+            val error = FeeRelayerErrorMapper.fromFeeRelayer(
+                serverError.code,
+                serverError.data?.clientError?.firstOrNull().orEmpty()
+            )
             return ServerException(
-                errorCode = ErrorTypeConverter.fromFeeRelayer(serverError.data?.type ?: FeeRelayerErrorType.UNKNOWN),
+                errorCode = ErrorTypeConverter.fromFeeRelayer(error),
                 fullMessage = fullMessage,
-                errorMessage = serverError.message
+                errorMessage = error.message ?: serverError.message
             )
         } catch (e: Throwable) {
             throw IOException("Error reading response error body", e)
