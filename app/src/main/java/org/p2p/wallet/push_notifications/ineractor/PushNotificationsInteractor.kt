@@ -15,6 +15,7 @@ import timber.log.Timber
 private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
 private const val TOKEN_SEND_RETRY_DELAY_MS = 60000L
 private const val DEFAULT_RETRIES_NUMBER = 1
+private const val TAG_NOTIFICATION_SERVICE = "NotificationService"
 
 class PushNotificationsInteractor(
     private val deviceTokenRepository: DeviceTokenRepository,
@@ -45,21 +46,26 @@ class PushNotificationsInteractor(
         try {
             deviceTokenRepository.sendDeviceToken(deviceToken)
         } catch (e: ServerException) {
-            Timber.e(e, "Error sending device token $token to server")
+            Timber.tag(TAG_NOTIFICATION_SERVICE).e(e, "Error sending device token $token to server")
             delay(TOKEN_SEND_RETRY_DELAY_MS)
             updateDeviceToken(retries - 1)
+        } catch (e: Throwable) {
+            // todo: Delete this catch after using real NotificationService
         }
     }
 
     suspend fun deleteDeviceToken() {
-        val token = sharedPreferences.getString(KEY_DEVICE_TOKEN, null) ?: return
         sharedPreferences.edit { remove(KEY_DEVICE_TOKEN) }
 
         val deviceToken = DeviceToken(
-            deviceToken = token,
+            deviceToken = pushTokenRepository.getPushToken().value,
             clientId = tokenKeyProvider.publicKey
         )
 
-        deviceTokenRepository.deleteDeviceToken(deviceToken)
+        try {
+            deviceTokenRepository.deleteDeviceToken(deviceToken)
+        } catch (e: Throwable) {
+            Timber.tag(TAG_NOTIFICATION_SERVICE).e(e, "Error deleting device token on server")
+        }
     }
 }
