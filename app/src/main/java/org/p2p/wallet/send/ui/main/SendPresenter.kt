@@ -14,6 +14,7 @@ import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -206,8 +207,10 @@ class SendPresenter(
     }
 
     override fun send() {
-        val token = token ?: throw IllegalStateException("Token cannot be null!")
-        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
+        val token = token ?: error("Token cannot be null!")
+        val address = target?.address ?: error("Target address cannot be null!")
+
+        sendAnalytics.logSendStarted(networkType, tokenAmount, token, fee, usdAmount)
 
         when (networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
@@ -216,8 +219,10 @@ class SendPresenter(
     }
 
     override fun sendOrConfirm() {
-        val token = token ?: throw IllegalStateException("Token cannot be null!")
-        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
+        val token = token ?: error("Token cannot be null!")
+        val address = target?.address ?: error("Target address cannot be null!")
+
+        sendAnalytics.logUserConfirmedSend(networkType, tokenAmount, token, fee, usdAmount)
 
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
@@ -227,14 +232,10 @@ class SendPresenter(
                 amountUsd = usdAmount.toString(),
                 destination = address
             )
-            val sendNetworkType = if (networkType == NetworkType.SOLANA) {
-                SendAnalytics.SendNetwork.SOLANA
-            } else {
-                SendAnalytics.SendNetwork.BITCOIN
-            }
+
             // TODO resolve [sendMax, sendFree,sendUsername]
             sendAnalytics.logSendReviewing(
-                sendNetwork = sendNetworkType,
+                sendNetwork = networkType,
                 sendCurrency = token.tokenSymbol,
                 sendSum = tokenAmount,
                 sendUSD = usdAmount,
@@ -260,7 +261,7 @@ class SendPresenter(
         }
     }
 
-    override fun loadAvailableValue() {
+    override fun setMaxSourceAmountValue() {
         val token = token ?: return
 
         val totalAvailable = when (mode) {
@@ -398,9 +399,12 @@ class SendPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val amount = tokenAmount.toLamports(token.decimals)
-                val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
+                val amountLamports = tokenAmount.toLamports(token.decimals)
+                val transactionId = burnBtcInteractor.submitBurnTransaction(address, amountLamports)
+
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
+                sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
+
                 val transaction = buildTransaction(transactionId)
                 view?.showTransactionDetails(transaction)
                 view?.showTransactionStatusMessage(tokenAmount, token.tokenSymbol, isSuccess = true)
@@ -427,8 +431,15 @@ class SendPresenter(
                         view?.showErrorMessage(validation.messageRes)
                         view?.showProgressDialog(null)
                     }
-                    is AddressValidation.Valid -> handleValidAddress(token, destinationAddress, lamports)
+                    is AddressValidation.Valid -> {
+                        handleValidAddress(token, destinationAddress, lamports)
+                    }
                 }
+            } catch (serverError: ServerException) {
+                val state = TransactionState.Error(
+                    serverError.getErrorMessage(resources).orEmpty()
+                )
+                transactionManager.emitTransactionState(state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
                 view?.showProgressDialog(null)
@@ -458,6 +469,7 @@ class SendPresenter(
         val transaction = buildTransaction(result)
         val state = TransactionState.SendSuccess(transaction, token.tokenSymbol)
         transactionManager.emitTransactionState(state)
+        sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =

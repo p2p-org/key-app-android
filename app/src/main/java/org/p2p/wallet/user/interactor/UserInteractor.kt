@@ -1,11 +1,12 @@
 package org.p2p.wallet.user.interactor
 
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.Flow
 import org.p2p.wallet.home.api.TokenSymbols
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
@@ -13,12 +14,15 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.emptyString
 
+private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
+
 class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: HomeLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val sharedPreferences: SharedPreferences
 ) {
 
     fun findTokenData(mintAddress: String): Token? {
@@ -97,6 +101,9 @@ class UserInteractor(
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
 
-    suspend fun getPriceByToken(sourceSymbol: String, destinationSymbol: String): TokenPrice? =
-        userRepository.getRate(sourceSymbol, destinationSymbol)
+    fun getHiddenTokensVisibility() = sharedPreferences.getBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, false)
+
+    fun setHiddenTokensVisibility(visible: Boolean) = sharedPreferences.edit {
+        putBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, visible)
+    }
 }

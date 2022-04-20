@@ -22,7 +22,7 @@ sealed class TransactionState {
     ) : TransactionState()
 
     data class Error(
-        val transaction: HistoryTransaction,
-        val message: String
+        val message: String,
+        val transaction: HistoryTransaction? = null,
     ) : TransactionState()
 }

@@ -39,18 +39,19 @@ class TransactionAddressInteractor(
 
     suspend fun findSplTokenAddressData(
         destinationAddress: PublicKey,
-        mintAddress: String
+        mintAddress: String,
+        useCache: Boolean = true
     ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).d("Searching for SPL token address")
-            findSplTokenAddress(destinationAddress, mintAddress)
+            findSplTokenAddress(destinationAddress, mintAddress, useCache)
         } catch (e: IllegalStateException) {
             Timber.tag(ADDRESS_TAG).d("Searching address failed, address is wrong")
             throw IllegalStateException("Invalid owner address")
         }
 
         /* If account is not found, create one */
-        val accountInfo = userAccountRepository.getAccountInfo(associatedAddress.toBase58())
+        val accountInfo = userAccountRepository.getAccountInfo(associatedAddress.toBase58(), useCache)
         val value = accountInfo?.value
         val accountExists = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
         return TransactionAddressData(
@@ -60,8 +61,12 @@ class TransactionAddressInteractor(
     }
 
     @Throws(IllegalStateException::class)
-    private suspend fun findSplTokenAddress(destinationAddress: PublicKey, mintAddress: String): PublicKey {
-        val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58())
+    private suspend fun findSplTokenAddress(
+        destinationAddress: PublicKey,
+        mintAddress: String,
+        useCache: Boolean
+    ): PublicKey {
+        val accountInfo = userAccountRepository.getAccountInfo(destinationAddress.toBase58(), useCache)
 
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo)

@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.orca
 
+import android.content.res.Resources
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
@@ -10,6 +11,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -51,6 +53,7 @@ import kotlin.properties.Delegates
 
 // TODO: Refactor, make simpler
 class OrcaSwapPresenter(
+    private val resources: Resources,
     private val initialToken: Token.Active?,
     private val appScope: AppScope,
     private val userInteractor: UserInteractor,
@@ -87,6 +90,7 @@ class OrcaSwapPresenter(
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
+    private var lastTransaction: HistoryTransaction? = null
 
     override fun loadInitialData() {
         launch {
@@ -365,12 +369,21 @@ class OrcaSwapPresenter(
                         view?.showErrorMessage(R.string.error_general_message)
                     }
                 }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error swapping tokens")
-                view?.showErrorMessage(e)
-                view?.showProgressDialog(null)
+            } catch (serverError: ServerException) {
+                val state = TransactionState.Error(
+                    serverError.getErrorMessage(resources).orEmpty()
+                )
+                transactionManager.emitTransactionState(state)
+            } catch (error: Throwable) {
+                showError(error)
             }
         }
+    }
+
+    private fun showError(error: Throwable) {
+        Timber.e(error, "Error swapping tokens")
+        view?.showErrorMessage(error)
+        view?.showProgressDialog(null)
     }
 
     private fun calculateData(source: Token.Active, destination: Token) {

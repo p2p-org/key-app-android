@@ -43,21 +43,12 @@ class HomePresenter(
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private data class ViewState(
-        val tokens: List<Token.Active>,
-        val visibilityState: VisibilityState?,
-        val username: Username?
-    ) {
-        companion object {
-            val EMPTY = ViewState(tokens = emptyList(), visibilityState = null, username = null)
-        }
+        val tokens: List<Token.Active> = emptyList(),
+        val visibilityState: VisibilityState = VisibilityState.Hidden,
+        val username: Username? = null
+    )
 
-        val actualVisibilityState: VisibilityState = when (visibilityState) {
-            is VisibilityState.Hidden, null -> VisibilityState.Hidden
-            is VisibilityState.Visible -> VisibilityState.Visible
-        }
-    }
-
-    private var presenterState = ViewState.EMPTY
+    private var presenterState = ViewState()
 
     private var userTokensFlowJob: Job? = null
 
@@ -75,7 +66,10 @@ class HomePresenter(
 
         updatesManager.start()
 
-        presenterState = presenterState.copy(username = usernameInteractor.getUsername())
+        presenterState = presenterState.copy(
+            username = usernameInteractor.getUsername(),
+            visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
+        )
 
         if (presenterState.tokens.isEmpty()) {
             initialLoadTokens()
@@ -167,7 +161,8 @@ class HomePresenter(
     }
 
     override fun toggleTokenVisibilityState() {
-        presenterState = presenterState.run { copy(visibilityState = visibilityState?.toggle()) }
+        presenterState = presenterState.run { copy(visibilityState = visibilityState.toggle()) }
+        userInteractor.setHiddenTokensVisibility(presenterState.visibilityState.isVisible)
 
         showTokensAndBalance()
     }
@@ -183,12 +178,11 @@ class HomePresenter(
 
         /* Mapping elements according to visibility settings */
         val isZerosHidden = settingsInteractor.isZerosHidden()
-        val actualState = presenterState.actualVisibilityState
         val mappedTokens = buildList {
             addAll(
                 homeElementItemMapper.mapToItem(
                     tokens = presenterState.tokens,
-                    visibilityState = presenterState.actualVisibilityState,
+                    visibilityState = presenterState.visibilityState,
                     isZerosHidden = isZerosHidden
                 )
             )
@@ -202,7 +196,7 @@ class HomePresenter(
             }
         }
 
-        view?.showTokens(mappedTokens, isZerosHidden, actualState)
+        view?.showTokens(mappedTokens, isZerosHidden, presenterState.visibilityState)
     }
 
     private fun initialLoadTokens() {
