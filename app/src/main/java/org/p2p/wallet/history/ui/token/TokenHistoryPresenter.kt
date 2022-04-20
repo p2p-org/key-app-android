@@ -189,9 +189,9 @@ class TokenHistoryPresenter(
                     if (transaction.isSend) {
                         val sendNetwork =
                             if (isRenBtcSessionActive) {
-                                SendAnalytics.SendNetwork.BITCOIN
+                                SendAnalytics.AnalyticsSendNetwork.BITCOIN
                             } else {
-                                SendAnalytics.SendNetwork.SOLANA
+                                SendAnalytics.AnalyticsSendNetwork.SOLANA
                             }
                         sendAnalytics.logSendShowingDetails(
                             sendStatus = SendAnalytics.SendStatus.SUCCESS,
