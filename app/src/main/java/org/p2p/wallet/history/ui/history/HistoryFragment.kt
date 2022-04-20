@@ -59,8 +59,10 @@ class HistoryFragment :
 
     override fun showPagingState(state: PagingState) {
         adapter.setPagingState(state)
-        binding.shimmerView.isVisible = state == PagingState.InitialLoading
-        binding.refreshLayout.isVisible = state != PagingState.InitialLoading
+        with(binding) {
+            shimmerView.isVisible = state == PagingState.InitialLoading
+            refreshLayout.isVisible = state != PagingState.InitialLoading
+        }
     }
 
     override fun showHistory(items: List<HistoryTransaction>) {
@@ -85,7 +87,8 @@ class HistoryFragment :
         }
     }
 
-    override fun showRefreshing(isRefreshing: Boolean) {
-        binding.refreshLayout.isRefreshing = isRefreshing
+    override fun showRefreshing(isRefreshing: Boolean) = with(binding) {
+        refreshLayout.isRefreshing = isRefreshing
+        refreshLayoutProgressPlaceholder.isVisible = isRefreshing
     }
 }
