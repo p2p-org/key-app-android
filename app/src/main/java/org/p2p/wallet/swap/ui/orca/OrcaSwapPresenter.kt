@@ -90,7 +90,6 @@ class OrcaSwapPresenter(
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
-    private var lastTransaction: HistoryTransaction? = null
 
     override fun loadInitialData() {
         launch {
@@ -193,11 +192,11 @@ class OrcaSwapPresenter(
         destinationToken?.let {
             calculationJob?.cancel()
             calculationJob = launch {
-                /* If pool is not null, then destination token is not null as well */
-                calculateAmount(sourceToken, it)
-
                 /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
                 calculateFees(sourceToken, it)
+
+                /* If pool is not null, then destination token is not null as well */
+                calculateAmount(sourceToken, it)
 
                 calculateRates(sourceToken, it)
             }
