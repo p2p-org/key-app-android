@@ -31,6 +31,8 @@ class AuthLogoutInteractor(
 ) {
     fun onUserLogout() {
         appScope.launch {
+            val publicKey = tokenKeyProvider.publicKey
+
             updatesManager.stop()
             sharedPreferences.edit { clear() }
             tokenKeyProvider.clear()
@@ -42,7 +44,7 @@ class AuthLogoutInteractor(
             IntercomService.logout()
             RenVMService.stopService(context)
 
-            pushNotificationsInteractor.deleteDeviceToken()
+            pushNotificationsInteractor.deleteDeviceToken(publicKey)
         }
     }
 

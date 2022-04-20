@@ -55,12 +55,12 @@ class PushNotificationsInteractor(
         }
     }
 
-    suspend fun deleteDeviceToken() {
+    suspend fun deleteDeviceToken(publicKey: String) {
         sharedPreferences.edit { remove(KEY_DEVICE_TOKEN) }
 
         val deviceToken = DeviceToken(
             deviceToken = pushTokenRepository.getPushToken().value,
-            clientId = tokenKeyProvider.publicKey
+            clientId = publicKey
         )
 
         try {
