@@ -601,10 +601,12 @@ class SendPresenter(
         }
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
-        val notEnoughFunds = when (mode) {
-            is CurrencyMode.Usd -> fee?.feePayerToken?.totalInUsd.orZero() < fee?.feeUsd.orZero()
-            is CurrencyMode.Token -> fee?.feePayerToken?.total.orZero() < fee?.fee.orZero()
-        }
+        val notEnoughFunds = fee?.let { sendFee ->
+            when (mode) {
+                is CurrencyMode.Usd -> sendFee.feePayerToken.totalInUsd.orZero() < sendFee.feeUsd.orZero()
+                is CurrencyMode.Token -> sendFee.feePayerToken.total.orZero() < sendFee.fee.orZero()
+            }
+        } ?: false
         view?.showAccountFeeView(
             fee = fee,
             notEnoughFunds = notEnoughFunds
@@ -653,10 +655,12 @@ class SendPresenter(
 
     private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: SendFee?) {
         val isAmountMoreThanBalance = amount.isMoreThan(total)
-        val isAmountWithFeeMoreThanBalance = when (mode) {
-            is CurrencyMode.Usd -> fee?.feePayerToken?.totalInUsd.orZero() < amount + fee?.feeUsd.orZero()
-            is CurrencyMode.Token -> fee?.feePayerToken?.total.orZero() < amount + fee?.fee.orZero()
-        }
+        val isAmountWithFeeMoreThanBalance = fee?.let { sendFee ->
+            when (mode) {
+                is CurrencyMode.Usd -> sendFee.feePayerToken.totalInUsd.orZero() < amount + sendFee.feeUsd.orZero()
+                is CurrencyMode.Token -> sendFee.feePayerToken.total.orZero() < amount + sendFee.fee.orZero()
+            }
+        } ?: false
         val address = target?.address
         val isMaxAmount = amount == total
 
