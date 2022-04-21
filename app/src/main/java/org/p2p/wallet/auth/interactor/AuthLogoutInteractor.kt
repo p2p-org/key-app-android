@@ -29,9 +29,10 @@ class AuthLogoutInteractor(
     private val pushNotificationsInteractor: PushNotificationsInteractor,
     private val appScope: AppScope,
 ) {
-    suspend fun onUserLogout() {
+    fun onUserLogout() {
         appScope.launch {
-            pushNotificationsInteractor.deleteDeviceToken()
+            val publicKey = tokenKeyProvider.publicKey
+
             updatesManager.stop()
             sharedPreferences.edit { clear() }
             tokenKeyProvider.clear()
@@ -42,6 +43,8 @@ class AuthLogoutInteractor(
             transactionDetailsLocalRepository.deleteAll()
             IntercomService.logout()
             RenVMService.stopService(context)
+
+            pushNotificationsInteractor.deleteDeviceToken(publicKey)
         }
     }
 
