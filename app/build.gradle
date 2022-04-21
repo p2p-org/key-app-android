@@ -180,6 +180,8 @@ dependencies {
 
     implementation 'com.amplitude:android-sdk:2.33.0'
 
+    def googleServicesUtilitiesVersion = "18.0.1"
+    implementation "com.google.android.gms:play-services-base:$googleServicesUtilitiesVersion"
 
     // Debug drawer
     def debugDrawerVersion = '0.8.0'
