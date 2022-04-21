@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,37 +10,86 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:background="@color/backgroundPrimary"
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/scrollView">
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/home_history"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold16" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/actionButtonsView">
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/historyRecyclerView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:paddingTop="24dp"
-            android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
-            tools:listitem="@layout/item_transaction" />
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/historyRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_transaction" />
+
+            <LinearLayout
+                android:id="@+id/emptyStateLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.4">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:src="@drawable/ic_history_empty_placeholder"
+                    tools:ignore="contentDescription" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_history_placeholder_shadow" />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="@string/receive_no_transactions_yet"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold20" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="@string/receive_no_transactions_yet_message"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+                    android:textColor="@color/textIconSecondary" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -48,7 +97,13 @@
         android:id="@+id/shimmerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:shimmer_auto_start="true">
+        android:layout_marginTop="?actionBarSize"
+        android:visibility="gone"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="1"
+        app:shimmer_base_color="@color/backgroundAppStroke"
+        app:shimmer_highlight_alpha="0"
+        app:shimmer_highlight_color="@color/backgroundAppStroke">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -151,6 +206,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp" />
         </LinearLayout>
+
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-</LinearLayout>
+    <View
+        android:id="@+id/refreshLayoutProgressPlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize"
+        android:background="@color/white_50"
+        android:clickable="true"
+        android:visibility="gone" />
+
+</FrameLayout>

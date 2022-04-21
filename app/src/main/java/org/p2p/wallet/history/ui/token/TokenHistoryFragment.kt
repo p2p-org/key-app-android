@@ -12,6 +12,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -56,8 +57,11 @@ class TokenHistoryFragment :
 
     private val tokenForHistory: Token.Active by args(EXTRA_TOKEN)
 
+    private val glideManager: GlideManager by inject()
+
     private val historyAdapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
+            glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
             onRetryClicked = presenter::fetchNextPage
         )

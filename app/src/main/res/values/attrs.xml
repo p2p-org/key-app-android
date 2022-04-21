@@ -92,4 +92,13 @@
         <attr name="android:text" />
         <attr name="isExpanded" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="TransactionImageView">
+        <attr name="statusIconSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="TransactionSwapImageView">
+        <attr name="tokenIconSize" format="dimension" />
+    </declare-styleable>
+
 </resources>

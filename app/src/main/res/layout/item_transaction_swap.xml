@@ -6,7 +6,7 @@
     android:background="@color/backgroundPrimary"
     android:orientation="horizontal">
 
-    <org.p2p.wallet.common.ui.widget.TransactionImageView
+    <org.p2p.wallet.common.ui.widget.TransactionSwapImageView
         android:id="@+id/transactionTokenImageView"
         android:layout_width="@dimen/history_transaction_image_size"
         android:layout_height="@dimen/history_transaction_image_size"

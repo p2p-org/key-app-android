@@ -19,22 +19,30 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <org.p2p.wallet.common.ui.widget.RoundedImageView
-                android:id="@+id/tokenImageView"
-                android:layout_width="@dimen/transaction_view_image_size"
-                android:layout_height="@dimen/transaction_view_image_size"
+            <org.p2p.wallet.common.ui.widget.TransactionImageView
+                android:id="@+id/transactionImageView"
+                android:layout_width="@dimen/history_transaction_details_image_size"
+                android:layout_height="@dimen/history_transaction_details_image_size"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="16dp"
-                android:background="@drawable/bg_app_stroke_rounded"
-                android:padding="12dp"
-                android:src="@drawable/ic_transaction_send"
-                app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:statusIconSize="@dimen/history_transaction_details_image_icon_size" />
 
-            <!--TODO PWN-3247 switch on specific view to show transaction token(s) ^^-->
+            <org.p2p.wallet.common.ui.widget.TransactionSwapImageView
+                android:id="@+id/transactionSwapImageView"
+                android:layout_width="@dimen/history_transaction_details_image_size"
+                android:layout_height="@dimen/history_transaction_details_image_size"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tokenIconSize="@dimen/history_transaction_details_image_token_icon_size" />
 
             <TextView
                 android:id="@+id/amountTextTokenView"

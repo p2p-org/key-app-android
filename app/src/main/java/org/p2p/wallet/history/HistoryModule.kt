@@ -10,10 +10,10 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.repository.TransactionDetailsDatabaseRepository
+import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
+import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
@@ -73,10 +73,7 @@ object HistoryModule : InjectionModule {
         } bind TransactionDetailsContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsBottomSheetPresenter(
-                resources = get(),
-                theme = get(),
                 state = state,
-                userLocalRepository = get(),
                 historyInteractor = get()
             )
         } bind TransactionDetailsBottomSheetContract.Presenter::class
@@ -103,6 +100,16 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsRemoteRepository::class
 
-        factory { HistoryPresenter() } bind HistoryContract.Presenter::class
+        factory {
+            HistoryPresenter(
+                historyInteractor = get(),
+                renBtcInteractor = get(),
+                receiveAnalytics = get(),
+                swapAnalytics = get(),
+                analyticsInteractor = get(),
+                environmentManager = get(),
+                sendAnalytics = get()
+            )
+        } bind HistoryContract.Presenter::class
     }
 }
