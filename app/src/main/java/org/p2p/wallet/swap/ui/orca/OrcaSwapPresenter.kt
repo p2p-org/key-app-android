@@ -159,10 +159,7 @@ class OrcaSwapPresenter(
         this.slippage = settingsResult.newSlippage
         view?.showSlippage(this.slippage)
 
-        destinationToken?.let {
-            /* If pool is not null, then destination token is not null as well */
-            calculateAmount(sourceToken, it)
-        }
+        reCalculate()
 
         swapInteractor.setFeePayerToken(settingsResult.newFeePayerToken)
         view?.showFeePayerToken(settingsResult.newFeePayerToken.tokenSymbol)
@@ -189,6 +186,10 @@ class OrcaSwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
+        reCalculate()
+    }
+
+    private fun reCalculate() {
         destinationToken?.let {
             calculationJob?.cancel()
             calculationJob = launch {
