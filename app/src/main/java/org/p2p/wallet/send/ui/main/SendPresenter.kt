@@ -657,8 +657,18 @@ class SendPresenter(
         val isAmountMoreThanBalance = amount.isMoreThan(total)
         val isAmountWithFeeMoreThanBalance = fee?.let { sendFee ->
             when (mode) {
-                is CurrencyMode.Usd -> sendFee.feePayerToken.totalInUsd.orZero() < amount + sendFee.feeUsd.orZero()
-                is CurrencyMode.Token -> sendFee.feePayerToken.total.orZero() < amount + sendFee.fee.orZero()
+                is CurrencyMode.Usd -> {
+                    sendFee.feePayerToken.totalInUsd.orZero() < countFeeWithAmountIfNeeded(
+                        sendFee.feeUsd.orZero(),
+                        amount,
+                        sendFee
+                    )
+                }
+                is CurrencyMode.Token -> sendFee.feePayerToken.total.orZero() < countFeeWithAmountIfNeeded(
+                    sendFee.fee.orZero(),
+                    amount,
+                    sendFee
+                )
             }
         } ?: false
         val address = target?.address
@@ -690,6 +700,18 @@ class SendPresenter(
         }
         view?.updateAvailableTextColor(availableColor)
         view?.showButtonEnabled(isEnabled)
+    }
+
+    private fun countFeeWithAmountIfNeeded(
+        fee: BigDecimal,
+        amount: BigDecimal,
+        sendFee: SendFee
+    ): BigDecimal {
+        return if (sendFee.feePayerSymbol == sendFee.sourceTokenSymbol) {
+            amount + fee
+        } else {
+            amount
+        }
     }
 
     private fun isAddressValid(address: String?): Boolean =
