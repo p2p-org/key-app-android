@@ -86,9 +86,6 @@ class SecretKeyFragment :
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
         }
-
-        val itemsCount = phraseAdapter.itemCount
-        setButtonEnabled(itemsCount != 0)
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
@@ -101,7 +98,7 @@ class SecretKeyFragment :
 
     override fun showError(messageRes: Int) {
         binding.errorTextView.setText(messageRes)
-        binding.messageTextView.isVisible = false
+        binding.messageView.isVisible = false
     }
 
     override fun showFile(file: File) {
@@ -126,7 +123,7 @@ class SecretKeyFragment :
 
     private fun clearError() {
         binding.errorTextView.text = emptyString()
-        binding.messageTextView.isVisible = true
+        binding.messageView.isVisible = true
     }
 
     private fun buildTermsAndPrivacyText(): SpannableString {
