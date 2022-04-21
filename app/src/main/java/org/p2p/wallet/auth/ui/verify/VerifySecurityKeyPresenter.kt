@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.ui.verify
 
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -15,7 +15,7 @@ private const val KEY_SIZE = 24
 
 class VerifySecurityKeyPresenter(
     private val secretKeyInteractor: SecretKeyInteractor,
-    private val onBoardingAnalytics: OnBoardingAnalytics,
+    private val onboardingAnalytics: OnboardingAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<VerifySecurityKeyContract.View>(),
     VerifySecurityKeyContract.Presenter {
@@ -132,9 +132,9 @@ class VerifySecurityKeyPresenter(
                 view?.navigateToReserve()
                 return@launch
             }
-            onBoardingAnalytics.logWalletCreated(lastScreenName = ScreenNames.OnBoarding.CREATE_MANUAL)
+            onboardingAnalytics.logWalletCreated(lastScreenName = ScreenNames.OnBoarding.CREATE_MANUAL)
             view?.showKeysDoesNotMatchError()
-            onBoardingAnalytics.logBackingUpRenew()
+            onboardingAnalytics.logBackingUpRenew()
         }.invokeOnCompletion {
             clear()
             view?.showLoading(isLoading = false)
@@ -145,7 +145,7 @@ class VerifySecurityKeyPresenter(
         launch {
             clear()
             view?.onCleared()
-            onBoardingAnalytics.logBackingUpError()
+            onboardingAnalytics.logBackingUpError()
         }
     }
 

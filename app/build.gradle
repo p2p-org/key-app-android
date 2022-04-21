@@ -45,7 +45,7 @@ android {
             buildConfigField("String", "amplitudeKey", "\"\"")
         }
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-        buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+        buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
 
@@ -92,6 +92,8 @@ android {
             versionNameSuffix ".$VERSION_BUILD-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
@@ -108,7 +110,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "true")
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
         }
     }

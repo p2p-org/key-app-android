@@ -102,6 +102,17 @@ workflows:
             - android_lint
           context: feature
 
+  lint_and_test_release:
+    jobs:
+      - android_lint:
+          filters:
+            branches:
+              only:
+                - /(^release\/.+)/
+      - unit_tests:
+          requires:
+            - android_lint
+
   build_develop_publish:
     jobs:
       - approve-feature-build:

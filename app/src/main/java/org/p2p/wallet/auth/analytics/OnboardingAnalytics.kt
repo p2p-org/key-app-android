@@ -25,14 +25,13 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SAV
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SKIPPED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_CREATED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_RESTORED
+import org.p2p.wallet.utils.emptyString
 
-class OnBoardingAnalytics(private val tracker: Analytics) {
-    fun logSplashViewed(campaignName: String) {
+class OnboardingAnalytics(private val tracker: Analytics) {
+    fun logSplashViewed() {
         tracker.logEvent(
-            ONBOARD_SPLASH_VIEWED,
-            arrayOf(
-                Pair("Splash_Campaign", campaignName)
-            )
+            event = ONBOARD_SPLASH_VIEWED,
+            params = mapOf("Splash_Campaign" to emptyString())
         )
     }
 

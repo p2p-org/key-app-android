@@ -5,7 +5,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
 import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -25,7 +25,7 @@ object AnalyticsModule : InjectionModule {
         factory { BuyAnalytics(get()) }
         factory { SwapAnalytics(get()) }
         factory { ScreensAnalyticsInteractor(get(), get()) }
-        factory { OnBoardingAnalytics(get()) }
+        factory { OnboardingAnalytics(get()) }
         factory { BrowseAnalytics(get()) }
         factory { SendAnalytics(get()) }
         single { AnalyticsInMemoryRepository() } bind AnalyticsLocalRepository::class

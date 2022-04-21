@@ -12,8 +12,8 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.home.ui.main.HomeFragment
