@@ -126,7 +126,9 @@ class FeeRelayerInteractor(
                 relayAccount = relayAccount,
                 freeTransactionFeeLimit = freeTransactionFeeLimit
             )
-        } else null
+        } else {
+            null
+        }
 
         if (topUpParams == null || topUpParams.amount.isZero()) return null
 
