@@ -14,7 +14,7 @@
         app:title="@string/auth_reserve_username"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -87,6 +87,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>
