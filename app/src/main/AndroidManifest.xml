@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
+    <!-- todo: remove usesCleartextTraffic after switching to https on NotificationService -->
     <application
         android:name=".App"
         android:allowBackup="false"
@@ -23,7 +24,8 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/WalletTheme">
+        android:theme="@style/WalletTheme"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name="org.p2p.wallet.root.RootActivity"

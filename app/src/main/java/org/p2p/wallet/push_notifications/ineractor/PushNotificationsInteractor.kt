@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.os.Build
 import androidx.core.content.edit
 import kotlinx.coroutines.delay
-import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.push_notifications.model.DeviceInfo
 import org.p2p.wallet.push_notifications.model.DeviceToken
@@ -45,13 +44,10 @@ class PushNotificationsInteractor(
 
         try {
             deviceTokenRepository.sendDeviceToken(deviceToken)
-        } catch (e: ServerException) {
+        } catch (e: Throwable) {
             Timber.tag(TAG_NOTIFICATION_SERVICE).e(e, "Error sending device token $token to server")
             delay(TOKEN_SEND_RETRY_DELAY_MS)
             updateDeviceToken(retries - 1)
-        } catch (e: Throwable) {
-            // todo: Delete this catch after using real NotificationService
-            // https://p2pvalidator.atlassian.net/browse/PWN-3355
         }
     }
 

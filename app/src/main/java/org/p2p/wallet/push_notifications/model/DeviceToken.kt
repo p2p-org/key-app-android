@@ -3,6 +3,8 @@ package org.p2p.wallet.push_notifications.model
 import com.google.gson.annotations.SerializedName
 
 data class DeviceToken(
+    @SerializedName("type")
+    val type: String = "device",
     @SerializedName("device_token")
     val deviceToken: String,
     @SerializedName("device_info")
