@@ -130,8 +130,8 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             transactionIdGroup.isVisible = true
             transactionIdTextView.text = signature
             transactionLabelTextView.setOnClickListener {
-                val url = getString(R.string.solanaExplorer, signature)
-                showUrlInCustomTabs(url)
+                val solanaUrl = getString(R.string.solanaExplorer, signature)
+                showUrlInCustomTabs(solanaUrl)
             }
 
             transactionImageView.setImageResource(R.drawable.ic_success)
