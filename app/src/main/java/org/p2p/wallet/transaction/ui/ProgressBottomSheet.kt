@@ -72,10 +72,6 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             subTitleTextView.text = data.subTitle
-            transactionIdGroup.isVisible = data.transactionId.isNotEmpty()
-
-            transactionIdTextView.text = data.transactionId
-
             arrowImageView.setOnClickListener {
                 setResultAndDismiss()
             }
