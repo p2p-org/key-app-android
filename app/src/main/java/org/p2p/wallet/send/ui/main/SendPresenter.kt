@@ -168,12 +168,22 @@ class SendPresenter(
             try {
                 view?.showSearchLoading(true)
                 val target = Target(value)
+
+                networkType = when (target.validation) {
+                    Target.Validation.SOL_ADDRESS -> NetworkType.SOLANA
+                    else -> NetworkType.BITCOIN
+                }
+
+                view?.showNetworkDestination(networkType)
+
                 when (target.validation) {
                     Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-                    Target.Validation.ADDRESS -> searchByNetwork(target.value)
+                    Target.Validation.BTC_ADDRESS -> searchByNetwork(target.value)
+                    Target.Validation.SOL_ADDRESS -> searchByNetwork(target.value)
                     Target.Validation.EMPTY -> view?.showIdleTarget()
                     Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
                 }
+
                 sendAnalytics.logSendPasting()
             } catch (e: Throwable) {
                 Timber.e(e, "Error validating target: $value")
