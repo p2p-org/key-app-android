@@ -21,10 +21,7 @@ object AppModule {
             single { AppScope() }
             single { AppFeatureFlags(get()) }
             single { AppRestarter { restartAction() } } bind AppRestarter::class
-            single {
-                val trackers = TrackersFactory.create(application, BuildConfig.ANALYTICS_ENABLED)
-                Analytics(trackers)
-            }
+            single { Analytics(TrackersFactory.create(application)) }
             single { GoogleFirebaseCrashlytics(get()) } bind CrashLoggingService::class
         }
     }

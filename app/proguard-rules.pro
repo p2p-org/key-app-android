@@ -10,6 +10,7 @@
 -keepclassmembers,allowobfuscation class * {
   @com.google.gson.annotations.SerializedName <fields>;
 }
+-keepclassmembers enum * {*;}
 
 -keepclassmembers enum * {*;}
 -keep class org.p2p.solanaj.** { *; }
