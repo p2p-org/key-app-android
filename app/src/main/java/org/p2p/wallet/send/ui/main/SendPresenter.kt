@@ -351,6 +351,7 @@ class SendPresenter(
 
     private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
         view?.showAddressOnlyTarget(result.address)
+        view?.showNetworkDestination(result.networkType)
         checkAddress(result.address)
     }
 
@@ -636,13 +637,13 @@ class SendPresenter(
 
     private suspend fun searchByNetwork(address: String) {
         when (networkType) {
-            NetworkType.SOLANA -> searchByAddress(address)
+            NetworkType.SOLANA -> searchBySolAddress(address)
             /* No search for bitcoin network */
-            NetworkType.BITCOIN -> setTargetResult(SearchResult.AddressOnly(address))
+            NetworkType.BITCOIN -> setTargetResult(SearchResult.AddressOnly(address, NetworkType.BITCOIN))
         }
     }
 
-    private suspend fun searchByAddress(address: String) {
+    private suspend fun searchBySolAddress(address: String) {
         val validatedAddress = try {
             PublicKey(address)
         } catch (e: Throwable) {
