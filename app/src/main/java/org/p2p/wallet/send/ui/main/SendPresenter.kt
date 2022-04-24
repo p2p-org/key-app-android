@@ -108,6 +108,7 @@ class SendPresenter(
         launch {
             try {
                 view?.showFullScreenLoading(true)
+                view?.showNetworkSelectionView(initialToken?.isRenBTC == true)
 
                 userTokens += userInteractor.getUserTokens()
                 val userPublicKey = tokenKeyProvider.publicKey
