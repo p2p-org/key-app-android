@@ -14,6 +14,7 @@ import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -434,6 +435,11 @@ class SendPresenter(
                         handleValidAddress(token, destinationAddress, lamports)
                     }
                 }
+            } catch (serverError: ServerException) {
+                val state = TransactionState.Error(
+                    serverError.getErrorMessage(resources).orEmpty()
+                )
+                transactionManager.emitTransactionState(state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
                 view?.showProgressDialog(null)
