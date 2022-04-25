@@ -160,7 +160,11 @@ class OrcaSwapInteractor(
         )
 
         val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
-        val accountCreationFee = fee.total.fromLamports(feePayerToken.decimals).scaleMedium()
+        val accountCreationFee = if (feePayerToken.isSOL) {
+            fee.total.fromLamports(feePayerToken.decimals).scaleMedium()
+        } else {
+            getFeesInPayingToken(fee.total).fromLamports(feePayerToken.decimals).scaleMedium()
+        }
         val accountCreationFeeUsd = accountCreationFee.toUsd(feePayerToken.usdRate)
 
         val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature
