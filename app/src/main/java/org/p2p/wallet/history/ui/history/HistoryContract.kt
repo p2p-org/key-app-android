@@ -11,6 +11,7 @@ interface HistoryContract {
         fun showHistory(items: List<HistoryTransaction>)
         fun openTransactionDetailsScreen(transaction: HistoryTransaction)
         fun showRefreshing(isRefreshing: Boolean)
+        fun scrollToTop()
     }
 
     interface Presenter : MvpPresenter<View> {

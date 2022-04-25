@@ -53,6 +53,7 @@ class HistoryPresenter(
         refreshJob = launch {
             view?.showRefreshing(isRefreshing = true)
             fetchHistory(isRefresh = true)
+            view?.scrollToTop()
             view?.showRefreshing(isRefreshing = false)
         }
     }
