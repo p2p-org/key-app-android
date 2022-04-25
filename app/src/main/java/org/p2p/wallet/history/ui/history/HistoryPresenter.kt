@@ -36,6 +36,7 @@ class HistoryPresenter(
 
     private var transactions by Delegates.observable<List<HistoryTransaction>>(emptyList()) { _, _, newValue ->
         view?.showHistory(items = newValue)
+        view?.showPagingState(PagingState.Idle)
     }
 
     override fun attach(view: HistoryContract.View) {
@@ -63,7 +64,6 @@ class HistoryPresenter(
         pagingJob = launch {
             view?.showPagingState(PagingState.Loading)
             fetchHistory()
-            view?.showPagingState(PagingState.Idle)
         }
     }
 
@@ -75,7 +75,6 @@ class HistoryPresenter(
         launch {
             view?.showPagingState(PagingState.InitialLoading)
             fetchHistory()
-            view?.showPagingState(PagingState.Idle)
         }
     }
 

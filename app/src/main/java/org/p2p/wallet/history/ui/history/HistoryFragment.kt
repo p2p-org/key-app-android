@@ -53,6 +53,9 @@ class HistoryFragment :
             }
             historyRecyclerView.addOnScrollListener(scrollListener)
             historyRecyclerView.adapter = adapter
+            retryButton.setOnClickListener {
+                presenter.loadHistory()
+            }
         }
         presenter.loadHistory()
     }
@@ -62,6 +65,8 @@ class HistoryFragment :
         with(binding) {
             shimmerView.isVisible = state == PagingState.InitialLoading
             refreshLayout.isVisible = state != PagingState.InitialLoading
+            errorStateLayout.isVisible = state is PagingState.Error
+            historyRecyclerView.isVisible = state == PagingState.Idle || state == PagingState.Loading
         }
     }
 
