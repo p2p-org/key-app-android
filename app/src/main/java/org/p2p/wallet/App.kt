@@ -1,9 +1,10 @@
 package org.p2p.wallet
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext
@@ -13,6 +14,7 @@ import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.TimberCrashTree
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
@@ -21,6 +23,8 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
+import org.p2p.wallet.push_notifications.PushNotificationsModule
+import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.qr.QrModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
@@ -38,6 +42,8 @@ import timber.log.Timber
 class App : Application() {
 
     private val crashLoggingService: CrashLoggingService by inject()
+    private val appScope: AppScope by inject()
+    private val pushTokenRepository: PushTokenRepository by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -56,6 +62,10 @@ class App : Application() {
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
 
         SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
+
+        if (BuildConfig.DEBUG) {
+            logFirebaseDevicePushToken()
+        }
     }
 
     private fun setupKoin() {
@@ -66,6 +76,7 @@ class App : Application() {
                 listOf(
                     AuthModule.create(),
                     RootModule.create(),
+                    PushNotificationsModule.create(),
                     BackupModule.create(),
                     UserModule.create(),
                     HomeModule.create(),
@@ -104,5 +115,13 @@ class App : Application() {
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag
         Timber.plant(TimberCrashTree(crashLoggingService))
+    }
+
+    private fun logFirebaseDevicePushToken() {
+        appScope.launch {
+            kotlin.runCatching { pushTokenRepository.getPushToken().value }
+                .onSuccess { Timber.tag("App:device_token").d(it) }
+                .onFailure { Timber.e(it) }
+        }
     }
 }
