@@ -91,4 +91,8 @@ class HistoryFragment :
         refreshLayout.isRefreshing = isRefreshing
         refreshLayoutProgressPlaceholder.isVisible = isRefreshing
     }
+
+    override fun scrollToTop() {
+        binding.historyRecyclerView.smoothScrollToPosition(0)
+    }
 }
