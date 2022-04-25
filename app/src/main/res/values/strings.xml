@@ -31,6 +31,7 @@
     <string name="common_close_account">Close account</string>
     <string name="common_commas">…</string>
     <string name="common_transaction_details">Transaction details</string>
+    <string name="common_error">Error</string>
 
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
@@ -52,6 +53,7 @@
     <string name="error_take_screenshot">Failed to take a screenshot</string>
     <string name="error_insufficient_funds">Insufficient funds</string>
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
+    <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
