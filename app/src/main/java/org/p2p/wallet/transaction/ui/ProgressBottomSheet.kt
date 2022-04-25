@@ -95,13 +95,13 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
     override fun onStop() {
         lifecycleScope.launch {
             // clearing state after transaction is viewed
-            transactionManager.emitTransactionState(TransactionState.Progress())
+            transactionManager.emitTransactionState(null)
         }
         super.onStop()
     }
 
     private fun observeState() {
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launchWhenCreated {
             transactionManager.getTransactionStateFlow().collect { state ->
                 TransitionManager.beginDelayedTransition(binding.root)
                 when (state) {

@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.p2p.wallet.common.di.AppScope
@@ -37,7 +38,7 @@ class TransactionManager private constructor(
     /*
    * This one is to show user transaction id when progress dialog is shown
    * */
-    private val transactionStateFlow = MutableStateFlow<TransactionState>(TransactionState.Progress())
+    private val transactionStateFlow = MutableStateFlow<TransactionState?>(null)
 
     private val pendingTransactions = mutableListOf<AppTransaction>()
 
@@ -68,11 +69,9 @@ class TransactionManager private constructor(
         return executor.getStateFlow()
     }
 
-    fun getTransactionStateFlow(): Flow<TransactionState> = transactionStateFlow
+    fun getTransactionStateFlow(): Flow<TransactionState> = transactionStateFlow.filterNotNull()
 
-    fun getTransactionState(): TransactionState = transactionStateFlow.value
-
-    suspend fun emitTransactionState(state: TransactionState) {
+    suspend fun emitTransactionState(state: TransactionState?) {
         transactionStateFlow.emit(state)
     }
 
