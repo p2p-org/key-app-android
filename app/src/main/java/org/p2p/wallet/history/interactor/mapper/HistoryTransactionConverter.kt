@@ -115,7 +115,7 @@ class HistoryTransactionConverter {
         rate: TokenPrice?
     ): HistoryTransaction {
         val isSend = if (response.isSimpleTransfer) {
-            response.source == directPublicKey && response.destination != publicKey
+            (response.source == directPublicKey && response.destination != publicKey) || response.authority == publicKey
         } else {
             response.authority == publicKey
         }
