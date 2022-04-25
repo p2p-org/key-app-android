@@ -391,9 +391,7 @@ class OrcaSwapPresenter(
             view?.showButtonText(R.string.swap_searching_swap_pair)
             searchTradablePairs(source, destination)
             view?.showButtonText(R.string.swap_calculating_fees)
-            if (!swapInteractor.getFeePayerToken().isSOL) {
-                swapInteractor.setFeePayerToken(source)
-            }
+            swapInteractor.setFeePayerToken(source)
             recalculate()
         }
     }
