@@ -1,5 +1,6 @@
 package org.p2p.wallet.restore.ui.keys
 
+import androidx.annotation.StringRes
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
@@ -21,18 +22,21 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.ui.widget.ProgressButton
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
+import org.p2p.wallet.utils.unsafeLazy
+import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
@@ -42,18 +46,20 @@ class SecretKeyFragment :
     SecretKeyContract.View {
 
     companion object {
-        fun create() = SecretKeyFragment()
+        fun create(): SecretKeyFragment = SecretKeyFragment()
     }
 
     override val presenter: SecretKeyContract.Presenter by inject()
     private val binding: FragmentSecretKeyBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val phraseAdapter: SecretPhraseAdapter by lazy {
-        SecretPhraseAdapter {
-            presenter.setNewKeys(it)
-            clearError()
-        }
+    private val phraseAdapter: SecretPhraseAdapter by unsafeLazy {
+        SecretPhraseAdapter(
+            onSeedPhraseChanged = { keys ->
+                clearError()
+                presenter.setNewKeys(keys)
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,26 +75,32 @@ class SecretKeyFragment :
                 presenter.verifySeedPhrase()
             }
 
-            keysRecyclerView.layoutManager = FlexboxLayoutManager(requireContext()).also {
-                it.flexDirection = FlexDirection.ROW
-                it.justifyContent = JustifyContent.FLEX_START
-            }
-            keysRecyclerView.attachAdapter(phraseAdapter)
+            initKeysList()
 
             phraseTextView.isVisible = false
-            keysRecyclerView.isVisible = true
-            phraseAdapter.addSecretKey(SecretKey())
 
             questionTextView.setOnClickListener {
                 replaceFragment(SeedInfoFragment.create())
             }
-            keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
+
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
         }
 
-        val itemsCount = phraseAdapter.itemCount
-        setButtonEnabled(itemsCount != 0)
+        setButtonEnabled(phraseAdapter.itemCount != 0)
+    }
+
+    private fun FragmentSecretKeyBinding.initKeysList() {
+        keysRecyclerView.layoutManager = FlexboxLayoutManager(requireContext()).also {
+            it.flexDirection = FlexDirection.ROW
+            it.justifyContent = JustifyContent.FLEX_START
+        }
+        keysRecyclerView.attachAdapter(phraseAdapter)
+        keysRecyclerView.isVisible = true
+
+        phraseAdapter.addSecretKey(SecretKey())
+
+        keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
@@ -99,9 +111,28 @@ class SecretKeyFragment :
         binding.restoreButton.isEnabled = isEnabled
     }
 
-    override fun showError(messageRes: Int) {
-        binding.errorTextView.setText(messageRes)
-        binding.messageTextView.isVisible = false
+    override fun showError(messageRes: Int) = with(binding) {
+        setPhraseContainerError(setError = true)
+        restoreButton.setRestoreButtonErrorState(
+            isError = true, buttonTextRes = messageRes
+        )
+    }
+
+    private fun FragmentSecretKeyBinding.setPhraseContainerError(setError: Boolean) {
+        phraseContainer.background = context.getDrawableCompat(
+            if (setError) R.drawable.bg_red_secondary_stroked else R.drawable.bg_gray_secondary_stroked
+        )
+    }
+
+    private fun ProgressButton.setRestoreButtonErrorState(isError: Boolean, @StringRes buttonTextRes: Int) {
+        setActionText(buttonTextRes)
+        if (isError) {
+            isEnabled = false
+            setStartIcon(iconRes = null)
+        } else {
+            isEnabled = true
+            setStartIcon(iconRes = R.drawable.ic_restore)
+        }
     }
 
     override fun showFile(file: File) {
@@ -124,9 +155,13 @@ class SecretKeyFragment :
         }
     }
 
-    private fun clearError() {
-        binding.errorTextView.text = emptyString()
-        binding.messageTextView.isVisible = true
+    private fun clearError() = with(binding) {
+        restoreButton.setRestoreButtonErrorState(
+            isError = false, buttonTextRes = R.string.auth_restore
+        )
+
+        messageTextView.isVisible = true
+        setPhraseContainerError(setError = false)
     }
 
     private fun buildTermsAndPrivacyText(): SpannableString {
