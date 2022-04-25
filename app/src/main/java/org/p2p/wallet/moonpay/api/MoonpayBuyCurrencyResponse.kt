@@ -3,7 +3,7 @@ package org.p2p.wallet.moonpay.api
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
-data class MoonpayBuyCurrencyResponse(
+class MoonpayBuyCurrencyResponse(
     @SerializedName("quoteCurrencyPrice")
     val quoteCurrencyPrice: BigDecimal,
     @SerializedName("feeAmount")
@@ -17,11 +17,11 @@ data class MoonpayBuyCurrencyResponse(
     @SerializedName("totalAmount")
     val totalAmount: BigDecimal,
     @SerializedName("baseCurrency")
-    val baseCurrency: BaseCurrency,
+    val baseCurrency: BaseCurrencyResponse,
     @SerializedName("currency")
-    val currency: BaseCurrency
+    val currency: BaseCurrencyResponse
 ) {
-    data class BaseCurrency(
+    class BaseCurrencyResponse(
         @SerializedName("name")
         val name: String,
         @SerializedName("code")
