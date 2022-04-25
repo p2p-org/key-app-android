@@ -165,7 +165,7 @@ class OrcaSwapInteractor(
         } else {
             getFeesInPayingToken(fee.total).fromLamports(feePayerToken.decimals)
         }
-          .scaleMedium()
+            .scaleMedium()
         val accountCreationFeeUsd = accountCreationFee.toUsd(feePayerToken.usdRate)
 
         val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature
