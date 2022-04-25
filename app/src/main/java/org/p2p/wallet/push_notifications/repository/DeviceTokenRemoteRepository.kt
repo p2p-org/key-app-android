@@ -1,6 +1,6 @@
 package org.p2p.wallet.push_notifications.repository
 
-import org.p2p.solanaj.model.types.RpcRequestObject
+import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.push_notifications.api.NotificationServiceApi
 import org.p2p.wallet.push_notifications.model.DeviceToken
 
@@ -12,18 +12,18 @@ class DeviceTokenRemoteRepository(
 ) : DeviceTokenRepository {
 
     override suspend fun sendDeviceToken(deviceToken: DeviceToken): DeviceToken {
-        val request = RpcRequestObject(
+        val request = RpcRequest(
             method = METHOD_ADD_DEVICE,
-            params = deviceToken
+            params = listOf(deviceToken)
         )
 
         return api.sendDeviceToken(request).result
     }
 
     override suspend fun deleteDeviceToken(deviceToken: DeviceToken): DeviceToken {
-        val request = RpcRequestObject(
+        val request = RpcRequest(
             method = METHOD_DELETE_DEVICE,
-            params = deviceToken
+            params = listOf(deviceToken)
         )
 
         return api.deleteDeviceToken(request).result

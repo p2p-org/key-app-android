@@ -61,7 +61,7 @@ object NetworkModule : InjectionModule {
 
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
             val endpoint = androidContext().getString(R.string.notification_service_url)
-            getRetrofit(endpoint, "NotificationService", RpcInterceptor(get(), get()))
+            getRetrofit(endpoint, "NotificationService", null)
         }
     }
 
@@ -88,16 +88,16 @@ object NetworkModule : InjectionModule {
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
-                if (BuildConfig.DEBUG) {
-                    addInterceptor(httpLoggingInterceptor(tag))
-                }
-
                 if (BuildConfig.CRASHLYTICS_ENABLED) {
                     addInterceptor(CrashHttpLoggingInterceptor())
                 }
 
                 if (interceptor != null) {
                     addInterceptor(interceptor)
+                }
+
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(httpLoggingInterceptor(tag))
                 }
             }
             .addNetworkInterceptor(ContentTypeInterceptor())
