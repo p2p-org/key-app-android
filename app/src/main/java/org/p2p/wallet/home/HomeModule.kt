@@ -11,7 +11,10 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
+import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
+import org.p2p.wallet.home.ui.select.SelectTokenContract
+import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.moonpay.api.MoonpayApi
 import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
@@ -51,7 +54,18 @@ object HomeModule : InjectionModule {
         factory { HomeDatabaseRepository(get()) } bind HomeLocalRepository::class
 
         /* Cached data exists, therefore creating singleton */
-        single { HomePresenter(get(), get(), get(), get(), get(), get()) } bind HomeContract.Presenter::class
+        factory {
+            HomePresenter(
+                appFeatureFlags = get(),
+                updatesManager = get(),
+                userInteractor = get(),
+                settingsInteractor = get(),
+                usernameInteractor = get(),
+                environmentManager = get(),
+                tokenKeyProvider = get(),
+                homeElementItemMapper = HomeElementItemMapper()
+            )
+        } bind HomeContract.Presenter::class
         single {
             SendInteractor(
                 addressInteractor = get(),
@@ -59,18 +73,18 @@ object HomeModule : InjectionModule {
                 feeRelayerAccountInteractor = get(),
                 feeRelayerTopUpInteractor = get(),
                 orcaInfoInteractor = get(),
-                amountInteractor = get(),
+                amountRepository = get(),
                 transactionInteractor = get(),
                 tokenKeyProvider = get(),
             )
         }
-        factory { SearchInteractor(get(), get()) }
+        factory { SearchInteractor(get(), get(), get()) }
 
         factory { (token: Token.Active?) ->
             ReceiveSolanaPresenter(token, get(), get(), get(), get(), get(), get())
         } bind ReceiveSolanaContract.Presenter::class
         factory { (type: NetworkType) ->
-            ReceiveNetworkTypePresenter(get(), get(), get(), get(), get(), type)
+            ReceiveNetworkTypePresenter(get(), get(), get(), get(), get(), get(), get(), type)
         } bind ReceiveNetworkTypeContract.Presenter::class
         factory { (token: Token.Active) ->
             SendPresenter(
@@ -86,6 +100,7 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 transactionManager = get(),
+                resources = androidContext().resources
             )
         } bind SendContract.Presenter::class
         factory { (usernames: List<SearchResult>) ->
@@ -120,5 +135,7 @@ object HomeModule : InjectionModule {
                 get()
             )
         } bind ReceiveRenBtcContract.Presenter::class
+
+        factory { (tokens: List<Token>) -> SelectTokenPresenter(tokens) } bind SelectTokenContract.Presenter::class
     }
 }

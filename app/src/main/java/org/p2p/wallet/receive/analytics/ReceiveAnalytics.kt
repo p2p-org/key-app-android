@@ -1,11 +1,9 @@
 package org.p2p.wallet.receive.analytics
 
-import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.Analytics
 import java.math.BigDecimal
 
-class ReceiveAnalytics(
-    private val tracker: TrackerContract
-) {
+class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logReceiveViewed(isUsernameClaimed: Boolean) {
         tracker.logEvent(

@@ -26,15 +26,6 @@ defaults: &defaults
     tag: 2021.10.1
 
 jobs:
-  version_build:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: "Generate build version"
-          command: |
-            ./gradlew setVersionBuild -Pversion=<< pipeline.number >>
-            echo "Set build version to << pipeline.number >>"
   android_lint:
     <<: *defaults
     steps:
@@ -49,30 +40,27 @@ jobs:
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_test_results
-      - android/save-gradle-cache
-      - android/save-build-cache
   build_and_publish:
     <<: *defaults
     steps:
       - checkout
-      - android/restore-gradle-cache
-      - android/restore-build-cache
       - run:
-          name: "Assemble Feature Build"
-          command: ./gradlew assembleFeature
+          name: "Generate build version"
+          command: |
+            ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
+            echo "Set build version to ${CIRCLE_BUILD_NUM}"
       - store_artifacts:
-          path: "./app/build/outputs/mapping/feature/mapping.txt"
-          destination: artifact-file
+          path: "./app/gradle.properties"
+          destination: gradle.properties
       - run:
           name: "Distribute to Firebase App Distribution"
-          command: ./gradlew appDistributionUploadFeature
+          command: ./gradlew assembleFeature appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
-
 workflows:
   version: 2
 
-  lint_and_test:
+  lint_test_and_publish_feature:
     jobs:
       - android_lint:
           context: feature
@@ -84,27 +72,59 @@ workflows:
           requires:
             - android_lint
           context: feature
+      - approve-feature-build:
+          requires:
+            - unit_tests
+          type: approval
+          filters:
+            branches:
+              only:
+                - /(^feature\/.+)/
+      - build_and_publish:
+          context: feature
+          requires:
+            - approve-feature-build
+          filters:
+            branches:
+              only:
+                - /(^feature\/.+)/
 
-  lint_test_and_publish_feature:
+  lint_and_test:
     jobs:
-      - version_build:
+      - android_lint:
           context: feature
           filters:
             branches:
               only:
                 - develop
-      - android_lint:
-          requires:
-            - version_build
-          context: feature
       - unit_tests:
           requires:
             - android_lint
           context: feature
-      - build_and_publish:
+
+  lint_and_test_release:
+    jobs:
+      - android_lint:
+          filters:
+            branches:
+              only:
+                - /(^release\/.+)/
+      - unit_tests:
           requires:
-            - unit_tests
-          context: feature
+            - android_lint
+
+  build_develop_publish:
+    jobs:
+      - approve-feature-build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - develop
+      - build_and_publish:
+          context: develop
+          requires:
+            - approve-feature-build
           filters:
             branches:
               only:

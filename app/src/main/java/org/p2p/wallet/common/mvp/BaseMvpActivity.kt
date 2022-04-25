@@ -2,10 +2,10 @@ package org.p2p.wallet.common.mvp
 
 import android.os.Bundle
 import androidx.annotation.CallSuper
-import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import org.p2p.wallet.common.ui.widget.SnackBarView
+import org.p2p.wallet.R
 import org.p2p.wallet.utils.showErrorDialog
+import org.p2p.wallet.utils.snackbar
 
 abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActivity(), MvpView {
 
@@ -32,15 +32,35 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
         showErrorDialog(e)
     }
 
-    override fun showSnackbarMessage(message: String, iconRes: Int?) {
-        showSnackbar(message, iconRes)
+    override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(getString(messageResId))
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
+        }
     }
 
-    override fun showSnackbarMessage(messageRes: Int, iconRes: Int?) {
-        showSnackbar(getString(messageRes), iconRes)
+    override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(message)
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
+        }
     }
 
-    private fun showSnackbar(message: String, @DrawableRes iconRes: Int?) {
-        SnackBarView.make(findViewById(android.R.id.content), message, iconRes)?.show()
+    override fun showSuccessSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(getString(messageResId))
+                .setIcon(R.drawable.ic_done)
+                .setAction(actionResId, block)
+        }
+    }
+
+    override fun showSuccessSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(message)
+                .setIcon(R.drawable.ic_done)
+                .setAction(actionResId, block)
+        }
     }
 }

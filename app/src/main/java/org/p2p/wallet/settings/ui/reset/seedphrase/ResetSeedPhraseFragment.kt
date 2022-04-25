@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.os.bundleOf
@@ -14,8 +15,8 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentResetSeedPhraseBinding
 import org.p2p.wallet.restore.model.SecretKey
@@ -23,6 +24,7 @@ import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -40,7 +42,7 @@ class ResetSeedPhraseFragment :
 
     override val presenter: ResetSeedPhraseContract.Presenter by inject()
     private val binding: FragmentResetSeedPhraseBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
 
@@ -61,7 +63,7 @@ class ResetSeedPhraseFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Settings.PIN_RESET)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.PIN_RESET)
         with(binding) {
             toolbar.setNavigationOnClickListener {
                 popBackStack()
@@ -83,7 +85,9 @@ class ResetSeedPhraseFragment :
                 keysRecyclerView.isVisible = true
                 phraseAdapter.addSecretKey(SecretKey())
             }
+
             messageTextView.text = buildSeedInfoText()
+            messageTextView.movementMethod = LinkMovementMethod.getInstance()
         }
 
         val itemsCount = phraseAdapter.itemCount
@@ -105,12 +109,19 @@ class ResetSeedPhraseFragment :
     }
 
     private fun clearError() {
-        binding.errorTextView.text = ""
+        binding.errorTextView.text = emptyString()
         binding.messageTextView.isVisible = true
     }
 
     private fun buildSeedInfoText(): SpannableString {
-        val message = getString(R.string.auth_recover_info)
+        val seedInfo = getString(R.string.settings_what_is_a_security_key)
+
+        val message = buildString {
+            append(getString(R.string.auth_recover_info))
+            append("\n\n")
+            append(seedInfo)
+        }
+
         val span = SpannableString(message)
         val clickableSeedInfo = object : ClickableSpan() {
             override fun onClick(widget: View) {
@@ -122,7 +133,6 @@ class ResetSeedPhraseFragment :
                 ds.isUnderlineText = false
             }
         }
-        val seedInfo = getString(R.string.settings_what_is_a_security_key)
         val termsStart = span.indexOf(seedInfo)
         val termsEnd = span.indexOf(seedInfo) + seedInfo.length
         span.setSpan(clickableSeedInfo, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)

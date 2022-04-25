@@ -32,6 +32,7 @@ interface SendContract {
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
+        fun setMaxButtonVisibility(isVisible: Boolean)
         fun updateAvailableTextColor(@ColorRes availableColor: Int)
 
         fun showNetworkDestination(type: NetworkType)
@@ -47,7 +48,7 @@ interface SendContract {
         fun showAddressOnlyTarget(address: String)
         fun showSearchScreen(usernames: List<SearchResult>)
 
-        fun showAccountFeeView(fee: SendFee?)
+        fun showAccountFeeView(fee: SendFee? = null, notEnoughFunds: Boolean = false)
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 
         fun showBiometricConfirmationPrompt(data: SendConfirmData)
@@ -61,7 +62,7 @@ interface SendContract {
         fun sendOrConfirm()
         fun loadInitialData()
         fun loadTokensForSelection()
-        fun loadAvailableValue()
+        fun setMaxSourceAmountValue()
         fun loadCurrentNetwork()
         fun loadFeePayerTokens()
         fun setSourceToken(newToken: Token.Active)

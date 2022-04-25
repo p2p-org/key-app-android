@@ -6,12 +6,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.NetworkConfig
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
@@ -31,7 +29,6 @@ private const val SESSION_POLLING_DELAY = 5000L
 
 class RenTransactionManager(
     private val renBTCRemoteRepository: RenRemoteRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
     private val environmentManager: EnvironmentManager
 ) {
 
@@ -47,36 +44,32 @@ class RenTransactionManager(
 
     private var queuedTransactions = mutableListOf<RenTransaction>()
 
-    suspend fun initializeSession(existingSession: LockAndMint.Session?): LockAndMint.Session =
-        withContext(Dispatchers.IO) {
-            val networkConfig = getNetworkConfig()
-            lockAndMint = if (existingSession == null || !existingSession.isValid) {
-                Timber.tag(REN_TAG).d("No existing session found, building new one")
-                val signer = tokenKeyProvider.publicKey
-                LockAndMint.buildSession(networkConfig, signer.toPublicKey())
-            } else {
-                Timber.tag(REN_TAG).d("Active session found, fetching information")
-                LockAndMint.getSession(networkConfig, existingSession)
-            }
-
-            val gatewayAddress = lockAndMint.generateGatewayAddress()
-            Timber.tag(REN_TAG).d("Gateway address generated: $gatewayAddress")
-
-            val fee = lockAndMint.estimateTransactionFee()
-            Timber.tag(REN_TAG).d("Fee calculated: $fee")
-
-            val session = lockAndMint.session
-            return@withContext session
+    fun initializeSession(existingSession: LockAndMint.Session?, signer: String): LockAndMint.Session {
+        val networkConfig = getNetworkConfig()
+        lockAndMint = if (existingSession == null || !existingSession.isValid) {
+            Timber.tag(REN_TAG).d("No existing session found, building new one")
+            LockAndMint.buildSession(networkConfig, signer.toPublicKey())
+        } else {
+            Timber.tag(REN_TAG).d("Active session found, fetching information")
+            LockAndMint.getSession(networkConfig, existingSession)
         }
 
-    suspend fun startPolling(session: LockAndMint.Session) {
-        if (!this::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
+        val gatewayAddress = lockAndMint.generateGatewayAddress()
+        Timber.tag(REN_TAG).d("Gateway address generated: $gatewayAddress")
+
+        val fee = lockAndMint.estimateTransactionFee()
+        Timber.tag(REN_TAG).d("Fee calculated: $fee")
+
+        return lockAndMint.session
+    }
+
+    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = scope.launch {
+        if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
         Timber.tag(REN_TAG).d("Starting blockstream polling")
 
         val environment = environmentManager.loadEnvironment()
 
         /* Caching value, since it's being called multiple times inside the loop */
-        val secretKey = tokenKeyProvider.secretKey
         while (session.isValid) {
             pollPaymentData(environment, session, secretKey)
             delay(SESSION_POLLING_DELAY)
@@ -106,22 +99,20 @@ class RenTransactionManager(
         environment: Environment,
         session: LockAndMint.Session,
         secretKey: ByteArray
-    ) {
-        scope.launch {
-            Timber.tag(REN_TAG).d("Checking payment data by gateway address")
-            try {
-                val data = renBTCRemoteRepository.getPaymentData(environment, session.gatewayAddress)
-                handlePaymentData(data, secretKey)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error checking payment data")
-            }
+    ) = scope.launch {
+        Timber.tag(REN_TAG).d("Checking payment data by gateway address")
+        try {
+            val data = renBTCRemoteRepository.getPaymentData(environment, session.gatewayAddress)
+            handlePaymentData(data, secretKey)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error checking payment data")
         }
     }
 
     private suspend fun handlePaymentData(
         data: List<RenBTCPayment>,
         secretKey: ByteArray
-    ) = withContext(Dispatchers.IO) {
+    ) = scope.launch {
         Timber.tag(REN_TAG).d("Payment data received: ${data.size}")
 
         /*
@@ -140,7 +131,7 @@ class RenTransactionManager(
 
         /* Making sure we have transactions that should be executed */
         val awaitingTransactions = queuedTransactions.filter { it.isAwaiting() }
-        if (awaitingTransactions.isEmpty()) return@withContext
+        if (awaitingTransactions.isEmpty()) return@launch
 
         val executorsSize = executors.size
         Timber.tag(REN_TAG).d("Starting filter executors for finished one. Size: $executorsSize")
@@ -156,7 +147,7 @@ class RenTransactionManager(
         /* Making sure there are no any active executors, checking new executors size */
         if (executors.isNotEmpty()) {
             Timber.tag(REN_TAG).d("Filter finished, there are still active executors exist, waiting")
-            return@withContext
+            return@launch
         }
 
         Timber.tag(REN_TAG).d("No active executors, adding new transaction executor")
@@ -170,7 +161,7 @@ class RenTransactionManager(
          * Each transaction is being executed in separate coroutine
          * */
         executors.forEach {
-            launch { it.execute() }
+            scope.launch { it.execute() }
         }
     }
 

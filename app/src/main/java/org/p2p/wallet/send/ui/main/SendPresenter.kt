@@ -1,18 +1,20 @@
 package org.p2p.wallet.send.ui.main
 
+import android.content.res.Resources
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -34,13 +36,16 @@ import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
@@ -65,9 +70,10 @@ class SendPresenter(
     private val settingsInteractor: SettingsInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
-    private val transactionManager: TransactionManager
+    private val transactionManager: TransactionManager,
+    private val resources: Resources
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -138,6 +144,7 @@ class SendPresenter(
         calculateRenBtcFeeIfNeeded(hideTotal = true)
         calculateData(newToken)
         checkAddress(target?.address)
+        updateMaxButtonVisibility(newToken)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
     }
 
@@ -180,8 +187,17 @@ class SendPresenter(
         inputAmount = amount
 
         val token = token ?: return
+        updateMaxButtonVisibility(token)
         calculateRenBtcFeeIfNeeded()
         calculateData(token)
+    }
+
+    private fun updateMaxButtonVisibility(token: Token.Active) {
+        val totalAvailable = when (mode) {
+            is CurrencyMode.Usd -> token.totalInUsd
+            is CurrencyMode.Token -> token.total.scaleLong()
+        } ?: return
+        view?.setMaxButtonVisibility(inputAmount != totalAvailable.toString())
     }
 
     override fun setNetworkDestination(networkType: NetworkType) {
@@ -191,8 +207,10 @@ class SendPresenter(
     }
 
     override fun send() {
-        val token = token ?: throw IllegalStateException("Token cannot be null!")
-        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
+        val token = token ?: error("Token cannot be null!")
+        val address = target?.address ?: error("Target address cannot be null!")
+
+        sendAnalytics.logSendStarted(networkType, tokenAmount, token, fee, usdAmount)
 
         when (networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
@@ -201,8 +219,10 @@ class SendPresenter(
     }
 
     override fun sendOrConfirm() {
-        val token = token ?: throw IllegalStateException("Token cannot be null!")
-        val address = target?.address ?: throw IllegalStateException("Target address cannot be null!")
+        val token = token ?: error("Token cannot be null!")
+        val address = target?.address ?: error("Target address cannot be null!")
+
+        sendAnalytics.logUserConfirmedSend(networkType, tokenAmount, token, fee, usdAmount)
 
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
@@ -212,14 +232,10 @@ class SendPresenter(
                 amountUsd = usdAmount.toString(),
                 destination = address
             )
-            val sendNetworkType = if (networkType == NetworkType.SOLANA) {
-                SendAnalytics.SendNetwork.SOLANA
-            } else {
-                SendAnalytics.SendNetwork.BITCOIN
-            }
+
             // TODO resolve [sendMax, sendFree,sendUsername]
             sendAnalytics.logSendReviewing(
-                sendNetwork = sendNetworkType,
+                sendNetwork = networkType,
                 sendCurrency = token.tokenSymbol,
                 sendSum = tokenAmount,
                 sendUSD = usdAmount,
@@ -245,7 +261,7 @@ class SendPresenter(
         }
     }
 
-    override fun loadAvailableValue() {
+    override fun setMaxSourceAmountValue() {
         val token = token ?: return
 
         val totalAvailable = when (mode) {
@@ -254,6 +270,9 @@ class SendPresenter(
         } ?: return
 
         view?.showInputValue(totalAvailable)
+
+        val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
+        view?.showSuccessSnackBar(message)
         setNewSourceAmount(totalAvailable.toString())
     }
 
@@ -287,9 +306,13 @@ class SendPresenter(
 
     override fun onFeeClicked() {
         launch {
-            sendAnalytics.logSendShowDetailsPressed()
-            val (maxAvailable, remaining) = sendInteractor.getFreeTransactionsInfo()
-            view?.showFeeLimitsDialog(maxAvailable, remaining)
+            try {
+                sendAnalytics.logSendShowDetailsPressed()
+                val freeTransactionsInfo = sendInteractor.getFreeTransactionsInfo()
+                view?.showFeeLimitsDialog(freeTransactionsInfo.maxUsage, freeTransactionsInfo.remaining)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading free transactions info")
+            }
         }
     }
 
@@ -298,7 +321,7 @@ class SendPresenter(
         val sendCurrency: String
         mode = when (mode) {
             is CurrencyMode.Token -> {
-                sendCurrency = "USD"
+                sendCurrency = USD_READABLE_SYMBOL
                 CurrencyMode.Usd
             }
             is CurrencyMode.Usd -> {
@@ -307,6 +330,7 @@ class SendPresenter(
             }
         }
         sendAnalytics.logSendChangingCurrency(sendCurrency)
+        updateMaxButtonVisibility(token)
         calculateData(token)
     }
 
@@ -327,13 +351,13 @@ class SendPresenter(
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
         view?.showWrongAddressTarget(result.address.cutEnd())
-        view?.showAccountFeeView(null)
+        view?.showAccountFeeView()
     }
 
     private fun handleIdleTarget() {
         view?.showIdleTarget()
         view?.showTotal(data = null)
-        view?.showAccountFeeView(fee = null)
+        view?.showAccountFeeView()
 
         fee = null
         calculateTotal(sendFee = null)
@@ -361,9 +385,13 @@ class SendPresenter(
 
     private suspend fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
         when (checkAddressResult) {
-            is CheckAddressResult.NewAccountNeeded -> calculateFeeRelayerFee(checkAddressResult.feePayerToken)
+            is CheckAddressResult.NewAccountNeeded ->
+                calculateFeeRelayerFee(checkAddressResult.feePayerToken)
             is CheckAddressResult.AccountExists,
-            is CheckAddressResult.InvalidAddress -> view?.showAccountFeeView(null)
+            is CheckAddressResult.InvalidAddress -> {
+                calculateTotal(sendFee = null)
+                view?.showAccountFeeView()
+            }
         }
     }
 
@@ -371,9 +399,12 @@ class SendPresenter(
         launch {
             try {
                 view?.showLoading(true)
-                val amount = tokenAmount.toLamports(token.decimals)
-                val transactionId = burnBtcInteractor.submitBurnTransaction(address, amount)
+                val amountLamports = tokenAmount.toLamports(token.decimals)
+                val transactionId = burnBtcInteractor.submitBurnTransaction(address, amountLamports)
+
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
+                sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
+
                 val transaction = buildTransaction(transactionId)
                 view?.showTransactionDetails(transaction)
                 view?.showTransactionStatusMessage(tokenAmount, token.tokenSymbol, isSuccess = true)
@@ -400,8 +431,15 @@ class SendPresenter(
                         view?.showErrorMessage(validation.messageRes)
                         view?.showProgressDialog(null)
                     }
-                    is AddressValidation.Valid -> handleValidAddress(token, destinationAddress, lamports)
+                    is AddressValidation.Valid -> {
+                        handleValidAddress(token, destinationAddress, lamports)
+                    }
                 }
+            } catch (serverError: ServerException) {
+                val state = TransactionState.Error(
+                    serverError.getErrorMessage(resources).orEmpty()
+                )
+                transactionManager.emitTransactionState(state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
                 view?.showProgressDialog(null)
@@ -418,7 +456,7 @@ class SendPresenter(
         val data = ShowProgress(
             title = R.string.send_transaction_being_processed,
             subTitle = "$tokenAmount ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
-            transactionId = ""
+            transactionId = emptyString()
         )
         view?.showProgressDialog(data)
 
@@ -427,10 +465,11 @@ class SendPresenter(
             token = token,
             lamports = lamports
         )
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.SUCCESS)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.SUCCESS)
         val transaction = buildTransaction(result)
         val state = TransactionState.SendSuccess(transaction, token.tokenSymbol)
         transactionManager.emitTransactionState(state)
+        sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =
@@ -478,9 +517,6 @@ class SendPresenter(
         }
         view?.showTokenAroundValue(tokenAround, token.tokenSymbol)
         view?.showAvailableValue(token.totalInUsd ?: BigDecimal.ZERO, USD_READABLE_SYMBOL)
-
-        updateButtonText(token)
-        setButtonEnabled(usdAmount, token.totalInUsd ?: BigDecimal.ZERO)
     }
 
     private fun calculateByToken(token: Token.Active) {
@@ -491,9 +527,6 @@ class SendPresenter(
         val total = token.total.scaleLong()
         view?.showUsdAroundValue(usdAround)
         view?.showAvailableValue(total, token.tokenSymbol)
-
-        updateButtonText(token)
-        setButtonEnabled(tokenAmount, total)
     }
 
     private fun calculateTotal(sendFee: SendFee?) {
@@ -502,11 +535,28 @@ class SendPresenter(
         val data = SendTotal(
             total = tokenAmount,
             totalUsd = usdAmount,
-            receive = "$tokenAmount ${sourceToken.tokenSymbol}",
+            receive = "${AmountUtils.format(tokenAmount)} ${sourceToken.tokenSymbol}",
             receiveUsd = tokenAmount.toUsd(sourceToken),
             fee = sendFee,
             sourceSymbol = sourceToken.tokenSymbol
         )
+
+        when (mode) {
+            is CurrencyMode.Token -> {
+                updateButton(
+                    amount = tokenAmount,
+                    total = sourceToken.total.scaleLong(),
+                    fee = data.fee?.fee ?: BigDecimal.ZERO
+                )
+            }
+            is CurrencyMode.Usd -> {
+                updateButton(
+                    amount = usdAmount,
+                    total = sourceToken.totalInUsd ?: BigDecimal.ZERO,
+                    fee = data.fee?.feeUsd ?: BigDecimal.ZERO
+                )
+            }
+        }
 
         view?.showTotal(data)
     }
@@ -522,7 +572,7 @@ class SendPresenter(
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(SendFee.RenBtcFee(fee, sourceToken))
+            calculateTotal(SendFee.RenBtcFee(fee, sourceToken, sourceToken.tokenSymbol))
         }
     }
 
@@ -540,7 +590,7 @@ class SendPresenter(
         )
 
         if (fees == null) {
-            view?.showAccountFeeView(null)
+            view?.showAccountFeeView()
             return
         }
 
@@ -550,9 +600,11 @@ class SendPresenter(
             fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
         }
 
-        fee = SendFee.SolanaFee(feeAmount, feePayer)
-        view?.showAccountFeeView(fee)
-
+        fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
+        view?.showAccountFeeView(
+            fee = fee,
+            notEnoughFunds = fee?.feePayerToken?.totalInUsd.orZero() < fee?.feeUsd.orZero()
+        )
         calculateTotal(fee)
     }
 
@@ -595,32 +647,36 @@ class SendPresenter(
         setTargetResult(first)
     }
 
-    private fun updateButtonText(source: Token.Active) {
-        val decimalAmount = inputAmount.toBigDecimalOrZero()
-        val isMoreThanBalance = decimalAmount.isMoreThan(source.total)
+    private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: BigDecimal) {
+        val isAmountMoreThanBalance = amount.isMoreThan(total)
+        val isAmountWithFeeMoreThanBalance = (amount + fee).isMoreThan(total)
         val address = target?.address
+        val isMaxAmount = amount == total
+
+        val isNotZero = !amount.isZero()
+        val isValidAddress = isAddressValid(target?.address)
+        val isEnabled = isNotZero && !isAmountMoreThanBalance && !isAmountWithFeeMoreThanBalance && isValidAddress
 
         when {
-            isMoreThanBalance ->
+            isAmountWithFeeMoreThanBalance ->
+                view?.showButtonText(R.string.send_insufficient_funds)
+            isAmountMoreThanBalance ->
                 view?.showButtonText(R.string.swap_funds_not_enough)
-            decimalAmount.isZero() ->
+            amount.isZero() ->
                 view?.showButtonText(R.string.main_enter_the_amount)
             address.isNullOrBlank() ->
                 view?.showButtonText(R.string.send_enter_address)
             else -> {
-                val amount = "$tokenAmount ${token!!.tokenSymbol}"
-                view?.showButtonText(R.string.send_format, R.drawable.ic_send_simple, amount)
+                val amountToSend = "$tokenAmount ${token?.tokenSymbol.orEmpty()}"
+                view?.showButtonText(R.string.send_format, R.drawable.ic_send_simple, amountToSend)
             }
         }
-    }
 
-    private fun setButtonEnabled(amount: BigDecimal, total: BigDecimal) {
-        val isMoreThanBalance = amount.isMoreThan(total)
-        val isNotZero = !amount.isZero()
-        val isValidAddress = isAddressValid(target?.address)
-        val isEnabled = isNotZero && !isMoreThanBalance && isValidAddress
-
-        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
+        val availableColor = when {
+            isAmountMoreThanBalance -> R.color.systemErrorMain
+            isMaxAmount -> R.color.systemSuccessMain
+            else -> R.color.textIconSecondary
+        }
         view?.updateAvailableTextColor(availableColor)
         view?.showButtonEnabled(isEnabled)
     }

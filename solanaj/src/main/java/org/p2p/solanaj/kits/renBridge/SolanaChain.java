@@ -9,7 +9,7 @@ import org.p2p.solanaj.core.TransactionInstruction;
 import org.p2p.solanaj.kits.TokenTransaction;
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint;
 import org.p2p.solanaj.model.types.AccountInfo;
-import org.p2p.solanaj.model.types.SignatureInformation;
+import org.p2p.solanaj.model.types.SignatureInformationResponse;
 import org.p2p.solanaj.programs.TokenProgram;
 import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.utils.ByteUtils;
@@ -100,11 +100,11 @@ public class SolanaChain {
                 .getAddress();
         byte[] sHash = Hash.generateSHash();
         PublicKey tokenMint = getSPLTokenPubkey();
-        PublicKey mintAuthority = PublicKey.Companion.findProgramAddress(Arrays.asList(tokenMint.toByteArray()), program)
+        PublicKey mintAuthority = PublicKey.Companion.findProgramAddress(Arrays.asList(tokenMint.asByteArray()), program)
                 .getAddress();
         PublicKey recipientTokenAccount = getAssociatedTokenAddress(address);
 
-        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, recipientTokenAccount.toByteArray(), nHash);
+        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, recipientTokenAccount.asByteArray(), nHash);
         PublicKey mintLogAccount = PublicKey.Companion.findProgramAddress(Arrays.asList(Hash.keccak256(renVMMessage)), program)
                 .getAddress();
 
@@ -130,7 +130,7 @@ public class SolanaChain {
     public String findMintByDepositDetails(byte[] nHash, byte[] pHash, byte[] to, String amount) throws Exception {
         PublicKey program = resolveTokenGatewayContract();
         byte[] sHash = Hash.generateSHash();
-        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, new PublicKey(to).toByteArray(), nHash);
+        byte[] renVMMessage = buildRenVMMessage(pHash, amount, sHash, new PublicKey(to).asByteArray(), nHash);
         PublicKey mintLogAccount = PublicKey.Companion.findProgramAddress(Arrays.asList(Hash.keccak256(renVMMessage)), program)
                 .getAddress();
 
@@ -143,7 +143,7 @@ public class SolanaChain {
                 return signature;
             }
 
-            List<SignatureInformation> signatures = client.getApi().getConfirmedSignaturesForAddress2(mintLogAccount,
+            List<SignatureInformationResponse> signatures = client.getApi().getConfirmedSignaturesForAddress2(mintLogAccount,
                     1);
             signature = signatures.get(0).getSignature();
         } catch (Exception e) {

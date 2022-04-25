@@ -14,6 +14,6 @@ class LetterInputFilter(private val availableChars: String) : InputFilter {
         dend: Int
     ): CharSequence {
         val subSequence = source?.subSequence(start, end)
-        return if (subSequence?.all { availableChars.contains(it) } == true) subSequence.toString() else ""
+        return if (subSequence?.all { availableChars.contains(it) } == true) subSequence.toString() else emptyString()
     }
 }

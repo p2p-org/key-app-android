@@ -4,22 +4,23 @@ import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
-import android.text.Editable
+import android.util.TypedValue
 import android.view.View
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.AmountFractionTextWatcher
-import org.p2p.wallet.common.ui.textwatcher.SimpleTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -35,19 +36,19 @@ import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
-import kotlin.properties.Delegates
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
 private const val EXTRA_SOURCE_TOKEN = "EXTRA_SOURCE_TOKEN"
@@ -61,8 +62,6 @@ class OrcaSwapFragment :
     OrcaSwapContract.View {
 
     companion object {
-        private const val SYMBOL_ZERO = "0"
-
         fun create() = OrcaSwapFragment()
 
         fun create(token: Token) = OrcaSwapFragment().withArgs(
@@ -76,7 +75,7 @@ class OrcaSwapFragment :
         parametersOf(token)
     }
     private val binding: FragmentSwapOrcaBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private var onBackPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,33 +83,8 @@ class OrcaSwapFragment :
         onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
             presenter.onBackPressed()
         }
-        with(binding) {
-            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
-            toolbar.setOnMenuItemClickListener { menu ->
-                if (menu.itemId == R.id.settingsMenuItem) {
-                    presenter.loadDataForSettings()
-                    return@setOnMenuItemClickListener true
-                }
-                return@setOnMenuItemClickListener false
-            }
-            sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
-            destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-            destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-            availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
-            maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
 
-            setupAmountListener()
-
-            exchangeImageView.setOnClickListener { presenter.reverseTokens() }
-            swapDetails.setOnSlippageClickListener {
-                presenter.loadDataForSettings()
-            }
-            swapDetails.setOnPayFeeClickListener {
-                presenter.loadDataForSettings()
-            }
-            swapButton.setOnClickListener { presenter.swapOrConfirm() }
-            amountEditText.focusAndShowKeyboard()
-        }
+        setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SWAP,
@@ -129,17 +103,6 @@ class OrcaSwapFragment :
                     val settingsResult = result.getParcelable<OrcaSettingsResult>(EXTRA_SETTINGS)
                     if (settingsResult != null) presenter.setNewSettings(settingsResult)
                 }
-                result.containsKey(EXTRA_RESULT_KEY_PRIMARY) -> {
-                    val transaction = result.getParcelable<HistoryTransaction>(EXTRA_RESULT_KEY_PRIMARY)
-                    if (transaction != null) {
-                        val state = TransactionDetailsLaunchState.History(transaction)
-                        popAndReplaceFragment(TransactionDetailsFragment.create(state))
-                    }
-                }
-                result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
-                    val swapFragment = create()
-                    popAndReplaceFragment(swapFragment)
-                }
                 result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
                     popBackStack()
                 }
@@ -147,6 +110,51 @@ class OrcaSwapFragment :
         }
 
         presenter.loadInitialData()
+    }
+
+    private fun setupViews() = with(binding) {
+        toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
+        toolbar.setOnMenuItemClickListener { menu ->
+            if (menu.itemId == R.id.settingsMenuItem) {
+                presenter.loadDataForSettings()
+                return@setOnMenuItemClickListener true
+            }
+            return@setOnMenuItemClickListener false
+        }
+        sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+        destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+        destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+        availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
+        maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
+
+        setupAmountListener()
+
+        exchangeImageView.setOnClickListener { presenter.reverseTokens() }
+        swapDetails.setOnSlippageClickListener {
+            presenter.loadDataForSettings()
+        }
+        swapDetails.setOnPayFeeClickListener {
+            presenter.loadDataForSettings()
+        }
+        swapDetails.setOnTransactionFeeClickListener {
+            presenter.onFeeLimitsClicked()
+        }
+        swapButton.setOnClickListener { presenter.swapOrConfirm() }
+        amountEditText.focusAndShowKeyboard()
+
+        val originalTextSize = amountEditText.textSize
+
+        // Use invisible auto size textView to handle editText text size
+        amountEditText.doOnTextChanged { text, _, _, _ ->
+            autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
+            amountEditText.post {
+                val textSize =
+                    if (text.isNullOrBlank()) originalTextSize
+                    else autoSizeHelperTextView.textSize
+
+                amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+            }
+        }
     }
 
     override fun onStop() {
@@ -175,7 +183,7 @@ class OrcaSwapFragment :
                 destinationImageView.setImageResource(R.drawable.ic_question)
                 destinationTextView.setText(R.string.main_select)
                 destinationAvailableTextView.isVisible = false
-                destinationAvailableTextView.text = ""
+                destinationAvailableTextView.text = emptyString()
             }
         }
     }
@@ -211,10 +219,10 @@ class OrcaSwapFragment :
                 receiveUsdTextView.text = data.receiveAtLeastUsd
                 destinationAmountTextView.text = data.destinationAmount
             } else {
-                receiveAtLeastLabelTextView.text = ""
-                receiveTextView.text = ""
-                receiveUsdTextView.text = ""
-                destinationAmountTextView.text = ""
+                receiveAtLeastLabelTextView.text = emptyString()
+                receiveTextView.text = emptyString()
+                receiveUsdTextView.text = emptyString()
+                destinationAmountTextView.text = emptyString()
             }
         }
     }
@@ -255,12 +263,15 @@ class OrcaSwapFragment :
     }
 
     override fun showError(@StringRes errorText: Int?) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.ERROR)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.ERROR)
         binding.swapDetails.showError(errorText)
     }
 
     override fun showAroundValue(aroundValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, aroundValue)
+        binding.aroundTextView.text = getString(
+            R.string.main_send_around_in_usd,
+            AmountUtils.format(aroundValue)
+        )
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
@@ -268,12 +279,11 @@ class OrcaSwapFragment :
     }
 
     override fun showTransactionStatusMessage(fromSymbol: String, toSymbol: String, isSuccess: Boolean) {
-        val (message, iconRes) = if (isSuccess) {
-            getString(R.string.swap_transaction_completed, fromSymbol, toSymbol) to R.drawable.ic_done
+        if (isSuccess) {
+            showSuccessSnackBar(getString(R.string.swap_transaction_completed, fromSymbol, toSymbol))
         } else {
-            getString(R.string.swap_transaction_failed, fromSymbol, toSymbol) to R.drawable.ic_close_red
+            showErrorSnackBar(getString(R.string.swap_transaction_failed, fromSymbol, toSymbol))
         }
-        showSnackbar(message, iconRes)
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {
@@ -292,7 +302,7 @@ class OrcaSwapFragment :
     }
 
     override fun showDestinationSelection(tokens: List<Token>) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.CURRENCY_B)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.CURRENCY_B)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SWAP, EXTRA_DESTINATION_TOKEN),
             enter = R.anim.slide_up,
@@ -321,41 +331,18 @@ class OrcaSwapFragment :
 
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
-            analyticsInteractor.logScreenOpenEvent(ScreenName.Swap.PROCESSING)
+            analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.PROCESSING)
             ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SWAP)
         } else {
             ProgressBottomSheet.hide(parentFragmentManager)
         }
     }
 
-    private val inputTextWatcher = object : SimpleTextWatcher() {
-
-        private var inputText: String by Delegates.observable("") { _, oldValue, newValue ->
-            if (newValue != oldValue) {
-                presenter.setSourceAmount(newValue)
-            }
-        }
-
-        override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-            super.onTextChanged(text, start, before, count)
-            if (text.isNullOrEmpty()) {
-                inputText = ""
-                return
-            }
-
-            inputText = if (text.startsWith('.')) {
-                "$SYMBOL_ZERO$text"
-            } else {
-                text.toString()
-            }
-        }
-
-        override fun afterTextChanged(text: Editable) {
-            binding.amountEditText.removeTextChangedListener(this)
-            text.clear()
-            text.append(inputText)
-            binding.amountEditText.addTextChangedListener(this)
-        }
+    override fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int) {
+        showInfoDialog(
+            message = getString(R.string.main_free_transactions_info, maxTransactionsAvailable, remaining),
+            primaryButtonRes = R.string.common_understood
+        )
     }
 
     private fun setupAmountListener() {

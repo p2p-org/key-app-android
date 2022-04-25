@@ -36,12 +36,23 @@ android {
             buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
             buildConfigField("String", "amplitudeKey", apikeyProperties['amplitudeKey'])
         } else {
+            logger.quiet "apikey.properties is not found, using empty keys!"
             buildConfigField("String", "rpcPoolApiKey", "\"\"")
             buildConfigField("String", "moonpayKey", "\"\"")
             buildConfigField("String", "comparePublicKey", "\"\"")
             buildConfigField("String", "intercomApiKey", "\"\"")
             buildConfigField("String", "intercomAppId", "\"\"")
             buildConfigField("String", "amplitudeKey", "\"\"")
+        }
+        buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+        buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
+        buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
+        buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
         }
     }
 
@@ -57,7 +68,7 @@ android {
                     keyAlias properties['keyAlias']
                     keyPassword properties['keyPassword']
                 } else {
-                    println 'Unable to read signing.properties, using defaults'
+                    logger.quiet 'Unable to read signing.properties, using defaults'
                 }
             }
         }
@@ -70,10 +81,10 @@ android {
             shrinkResources false
             versionNameSuffix ".$VERSION_BUILD-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
         }
 
         feature {
+            applicationIdSuffix ".feature"
             debuggable true
             signingConfig signingConfigs.debug
             minifyEnabled true
@@ -81,12 +92,15 @@ android {
             versionNameSuffix ".$VERSION_BUILD-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
 
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
+            }
+
+            firebaseCrashlytics {
+                mappingFileUploadEnabled true
             }
         }
 
@@ -96,17 +110,17 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "true")
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+            buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     buildFeatures {

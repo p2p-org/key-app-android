@@ -6,18 +6,17 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.toast
+import java.io.File
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class UsernameFragment :
@@ -32,22 +31,19 @@ class UsernameFragment :
 
     private val binding: FragmentUsernameBinding by viewBinding()
     private val receiveAnalytics: ReceiveAnalytics by inject()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                bottomSheetView.fitMargin { Edge.BottomArc }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
-            receiveCardView.setOnSaveQrClickListener { name, qrImage ->
-                presenter.saveQr(binding.receiveCardView.getQrName(), qrImage)
+            receiveCardView.setOnSaveQrClickListener { qrValue, qrImage ->
+                presenter.saveQr(qrValue, qrImage)
                 receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
             }
             receiveCardView.setSelectNetworkVisibility(isVisible = false)
             receiveCardView.setFaqVisibility(isVisible = false)
+            receiveCardView.hideWatermark()
             progressButton.setOnClickListener {
                 replaceFragment(TokenListFragment.create())
             }
@@ -63,8 +59,8 @@ class UsernameFragment :
             receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
         }
 
-        binding.receiveCardView.setOnShareQrClickListener {
-            requireContext().shareText(fullUsername)
+        binding.receiveCardView.setOnShareQrClickListener { qrValue, qrImage ->
+            presenter.saveQr(qrValue, qrImage, shareAfter = true)
             receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
         }
     }
@@ -80,5 +76,9 @@ class UsernameFragment :
 
     override fun showToastMessage(messageRes: Int) {
         toast(messageRes)
+    }
+
+    override fun showShareQr(qrImage: File, qrValue: String) {
+        requireContext().shareScreenShot(qrImage, qrValue)
     }
 }

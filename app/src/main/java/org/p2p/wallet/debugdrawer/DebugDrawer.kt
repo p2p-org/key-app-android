@@ -2,9 +2,6 @@ package org.p2p.wallet.debugdrawer
 
 import android.app.Application
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.FragmentActivity
 import io.palaima.debugdrawer.DebugDrawer
 import io.palaima.debugdrawer.base.DebugModuleAdapter
@@ -14,18 +11,14 @@ import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.utils.edgetoedge.isInsetConsumed
-import org.p2p.wallet.utils.edgetoedge.navigationBarInset
-import org.p2p.wallet.utils.edgetoedge.redispatchWindowInsetsToAllChildren
-import org.p2p.wallet.utils.edgetoedge.statusBarInset
 import timber.log.Timber
 
 object DebugDrawer : KoinComponent {
 
     private val appRestarter: AppRestarter by inject()
-    private val authInteractor: AuthInteractor by inject()
+    private val authLogoutInteractor: AuthLogoutInteractor by inject()
 
     fun init(application: Application) {
         val lumberYard = LumberYard.getInstance(application)
@@ -53,25 +46,12 @@ object DebugDrawer : KoinComponent {
 
         drawerContent.setBackgroundColor(activity.getColor(R.color.backgroundPrimary))
 
-        ViewCompat.setOnApplyWindowInsetsListener(drawerContent) { v, insets ->
-            if (insets.isInsetConsumed()) {
-                return@setOnApplyWindowInsetsListener insets
-            }
-            v.updatePadding(
-                top = insets.statusBarInset(),
-                bottom = insets.navigationBarInset()
-            )
-            WindowInsetsCompat.CONSUMED
-        }
-        parent.redispatchWindowInsetsToAllChildren()
-        content.redispatchWindowInsetsToAllChildren()
-
         return drawer
     }
 
     private fun getDefaultModules(): Array<DebugModuleAdapter> {
         val restartCallback = { appRestarter.restartApp() }
-        val clearDataCallback = { authInteractor.clear() }
+        val clearDataCallback = { authLogoutInteractor.clearAppData() }
 
         return arrayOf(
             ConfigurationModule(),

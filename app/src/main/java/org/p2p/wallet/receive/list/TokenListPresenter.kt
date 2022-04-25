@@ -1,21 +1,21 @@
 package org.p2p.wallet.receive.list
 
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.emptyString
 
 private const val PAGE_SIZE = 20
 
 class TokenListPresenter(
     private val interactor: UserInteractor,
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<TokenListContract.View>(), TokenListContract.Presenter {
 
-    private var searchText = ""
+    private var searchText = emptyString()
     private var scrollToUp = false
 
     override fun attach(view: TokenListContract.View) {
@@ -48,8 +48,12 @@ class TokenListPresenter(
 
     private fun observeTokens() {
         launch {
-            interactor.getTokenListFlow().collect { tokens ->
-                view?.showItems(tokens, scrollToUp)
+            interactor.getTokenListFlow().collect { data ->
+                if (data.result.isNotEmpty()) {
+                    view?.showItems(data.result, scrollToUp)
+                } else {
+                    view?.showEmpty(data.searchText)
+                }
             }
         }
     }

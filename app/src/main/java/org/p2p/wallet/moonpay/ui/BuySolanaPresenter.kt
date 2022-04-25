@@ -4,7 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
@@ -12,6 +12,7 @@ import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.isZero
@@ -30,7 +31,7 @@ class BuySolanaPresenter(
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
     private val buyAnalytics: BuyAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     private var calculationJob: Job? = null
@@ -129,7 +130,7 @@ class BuySolanaPresenter(
                 val result = moonpayRepository.getCurrency(
                     baseCurrencyAmount = amountInCurrency,
                     quoteCurrencyAmount = amountInTokens,
-                    quoteCurrencyCode = token.tokenSymbol.lowercase(),
+                    quoteCurrencyCode = token.getTokenSymbolForMoonPay(),
                     baseCurrencyCode = baseCurrencyCode
                 )
                 when (result) {
@@ -213,5 +214,14 @@ class BuySolanaPresenter(
         )
         view?.showData(clearedData)
         view?.showMessage(null)
+    }
+
+    private fun Token.getTokenSymbolForMoonPay(): String {
+        val tokenLowercase = token.tokenSymbol.lowercase()
+        return if (token.isUSDC) {
+            "${tokenLowercase}_${SOL_SYMBOL.lowercase()}"
+        } else {
+            tokenLowercase
+        }
     }
 }

@@ -75,6 +75,18 @@ class TokenListFragment :
                     recyclerView.smoothScrollToPosition(0)
                 }
             }
+            recyclerView.isVisible = items.isNotEmpty()
+            emptyView.isVisible = items.isEmpty()
+        }
+    }
+
+    override fun showEmpty(searchText: String) {
+        with(binding) {
+            val text = getString(R.string.receive_token_list_not_found, searchText)
+            emptyTextView.text = text
+
+            recyclerView.isVisible = false
+            emptyView.isVisible = true
         }
     }
 

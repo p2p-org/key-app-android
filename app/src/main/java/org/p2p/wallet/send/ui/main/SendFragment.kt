@@ -1,21 +1,26 @@
 package org.p2p.wallet.send.ui.main
 
 import android.annotation.SuppressLint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface.BOLD
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.TypedValue
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
@@ -28,34 +33,31 @@ import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
-import org.p2p.wallet.send.ui.dialogs.EXTRA_NETWORK
-import org.p2p.wallet.send.ui.dialogs.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
+import org.p2p.wallet.send.ui.network.EXTRA_NETWORK
+import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_PRIMARY
-import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_SECONDARY
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -86,14 +88,19 @@ class SendFragment :
         parametersOf(token)
     }
     private val glideManager: GlideManager by inject()
+
     private val binding: FragmentSendBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+
+    private val sendAnalytics: SendAnalytics by inject()
+
     private val address: String? by args(EXTRA_ADDRESS)
     private val token: Token? by args(EXTRA_TOKEN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.MAIN)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.MAIN)
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -117,17 +124,6 @@ class SendFragment :
                     val ordinal = result.getInt(EXTRA_NETWORK, 0)
                     presenter.setNetworkDestination(NetworkType.values()[ordinal])
                 }
-                result.containsKey(EXTRA_RESULT_KEY_PRIMARY) -> {
-                    val transaction = result.getParcelable<HistoryTransaction>(EXTRA_RESULT_KEY_PRIMARY)
-                    if (transaction != null) {
-                        val state = TransactionDetailsLaunchState.History(transaction)
-                        popAndReplaceFragment(TransactionDetailsFragment.create(state))
-                    }
-                }
-                result.containsKey(EXTRA_RESULT_KEY_SECONDARY) -> {
-                    val sendFragment = create()
-                    popAndReplaceFragment(sendFragment)
-                }
                 result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
                     popBackStack()
                 }
@@ -145,11 +141,6 @@ class SendFragment :
 
     private fun setupViews() {
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                scrollView.fit { Edge.BottomArc }
-            }
-
             if (backStackEntryCount() > 1) {
                 toolbar.setNavigationIcon(R.drawable.ic_back)
                 toolbar.setNavigationOnClickListener { popBackStack() }
@@ -191,11 +182,11 @@ class SendFragment :
             }
 
             availableTextView.setOnClickListener {
-                presenter.loadAvailableValue()
+                presenter.setMaxSourceAmountValue()
             }
 
             maxTextView.setOnClickListener {
-                presenter.loadAvailableValue()
+                presenter.setMaxSourceAmountValue()
             }
 
             aroundTextView.setOnClickListener {
@@ -214,12 +205,26 @@ class SendFragment :
             sendDetailsView.setOnPaidClickListener {
                 presenter.onFeeClicked()
             }
+
+            val originalTextSize = amountEditText.textSize
+
+            // Use invisible auto size textView to handle editText text size
+            amountEditText.doOnTextChanged { text, _, _, _ ->
+                autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
+                amountEditText.post {
+                    val textSize =
+                        if (text.isNullOrBlank()) originalTextSize
+                        else autoSizeHelperTextView.textSize
+
+                    amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+                }
+            }
         }
     }
 
     override fun showBiometricConfirmationPrompt(data: SendConfirmData) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.CONFIRMATION)
-        SendConfirmBottomSheet.show(this, data) { presenter.send() }
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.CONFIRMATION)
+        SendConfirmBottomSheet.show(this, data, onConfirmed = { presenter.send() })
     }
 
     override fun showScanner() {
@@ -236,12 +241,12 @@ class SendFragment :
 
     // TODO: remove add fragment
     override fun navigateToNetworkSelection(currentNetworkType: NetworkType) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.NETWORK)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.NETWORK)
         addFragment(NetworkSelectionFragment.create(currentNetworkType))
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>) {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.FEE_CURRENCY)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.FEE_CURRENCY)
         addFragment(
             target = SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN),
             enter = R.anim.slide_up,
@@ -324,7 +329,7 @@ class SendFragment :
         }
     }
 
-    override fun showAccountFeeView(fee: SendFee?) {
+    override fun showAccountFeeView(fee: SendFee?, notEnoughFunds: Boolean) {
         with(binding) {
             if (fee == null) {
                 accountCardView.isVisible = false
@@ -332,13 +337,24 @@ class SendFragment :
                 return
             }
 
+            val tokenSymbol = fee.sourceTokenSymbol
+            accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
             accountInfoTextView.isVisible = true
             accountCardView.isVisible = true
 
             val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
             accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
-            accountFeeValueTextView.text = fee.formattedFee
-            glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
+            if (notEnoughFunds) {
+                accountImageView.setBackgroundResource(R.drawable.bg_error_rounded)
+                accountImageView.setImageResource(R.drawable.ic_error)
+                accountFeeValueTextView.text = getString(R.string.send_not_enough_funds)
+                accountFeeValueTextView.setTextColor(getColor(R.color.systemErrorMain))
+            } else {
+                accountImageView.background = null
+                accountFeeValueTextView.text = fee.formattedFee
+                accountFeeValueTextView.setTextColor(getColor(R.color.textIconPrimary))
+                glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
+            }
         }
     }
 
@@ -347,7 +363,6 @@ class SendFragment :
     }
 
     override fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>) {
-
         addFragment(
             target = SelectTokenFragment.create(feePayerTokens, KEY_REQUEST_SEND, EXTRA_FEE_PAYER),
             enter = R.anim.slide_up,
@@ -359,12 +374,11 @@ class SendFragment :
 
     override fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean) {
         val tokenAmount = "$amount $symbol"
-        val (message, iconRes) = if (isSuccess) {
-            getString(R.string.send_transaction_success, tokenAmount) to R.drawable.ic_done
+        if (isSuccess) {
+            showSuccessSnackBar(getString(R.string.send_transaction_success, tokenAmount))
         } else {
-            getString(R.string.send_transaction_error, tokenAmount) to R.drawable.ic_close_red
+            showErrorSnackBar(getString(R.string.send_transaction_error, tokenAmount))
         }
-        showSnackbar(message, iconRes)
     }
 
     override fun showTransactionDetails(transaction: HistoryTransaction) {
@@ -431,8 +445,12 @@ class SendFragment :
 
     override fun showInputValue(value: BigDecimal) {
         val textValue = "$value"
-        binding.amountEditText.setText(textValue)
-        binding.amountEditText.setSelection(textValue.length)
+        with(binding.amountEditText) {
+            setText(textValue)
+            setSelection(
+                text.toString().length
+            )
+        }
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -447,6 +465,10 @@ class SendFragment :
         }
     }
 
+    override fun setMaxButtonVisibility(isVisible: Boolean) {
+        binding.maxTextView.isVisible = isVisible
+    }
+
     override fun showSearchLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
     }
@@ -455,13 +477,14 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun updateAvailableTextColor(@ColorRes availableColor: Int) {
-        binding.availableTextView.setTextColor(getColor(availableColor))
+    override fun updateAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
+        setTextColor(getColor(availableColor))
+        setTextDrawableColor(availableColor)
     }
 
     @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = available.scaleLong().toString()
+        binding.availableTextView.text = AmountUtils.format(available)
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
@@ -477,11 +500,11 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
-        binding.aroundTextView.text = "$tokenValue $symbol"
+        binding.aroundTextView.text = "${AmountUtils.format(tokenValue)} $symbol"
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue)
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, AmountUtils.format(usdValue))
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
@@ -489,7 +512,7 @@ class SendFragment :
     }
 
     override fun showWrongWalletError() {
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Send.ERROR)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.ERROR)
         ErrorBottomSheet.show(
             fragment = this,
             iconRes = R.drawable.ic_wallet_error,
@@ -501,5 +524,14 @@ class SendFragment :
     private fun checkClipBoard() {
         val clipBoardData = requireContext().getClipBoardText()
         binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
+    }
+
+    private fun TextView.setTextDrawableColor(@ColorRes color: Int) {
+        compoundDrawables.filterNotNull().forEach {
+            it.colorFilter = PorterDuffColorFilter(
+                getColor(color),
+                PorterDuff.Mode.SRC_IN
+            )
+        }
     }
 }

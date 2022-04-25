@@ -1,15 +1,17 @@
 package org.p2p.wallet.swap.ui.orca
 
+import android.content.res.Resources
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -31,6 +33,7 @@ import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.divideSafe
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isNotZero
@@ -50,6 +53,7 @@ import kotlin.properties.Delegates
 
 // TODO: Refactor, make simpler
 class OrcaSwapPresenter(
+    private val resources: Resources,
     private val initialToken: Token.Active?,
     private val appScope: AppScope,
     private val userInteractor: UserInteractor,
@@ -57,7 +61,7 @@ class OrcaSwapPresenter(
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val swapAnalytics: SwapAnalytics,
     private val transactionManager: TransactionManager
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
@@ -86,6 +90,7 @@ class OrcaSwapPresenter(
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
+    private var lastTransaction: HistoryTransaction? = null
 
     override fun loadInitialData() {
         launch {
@@ -165,7 +170,7 @@ class OrcaSwapPresenter(
     }
 
     override fun calculateAvailableAmount() {
-        val amount = sourceToken.total.scaleLong().toString()
+        val amount = AmountUtils.format(sourceToken.total.scaleLong())
         setSourceAmount(amount)
         view?.showNewAmount(amount)
         isMaxClicked = true
@@ -232,11 +237,22 @@ class OrcaSwapPresenter(
 
         /* reversing amounts */
         sourceAmount = destinationAmount
-        destinationAmount = ""
+        destinationAmount = emptyString()
         view?.showTotal(null)
         view?.showNewAmount(sourceAmount)
         swapAnalytics.logSwapReversing(destinationToken?.tokenSymbol.orEmpty())
         calculateData(sourceToken, destinationToken!!)
+    }
+
+    override fun onFeeLimitsClicked() {
+        launch {
+            try {
+                val freeTransactionsInfo = swapInteractor.getFreeTransactionsInfo()
+                view?.showFeeLimitsDialog(freeTransactionsInfo.maxUsage, freeTransactionsInfo.remaining)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading free transactions info")
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -244,13 +260,13 @@ class OrcaSwapPresenter(
         swapAnalytics.logSwapGoingBack(
             tokenAName = sourceToken.tokenSymbol,
             tokenBName = destinationToken?.tokenSymbol.orEmpty(),
-            swapCurrency = "",
+            swapCurrency = sourceToken.tokenSymbol,
             swapSum = sourceAmount.toBigDecimalOrZero(),
             swapMax = isMaxClicked,
             swapUSD = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
             priceSlippage = slippage.doubleValue,
             priceSlippageExact = false,
-            feesSource = SwapAnalytics.FeeSource.UNKNOWN
+            feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
         )
         view?.close()
     }
@@ -270,6 +286,15 @@ class OrcaSwapPresenter(
                 destinationAmountUsd = destinationAmountUsd.toString()
             )
             swapAnalytics.logSwapVerificationInvoked(AuthAnalytics.AuthType.BIOMETRIC)
+            swapAnalytics.logSwapUserConfirmed(
+                tokenAName = sourceToken.tokenSymbol,
+                tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+                swapSum = sourceAmount,
+                isSwapMax = isMaxClicked,
+                swapUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+                priceSlippage = slippage.doubleValue,
+                feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
+            )
             view?.showBiometricConfirmationPrompt(data)
         } else {
             swap()
@@ -288,6 +313,16 @@ class OrcaSwapPresenter(
 
         appScope.launch {
             try {
+                swapAnalytics.logSwapStarted(
+                    tokenAName = sourceToken.tokenSymbol,
+                    tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+                    swapSum = sourceAmount,
+                    isSwapMax = isMaxClicked,
+                    swapUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+                    priceSlippage = slippage.doubleValue,
+                    feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
+                )
+
                 val sourceTokenSymbol = sourceToken.tokenSymbol
                 val destinationTokenSymbol = destination.tokenSymbol
                 val subTitle =
@@ -295,7 +330,7 @@ class OrcaSwapPresenter(
                 val progress = ShowProgress(
                     title = R.string.swap_being_processed,
                     subTitle = subTitle,
-                    transactionId = ""
+                    transactionId = emptyString()
                 )
                 view?.showProgressDialog(progress)
                 swapAnalytics.logSwapProcessShown()
@@ -309,23 +344,46 @@ class OrcaSwapPresenter(
 
                 when (data) {
                     is OrcaSwapResult.Finished -> {
+                        swapAnalytics.logSwapCompleted(
+                            tokenAName = sourceToken.tokenSymbol,
+                            tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+                            swapSum = sourceAmount,
+                            isSwapMax = isMaxClicked,
+                            swapUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+                            priceSlippage = slippage.doubleValue,
+                            feesSource = SwapAnalytics.FeeSource.getValueOf(sourceToken.tokenSymbol)
+                        )
+
                         val state = TransactionState.SwapSuccess(
-                            buildTransaction(destination, data.transactionId, data.destinationAddress),
-                            sourceTokenSymbol,
-                            destinationTokenSymbol
+                            transaction = buildTransaction(
+                                destination = destination,
+                                transactionId = data.transactionId,
+                                destinationAddress = data.destinationAddress
+                            ),
+                            fromToken = sourceTokenSymbol,
+                            toToken = destinationTokenSymbol
                         )
                         transactionManager.emitTransactionState(state)
                     }
-                    is OrcaSwapResult.InvalidInfoOrPair,
-                    is OrcaSwapResult.InvalidPool ->
+                    is OrcaSwapResult.InvalidInfoOrPair, is OrcaSwapResult.InvalidPool -> {
                         view?.showErrorMessage(R.string.error_general_message)
+                    }
                 }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error swapping tokens")
-                view?.showErrorMessage(e)
-                view?.showProgressDialog(null)
+            } catch (serverError: ServerException) {
+                val state = TransactionState.Error(
+                    serverError.getErrorMessage(resources).orEmpty()
+                )
+                transactionManager.emitTransactionState(state)
+            } catch (error: Throwable) {
+                showError(error)
             }
         }
+    }
+
+    private fun showError(error: Throwable) {
+        Timber.e(error, "Error swapping tokens")
+        view?.showErrorMessage(error)
+        view?.showProgressDialog(null)
     }
 
     private fun calculateData(source: Token.Active, destination: Token) {
@@ -381,24 +439,24 @@ class OrcaSwapPresenter(
         val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
         Timber.tag(TAG_SWAP).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
-        destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleLong().toString()
+        destinationAmount = AmountUtils.format(estimatedOutputAmount.fromLamports(destination.decimals).scaleLong())
 
         val minReceive = pair.getMinimumAmountOut(inputAmount, slippage.doubleValue) ?: return
         val minReceiveResult = minReceive.fromLamports(destination.decimals).scaleLong()
 
         val totalUsd = sourceAmount.toBigDecimalOrZero().multiply(source.usdRateOrZero)
 
-        val receiveAtLeast = "${minReceiveResult.toPlainString()} ${destination.tokenSymbol}"
+        val receiveAtLeast = "${AmountUtils.format(minReceiveResult)} ${destination.tokenSymbol}"
         val receiveAtLeastUsd = destination.usdRate?.let { minReceiveResult.multiply(it) }
 
         val data = SwapTotal(
             destinationAmount = destinationAmount,
-            total = "$sourceAmount ${source.tokenSymbol}",
-            totalUsd = totalUsd.scaleShort().toPlainString(),
+            total = "${AmountUtils.format(sourceAmount.toBigDecimalOrZero())} ${source.tokenSymbol}",
+            totalUsd = AmountUtils.format(totalUsd.scaleShort()),
             fee = fees?.transactionFeeString,
             approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
             receiveAtLeast = receiveAtLeast,
-            receiveAtLeastUsd = receiveAtLeastUsd?.toPlainString()
+            receiveAtLeastUsd = receiveAtLeastUsd?.let { AmountUtils.format(it) }
         )
         view?.showTotal(data)
 

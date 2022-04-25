@@ -1,32 +1,38 @@
 package org.p2p.wallet.send.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.Events.SEND_CHANGING_CURRENCY
-import org.p2p.wallet.common.analytics.Events.SEND_CHANGING_TOKEN
-import org.p2p.wallet.common.analytics.Events.SEND_CHOOSING_RECEIPT
-import org.p2p.wallet.common.analytics.Events.SEND_CREATING_ANOTHER
-import org.p2p.wallet.common.analytics.Events.SEND_GOING_BACK
-import org.p2p.wallet.common.analytics.Events.SEND_PASTING
-import org.p2p.wallet.common.analytics.Events.SEND_PROCESS_SHOWN
-import org.p2p.wallet.common.analytics.Events.SEND_QR_GOING_BACK
-import org.p2p.wallet.common.analytics.Events.SEND_QR_SCANNING
-import org.p2p.wallet.common.analytics.Events.SEND_RESOLVED_AUTO
-import org.p2p.wallet.common.analytics.Events.SEND_RESOLVED_MANUALLY
-import org.p2p.wallet.common.analytics.Events.SEND_REVIEWING
-import org.p2p.wallet.common.analytics.Events.SEND_SHOWING_DETAILS
-import org.p2p.wallet.common.analytics.Events.SEND_SHOW_DETAIL_PRESSED
-import org.p2p.wallet.common.analytics.Events.SEND_VERIFICATION_INVOKED
-import org.p2p.wallet.common.analytics.Events.SEND_VIEWED
-import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHANGING_CURRENCY
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHANGING_TOKEN
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHOOSING_RECEIPT
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_COMPLETED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CREATING_ANOTHER
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_GOING_BACK
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PASTING
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PROCESS_SHOWN
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_QR_GOING_BACK
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_QR_SCANNING
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_RESOLVED_AUTO
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_RESOLVED_MANUALLY
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_REVIEWING
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_SHOWING_DETAILS
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_SHOW_DETAIL_PRESSED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_STARTED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_USER_CONFIRMED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VERIFICATION_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VIEWED
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.send.model.SendFee
 import java.math.BigDecimal
 
-class SendAnalytics(private val tracker: TrackerContract) {
+class SendAnalytics(private val tracker: Analytics) {
 
     fun logSendViewed(lastScreenName: String) {
         tracker.logEvent(
             SEND_VIEWED,
-            arrayOf(
-                Pair("Last_Screen", lastScreenName)
+            mapOf(
+                "Last_Screen" to lastScreenName
             )
         )
     }
@@ -34,8 +40,8 @@ class SendAnalytics(private val tracker: TrackerContract) {
     fun logSendChangingToken(tokenName: String) {
         tracker.logEvent(
             SEND_CHANGING_TOKEN,
-            arrayOf(
-                Pair("Token_Name", tokenName)
+            mapOf(
+                "Token_Name" to tokenName
             )
         )
     }
@@ -43,8 +49,8 @@ class SendAnalytics(private val tracker: TrackerContract) {
     fun logSendChangingCurrency(currencyName: String) {
         tracker.logEvent(
             SEND_CHANGING_CURRENCY,
-            arrayOf(
-                Pair("Send_Currency", currencyName)
+            mapOf(
+                "Send_Currency" to currencyName
             )
         )
     }
@@ -57,11 +63,11 @@ class SendAnalytics(private val tracker: TrackerContract) {
     ) {
         tracker.logEvent(
             SEND_GOING_BACK,
-            arrayOf(
-                Pair("Send_Sum", sendSum),
-                Pair("Send_Currency", sendCurrency),
-                Pair("Send_MAX", sendMax),
-                Pair("Send_USD", sendUSD)
+            mapOf(
+                "Send_Sum" to sendSum,
+                "Send_Currency" to sendCurrency,
+                "Send_MAX" to sendMax,
+                "Send_USD" to sendUSD
             )
         )
     }
@@ -74,11 +80,11 @@ class SendAnalytics(private val tracker: TrackerContract) {
     ) {
         tracker.logEvent(
             SEND_CHOOSING_RECEIPT,
-            arrayOf(
-                Pair("Send_Sum", sendSum),
-                Pair("Send_Currency", sendCurrency),
-                Pair("Send_MAX", sendMax),
-                Pair("Send_USD", sendUSD)
+            mapOf(
+                "Send_Sum" to sendSum,
+                "Send_Currency" to sendCurrency,
+                "Send_MAX" to sendMax,
+                "Send_USD" to sendUSD
             )
         )
     }
@@ -94,10 +100,10 @@ class SendAnalytics(private val tracker: TrackerContract) {
     ) {
         tracker.logEvent(
             SEND_QR_GOING_BACK,
-            arrayOf(
-                Pair("QR_Camera_Availability", qrCameraIsAvailable),
-                Pair("QR_Gallery_Availability", qrGalleryIsAvailable),
-                Pair("QR_Tab", qrTab.title),
+            mapOf(
+                "QR_Camera_Availability" to qrCameraIsAvailable,
+                "QR_Gallery_Availability" to qrGalleryIsAvailable,
+                "QR_Tab" to qrTab.title,
             )
         )
     }
@@ -112,9 +118,9 @@ class SendAnalytics(private val tracker: TrackerContract) {
     ) {
         tracker.logEvent(
             SEND_RESOLVED_AUTO,
-            arrayOf(
-                Pair("Address_Source", addressSource.title),
-                Pair("Send_Username", isSendUsername)
+            mapOf(
+                "Address_Source" to addressSource.title,
+                "Send_Username" to isSendUsername
             )
         )
     }
@@ -125,15 +131,15 @@ class SendAnalytics(private val tracker: TrackerContract) {
     ) {
         tracker.logEvent(
             SEND_RESOLVED_MANUALLY,
-            arrayOf(
-                Pair("Resolve_Options_Number", resolveOptionsNumber),
-                Pair("No_Funds", isNoFunds)
+            mapOf(
+                "Resolve_Options_Number" to resolveOptionsNumber,
+                "No_Funds" to isNoFunds
             )
         )
     }
 
     fun logSendReviewing(
-        sendNetwork: SendNetwork,
+        sendNetwork: NetworkType,
         sendCurrency: String,
         sendSum: BigDecimal,
         sendMax: Boolean,
@@ -143,14 +149,14 @@ class SendAnalytics(private val tracker: TrackerContract) {
     ) {
         tracker.logEvent(
             SEND_REVIEWING,
-            arrayOf(
-                Pair("Send_Network", sendNetwork),
-                Pair("Send_Currency", sendCurrency),
-                Pair("Send_Sum", sendSum),
-                Pair("Send_MAX", sendMax),
-                Pair("Send_USD", sendUSD),
-                Pair("Send_Free", sendFree),
-                Pair("Send_Username", sendUsername)
+            mapOf(
+                "Send_Network" to sendNetwork.toAnalyticsValue().title,
+                "Send_Currency" to sendCurrency,
+                "Send_Sum" to sendSum,
+                "Send_MAX" to sendMax,
+                "Send_USD" to sendUSD,
+                "Send_Free" to sendFree,
+                "Send_Username" to sendUsername
             )
         )
     }
@@ -158,8 +164,8 @@ class SendAnalytics(private val tracker: TrackerContract) {
     fun logSendVerificationInvoked(authType: AuthAnalytics.AuthType) {
         tracker.logEvent(
             SEND_VERIFICATION_INVOKED,
-            arrayOf(
-                Pair("Auth_Type", authType.title)
+            mapOf(
+                "Auth_Type" to authType.title
             )
         )
     }
@@ -171,8 +177,8 @@ class SendAnalytics(private val tracker: TrackerContract) {
     fun logSendCreatingAnother(sendStatus: SendStatus) {
         tracker.logEvent(
             SEND_CREATING_ANOTHER,
-            arrayOf(
-                Pair("Send_Status", sendStatus.title)
+            mapOf(
+                "Send_Status" to sendStatus.title
             )
         )
     }
@@ -185,19 +191,82 @@ class SendAnalytics(private val tracker: TrackerContract) {
         sendStatus: SendStatus,
         lastScreenName: String,
         tokenName: String,
-        sendNetwork: SendNetwork,
+        sendNetwork: AnalyticsSendNetwork,
         sendSum: BigDecimal,
         sendUSD: BigDecimal
     ) {
         tracker.logEvent(
             SEND_SHOWING_DETAILS,
-            arrayOf(
-                Pair("Send_Status", sendStatus.title),
-                Pair("Last_Screen", lastScreenName),
-                Pair("Token_Name", tokenName),
-                Pair("Send_Network", sendNetwork.title),
-                Pair("Send_Sum", sendSum),
-                Pair("Send_USD", sendUSD)
+            mapOf(
+                "Send_Status" to sendStatus.title,
+                "Last_Screen" to lastScreenName,
+                "Token_Name" to tokenName,
+                "Send_Network" to sendNetwork.title,
+                "Send_Sum" to sendSum,
+                "Send_USD" to sendUSD
+            )
+        )
+    }
+
+    fun logUserConfirmedSend(
+        networkType: NetworkType,
+        sendAmount: BigDecimal,
+        sendToken: Token.Active,
+        fee: SendFee?,
+        usdAmount: BigDecimal,
+    ) {
+        tracker.logEvent(
+            event = SEND_USER_CONFIRMED,
+            params = mapOf(
+                "Send_Network" to networkType.toAnalyticsValue().title,
+                "Send_Currency" to sendToken.tokenSymbol,
+                "Send_Sum" to sendAmount.toString(),
+                "Send_MAX" to (sendAmount == sendToken.total),
+                "Send_USD" to usdAmount,
+                "Send_Free" to (fee == null),
+                "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
+            )
+        )
+    }
+
+    fun logSendStarted(
+        networkType: NetworkType,
+        sendAmount: BigDecimal,
+        sendToken: Token.Active,
+        fee: SendFee?,
+        usdAmount: BigDecimal,
+    ) {
+        tracker.logEvent(
+            event = SEND_STARTED,
+            params = mapOf(
+                "Send_Network" to networkType.toAnalyticsValue().title,
+                "Send_Currency" to sendToken.tokenSymbol,
+                "Send_Sum" to sendAmount.toString(),
+                "Send_MAX" to (sendAmount == sendToken.total),
+                "Send_USD" to usdAmount,
+                "Send_Free" to (fee == null),
+                "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
+            )
+        )
+    }
+
+    fun logSendCompleted(
+        networkType: NetworkType,
+        sendAmount: BigDecimal,
+        sendToken: Token.Active,
+        fee: SendFee?,
+        usdAmount: BigDecimal,
+    ) {
+        tracker.logEvent(
+            event = SEND_COMPLETED,
+            params = mapOf(
+                "Send_Network" to networkType.toAnalyticsValue().title,
+                "Send_Currency" to sendToken.tokenSymbol,
+                "Send_Sum" to sendAmount.toString(),
+                "Send_MAX" to (sendAmount == sendToken.total),
+                "Send_USD" to usdAmount,
+                "Send_Free" to (fee == null),
+                "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )
     }
@@ -220,8 +289,13 @@ class SendAnalytics(private val tracker: TrackerContract) {
         ERROR("Error")
     }
 
-    enum class SendNetwork(val title: String) {
+    enum class AnalyticsSendNetwork(val title: String) {
         SOLANA("Solana"),
         BITCOIN("Bitcoin")
+    }
+
+    private fun NetworkType.toAnalyticsValue(): AnalyticsSendNetwork = when (this) {
+        NetworkType.SOLANA -> AnalyticsSendNetwork.SOLANA
+        NetworkType.BITCOIN -> AnalyticsSendNetwork.BITCOIN
     }
 }

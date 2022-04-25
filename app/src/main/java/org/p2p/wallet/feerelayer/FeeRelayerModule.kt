@@ -22,7 +22,6 @@ import retrofit2.Retrofit
 object FeeRelayerModule : InjectionModule {
 
     const val FEE_RELAYER_QUALIFIER = "https://fee-relayer.solana.p2p.org"
-
     override fun create() = module {
         single(named(FEE_RELAYER_QUALIFIER)) {
             val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
@@ -39,7 +38,7 @@ object FeeRelayerModule : InjectionModule {
         single {
             FeeRelayerAccountInteractor(
                 userAccountRepository = get(),
-                amountInteractor = get(),
+                amountRepository = get(),
                 userInteractor = get(),
                 feeRelayerRepository = get(),
                 tokenKeyProvider = get()

@@ -54,6 +54,11 @@ class SearchPresenter(
         }
     }
 
+    override fun onSearchResultClick(result: SearchResult) {
+        if (searchInteractor.isOwnPublicKey(result.address)) view?.showMessage(R.string.main_send_to_yourself_error)
+        else view?.submitSearchResult(result)
+    }
+
     private suspend fun validate(target: Target) {
         when (target.validation) {
             Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
@@ -81,14 +86,14 @@ class SearchPresenter(
     }
 
     private suspend fun searchByAddress(address: String) {
-        val validatedAddress = try {
+        val publicKey = try {
             PublicKey(address)
         } catch (e: Throwable) {
             showNotFound()
-            null
-        } ?: return
+            return
+        }
 
-        val result = searchInteractor.searchByAddress(validatedAddress.toBase58())
+        val result = searchInteractor.searchByAddress(publicKey.toBase58())
         view?.showMessage(R.string.send_account_found)
         view?.showResult(result)
     }

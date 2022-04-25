@@ -1,16 +1,20 @@
 package org.p2p.wallet.receive.network
 
 import kotlinx.coroutines.launch
+import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
+import org.p2p.wallet.rpc.interactor.TokenInteractor
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
@@ -19,14 +23,18 @@ import java.math.BigInteger
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
     private val userInteractor: UserInteractor,
-    private val transactionAmountInteractor: TransactionAmountInteractor,
+    private val transactionAmountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val tokenInteractor: TokenInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
+    private val environmentManager: EnvironmentManager,
     networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
 
     private var selectedNetworkType: NetworkType = networkType
+
+    private val tokensValidForBuy = listOf("SOL", "USDC")
 
     override fun load() {
         view?.setCheckState(selectedNetworkType)
@@ -50,16 +58,34 @@ class ReceiveNetworkTypePresenter(
     }
 
     override fun onTopupSelected(isSelected: Boolean) {
-        if (isSelected) {
-            // TODO implement topup
-        } else {
+        if (!isSelected) {
             view?.close()
+            return
+        }
+        launch {
+            try {
+                val tokensForBuy = userInteractor.getTokensForBuy(tokensValidForBuy)
+                view?.showTokensForBuy(tokensForBuy)
+                return@launch
+            } catch (e: Exception) {
+                view?.showErrorMessage(e)
+            }
         }
     }
 
     override fun onBuySelected(isSelected: Boolean) {
-        if (isSelected) {
-            view?.navigateToReceive(selectedNetworkType)
+        launch {
+            try {
+                val mintAddress = when (environmentManager.loadEnvironment()) {
+                    Environment.DEVNET -> Constants.REN_BTC_DEVNET_MINT
+                    else -> Constants.REN_BTC_DEVNET_MINT_ALTERNATE
+                }
+                tokenInteractor.openTokenAccount(mintAddress)
+                view?.navigateToReceive(selectedNetworkType)
+            } catch (e: Exception) {
+                Timber.e("Error on launching RenBtc session $e")
+                view?.showErrorMessage(e)
+            }
         }
     }
 
@@ -82,7 +108,7 @@ class ReceiveNetworkTypePresenter(
                         ?: throw IllegalStateException("No SOL account found")
                     createBtcWallet(sol)
                 } else {
-                    onWalletExists()
+                    launchRenBtcSession()
                 }
             } catch (e: Throwable) {
                 Timber.e("Error on switch network: $e")
@@ -93,7 +119,7 @@ class ReceiveNetworkTypePresenter(
         }
     }
 
-    private suspend fun onWalletExists() {
+    private suspend fun launchRenBtcSession() {
         val session = renBtcInteractor.findActiveSession()
         if (session != null && session.isValid) {
             receiveAnalytics.logReceiveSettingBitcoin()
@@ -103,12 +129,17 @@ class ReceiveNetworkTypePresenter(
         }
     }
 
+    private suspend fun isRenBtcSessionActive(): Boolean {
+        val session = renBtcInteractor.findActiveSession()
+        return session != null && session.isValid
+    }
+
     private suspend fun createBtcWallet(sol: Token.Active) {
-        val btcMinPrice = transactionAmountInteractor.getMinBalanceForRentExemption()
+        val btcMinPrice = transactionAmountRepository.getMinBalanceForRentExemption()
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - btcMinPrice) >= BigInteger.ZERO
         if (isAmountEnough) {
-            val priceInSol = btcMinPrice.fromLamports(sol.decimals).scaleMedium()
+            val priceInSol = btcMinPrice.fromLamports(sol.decimals).scaleLong()
             val priceInUsd = priceInSol.toUsd(sol)
             view?.showBuy(priceInSol, priceInUsd)
         } else {

@@ -29,7 +29,7 @@ sealed class HistoryTransaction(
     abstract val signature: String
     abstract val blockNumber: Int?
 
-    protected fun getSymbol(isSend: Boolean) = if (isSend) "-" else "+"
+    protected fun getSymbol(isSend: Boolean): String = if (isSend) "-" else "+"
 
     fun getBlockNumber(): String? = blockNumber?.let { "#$it" }
 

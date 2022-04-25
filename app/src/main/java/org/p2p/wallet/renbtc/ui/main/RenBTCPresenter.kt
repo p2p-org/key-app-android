@@ -61,24 +61,26 @@ class RenBTCPresenter(
     }
 
     override fun startNewSession(context: Context) {
-        launch {
-            RenVMService.startWithNewSession(context)
-        }
+        RenVMService.startWithNewSession(context)
     }
 
     override fun checkActiveSession(context: Context) {
-        launch {
-            RenVMService.startWithCheck(context)
-        }
+        RenVMService.startWithCheck(context)
     }
 
-    override fun saveQr(name: String, bitmap: Bitmap) {
+    override fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean) {
         launch {
             try {
-                usernameInteractor.saveQr(name, bitmap)
-                view?.showToastMessage(R.string.auth_saved)
+                val savedFile = usernameInteractor.saveQr(name, bitmap)
+                if (shareAfter) {
+                    savedFile?.let {
+                        view?.showShareQr(it, name)
+                    } ?: Timber.e("Error on saving QR file == null")
+                } else {
+                    view?.showToastMessage(R.string.auth_saved)
+                }
             } catch (e: Throwable) {
-                Timber.e("Error on saving QR: $e")
+                Timber.e(e, "Error on saving QR")
                 view?.showErrorMessage(e)
             }
         }
@@ -91,7 +93,7 @@ class RenBTCPresenter(
 
     override fun onBrowserClicked(publicKey: String) {
         receiveAnalytics.logReceiveViewingExplorer(ReceiveAnalytics.ReceiveNetwork.BITCOIN)
-        val url = context.getString(R.string.solanaWalletExplorer, publicKey)
+        val url = context.getString(R.string.bitcoinExplorer, publicKey)
         view?.showBrowser(url)
     }
 

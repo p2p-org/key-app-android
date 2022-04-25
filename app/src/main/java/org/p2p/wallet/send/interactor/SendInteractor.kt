@@ -10,13 +10,14 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.rpc.interactor.TransactionAmountInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
@@ -25,20 +26,18 @@ import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
 
+private const val SEND_TAG = "SEND"
+
 class SendInteractor(
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
-    private val amountInteractor: TransactionAmountInteractor,
     private val transactionInteractor: TransactionInteractor,
+    private val amountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
-
-    companion object {
-        private const val SEND_TAG = "SEND"
-    }
 
     /*
     * If transaction will need to create a new account,
@@ -56,7 +55,7 @@ class SendInteractor(
     }
 
     fun setFeePayerToken(newToken: Token.Active) {
-        if (!this::feePayerToken.isInitialized) throw IllegalStateException("PayToken is not initialized")
+        if (!this::feePayerToken.isInitialized) error("PayToken is not initialized")
         if (newToken.publicKey.equals(feePayerToken)) return
 
         feePayerToken = newToken
@@ -76,10 +75,10 @@ class SendInteractor(
                     feeInPayingToken = null
                 )
             NetworkType.SOLANA -> {
-                if (receiver.isNullOrEmpty()) return null
+                if (receiver.isNullOrEmpty() || token.isSOL) return null
 
-                val lamportsPerSignature: BigInteger = amountInteractor.getLamportsPerSignature()
-                val minRentExemption: BigInteger = amountInteractor.getMinBalanceForRentExemption()
+                val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
+                val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption()
 
                 var transactionFee: BigInteger = BigInteger.ZERO
 
@@ -116,11 +115,8 @@ class SendInteractor(
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
-    suspend fun getFreeTransactionsInfo(): Pair<Int, Int> {
-        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val remaining = freeTransactionFeeLimit.maxUsage - freeTransactionFeeLimit.currentUsage
-        return freeTransactionFeeLimit.maxUsage to remaining
-    }
+    suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit =
+        feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
     suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult =
         try {
@@ -130,7 +126,8 @@ class SendInteractor(
             } else {
                 val address = addressInteractor.findSplTokenAddressData(
                     destinationAddress = destinationAddress,
-                    mintAddress = token.mintAddress
+                    mintAddress = token.mintAddress,
+                    useCache = false
                 )
                 val accountAddress = address.destinationAddress.toBase58()
                 if (address.shouldCreateAccount) {
@@ -162,7 +159,9 @@ class SendInteractor(
             feeRelayerInteractor.topUpAndRelayTransaction(
                 preparedTransaction = preparedTransaction,
                 payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
-            ).firstOrNull().orEmpty()
+            )
+                .firstOrNull()
+                .orEmpty()
         } else {
             // send normally, paid by SOL
             transactionInteractor.serializeAndSend(
@@ -195,7 +194,7 @@ class SendInteractor(
         val sender = token.publicKey
 
         if (sender == receiver) {
-            throw IllegalStateException("You can not send tokens to yourself")
+            error("You can not send tokens to yourself")
         }
 
         val (feePayer, useFeeRelayer) = if (feePayerToken.isSOL) {
@@ -272,7 +271,8 @@ class SendInteractor(
 
         val feePayer = feePayerPublicKey ?: account.publicKey
 
-        val minRentExemption = minBalanceForRentExemption ?: amountInteractor.getMinBalanceForRentExemption()
+        val minRentExemption =
+            minBalanceForRentExemption ?: amountRepository.getMinBalanceForRentExemption()
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress.toPublicKey(),

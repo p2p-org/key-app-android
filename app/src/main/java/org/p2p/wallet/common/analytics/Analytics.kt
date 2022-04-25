@@ -1,14 +1,26 @@
 package org.p2p.wallet.common.analytics
 
-class Analytics(
-    private val trackers: Set<TrackerContract>
-) : TrackerContract {
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
 
-    override fun logEvent(event: String, params: Array<out Pair<String, Any>>?) {
-        trackers.forEach { it.logEvent(event, params) }
+/**
+ * Single entry point that behaves like a proxy for all AnalyticsTracker impl`s
+ */
+class Analytics(private val trackers: Set<AnalyticsTracker>) {
+
+    private val shouldAddDebugSuffix: Boolean = BuildConfig.DEBUG
+
+    fun logEvent(event: String, params: Map<String, Any> = emptyMap()) {
+        val modifiedEventName = if (shouldAddDebugSuffix) "${event}_debug" else event
+        trackers.forEach { it.logEvent(modifiedEventName, params) }
     }
 
-    override fun setUserProperty(key: String, value: String) {
+    fun logEvent(event: String, params: Array<out Pair<String, Any>>) {
+        val modifiedEventName = if (shouldAddDebugSuffix) "${event}_debug" else event
+        trackers.forEach { it.logEvent(modifiedEventName, params) }
+    }
+
+    fun setUserProperty(key: String, value: String) {
         trackers.forEach { it.setUserProperty(key, value) }
     }
 
@@ -16,19 +28,19 @@ class Analytics(
         setUserProperty(key, if (value) "TRUE" else "FALSE")
     }
 
-    override fun setUserPropertyOnce(key: String, value: String) {
+    fun setUserPropertyOnce(key: String, value: String) {
         trackers.forEach { it.setUserPropertyOnce(key, value) }
     }
 
-    override fun incrementUserProperty(property: String, byValue: Int) {
+    fun incrementUserProperty(property: String, byValue: Int) {
         trackers.forEach { it.incrementUserProperty(property, byValue) }
     }
 
-    override fun setUserId(userId: String?) {
+    fun setUserId(userId: String?) {
         trackers.forEach { it.setUserId(userId) }
     }
 
-    override fun appendToArray(property: String, value: Int) {
+    fun appendToArray(property: String, value: Int) {
         trackers.forEach { it.appendToArray(property, value) }
     }
 }

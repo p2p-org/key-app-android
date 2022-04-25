@@ -1,17 +1,17 @@
 package org.p2p.wallet.moonpay.analytics
 
-import org.p2p.wallet.common.analytics.Events.BUY_CHANGING_PROVIDER
-import org.p2p.wallet.common.analytics.Events.BUY_CONTINUING
-import org.p2p.wallet.common.analytics.Events.BUY_GOING_BACK
-import org.p2p.wallet.common.analytics.Events.BUY_LIST_VIEWED
-import org.p2p.wallet.common.analytics.Events.BUY_PAYMENT_RESULT_SHOWN
-import org.p2p.wallet.common.analytics.Events.BUY_PROVIDER_STEP_VIEWED
-import org.p2p.wallet.common.analytics.Events.BUY_TOKEN_CHOSEN
-import org.p2p.wallet.common.analytics.Events.BUY_VIEWED
-import org.p2p.wallet.common.analytics.TrackerContract
+import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_CHANGING_PROVIDER
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_CONTINUING
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_GOING_BACK
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_LIST_VIEWED
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_PAYMENT_RESULT_SHOWN
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_PROVIDER_STEP_VIEWED
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_TOKEN_CHOSEN
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_VIEWED
 import java.math.BigDecimal
 
-class BuyAnalytics(private val tracker: TrackerContract) {
+class BuyAnalytics(private val tracker: Analytics) {
 
     fun logBuyViewed() {
         tracker.logEvent(BUY_VIEWED)

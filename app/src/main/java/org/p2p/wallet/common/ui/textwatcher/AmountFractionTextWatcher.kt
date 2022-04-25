@@ -4,6 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.emptyString
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
@@ -13,6 +14,9 @@ import kotlin.properties.Delegates
  * For example: 0.1234456789123123 -> 0.123456789
  * */
 
+private const val SYMBOL_ZERO = "0"
+private const val SYMBOL_DOT = "."
+private const val EMPTY = ""
 private const val MAX_AMOUNT_ALLOWED_FRACTION_LENGTH = 9
 
 class AmountFractionTextWatcher(
@@ -41,7 +45,7 @@ class AmountFractionTextWatcher(
 
     private val field = WeakReference(editText)
 
-    private var valueText: String by Delegates.observable("") { _, oldValue, newValue ->
+    private var valueText: String by Delegates.observable(emptyString()) { _, oldValue, newValue ->
         if (oldValue != newValue) onValueChanged.invoke(newValue)
     }
 
@@ -49,13 +53,19 @@ class AmountFractionTextWatcher(
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         val value = s.toString()
-        valueText = if (value.contains(".")) {
-            val dividedValues = value.split(".")
-            val valueAfterDelimiter = dividedValues.last()
-            val fractionValue = valueAfterDelimiter.take(maxLengthAllowed)
-            "${dividedValues.first()}.$fractionValue"
-        } else {
-            value
+        valueText = when {
+            value == SYMBOL_ZERO && before == 1 -> EMPTY
+            value == "$SYMBOL_ZERO$SYMBOL_ZERO" && start == 1 -> SYMBOL_ZERO
+            value.startsWith(SYMBOL_DOT) -> {
+                "$SYMBOL_ZERO$value"
+            }
+            value.contains(SYMBOL_DOT) -> {
+                val indexOfDot = value.indexOfFirst { it.toString() == SYMBOL_DOT }
+                val valueAfterDelimiter = value.substring(indexOfDot).replace(SYMBOL_DOT, EMPTY)
+                val fractionValue = valueAfterDelimiter.take(maxLengthAllowed)
+                "${value.substring(0, indexOfDot)}$SYMBOL_DOT$fractionValue"
+            }
+            else -> value
         }
     }
 

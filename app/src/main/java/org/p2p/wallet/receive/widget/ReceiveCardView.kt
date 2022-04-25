@@ -52,6 +52,8 @@ class ReceiveCardView @JvmOverloads constructor(
         binding.qrView.setWatermarkIcon(iconUrl)
     }
 
+    fun hideWatermark() = binding.qrView.hideWatermark()
+
     fun setNetworkName(newName: String) {
         binding.networkTextView.text = newName
     }
@@ -68,8 +70,8 @@ class ReceiveCardView @JvmOverloads constructor(
         binding.qrView.onSaveClickListener = { name, qrImage -> block(name, qrImage) }
     }
 
-    fun setOnShareQrClickListener(block: () -> Unit) {
-        binding.qrView.onShareClickListener = { block() }
+    fun setOnShareQrClickListener(block: (qrValue: String, qrImage: Bitmap) -> Unit) {
+        binding.qrView.onShareClickListener = { name, qrImage -> block(name, qrImage) }
     }
 
     fun setOnCopyQrClickListener(block: () -> Unit) {

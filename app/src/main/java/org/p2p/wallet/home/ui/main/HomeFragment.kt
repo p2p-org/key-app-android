@@ -19,7 +19,6 @@ import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
@@ -30,6 +29,7 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 import kotlin.math.absoluteValue
@@ -39,74 +39,82 @@ private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
-    HomeContract.View,
-    OnHomeItemsClickListener {
+    HomeContract.View {
 
     companion object {
-        fun create() = HomeFragment()
+        fun create(): HomeFragment = HomeFragment()
     }
 
     override val presenter: HomeContract.Presenter by inject()
 
     private val binding: FragmentHomeBinding by viewBinding()
 
-    private val mainAdapter: TokenAdapter by lazy {
+    private val mainAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(this)
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding) {
-            val commonTitle = getString(R.string.app_name)
-            val beta = getString(R.string.common_beta)
-            val color = getColor(R.color.textIconSecondary)
-            titleTextView.text = SpanUtils.highlightText("$commonTitle $beta", beta, color)
-
-            mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            mainRecyclerView.adapter = mainAdapter
-
-            with(actionButtonsView) {
-                onBuyItemClickListener = {
-                    presenter.onBuyClicked()
-                }
-                onReceiveItemClickListener = {
-                    replaceFragment(ReceiveSolanaFragment.create(null))
-                }
-                onSendClickListener = {
-                    replaceFragment(SendFragment.create())
-                }
-                onSwapItemClickListener = {
-                    replaceFragment(OrcaSwapFragment.create())
-                }
-            }
-
-            swipeRefreshLayout.setOnRefreshListener {
-                presenter.refresh()
-            }
-
-            appBarLayout.addOnOffsetChangedListener(
-                AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                    val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
-                    (binding.actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
-                }
-            )
-        }
+        binding.setupView()
 
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_TOKEN,
-            viewLifecycleOwner
-        ) { _, result ->
-            when {
-                result.containsKey(KEY_RESULT_TOKEN) -> {
-                    val token = result.getParcelable<Token>(KEY_RESULT_TOKEN)
-                    if (token != null) replaceFragment(BuySolanaFragment.create(token))
-                }
-            }
+            viewLifecycleOwner,
+            ::onFragmentResult
+        )
+
+        presenter.subscribeToUserTokensFlow()
+    }
+
+    private fun FragmentHomeBinding.setupView() {
+        val commonTitle = getString(R.string.app_name)
+        val beta = getString(R.string.common_beta)
+        val color = getColor(R.color.textIconSecondary)
+        titleTextView.text = SpanUtils.highlightText(
+            commonText = "$commonTitle $beta",
+            highlightedText = beta,
+            color = color
+        )
+
+        mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        mainRecyclerView.adapter = mainAdapter
+
+        actionButtonsView.setupActionButtons()
+
+        swipeRefreshLayout.setOnRefreshListener {
+            presenter.refreshTokenAndPrices()
         }
 
-        presenter.collectData()
+        appBarLayout.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
+                (actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
+            }
+        )
+    }
+
+    private fun ActionButtonsView.setupActionButtons() {
+        onBuyItemClickListener = {
+            presenter.onBuyClicked()
+        }
+        onReceiveItemClickListener = {
+            replaceFragment(ReceiveSolanaFragment.create(token = null))
+        }
+        onSendClickListener = {
+            replaceFragment(SendFragment.create())
+        }
+        onSwapItemClickListener = {
+            replaceFragment(OrcaSwapFragment.create())
+        }
+    }
+
+    private fun onFragmentResult(requestKey: String, result: Bundle) {
+        result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
+            replaceFragment(BuySolanaFragment.create(it))
+        }
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
@@ -114,7 +122,12 @@ class HomeFragment :
     }
 
     override fun showTokensForBuy(tokens: List<Token>) {
-        SelectTokenBottomSheet.show(childFragmentManager, tokens, KEY_REQUEST_TOKEN, KEY_RESULT_TOKEN)
+        SelectTokenBottomSheet.show(
+            fm = childFragmentManager,
+            tokens = tokens,
+            requestKey = KEY_REQUEST_TOKEN,
+            resultKey = KEY_RESULT_TOKEN
+        )
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {
@@ -136,16 +149,18 @@ class HomeFragment :
         binding.actionButtonsView.setItems(items)
     }
 
-    override fun showEmptyState(isEmpty: Boolean) = with(binding) {
-        emptyStateLayout.isVisible = isEmpty
-        swipeRefreshLayout.isVisible = !isEmpty
-        balanceTextView.isVisible = !isEmpty
-        balanceLabelTextView.isVisible = !isEmpty
+    override fun showEmptyState(isEmpty: Boolean) {
+        with(binding) {
+            emptyStateLayout.isVisible = isEmpty
+            swipeRefreshLayout.isVisible = !isEmpty
+            balanceTextView.isVisible = !isEmpty
+            balanceLabelTextView.isVisible = !isEmpty
+        }
     }
 
     override fun onDestroy() {
         /* We are clearing cache only if activity is destroyed */
-        presenter.clearCache()
+        presenter.clearTokensCache()
         super.onDestroy()
     }
 
@@ -153,7 +168,7 @@ class HomeFragment :
         when (bannerId) {
             R.string.main_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
-                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP))
+                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP, isSkipStepEnabled = false))
             }
             R.string.main_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
@@ -163,7 +178,7 @@ class HomeFragment :
     }
 
     override fun onToggleClicked() {
-        presenter.toggleVisibilityState()
+        presenter.toggleTokenVisibilityState()
     }
 
     override fun onTokenClicked(token: Token.Active) {
@@ -171,6 +186,10 @@ class HomeFragment :
     }
 
     override fun onHideClicked(token: Token.Active) {
-        presenter.toggleVisibility(token)
+        presenter.toggleTokenVisibility(token)
+    }
+
+    override fun onSendClicked(token: Token.Active) {
+        replaceFragment(SendFragment.create(token))
     }
 }

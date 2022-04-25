@@ -1,18 +1,14 @@
 package org.p2p.wallet.auth.repository
 
-import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
-import android.text.format.DateFormat
 import org.p2p.wallet.R
+import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStream
 import java.util.Date
 
 class FileRepository(private val context: Context) {
@@ -24,13 +20,10 @@ class FileRepository(private val context: Context) {
         pdfFolder = File(rootFolder, "pdf")
     }
 
-    @Throws(IOException::class)
-    fun saveQr(name: String, bitmap: Bitmap) {
-        val stream: OutputStream = generateOutputStream(name)
-            ?: throw IllegalStateException("Couldn't save qr image")
-
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        stream.close()
+    fun saveQr(name: String, bitmap: Bitmap): File? {
+        val file = saveBitmapAsFile(bitmap, name)
+        bitmap.recycle()
+        return file
     }
 
     fun savePdf(fileName: String, bytes: ByteArray): File {
@@ -47,37 +40,17 @@ class FileRepository(private val context: Context) {
 
     private fun ensurePdfFolderExists() = pdfFolder.mkdirs()
 
-    private fun generateOutputStream(name: String): OutputStream? =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val resolver = context.contentResolver
-            val contentValues = ContentValues()
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-            val directory = Environment.DIRECTORY_DCIM + File.separator + "p2p-wallet"
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, directory)
-            val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
-            resolver.openOutputStream(uri)
-        } else {
-            @Suppress("DEPRECATION")
-            val rootFolder = File(context.cacheDir.toString() + File.separator + "p2p-wallet")
-            if (!rootFolder.exists()) {
-                rootFolder.mkdirs()
-            }
-            val pathName = rootFolder.toString() + File.separator + "p2p-wallet"
-            FileOutputStream(File(pathName))
-        }
-
-    fun takeScreenShot(bitmap: Bitmap): File? {
-        val date = Date()
-        val format = DateFormat.format("MM-dd-yyyy_hh:mm:ss", date)
+    fun saveBitmapAsFile(bitmap: Bitmap, name: String? = null): File? {
+        val fileName = name ?: Date().toString()
         try {
-            val mainDir =
-                File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), context.getString(R.string.app_name))
+            val mainDir = File(
+                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                context.getString(R.string.app_name)
+            )
             if (!mainDir.exists()) {
-                val mkdir = mainDir.mkdir()
+                mainDir.mkdir()
             }
-
-            val stringPath = mainDir.absolutePath + "/$date" + ".jpeg"
+            val stringPath = mainDir.absolutePath + "/$fileName" + ".png"
             val imageFile = File(stringPath)
             val fos = FileOutputStream(imageFile)
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
@@ -85,7 +58,7 @@ class FileRepository(private val context: Context) {
             fos.close()
             return imageFile
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.e(e, "Error on saving bitmap to file")
         }
         return null
     }

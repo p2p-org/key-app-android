@@ -20,7 +20,7 @@ import java.math.BigDecimal
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
+class RenBtcBuyBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
         private const val EXTRA_PRICE_IN_SOL = "EXTRA_PRICE_IN_SOL"
@@ -51,15 +51,13 @@ class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            progressButton.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
-                dismissAllowingStateLoss()
-            }
-
             val feeUsd = if (priceInUsd != null) "~$$priceInUsd" else getString(R.string.common_not_available)
             topTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
-            amountTextView.text = priceInSol.toString()
-
+            amountTextView.text = getString(R.string.receive_amount_in_sol, priceInSol.toString())
+            with(progressButton) {
+                setActionText(getString(R.string.receive_pay_and_countinue, priceInSol.toString()))
+                setOnClickListener { onBuySelected() }
+            }
             val attentionText = buildSpannedString {
                 val onlyBitcoin = getString(R.string.receive_only_bitcoin)
                 val text = getString(R.string.receive_session_info)
@@ -81,4 +79,9 @@ class RenBtcBuyBottomSheet() : NonDraggableBottomSheetDialogFragment() {
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+
+    private fun onBuySelected() {
+        setFragmentResult(requestKey, bundleOf(Pair(resultKey, true)))
+        dismissAllowingStateLoss()
+    }
 }

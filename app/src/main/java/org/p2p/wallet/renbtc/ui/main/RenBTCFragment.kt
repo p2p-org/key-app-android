@@ -7,8 +7,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
 import org.p2p.wallet.send.model.NetworkType
@@ -17,15 +17,15 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import java.io.File
 
 class RenBTCFragment :
     BaseMvpFragment<RenBTCContract.View, RenBTCContract.Presenter>(R.layout.fragment_ren_btc),
@@ -39,16 +39,12 @@ class RenBTCFragment :
 
     override val presenter: RenBTCContract.Presenter by inject()
     private val binding: FragmentRenBtcBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.Receive.BITCOIN)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.BITCOIN)
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                progressButton.fitMargin { Edge.BottomArc }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
 
             statusView.setOnClickListener {
@@ -57,6 +53,9 @@ class RenBTCFragment :
 
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
+            }
+            receiveCardView.setOnShareQrClickListener { name, qrImage ->
+                presenter.saveQr(name, qrImage, shareAfter = true)
             }
             receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()
@@ -115,7 +114,6 @@ class RenBTCFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.progressView.isVisible = isLoading
         binding.receiveCardView.showQrLoading(isLoading)
     }
 
@@ -148,5 +146,9 @@ class RenBTCFragment :
         showErrorDialog(e) {
             popBackStack()
         }
+    }
+
+    override fun showShareQr(qrImage: File, qrValue: String) {
+        requireContext().shareScreenShot(qrImage, qrValue)
     }
 }

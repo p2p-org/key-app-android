@@ -9,13 +9,13 @@ data class ServerError(
 
 data class ErrorContent(
     @SerializedName("code")
-    val code: ErrorCode,
+    val code: ErrorCode?,
 
     @SerializedName("message")
     val message: String,
 
     @SerializedName("data")
-    val data: ErrorData
+    val data: ErrorData?
 )
 
 data class ErrorData(

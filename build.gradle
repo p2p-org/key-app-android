@@ -7,9 +7,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.0'
+        classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.1'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
         classpath 'com.google.gms:google-services:4.3.10'
     }
@@ -27,3 +27,23 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+task installGitHook(type: Copy) {
+    def useGitHooks = use_git_hooks
+    if (rootProject.file('local.properties').exists()) {
+        def localProperties = new Properties()
+        localProperties.load(new FileInputStream(rootProject.file('local.properties')))
+        useGitHooks = localProperties.getOrDefault('use_git_hooks', use_git_hooks)
+    }
+
+    logger.quiet "use_git_hooks=$useGitHooks"
+    if (useGitHooks) {
+        from rootProject.file('scripts/pre-commit')
+        into rootProject.file('.git/hooks')
+        fileMode 0777
+    } else {
+        rootProject.file('.git/hooks/pre-commit').delete()
+    }
+}
+
+tasks.getByPath(':app:preBuild').dependsOn installGitHook

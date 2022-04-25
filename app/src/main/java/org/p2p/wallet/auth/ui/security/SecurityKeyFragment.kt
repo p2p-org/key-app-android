@@ -17,8 +17,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecurityKeyBinding
 import org.p2p.wallet.utils.PixelCopy
@@ -28,9 +28,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.toast
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
-import org.p2p.wallet.utils.shareScreenShoot
+import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
@@ -47,19 +45,15 @@ class SecurityKeyFragment :
     override val presenter: SecurityKeyContract.Presenter by inject()
 
     private val binding: FragmentSecurityKeyBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val keysAdapter: KeysAdapter by lazy {
         KeysAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.CREATE_MANUAL)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.CREATE_MANUAL)
         binding.run {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                termsAndConditionsTextView.fitMargin { Edge.BottomArc }
-            }
             toolbar.setNavigationOnClickListener { popBackStack() }
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
@@ -93,7 +87,7 @@ class SecurityKeyFragment :
         val clickableTermsOfUse = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 presenter.openTermsOfUse()
-                analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.TERMS_OF_USE)
+                analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.TERMS_OF_USE)
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -165,8 +159,8 @@ class SecurityKeyFragment :
         }
     }
 
-    override fun shareScreenShoot(file: File) {
-        requireContext().shareScreenShoot(file)
+    override fun shareScreenShot(file: File) {
+        requireContext().shareScreenShot(file)
     }
 
     override fun copyToClipboard(keys: List<String>) {

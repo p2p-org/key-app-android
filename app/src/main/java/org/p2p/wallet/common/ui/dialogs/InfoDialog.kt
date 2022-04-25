@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
@@ -82,7 +84,7 @@ class InfoDialog : DialogFragment() {
         with(binding) {
 
             titleTextView withTextOrGone titleRes?.let { getString(it) }
-            subTitleTextView.text = subTitle
+            subTitleTextView.setHtml(subTitle)
             primaryButton.setText(primaryButtonRes)
 
             secondaryButtonRes?.let {
@@ -103,5 +105,12 @@ class InfoDialog : DialogFragment() {
                 dismissAllowingStateLoss()
             }
         }
+    }
+
+    private fun TextView.setHtml(html: String) {
+        text = HtmlCompat.fromHtml(
+            html,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
     }
 }

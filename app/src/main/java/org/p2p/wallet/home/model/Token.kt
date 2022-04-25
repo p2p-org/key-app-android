@@ -5,8 +5,10 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_NAME
+import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
@@ -70,9 +72,16 @@ sealed class Token constructor(
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${total.scaleLong()} $tokenSymbol"
+                "${AmountUtils.format(total)} $tokenSymbol"
             } else {
-                "${total.scaleLong()}"
+                AmountUtils.format(total)
+            }
+
+        fun getTotal(includeSymbol: Boolean = false): String =
+            if (includeSymbol) {
+                "${total.scaleLong().toPlainString()} $tokenSymbol"
+            } else {
+                total.scaleLong().toPlainString()
             }
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int {
@@ -115,6 +124,10 @@ sealed class Token constructor(
     @IgnoredOnParcel
     val isRenBTC: Boolean
         get() = tokenSymbol == REN_BTC_SYMBOL
+
+    @IgnoredOnParcel
+    val isUSDC: Boolean
+        get() = tokenSymbol == USDC_SYMBOL
 
     fun getFormattedName(): String = if (isSOL) SOL_NAME else tokenName
 

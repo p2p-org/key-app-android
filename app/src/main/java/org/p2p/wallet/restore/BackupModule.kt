@@ -1,5 +1,6 @@
 package org.p2p.wallet.restore
 
+import org.koin.android.ext.koin.androidContext
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import org.p2p.wallet.restore.model.SecretKey
@@ -14,7 +15,7 @@ object BackupModule : InjectionModule {
 
     override fun create() = module {
         factory { SecretKeyInteractor(get(), get(), get(), get(), get(), get(), get()) }
-        factory { SecretKeyPresenter(get()) } bind SecretKeyContract.Presenter::class
+        factory { SecretKeyPresenter(androidContext().resources, get(), get()) } bind SecretKeyContract.Presenter::class
         factory { (secretKeys: List<SecretKey>) ->
             DerivableAccountsPresenter(secretKeys, get(), get(), get())
         } bind DerivableAccountsContract.Presenter::class

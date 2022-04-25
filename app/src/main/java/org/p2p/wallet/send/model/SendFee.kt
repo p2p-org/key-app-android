@@ -6,7 +6,8 @@ import java.math.BigDecimal
 
 sealed class SendFee(
     open val fee: BigDecimal,
-    open val feePayerToken: Token.Active
+    open val feePayerToken: Token.Active,
+    open val sourceTokenSymbol: String
 ) {
 
     val feeUsd: BigDecimal?
@@ -20,8 +21,9 @@ sealed class SendFee(
 
     data class RenBtcFee(
         override val fee: BigDecimal,
-        override val feePayerToken: Token.Active
-    ) : SendFee(fee, feePayerToken) {
+        override val feePayerToken: Token.Active,
+        override val sourceTokenSymbol: String
+    ) : SendFee(fee, feePayerToken, sourceTokenSymbol) {
 
         val fullFee: String
             get() = "$fee $feePayerSymbol ${approxFeeUsd.orEmpty()}"
@@ -31,8 +33,9 @@ sealed class SendFee(
 
     data class SolanaFee(
         override val fee: BigDecimal,
-        override val feePayerToken: Token.Active
-    ) : SendFee(fee, feePayerToken) {
+        override val feePayerToken: Token.Active,
+        override val sourceTokenSymbol: String
+    ) : SendFee(fee, feePayerToken, sourceTokenSymbol) {
 
         val accountCreationFullFee: String
             get() = "$fee $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"

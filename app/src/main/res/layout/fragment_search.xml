@@ -77,7 +77,7 @@
             android:layout_marginStart="16dp"
             android:text="@string/send_multiple_accounts"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="@color/textIconPrimary"
+            android:textColor="@color/textIconSecondary"
             android:visibility="gone"
             tools:visibility="visible" />
 

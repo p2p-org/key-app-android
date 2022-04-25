@@ -4,17 +4,15 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
-import org.p2p.wallet.common.analytics.ScreenName
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentAuthDoneBinding
 import org.p2p.wallet.home.MainFragment
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class AuthDoneFragment() :
+class AuthDoneFragment :
     BaseMvpFragment<AuthDoneContract.View, AuthDoneContract.Presenter>(R.layout.fragment_auth_done),
     AuthDoneContract.View {
 
@@ -24,15 +22,12 @@ class AuthDoneFragment() :
 
     override val presenter: AuthDoneContract.Presenter by inject()
     private val binding: FragmentAuthDoneBinding by viewBinding()
-    private val analyticsInteractor: AnalyticsInteractor by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenName.OnBoarding.WELCOME_NEW)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.WELCOME_NEW)
         with(binding) {
-            edgeToEdge {
-                finishButton.fitMargin { Edge.BottomArc }
-            }
 
             finishButton.clipToOutline = true
             finishButton.setOnClickListener {

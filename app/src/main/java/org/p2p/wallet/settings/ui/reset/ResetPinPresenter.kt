@@ -9,7 +9,8 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.AnalyticsInteractor
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -18,11 +19,11 @@ private const val VIBRATE_DURATION = 500L
 class ResetPinPresenter(
     private val authInteractor: AuthInteractor,
     private val adminAnalytics: AdminAnalytics,
-    private val analyticsInteractor: AnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<ResetPinContract.View>(), ResetPinContract.Presenter {
 
     private var isCurrentPinConfirmed = false
-    private var createdPin = ""
+    private var createdPin = emptyString()
 
     private var timer: CountDownTimer? = null
 
@@ -116,7 +117,7 @@ class ResetPinPresenter(
                 view?.showEnterNewPin()
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
-                createdPin = ""
+                createdPin = emptyString()
                 view?.showLoading(false)
             }
         }

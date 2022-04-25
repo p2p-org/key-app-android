@@ -11,8 +11,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentVerifySecurityKeyBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.edgetoedge.Edge
-import org.p2p.wallet.utils.edgetoedge.edgeToEdge
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
@@ -43,10 +41,6 @@ class VerifySecurityKeyFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            edgeToEdge {
-                toolbar.fit { Edge.TopArc }
-                progressButton.fitMargin { Edge.BottomArc }
-            }
             progressButton.setOnClickListener {
                 presenter.validate()
             }
