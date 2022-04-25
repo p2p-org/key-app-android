@@ -47,8 +47,6 @@
     <color name="backgroundBannerSecondary">#D7D1FF</color>
     <color name="colorBackgroundNotification">#404040</color>
 
-    <color name="secondaryGray">#6F7D8D</color>
-
     <!--Android Overridden colors-->
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/backgroundDisabled</color>
 
