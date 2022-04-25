@@ -90,7 +90,6 @@ class OrcaSwapPresenter(
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
-    private var lastTransaction: HistoryTransaction? = null
 
     override fun loadInitialData() {
         launch {
@@ -160,10 +159,7 @@ class OrcaSwapPresenter(
         this.slippage = settingsResult.newSlippage
         view?.showSlippage(this.slippage)
 
-        destinationToken?.let {
-            /* If pool is not null, then destination token is not null as well */
-            calculateAmount(sourceToken, it)
-        }
+        reCalculate()
 
         swapInteractor.setFeePayerToken(settingsResult.newFeePayerToken)
         view?.showFeePayerToken(settingsResult.newFeePayerToken.tokenSymbol)
@@ -190,14 +186,18 @@ class OrcaSwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
+        reCalculate()
+    }
+
+    private fun reCalculate() {
         destinationToken?.let {
             calculationJob?.cancel()
             calculationJob = launch {
-                /* If pool is not null, then destination token is not null as well */
-                calculateAmount(sourceToken, it)
-
                 /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
                 calculateFees(sourceToken, it)
+
+                /* If pool is not null, then destination token is not null as well */
+                calculateAmount(sourceToken, it)
 
                 calculateRates(sourceToken, it)
             }
