@@ -159,7 +159,7 @@ class OrcaSwapPresenter(
         this.slippage = settingsResult.newSlippage
         view?.showSlippage(this.slippage)
 
-        reCalculate()
+        recalculate()
 
         swapInteractor.setFeePayerToken(settingsResult.newFeePayerToken)
         view?.showFeePayerToken(settingsResult.newFeePayerToken.tokenSymbol)
@@ -186,10 +186,10 @@ class OrcaSwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
-        reCalculate()
+        recalculate()
     }
 
-    private fun reCalculate() {
+    private fun recalculate() {
         destinationToken?.let {
             calculationJob?.cancel()
             calculationJob = launch {
@@ -391,9 +391,10 @@ class OrcaSwapPresenter(
             view?.showButtonText(R.string.swap_searching_swap_pair)
             searchTradablePairs(source, destination)
             view?.showButtonText(R.string.swap_calculating_fees)
-            calculateAmount(source, destination)
-            calculateFees(source, destination)
-            calculateRates(source, destination)
+            if (!swapInteractor.getFeePayerToken().isSOL) {
+                swapInteractor.setFeePayerToken(source)
+            }
+            recalculate()
         }
     }
 
