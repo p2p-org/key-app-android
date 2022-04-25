@@ -56,8 +56,8 @@ class SecretKeyFragment :
     private val phraseAdapter: SecretPhraseAdapter by unsafeLazy {
         SecretPhraseAdapter(
             onSeedPhraseChanged = { keys ->
-                presenter.setNewKeys(keys)
                 clearError()
+                presenter.setNewKeys(keys)
             }
         )
     }

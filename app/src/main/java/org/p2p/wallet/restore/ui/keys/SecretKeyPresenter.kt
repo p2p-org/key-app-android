@@ -26,9 +26,10 @@ class SecretKeyPresenter(
 
     private var keys: List<SecretKey> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
         if (oldValue != newValue) {
-            val size = newValue.size
-            val isVisible = size == SEED_PHRASE_SIZE_LONG || size == SEED_PHRASE_SIZE_SHORT
-            view?.setButtonEnabled(isVisible)
+            val newSeedPhraseSize = newValue.size
+            val isSeedPhraseValid =
+                newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
+            view?.setButtonEnabled(isSeedPhraseValid)
         }
     }
 
