@@ -38,7 +38,7 @@ class TransactionManager private constructor(
     /*
    * This one is to show user transaction id when progress dialog is shown
    * */
-    private val transactionStateFlow = MutableStateFlow<TransactionState?>(null)
+    private val transactionStateFlow = MutableStateFlow<TransactionState>(TransactionState.Progress())
 
     private val pendingTransactions = mutableListOf<AppTransaction>()
 
@@ -69,9 +69,14 @@ class TransactionManager private constructor(
         return executor.getStateFlow()
     }
 
-    fun getTransactionStateFlow(): Flow<TransactionState> = transactionStateFlow.filterNotNull()
+    fun getTransactionStateFlow(refresh: Boolean = true): Flow<TransactionState> {
+        if (refresh) {
+            transactionStateFlow.value = TransactionState.Progress()
+        }
+        return transactionStateFlow
+    }
 
-    suspend fun emitTransactionState(state: TransactionState?) {
+    suspend fun emitTransactionState(state: TransactionState) {
         transactionStateFlow.emit(state)
     }
 
