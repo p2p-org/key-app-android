@@ -129,7 +129,7 @@ class UserRemoteRepository(
             exchangeRate = solPrice?.getScaledValue()
         )
 
-        return tokens + solToken
+        return listOf(solToken) + tokens
     }
 
     private fun mapDevnetRenBTC(account: Account): Token.Active? {
