@@ -63,10 +63,14 @@ class UserInteractor(
 
     fun getTokenListFlow() = userLocalRepository.getTokenListFlow()
 
-    fun getHiddenTokensVisibility() = sharedPreferences.getBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, false)
+    fun getHiddenTokensVisibility() {
+        sharedPreferences.getBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, false)
+    }
 
-    fun setHiddenTokensVisibility(visible: Boolean) = sharedPreferences.edit {
-        putBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, visible)
+    fun setHiddenTokensVisibility(visible: Boolean) {
+        sharedPreferences.edit {
+            putBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, visible)
+        }
     }
 
     suspend fun loadUserTokensAndUpdateLocal(fetchPrices: Boolean) {
