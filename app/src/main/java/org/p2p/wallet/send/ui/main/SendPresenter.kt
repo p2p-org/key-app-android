@@ -108,6 +108,7 @@ class SendPresenter(
         launch {
             try {
                 view?.showFullScreenLoading(true)
+                view?.showNetworkSelectionView(initialToken?.isRenBTC == true)
 
                 userTokens += userInteractor.getUserTokens()
                 val userPublicKey = tokenKeyProvider.publicKey
@@ -168,12 +169,22 @@ class SendPresenter(
             try {
                 view?.showSearchLoading(true)
                 val target = Target(value)
+
+                networkType = when (target.validation) {
+                    Target.Validation.SOL_ADDRESS -> NetworkType.SOLANA
+                    else -> NetworkType.BITCOIN
+                }
+
+                view?.showNetworkDestination(networkType)
+
                 when (target.validation) {
                     Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-                    Target.Validation.ADDRESS -> searchByNetwork(target.value)
+                    Target.Validation.BTC_ADDRESS -> searchByNetwork(target.value)
+                    Target.Validation.SOL_ADDRESS -> searchByNetwork(target.value)
                     Target.Validation.EMPTY -> view?.showIdleTarget()
                     Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
                 }
+
                 sendAnalytics.logSendPasting()
             } catch (e: Throwable) {
                 Timber.e(e, "Error validating target: $value")
@@ -341,6 +352,7 @@ class SendPresenter(
 
     private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
         view?.showAddressOnlyTarget(result.address)
+        view?.showNetworkDestination(result.networkType)
         checkAddress(result.address)
     }
 
@@ -626,13 +638,13 @@ class SendPresenter(
 
     private suspend fun searchByNetwork(address: String) {
         when (networkType) {
-            NetworkType.SOLANA -> searchByAddress(address)
+            NetworkType.SOLANA -> searchBySolAddress(address)
             /* No search for bitcoin network */
-            NetworkType.BITCOIN -> setTargetResult(SearchResult.AddressOnly(address))
+            NetworkType.BITCOIN -> setTargetResult(SearchResult.AddressOnly(address, NetworkType.BITCOIN))
         }
     }
 
-    private suspend fun searchByAddress(address: String) {
+    private suspend fun searchBySolAddress(address: String) {
         val validatedAddress = try {
             PublicKey(address)
         } catch (e: Throwable) {
