@@ -40,7 +40,7 @@ import org.p2p.wallet.renbtc.db.SessionEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 4
+        const val DATABASE_VERSION = 5
         const val DATABASE_NAME = "p2p.wallet"
     }
 

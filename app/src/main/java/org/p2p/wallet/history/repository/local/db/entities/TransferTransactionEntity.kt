@@ -36,7 +36,10 @@ class TransferTransactionEntity(
     val decimals: Int,
 
     @ColumnInfo(name = COLUMN_FEE)
-    val fee: Long
+    val fee: Long,
+
+    @ColumnInfo(name = COLUMN_PROGRAM_ID)
+    val programId: String
 ) : TransactionEntity {
     companion object {
         const val TABLE_NAME = "transfer_transactions"
@@ -48,5 +51,6 @@ class TransferTransactionEntity(
         const val COLUMN_AMOUNT = "amount"
         const val COLUMN_DECIMALS = "decimals"
         const val COLUMN_FEE = "fee"
+        const val COLUMN_PROGRAM_ID = "program_id"
     }
 }

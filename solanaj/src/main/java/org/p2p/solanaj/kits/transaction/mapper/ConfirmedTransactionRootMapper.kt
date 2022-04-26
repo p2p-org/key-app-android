@@ -151,32 +151,31 @@ internal class ConfirmedTransactionRootMapper(
         transactionRoot: ConfirmedTransactionRootResponse,
         parsedInfo: InstructionInfoDetailsResponse,
     ): TransferDetails {
-        val info = parsedInfo.info
 
-        val mint: String?
-        val amount: String?
-        val decimals: Int
-        if (parsedInfo.type == "transferChecked") {
-            mint = info.mint
-            amount = info.tokenAmount?.amount
-            decimals = info.tokenAmount?.decimals?.toInt() ?: 0
-        } else {
-            mint = null
-            amount = info.lamports?.toLong()?.toBigInteger()?.toString() ?: info.amount
-            decimals = 0
-        }
+        val instruction = transactionRoot.transaction?.message?.instructions?.lastOrNull()
+
+        val sourcePubKey = parsedInfo.info.source
+        val destinationPubKey = parsedInfo.info.destination
+        val authority = parsedInfo.info.authority
+        val instructionInfo = parsedInfo.info
+        val lamports: String = instructionInfo.lamports?.toLong()?.toBigInteger()
+            ?.toString() ?: instructionInfo.amount ?: instructionInfo.tokenAmount?.amount ?: "0"
+        val mint = parsedInfo.info.mint
+        val decimals = instructionInfo.tokenAmount?.decimals?.toInt() ?: 0
+
         return TransferDetails(
             signature = signature,
             blockTime = transactionRoot.blockTime,
             slot = transactionRoot.slot,
-            typeStr = parsedInfo.type,
             fee = transactionRoot.meta.fee,
-            source = info.source,
-            destination = info.destination,
-            authority = info.authority,
+            source = sourcePubKey,
+            destination = destinationPubKey,
+            authority = authority,
             mint = mint,
-            amount = amount,
-            _decimals = decimals
+            amount = lamports,
+            _decimals = decimals,
+            programId = instruction?.programId.orEmpty(),
+            typeStr = parsedInfo.type
         )
     }
 

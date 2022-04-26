@@ -1,11 +1,14 @@
 package org.p2p.solanaj.kits.transaction
 
+import org.p2p.solanaj.programs.SystemProgram.PROGRAM_ID
+
 private const val SOL_DECIMALS = 9
 
 class TransferDetails(
     signature: String,
     blockTime: Long,
     slot: Int,
+    val programId: String,
     val typeStr: String?,
     val fee: Long,
     val source: String?,
@@ -20,7 +23,7 @@ class TransferDetails(
     val decimals: Int
         get() = if (_decimals == 0) SOL_DECIMALS else _decimals
 
-    val isSimpleTransfer: Boolean = typeStr == "transfer"
+    val isSimpleTransfer: Boolean = programId == PROGRAM_ID.toBase58()
 
     override val type: TransactionDetailsType = TransactionDetailsType.TRANSFER
 }
