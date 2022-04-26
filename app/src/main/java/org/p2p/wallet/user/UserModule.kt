@@ -3,6 +3,7 @@ package org.p2p.wallet.user
 import android.content.Context
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -56,7 +57,7 @@ object UserModule : InjectionModule {
                 }
                 .build()
             Retrofit.Builder()
-                .baseUrl(get<Context>().getString(R.string.solanaTokensBaseUrl))
+                .baseUrl(androidContext().getString(R.string.solanaTokensBaseUrl))
                 .addConverterFactory(GsonConverterFactory.create(get()))
                 .client(client)
                 .build()

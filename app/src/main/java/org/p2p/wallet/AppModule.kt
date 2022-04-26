@@ -11,6 +11,7 @@ import org.p2p.wallet.common.analytics.TrackersFactory
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.impl.GoogleFirebaseCrashlytics
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.di.ServiceScope
 
 object AppModule {
     fun create(
@@ -19,12 +20,10 @@ object AppModule {
     ): Module {
         return module {
             single { AppScope() }
+            single { ServiceScope() }
             single { AppFeatureFlags(get()) }
             single { AppRestarter { restartAction() } } bind AppRestarter::class
-            single {
-                val trackers = TrackersFactory.create(application, BuildConfig.ANALYTICS_ENABLED)
-                Analytics(trackers)
-            }
+            single { Analytics(TrackersFactory.create(application)) }
             single { GoogleFirebaseCrashlytics(get()) } bind CrashLoggingService::class
         }
     }

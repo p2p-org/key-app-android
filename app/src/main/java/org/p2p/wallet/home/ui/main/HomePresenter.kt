@@ -76,7 +76,7 @@ class HomePresenter(
             startPollingForTokens()
         }
 
-        IntercomService.signIn(tokenKeyProvider.publicKey)
+        IntercomService.signIn(usernameInteractor.getUsername()?.username ?: tokenKeyProvider.publicKey)
 
         environmentManager.addEnvironmentListener(this::class) {
             refreshTokens()

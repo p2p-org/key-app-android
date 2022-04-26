@@ -108,7 +108,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/backgroundApp"
             android:foreground="?selectableItemBackground"
-            app:buttonDrawable="@drawable/ic_copy"
+            app:buttonDrawableStart="@drawable/ic_copy"
             app:buttonDrawableTint="@color/backgroundButtonPrimary"
             app:buttonText="@string/auth_copy"
             app:buttonTextColor="@color/backgroundButtonPrimary" />
@@ -127,7 +127,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/backgroundApp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            app:buttonDrawable="@drawable/ic_share_blue"
+            app:buttonDrawableStart="@drawable/ic_share_blue"
             app:buttonDrawableTint="@color/backgroundButtonPrimary"
             app:buttonText="@string/auth_share"
             app:buttonTextColor="@color/backgroundButtonPrimary" />
@@ -146,7 +146,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/backgroundApp"
             android:foreground="?selectableItemBackground"
-            app:buttonDrawable="@drawable/ic_gallery"
+            app:buttonDrawableStart="@drawable/ic_gallery"
             app:buttonDrawableTint="@color/backgroundButtonPrimary"
             app:buttonText="@string/auth_save"
             app:buttonTextColor="@color/backgroundButtonPrimary" />

@@ -61,15 +61,11 @@ class RenBTCPresenter(
     }
 
     override fun startNewSession(context: Context) {
-        launch {
-            RenVMService.startWithNewSession(context)
-        }
+        RenVMService.startWithNewSession(context)
     }
 
     override fun checkActiveSession(context: Context) {
-        launch {
-            RenVMService.startWithCheck(context)
-        }
+        RenVMService.startWithCheck(context)
     }
 
     override fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean) {

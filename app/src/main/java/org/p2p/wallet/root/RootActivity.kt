@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -14,6 +16,7 @@ import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
@@ -36,6 +39,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
+    private val crashLoggingService: CrashLoggingService by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
@@ -53,6 +58,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         }
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
+
+        checkForGoogleServices()
     }
 
     private fun logScreenOpenEvent() {
@@ -113,6 +120,19 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         } else {
             devView.isVisible = false
         }
+    }
+
+    private fun checkForGoogleServices() {
+        val servicesAvailabilityChecker = GoogleApiAvailability.getInstance()
+        val userHasGoogleServices =
+            servicesAvailabilityChecker.isGooglePlayServicesAvailable(applicationContext) == ConnectionResult.SUCCESS
+        if (userHasGoogleServices) {
+            Timber.i("Google services are found on device")
+        } else {
+            Timber.i("Google services are NOT found on device: code=$userHasGoogleServices")
+        }
+
+        crashLoggingService.setCustomKey("has_google_services", userHasGoogleServices)
     }
 
     override fun onStop() {

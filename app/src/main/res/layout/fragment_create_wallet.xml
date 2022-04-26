@@ -57,7 +57,7 @@
             android:layout_marginBottom="32dp"
             android:textAllCaps="false"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:buttonDrawable="@drawable/ic_key"
+            app:buttonDrawableStart="@drawable/ic_key"
             app:buttonText="@string/auth_show_your_secret_key"
             app:buttonTextColor="@color/textIconButtonPrimary"
             app:layout_constraintBottom_toBottomOf="parent" />

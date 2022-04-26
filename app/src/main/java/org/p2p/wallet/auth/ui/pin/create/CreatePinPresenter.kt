@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.ui.pin.create
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
-import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
@@ -21,7 +21,7 @@ class CreatePinPresenter(
     private val authInteractor: AuthInteractor,
     private val authLogoutInteractor: AuthLogoutInteractor,
     private val adminAnalytics: AdminAnalytics,
-    private val analytics: OnBoardingAnalytics,
+    private val analytics: OnboardingAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<CreatePinContract.View>(),
     CreatePinContract.Presenter {

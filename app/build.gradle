@@ -45,7 +45,7 @@ android {
             buildConfigField("String", "amplitudeKey", "\"\"")
         }
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-        buildConfigField("boolean", "ANALYTICS_ENABLED", "false")
+        buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
 
@@ -92,6 +92,8 @@ android {
             versionNameSuffix ".$VERSION_BUILD-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+
             firebaseAppDistribution {
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
@@ -108,7 +110,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField("boolean", "ANALYTICS_ENABLED", "true")
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
         }
     }
@@ -171,12 +173,15 @@ dependencies {
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-messaging-ktx'
 
     implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
 
     implementation 'com.amplitude:android-sdk:2.33.0'
 
+    def googleServicesUtilitiesVersion = "18.0.1"
+    implementation "com.google.android.gms:play-services-base:$googleServicesUtilitiesVersion"
 
     // Debug drawer
     def debugDrawerVersion = '0.8.0'
