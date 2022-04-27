@@ -25,6 +25,24 @@ defaults: &defaults
     resource-class: large
     tag: 2021.10.1
 
+filter_feature_branch_only: &filter_feature_branch_only
+  filters:
+    branches:
+      only:
+        - /(^feature\/.+)/
+
+filter_develop_branch_only: &filter_develop_branch_only
+  filters:
+    branches:
+      only:
+        - develop
+
+filter_release_branch_only: &filter_release_branch_only
+  filters:
+    branches:
+      only:
+        - /(^release\/.+)/
+
 jobs:
   android_lint:
     <<: *defaults
@@ -33,6 +51,7 @@ jobs:
       - run:
           name: "Static analysis"
           command: ./gradlew ktlint -PautoCorrect=0
+
   unit_tests:
     <<: *defaults
     steps:
@@ -40,7 +59,8 @@ jobs:
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_test_results
-  build_and_publish:
+
+  publish_feature:
     <<: *defaults
     steps:
       - checkout
@@ -57,6 +77,29 @@ jobs:
           command: ./gradlew assembleFeature appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
+
+  publish_release:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: "Generate build version"
+          command: |
+            ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
+            echo "Set build version to ${CIRCLE_BUILD_NUM}"
+      - store_artifacts:
+          path: "./app/gradle.properties"
+          destination: gradle.properties
+      - run:
+          name: "Write signing jks file from env"
+          command: |
+            echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
+      - run:
+          name: "Distribute release to Firebase App Distribution"
+          command: ./gradlew assembleRelease appDistributionUploadRelease
+      - store_artifacts:
+          path: app/build/outputs/apk/release
+
 workflows:
   version: 2
 
@@ -64,68 +107,56 @@ workflows:
     jobs:
       - android_lint:
           context: feature
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
+          <<: *filter_feature_branch_only
       - unit_tests:
-          requires:
-            - android_lint
           context: feature
+          <<: *filter_feature_branch_only
       - approve-feature-build:
+          type: approval
           requires:
             - unit_tests
-          type: approval
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
-      - build_and_publish:
+            - android_lint
+          <<: *filter_feature_branch_only
+      - publish_feature:
           context: feature
           requires:
             - approve-feature-build
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
+          <<: *filter_feature_branch_only
 
-  lint_and_test:
+  lint_test_develop:
     jobs:
       - android_lint:
-          context: feature
-          filters:
-            branches:
-              only:
-                - develop
+          <<: *filter_develop_branch_only
       - unit_tests:
-          requires:
-            - android_lint
-          context: feature
+          <<: *filter_develop_branch_only
 
-  lint_and_test_release:
-    jobs:
-      - android_lint:
-          filters:
-            branches:
-              only:
-                - /(^release\/.+)/
-      - unit_tests:
-          requires:
-            - android_lint
-
-  build_develop_publish:
+  publish_develop:
     jobs:
       - approve-feature-build:
           type: approval
-          filters:
-            branches:
-              only:
-                - develop
-      - build_and_publish:
-          context: develop
+          <<: *filter_develop_branch_only
+      - publish_feature:
+          context: feature
           requires:
             - approve-feature-build
-          filters:
-            branches:
-              only:
-                - develop
+          <<: *filter_develop_branch_only
+
+  lint_test_and_publish_release:
+    jobs:
+      - android_lint:
+          context: release
+          <<: *filter_release_branch_only
+      - unit_tests:
+          context: release
+          <<: *filter_release_branch_only
+      - approve-build:
+          type: approval
+          requires:
+            - android_lint
+            - unit_tests
+          <<: *filter_release_branch_only
+      - publish_release:
+          context: release
+          requires:
+            - approve-build
+          <<: *filter_release_branch_only

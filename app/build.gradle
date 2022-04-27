@@ -11,6 +11,28 @@ plugins {
 apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 
+def initApiKeys(defaultConfig) {
+    def apikeyPropertiesFile = rootProject.file("apikey.properties")
+    if (apikeyPropertiesFile.canRead()) {
+        def apikeyProperties = new Properties()
+        apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+        defaultConfig.buildConfigField("String", "rpcPoolApiKey", apikeyProperties['rpcPoolApiKey'])
+        defaultConfig.buildConfigField("String", "moonpayKey", apikeyProperties['moonpayKey'])
+        defaultConfig.buildConfigField("String", "comparePublicKey", apikeyProperties['comparePublicKey'])
+        defaultConfig.buildConfigField("String", "intercomApiKey", apikeyProperties['intercomApiKey'])
+        defaultConfig.buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
+        defaultConfig.buildConfigField("String", "amplitudeKey", apikeyProperties['amplitudeKey'])
+    } else {
+        logger.quiet "apikey.properties is not found, using CI keys!"
+        defaultConfig.buildConfigField("String", "rpcPoolApiKey", ${System.getenv('RPC_POOL_API_KEY')})
+        defaultConfig.buildConfigField("String", "moonpayKey", ${System.getenv('MOONPAY_KEY')})
+        defaultConfig.buildConfigField("String", "comparePublicKey", ${System.getenv('COMPARE_PUBLIC_KEY')})
+        defaultConfig.buildConfigField("String", "intercomApiKey", ${System.getenv('INTERCOM_API_KEY')})
+        defaultConfig.buildConfigField("String", "intercomAppId", ${System.getenv('INTERCOM_APP_ID')})
+        defaultConfig.buildConfigField("String", "amplitudeKey", ${System.getenv('AMPLITUDE_KEY')})
+    }
+}
+
 android {
     compileSdkVersion sdkCompileVersion
 
@@ -25,25 +47,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
-        def apikeyPropertiesFile = rootProject.file("apikey.properties")
-        def apikeyProperties = new Properties()
-        if (apikeyPropertiesFile.canRead()) {
-            apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
-            buildConfigField("String", "rpcPoolApiKey", apikeyProperties['rpcPoolApiKey'])
-            buildConfigField("String", "moonpayKey", apikeyProperties['moonpayKey'])
-            buildConfigField("String", "comparePublicKey", apikeyProperties['comparePublicKey'])
-            buildConfigField("String", "intercomApiKey", apikeyProperties['intercomApiKey'])
-            buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
-            buildConfigField("String", "amplitudeKey", apikeyProperties['amplitudeKey'])
-        } else {
-            logger.quiet "apikey.properties is not found, using empty keys!"
-            buildConfigField("String", "rpcPoolApiKey", "\"\"")
-            buildConfigField("String", "moonpayKey", "\"\"")
-            buildConfigField("String", "comparePublicKey", "\"\"")
-            buildConfigField("String", "intercomApiKey", "\"\"")
-            buildConfigField("String", "intercomAppId", "\"\"")
-            buildConfigField("String", "amplitudeKey", "\"\"")
-        }
+        initApiKeys(it)
+
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
@@ -58,19 +63,23 @@ android {
 
     signingConfigs {
         release {
-            file("../signing.properties").with { propFile ->
-                if (propFile.canRead()) {
-                    def properties = new Properties()
-                    properties.load(new FileInputStream(propFile))
+            def secretProperties = new Properties()
 
-                    storeFile file(properties['keystorePath'])
-                    storePassword properties['keystorePassword']
-                    keyAlias properties['keyAlias']
-                    keyPassword properties['keyPassword']
-                } else {
-                    logger.quiet 'Unable to read signing.properties, using defaults'
-                }
+            def signingPropertiesFile = rootProject.file("signing.properties")
+            if (signingPropertiesFile.canRead()) {
+                logger.quiet "Using signing properties file"
+                secretProperties.load(new FileInputStream(signingPropertiesFile))
+            } else {
+                logger.quiet "Using signing properties from CI"
+                secretProperties["KEYSTORE_PASSWORD"] = "${System.getenv('KEYSTORE_PASSWORD')}"
+                secretProperties["KEY_PASSWORD"] = "${System.getenv('KEY_PASSWORD')}"
+                secretProperties["KEY_ALIAS"] = "${System.getenv('KEY_ALIAS')}"
             }
+
+            storeFile file("./p2p-wallet.jks")
+            storePassword secretProperties["KEYSTORE_PASSWORD"]
+            keyPassword secretProperties["KEY_PASSWORD"]
+            keyAlias secretProperties["KEY_ALIAS"]
         }
     }
 
