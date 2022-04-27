@@ -170,12 +170,7 @@ class SendPresenter(
                 view?.showSearchLoading(true)
                 val target = Target(value)
 
-                networkType = when (target.validation) {
-                    Target.Validation.SOL_ADDRESS, Target.Validation.USERNAME -> NetworkType.SOLANA
-                    else -> NetworkType.BITCOIN
-                }
-
-                view?.showNetworkDestination(networkType)
+                selectNetworkType(target)
 
                 when (target.validation) {
                     Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
@@ -192,6 +187,17 @@ class SendPresenter(
                 view?.showSearchLoading(false)
             }
         }
+    }
+
+    private fun selectNetworkType(target: Target) {
+        if (token?.isRenBTC != true) return
+
+        networkType = when (target.validation) {
+            Target.Validation.SOL_ADDRESS, Target.Validation.USERNAME -> NetworkType.SOLANA
+            else -> NetworkType.BITCOIN
+        }
+
+        view?.showNetworkDestination(networkType)
     }
 
     override fun setNewSourceAmount(amount: String) {
