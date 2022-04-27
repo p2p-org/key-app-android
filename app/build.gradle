@@ -12,7 +12,7 @@ apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 
 def initApiKeys(defaultConfig) {
-    def apikeyPropertiesFile = rootProject.file("./apikey.properties")
+    def apikeyPropertiesFile = rootProject.file("apikey.properties")
     if (apikeyPropertiesFile.canRead()) {
         logger.quiet "apikey.properties found, using file!"
 
@@ -80,7 +80,7 @@ android {
                 secretProperties["KEY_ALIAS"] = "${System.getenv('KEY_ALIAS')}"
             }
 
-            storeFile file("./p2p-wallet.jks")
+            storeFile rootProject.file("p2p-wallet.jks")
             storePassword secretProperties["KEYSTORE_PASSWORD"]
             keyPassword secretProperties["KEY_PASSWORD"]
             keyAlias secretProperties["KEY_ALIAS"]

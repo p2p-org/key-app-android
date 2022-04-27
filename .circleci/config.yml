@@ -113,7 +113,7 @@ jobs:
           name: "Write signing jks file from env"
           command: |
             echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
-            find . -name 'p2p-wallet.jks' | grep -q filename && echo "File found" || echo "File not found"
+            find . -name 'p2p-wallet.jks' | grep -q p2p-wallet.jks && echo "File found" || echo "File not found"
             ls -a
       - run:
           name: "Distribute release to Firebase App Distribution"
