@@ -4,15 +4,19 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.content.res.use
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import android.content.res.TypedArray
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetProgressButtonBinding
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+
+private const val NO_ID_VALUE = 0
 
 class ProgressButton @JvmOverloads constructor(
     context: Context,
@@ -20,67 +24,95 @@ class ProgressButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val binding: WidgetProgressButtonBinding = WidgetProgressButtonBinding.inflate(
-        LayoutInflater.from(context), this
-    )
+    private val binding: WidgetProgressButtonBinding = inflateViewBinding()
 
     init {
         val outValue = TypedValue()
         context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
+
         foreground = getDrawable(context, outValue.resourceId)
         clipToOutline = true
 
         isClickable = true
         isFocusable = true
 
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ProgressButton)
+        context.obtainStyledAttributes(attrs, R.styleable.ProgressButton).use { typedArray ->
+            initButtonBackground(typedArray)
+            initButtonText(typedArray)
+            initIconStart(typedArray)
+            initIconEnd(typedArray)
+            initIconsStartEndTint(typedArray)
+            initButtonEnabled(typedArray)
+        }
+    }
 
+    private fun initButtonBackground(typedArray: TypedArray) {
         val backgroundResource = typedArray.getResourceId(
-            R.styleable.ProgressButton_buttonBackground, R.drawable.bg_blue_selector
+            R.styleable.ProgressButton_buttonBackground,
+            R.drawable.bg_blue_selector
         )
-
         setBackgroundResource(backgroundResource)
+    }
 
-        val text = typedArray.getText(R.styleable.ProgressButton_buttonText)
-        binding.actionTextView.text = text
-
-        val startImageResourceId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawable, 0)
-        if (startImageResourceId != 0) {
-            binding.startImageView.setImageResource(startImageResourceId)
-            binding.startImageView.isVisible = true
-        }
-
-        val endImageResourceId = typedArray.getResourceId(R.styleable.ProgressButton_buttonDrawableEnd, 0)
-        if (endImageResourceId != 0) {
-            binding.endImageView.setImageResource(endImageResourceId)
-            binding.endImageView.isVisible = true
-        }
+    private fun initButtonText(typedArray: TypedArray) = with(binding.actionTextView) {
+        val buttonText = typedArray.getText(R.styleable.ProgressButton_buttonText)
+        text = buttonText
 
         val textAppearanceId = typedArray.getResourceId(
             R.styleable.ProgressButton_android_textAppearance,
             R.style.WalletTheme_TextAppearance_SemiBold16
         )
-        if (textAppearanceId != 0) {
-            binding.actionTextView.setTextAppearance(textAppearanceId)
+        if (textAppearanceId != NO_ID_VALUE) {
+            setTextAppearance(textAppearanceId)
         }
 
-        val color = typedArray.getColor(
-            R.styleable.ProgressButton_buttonTextColor, context.getColor(R.color.textIconButtonPrimary)
+        val textColor = typedArray.getColor(
+            R.styleable.ProgressButton_buttonTextColor,
+            context.getColor(R.color.textIconButtonPrimary)
         )
-        binding.actionTextView.setTextColor(color)
+        setTextColor(textColor)
+    }
 
+    private fun initIconStart(typedArray: TypedArray) {
+        val startImageResourceId = typedArray.getResourceId(
+            R.styleable.ProgressButton_buttonDrawableStart,
+            NO_ID_VALUE
+        )
+        if (startImageResourceId != NO_ID_VALUE) {
+            binding.startImageView.setImageResource(startImageResourceId)
+            binding.startImageView.isVisible = true
+        }
+    }
+
+    private fun initIconEnd(typedArray: TypedArray) {
+        val endImageResourceId = typedArray.getResourceId(
+            R.styleable.ProgressButton_buttonDrawableEnd,
+            NO_ID_VALUE
+        )
+        if (endImageResourceId != NO_ID_VALUE) {
+            binding.endImageView.setImageResource(endImageResourceId)
+            binding.endImageView.isVisible = true
+        }
+    }
+
+    private fun initIconsStartEndTint(typedArray: TypedArray) {
         val buttonDrawableTintId = typedArray.getResourceId(
             R.styleable.ProgressButton_buttonDrawableTint,
             R.color.textIconButtonPrimary
         )
-        if (buttonDrawableTintId != 0) {
+        if (buttonDrawableTintId != NO_ID_VALUE) {
             val tintColor = context.getColor(buttonDrawableTintId)
             binding.startImageView.imageTintList = ColorStateList.valueOf(tintColor)
             binding.endImageView.imageTintList = ColorStateList.valueOf(tintColor)
         }
-        val isEnabled = typedArray.getBoolean(R.styleable.ProgressButton_buttonEnabled, true)
+    }
+
+    private fun initButtonEnabled(typedArray: TypedArray) {
+        val isEnabled = typedArray.getBoolean(
+            R.styleable.ProgressButton_buttonEnabled,
+            true
+        )
         setEnabled(isEnabled)
-        typedArray.recycle()
     }
 
     fun setLoading(isLoading: Boolean) {
