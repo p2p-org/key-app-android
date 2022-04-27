@@ -90,7 +90,6 @@ class SwapDetailsView @JvmOverloads constructor(
             }
 
             val accountCreationToken = data.accountCreationToken
-
             val fee = data.commonFee
             val approxFeeUsd = data.approxFeeUsd
             val isSol = accountCreationToken == Constants.SOL_SYMBOL

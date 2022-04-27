@@ -136,7 +136,7 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 transactionManager = get(),
-                resources = androidContext().resources
+                resources = get()
             )
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->

@@ -24,6 +24,7 @@ class HistoryInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyTransactionMapper: HistoryTransactionMapper
 ) {
+    private var lastTransactionSignature: String? = null
 
     suspend fun getHistoryTransaction(tokenPublicKey: String, transactionId: String): HistoryTransaction? {
         return getTransactionHistory(
@@ -34,7 +35,7 @@ class HistoryInteractor(
             .firstOrNull()
     }
 
-    suspend fun getAllHistoryTransactions(
+    suspend fun loadTransactionHistory(
         tokenPublicKey: String,
         before: String?,
         limit: Int,
@@ -72,6 +73,42 @@ class HistoryInteractor(
             }
             .also { transactionsLocalRepository.saveTransactions(it) }
             .mapToHistoryTransactions(tokenPublicKey)
+    }
+
+    suspend fun getTransactionHistory2(
+        forceNetwork: Boolean,
+        limit: Int,
+    ): List<HistoryTransaction> {
+        val tokenPublicKey = tokenKeyProvider.publicKey
+        if (forceNetwork) {
+            lastTransactionSignature = null
+            transactionsLocalRepository.deleteAll()
+        }
+        val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(
+            userAccountAddress = tokenPublicKey.toPublicKey(),
+            before = lastTransactionSignature,
+            limit = limit
+        )
+            .map(SignatureInformationResponse::signature)
+
+        lastTransactionSignature = signatures.lastOrNull()
+
+        val localTransactions = transactionsLocalRepository.getTransactions(signatures)
+
+        if (localTransactions.isNotEmpty()) {
+            Timber.i("History Transactions are found in cache for token $tokenPublicKey")
+        }
+
+        if (localTransactions.size != signatures.size) {
+            Timber.i(
+                "History Transactions are not cached fully for token $tokenPublicKey: " +
+                    "expected=${signatures.size} actual=${localTransactions.size}"
+            )
+            val remoteTransactions = transactionsRemoteRepository.getTransactions(signatures)
+            transactionsLocalRepository.saveTransactions(remoteTransactions)
+            return remoteTransactions.mapToHistoryTransactions(tokenPublicKey)
+        }
+        return localTransactions.mapToHistoryTransactions(tokenPublicKey)
     }
 
     private suspend fun List<TransactionDetails>.mapToHistoryTransactions(
