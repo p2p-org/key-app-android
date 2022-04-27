@@ -78,7 +78,7 @@
         android:layout_marginTop="36dp"
         android:layout_marginBottom="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonDrawable="@drawable/ic_plus"
+        app:buttonDrawableStart="@drawable/ic_plus"
         app:buttonDrawableTint="@color/textIconButtonPrimary"
         app:buttonText="@string/receive_topup_your_account"
         app:buttonTextColor="@color/textIconButtonPrimary"

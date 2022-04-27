@@ -105,7 +105,7 @@
     <string name="auth_go_to_wallet">Go to wallet</string>
     <string name="auth_logout">Logout now</string>
     <string name="auth_done">Done</string>
-    <string name="auth_wrong_seed_phrase">Wrong order or seed phrase, please check it and try again</string>
+    <string name="auth_wrong_seed_phrase">The wrong security key or words order</string>
     <string name="auth_wrong_seed_phrase_empty">Seed phrase is empty</string>
     <string name="auth_derivable_accounts">Derivable accounts</string>
     <string name="auth_derivable_info">This is what you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>

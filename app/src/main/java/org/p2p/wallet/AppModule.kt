@@ -13,6 +13,7 @@ import org.p2p.wallet.common.analytics.TrackersFactory
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.impl.GoogleFirebaseCrashlytics
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.di.ServiceScope
 
 object AppModule {
     fun create(
@@ -23,6 +24,7 @@ object AppModule {
             single { AppScope() }
             single { androidContext().resources } bind Resources::class
             single { androidContext().theme } bind Resources.Theme::class
+            single { ServiceScope() }
             single { AppFeatureFlags(get()) }
             single { AppRestarter { restartAction() } } bind AppRestarter::class
             single { Analytics(TrackersFactory.create(application)) }

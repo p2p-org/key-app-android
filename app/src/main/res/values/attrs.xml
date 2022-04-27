@@ -59,7 +59,7 @@
 
     <declare-styleable name="ProgressButton">
         <attr name="buttonText" format="string" />
-        <attr name="buttonDrawable" format="reference" />
+        <attr name="buttonDrawableStart" format="reference" />
         <attr name="buttonBackground" format="reference" />
         <attr name="buttonDrawableTint" format="reference" />
         <attr name="buttonTextColor" format="color" />
