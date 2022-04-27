@@ -602,7 +602,7 @@ class SendPresenter(
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
         val notEnoughFunds = fee?.let { sendFee ->
-            sendFee.feePayerToken.total.orZero() <= sendFee.fee.orZero()
+            sendFee.feePayerToken.total.orZero() < sendFee.fee.orZero()
         } ?: false
         view?.showAccountFeeView(
             fee = fee,
@@ -700,9 +700,9 @@ class SendPresenter(
         sendFee: SendFee
     ): Boolean {
         return if (sendFee.feePayerSymbol == sendFee.sourceTokenSymbol) {
-            total <= amount + fee
+            total < amount + fee
         } else {
-            total <= amount && feePayerTotal <= fee
+            total < amount && feePayerTotal < fee
         }
     }
 
