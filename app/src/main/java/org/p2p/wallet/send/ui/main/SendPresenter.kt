@@ -226,8 +226,11 @@ class SendPresenter(
 
     private fun validateSelectedNetwork(networkType: NetworkType) {
         target?.let { target ->
-            if (target.networkType != networkType) view?.showWrongAddressTarget(target.address, networkType)
-            else view?.showAddressOnlyTarget(target.address)
+            if (target.networkType != networkType) {
+                view?.showWrongAddressTarget(target.address, networkType)
+            } else {
+                view?.showAddressOnlyTarget(target.address)
+            }
         }
     }
 
