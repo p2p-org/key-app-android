@@ -602,10 +602,7 @@ class SendPresenter(
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
         val notEnoughFunds = fee?.let { sendFee ->
-            when (mode) {
-                is CurrencyMode.Usd -> sendFee.feePayerToken.totalInUsd.orZero() < sendFee.feeUsd.orZero()
-                is CurrencyMode.Token -> sendFee.feePayerToken.total.orZero() < sendFee.fee.orZero()
-            }
+            sendFee.feePayerToken.total.orZero() <= sendFee.fee.orZero()
         } ?: false
         view?.showAccountFeeView(
             fee = fee,
@@ -656,20 +653,13 @@ class SendPresenter(
     private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: SendFee?) {
         val isAmountMoreThanBalance = amount.isMoreThan(total)
         val isAmountWithFeeMoreThanBalance = fee?.let { sendFee ->
-            when (mode) {
-                is CurrencyMode.Usd -> {
-                    sendFee.feePayerToken.totalInUsd.orZero() < countFeeWithAmountIfNeeded(
-                        sendFee.feeUsd.orZero(),
-                        amount,
-                        sendFee
-                    )
-                }
-                is CurrencyMode.Token -> sendFee.feePayerToken.total.orZero() < countFeeWithAmountIfNeeded(
-                    sendFee.fee.orZero(),
-                    amount,
-                    sendFee
-                )
-            }
+            countIfAmountWithFeeMoreThanBalance(
+                sendFee.fee.orZero(),
+                amount,
+                sendFee.feePayerToken.total.orZero(),
+                total,
+                sendFee
+            )
         } ?: false
         val address = target?.address
         val isMaxAmount = amount == total
@@ -702,15 +692,17 @@ class SendPresenter(
         view?.showButtonEnabled(isEnabled)
     }
 
-    private fun countFeeWithAmountIfNeeded(
+    private fun countIfAmountWithFeeMoreThanBalance(
         fee: BigDecimal,
         amount: BigDecimal,
+        feePayerTotal: BigDecimal,
+        total: BigDecimal,
         sendFee: SendFee
-    ): BigDecimal {
+    ): Boolean {
         return if (sendFee.feePayerSymbol == sendFee.sourceTokenSymbol) {
-            amount + fee
+            total <= amount + fee
         } else {
-            amount
+            total <= amount && feePayerTotal <= fee
         }
     }
 
