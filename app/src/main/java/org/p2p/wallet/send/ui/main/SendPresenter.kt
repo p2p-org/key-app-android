@@ -171,7 +171,7 @@ class SendPresenter(
                 val target = Target(value)
 
                 networkType = when (target.validation) {
-                    Target.Validation.SOL_ADDRESS -> NetworkType.SOLANA
+                    Target.Validation.SOL_ADDRESS, Target.Validation.USERNAME -> NetworkType.SOLANA
                     else -> NetworkType.BITCOIN
                 }
 
