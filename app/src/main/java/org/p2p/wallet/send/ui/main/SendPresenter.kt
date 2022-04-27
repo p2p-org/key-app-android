@@ -214,7 +214,15 @@ class SendPresenter(
     override fun setNetworkDestination(networkType: NetworkType) {
         this.networkType = networkType
         view?.showNetworkDestination(networkType)
+        validateSelectedNetwork(networkType)
         calculateRenBtcFeeIfNeeded(hideTotal = true)
+    }
+
+    private fun validateSelectedNetwork(networkType: NetworkType) {
+        target?.let { target ->
+            if (target.networkType != networkType) view?.showWrongAddressTarget(target.address, networkType)
+            else view?.showAddressOnlyTarget(target.address)
+        }
     }
 
     override fun send() {

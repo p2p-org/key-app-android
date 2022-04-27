@@ -4,7 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 sealed class SearchResult(
-    open val address: String
+    open val address: String,
+    open val networkType: NetworkType = NetworkType.SOLANA
 ) : Parcelable {
 
     @Parcelize
@@ -13,8 +14,8 @@ sealed class SearchResult(
     @Parcelize
     data class AddressOnly(
         override val address: String,
-        val networkType: NetworkType = NetworkType.SOLANA
-    ) : SearchResult(address)
+        override val networkType: NetworkType = NetworkType.SOLANA
+    ) : SearchResult(address, networkType)
 
     @Parcelize
     data class Full(override val address: String, val username: String) : SearchResult(address)
