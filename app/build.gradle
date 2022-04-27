@@ -12,24 +12,28 @@ apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 
 def initApiKeys(defaultConfig) {
-    def apikeyPropertiesFile = rootProject.file("apikey.properties")
+    def apikeyPropertiesFile = rootProject.file("./apikey.properties")
     if (apikeyPropertiesFile.canRead()) {
+        logger.quiet "apikey.properties found, using file!"
+
         def apikeyProperties = new Properties()
         apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
-        defaultConfig.buildConfigField("String", "rpcPoolApiKey", apikeyProperties['rpcPoolApiKey'])
-        defaultConfig.buildConfigField("String", "moonpayKey", apikeyProperties['moonpayKey'])
-        defaultConfig.buildConfigField("String", "comparePublicKey", apikeyProperties['comparePublicKey'])
-        defaultConfig.buildConfigField("String", "intercomApiKey", apikeyProperties['intercomApiKey'])
-        defaultConfig.buildConfigField("String", "intercomAppId", apikeyProperties['intercomAppId'])
-        defaultConfig.buildConfigField("String", "amplitudeKey", apikeyProperties['amplitudeKey'])
+        defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apikeyProperties['rpcPoolApiKey']}")
+        defaultConfig.buildConfigField("String", "moonpayKey", "${apikeyProperties['moonpayKey']}")
+        defaultConfig.buildConfigField("String", "comparePublicKey", "${apikeyProperties['comparePublicKey']}")
+        defaultConfig.buildConfigField("String", "intercomApiKey", "${apikeyProperties['intercomApiKey']}")
+        defaultConfig.buildConfigField("String", "intercomAppId", "${apikeyProperties['intercomAppId']}")
+        defaultConfig.buildConfigField("String", "amplitudeKey", "${apikeyProperties['amplitudeKey']}")
     } else {
-        logger.quiet "apikey.properties is not found, using CI keys!"
-        defaultConfig.buildConfigField("String", "rpcPoolApiKey", ${System.getenv('RPC_POOL_API_KEY')})
-        defaultConfig.buildConfigField("String", "moonpayKey", ${System.getenv('MOONPAY_KEY')})
-        defaultConfig.buildConfigField("String", "comparePublicKey", ${System.getenv('COMPARE_PUBLIC_KEY')})
-        defaultConfig.buildConfigField("String", "intercomApiKey", ${System.getenv('INTERCOM_API_KEY')})
-        defaultConfig.buildConfigField("String", "intercomAppId", ${System.getenv('INTERCOM_APP_ID')})
-        defaultConfig.buildConfigField("String", "amplitudeKey", ${System.getenv('AMPLITUDE_KEY')})
+        logger.quiet "apikey.properties is not found, using empty values!"
+
+        def emptyString = "\"\""
+        defaultConfig.buildConfigField("String", "rpcPoolApiKey", emptyString)
+        defaultConfig.buildConfigField("String", "moonpayKey", emptyString)
+        defaultConfig.buildConfigField("String", "comparePublicKey", emptyString)
+        defaultConfig.buildConfigField("String", "intercomApiKey", emptyString)
+        defaultConfig.buildConfigField("String", "intercomAppId", emptyString)
+        defaultConfig.buildConfigField("String", "amplitudeKey", emptyString)
     }
 }
 

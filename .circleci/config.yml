@@ -8,7 +8,7 @@ commands:
     description: "Saves all test results into a single directory"
     steps:
       - run:
-          name: Save test results
+          name: "Save test results"
           command: |
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
@@ -17,6 +17,21 @@ commands:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+
+  create_api_keys_file:
+    description: "Create apikey.properties"
+    steps:
+      - run:
+          name: "Create apikey.properties and fill them"
+          command: |
+            touch apikey.properties
+            echo 'rpcPoolApiKey="${RPC_POOL_API_KEY}"' >> apikey.properties
+            echo 'moonpayKey="${MOONPAY_KEY}"' >> apikey.properties
+            echo 'comparePublicKey="${COMPARE_PUBLIC_KEY}"' >> apikey.properties
+            echo 'intercomApiKey="${INTERCOM_API_KEY}"' >> apikey.properties
+            echo 'intercomAppId="${INTERCOM_APP_ID}"' >> apikey.properties
+            echo 'amplitudeKey="${AMPLITUDE_KEY}"' >> apikey.properties
+            echo "apikey.properties created succesfully"
 
 defaults: &defaults
   working_directory: ~/app
@@ -48,6 +63,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - create_api_keys_file
       - run:
           name: "Static analysis"
           command: ./gradlew ktlint -PautoCorrect=0
@@ -56,6 +72,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - create_api_keys_file
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_test_results
@@ -64,6 +81,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - create_api_keys_file
       - run:
           name: "Generate build version"
           command: |
@@ -82,6 +100,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - create_api_keys_file
       - run:
           name: "Generate build version"
           command: |
