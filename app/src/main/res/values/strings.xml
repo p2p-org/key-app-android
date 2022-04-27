@@ -337,7 +337,6 @@
     <string name="send_p2p_username_sol_address">P2P username / SOL address</string>
     <string name="send_type_paste">Type or paste</string>
     <string name="send_no_address">There\'s no address like this</string>
-    <string name="send_address_error">This is not a %s address</string>
     <string name="send_current_price">Current price</string>
     <string name="send_caution_empty_balance">Caution: this address has no funds</string>
     <string name="send_zero_usd">$0</string>

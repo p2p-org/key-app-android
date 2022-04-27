@@ -270,19 +270,14 @@ class SendFragment :
         }
     }
 
-    override fun showWrongAddressTarget(address: String, networkType: NetworkType?) {
-        val errorText = when {
-            networkType != null -> getString(R.string.send_address_error, networkType.stringValue)
-            else -> getString(R.string.send_no_address)
-        }
-
+    override fun showWrongAddressTarget(address: String) {
         with(binding) {
             targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
-            messageTextView.withTextOrGone(errorText)
+            messageTextView.withTextOrGone(getString(R.string.send_no_address))
             messageTextView.setTextColor(getColor(R.color.systemErrorMain))
             clearImageView.isVisible = true
             scanTextView.isVisible = false

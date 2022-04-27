@@ -42,7 +42,7 @@ interface SendContract {
 
         fun showSearchLoading(isLoading: Boolean)
         fun showIdleTarget()
-        fun showWrongAddressTarget(address: String, networkType: NetworkType? = null)
+        fun showWrongAddressTarget(address: String)
         fun showFullTarget(address: String, username: String)
         fun showEmptyBalanceTarget(address: String)
         fun showAddressOnlyTarget(address: String)
