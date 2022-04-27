@@ -109,12 +109,14 @@ fun Fragment.addFragment(
     @AnimRes popEnter: Int = R.anim.nav_pop_enter,
     @AnimRes popExit: Int = R.anim.nav_pop_exit,
     fragmentManager: FragmentManager = requireActivity().supportFragmentManager
-) = whenStateAtLeast(Lifecycle.State.STARTED) {
-    requireActivity().hideKeyboard()
-    fragmentManager.commit(allowStateLoss = true) {
-        setCustomAnimations(enter, exit, popEnter, popExit)
-        add(containerId, target, target.javaClass.name)
-        if (addToBackStack) addToBackStack(target.javaClass.name)
+) {
+    whenStateAtLeast(Lifecycle.State.STARTED) {
+        requireActivity().hideKeyboard()
+        fragmentManager.commit(allowStateLoss = true) {
+            setCustomAnimations(enter, exit, popEnter, popExit)
+            add(containerId, target, target.javaClass.name)
+            if (addToBackStack) addToBackStack(target.javaClass.name)
+        }
     }
 }
 
