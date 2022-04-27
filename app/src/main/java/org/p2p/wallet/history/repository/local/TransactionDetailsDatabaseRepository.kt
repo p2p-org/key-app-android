@@ -1,9 +1,8 @@
-package org.p2p.wallet.history.repository
+package org.p2p.wallet.history.repository.local
 
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
 import org.p2p.wallet.history.repository.local.db.dao.TransactionsDaoDelegate
-import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 
 class TransactionDetailsDatabaseRepository(
     private val daoDelegate: TransactionsDaoDelegate,

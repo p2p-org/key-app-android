@@ -5,7 +5,8 @@ import java.util.concurrent.TimeUnit
 sealed class TransactionDetails(
     val signature: String,
     val blockTimeSeconds: Long,
-    val slot: Int
+    val slot: Int,
+    var error: List<Any>? = null
 ) {
     abstract val type: TransactionDetailsType
 

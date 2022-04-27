@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.TextView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -20,6 +21,7 @@ import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
+import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -38,6 +40,9 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     override val presenter: RootContract.Presenter by inject()
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val binding: ActivityRootBinding by lazy {
+        ActivityRootBinding.inflate(LayoutInflater.from(this))
+    }
 
     private val crashLoggingService: CrashLoggingService by inject()
 
@@ -56,19 +61,18 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }
-
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
 
         checkForGoogleServices()
     }
 
     private fun logScreenOpenEvent() {
-        val openedFragment = supportFragmentManager.findFragmentById(R.id.content) as? BaseFragment
+        val openedFragment = supportFragmentManager.findFragmentById(R.id.rootContainer) as? BaseFragment
         if (openedFragment != null) {
             analyticsInteractor.logScreenOpenEvent(openedFragment.getAnalyticsName())
         } else {
             val findFragmentError = ClassCastException(
-                "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.content)}"
+                "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.rootContainer)}"
             )
             Timber.w(findFragmentError)
         }

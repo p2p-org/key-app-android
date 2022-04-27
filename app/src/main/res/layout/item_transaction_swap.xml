@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/backgroundPrimary"
+    android:orientation="horizontal">
+
+    <org.p2p.wallet.common.ui.widget.TransactionSwapImageView
+        android:id="@+id/transactionTokenImageView"
+        android:layout_width="@dimen/history_transaction_image_size"
+        android:layout_height="@dimen/history_transaction_image_size"
+        android:layout_marginVertical="12dp"
+        android:layout_marginStart="16dp" />
+
+    <include
+        android:id="@+id/transactionData"
+        layout="@layout/item_transaction_base_part"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/history_transaction_item_height"
+        android:layout_gravity="center" />
+
+</LinearLayout>

@@ -89,7 +89,6 @@ class SwapDetailsView @JvmOverloads constructor(
             }
 
             val accountCreationToken = data.accountCreationToken
-
             val fee = data.commonFee
             val approxFeeUsd = data.approxFeeUsd
             if (accountCreationToken != null && fee != null) {
