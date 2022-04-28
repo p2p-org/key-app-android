@@ -1,8 +1,5 @@
 package org.p2p.wallet.history.ui.history
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -17,6 +14,9 @@ import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.properties.Delegates
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val PAGE_SIZE = 20
 
@@ -88,11 +88,11 @@ class HistoryPresenter(
             }
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
+        } catch (e: EmptyDataException) {
+            transactions = emptyList()
         } catch (e: Throwable) {
             view?.showPagingState(PagingState.Error(e))
             Timber.e(e, "Error getting transaction history")
-        } catch (e: EmptyDataException) {
-            transactions = emptyList()
         }
     }
 
