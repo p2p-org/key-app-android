@@ -1,97 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contentView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_net"
+    android:fitsSystemWindows="true">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <VideoView
-        android:id="@+id/animationVideoView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="?actionBarSize"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/titleTextView"
-        app:layout_constraintDimensionRatio="W,1:1.04"
-        app:layout_constraintEnd_toEndOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_max="400dp" />
-
-    <View
-        android:id="@+id/animationVideoViewPlaceHolder"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/animationVideoView"
-        app:layout_constraintEnd_toEndOf="@id/animationVideoView"
-        app:layout_constraintStart_toStartOf="@id/animationVideoView"
-        app:layout_constraintTop_toTopOf="@id/animationVideoView" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/titleTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="16dp"
-        android:gravity="center"
-        android:text="@string/app_name"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Bold32"
-        app:layout_constraintBottom_toTopOf="@+id/subTitleTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/subTitleTextView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="24dp"
-        android:gravity="center"
-        android:text="@string/auth_onboarding_subtitle"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        app:layout_constraintBottom_toTopOf="@+id/createButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="match_parent">
 
-    <org.p2p.wallet.common.ui.widget.ProgressButton
-        android:id="@+id/createButton"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_blue_rounded"
-        android:foreground="?selectableItemBackground"
-        android:textAllCaps="false"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonDrawableStart="@drawable/ic_wallet_white"
-        app:buttonText="@string/auth_create_new_wallet"
-        app:buttonTextColor="@color/white"
-        app:layout_constraintBottom_toTopOf="@id/loginButton"
-        tools:ignore="UnusedAttribute" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
-    <org.p2p.wallet.common.ui.widget.ProgressButton
-        android:id="@+id/loginButton"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="32dp"
-        android:textAllCaps="false"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonBackground="@drawable/bg_blue_stroke_rounded"
-        app:buttonDrawableStart="@drawable/ic_user"
-        app:buttonText="@string/auth_have_wallet"
-        app:buttonTextColor="@color/backgroundButtonPrimary"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        <VideoView
+            android:id="@+id/animationVideoView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="?actionBarSize"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/titleTextView"
+            app:layout_constraintDimensionRatio="W,1:1.04"
+            app:layout_constraintEnd_toEndOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="400dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/animationVideoViewPlaceHolder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="@id/animationVideoView"
+            app:layout_constraintEnd_toEndOf="@id/animationVideoView"
+            app:layout_constraintStart_toStartOf="@id/animationVideoView"
+            app:layout_constraintTop_toTopOf="@id/animationVideoView" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/titleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Bold32"
+            app:layout_constraintBottom_toTopOf="@+id/subTitleTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/subTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="@string/auth_onboarding_subtitle"
+            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            app:layout_constraintBottom_toTopOf="@+id/createButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/createButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_blue_rounded"
+            android:foreground="?selectableItemBackground"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            app:buttonDrawableStart="@drawable/ic_wallet_white"
+            app:buttonText="@string/auth_create_new_wallet"
+            app:buttonTextColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@id/loginButton"
+            tools:ignore="UnusedAttribute" />
+
+        <org.p2p.wallet.common.ui.widget.ProgressButton
+            android:id="@+id/loginButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="32dp"
+            android:textAllCaps="false"
+            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+            app:buttonBackground="@drawable/bg_blue_stroke_rounded"
+            app:buttonDrawableStart="@drawable/ic_user"
+            app:buttonText="@string/auth_have_wallet"
+            app:buttonTextColor="@color/backgroundButtonPrimary"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
