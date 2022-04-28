@@ -558,14 +558,14 @@ class SendPresenter(
                 updateButton(
                     amount = tokenAmount,
                     total = sourceToken.total.scaleLong(),
-                    fee = data.fee?.fee ?: BigDecimal.ZERO
+                    fee = data.fee
                 )
             }
             is CurrencyMode.Usd -> {
                 updateButton(
                     amount = usdAmount,
-                    total = sourceToken.totalInUsd ?: BigDecimal.ZERO,
-                    fee = data.fee?.feeUsd ?: BigDecimal.ZERO
+                    total = sourceToken.totalInUsd.orZero(),
+                    fee = data.fee
                 )
             }
         }
@@ -613,9 +613,12 @@ class SendPresenter(
         }
 
         fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
+        val notEnoughFunds = fee?.let { sendFee ->
+            sendFee.feePayerToken.total.orZero() < sendFee.fee.orZero()
+        } ?: false
         view?.showAccountFeeView(
             fee = fee,
-            notEnoughFunds = fee?.feePayerToken?.totalInUsd.orZero() < fee?.feeUsd.orZero()
+            notEnoughFunds = notEnoughFunds
         )
         calculateTotal(fee)
     }
@@ -659,9 +662,17 @@ class SendPresenter(
         setTargetResult(first)
     }
 
-    private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: BigDecimal) {
+    private fun updateButton(amount: BigDecimal, total: BigDecimal, fee: SendFee?) {
         val isAmountMoreThanBalance = amount.isMoreThan(total)
-        val isAmountWithFeeMoreThanBalance = (amount + fee).isMoreThan(total)
+        val isAmountWithFeeMoreThanBalance = fee?.let { sendFee ->
+            countIfAmountWithFeeMoreThanBalance(
+                sendFee.fee.orZero(),
+                amount,
+                sendFee.feePayerToken.total.orZero(),
+                total,
+                sendFee
+            )
+        } ?: false
         val address = target?.address
         val isMaxAmount = amount == total
 
@@ -691,6 +702,20 @@ class SendPresenter(
         }
         view?.updateAvailableTextColor(availableColor)
         view?.showButtonEnabled(isEnabled)
+    }
+
+    private fun countIfAmountWithFeeMoreThanBalance(
+        fee: BigDecimal,
+        amount: BigDecimal,
+        feePayerTotal: BigDecimal,
+        total: BigDecimal,
+        sendFee: SendFee
+    ): Boolean {
+        return if (sendFee.feePayerSymbol == sendFee.sourceTokenSymbol) {
+            total < amount + fee
+        } else {
+            total < amount && feePayerTotal < fee
+        }
     }
 
     private fun isAddressValid(address: String?): Boolean =
