@@ -63,8 +63,8 @@ class UserInteractor(
 
     fun getTokenListFlow() = userLocalRepository.getTokenListFlow()
 
-    fun getHiddenTokensVisibility() {
-        sharedPreferences.getBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, false)
+    fun getHiddenTokensVisibility(): Boolean {
+        return sharedPreferences.getBoolean(KEY_HIDDEN_TOKENS_VISIBILITY, false)
     }
 
     fun setHiddenTokensVisibility(visible: Boolean) {
