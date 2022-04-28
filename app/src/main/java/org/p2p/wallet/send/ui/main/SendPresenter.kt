@@ -108,7 +108,7 @@ class SendPresenter(
         launch {
             try {
                 view?.showFullScreenLoading(true)
-                view?.showNetworkSelectionView(initialToken?.isRenBTC == true)
+                view?.showNetworkSelectionView(initialToken.isRenBTC)
 
                 userTokens += userInteractor.getUserTokens()
                 val userPublicKey = tokenKeyProvider.publicKey
@@ -151,9 +151,13 @@ class SendPresenter(
 
     override fun setTargetResult(result: SearchResult?) {
         target = result
-        result?.networkType?.let {
-            networkType = result.networkType
-            view?.showNetworkDestination(result.networkType)
+
+        result?.let {
+            selectNetworkType(result.networkType)
+            if (!token.isRenBTC && result.networkType == NetworkType.BITCOIN) {
+                view?.showWrongAddressTarget(result.address)
+                return
+            }
         }
 
         when (result) {
@@ -168,18 +172,25 @@ class SendPresenter(
         calculateData(sourceToken)
     }
 
+    private fun selectNetworkType(networkType: NetworkType) {
+        if (!token.isRenBTC) return
+
+        this.networkType = networkType
+        view?.showNetworkDestination(networkType)
+    }
+
     override fun validateTarget(value: String) {
         launch {
             try {
                 view?.showSearchLoading(true)
-                val target = Target(value)
 
-                selectNetworkType(target)
+                val target = Target(value)
+                selectNetworkType(target.networkType)
 
                 when (target.validation) {
                     Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-                    Target.Validation.BTC_ADDRESS -> searchByNetwork(target.value)
-                    Target.Validation.SOL_ADDRESS -> searchByNetwork(target.value)
+                    Target.Validation.BTC_ADDRESS -> setBitcoinTargetResult(target.value)
+                    Target.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
                     Target.Validation.EMPTY -> view?.showIdleTarget()
                     Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
                 }
@@ -191,17 +202,6 @@ class SendPresenter(
                 view?.showSearchLoading(false)
             }
         }
-    }
-
-    private fun selectNetworkType(target: Target) {
-        if (token?.isRenBTC != true) return
-
-        networkType = when (target.validation) {
-            Target.Validation.SOL_ADDRESS, Target.Validation.USERNAME -> NetworkType.SOLANA
-            else -> NetworkType.BITCOIN
-        }
-
-        view?.showNetworkDestination(networkType)
     }
 
     override fun setNewSourceAmount(amount: String) {
@@ -656,11 +656,11 @@ class SendPresenter(
         setTargetResult(result)
     }
 
-    private suspend fun searchByNetwork(address: String) {
-        when (networkType) {
-            NetworkType.SOLANA -> searchBySolAddress(address)
-            /* No search for bitcoin network */
-            NetworkType.BITCOIN -> setTargetResult(SearchResult.AddressOnly(address, NetworkType.BITCOIN))
+    private fun setBitcoinTargetResult(address: String) {
+        if (!token.isRenBTC) {
+            view?.showWrongAddressTarget(address)
+        } else {
+            setTargetResult(SearchResult.AddressOnly(address, NetworkType.BITCOIN))
         }
     }
 
@@ -715,4 +715,7 @@ class SendPresenter(
 
     private fun isAddressValid(address: String?): Boolean =
         !address.isNullOrBlank() && address.trim().length >= VALID_ADDRESS_LENGTH
+
+    private val Token.Active?.isRenBTC: Boolean
+        get() = this?.isRenBTC == true
 }

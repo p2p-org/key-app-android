@@ -50,4 +50,8 @@ data class Target constructor(
                 else -> Validation.INVALID
             }
         }
+
+    @IgnoredOnParcel
+    val networkType: NetworkType
+        get() = if (validation == Validation.BTC_ADDRESS) NetworkType.BITCOIN else NetworkType.SOLANA
 }
