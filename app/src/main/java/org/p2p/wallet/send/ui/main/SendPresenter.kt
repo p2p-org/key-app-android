@@ -151,6 +151,10 @@ class SendPresenter(
 
     override fun setTargetResult(result: SearchResult?) {
         target = result
+        result?.networkType?.let {
+            networkType = result.networkType
+            view?.showNetworkDestination(result.networkType)
+        }
 
         when (result) {
             is SearchResult.Full -> handleFullResult(result)
@@ -369,7 +373,6 @@ class SendPresenter(
 
     private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
         view?.showAddressOnlyTarget(result.address)
-        view?.showNetworkDestination(result.networkType)
         checkAddress(result.address)
     }
 
