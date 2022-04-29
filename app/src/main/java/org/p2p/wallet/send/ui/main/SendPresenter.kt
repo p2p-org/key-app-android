@@ -154,7 +154,7 @@ class SendPresenter(
 
         result?.let {
             selectNetworkType(result.networkType)
-            if (!token.isRenBTC && result.networkType == NetworkType.BITCOIN) {
+            if (networkType != result.networkType) {
                 view?.showWrongAddressTarget(result.address)
                 return
             }
