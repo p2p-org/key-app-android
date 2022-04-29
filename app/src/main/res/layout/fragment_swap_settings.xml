@@ -1,161 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:background="@color/backgroundPrimary"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/backgroundPrimary"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="@string/swap_settings"
+        app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:navigationIcon="@drawable/ic_back"
-            app:title="@string/swap_settings"
-            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+            android:orientation="vertical">
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/payFeeTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/swap_pay_fee"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+                android:textColor="@color/textIconSecondary" />
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tokensRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:overScrollMode="never"
+                android:paddingHorizontal="24dp"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_fee_payment_token" />
+
+            <TextView
+                android:id="@+id/slippageTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/swap_max_price_slippage"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
+                android:textColor="@color/textIconSecondary" />
+
+            <RadioGroup
+                android:id="@+id/slippageRadioGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/payFeeTextView"
+                <RadioButton
+                    android:id="@+id/minRadioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="32dp"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/swap_pay_fee"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                    android:textColor="@color/textIconSecondary" />
+                    android:layout_marginHorizontal="24dp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    tools:text="0.1%" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/tokensRecyclerView"
+                <RadioButton
+                    android:id="@+id/mediumRadioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:overScrollMode="never"
-                    android:paddingHorizontal="24dp"
-                    tools:itemCount="2"
-                    tools:listitem="@layout/item_fee_payment_token" />
+                    android:layout_marginHorizontal="24dp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    tools:text="0.1%" />
 
-                <TextView
-                    android:id="@+id/slippageTitleTextView"
+                <RadioButton
+                    android:id="@+id/percentRadioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="32dp"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/swap_max_price_slippage"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                    android:textColor="@color/textIconSecondary" />
+                    android:layout_marginHorizontal="24dp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    tools:text="0.1%" />
 
-                <RadioGroup
-                    android:id="@+id/slippageRadioGroup"
+                <RadioButton
+                    android:id="@+id/fiveRadioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginHorizontal="24dp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
+                    tools:text="0.1%" />
 
-                    <RadioButton
-                        android:id="@+id/minRadioButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="24dp"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        tools:text="0.1%" />
-
-                    <RadioButton
-                        android:id="@+id/mediumRadioButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="24dp"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        tools:text="0.1%" />
-
-                    <RadioButton
-                        android:id="@+id/percentRadioButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="24dp"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        tools:text="0.1%" />
-
-                    <RadioButton
-                        android:id="@+id/fiveRadioButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="24dp"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                        tools:text="0.1%" />
-
-                    <RadioButton
-                        android:id="@+id/customRadioButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="24dp"
-                        android:text="@string/main_custom"
-                        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
-
-                </RadioGroup>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/slippageInputTextViewLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                <RadioButton
+                    android:id="@+id/customRadioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/settings_slippage_hint"
-                    android:visibility="gone"
-                    app:errorEnabled="false"
-                    app:errorIconDrawable="@null">
+                    android:layout_marginHorizontal="24dp"
+                    android:text="@string/main_custom"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/slippageInputTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:digits="@string/buy_value_allowed_symbols"
-                        android:imeOptions="actionDone"
-                        android:inputType="numberDecimal"
-                        android:minHeight="48dp"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="12dp" />
+            </RadioGroup>
 
-                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/slippageInputTextViewLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/settings_slippage_hint"
+                android:visibility="gone"
+                app:errorEnabled="false"
+                app:errorIconDrawable="@null">
 
-                <TextView
-                    android:id="@+id/receiveTextView"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/slippageInputTextView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_app_rounded"
-                    android:lineSpacingExtra="5dp"
-                    android:padding="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="@string/settings_slippage_info"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="match_parent"
+                    android:digits="@string/buy_value_allowed_symbols"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:minHeight="48dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp" />
 
-            </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-        </androidx.core.widget.NestedScrollView>
+            <TextView
+                android:id="@+id/receiveTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_app_rounded"
+                android:lineSpacingExtra="5dp"
+                android:padding="16dp"
+                android:paddingBottom="16dp"
+                android:text="@string/settings_slippage_info"
+                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+        </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
