@@ -46,7 +46,7 @@ class TransactionViewHolder(
 
     private fun showUnknownTransaction(transaction: HistoryTransaction.Unknown) {
         with(binding) {
-            transactionTokenImageView.setTransactionIcon(R.drawable.ic_no_money)
+            transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
             with(transactionData) {
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
@@ -63,7 +63,7 @@ class TransactionViewHolder(
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
 
-                transactionTokenImageView.setTransactionIcon(R.drawable.ic_wallet_gray)
+                transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_create)
                 titleTextView.setText(R.string.transaction_history_create)
                 subtitleTextView.text = transaction.signature.cutMiddle()
             }
@@ -73,7 +73,7 @@ class TransactionViewHolder(
     @SuppressLint("SetTextI18n")
     private fun showCloseTransaction(transaction: HistoryTransaction.CloseAccount) {
         with(binding) {
-            transactionTokenImageView.setTransactionIcon(R.drawable.ic_trash)
+            transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_closed)
             with(transactionData) {
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
