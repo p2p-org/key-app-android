@@ -33,6 +33,12 @@ commands:
             echo 'amplitudeKey="${AMPLITUDE_KEY}"' >> apikey.properties
             echo "apikey.properties created succesfully"
 
+  restore_gradle_cache:
+    description: "Try and use .gradle cache"
+    steps:
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+
 defaults: &defaults
   working_directory: ~/app
   executor:
@@ -72,15 +78,21 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - restore_gradle_cache
       - create_api_keys_file
       - android/run-tests:
           test-command: ./gradlew testDebug
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - save_test_results
 
   publish_feature:
     <<: *defaults
     steps:
       - checkout
+      - restore_gradle_cache
       - create_api_keys_file
       - run:
           name: "Generate build version"
@@ -100,6 +112,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - restore_gradle_cache
       - create_api_keys_file
       - run:
           name: "Generate build version"
@@ -113,8 +126,6 @@ jobs:
           name: "Write signing jks file from env"
           command: |
             echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
-            find . -name 'p2p-wallet.jks' | grep -q p2p-wallet.jks && echo "File found" || echo "File not found"
-            ls -a
       - run:
           name: "Distribute release to Firebase App Distribution"
           command: ./gradlew bundleRelease appDistributionUploadRelease
@@ -137,12 +148,10 @@ workflows:
           requires:
             - unit_tests
             - android_lint
-          <<: *filter_feature_branch_only
       - publish_feature:
           context: feature
           requires:
             - approve-feature-build
-          <<: *filter_feature_branch_only
 
   lint_test_develop:
     jobs:
@@ -153,14 +162,13 @@ workflows:
 
   publish_develop:
     jobs:
-      - approve-feature-build:
+      - approve-develop-build:
           type: approval
           <<: *filter_develop_branch_only
       - publish_feature:
           context: feature
           requires:
-            - approve-feature-build
-          <<: *filter_develop_branch_only
+            - approve-develop-build
 
   lint_test_and_publish_release:
     jobs:
@@ -170,14 +178,12 @@ workflows:
       - unit_tests:
           context: release
           <<: *filter_release_branch_only
-      - approve-build:
+      - approve-release-build:
           type: approval
           requires:
             - android_lint
             - unit_tests
-          <<: *filter_release_branch_only
       - publish_release:
           context: release
           requires:
-            - approve-build
-          <<: *filter_release_branch_only
+            - approve-release-build

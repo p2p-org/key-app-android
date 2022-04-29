@@ -108,7 +108,7 @@ android {
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
 
             firebaseAppDistribution {
-                artifactType="APK"
+                artifactType = "APK"
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
             }
@@ -128,7 +128,9 @@ android {
             buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
 
             firebaseAppDistribution {
-                artifactType="AAB"
+                artifactType = "AAB"
+                releaseNotes = releaseChangelog(VERSION_NAME)
+                groups = "wallet.feature.test"
             }
         }
     }
