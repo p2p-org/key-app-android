@@ -64,7 +64,10 @@ class HistoryPresenter(
     }
 
     override fun loadHistory() {
-        if (transactions.isNotEmpty()) return
+        if (transactions.isNotEmpty()) {
+            view?.showHistory(transactions)
+            return
+        }
 
         launch {
             view?.showPagingState(PagingState.InitialLoading)
