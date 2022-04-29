@@ -43,7 +43,6 @@
                 android:orientation="vertical"
                 android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_transaction" />
 
             <LinearLayout
