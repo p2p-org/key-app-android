@@ -21,10 +21,10 @@ import org.p2p.wallet.utils.NoOp
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val TRANSACTION_SWAP_VIEW_TYPE = 2
-private const val HISTORY_EMPTY_VIEW_TYPE = 2
 private const val HISTORY_DATE_VIEW_TYPE = 3
 private const val PROGRESS_VIEW_TYPE = 4
 private const val ERROR_VIEW_TYPE = 5
+private const val HISTORY_EMPTY_VIEW_TYPE = 6
 
 class HistoryAdapter(
     private val glideManager: GlideManager,

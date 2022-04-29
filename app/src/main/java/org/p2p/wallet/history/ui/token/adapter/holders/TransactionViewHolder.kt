@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
-import org.p2p.wallet.common.date.toTimeString
 import org.p2p.wallet.databinding.ItemTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
@@ -37,8 +36,8 @@ class TransactionViewHolder(
         with(binding) {
             transactionTokenImageView.setTransactionIcon(transaction.getIcon())
             with(transactionData) {
-                addressTextView.text = transaction.signature.cutMiddle()
-                timeTextView.text = transaction.date.toTimeString()
+                titleTextView.setText(transaction.getTitle())
+                subtitleTextView.text = transaction.signature.cutMiddle()
                 totalTextView.text = transaction.getTotal()
                 valueTextView.text = transaction.getValue()
             }
@@ -52,8 +51,8 @@ class TransactionViewHolder(
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
 
-                addressTextView.text = transaction.signature.cutMiddle()
-                timeTextView.text = transaction.date.toTimeString()
+                titleTextView.setText(R.string.transaction_history_unknown)
+                subtitleTextView.text = transaction.signature.cutMiddle()
             }
         }
     }
@@ -65,7 +64,8 @@ class TransactionViewHolder(
                 totalTextView.isVisible = false
 
                 transactionTokenImageView.setTransactionIcon(R.drawable.ic_wallet_gray)
-                addressTextView.text = transaction.signature.cutMiddle()
+                titleTextView.setText(R.string.transaction_history_create)
+                subtitleTextView.text = transaction.signature.cutMiddle()
             }
         }
     }
@@ -78,8 +78,8 @@ class TransactionViewHolder(
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
 
-                addressTextView.text = transaction.getInfo()
-                timeTextView.text = transaction.date.toTimeString()
+                titleTextView.text = transaction.getInfo()
+                subtitleTextView.text = transaction.signature.cutMiddle()
             }
         }
     }
@@ -91,11 +91,11 @@ class TransactionViewHolder(
                 valueTextView.isVisible = true
                 totalTextView.isVisible = true
 
-                addressTextView.text = transaction.getAddress()
-                timeTextView.text = transaction.date.toTimeString()
-                valueTextView withTextOrGone (transaction.getValue())
+                titleTextView.setText(transaction.getTypeName())
+                subtitleTextView.text = transaction.getAddress()
                 totalTextView.text = transaction.getTotal()
-                totalTextView.setTextColor(getColor(transaction.getTextColor()))
+                valueTextView.setTextColor(getColor(transaction.getTextColor()))
+                valueTextView.withTextOrGone(transaction.getValue())
             }
         }
     }

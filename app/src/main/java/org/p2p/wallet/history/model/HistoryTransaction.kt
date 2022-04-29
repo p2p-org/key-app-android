@@ -100,7 +100,10 @@ sealed class HistoryTransaction(
 
         fun getValue(): String? = totalInUsd?.let { "${getSymbol(isSend)} $${it.scaleShort()}" }
 
-        fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
+        fun getTotal(): String = getFormattedTotal()
+
+        @StringRes
+        fun getTypeName(): Int = if (isSend) R.string.transaction_history_send else R.string.transaction_history_receive
 
         @ColorRes
         fun getTextColor() = if (isSend) {
