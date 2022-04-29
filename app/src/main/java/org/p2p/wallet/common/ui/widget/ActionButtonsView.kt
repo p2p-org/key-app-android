@@ -115,7 +115,9 @@ class ActionButtonsView @JvmOverloads constructor(
             val imageView = binding.imageView
 
             override fun onOffsetChanged(offset: Float) = with(imageView) {
-                updateLayoutParams<LinearLayout.LayoutParams> { topMargin = -(MARGIN_DP.toPx() * offset).toInt() }
+                if (!isInLayout) {
+                    updateLayoutParams<LinearLayout.LayoutParams> { topMargin = -(MARGIN_DP.toPx() * offset).toInt() }
+                }
                 alpha = 1 - offset
             }
 
