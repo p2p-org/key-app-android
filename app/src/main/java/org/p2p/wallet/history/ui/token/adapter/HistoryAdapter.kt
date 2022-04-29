@@ -44,7 +44,7 @@ class HistoryAdapter(
             notifyDataSetChanged()
         } else {
             val oldItems = ArrayList(currentItems)
-            currentItems = ArrayList(newTransactions.mapToItems())
+            currentItems = newTransactions.mapToItems().toMutableList()
 
             DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
                 .dispatchUpdatesTo(this)
