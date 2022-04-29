@@ -1,5 +1,7 @@
 package org.p2p.wallet.history.ui.history
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -13,8 +15,6 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 private const val PAGE_SIZE = 20
 
@@ -90,7 +90,12 @@ class HistoryPresenter(
         if (historyTransactions.isEmpty()) {
             isPagingEnded = true
         } else {
-            if (isRefresh) transactions.clear()
+            if (isRefresh) {
+                transactions.clear()
+            }
+            if (historyTransactions.size != PAGE_SIZE) {
+                isPagingEnded = true
+            }
             transactions.addAll(historyTransactions)
             view?.showHistory(transactions)
         }
