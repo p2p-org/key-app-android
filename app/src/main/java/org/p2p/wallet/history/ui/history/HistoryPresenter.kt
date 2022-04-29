@@ -13,8 +13,6 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
-import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -34,10 +32,7 @@ class HistoryPresenter(
     private var refreshJob: Job? = null
     private var pagingJob: Job? = null
 
-    private var transactions by Delegates.observable<List<HistoryTransaction>>(emptyList()) { _, _, newValue ->
-        view?.showHistory(items = newValue)
-        view?.showPagingState(PagingState.Idle)
-    }
+    private val transactions = mutableListOf<HistoryTransaction>()
 
     override fun attach(view: HistoryContract.View) {
         super.attach(view)
@@ -69,10 +64,8 @@ class HistoryPresenter(
     }
 
     override fun loadHistory() {
-        if (transactions.isNotEmpty()) {
-            transactions = transactions
-            return
-        }
+        if (transactions.isNotEmpty()) return
+
         launch {
             view?.showPagingState(PagingState.InitialLoading)
             fetchHistory()
@@ -80,19 +73,36 @@ class HistoryPresenter(
     }
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
-        try {
-            transactions = if (isRefresh) {
-                historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
-            } else {
-                transactions + historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
-            }
-        } catch (e: CancellationException) {
-            Timber.w(e, "Cancelled history next page load")
-        } catch (e: EmptyDataException) {
-            transactions = emptyList()
-        } catch (e: Throwable) {
+        runCatching {
+            historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
+        }
+            .onSuccess { handleLoadHistorySuccess(it, isRefresh) }
+            .onFailure(::handleLoadHistoryFailure)
+    }
+
+    private fun handleLoadHistorySuccess(
+        historyTransactions: List<HistoryTransaction>,
+        isRefresh: Boolean = false
+    ) {
+        if (historyTransactions.isEmpty()) {
+            isPagingEnded = true
+        } else {
+            if (isRefresh) transactions.clear()
+            transactions.addAll(historyTransactions)
+            view?.showHistory(transactions)
+        }
+
+        view?.showPagingState(PagingState.Idle)
+    }
+
+    private fun handleLoadHistoryFailure(e: Throwable) {
+        Timber.e(e, "Error getting transaction history")
+
+        if (e is EmptyDataException) {
+            view?.showPagingState(PagingState.Idle)
+            if (transactions.isEmpty()) view?.showHistory(emptyList())
+        } else {
             view?.showPagingState(PagingState.Error(e))
-            Timber.e(e, "Error getting transaction history")
         }
     }
 

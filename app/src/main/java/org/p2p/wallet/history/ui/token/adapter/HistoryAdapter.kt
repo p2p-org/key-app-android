@@ -20,11 +20,11 @@ import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
 import org.p2p.wallet.utils.NoOp
 
 private const val TRANSACTION_VIEW_TYPE = 1
-private const val TRANSACTION_SWAP_VIEW_TYPE = 2
 private const val HISTORY_EMPTY_VIEW_TYPE = 2
 private const val HISTORY_DATE_VIEW_TYPE = 3
 private const val PROGRESS_VIEW_TYPE = 4
 private const val ERROR_VIEW_TYPE = 5
+private const val TRANSACTION_SWAP_VIEW_TYPE = 6
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
@@ -32,7 +32,7 @@ class HistoryAdapter(
     private val onRetryClicked: () -> Unit
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
 
-    private val currentItems = mutableListOf<HistoryItem>()
+    private var currentItems = mutableListOf<HistoryItem>()
     private val pagingController = HistoryAdapterPagingController(this)
 
     @SuppressLint("NotifyDataSetChanged")
@@ -44,8 +44,7 @@ class HistoryAdapter(
             notifyDataSetChanged()
         } else {
             val oldItems = ArrayList(currentItems)
-            currentItems.clear()
-            currentItems += newTransactions.mapToItems()
+            currentItems = ArrayList(newTransactions.mapToItems())
 
             DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
                 .dispatchUpdatesTo(this)
