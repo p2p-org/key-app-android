@@ -43,6 +43,7 @@
                 android:orientation="vertical"
                 android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_transaction" />
 
             <LinearLayout
@@ -93,8 +94,8 @@
                 android:id="@+id/errorStateLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/errorImageView"
@@ -102,11 +103,11 @@
                     android:layout_height="80dp"
                     android:background="@drawable/bg_circle_stroke_icon_secondary"
                     android:src="@drawable/ic_history_error_placeholder"
+                    app:layout_constraintBottom_toTopOf="@id/retryButton"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintVertical_bias="0.4"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/retryButton"
+                    app:layout_constraintVertical_bias="0.4"
                     tools:ignore="contentDescription" />
 
 
@@ -136,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     app:buttonText="@string/common_try_again"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -16,7 +16,6 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
-import kotlin.properties.Delegates
 
 private const val PAGE_SIZE = 20
 
@@ -34,13 +33,7 @@ class HistoryPresenter(
     private var refreshJob: Job? = null
     private var pagingJob: Job? = null
 
-    private var transactions by Delegates.observable<List<HistoryTransaction>>(emptyList()) { _, oldItems, newItems ->
-        if (oldItems.size == newItems.size) {
-            isPagingEnded = true
-        }
-        view?.showHistory(items = newItems)
-        view?.showPagingState(PagingState.Idle)
-    }
+    private var transactions = mutableListOf<HistoryTransaction>()
 
     override fun attach(view: HistoryContract.View) {
         super.attach(view)
@@ -71,12 +64,19 @@ class HistoryPresenter(
         }
     }
 
+    override fun retry() {
+        launch {
+            val pagingState = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
+            view?.showPagingState(pagingState)
+            fetchHistory()
+        }
+    }
+
     override fun loadHistory() {
         if (transactions.isNotEmpty()) {
             view?.showHistory(transactions)
             return
         }
-
         launch {
             view?.showPagingState(PagingState.InitialLoading)
             fetchHistory()
@@ -85,16 +85,23 @@ class HistoryPresenter(
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
-            transactions = if (isRefresh) {
-                historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
-            } else {
-                transactions + historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
+            if (isRefresh) {
+                transactions.clear()
             }
+            val fetchedItems = historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
+
+            transactions.addAll(fetchedItems)
+
+            view?.showHistory(transactions)
+            view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
         } catch (e: EmptyDataException) {
-            transactions = transactions
-            isPagingEnded = true
+            if (transactions.isEmpty()) {
+                view?.showHistory(emptyList())
+                isPagingEnded = true
+            }
+            view?.showPagingState(PagingState.Idle)
         } catch (e: Throwable) {
             view?.showPagingState(PagingState.Error(e))
             Timber.e(e, "Error getting transaction history")

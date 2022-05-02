@@ -163,4 +163,6 @@ class HistoryAdapter(
     fun setPagingState(newState: PagingState) {
         pagingController.setPagingState(newState)
     }
+
+    fun isEmpty() = currentItems.isEmpty()
 }

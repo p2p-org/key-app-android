@@ -3,6 +3,7 @@ package org.p2p.wallet.history.ui.history
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.glide.GlideManager
@@ -14,7 +15,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.wallet.utils.WalletLinearLayoutManager
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -42,17 +42,17 @@ class HistoryFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            val layoutManager = WalletLinearLayoutManager(requireContext())
-            val scrollListener = EndlessScrollListener(
-                layoutManager = layoutManager,
-                loadNextPage = { presenter.loadNextHistoryPage() }
-            )
-            historyRecyclerView.layoutManager = layoutManager
-            historyRecyclerView.addOnScrollListener(scrollListener)
+
             historyRecyclerView.adapter = adapter
             retryButton.setOnClickListener {
-                presenter.loadHistory()
+                presenter.retry()
             }
+            val scrollListener = EndlessScrollListener(
+                layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
+                loadNextPage = { presenter.loadNextHistoryPage() }
+            )
+
+            historyRecyclerView.addOnScrollListener(scrollListener)
 
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
@@ -63,12 +63,15 @@ class HistoryFragment :
     }
 
     override fun showPagingState(state: PagingState) {
+        Timber.tag("_______").d("PagingState = $state adapter = ${adapter.isEmpty()}")
         adapter.setPagingState(state)
         with(binding) {
             shimmerView.isVisible = state == PagingState.InitialLoading
             refreshLayout.isVisible = state != PagingState.InitialLoading
             errorStateLayout.isVisible = state is PagingState.Error
-            historyRecyclerView.isVisible = state == PagingState.Idle || state == PagingState.Loading
+            emptyStateLayout.isVisible = state == PagingState.Idle && adapter.isEmpty()
+            historyRecyclerView.isVisible =
+                (state == PagingState.Idle && !adapter.isEmpty()) || state == PagingState.Loading
         }
     }
 
