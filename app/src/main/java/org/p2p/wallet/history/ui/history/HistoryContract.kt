@@ -18,6 +18,7 @@ interface HistoryContract {
         fun loadHistory()
         fun refreshHistory()
         fun loadNextHistoryPage()
+        fun retry()
         fun onItemClicked(transaction: HistoryTransaction)
     }
 }
