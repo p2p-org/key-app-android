@@ -63,7 +63,6 @@ class HistoryFragment :
     }
 
     override fun showPagingState(state: PagingState) {
-        Timber.tag("_______").d("PagingState = $state adapter = ${adapter.isEmpty()}")
         adapter.setPagingState(state)
         with(binding) {
             shimmerView.isVisible = state == PagingState.InitialLoading
