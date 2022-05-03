@@ -217,7 +217,7 @@ dependencies {
     implementation 'com.caverock:androidsvg-aar:1.4'
 
     // Room
-    def roomVersion = '2.4.1'
+    def roomVersion = '2.4.2'
     implementation "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
@@ -242,7 +242,7 @@ dependencies {
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation 'junit:junit:4.13.2'
     // https://github.com/robolectric/robolectric
-    testImplementation "org.robolectric:robolectric:4.5.1"
+    testImplementation "org.robolectric:robolectric:4.6.1"
     // Coroutines support
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 }
