@@ -33,7 +33,7 @@ class HistoryPresenter(
     private var refreshJob: Job? = null
     private var pagingJob: Job? = null
 
-    private var transactions = mutableListOf<HistoryTransaction>()
+    private val transactions = mutableListOf<HistoryTransaction>()
 
     override fun attach(view: HistoryContract.View) {
         super.attach(view)
