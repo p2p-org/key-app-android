@@ -7,6 +7,11 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
+import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -98,6 +103,8 @@ class CheckModulesTest : KoinTest {
 
     @Test
     fun verifyKoinApp() {
+        mockFirebase()
+
         checkKoinModules(
             modules = allModules + javaxDefaultModule,
             appDeclaration = {
@@ -113,6 +120,12 @@ class CheckModulesTest : KoinTest {
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
             }
         )
+    }
+
+    private fun mockFirebase(){
+        mockkStatic(FirebaseApp::class, FirebaseCrashlytics::class)
+        every { FirebaseApp.getInstance() } returns mockk(relaxed = true)
+        every { FirebaseCrashlytics.getInstance() } returns mockk(relaxed = true)
     }
 
     @After

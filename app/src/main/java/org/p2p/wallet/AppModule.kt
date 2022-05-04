@@ -13,8 +13,8 @@ object AppModule {
     fun create(restartAction: () -> Unit): Module = module {
         single { AppScope() }
         single { AppFeatureFlags(get()) }
-        single { AppRestarter { restartAction.invoke() } } bind AppRestarter::class
+        single { AppRestarter { restartAction.invoke() } }
 
-        single { GoogleFirebaseCrashlytics() } bind CrashLoggingService::class
+        single<CrashLoggingService> { GoogleFirebaseCrashlytics(get()) }
     }
 }

@@ -41,7 +41,6 @@ import timber.log.Timber
 class App : Application() {
 
     private val crashLoggingService: CrashLoggingService by inject()
-    private val tokenKeyProvider: TokenKeyProvider by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -120,13 +119,6 @@ class App : Application() {
         crashLoggingService.apply {
             isLoggingEnabled = BuildConfig.CRASHLYTICS_ENABLED
             setCustomKey(BuildConfig.TASK_NUMBER, "")
-
-            val currentUserPublicKey = kotlin.runCatching { tokenKeyProvider.publicKey }
-            setUserId(CrashLoggingService.UserId(currentUserPublicKey.getOrDefault("")))
-
-            tokenKeyProvider.registerListener { newUserPublicKey ->
-                setUserId(CrashLoggingService.UserId(newUserPublicKey))
-            }
         }
     }
 }
