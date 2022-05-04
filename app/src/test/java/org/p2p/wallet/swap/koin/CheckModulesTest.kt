@@ -6,6 +6,7 @@ import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.net.ConnectivityManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -22,12 +23,7 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
@@ -39,7 +35,10 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
+import org.p2p.wallet.infrastructure.security.SecureStorage
+import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.QrModule
+import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
@@ -50,8 +49,10 @@ import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
+import javax.crypto.Cipher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -70,28 +71,42 @@ class CheckModulesTest : KoinTest {
         Mockito.mock(clazz.java)
     }
 
-    private val sharedPrefsMock: SharedPreferences = mock {
-        on { getString(eq("KEY_BASE_URL"), anyString()) }.thenReturn(Environment.RPC_POOL.endpoint)
+    private val sharedPrefsMock: SharedPreferences = mockk(relaxed = true) {
+        every { getString(eq("KEY_BASE_URL"), any()) }.returns(Environment.RPC_POOL.endpoint)
     }
 
-    private val contextMock: Context = mock {
-        on { getSharedPreferences(anyString(), anyInt()) }.doReturn(sharedPrefsMock)
-        on { getString(anyInt()) }.doReturn("https://blockstream.info/")
-        on { resources }.doReturn(mock())
+    private val resourcesMock: Resources = mockk(relaxed = true)
 
-        val connectivityManagerMock = mock<ConnectivityManager> { on { allNetworks }.thenReturn(emptyArray()) }
-        on { getSystemService<ConnectivityManager>() }.thenReturn(connectivityManagerMock)
-        on { getSystemService<NotificationManager>() }.thenReturn(mock())
+    private val contextMock: Context = mockk(relaxed = true) {
+        every { getSharedPreferences(any(), any()) }.returns(sharedPrefsMock)
+        every { getString(any()) }.returns("https://blockstream.info/")
+        every { resources }.returns(resourcesMock)
+        every { theme }.returns(mockk())
+        every { packageName }.returns("p2p.wallet")
+
+        val connectivityManagerMock: ConnectivityManager = mockk {
+            every { allNetworks }.returns(emptyArray())
+        }
+        every { getSystemService<ConnectivityManager>() }.returns(connectivityManagerMock)
+        every { getSystemService<NotificationManager>() }.returns(mockk())
+
+        val externalDirMock: File = mockk(relaxed = true) {
+            every { path }.returns("somepath")
+        }
+        every { getExternalFilesDir(any()) }.returns(externalDirMock)
     }
 
-    private val applicationMock: Application = mock {
-        on { applicationContext }.thenReturn(contextMock)
-        on { baseContext }.thenReturn(contextMock)
+    private val applicationMock: Application = mockk {
+        every { applicationContext }.returns(contextMock)
+        every { baseContext }.returns(contextMock)
+        every { resources }.returns(resourcesMock)
     }
 
     private val javaxDefaultModule: Module = module {
         // no AndroidKeyStore found in unit tests, so override with default
-        single { KeyStore.getInstance(KeyStore.getDefaultType()) }
+        single<KeyStore> {
+            mockk(relaxed = true) { every { getKey(any(), any()) }.returns(mockk()) }
+        }
     }
 
     @Before
@@ -116,16 +131,21 @@ class CheckModulesTest : KoinTest {
             parameters = {
                 withInstance(sharedPrefsMock)
                 withInstance(createEmptyActiveToken())
+                withInstance(mockk<SecureStorage>())
 
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
+                withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
             }
         )
     }
 
-    private fun mockFirebase(){
+    private fun mockFirebase() {
         mockkStatic(FirebaseApp::class, FirebaseCrashlytics::class)
         every { FirebaseApp.getInstance() } returns mockk(relaxed = true)
         every { FirebaseCrashlytics.getInstance() } returns mockk(relaxed = true)
+
+        mockkStatic(Cipher::class)
+        every { Cipher.getInstance(any()) } returns mockk(relaxed = true)
     }
 
     @After
@@ -148,6 +168,7 @@ class CheckModulesTest : KoinTest {
         RpcModule.create(),
         FeeRelayerModule.create(),
         InfrastructureModule.create(),
+        PushNotificationsModule.create(),
         TransactionModule.create(),
         AnalyticsModule.create(),
         AppModule.create(restartAction = {})
