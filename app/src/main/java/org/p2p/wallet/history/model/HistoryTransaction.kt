@@ -16,6 +16,7 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.scaleShort
+import org.p2p.wallet.utils.scaleShortOrFirstNotZero
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -98,7 +99,9 @@ sealed class HistoryTransaction(
 
         fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
 
-        fun getValue(): String? = totalInUsd?.let { "${getSymbol(isSend)} $${it.scaleShort()}" }
+        fun getValue(): String? = totalInUsd?.let {
+            "${getSymbol(isSend)} $${it.scaleShortOrFirstNotZero().toPlainString()}"
+        }
 
         fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
 

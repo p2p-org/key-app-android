@@ -107,7 +107,8 @@ class HistoryTransactionMapper(
         directPublicKey: String,
         publicKey: String
     ): HistoryTransaction? {
-        val symbol = if (transfer.isSimpleTransfer) Constants.SOL_SYMBOL else findSymbol(transfer.mint)
+        val symbol = findSymbol(transfer.mint ?: Constants.SOL_MINT)
+
         val rate = userLocalRepository.getPriceByToken(symbol)
 
         val mint = if (transfer.isSimpleTransfer) Constants.WRAPPED_SOL_MINT else transfer.mint
