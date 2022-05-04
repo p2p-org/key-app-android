@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.repository
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.media.MediaScannerConnection
 import android.os.Environment
 import org.p2p.wallet.R
 import timber.log.Timber
@@ -44,7 +45,7 @@ class FileRepository(private val context: Context) {
         val fileName = name ?: Date().toString()
         try {
             val mainDir = File(
-                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 context.getString(R.string.app_name)
             )
             if (!mainDir.exists()) {
@@ -56,6 +57,8 @@ class FileRepository(private val context: Context) {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
             fos.flush()
             fos.close()
+            // Add image to gallery
+            MediaScannerConnection.scanFile(context, arrayOf(imageFile.toString()), null, null)
             return imageFile
         } catch (e: IOException) {
             Timber.e(e, "Error on saving bitmap to file")

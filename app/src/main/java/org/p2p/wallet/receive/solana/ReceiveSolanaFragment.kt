@@ -5,30 +5,30 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.p2p.wallet.utils.withArgs
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
-import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
+import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
+import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
 import java.io.File
 
 class ReceiveSolanaFragment :
@@ -71,7 +71,7 @@ class ReceiveSolanaFragment :
                 receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
             }
             receiveCardView.setOnSaveQrClickListener { qrValue, qrImage ->
-                presenter.saveQr(qrValue, qrImage, shareAfter = true)
+                presenter.saveQr(qrValue, qrImage)
             }
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
         }
