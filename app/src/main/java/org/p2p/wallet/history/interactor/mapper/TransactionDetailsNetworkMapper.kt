@@ -1,4 +1,4 @@
-package org.p2p.solanaj.kits.transaction.mapper
+package org.p2p.wallet.history.interactor.mapper
 
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
@@ -8,6 +8,7 @@ import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
+import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
 import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
 import org.p2p.solanaj.utils.SolanjLogger
@@ -17,15 +18,90 @@ class TransactionDetailsNetworkMapper(
 ) {
 
     private val confirmedTransactionMapper = ConfirmedTransactionRootMapper(
-        orcaSwapInstructionParser = OrcaSwapInstructionParser(),
-        serumSwapInstructionParser = SerumSwapInstructionParser(),
+        orcaSwapInstructionParser = OrcaSwapInstructionParser,
+        serumSwapInstructionParser = SerumSwapInstructionParser,
         userPublicKey = userPublicKey
     )
 
+    fun fromNetworkToDomain(transactions: List<ConfirmedTransactionRootResponse>): List<TransactionDetails> {
+        transactions.forEachIndexed { index, transaction ->
+            val signature = transaction.transaction?.getTransactionId() ?: return@forEachIndexed
+            when {
+                OrcaSwapInstructionParser.isTransactionContainsOrcaSwap(transaction) -> {
+                    OrcaSwapInstructionParser.parse(signature = signature, transactionRoot = transaction)
+                }
+                SerumSwapInstructionParser.isTransactionContainsSerumSwap(transaction) -> {
+                    SerumSwapInstructionParser.parse(signature = signature, transactionRoot = transaction)
+                }
+                else -> {
+                    parseTransaction(signature, transaction)
+                }
+            }
+        }
+    }
+
+    private fun parseTransaction(
+        signature: String,
+        transactionRoot: ConfirmedTransactionRootResponse
+    ): TransactionDetails {
+        transactionRoot.transaction?.message?.instructions?.mapNotNull { instruction ->
+            parseInstructionByType(
+                signature = signature,
+                transactionRoot = transactionRoot,
+                parsedInstruction = instruction
+            )
+        }
+    }
+
+    private fun parseInstructionByType(
+        signature: String,
+        transactionRoot: ConfirmedTransactionRootResponse,
+        parsedInstruction: InstructionResponse
+    ): TransactionDetails? {
+        val parsedInfo = parsedInstruction.parsed
+        return when (parsedInfo?.type) {
+            "burnChecked" -> {
+                parseBurnOrMintTransaction(
+                    signature = signature,
+                    transactionRoot = transactionRoot,
+                    parsedInfo = parsedInfo
+                )
+            }
+            "transfer", "transferChecked" -> {
+                parseTransferTransaction(
+                    signature = signature,
+                    transactionRoot = transactionRoot,
+                    parsedInfo = parsedInfo
+                )
+            }
+            "closeAccount" -> {
+                parseCloseTransaction(
+                    parsedInstruction = parsedInstruction,
+                    parsedInfo = parsedInfo,
+                    transactionRoot = transactionRoot,
+                    signature = signature,
+                )
+            }
+            "create" -> {
+                parseCreateAccountTransaction(
+                    signature = signature,
+                    transactionRoot = transactionRoot
+                )
+            }
+            else -> {
+                parseUnknownTransaction(
+                    signature = signature,
+                    transactionRoot = transactionRoot
+                )
+            }
+        }
+    }
+
     fun fromNetworkToDomain(
         confirmedTransactionRoots: List<ConfirmedTransactionRootResponse>,
-        findMintAddress: (String) -> String,
+        findMintAddress: (String) -> String
     ): List<TransactionDetails> {
+
         val resultTransactions = mutableListOf<TransactionDetails>()
 
         confirmedTransactionRoots.forEach { confirmedTransaction ->

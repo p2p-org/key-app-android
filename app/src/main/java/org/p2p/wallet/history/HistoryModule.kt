@@ -4,7 +4,7 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.transaction.mapper.TransactionDetailsNetworkMapper
+import org.p2p.wallet.history.interactor.mapper.TransactionDetailsNetworkMapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter

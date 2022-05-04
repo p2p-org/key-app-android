@@ -2,7 +2,7 @@ package org.p2p.wallet.history.repository.remote
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.TransactionDetails
-import org.p2p.solanaj.kits.transaction.mapper.TransactionDetailsNetworkMapper
+import org.p2p.wallet.history.interactor.mapper.TransactionDetailsNetworkMapper
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.rpc.RpcConstants
@@ -21,6 +21,8 @@ class TransactionDetailsRpcRepository(
             val encoding = buildMap {
                 this[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] =
                     RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
+                this[RpcConstants.REQUEST_PARAMETER_KEY_COMMITMENT] =
+                    RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
             }
             val params = listOf(signature, encoding)
 

@@ -15,6 +15,8 @@ public class ConfigObjects {
         private String before;
         @SerializedName("until")
         private String until;
+        @SerializedName("commitment")
+        private String commitment = "confirmed";
 
         public ConfirmedSignFAddr2(String before, int limit) {
             this.limit = limit;
@@ -24,6 +26,15 @@ public class ConfigObjects {
         public ConfirmedSignFAddr2(int limit) {
             this.limit = limit;
             this.before = before;
+        }
+    }
+
+    public static class Commitment {
+        @SerializedName("commitment")
+        private String commitment;
+
+        public Commitment(String commitment) {
+            this.commitment = commitment;
         }
     }
 

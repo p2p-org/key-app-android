@@ -84,13 +84,15 @@ class HistoryInteractor(
             lastTransactionSignature = null
             transactionsLocalRepository.deleteAll()
         }
-        val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(
+        val statusAndSignature = rpcSignatureRepository.getConfirmedSignaturesForAddress(
             userAccountAddress = tokenPublicKey.toPublicKey(),
             before = lastTransactionSignature,
             limit = limit
-        )
-            .map(SignatureInformationResponse::signature)
+        ).map {
+            Pair(it.confirmationStatus, it.signature)
+        }
 
+        val signatures = statusAndSignature.map { it.second }
         lastTransactionSignature = signatures.lastOrNull()
 
         val localTransactions = transactionsLocalRepository.getTransactions(signatures)
@@ -104,7 +106,11 @@ class HistoryInteractor(
                 "History Transactions are not cached fully for token $tokenPublicKey: " +
                     "expected=${signatures.size} actual=${localTransactions.size}"
             )
-            val remoteTransactions = transactionsRemoteRepository.getTransactions(signatures)
+            val remoteTransactions = transactionsRemoteRepository.getTransactions(signatures).also { items ->
+                items.forEach { transaction ->
+                    transaction.status = statusAndSignature.first { it.second == transaction.signature }.first
+                }
+            }
             transactionsLocalRepository.saveTransactions(remoteTransactions)
             return remoteTransactions.mapToHistoryTransactions(tokenPublicKey)
         }
