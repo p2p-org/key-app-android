@@ -9,28 +9,33 @@ import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.model.SeedPhraseResult
 import kotlin.properties.Delegates
 
+private const val SEED_PHRASE_SIZE_SHORT = 12
+private const val SEED_PHRASE_SIZE_LONG = 24
+
+private const val TERMS_OF_SERVICE_FILE_FULL = "p2p_terms_of_service.pdf"
+private const val TERMS_OF_SERVICE_FILE_NAME = "p2p_terms_of_service"
+
+private const val PRIVACY_POLICY_FILE_FULL = "p2p_privacy_policy.pdf"
+private const val PRIVACY_POLICY_FILE_NAME = "p2p_privacy_policy"
+
 class SecretKeyPresenter(
     private val resources: Resources,
     private val secretKeyInteractor: SecretKeyInteractor,
     private val fileRepository: FileRepository,
 ) : BasePresenter<SecretKeyContract.View>(), SecretKeyContract.Presenter {
 
-    companion object {
-        private const val SEED_PHRASE_SIZE_SHORT = 12
-        private const val SEED_PHRASE_SIZE_LONG = 24
-    }
-
     private var keys: List<SecretKey> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
         if (oldValue != newValue) {
-            val size = newValue.size
-            val isVisible = size == SEED_PHRASE_SIZE_LONG || size == SEED_PHRASE_SIZE_SHORT
-            view?.setButtonEnabled(isVisible)
+            val newSeedPhraseSize = newValue.size
+            val isSeedPhraseValid =
+                newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
+            view?.setButtonEnabled(isSeedPhraseValid)
         }
     }
 
     override fun setNewKeys(keys: List<SecretKey>) {
         val filtered = keys.filter { it.text.isNotEmpty() }
-        this.keys = ArrayList(filtered)
+        this.keys = filtered.toMutableList()
     }
 
     override fun verifySeedPhrase() {
@@ -43,14 +48,14 @@ class SecretKeyPresenter(
     }
 
     override fun openTermsOfUse() {
-        val inputStream = resources.assets.open("p2p_terms_of_service.pdf")
-        val file = fileRepository.savePdf("p2p_terms_of_service", inputStream.readBytes())
+        val inputStream = resources.assets.open(TERMS_OF_SERVICE_FILE_FULL)
+        val file = fileRepository.savePdf(TERMS_OF_SERVICE_FILE_NAME, inputStream.readBytes())
         view?.showFile(file)
     }
 
     override fun openPrivacyPolicy() {
-        val inputStream = resources.assets.open("p2p_privacy_policy.pdf")
-        val file = fileRepository.savePdf("p2p_privacy_policy", inputStream.readBytes())
+        val inputStream = resources.assets.open(PRIVACY_POLICY_FILE_FULL)
+        val file = fileRepository.savePdf(PRIVACY_POLICY_FILE_NAME, inputStream.readBytes())
         view?.showFile(file)
     }
 }

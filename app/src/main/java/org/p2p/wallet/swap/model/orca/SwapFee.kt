@@ -2,17 +2,15 @@ package org.p2p.wallet.swap.model.orca
 
 import org.p2p.wallet.utils.asApproximateUsd
 import java.math.BigDecimal
-import java.math.BigInteger
 
-class SwapFee constructor(
+class SwapFee(
     val isFreeTransactionAvailable: Boolean,
     val accountCreationToken: String?,
     val accountCreationFee: BigDecimal?,
     val accountCreationFeeUsd: BigDecimal?,
     val transactionFee: BigDecimal?,
     val transactionFeeUsd: BigDecimal?,
-    val feePayerToken: String,
-    val totalLamports: BigInteger
+    val feePayerToken: String
 ) {
 
     val commonFee: String?

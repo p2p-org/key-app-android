@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.orca
 
+import android.content.res.Resources
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
@@ -10,6 +11,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -51,6 +53,7 @@ import kotlin.properties.Delegates
 
 // TODO: Refactor, make simpler
 class OrcaSwapPresenter(
+    private val resources: Resources,
     private val initialToken: Token.Active?,
     private val appScope: AppScope,
     private val userInteractor: UserInteractor,
@@ -156,10 +159,7 @@ class OrcaSwapPresenter(
         this.slippage = settingsResult.newSlippage
         view?.showSlippage(this.slippage)
 
-        destinationToken?.let {
-            /* If pool is not null, then destination token is not null as well */
-            calculateAmount(sourceToken, it)
-        }
+        recalculate()
 
         swapInteractor.setFeePayerToken(settingsResult.newFeePayerToken)
         view?.showFeePayerToken(settingsResult.newFeePayerToken.tokenSymbol)
@@ -186,14 +186,18 @@ class OrcaSwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
+        recalculate()
+    }
+
+    private fun recalculate() {
         destinationToken?.let {
             calculationJob?.cancel()
             calculationJob = launch {
-                /* If pool is not null, then destination token is not null as well */
-                calculateAmount(sourceToken, it)
-
                 /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
                 calculateFees(sourceToken, it)
+
+                /* If pool is not null, then destination token is not null as well */
+                calculateAmount(sourceToken, it)
 
                 calculateRates(sourceToken, it)
             }
@@ -365,12 +369,21 @@ class OrcaSwapPresenter(
                         view?.showErrorMessage(R.string.error_general_message)
                     }
                 }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error swapping tokens")
-                view?.showErrorMessage(e)
-                view?.showProgressDialog(null)
+            } catch (serverError: ServerException) {
+                val state = TransactionState.Error(
+                    serverError.getErrorMessage(resources).orEmpty()
+                )
+                transactionManager.emitTransactionState(state)
+            } catch (error: Throwable) {
+                showError(error)
             }
         }
+    }
+
+    private fun showError(error: Throwable) {
+        Timber.e(error, "Error swapping tokens")
+        view?.showErrorMessage(error)
+        view?.showProgressDialog(null)
     }
 
     private fun calculateData(source: Token.Active, destination: Token) {
@@ -378,9 +391,8 @@ class OrcaSwapPresenter(
             view?.showButtonText(R.string.swap_searching_swap_pair)
             searchTradablePairs(source, destination)
             view?.showButtonText(R.string.swap_calculating_fees)
-            calculateAmount(source, destination)
-            calculateFees(source, destination)
-            calculateRates(source, destination)
+            swapInteractor.setFeePayerToken(source)
+            recalculate()
         }
     }
 

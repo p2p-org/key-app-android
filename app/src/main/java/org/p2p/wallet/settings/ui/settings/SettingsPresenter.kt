@@ -13,19 +13,20 @@ import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsRow
+import timber.log.Timber
 
 class SettingsPresenter(
+    environmentManager: EnvironmentManager,
     private val usernameInteractor: UsernameInteractor,
     private val authLogoutInteractor: AuthLogoutInteractor,
-    private val environmentManager: EnvironmentManager,
     private val appRestarter: AppRestarter,
     private val analytics: ReceiveAnalytics,
     private val adminAnalytics: AdminAnalytics,
     private val settingsInteractor: SettingsInteractor,
-    private val context: Context,
+    private val context: Context
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
-    var networkName = environmentManager.loadEnvironment().name
+    private var networkName = environmentManager.loadEnvironment().name
 
     override fun loadData() {
         launch {
@@ -39,9 +40,14 @@ class SettingsPresenter(
 
     override fun logout() {
         launch {
-            authLogoutInteractor.onUserLogout()
-            adminAnalytics.logSignedOut()
-            appRestarter.restartApp()
+            try {
+                authLogoutInteractor.onUserLogout()
+                adminAnalytics.logSignedOut()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error log out")
+            } finally {
+                appRestarter.restartApp()
+            }
         }
     }
 

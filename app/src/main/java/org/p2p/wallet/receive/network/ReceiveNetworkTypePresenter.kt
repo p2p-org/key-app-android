@@ -108,12 +108,6 @@ class ReceiveNetworkTypePresenter(
                         ?: throw IllegalStateException("No SOL account found")
                     createBtcWallet(sol)
                 } else {
-                    if (isRenBtcSessionActive()) {
-                        receiveAnalytics.logReceiveSettingBitcoin()
-                        view?.navigateToReceive(selectedNetworkType)
-                    } else {
-                        view?.showNetworkInfo(selectedNetworkType)
-                    }
                     launchRenBtcSession()
                 }
             } catch (e: Throwable) {

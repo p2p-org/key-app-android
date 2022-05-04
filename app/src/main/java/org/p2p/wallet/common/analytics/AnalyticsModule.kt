@@ -4,10 +4,9 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.auth.analytics.OnBoardingAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
 import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
@@ -20,17 +19,14 @@ import org.p2p.wallet.swap.analytics.SwapAnalytics
 object AnalyticsModule {
 
     fun create(): Module = module {
-        single {
-            val trackers = TrackersFactory.create(androidApplication(), BuildConfig.ANALYTICS_ENABLED)
-            Analytics(trackers)
-        }
+        single { Analytics(TrackersFactory.create(androidApplication())) }
         factory { AdminAnalytics(get()) }
         factory { AuthAnalytics(get()) }
         factory { ReceiveAnalytics(get()) }
         factory { BuyAnalytics(get()) }
         factory { SwapAnalytics(get()) }
         factory { ScreensAnalyticsInteractor(get(), get()) }
-        factory { OnBoardingAnalytics(get()) }
+        factory { OnboardingAnalytics(get()) }
         factory { BrowseAnalytics(get()) }
         factory { SendAnalytics(get()) }
         single { AnalyticsInMemoryRepository() } bind AnalyticsLocalRepository::class

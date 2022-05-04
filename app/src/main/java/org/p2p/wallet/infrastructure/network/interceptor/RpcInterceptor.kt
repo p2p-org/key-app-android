@@ -22,10 +22,6 @@ import org.p2p.wallet.rpc.RpcConstants
 import timber.log.Timber
 import java.io.IOException
 
-// todo: Update validation
-private const val GSON_KEY = "method"
-private const val GSON_VALUE = "getConfirmedTransaction"
-
 open class RpcInterceptor(
     private val gson: Gson,
     environmentManager: EnvironmentManager
@@ -58,9 +54,10 @@ open class RpcInterceptor(
         val url = request.url
 
         val key = RpcConstants.REQUEST_METHOD_KEY
-        val value = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS
+        val historyEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS
+        val signaturesEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_SIGNATURES
         val environmentUrl =
-            if (json?.getString(key) == value) {
+            if (json?.getString(key) == historyEndpoint || json?.getString(key) == signaturesEndpoint) {
                 Environment.RPC_POOL
             } else {
                 currentEnvironment
@@ -105,6 +102,7 @@ open class RpcInterceptor(
     }
 
     private fun handleResponse(response: Response): Response {
+        Timber.tag(TAG).d(response.request.url.toString())
         val responseBody = try {
             response.body!!.string()
         } catch (e: Exception) {
@@ -169,13 +167,13 @@ open class RpcInterceptor(
     private fun extractException(bodyString: String): Throwable = try {
         val fullMessage = JSONObject(bodyString).toString(1)
 
-        Timber.tag("ServerErrorInterceptor").d("Handling exception: $fullMessage")
+        Timber.tag("RpcInterceptor").d("Handling exception: $fullMessage")
 
         val serverError = gson.fromJson(bodyString, ServerError::class.java)
 
         val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
         ServerException(
-            errorCode = serverError.error.code,
+            errorCode = serverError.error.code ?: ErrorCode.SERVER_ERROR,
             fullMessage = fullMessage,
             errorMessage = errorMessage
         )
