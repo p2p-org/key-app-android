@@ -13,6 +13,7 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
@@ -91,7 +92,8 @@ class SwapDetailsView @JvmOverloads constructor(
             val accountCreationToken = data.accountCreationToken
             val fee = data.commonFee
             val approxFeeUsd = data.approxFeeUsd
-            if (accountCreationToken != null && fee != null) {
+            val isSol = accountCreationToken == Constants.SOL_SYMBOL
+            if (accountCreationToken != null && fee != null && !isSol) {
                 accountCreationFeeView.isVisible = isExpanded
 
                 val account = context.getString(R.string.swap_account_creation_format, accountCreationToken)

@@ -72,15 +72,6 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             subTitleTextView.text = data.subTitle
-            transactionIdGroup.isVisible = data.transactionId.isNotEmpty()
-
-            transactionLabelTextView.setOnClickListener {
-                val url = getString(R.string.solanaExplorer, data.transactionId)
-                showUrlInCustomTabs(url)
-            }
-
-            transactionIdTextView.text = data.transactionId
-
             arrowImageView.setOnClickListener {
                 setResultAndDismiss()
             }
@@ -128,11 +119,16 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     private fun setSuccessState(message: String, signature: String) {
         with(binding) {
+
             titleTextView.text = message
             progressBar.isVisible = false
 
             transactionIdGroup.isVisible = true
             transactionIdTextView.text = signature
+            transactionLabelTextView.setOnClickListener {
+                val solanaUrl = getString(R.string.solanaExplorer, signature)
+                showUrlInCustomTabs(solanaUrl)
+            }
 
             transactionImageView.setImageResource(R.drawable.ic_success)
             lineView.isVisible = true
