@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap
 
 import android.content.Context
+import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
@@ -85,6 +86,7 @@ object SwapModule : InjectionModule {
 
         factory { (token: Token.Active?) ->
             OrcaSwapPresenter(
+                resources = androidApplication().resources,
                 initialToken = token,
                 appScope = get(),
                 userInteractor = get(),

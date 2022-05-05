@@ -10,13 +10,21 @@ import java.io.ByteArrayOutputStream
 class PublicKey {
     private var publicKey: ByteArray
 
+    @Throws(IllegalArgumentException::class)
     constructor(publicKey: String) {
-        PublicKeyValidator.validate(publicKey)
+        require(PublicKeyValidator.isValid(publicKey)) {
+            "Invalid public key input[String]"
+        }
+
         this.publicKey = Base58.decode(publicKey)
     }
 
+    @Throws(IllegalArgumentException::class)
     constructor(publicKey: ByteArray) {
-        PublicKeyValidator.validate(publicKey)
+        require(PublicKeyValidator.isValid(publicKey)) {
+            "Invalid public key input[ByteArray]"
+        }
+
         this.publicKey = publicKey
     }
 

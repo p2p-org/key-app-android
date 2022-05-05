@@ -1,10 +1,10 @@
 package org.p2p.wallet.infrastructure.network
 
-import android.content.Context
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
@@ -21,6 +21,7 @@ import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
@@ -50,9 +51,10 @@ object NetworkModule : InjectionModule {
         single { ConnectionStateProvider(get()) }
 
         single(named(MOONPAY_QUALIFIER)) {
-            val moonPayApiUrl = get<Context>().getString(R.string.moonpayBaseUrl)
+            val moonPayApiUrl = androidContext().getString(R.string.moonpayBaseUrl)
             getRetrofit(moonPayApiUrl, "Moonpay", MoonpayErrorInterceptor(get()))
         }
+
         single(named(RPC_RETROFIT_QUALIFIER)) {
             val environment = get<EnvironmentManager>().loadEnvironment()
             val rpcApiUrl = environment.endpoint
@@ -62,6 +64,11 @@ object NetworkModule : InjectionModule {
             val environment = get<EnvironmentManager>().loadRpcEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(rpcApiUrl, "RpcSolana", RpcSolanaInterceptor(get()))
+        }
+
+        single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
+            val endpoint = androidContext().getString(R.string.notification_service_url)
+            getRetrofit(endpoint, "NotificationService", null)
         }
     }
 
@@ -88,16 +95,16 @@ object NetworkModule : InjectionModule {
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
-                if (BuildConfig.DEBUG) {
-                    addInterceptor(httpLoggingInterceptor(tag))
-                }
-
                 if (BuildConfig.CRASHLYTICS_ENABLED) {
                     addInterceptor(CrashHttpLoggingInterceptor())
                 }
 
                 if (interceptor != null) {
                     addInterceptor(interceptor)
+                }
+
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(httpLoggingInterceptor(tag))
                 }
             }
             .addNetworkInterceptor(ContentTypeInterceptor())

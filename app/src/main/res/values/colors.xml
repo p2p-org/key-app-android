@@ -21,6 +21,7 @@
 
     <!--Warning colors-->
     <color name="systemWarningMain">#FFA631</color>
+    <color name="systemWarningSecondary">#FF6600</color>
     <color name="systemWarningBackground">#FFFBF5</color>
 
     <color name="strokePrimary">#D3D4DE</color>

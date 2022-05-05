@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/rootContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/developTextView"
@@ -18,9 +23,9 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:rotation="45"
-        android:translationY="30dp"
         android:text="DEV"
         android:textColor="@android:color/white"
-        android:translationX="15dp" />
+        android:translationX="15dp"
+        android:translationY="30dp" />
 
 </FrameLayout>
