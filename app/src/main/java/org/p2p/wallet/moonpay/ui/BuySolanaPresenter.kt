@@ -9,10 +9,9 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.model.BuyCurrency
-import org.p2p.wallet.moonpay.model.BuyData
+import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.isZero
@@ -26,7 +25,7 @@ import java.math.BigDecimal
 private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
-    private val token: Token,
+    private val tokenToBuy: Token,
     private val moonpayRepository: MoonpayRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
@@ -38,19 +37,19 @@ class BuySolanaPresenter(
 
     private var amount: String = "0"
 
-    private var data: BuyData? = null
+    private var currentBuyViewData: BuyViewData? = null
 
-    private var isSwapped: Boolean = false
+    private var isSwappedToToken: Boolean = false
 
     private var prefix = USD_SYMBOL
 
     override fun loadData() {
         launch {
             try {
-                view?.showLoading(true)
-                val price = moonpayRepository.getCurrencyAskPrice(token.tokenSymbol.lowercase()).scaleShort()
+                view?.showLoading(isLoading = true)
+                val price = moonpayRepository.getCurrencyAskPrice(tokenToBuy).scaleShort()
                 view?.showTokenPrice("$USD_SYMBOL$price")
-                if (isSwapped) {
+                if (isSwappedToToken) {
                     updateViewWithData()
                 }
             } catch (e: Throwable) {
@@ -64,8 +63,8 @@ class BuySolanaPresenter(
     }
 
     override fun onContinueClicked() {
-        data?.let {
-            view?.navigateToMoonpay(it.total.toString())
+        currentBuyViewData?.let {
+            view?.navigateToMoonpay(amount = it.total.toString())
             // TODO resolve [buyProvider]
             buyAnalytics.logBuyContinuing(
                 buyCurrency = it.tokenSymbol,
@@ -79,15 +78,15 @@ class BuySolanaPresenter(
 
     override fun onBackPressed() {
         buyAnalytics.logBuyGoingBack(
-            buySum = data?.receiveAmount?.toBigDecimal() ?: BigDecimal.ZERO,
-            buyCurrency = token.tokenSymbol,
-            buyUSD = data?.price ?: BigDecimal.ZERO
+            buySum = currentBuyViewData?.receiveAmount?.toBigDecimal() ?: BigDecimal.ZERO,
+            buyCurrency = tokenToBuy.tokenSymbol,
+            buyUSD = currentBuyViewData?.price ?: BigDecimal.ZERO
         )
         view?.close()
     }
 
     override fun onSwapClicked() {
-        isSwapped = !isSwapped
+        isSwappedToToken = !isSwappedToToken
         updateViewWithData()
     }
 
@@ -97,8 +96,9 @@ class BuySolanaPresenter(
     }
 
     private fun updateViewWithData() {
-        prefix = if (isSwapped) token.tokenSymbol else USD_SYMBOL
-        view?.swapData(isSwapped, prefix)
+        prefix = if (isSwappedToToken) tokenToBuy.tokenSymbol else USD_SYMBOL
+        view?.swapData(isSwappedToToken, prefix)
+
         setBuyAmount(amount, isDelayEnabled = false)
     }
 
@@ -110,10 +110,13 @@ class BuySolanaPresenter(
             clear()
             return
         }
+        calculationJob = calculateBuyDataWithMoonpay(isDelayEnabled)
+    }
 
+    private fun calculateBuyDataWithMoonpay(isDelayEnabled: Boolean): Job = launch {
         val amountInTokens: String?
         val amountInCurrency: String?
-        if (isSwapped) {
+        if (isSwappedToToken) {
             amountInTokens = amount
             amountInCurrency = null
         } else {
@@ -121,89 +124,113 @@ class BuySolanaPresenter(
             amountInCurrency = amount
         }
 
-        calculationJob = launch {
-            try {
-                if (isDelayEnabled) delay(DELAY_IN_MS)
-                view?.showLoading(true)
-                val baseCurrencyCode = USD_READABLE_SYMBOL.lowercase()
-                val buyResult: BuyAnalytics.BuyResult
-                val result = moonpayRepository.getCurrency(
-                    baseCurrencyAmount = amountInCurrency,
-                    quoteCurrencyAmount = amountInTokens,
-                    quoteCurrencyCode = token.getTokenSymbolForMoonPay(),
-                    baseCurrencyCode = baseCurrencyCode
-                )
-                when (result) {
-                    is MoonpayBuyResult.Success -> {
-                        buyResult = BuyAnalytics.BuyResult.SUCCESS
-                        handleSuccess(result.data)
-                    }
-                    is MoonpayBuyResult.Error -> {
-                        buyResult = BuyAnalytics.BuyResult.ERROR
-                        view?.showMessage(result.message)
-                    }
-                }
-                buyAnalytics.logBuyPaymentResultShown(buyResult)
-            } catch (e: CancellationException) {
-                Timber.w("Cancelled get currency request")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error loading buy currency data")
-                view?.showErrorMessage(e)
-            } finally {
-                view?.showLoading(false)
-            }
+        try {
+            if (isDelayEnabled) delay(DELAY_IN_MS)
+
+            view?.showLoading(isLoading = true)
+
+            val baseCurrencyCode = USD_READABLE_SYMBOL.lowercase()
+            val result = moonpayRepository.getBuyCurrencyData(
+                baseCurrencyAmount = amountInCurrency,
+                quoteCurrencyAmount = amountInTokens,
+                tokenToBuy = tokenToBuy,
+                baseCurrencyCode = baseCurrencyCode
+            )
+            onBuyCurrencyLoadSuccess(result)
+        } catch (error: Throwable) {
+            onBuyCurrencyLoadFailed(error)
+        } finally {
+            view?.showLoading(isLoading = false)
         }
     }
 
-    private fun handleSuccess(info: BuyCurrency) {
-        val amountBigDecimal = amount.toBigDecimal()
-        val currency = if (isSwapped) info.quoteCurrency else info.baseCurrency
-        if (amountBigDecimal >= currency.minAmount && currency.maxAmount?.let { amountBigDecimal <= it } != false) {
-            val receiveSymbol = if (isSwapped) USD_SYMBOL else token.tokenSymbol
-            val amount = if (isSwapped) info.totalAmount.scaleShort() else info.receiveAmount
-            val currencyForTokensAmount = info.price * info.receiveAmount.toBigDecimal()
-            val data = BuyData(
-                tokenSymbol = token.tokenSymbol,
-                currencySymbol = USD_SYMBOL,
-                price = info.price.scaleShort(),
-                receiveAmount = info.receiveAmount,
-                processingFee = info.feeAmount.scaleShort(),
-                networkFee = info.networkFeeAmount.scaleShort(),
-                extraFee = info.extraFeeAmount.scaleShort(),
-                accountCreationCost = null,
-                total = info.totalAmount.scaleShort(),
-                receiveAmountText = "$amount $receiveSymbol",
-                purchaseCostText = if (isSwapped) currencyForTokensAmount.scaleShort().toString() else null
-            )
-            view?.showData(data).also { this.data = data }
-            view?.showMessage(null)
-        } else {
-            val isUsd = currency.code == USD_READABLE_SYMBOL.lowercase()
-            val suffixPrefix = if (isUsd) USD_SYMBOL else currency.code.uppercase()
-            val amountIsLower = amountBigDecimal < currency.minAmount
-            val amountForFormatter = if (amountIsLower) {
-                currency.minAmount
-            } else {
-                currency.maxAmount
+    private fun onBuyCurrencyLoadSuccess(buyResult: MoonpayBuyResult) {
+        val buyResultAnalytics: BuyAnalytics.BuyResult
+        Timber.d(buyResult.toString())
+        when (buyResult) {
+            is MoonpayBuyResult.Success -> {
+                buyResultAnalytics = BuyAnalytics.BuyResult.SUCCESS
+                updateViewWithBuyCurrencyData(buyResult.data)
             }
-            val suffixPrefixWithAmount =
-                if (isUsd) {
-                    "$suffixPrefix$amountForFormatter"
-                } else {
-                    "$amountForFormatter $suffixPrefix"
-                }
-            view?.showMessage(
-                if (amountIsLower) {
-                    minBuyErrorFormat
-                } else {
-                    maxBuyErrorFormat
-                }.format(suffixPrefixWithAmount)
-            )
+            is MoonpayBuyResult.Error -> {
+                buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
+                view?.showMessage(buyResult.message)
+            }
         }
+        buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)
+    }
+
+    private fun onBuyCurrencyLoadFailed(error: Throwable) {
+        if (error is CancellationException) {
+            Timber.w("Cancelled get currency request")
+        } else {
+            Timber.e(error, "Error loading buy currency data")
+            view?.showErrorMessage(error)
+        }
+    }
+
+    private fun updateViewWithBuyCurrencyData(buyCurrencyInfo: BuyCurrency) {
+        val enteredAmountBigDecimal = amount.toBigDecimal()
+        val loadedBuyCurrency = if (isSwappedToToken) buyCurrencyInfo.quoteCurrency else buyCurrencyInfo.baseCurrency
+        val enteredAmountLowerThanMax = loadedBuyCurrency.maxAmount
+            ?.let { maxCurrencyAmount -> enteredAmountBigDecimal <= maxCurrencyAmount }
+            ?: true
+        val enteredAmountHigherThanMin = enteredAmountBigDecimal >= loadedBuyCurrency.minAmount
+
+        if (enteredAmountHigherThanMin && enteredAmountLowerThanMax) {
+            handleEnteredAmountValid(buyCurrencyInfo)
+        } else {
+            handleEnteredAmountInvalid(loadedBuyCurrency)
+        }
+    }
+
+    private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
+        val receiveSymbol = if (isSwappedToToken) USD_SYMBOL else tokenToBuy.tokenSymbol
+        val amount = if (isSwappedToToken) buyCurrencyInfo.totalAmount.scaleShort() else buyCurrencyInfo.receiveAmount
+        val currencyForTokensAmount = buyCurrencyInfo.price * buyCurrencyInfo.receiveAmount.toBigDecimal()
+        val data = BuyViewData(
+            tokenSymbol = tokenToBuy.tokenSymbol,
+            currencySymbol = USD_SYMBOL,
+            price = buyCurrencyInfo.price.scaleShort(),
+            receiveAmount = buyCurrencyInfo.receiveAmount,
+            processingFee = buyCurrencyInfo.feeAmount.scaleShort(),
+            networkFee = buyCurrencyInfo.networkFeeAmount.scaleShort(),
+            extraFee = buyCurrencyInfo.extraFeeAmount.scaleShort(),
+            accountCreationCost = null,
+            total = buyCurrencyInfo.totalAmount.scaleShort(),
+            receiveAmountText = "$amount $receiveSymbol",
+            purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.scaleShort().toString() else null
+        )
+        view?.showData(data)
+            .also { currentBuyViewData = data }
+        view?.showMessage(message = null)
+    }
+
+    private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
+        val isCurrencyUsd = loadedBuyCurrency.code == USD_READABLE_SYMBOL.lowercase()
+        val suffixPrefix = if (isCurrencyUsd) {
+            USD_SYMBOL
+        } else {
+            loadedBuyCurrency.code.uppercase()
+        }
+        val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
+
+        val amountForFormatter = if (isAmountLower) loadedBuyCurrency.minAmount else loadedBuyCurrency.maxAmount
+        val suffixPrefixWithAmount =
+            if (isCurrencyUsd) {
+                "$suffixPrefix$amountForFormatter"
+            } else {
+                "$amountForFormatter $suffixPrefix"
+            }
+
+        val errorMessageRaw = if (isAmountLower) minBuyErrorFormat else maxBuyErrorFormat
+        view?.showMessage(
+            errorMessageRaw.format(suffixPrefixWithAmount)
+        )
     }
 
     private fun clear() {
-        val data = data ?: return
+        val data = currentBuyViewData ?: return
         val clearedData = data.copy(
             receiveAmount = 0.0,
             processingFee = BigDecimal.ZERO,
@@ -216,12 +243,8 @@ class BuySolanaPresenter(
         view?.showMessage(null)
     }
 
-    private fun Token.getTokenSymbolForMoonPay(): String {
-        val tokenLowercase = token.tokenSymbol.lowercase()
-        return if (token.isUSDC) {
-            "${tokenLowercase}_${SOL_SYMBOL.lowercase()}"
-        } else {
-            tokenLowercase
-        }
+    override fun detach() {
+        calculationJob?.cancel()
+        super.detach()
     }
 }

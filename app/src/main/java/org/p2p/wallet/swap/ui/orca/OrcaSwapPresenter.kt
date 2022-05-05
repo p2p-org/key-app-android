@@ -90,7 +90,6 @@ class OrcaSwapPresenter(
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
-    private var lastTransaction: HistoryTransaction? = null
 
     override fun loadInitialData() {
         launch {
@@ -160,10 +159,7 @@ class OrcaSwapPresenter(
         this.slippage = settingsResult.newSlippage
         view?.showSlippage(this.slippage)
 
-        destinationToken?.let {
-            /* If pool is not null, then destination token is not null as well */
-            calculateAmount(sourceToken, it)
-        }
+        recalculate()
 
         swapInteractor.setFeePayerToken(settingsResult.newFeePayerToken)
         view?.showFeePayerToken(settingsResult.newFeePayerToken.tokenSymbol)
@@ -190,14 +186,18 @@ class OrcaSwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
+        recalculate()
+    }
+
+    private fun recalculate() {
         destinationToken?.let {
             calculationJob?.cancel()
             calculationJob = launch {
-                /* If pool is not null, then destination token is not null as well */
-                calculateAmount(sourceToken, it)
-
                 /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
                 calculateFees(sourceToken, it)
+
+                /* If pool is not null, then destination token is not null as well */
+                calculateAmount(sourceToken, it)
 
                 calculateRates(sourceToken, it)
             }
@@ -391,9 +391,8 @@ class OrcaSwapPresenter(
             view?.showButtonText(R.string.swap_searching_swap_pair)
             searchTradablePairs(source, destination)
             view?.showButtonText(R.string.swap_calculating_fees)
-            calculateAmount(source, destination)
-            calculateFees(source, destination)
-            calculateRates(source, destination)
+            swapInteractor.setFeePayerToken(source)
+            recalculate()
         }
     }
 

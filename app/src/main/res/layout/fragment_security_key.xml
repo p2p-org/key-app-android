@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/backgroundPrimary"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            app:buttonDrawable="@drawable/ic_swap_simple"
+            app:buttonDrawableStart="@drawable/ic_swap_simple"
             app:buttonDrawableTint="@color/backgroundButtonPrimary"
             app:buttonText="@string/auth_renew"
             app:buttonTextColor="@color/backgroundButtonPrimary" />
@@ -61,7 +61,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/backgroundPrimary"
             android:foreground="?selectableItemBackground"
-            app:buttonDrawable="@drawable/ic_copy"
+            app:buttonDrawableStart="@drawable/ic_copy"
             app:buttonDrawableTint="@color/backgroundButtonPrimary"
             app:buttonText="@string/auth_copy"
             app:buttonTextColor="@color/backgroundButtonPrimary" />
@@ -74,7 +74,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/backgroundPrimary"
             android:foreground="?selectableItemBackground"
-            app:buttonDrawable="@drawable/ic_gallery"
+            app:buttonDrawableStart="@drawable/ic_gallery"
             app:buttonDrawableTint="@color/backgroundButtonPrimary"
             app:buttonText="@string/auth_save"
             app:buttonTextColor="@color/backgroundButtonPrimary" />
@@ -116,4 +116,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
