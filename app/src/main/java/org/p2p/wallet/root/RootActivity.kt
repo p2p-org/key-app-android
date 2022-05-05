@@ -110,7 +110,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     @SuppressLint("SetTextI18n")
     private fun initializeDebugDrawer() {
         val devView = findViewById<TextView>(R.id.developTextView)
-        val isDebugHidden = sharedPreferences.getBoolean(KEY_DEBUG_HIDDEN, false)
+        val isDebugViewHidden = sharedPreferences.getBoolean(KEY_DEBUG_HIDDEN, false)
 
         if (BuildConfig.DEBUG) {
             val drawer = DebugDrawer.install(this)
@@ -118,7 +118,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
             devView.text = "${BuildConfig.BUILD_TYPE}-${BuildConfig.VERSION_NAME}"
             devView.isVisible = true
 
-            devView.alpha = if (isDebugHidden) 0f else 1f
+            devView.alpha = if (isDebugViewHidden) 0f else 1f
             devView.setOnClickListener { drawer.openDrawer() }
             devView.setOnLongClickListener {
                 val currentAlpha = devView.alpha
