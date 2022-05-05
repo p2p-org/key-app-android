@@ -100,7 +100,7 @@ open class RpcSolanaInterceptor(private val gson: Gson) : Interceptor {
         val errorMessage = serverError.error.data?.getErrorLog() ?: serverError.error.message
 
         ServerException(
-            errorCode = serverError.error.code,
+            errorCode = serverError.error.code ?: ErrorCode.SERVER_ERROR,
             fullMessage = fullMessage,
             errorMessage = errorMessage
         )
