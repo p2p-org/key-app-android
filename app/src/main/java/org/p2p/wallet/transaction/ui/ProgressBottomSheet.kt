@@ -60,7 +60,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        isCancelable = false
+        isCancelable = false
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
