@@ -9,6 +9,7 @@ import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.viewbinding.getColor
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -64,7 +65,7 @@ class TransactionViewHolder(
                 totalTextView.isVisible = false
 
                 transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_create)
-                titleTextView.setText(R.string.transaction_history_create)
+                titleTextView.text = transaction.getInfo(getString(R.string.transaction_history_create))
                 subtitleTextView.text = transaction.signature.cutMiddle()
             }
         }
@@ -78,7 +79,7 @@ class TransactionViewHolder(
                 valueTextView.isVisible = false
                 totalTextView.isVisible = false
 
-                titleTextView.text = transaction.getInfo()
+                titleTextView.text = transaction.getInfo(getString(R.string.transaction_history_closed))
                 subtitleTextView.text = transaction.signature.cutMiddle()
             }
         }

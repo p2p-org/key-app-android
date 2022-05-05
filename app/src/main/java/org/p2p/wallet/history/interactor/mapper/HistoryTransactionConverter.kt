@@ -156,7 +156,7 @@ class HistoryTransactionConverter {
     }
 
     /* Create account transaction */
-    fun mapCreateAccountTransactionToHistory(response: CreateAccountDetails): HistoryTransaction =
+    fun mapCreateAccountTransactionToHistory(response: CreateAccountDetails, symbol: String): HistoryTransaction =
         HistoryTransaction.CreateAccount(
             signature = response.signature,
             blockNumber = response.slot,
@@ -165,7 +165,8 @@ class HistoryTransactionConverter {
                 ZoneId.systemDefault()
             ),
             fee = response.fee.toBigInteger(),
-            status = TransactionStatus.from(response)
+            status = TransactionStatus.from(response),
+            tokenSymbol = symbol
         )
 
     /* Close account transaction */
