@@ -51,7 +51,7 @@
         android:background="@drawable/bg_blue_rounded"
         android:foreground="?selectableItemBackground"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonDrawable="@drawable/ic_light"
+        app:buttonDrawableStart="@drawable/ic_light"
         app:buttonText="@string/auth_finish_setup"
         app:buttonTextColor="@color/textIconButtonPrimary"
         app:layout_constraintBottom_toBottomOf="parent"

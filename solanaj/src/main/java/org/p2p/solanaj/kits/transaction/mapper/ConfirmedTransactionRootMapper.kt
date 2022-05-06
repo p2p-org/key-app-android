@@ -11,18 +11,22 @@ import org.p2p.solanaj.kits.transaction.network.meta.InstructionInfoDetailsRespo
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
 import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
+import org.p2p.solanaj.programs.SystemProgram.PROGRAM_ID
 import org.p2p.solanaj.programs.SystemProgram.SPL_TOKEN_PROGRAM_ID
+import org.p2p.solanaj.programs.TokenProgram
 
 // Get some parsing info from here
 // https://github.com/p2p-org/solana-swift/blob/main/Sources/SolanaSwift/Helpers/TransactionParser.swift#L74-L86
 internal class ConfirmedTransactionRootMapper(
     private val orcaSwapInstructionParser: OrcaSwapInstructionParser,
-    private val serumSwapInstructionParser: SerumSwapInstructionParser
+    private val serumSwapInstructionParser: SerumSwapInstructionParser,
+    private val userPublicKey: String,
 ) {
 
     fun mapToDomain(
         transactionRoot: ConfirmedTransactionRootResponse,
-        onErrorLogger: (Throwable) -> Unit
+        onErrorLogger: (Throwable) -> Unit,
+        findMintAddress: (String) -> String,
     ): List<TransactionDetails> {
         val signature = transactionRoot.transaction?.getTransactionId() ?: return emptyList()
 
@@ -42,7 +46,7 @@ internal class ConfirmedTransactionRootMapper(
                 )
             }
             else -> {
-                parseTransaction(transactionRoot, signature)
+                parseTransaction(transactionRoot, signature, findMintAddress)
             }
         }
     }
@@ -50,10 +54,11 @@ internal class ConfirmedTransactionRootMapper(
     private fun parseTransaction(
         transactionRoot: ConfirmedTransactionRootResponse,
         signature: String,
+        findMintAddress: (String) -> String
     ): List<TransactionDetails> {
         return transactionRoot.transaction?.message
             ?.instructions
-            ?.mapNotNull { parseInstructionByType(signature, transactionRoot, it) }
+            ?.mapNotNull { parseInstructionByType(signature, transactionRoot, it, findMintAddress) }
             ?.toMutableList()
             .orEmpty()
     }
@@ -61,7 +66,8 @@ internal class ConfirmedTransactionRootMapper(
     private fun parseInstructionByType(
         signature: String,
         transactionRoot: ConfirmedTransactionRootResponse,
-        parsedInstruction: InstructionResponse
+        parsedInstruction: InstructionResponse,
+        findMintAddress: (String) -> String
     ): TransactionDetails? {
         val parsedInfo = parsedInstruction.parsed
         return when (parsedInfo?.type) {
@@ -77,6 +83,7 @@ internal class ConfirmedTransactionRootMapper(
                     signature = signature,
                     transactionRoot = transactionRoot,
                     parsedInfo = parsedInfo,
+                    findMintAddress = findMintAddress
                 )
             }
             "closeAccount" -> {
@@ -106,11 +113,13 @@ internal class ConfirmedTransactionRootMapper(
         signature: String,
         transactionRoot: ConfirmedTransactionRootResponse
     ): CreateAccountDetails {
+        val preBalances = transactionRoot.meta.preTokenBalances.firstOrNull()?.mint
         return CreateAccountDetails(
             signature = signature,
             slot = transactionRoot.slot,
             blockTime = transactionRoot.blockTime,
-            fee = transactionRoot.meta.fee
+            fee = transactionRoot.meta.fee,
+            mint = preBalances
         )
     }
 
@@ -150,33 +159,111 @@ internal class ConfirmedTransactionRootMapper(
         signature: String,
         transactionRoot: ConfirmedTransactionRootResponse,
         parsedInfo: InstructionInfoDetailsResponse,
+        findMintAddress: (String) -> String
     ): TransferDetails {
-        val info = parsedInfo.info
 
-        val mint: String?
-        val amount: String?
-        val decimals: Int
-        if (parsedInfo.type == "transferChecked") {
-            mint = info.mint
-            amount = info.tokenAmount?.amount
-            decimals = info.tokenAmount?.decimals?.toInt() ?: 0
+        val instruction = transactionRoot.transaction?.message?.instructions?.lastOrNull()
+
+        val sourcePubKey = parsedInfo.info.source
+        val destinationPubKey = parsedInfo.info.destination
+        val authority = parsedInfo.info.authority
+        val instructionInfo = parsedInfo.info
+        val lamports: String = instructionInfo.lamports?.toLong()?.toBigInteger()
+            ?.toString() ?: instructionInfo.amount ?: instructionInfo.tokenAmount?.amount ?: "0"
+        val mint = parsedInfo.info.mint
+        val decimals = instructionInfo.tokenAmount?.decimals?.toInt() ?: 0
+
+        if (instruction?.programId == PROGRAM_ID.toBase58()) {
+
+            return TransferDetails(
+                signature = signature,
+                blockTime = transactionRoot.blockTime,
+                slot = transactionRoot.slot,
+                fee = transactionRoot.meta.fee,
+                source = sourcePubKey,
+                destination = destinationPubKey,
+                authority = authority,
+                mint = mint,
+                amount = lamports,
+                _decimals = decimals,
+                programId = instruction.programId.orEmpty(),
+                typeStr = parsedInfo.type
+            )
         } else {
-            mint = null
-            amount = info.lamports?.toLong()?.toBigInteger()?.toString() ?: info.amount
-            decimals = 0
+            var destinationAuthority: String? = null
+
+            val instructions = transactionRoot.transaction?.message?.instructions
+
+            instructions?.firstOrNull { it.programId == TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID.toBase58() }?.let {
+                destinationAuthority = it.parsed?.info?.wallet
+            }
+
+            if (destinationAuthority == null) {
+                instructions?.firstOrNull {
+                    it.programId == PROGRAM_ID.toBase58() && it.parsed?.type == "initializeAccount"
+                }?.let { destinationAuthority = it.parsed?.info?.owner }
+            }
+
+            val tokenBalance = transactionRoot.meta.postTokenBalances?.firstOrNull { !it.mint.isNullOrEmpty() }
+            if (tokenBalance != null) {
+                var myAccount = userPublicKey
+                val accountKeys = transactionRoot.transaction?.message?.accountKeys.orEmpty()
+                if ((sourcePubKey != userPublicKey && destinationPubKey != myAccount) && accountKeys.size >= 4) {
+
+                    if (myAccount == accountKeys[0].publicKey) {
+                        myAccount = sourcePubKey.orEmpty()
+                    }
+                    if (myAccount == accountKeys[3].publicKey) {
+                        myAccount = destinationPubKey.orEmpty()
+                    }
+
+                    val tokenMint = findMintAddress(tokenBalance.mint.orEmpty()).takeIf { it.isNotEmpty() }
+
+                    return TransferDetails(
+                        signature = signature,
+                        blockTime = transactionRoot.blockTime,
+                        slot = transactionRoot.slot,
+                        fee = transactionRoot.meta.fee,
+                        source = sourcePubKey,
+                        destination = destinationPubKey,
+                        authority = authority,
+                        mint = tokenMint,
+                        amount = lamports,
+                        _decimals = decimals,
+                        programId = instruction?.programId.orEmpty(),
+                        typeStr = parsedInfo.type
+                    )
+                }
+            } else {
+                return TransferDetails(
+                    signature = signature,
+                    blockTime = transactionRoot.blockTime,
+                    slot = transactionRoot.slot,
+                    fee = transactionRoot.meta.fee,
+                    source = sourcePubKey,
+                    destination = destinationPubKey,
+                    authority = authority,
+                    mint = tokenBalance,
+                    amount = lamports,
+                    _decimals = decimals,
+                    programId = instruction?.programId.orEmpty(),
+                    typeStr = parsedInfo.type
+                )
+            }
         }
         return TransferDetails(
             signature = signature,
             blockTime = transactionRoot.blockTime,
             slot = transactionRoot.slot,
-            typeStr = parsedInfo.type,
             fee = transactionRoot.meta.fee,
-            source = info.source,
-            destination = info.destination,
-            authority = info.authority,
+            source = sourcePubKey,
+            destination = destinationPubKey,
+            authority = authority,
             mint = mint,
-            amount = amount,
-            _decimals = decimals
+            amount = lamports,
+            _decimals = decimals,
+            programId = instruction?.programId.orEmpty(),
+            typeStr = parsedInfo.type
         )
     }
 

@@ -8,15 +8,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 
+private const val DEFAULT_IMAGE_SIZE = 56
 class GlideManager(context: Context) {
 
-    companion object {
-        private const val DEFAULT_IMAGE_SIZE = 56
+    private val requestBuilder: RequestBuilder<PictureDrawable> by lazy {
+        Glide.with(context)
+            .`as`(PictureDrawable::class.java)
+            .listener(SvgSoftwareLayerSetter())
     }
-
-    private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(context)
-        .`as`(PictureDrawable::class.java)
-        .listener(SvgSoftwareLayerSetter())
 
     fun load(imageView: ImageView, url: String?, size: Int = DEFAULT_IMAGE_SIZE) {
         if (url.isNullOrEmpty()) return

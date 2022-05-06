@@ -8,6 +8,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.send.interactor.SearchInteractor
+import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.Target
 import timber.log.Timber
@@ -62,7 +63,8 @@ class SearchPresenter(
     private suspend fun validate(target: Target) {
         when (target.validation) {
             Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-            Target.Validation.ADDRESS -> searchByAddress(target.value)
+            Target.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
+            Target.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
             Target.Validation.EMPTY -> showEmptyState()
             Target.Validation.INVALID -> showNotFound()
         }
@@ -85,7 +87,7 @@ class SearchPresenter(
         view?.showResult(usernames)
     }
 
-    private suspend fun searchByAddress(address: String) {
+    private suspend fun searchBySolAddress(address: String) {
         val publicKey = try {
             PublicKey(address)
         } catch (e: Throwable) {
@@ -96,6 +98,13 @@ class SearchPresenter(
         val result = searchInteractor.searchByAddress(publicKey.toBase58())
         view?.showMessage(R.string.send_account_found)
         view?.showResult(result)
+    }
+
+    private fun showBtcAddress(address: String) {
+        val searchResult = SearchResult.AddressOnly(address, NetworkType.BITCOIN)
+        val resultList = listOf(searchResult)
+        view?.showMessage(null)
+        view?.showResult(resultList)
     }
 
     private fun showEmptyState() {

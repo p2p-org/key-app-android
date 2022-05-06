@@ -37,6 +37,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">18sp</item>
     </style>
+
     <style name="WalletTheme.TextAppearance.Bold16">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_bold</item>
@@ -94,16 +95,25 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="WalletTheme.TextAppearance.Medium16">
-        <item name="android:textColor">@color/textIconPrimary</item>
-        <item name="fontFamily">@font/manrope_medium</item>
+    <style name="WalletTheme.TextAppearance.Medium20" parent="WalletTheme.TextAppearance.Medium">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="WalletTheme.TextAppearance.Medium16" parent="WalletTheme.TextAppearance.Medium">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="WalletTheme.TextAppearance.Medium14">
+    <style name="WalletTheme.TextAppearance.Medium14" parent="WalletTheme.TextAppearance.Medium">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="WalletTheme.TextAppearance.Medium12" parent="WalletTheme.TextAppearance.Medium">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="WalletTheme.TextAppearance.Medium">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_medium</item>
-        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="WalletTheme.TextAppearance.Regular24">

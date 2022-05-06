@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="20dp"
         android:paddingVertical="16dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/textIconPrimary"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+        android:textColor="@color/textIconSecondary"
         tools:text="Today, Dec 4" />
 
 </FrameLayout>

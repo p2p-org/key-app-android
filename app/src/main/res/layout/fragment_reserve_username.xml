@@ -76,7 +76,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="12dp"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                app:buttonDrawable="@drawable/ic_done"
+                app:buttonDrawableStart="@drawable/ic_done"
                 app:buttonDrawableTint="@color/textIconButtonPrimary"
                 app:buttonEnabled="false"
                 app:buttonText="@string/auth_reserve"

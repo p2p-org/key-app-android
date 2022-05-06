@@ -10,6 +10,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.RenBtcType
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenPrice
+import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleLong
@@ -63,7 +64,8 @@ class HistoryTransactionConverter {
             sourceSymbol = sourceData.symbol,
             sourceIconUrl = sourceData.iconUrl.orEmpty(),
             destinationSymbol = destinationData.symbol,
-            destinationIconUrl = destinationData.iconUrl.orEmpty()
+            destinationIconUrl = destinationData.iconUrl.orEmpty(),
+            status = TransactionStatus.from(response)
         )
 
     private fun String.toBigDecimalFromLamports(decimals: Int): BigDecimal =
@@ -99,7 +101,8 @@ class HistoryTransactionConverter {
             totalInUsd = amount,
             total = response.uiAmount.toBigDecimalOrZero(),
             date = date,
-            type = RenBtcType.BURN
+            type = RenBtcType.BURN,
+            status = TransactionStatus.from(response)
         )
     }
 
@@ -112,7 +115,7 @@ class HistoryTransactionConverter {
         rate: TokenPrice?
     ): HistoryTransaction {
         val isSend = if (response.isSimpleTransfer) {
-            response.source == directPublicKey && response.destination != publicKey
+            (response.source == directPublicKey && response.destination != publicKey) || response.authority == publicKey
         } else {
             response.authority == publicKey
         }
@@ -147,12 +150,13 @@ class HistoryTransactionConverter {
                 ?.toBigInteger()
                 ?.fromLamports(response.decimals)
                 ?: BigDecimal.ZERO,
-            date = date
+            date = date,
+            status = TransactionStatus.from(response)
         )
     }
 
     /* Create account transaction */
-    fun mapCreateAccountTransactionToHistory(response: CreateAccountDetails): HistoryTransaction =
+    fun mapCreateAccountTransactionToHistory(response: CreateAccountDetails, symbol: String): HistoryTransaction =
         HistoryTransaction.CreateAccount(
             signature = response.signature,
             blockNumber = response.slot,
@@ -160,7 +164,9 @@ class HistoryTransactionConverter {
                 Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
-            fee = response.fee.toBigInteger()
+            fee = response.fee.toBigInteger(),
+            status = TransactionStatus.from(response),
+            tokenSymbol = symbol
         )
 
     /* Close account transaction */
@@ -174,7 +180,8 @@ class HistoryTransactionConverter {
                 Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
-            tokenSymbol = symbol
+            tokenSymbol = symbol,
+            status = TransactionStatus.from(response)
         )
 
     /* Unknown transaction */
@@ -188,5 +195,6 @@ class HistoryTransactionConverter {
                 ZoneId.systemDefault()
             ),
             blockNumber = response.slot,
+            status = TransactionStatus.from(response)
         )
 }

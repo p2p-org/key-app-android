@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth
 
 import androidx.biometric.BiometricManager
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -33,17 +34,17 @@ import retrofit2.Retrofit
 object AuthModule {
 
     fun create() = module {
-        single { BiometricManager.from(get()) }
+        single { BiometricManager.from(androidContext()) }
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
-        factory { AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory { AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
         factory { FileRepository(get()) }
         factory { SecurityKeyPresenter(get(), get(), get(), get()) } bind SecurityKeyContract.Presenter::class
         factory { CreatePinPresenter(get(), get(), get(), get(), get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get(), get(), get(), get(), get()) } bind SignInPinContract.Presenter::class
         factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
-        factory { AuthDonePresenter(get()) } bind AuthDoneContract.Presenter::class
+        factory { AuthDonePresenter(get(), get(), get()) } bind AuthDoneContract.Presenter::class
 
         // reserving username
         factory { UsernameInteractor(get(), get(), get(), get()) }

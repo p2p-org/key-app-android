@@ -1,76 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contentView"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:background="#000">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+    <ImageView
+        android:id="@+id/closeImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="16dp"
+        android:src="@drawable/ic_close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/textIconPrimary"
+        tools:ignore="ContentDescription" />
+
+    <me.dm7.barcodescanner.zxing.ZXingScannerView
+        android:id="@+id/barcodeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000">
+        app:borderColor="@color/textIconPrimary"
+        app:borderLength="64dp"
+        app:borderWidth="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:squaredFinder="true" />
 
-        <ImageView
-            android:id="@+id/closeImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackgroundBorderless"
-            android:padding="16dp"
-            android:src="@drawable/ic_close"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/textIconPrimary"
-            tools:ignore="ContentDescription" />
+    <TextView
+        android:id="@+id/cameraPermissionDeniedPlaceholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_horizontal"
+        android:text="@string/qr_failed_to_acquire_camera_permission"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
+        android:textColor="@color/textIconPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <me.dm7.barcodescanner.zxing.ZXingScannerView
-            android:id="@+id/barcodeView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:borderColor="@color/textIconPrimary"
-            app:borderLength="64dp"
-            app:borderWidth="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:squaredFinder="true" />
+    <TextView
+        android:id="@+id/cameraPermissionRequestButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/qr_give_camera_permission"
+        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
+        android:textColor="@color/strokeSecondary"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cameraPermissionDeniedPlaceholder" />
 
-        <TextView
-            android:id="@+id/cameraPermissionDeniedPlaceholder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:gravity="center_horizontal"
-            android:text="@string/qr_failed_to_acquire_camera_permission"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
-            android:textColor="@color/textIconPrimary"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/cameraPermissionRequestButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="?attr/selectableItemBackground"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="@string/qr_give_camera_permission"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            android:textColor="@color/strokeSecondary"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cameraPermissionDeniedPlaceholder" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

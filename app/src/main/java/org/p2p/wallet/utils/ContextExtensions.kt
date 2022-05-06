@@ -1,5 +1,7 @@
 package org.p2p.wallet.utils
 
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -11,6 +13,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.core.content.FileProvider
+import android.graphics.drawable.Drawable
 import org.p2p.wallet.R
 import java.io.File
 
@@ -61,4 +64,8 @@ fun Context.shareScreenShot(image: File, providedText: String = "Save Screenshot
     } catch (e: ActivityNotFoundException) {
         toast("No App Available")
     }
+}
+
+fun Context.getDrawableCompat(@DrawableRes drawableId: Int): Drawable? {
+    return ContextCompat.getDrawable(this, drawableId)
 }

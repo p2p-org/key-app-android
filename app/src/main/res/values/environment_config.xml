@@ -22,4 +22,7 @@
     <string name="blockstreamUrl">https://blockstream.info/</string>
 
     <string name="p2pWebBaseUrl">https://raw.githubusercontent.com/p2p-org/p2p-wallet-web/develop/src/app/contexts/swap/orca-commons/data/json/</string>
+
+    <!-- todo: Replace endpoint PWN-3405 -->
+    <string name="notification_service_url">http://35.234.120.240:9090/</string>
 </resources>

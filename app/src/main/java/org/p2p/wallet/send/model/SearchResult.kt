@@ -11,7 +11,10 @@ sealed class SearchResult(
     data class Wrong(override val address: String) : SearchResult(address)
 
     @Parcelize
-    data class AddressOnly(override val address: String) : SearchResult(address)
+    data class AddressOnly(
+        override val address: String,
+        val networkType: NetworkType = NetworkType.SOLANA
+    ) : SearchResult(address)
 
     @Parcelize
     data class Full(override val address: String, val username: String) : SearchResult(address)
