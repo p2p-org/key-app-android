@@ -219,7 +219,7 @@ dependencies {
     implementation 'com.caverock:androidsvg-aar:1.4'
 
     // Room
-    def roomVersion = '2.4.1'
+    def roomVersion = '2.4.2'
     implementation "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
