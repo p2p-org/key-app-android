@@ -113,11 +113,13 @@ internal class ConfirmedTransactionRootMapper(
         signature: String,
         transactionRoot: ConfirmedTransactionRootResponse
     ): CreateAccountDetails {
+        val preBalances = transactionRoot.meta.preTokenBalances.firstOrNull()?.mint
         return CreateAccountDetails(
             signature = signature,
             slot = transactionRoot.slot,
             blockTime = transactionRoot.blockTime,
-            fee = transactionRoot.meta.fee
+            fee = transactionRoot.meta.fee,
+            mint = preBalances
         )
     }
 

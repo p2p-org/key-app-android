@@ -6,6 +6,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.InjectionModule
@@ -30,7 +31,10 @@ import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.updates.SocketUpdatesManager
 import org.p2p.wallet.updates.UpdateHandler
 import org.p2p.wallet.updates.UpdatesManager
+import java.security.KeyStore
 import java.util.concurrent.Executors
+
+private const val ANDROID_KEY_STORE = "AndroidKeyStore"
 
 object InfrastructureModule : InjectionModule {
 
@@ -70,10 +74,9 @@ object InfrastructureModule : InjectionModule {
             context.getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
-        single {
-            val encoderDecoder = EncoderDecoderMarshmallow(get())
-            return@single KeyStoreWrapper(encoderDecoder)
-        }
+        single { EncoderDecoderMarshmallow(get()) } bind EncoderDecoder::class
+        single { KeyStore.getInstance(ANDROID_KEY_STORE) }
+        single { KeyStoreWrapper(encoderDecoder = get(), keyStore = get()) }
 
         factory { SecureStorage(get(), get()) } bind SecureStorageContract::class
 

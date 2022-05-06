@@ -100,7 +100,10 @@ sealed class HistoryTransaction(
 
         fun getValue(): String? = totalInUsd?.let { "${getSymbol(isSend)} $${it.scaleShort()}" }
 
-        fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
+        fun getTotal(): String = getFormattedTotal()
+
+        @StringRes
+        fun getTypeName(): Int = if (isSend) R.string.transaction_history_send else R.string.transaction_history_receive
 
         @ColorRes
         fun getTextColor() = if (isSend) {
@@ -162,8 +165,16 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val blockNumber: Int,
         override val status: TransactionStatus,
-        val fee: BigInteger
-    ) : HistoryTransaction(date)
+        val fee: BigInteger,
+        val tokenSymbol: String,
+    ) : HistoryTransaction(date) {
+
+        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
+            "$tokenSymbol $operationText"
+        } else {
+            operationText
+        }
+    }
 
     @Parcelize
     data class CloseAccount(
@@ -176,7 +187,11 @@ sealed class HistoryTransaction(
         val tokenSymbol: String,
     ) : HistoryTransaction(date) {
 
-        fun getInfo(): String = if (tokenSymbol.isNotBlank()) "$tokenSymbol Closed" else "Closed"
+        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
+            "$tokenSymbol $operationText"
+        } else {
+            operationText
+        }
     }
 
     @Parcelize

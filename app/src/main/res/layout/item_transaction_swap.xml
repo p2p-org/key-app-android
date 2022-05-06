@@ -17,7 +17,7 @@
         android:id="@+id/transactionData"
         layout="@layout/item_transaction_base_part"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/history_transaction_item_height"
+        android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
 </LinearLayout>

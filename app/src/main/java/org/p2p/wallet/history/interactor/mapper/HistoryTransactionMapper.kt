@@ -33,7 +33,7 @@ class HistoryTransactionMapper(
                 is BurnOrMintDetails -> parseBurnAndMintDetails(transaction, userPublicKey)
                 is TransferDetails -> parseTransferDetails(transaction, tokenPublicKey, userPublicKey)
                 is CloseAccountDetails -> parseCloseDetails(transaction)
-                is CreateAccountDetails -> historyTransactionConverter.mapCreateAccountTransactionToHistory(transaction)
+                is CreateAccountDetails -> parseCreateDetails(transaction)
                 is UnknownDetails -> historyTransactionConverter.mapUnknownTransactionToHistory(transaction)
                 else -> throw IllegalStateException("Unknown transaction details $transaction")
             }
@@ -127,6 +127,13 @@ class HistoryTransactionMapper(
         val symbol = findSymbol(details.mint)
         val rate = userLocalRepository.getPriceByToken(symbol)
         return historyTransactionConverter.mapBurnOrMintTransactionToHistory(details, userPublicKey, rate)
+    }
+
+    private fun parseCreateDetails(
+        details: CreateAccountDetails
+    ): HistoryTransaction {
+        val symbol = findSymbol(details.mint)
+        return historyTransactionConverter.mapCreateAccountTransactionToHistory(details, symbol)
     }
 
     private fun parseCloseDetails(

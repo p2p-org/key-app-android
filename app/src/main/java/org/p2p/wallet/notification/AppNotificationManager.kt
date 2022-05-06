@@ -1,5 +1,9 @@
 package org.p2p.wallet.notification
 
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,10 +11,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.getSystemService
 import org.p2p.wallet.R
 import org.p2p.wallet.root.RootActivity
 import java.util.UUID
@@ -38,8 +38,7 @@ class AppNotificationManager(private val context: Context) {
         )
     }
 
-    private val notificationManager =
-        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val notificationManager = context.getSystemService<NotificationManager>()!!
 
     fun showSwapTransactionNotification(data: SwapTransactionNotification) {
         val contentIntent = createPendingContentIntent()
