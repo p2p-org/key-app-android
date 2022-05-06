@@ -64,7 +64,7 @@ class TokenHistoryPresenter(
         launch {
             view?.showPagingState(PagingState.Loading)
 
-            kotlin.runCatching {
+            runCatching {
                 historyInteractor.loadTransactionHistory(
                     tokenPublicKey = token.publicKey,
                     before = null,
