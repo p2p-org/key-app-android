@@ -12,8 +12,8 @@ import org.threeten.bp.temporal.TemporalAccessor
 import java.util.Locale
 import kotlin.math.ceil
 
-private val dayMonthFormatter = DateTimeFormatter.ofPattern("dd MMMM")
-private val dayMonthYearFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+private val monthDayFormatter = DateTimeFormatter.ofPattern("MMMM dd")
+private val monthDayYearFormatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("MM.dd.yyyy HH:mm")
 private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
@@ -22,8 +22,8 @@ fun ZonedDateTime.toDateString(context: Context): String {
     val today = Today.value
     return when {
         day.isEqual(today) -> context.getString(R.string.details_today)
-        today.year == day.year -> dayMonthFormatter.formatWithLocale(day)
-        else -> dayMonthYearFormatter.formatWithLocale(day)
+        today.year == day.year -> monthDayFormatter.formatWithLocale(day)
+        else -> monthDayYearFormatter.formatWithLocale(day)
     }
 }
 
