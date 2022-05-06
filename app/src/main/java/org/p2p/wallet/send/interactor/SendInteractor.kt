@@ -86,9 +86,7 @@ class SendInteractor(
                 transactionFee += lamportsPerSignature
 
                 // feePayer's signature
-                if (!feePayerToken.isSOL) {
-                    transactionFee += lamportsPerSignature
-                }
+                transactionFee += lamportsPerSignature
 
                 val shouldCreateAccount = if (token.mintAddress != WRAPPED_SOL_MINT) {
                     addressInteractor.findSplTokenAddressData(
@@ -96,6 +94,15 @@ class SendInteractor(
                         destinationAddress = receiver.toPublicKey()
                     ).shouldCreateAccount
                 } else false
+
+                if (isFreeTransactionNotAvailableAndUserIsPayingWithSOL(
+                        feePayerToken.mintAddress,
+                        lamportsPerSignature
+                    )
+                ) {
+                    // subtract the fee payer signature cost
+                    transactionFee -= lamportsPerSignature
+                }
 
                 val expectedFee = FeeAmount(
                     transaction = transactionFee,
@@ -343,5 +350,18 @@ class SendInteractor(
         )
 
         return preparedTransaction to realDestination
+    }
+
+    private suspend fun isFreeTransactionNotAvailableAndUserIsPayingWithSOL(
+        payingTokenMint: String?,
+        lamportsPerSignature: BigInteger
+    ): Boolean {
+        return payingTokenMint == WRAPPED_SOL_MINT && !isFreeTransactionAvailable(lamportsPerSignature)
+    }
+
+    private suspend fun isFreeTransactionAvailable(lamportsPerSignature: BigInteger): Boolean {
+        val expectedTransactionFee = 2.toBigInteger() * lamportsPerSignature
+        val freeTransactionLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        return freeTransactionLimits.isFreeTransactionFeeAvailable(expectedTransactionFee)
     }
 }
