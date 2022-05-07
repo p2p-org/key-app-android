@@ -89,7 +89,12 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsLocalRepository::class
 
-        factory { TransactionDetailsNetworkMapper(get<TokenKeyProvider>().publicKey) }
+        factory {
+            TransactionDetailsNetworkMapper(
+                userPublicKey = get<TokenKeyProvider>().publicKey,
+                userInteractor = get()
+            )
+        }
         single {
             val api = get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER))
                 .create(RpcHistoryApi::class.java)

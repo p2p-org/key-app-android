@@ -4,109 +4,75 @@ import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.CreateAccountDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
+import org.p2p.solanaj.kits.transaction.TransactionDetailsType
 import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionInfoDetailsResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
-import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
-import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
-import org.p2p.solanaj.programs.SystemProgram.PROGRAM_ID
-import org.p2p.solanaj.programs.SystemProgram.SPL_TOKEN_PROGRAM_ID
+import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.wallet.user.interactor.UserInteractor
 
-// Get some parsing info from here
-// https://github.com/p2p-org/solana-swift/blob/main/Sources/SolanaSwift/Helpers/TransactionParser.swift#L74-L86
-internal class ConfirmedTransactionRootMapper(
-    private val orcaSwapInstructionParser: OrcaSwapInstructionParser,
-    private val serumSwapInstructionParser: SerumSwapInstructionParser,
-    private val userPublicKey: String,
-) {
+object TransactionDetailsParser {
 
-    fun mapToDomain(
-        transactionRoot: ConfirmedTransactionRootResponse,
-        onErrorLogger: (Throwable) -> Unit,
-        findMintAddress: (String) -> String,
-    ): List<TransactionDetails> {
-        val signature = transactionRoot.transaction?.getTransactionId() ?: return emptyList()
-
-        return when {
-            orcaSwapInstructionParser.isTransactionContainsOrcaSwap(transactionRoot) -> {
-                listOfNotNull(
-                    orcaSwapInstructionParser.parse(signature, transactionRoot)
-                        .onFailure(onErrorLogger)
-                        .getOrNull()
-                )
-            }
-            serumSwapInstructionParser.isTransactionContainsSerumSwap(transactionRoot) -> {
-                listOfNotNull(
-                    serumSwapInstructionParser.parse(signature, transactionRoot)
-                        .onFailure(onErrorLogger)
-                        .getOrNull()
-                )
-            }
-            else -> {
-                parseTransaction(transactionRoot, signature, findMintAddress)
-            }
-        }
-    }
-
-    private fun parseTransaction(
-        transactionRoot: ConfirmedTransactionRootResponse,
-        signature: String,
-        findMintAddress: (String) -> String
-    ): List<TransactionDetails> {
-        return transactionRoot.transaction?.message
-            ?.instructions
-            ?.mapNotNull { parseInstructionByType(signature, transactionRoot, it, findMintAddress) }
-            ?.toMutableList()
-            .orEmpty()
-    }
-
-    private fun parseInstructionByType(
+    fun parse(
         signature: String,
         transactionRoot: ConfirmedTransactionRootResponse,
-        parsedInstruction: InstructionResponse,
-        findMintAddress: (String) -> String
-    ): TransactionDetails? {
-        val parsedInfo = parsedInstruction.parsed
-        return when (parsedInfo?.type) {
-            "burnChecked" -> {
-                parseBurnOrMintTransaction(
-                    signature = signature,
-                    transactionRoot = transactionRoot,
-                    parsedInfo = parsedInfo
-                )
-            }
-            "transfer", "transferChecked" -> {
-                parseTransferTransaction(
-                    signature = signature,
-                    transactionRoot = transactionRoot,
-                    parsedInfo = parsedInfo,
-                    findMintAddress = findMintAddress
-                )
-            }
-            "closeAccount" -> {
-                parseCloseTransaction(
-                    parsedInstruction = parsedInstruction,
-                    parsedInfo = parsedInfo,
-                    transactionRoot = transactionRoot,
-                    signature = signature,
-                )
-            }
-            "create" -> {
-                parseCreateAccountTransaction(
-                    signature = signature,
-                    transactionRoot = transactionRoot
-                )
-            }
-            else -> {
-                parseUnknownTransaction(
-                    signature = signature,
-                    transactionRoot = transactionRoot
-                )
+        userInteractor: UserInteractor,
+        userPublicKey: String
+    ): List<TransactionDetails> {
+
+        val transactionInstructions = transactionRoot.transaction?.message?.instructions ?: emptyList()
+
+        val items = transactionInstructions.map { instruction ->
+
+            val parsedInfo = instruction.parsed
+            val type = parsedInfo?.type
+            when (TransactionDetailsType.valueOf(type)) {
+                TransactionDetailsType.TRANSFER, TransactionDetailsType.TRANSFER_CHECKED -> {
+                    parseTransferTransaction(
+                        signature = signature,
+                        transactionRoot = transactionRoot,
+                        parsedInfo = parsedInfo!!,
+                        userPublicKey = userPublicKey,
+                        userInteractor = userInteractor
+                    )
+                }
+
+                TransactionDetailsType.CREATE_ACCOUNT -> {
+                    parseCreateAccountTransaction(
+                        signature = signature,
+                        transactionRoot = transactionRoot
+                    )
+                }
+
+                TransactionDetailsType.BURN_CHECKED -> {
+                    parseBurnOrMintTransaction(
+                        signature = signature,
+                        transactionRoot = transactionRoot,
+                        parsedInfo = parsedInfo!!
+                    )
+                }
+
+                TransactionDetailsType.CLOSE_ACCOUNT -> {
+                    parseCloseTransaction(
+                        signature = signature,
+                        parsedInstruction = instruction,
+                        parsedInfo = parsedInfo!!,
+                        transactionRoot = transactionRoot
+                    )
+                }
+
+                else -> {
+                    parseUnknownTransaction(
+                        signature = signature,
+                        transactionRoot = transactionRoot
+                    )
+                }
             }
         }
+        return items.filterNotNull()
     }
 
     private fun parseCreateAccountTransaction(
@@ -138,7 +104,7 @@ internal class ConfirmedTransactionRootMapper(
         transactionRoot: ConfirmedTransactionRootResponse,
         signature: String,
     ): CloseAccountDetails? {
-        if (parsedInstruction.programId != SPL_TOKEN_PROGRAM_ID.toBase58()) {
+        if (parsedInstruction.programId != SystemProgram.SPL_TOKEN_PROGRAM_ID.toBase58()) {
             return null
         }
 
@@ -157,7 +123,8 @@ internal class ConfirmedTransactionRootMapper(
         signature: String,
         transactionRoot: ConfirmedTransactionRootResponse,
         parsedInfo: InstructionInfoDetailsResponse,
-        findMintAddress: (String) -> String
+        userPublicKey: String,
+        userInteractor: UserInteractor
     ): TransferDetails {
 
         val instruction = transactionRoot.transaction?.message?.instructions?.lastOrNull()
@@ -171,7 +138,7 @@ internal class ConfirmedTransactionRootMapper(
         val mint = parsedInfo.info.mint
         val decimals = instructionInfo.tokenAmount?.decimals?.toInt() ?: 0
 
-        if (instruction?.programId == PROGRAM_ID.toBase58()) {
+        if (instruction?.programId == SystemProgram.PROGRAM_ID.toBase58()) {
 
             return TransferDetails(
                 signature = signature,
@@ -198,7 +165,7 @@ internal class ConfirmedTransactionRootMapper(
 
             if (destinationAuthority == null) {
                 instructions?.firstOrNull {
-                    it.programId == PROGRAM_ID.toBase58() && it.parsed?.type == "initializeAccount"
+                    it.programId == SystemProgram.PROGRAM_ID.toBase58() && it.parsed?.type == "initializeAccount"
                 }?.let { destinationAuthority = it.parsed?.info?.owner }
             }
 
@@ -215,7 +182,7 @@ internal class ConfirmedTransactionRootMapper(
                         myAccount = destinationPubKey.orEmpty()
                     }
 
-                    val tokenMint = findMintAddress(tokenBalance.mint.orEmpty()).takeIf { it.isNotEmpty() }
+                    val tokenMint = userInteractor.findTokenData(tokenBalance.mint.orEmpty())?.mintAddress
 
                     return TransferDetails(
                         signature = signature,

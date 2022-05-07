@@ -33,9 +33,7 @@ class TransactionDetailsRpcRepository(
             .map { it.result }
             .let {
                 withContext(dispatchers.io) {
-                    transactionDetailsNetworkMapper.fromNetworkToDomain(it) { mintAddress ->
-                        userLocalRepository.findTokenData(mintAddress)?.mintAddress.orEmpty()
-                    }
+                    transactionDetailsNetworkMapper.fromNetworkToDomain(it)
                 }
             }
     }

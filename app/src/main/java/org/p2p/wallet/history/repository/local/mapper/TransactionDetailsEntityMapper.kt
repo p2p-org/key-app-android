@@ -194,9 +194,9 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
 
     private fun TransactionDetailsType.toEntity(): TransactionTypeEntity = when (this) {
         TransactionDetailsType.CREATE_ACCOUNT -> TransactionTypeEntity.CREATE_ACCOUNT
-        TransactionDetailsType.UNKNOWN -> TransactionTypeEntity.UNKNOWN
         TransactionDetailsType.SWAP -> TransactionTypeEntity.SWAP
         TransactionDetailsType.TRANSFER -> TransactionTypeEntity.TRANSFER
         TransactionDetailsType.CLOSE_ACCOUNT -> TransactionTypeEntity.CLOSE_ACCOUNT
+        else -> TransactionTypeEntity.UNKNOWN
     }
 }
