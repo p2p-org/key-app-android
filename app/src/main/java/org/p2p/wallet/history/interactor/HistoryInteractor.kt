@@ -5,7 +5,7 @@ import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
-import org.p2p.wallet.history.model.TransactionSignature
+import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -27,14 +27,14 @@ class HistoryInteractor(
     suspend fun loadSignatureForAddress(
         tokenPublicKey: String,
         before: String? = null
-    ): List<TransactionSignature> {
+    ): List<RpcTransactionSignature> {
 
         val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(
             userAccountAddress = tokenPublicKey.toPublicKey(),
             before = before,
             limit = PAGE_LIMIT
         )
-        return signatures.map { TransactionSignature(it.signature, it.confirmationStatus) }
+        return signatures.map { RpcTransactionSignature(it.signature, it.confirmationStatus) }
     }
 
     suspend fun getHistoryTransaction(tokenPublicKey: String, transactionId: String) =
@@ -43,26 +43,19 @@ class HistoryInteractor(
 
     suspend fun loadTransactionHistory(
         tokenPublicKey: String,
-        signaturesWithStatus: List<TransactionSignature>,
+        signaturesWithStatus: List<RpcTransactionSignature>,
         forceRefresh: Boolean
     ): List<HistoryTransaction> {
         if (forceRefresh) {
             transactionsLocalRepository.deleteAll()
         }
-        val signatures = signaturesWithStatus.map { it.signature }
-        val localTransactions = transactionsLocalRepository.getTransactions(signatures)
+        val localTransactions = transactionsLocalRepository.getTransactions(signaturesWithStatus.map { it.signature })
 
-        if (localTransactions.size != signatures.size) {
+        if (localTransactions.size != signaturesWithStatus.size) {
             val remoteTransaction = transactionsRemoteRepository.getTransactions(
                 userPublicKey = tokenKeyProvider.publicKey,
-                signatures = signatures
+                signatures = signaturesWithStatus
             )
-
-            remoteTransaction.forEach { transactionDetails ->
-                transactionDetails.status =
-                    signaturesWithStatus.first { it.signature == transactionDetails.signature }.status
-            }
-
             transactionsLocalRepository.saveTransactions(remoteTransaction)
             return remoteTransaction.mapToHistoryTransactions(tokenPublicKey)
         }

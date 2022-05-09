@@ -83,7 +83,8 @@ object SolanaInstructionParser {
             signature = signature,
             slot = transactionRoot.slot,
             blockTime = transactionRoot.blockTime,
-            fee = transactionRoot.meta.fee
+            fee = transactionRoot.meta.fee,
+            mint = null
         )
     }
 

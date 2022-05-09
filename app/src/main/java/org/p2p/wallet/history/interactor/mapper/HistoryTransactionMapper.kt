@@ -79,8 +79,7 @@ class HistoryTransactionMapper(
         if (info != null) return info.mint.toBase58()
 
         val account = accountsInfo.find { it.first == details.alternateSource } ?: return null
-        val alternateInfo =
-            TokenTransaction.parseAccountInfoData(account.second, TokenProgram.PROGRAM_ID)
+        val alternateInfo = TokenTransaction.parseAccountInfoData(account.second, TokenProgram.PROGRAM_ID)
         return alternateInfo?.mint?.toBase58()
     }
 
