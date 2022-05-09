@@ -33,6 +33,7 @@ class TransactionDetailsRpcRepository(
         }
 
         val transactions = rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
+
         return fromNetworkToDomain(userPublicKey, transactions).onEach { transactionDetails ->
             transactionDetails.status =
                 transactionSignature.first { it.signature == transactionDetails.signature }.status
