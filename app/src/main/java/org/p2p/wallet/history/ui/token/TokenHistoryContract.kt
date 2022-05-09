@@ -16,13 +16,15 @@ interface TokenHistoryContract {
         fun showRefreshing(isRefreshing: Boolean)
         fun showError(@StringRes resId: Int, argument: String)
         fun openTransactionDetailsScreen(transaction: HistoryTransaction)
+        fun scrollToTop()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun loadHistory()
-        fun refresh()
-        fun fetchNextPage()
         fun onItemClicked(transaction: HistoryTransaction)
         fun closeAccount()
+        fun refreshHistory()
+        fun loadNextHistoryPage()
+        fun retry()
     }
 }

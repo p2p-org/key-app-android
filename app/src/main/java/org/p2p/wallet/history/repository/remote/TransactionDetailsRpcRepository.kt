@@ -1,6 +1,5 @@
 package org.p2p.wallet.history.repository.remote
 
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.wallet.history.interactor.mapper.TransactionDetailsNetworkMapper
 import org.p2p.solanaj.model.types.RpcRequest
@@ -29,12 +28,10 @@ class TransactionDetailsRpcRepository(
             RpcRequest(method = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params = params)
         }
 
+        val transactions = rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
+
         return rpcApi.getConfirmedTransactions(requestsBatch)
             .map { it.result }
-            .let {
-                withContext(dispatchers.io) {
-                    transactionDetailsNetworkMapper.fromNetworkToDomain(it)
-                }
-            }
+            .let { transactionDetailsNetworkMapper.fromNetworkToDomain(it) }
     }
 }

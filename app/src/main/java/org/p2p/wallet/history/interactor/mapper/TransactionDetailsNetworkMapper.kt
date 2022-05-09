@@ -4,6 +4,7 @@ import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
 import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
+import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 
@@ -30,7 +31,7 @@ class TransactionDetailsNetworkMapper(
                     }
                     else -> {
                         transactionDetails.addAll(
-                            TransactionDetailsParser.parse(
+                            SolanaInstructionParser.parse(
                                 signature = signature,
                                 transactionRoot = transaction,
                                 userInteractor = userInteractor,
@@ -42,79 +43,21 @@ class TransactionDetailsNetworkMapper(
                 transactionDetails.forEach {
                     it.error = transaction.meta.error?.instructionError
                 }
+                val unknownTransactionTypeLogData =
+                    "(parsedTransactions=$transactionDetails;\nconfirmedTransaction=${transaction.transaction}"
+
+                SolanjLogger.w(
+                    "TransactionDetailsNetworkMapper " +
+                        "unknown transactions type, skipping $unknownTransactionTypeLogData"
+                )
+                SolanjLogger.d(
+                    "TransactionDetailsNetworkMapper: " +
+                        "Parsing finished: ${transactionDetails.size}; total=${transactions.size}"
+                )
             } catch (e: Exception) {
                 Timber.e(e)
             }
         }
         return transactionDetails
     }
-
-//    fun fromNetworkToDomain(
-//        confirmedTransactionRoots: List<ConfirmedTransactionRootResponse>,
-//        findMintAddress: (String) -> String
-//    ): List<TransactionDetails> {
-//
-//        val resultTransactions = mutableListOf<TransactionDetails>()
-//
-//        confirmedTransactionRoots.forEach { confirmedTransaction ->
-//            val parsedTransactions = mapToDomain(
-//                transactionRoot = confirmedTransaction,
-//                onErrorLogger = { SolanjLogger.w(it) },
-//                findMintAddress = findMintAddress
-//            )
-//
-//            parsedTransactions.forEach {
-//                it.error = confirmedTransaction.meta.error?.instructionError
-//            }
-//
-//            val swapTransaction = parsedTransactions.firstOrNull { it is SwapDetails }
-//            if (swapTransaction != null) {
-//                resultTransactions.add(swapTransaction)
-//                return@forEach
-//            }
-//
-//            val burnOrMintTransaction = parsedTransactions.firstOrNull { it is BurnOrMintDetails }
-//            if (burnOrMintTransaction != null) {
-//                resultTransactions.add(burnOrMintTransaction)
-//                return@forEach
-//            }
-//
-//            val transferTransaction = parsedTransactions.firstOrNull { it is TransferDetails }
-//            if (transferTransaction != null) {
-//                resultTransactions.add(transferTransaction)
-//                return@forEach
-//            }
-//
-//            val createTransaction = parsedTransactions.firstOrNull { it is CreateAccountDetails }
-//            if (createTransaction != null) {
-//                resultTransactions.add(createTransaction)
-//                return@forEach
-//            }
-//
-//            val closeTransaction = parsedTransactions.firstOrNull { it is CloseAccountDetails }
-//            if (closeTransaction != null) {
-//                resultTransactions.add(closeTransaction)
-//                return@forEach
-//            }
-//
-//            val unknownTransaction = parsedTransactions.firstOrNull { it is UnknownDetails }
-//            if (unknownTransaction != null) {
-//                resultTransactions.add(unknownTransaction)
-//                return@forEach
-//            }
-//
-//            val unknownTransactionTypeLogData =
-//                "(parsedTransactions=$parsedTransactions;\nconfirmedTransaction=${confirmedTransaction.transaction}"
-//            SolanjLogger.w(
-//                "TransactionDetailsNetworkMapper " +
-//                    "unknown transactions type, skipping $unknownTransactionTypeLogData"
-//            )
-//        }
-//
-//        SolanjLogger.d(
-//            "TransactionDetailsNetworkMapper: " +
-//                "Parsing finished: ${resultTransactions.size}; total=${confirmedTransactionRoots.size}"
-//        )
-//        return resultTransactions.toList()
-//    }
 }

@@ -14,7 +14,7 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.user.interactor.UserInteractor
 
-object TransactionDetailsParser {
+object SolanaInstructionParser {
 
     fun parse(
         signature: String,

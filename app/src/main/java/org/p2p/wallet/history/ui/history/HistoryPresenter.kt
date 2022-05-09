@@ -10,14 +10,13 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
-
-private const val PAGE_SIZE = 20
 
 class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
@@ -26,13 +25,15 @@ class HistoryPresenter(
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val environmentManager: EnvironmentManager,
-    private val sendAnalytics: SendAnalytics
+    private val sendAnalytics: SendAnalytics,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private var isPagingEnded = false
     private var refreshJob: Job? = null
     private var pagingJob: Job? = null
 
+    private var lastTransactionSignature: String? = null
     private var transactions = mutableListOf<HistoryTransaction>()
 
     override fun attach(view: HistoryContract.View) {
@@ -44,6 +45,7 @@ class HistoryPresenter(
 
     override fun refreshHistory() {
         isPagingEnded = false
+        lastTransactionSignature = null
         refreshJob?.cancel()
 
         refreshJob = launch {
@@ -88,8 +90,17 @@ class HistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val fetchedItems = historyInteractor.getTransactionHistory2(isRefresh, PAGE_SIZE)
+            val signatures = historyInteractor.loadSignatureForAddress(
+                tokenPublicKey = tokenKeyProvider.publicKey,
+                before = lastTransactionSignature
+            )
+            val fetchedItems = historyInteractor.loadTransactionHistory(
+                tokenPublicKey = tokenKeyProvider.publicKey,
+                signaturesWithStatus = signatures,
+                forceRefresh = isRefresh
+            )
 
+            lastTransactionSignature = fetchedItems.last().signature
             transactions.addAll(fetchedItems)
 
             view?.showHistory(transactions)
