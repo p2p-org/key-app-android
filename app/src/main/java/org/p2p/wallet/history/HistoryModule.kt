@@ -4,7 +4,6 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.history.interactor.mapper.TransactionDetailsNetworkMapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
@@ -24,7 +23,6 @@ import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import retrofit2.Retrofit
@@ -89,21 +87,13 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsLocalRepository::class
 
-        factory {
-            TransactionDetailsNetworkMapper(
-                userPublicKey = get<TokenKeyProvider>().publicKey,
-                userInteractor = get()
-            )
-        }
         single {
             val api = get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER))
                 .create(RpcHistoryApi::class.java)
 
             TransactionDetailsRpcRepository(
                 rpcApi = api,
-                dispatchers = get(),
-                transactionDetailsNetworkMapper = get(),
-                userLocalRepository = get()
+                userInteractor = get()
             )
         } bind TransactionDetailsRemoteRepository::class
 

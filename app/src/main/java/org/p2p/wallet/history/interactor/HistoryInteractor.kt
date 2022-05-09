@@ -53,7 +53,10 @@ class HistoryInteractor(
         val localTransactions = transactionsLocalRepository.getTransactions(signatures)
 
         if (localTransactions.size != signatures.size) {
-            val remoteTransaction = transactionsRemoteRepository.getTransactions(signatures)
+            val remoteTransaction = transactionsRemoteRepository.getTransactions(
+                userPublicKey = tokenKeyProvider.publicKey,
+                signatures = signatures
+            )
 
             remoteTransaction.forEach { transactionDetails ->
                 transactionDetails.status =
