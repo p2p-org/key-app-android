@@ -32,7 +32,7 @@ class HistoryAdapter(
     private val onRetryClicked: () -> Unit
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
 
-    private var currentItems = mutableListOf<HistoryItem>()
+    private val currentItems = mutableListOf<HistoryItem>()
     private val pagingController = HistoryAdapterPagingController(this)
 
     @SuppressLint("NotifyDataSetChanged")
@@ -44,7 +44,8 @@ class HistoryAdapter(
             notifyDataSetChanged()
         } else {
             val oldItems = ArrayList(currentItems)
-            currentItems = newTransactions.mapToItems().toMutableList()
+            currentItems.clear()
+            currentItems.addAll(newTransactions.mapToItems())
 
             DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
                 .dispatchUpdatesTo(this)

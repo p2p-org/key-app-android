@@ -7,13 +7,12 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 class GoogleFirebaseCrashlytics(
     private val tokenKeyProvider: TokenKeyProvider
 ) : CrashLoggingService {
-
     init {
         val currentUserPublicKey = kotlin.runCatching { tokenKeyProvider.publicKey }.getOrDefault("")
         setUserId(CrashLoggingService.UserId(currentUserPublicKey))
 
-        tokenKeyProvider.registerListener { publicKey ->
-            setUserId(CrashLoggingService.UserId(publicKey))
+        tokenKeyProvider.registerListener { newUserPublicKey ->
+            setUserId(CrashLoggingService.UserId(newUserPublicKey))
         }
     }
 

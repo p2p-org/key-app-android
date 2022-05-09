@@ -53,6 +53,7 @@ fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
 fun BigDecimal.isLessThan(value: BigDecimal) = this.compareTo(value) == -1
 
 fun BigDecimal?.orZero(): BigDecimal = this ?: BigDecimal.ZERO
+fun BigInteger?.orZero(): BigInteger = this ?: BigInteger.ZERO
 
 fun BigInteger.isZero() = this.compareTo(BigInteger.ZERO) == 0
 fun BigInteger.isNotZero() = this.compareTo(BigInteger.ZERO) != 0

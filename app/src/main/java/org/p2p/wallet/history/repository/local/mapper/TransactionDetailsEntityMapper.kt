@@ -36,6 +36,7 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                         slot = it.identifiers.blockId,
                         blockTime = it.commonInformation.blockTimeSec,
                         fee = it.fee,
+                        mint = it.mint
                     )
                 }
                 is CloseAccountTransactionEntity -> {
@@ -113,7 +114,8 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                     CreateAccountTransactionEntity(
                         identifiers = identifiers,
                         commonInformation = commonInformation,
-                        fee = it.fee
+                        fee = it.fee,
+                        mint = it.mint
                     )
                 }
                 is CloseAccountDetails -> {

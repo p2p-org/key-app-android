@@ -26,7 +26,7 @@ class SettingsPresenter(
     private val context: Context
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
-    var networkName = environmentManager.loadEnvironment().name
+    private var networkName = environmentManager.loadEnvironment().name
 
     override fun loadData() {
         launch {

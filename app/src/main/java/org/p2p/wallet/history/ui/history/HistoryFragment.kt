@@ -15,6 +15,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -43,7 +44,7 @@ class HistoryFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
 
-            historyRecyclerView.adapter = adapter
+            historyRecyclerView.attachAdapter(adapter)
             retryButton.setOnClickListener {
                 presenter.retry()
             }
@@ -57,6 +58,11 @@ class HistoryFragment :
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()
+            }
+            historyRecyclerView.addOnScrollListener(scrollListener)
+            historyRecyclerView.adapter = adapter
+            retryButton.setOnClickListener {
+                presenter.loadHistory()
             }
         }
         presenter.loadHistory()
