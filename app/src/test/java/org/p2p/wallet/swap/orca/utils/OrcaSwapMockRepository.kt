@@ -2,10 +2,26 @@ package org.p2p.wallet.swap.orca.utils
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.swap.model.AccountBalance
+import org.p2p.wallet.swap.model.orca.OrcaAquafarm
+import org.p2p.wallet.swap.model.orca.OrcaAquafarms
+import org.p2p.wallet.swap.model.orca.OrcaConfigs
+import org.p2p.wallet.swap.model.orca.OrcaPool
+import org.p2p.wallet.swap.model.orca.OrcaPools
+import org.p2p.wallet.swap.model.orca.OrcaProgramId
+import org.p2p.wallet.swap.model.orca.OrcaToken
+import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import java.math.BigInteger
 
 class OrcaSwapMockRepository : OrcaSwapRepository {
+
+    override suspend fun loadOrcaConfigs(): OrcaConfigs =
+        OrcaConfigs(
+            tokens = mapOf<String, OrcaToken>() as OrcaTokens,
+            aquafarms =  mapOf<String, OrcaAquafarm>() as OrcaAquafarms,
+            pools =  mapOf<String, OrcaPool>() as OrcaPools,
+            programId =  OrcaProgramId("","","","",""),
+        )
 
     override suspend fun loadTokenBalance(publicKey: PublicKey): AccountBalance {
         // BTC/ETH
