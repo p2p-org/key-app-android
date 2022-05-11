@@ -47,9 +47,10 @@ commands:
           name: "Upload using CURL request to Slack"
           command: |
             curl \
+              -S -s -o /dev/null \
               -F token="${SLACK_BOT_TOKEN}" \
               -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
-              -F initial_comment="Hey! Here is the feature APK. Success :tada:)" \
+              -F initial_comment="Hey! Here is the feature APK. Success :tada:" \
               -F "file=@$(find app/build/outputs/apk/feature -name 'p2p*')" \
               https://slack.com/api/files.upload
 
@@ -60,9 +61,10 @@ commands:
           name: "Upload using CURL request to Slack"
           command: |
             curl \
+              -S -s -o /dev/null \
               -F token="${SLACK_BOT_TOKEN}" \
               -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
-              -F initial_comment="Hey! Here is the release APK. Success :tada:)" \
+              -F initial_comment="Hey! Here is the release APK. Success :tada:" \
               -F "file=@$(find app/build/outputs/apk/release -name 'p2p*')" \
               https://slack.com/api/files.upload
 
