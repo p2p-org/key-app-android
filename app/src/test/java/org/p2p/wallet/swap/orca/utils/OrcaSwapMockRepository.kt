@@ -18,9 +18,9 @@ class OrcaSwapMockRepository : OrcaSwapRepository {
     override suspend fun loadOrcaConfigs(): OrcaConfigs =
         OrcaConfigs(
             tokens = mapOf<String, OrcaToken>() as OrcaTokens,
-            aquafarms =  mapOf<String, OrcaAquafarm>() as OrcaAquafarms,
-            pools =  mapOf<String, OrcaPool>() as OrcaPools,
-            programId =  OrcaProgramId("","","","",""),
+            aquafarms = mapOf<String, OrcaAquafarm>() as OrcaAquafarms,
+            pools = mapOf<String, OrcaPool>() as OrcaPools,
+            programId = OrcaProgramId("", "", "", "", ""),
         )
 
     override suspend fun loadTokenBalance(publicKey: PublicKey): AccountBalance {
