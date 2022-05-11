@@ -40,18 +40,32 @@ commands:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
 
-  upload_apk_to_slack:
-    description: "Upload builded app to Slack channel"
+  upload_feature_apk_to_slack:
+    description: "Upload `feature` app to Slack channel"
     steps:
       - run:
           name: "Upload using CURL request to Slack"
           command: |
             curl \
-              -F token="${SLACK_CHANNEL_ACCESS_TOKEN}" \
-              -F channels="U03DXGAQ4DV" \
-              -F initial_comment="Hey! Here is the APK of branch (Build number ${CIRCLE_BUILD_NUM} Success :tada:)" \
-              -F "file=@$(find app/build/outputs/apk/feature -name 'app*')" \
+              -F token="${SLACK_BOT_TOKEN}" \
+              -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
+              -F initial_comment="Hey! Here is the feature APK. Success :tada:)" \
+              -F "file=@$(find app/build/intermediates/apk/feature -name 'app*')" \
               https://slack.com/api/files.upload
+
+  upload_release_apk_to_slack:
+    description: "Upload `release` app to Slack channel"
+    steps:
+      - run:
+          name: "Upload using CURL request to Slack"
+          command: |
+            curl \
+              -F token="${SLACK_BOT_TOKEN}" \
+              -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
+              -F initial_comment="Hey! Here is the release APK. Success :tada:)" \
+              -F "file=@$(find app/build/intermediates/apk/release -name 'app*')" \
+              https://slack.com/api/files.upload
+
 
 defaults: &defaults
   working_directory: ~/app
@@ -118,8 +132,8 @@ jobs:
           destination: gradle.properties
       - run:
           name: "Distribute to Firebase App Distribution"
-          command: ./gradlew assembleFeature
-      - upload_apk_to_slack
+          command: ./gradlew assembleFeature appDistributionUploadFeature
+      - upload_feature_apk_to_slack
       - store_artifacts:
           path: app/build/outputs/apk/feature
 
@@ -144,6 +158,7 @@ jobs:
       - run:
           name: "Distribute release to Firebase App Distribution"
           command: ./gradlew bundleRelease appDistributionUploadRelease
+      - upload_release_apk_to_slack
       - store_artifacts:
           path: app/build/outputs/apk/release
 

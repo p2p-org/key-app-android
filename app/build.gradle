@@ -143,6 +143,19 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def apkName = "p2p_wallet" +
+                    "_${VERSION_CODE}" +
+                    "_${VERSION_NAME}" +
+                    "_${taskNumber()}" +
+                    "_${variant.buildType.name}" +
+                    ".apk"
+
+            outputFileName = apkName
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }
