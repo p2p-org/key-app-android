@@ -25,7 +25,7 @@ object SolanaInstructionParser {
 
         val transactionInstructions = transactionRoot.transaction?.message?.instructions ?: emptyList()
 
-        val items = transactionInstructions.map { instruction ->
+        val items = transactionInstructions.filter { it.parsed != null }.map { instruction ->
 
             val parsedInfo = instruction.parsed
             val type = parsedInfo?.type

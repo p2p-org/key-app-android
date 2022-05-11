@@ -19,7 +19,7 @@ class TransactionDetailsRpcRepository(
 
     override suspend fun getTransactions(
         userPublicKey: String,
-        transactionSignature: List<RpcTransactionSignature>
+        transactionSignatures: List<RpcTransactionSignature>
     ): List<TransactionDetails> {
         val encoding = buildMap {
             this[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] =
@@ -27,7 +27,7 @@ class TransactionDetailsRpcRepository(
             this[RpcConstants.REQUEST_PARAMETER_KEY_COMMITMENT] =
                 RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
         }
-        val requestsBatch = transactionSignature.map { signature ->
+        val requestsBatch = transactionSignatures.map { signature ->
             val params = listOf(signature.signature, encoding)
             RpcRequest(method = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params = params)
         }
@@ -36,7 +36,7 @@ class TransactionDetailsRpcRepository(
 
         return fromNetworkToDomain(userPublicKey, transactions).onEach { transactionDetails ->
             transactionDetails.status =
-                transactionSignature.first { it.signature == transactionDetails.signature }.status
+                transactionSignatures.first { it.signature == transactionDetails.signature }.status
         }
     }
 
@@ -74,7 +74,7 @@ class TransactionDetailsRpcRepository(
                     it.error = transaction.meta.error?.instructionError
                 }
             } catch (e: Exception) {
-                Timber.e(e)
+                Timber.e("Error while parsing transaction from Rpc Api = $e")
             }
         }
         return transactionDetails

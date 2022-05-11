@@ -44,7 +44,6 @@ class HistoryFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
 
-            historyRecyclerView.attachAdapter(adapter)
             retryButton.setOnClickListener {
                 presenter.retry()
             }
@@ -54,13 +53,12 @@ class HistoryFragment :
             )
 
             historyRecyclerView.addOnScrollListener(scrollListener)
+            historyRecyclerView.attachAdapter(adapter)
 
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()
             }
-            historyRecyclerView.addOnScrollListener(scrollListener)
-            historyRecyclerView.adapter = adapter
             retryButton.setOnClickListener {
                 presenter.loadHistory()
             }

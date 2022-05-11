@@ -11,6 +11,6 @@ enum class TransactionDetailsType(val typeStr: String?) {
 
     companion object {
         fun valueOf(typeStr: String?): TransactionDetailsType =
-            values().firstOrNull { it.typeStr == typeStr } ?: UNKNOWN
+            values().firstOrNull { it.typeStr.equals(typeStr, ignoreCase = true) } ?: UNKNOWN
     }
 }

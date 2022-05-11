@@ -38,7 +38,8 @@ class HistoryInteractor(
     }
 
     suspend fun getHistoryTransaction(tokenPublicKey: String, transactionId: String) =
-        transactionsLocalRepository.getTransactions(listOf(transactionId)).mapToHistoryTransactions(tokenPublicKey)
+        transactionsLocalRepository.getTransactions(listOf(transactionId))
+            .mapToHistoryTransactions(tokenPublicKey)
             .first()
 
     suspend fun loadTransactionHistory(
