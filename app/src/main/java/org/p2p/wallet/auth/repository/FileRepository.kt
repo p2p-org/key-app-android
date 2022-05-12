@@ -49,18 +49,27 @@ class FileRepository(private val context: Context) {
         val fileName = name ?: Date().toString()
         val appName = context.getString(R.string.app_name)
         try {
-            val file: File
-            val outputStream = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val file: File = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val resolver = context.contentResolver
-                val contentValues = ContentValues()
-                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$appName")
-                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "$fileName.png")
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Images.Media.DISPLAY_NAME, "$fileName.png")
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                    put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$appName")
+                    put(MediaStore.Images.Media.IS_PENDING, 1)
+                }
 
-                val uri: Uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                val collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                val uri = resolver.insert(collection, contentValues)
                     ?: throw IOException("Unable to get Uri: $contentValues")
-                file = File(uri.toString())
+                resolver.openOutputStream(uri).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+
+                contentValues.clear()
+                contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+                resolver.update(uri, contentValues, null, null)
                 resolver.openOutputStream(uri) ?: throw IOException("Unable to open OutputStream from uri: $uri")
+                File(uri.toString())
             } else {
                 val mainDir = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
@@ -70,13 +79,13 @@ class FileRepository(private val context: Context) {
                     mainDir.mkdir()
                 }
                 val stringPath = "${mainDir.absolutePath}/$fileName.png"
-                file = File(stringPath)
-                FileOutputStream(file)
+                File(stringPath).also {
+                    val outputStream = FileOutputStream(it)
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    outputStream.flush()
+                    outputStream.close()
+                }
             }
-
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
             // Add image to gallery
             MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
             return file
