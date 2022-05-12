@@ -47,6 +47,10 @@ String getVersionBuild() {
     }
 }
 
+String getBuildAppFileName() {
+    """p2p_wallet_${getVersionBuild()}_${VERSION_NAME}_${taskNumber()}"""
+}
+
 android {
     compileSdkVersion sdkCompileVersion
 
@@ -73,6 +77,8 @@ android {
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+
+        setProperty("archivesBaseName", getBuildAppFileName())
     }
 
     signingConfigs {
@@ -155,14 +161,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            def apkName = "p2p_wallet" +
-                    "_${getVersionBuild()}" +
-                    "_${VERSION_NAME}" +
-                    "_${taskNumber()}" +
-                    "_${variant.buildType.name}" +
-                    ".apk"
-
-            outputFileName = apkName
+            outputFileName = getBuildAppFileName() + "_${variant.buildType.name}" + ".apk"
         }
     }
 

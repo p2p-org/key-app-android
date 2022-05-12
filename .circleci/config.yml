@@ -65,7 +65,7 @@ commands:
               -F token="${SLACK_BOT_TOKEN}" \
               -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
               -F initial_comment="Hey! Here is the release AAB. Success :tada:" \
-              -F "file=@$(find app/build/outputs/bundle/release -name 'app-*')" \
+              -F "file=@$(find app/build/outputs/bundle/release -name 'p2p*')" \
               https://slack.com/api/files.upload
 
   generate_build_version:
