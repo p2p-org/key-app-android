@@ -1,5 +1,6 @@
 package org.p2p.wallet.receive.solana
 
+import android.Manifest
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -12,13 +13,19 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.permissions.PermissionDeniedDialog
+import org.p2p.wallet.common.permissions.PermissionState
+import org.p2p.wallet.common.permissions.PermissionsDialog
+import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
+import org.p2p.wallet.receive.widget.QrView
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -29,11 +36,13 @@ import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 import java.io.File
 
 class ReceiveSolanaFragment :
     BaseMvpFragment<ReceiveSolanaContract.View, ReceiveSolanaContract.Presenter>(R.layout.fragment_receive_solana),
-    ReceiveSolanaContract.View {
+    ReceiveSolanaContract.View,
+    PermissionsDialog.Callback {
 
     companion object {
         private const val EXTRA_TOKEN = "EXTRA_TOKEN"
@@ -63,6 +72,9 @@ class ReceiveSolanaFragment :
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.LIST)
                 replaceFragment(TokenListFragment.create())
             }
+            receiveCardView.setOnRequestPermissions {
+                checkStatusAndRequestPermissionsIfNotGranted()
+            }
             receiveCardView.setOnShareQrClickListener { qrValue, qrImage ->
                 presenter.saveQr(qrValue, qrImage, shareAfter = true)
                 receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
@@ -73,6 +85,7 @@ class ReceiveSolanaFragment :
             receiveCardView.setOnSaveQrClickListener { qrValue, qrImage ->
                 presenter.saveQr(qrValue, qrImage)
             }
+            receiveCardView.setTokenSymbol(token?.tokenSymbol ?: Constants.SOL_SYMBOL)
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
         }
 
@@ -135,5 +148,45 @@ class ReceiveSolanaFragment :
 
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
+    }
+
+    override fun onPermissionsResult(state: Map<String, PermissionState>, payload: Any?) {
+        onCameraPermissionResult(state[Manifest.permission.WRITE_EXTERNAL_STORAGE])
+    }
+
+    private fun checkStatusAndRequestPermissionsIfNotGranted(): Boolean {
+        return PermissionsUtil.isGranted(
+            requireContext(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ).also { isGranted ->
+            if (!isGranted) {
+                PermissionsDialog.requestPermissions(
+                    this,
+                    listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                )
+            }
+        }
+    }
+
+    private fun onCameraPermissionResult(state: PermissionState?) {
+        when (state) {
+            PermissionState.GRANTED -> {
+                with(binding.receiveCardView) {
+                    when (val action = getQrCodeLastAction()) {
+                        QrView.QrCodeAction.SHARE -> requestShare()
+                        QrView.QrCodeAction.SAVE -> requestSave()
+                        else -> {
+                            Timber.e("Unsupported QrCodeAction $action")
+                        }
+                    }
+                }
+            }
+            else -> PermissionDeniedDialog.show(
+                fragment = this,
+                permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                title = getString(R.string.storage_permission_alert_title),
+                message = getString(R.string.storage_permission_alert_message)
+            )
+        }
     }
 }

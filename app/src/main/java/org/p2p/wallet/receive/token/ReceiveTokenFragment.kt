@@ -1,5 +1,6 @@
 package org.p2p.wallet.receive.token
 
+import android.Manifest
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -10,10 +11,15 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.permissions.PermissionDeniedDialog
+import org.p2p.wallet.common.permissions.PermissionState
+import org.p2p.wallet.common.permissions.PermissionsDialog
+import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentReceiveTokenBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
+import org.p2p.wallet.receive.widget.QrView
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
@@ -25,13 +31,15 @@ import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 import java.io.File
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
 class ReceiveTokenFragment :
     BaseMvpFragment<ReceiveTokenContract.View, ReceiveTokenContract.Presenter>(R.layout.fragment_receive_token),
-    ReceiveTokenContract.View {
+    ReceiveTokenContract.View,
+    PermissionsDialog.Callback {
 
     companion object {
         private const val REQUEST_KEY = "REQUEST_KEY_RECEIVE_TOKEN"
@@ -73,6 +81,9 @@ class ReceiveTokenFragment :
                     )
                 )
             }
+            receiveCardView.setOnRequestPermissions {
+                checkStatusAndRequestPermissionsIfNotGranted()
+            }
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
             }
@@ -80,6 +91,7 @@ class ReceiveTokenFragment :
                 presenter.saveQr(name, qrImage, shareAfter = true)
             }
             receiveCardView.setQrWatermark(token.iconUrl)
+            receiveCardView.setTokenSymbol(token.tokenSymbol)
             receiveCardView.showQrLoading(false)
             receiveCardView.setFaqVisibility(false)
             receiveCardView.setSelectNetworkVisibility(isVisible = token.isRenBTC)
@@ -150,5 +162,45 @@ class ReceiveTokenFragment :
 
     override fun showShareQr(qrImage: File, qrValue: String) {
         requireContext().shareScreenShot(qrImage, qrValue)
+    }
+
+    override fun onPermissionsResult(state: Map<String, PermissionState>, payload: Any?) {
+        onCameraPermissionResult(state[Manifest.permission.WRITE_EXTERNAL_STORAGE])
+    }
+
+    private fun checkStatusAndRequestPermissionsIfNotGranted(): Boolean {
+        return PermissionsUtil.isGranted(
+            requireContext(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ).also { isGranted ->
+            if (!isGranted) {
+                PermissionsDialog.requestPermissions(
+                    this,
+                    listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                )
+            }
+        }
+    }
+
+    private fun onCameraPermissionResult(state: PermissionState?) {
+        when (state) {
+            PermissionState.GRANTED -> {
+                with(binding.receiveCardView) {
+                    when (val action = getQrCodeLastAction()) {
+                        QrView.QrCodeAction.SHARE -> requestShare()
+                        QrView.QrCodeAction.SAVE -> requestSave()
+                        else -> {
+                            Timber.e("Unsupported QrCodeAction $action")
+                        }
+                    }
+                }
+            }
+            else -> PermissionDeniedDialog.show(
+                fragment = this,
+                permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                title = getString(R.string.storage_permission_alert_title),
+                message = getString(R.string.storage_permission_alert_message)
+            )
+        }
     }
 }

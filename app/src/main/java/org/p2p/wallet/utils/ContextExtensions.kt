@@ -1,19 +1,21 @@
 package org.p2p.wallet.utils
 
-import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.annotation.DrawableRes
+import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import android.graphics.drawable.Drawable
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import java.io.File
 
@@ -52,9 +54,11 @@ fun Context.shareText(value: String) {
 }
 
 fun Context.shareScreenShot(image: File, providedText: String = "Save Screenshot") {
-    val uri = FileProvider.getUriForFile(this, this.packageName + ".provider", image)
-    val intent = Intent().apply {
+    val uri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.provider", image)
+
+    val intent = ShareCompat.IntentBuilder(this).intent.apply {
         action = Intent.ACTION_SEND
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         type = "image/*"
         putExtra(Intent.EXTRA_TEXT, providedText)
         putExtra(Intent.EXTRA_STREAM, uri)

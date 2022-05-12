@@ -25,9 +25,14 @@ class QrView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val binding = WidgetQrViewBinding.inflate(LayoutInflater.from(context), this)
+    private var tokenSymbol: String? = null
+
     var onShareClickListener: ((String, Bitmap) -> Unit)? = null
     var onCopyClickListener: (() -> Unit)? = null
     var onSaveClickListener: ((String, Bitmap) -> Unit)? = null
+    var onRequestPermissions: (() -> Boolean)? = null
+
+    var qrCodeLastAction: QrCodeAction? = null
 
     fun setValue(qrValue: Spannable) {
         with(binding) {
@@ -38,10 +43,16 @@ class QrView @JvmOverloads constructor(
                 context.toast(R.string.main_receive_address_copied)
             }
             saveButton.setOnClickListener {
-                showSnapshotAnimation(QrCodeAction.SAVE)
+                qrCodeLastAction = QrCodeAction.SAVE
+                if (onRequestPermissions?.invoke() == true) {
+                    showSnapshotAnimation(QrCodeAction.SAVE)
+                }
             }
             shareButton.setOnClickListener {
-                showSnapshotAnimation(QrCodeAction.SHARE)
+                qrCodeLastAction = QrCodeAction.SHARE
+                if (onRequestPermissions?.invoke() == true) {
+                    showSnapshotAnimation(QrCodeAction.SHARE)
+                }
             }
             copyButton.setOnClickListener {
                 context.copyToClipBoard(qrValue.toString())
@@ -80,10 +91,16 @@ class QrView @JvmOverloads constructor(
         Glide.with(this).load(iconUrl).into(binding.watermarkImageView)
     }
 
+    fun setTokenSymbol(symbol: String) {
+        tokenSymbol = symbol
+    }
+
     fun showLoading(isLoading: Boolean) {
         binding.qrImageView.isVisible = !isLoading
         binding.progressBar.isVisible = isLoading
     }
+
+    fun requestAction(action: QrCodeAction) = showSnapshotAnimation(action)
 
     private fun showSnapshotAnimation(action: QrCodeAction) {
         val animation = AlphaAnimation(1.0f, 0.0f)
@@ -92,14 +109,12 @@ class QrView @JvmOverloads constructor(
         animation.repeatCount = 1
         animation.interpolator = LinearInterpolator()
         animation.repeatMode = Animation.REVERSE
-        var bitmap: Bitmap
 
         animation.setAnimationListener(object : Animation.AnimationListener {
 
             override fun onAnimationStart(animation: Animation?) {
                 binding.actionContainer.isVisible = false
                 binding.logoImageView.isVisible = true
-                bitmap = binding.root.createBitmap()
             }
 
             override fun onAnimationEnd(animation: Animation?) {
@@ -115,9 +130,10 @@ class QrView @JvmOverloads constructor(
 
     private fun onSnapshotReady(bitmap: Bitmap, action: QrCodeAction) {
         val qrValue = binding.valueTextView.text.toString()
+        val name = "$qrValue.${tokenSymbol.orEmpty()}"
         when (action) {
-            QrCodeAction.SHARE -> onShareClickListener?.invoke(qrValue, bitmap)
-            QrCodeAction.SAVE -> onSaveClickListener?.invoke(qrValue, bitmap)
+            QrCodeAction.SHARE -> onShareClickListener?.invoke(name, bitmap)
+            QrCodeAction.SAVE -> onSaveClickListener?.invoke(name, bitmap)
         }
     }
 

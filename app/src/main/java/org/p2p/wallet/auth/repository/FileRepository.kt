@@ -1,9 +1,13 @@
 package org.p2p.wallet.auth.repository
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaScannerConnection
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import org.p2p.wallet.R
 import timber.log.Timber
 import java.io.BufferedOutputStream
@@ -43,26 +47,60 @@ class FileRepository(private val context: Context) {
 
     fun saveBitmapAsFile(bitmap: Bitmap, name: String? = null): File? {
         val fileName = name ?: Date().toString()
+        val appName = context.getString(R.string.app_name)
         try {
-            val mainDir = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                context.getString(R.string.app_name)
-            )
-            if (!mainDir.exists()) {
-                mainDir.mkdir()
+            val file: File
+            val outputStream = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val resolver = context.contentResolver
+                val contentValues = ContentValues()
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$appName")
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "$fileName.png")
+
+                val uri: Uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                    ?: throw IOException("Unable to get Uri: $contentValues")
+                file = File(uri.toString())
+                resolver.openOutputStream(uri) ?: throw IOException("Unable to open OutputStream from uri: $uri")
+            } else {
+                val mainDir = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    appName
+                )
+                if (!mainDir.exists()) {
+                    mainDir.mkdir()
+                }
+                val stringPath = "${mainDir.absolutePath}/$fileName.png"
+                file = File(stringPath)
+                FileOutputStream(file)
             }
-            val stringPath = mainDir.absolutePath + "/$fileName" + ".png"
-            val imageFile = File(stringPath)
-            val fos = FileOutputStream(imageFile)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            fos.flush()
-            fos.close()
+
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
             // Add image to gallery
-            MediaScannerConnection.scanFile(context, arrayOf(imageFile.toString()), null, null)
-            return imageFile
+            MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
+            return file
         } catch (e: IOException) {
             Timber.e(e, "Error on saving bitmap to file")
         }
         return null
+    }
+
+    private fun getUriFromPath(displayName: String): Uri? {
+        val photoId: Long
+        val photoUri = MediaStore.Images.Media.getContentUri("external")
+        val projection = arrayOf(MediaStore.Images.ImageColumns._ID)
+        val cursor = context.contentResolver.query(
+            photoUri,
+            projection,
+            MediaStore.Images.ImageColumns.DISPLAY_NAME + " LIKE ?",
+            arrayOf(displayName),
+            null
+        )!!
+        cursor.moveToFirst()
+        val columnIndex = cursor.getColumnIndex(projection[0])
+        photoId = cursor.getLong(columnIndex)
+        cursor.close()
+        return Uri.parse("$photoUri/$photoId")
     }
 }

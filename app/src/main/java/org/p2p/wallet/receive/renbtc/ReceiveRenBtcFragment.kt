@@ -1,5 +1,6 @@
 package org.p2p.wallet.receive.renbtc
 
+import android.Manifest
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
@@ -7,14 +8,20 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.permissions.PermissionDeniedDialog
+import org.p2p.wallet.common.permissions.PermissionState
+import org.p2p.wallet.common.permissions.PermissionsDialog
+import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.widget.QrView
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -25,11 +32,13 @@ import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import timber.log.Timber
 import java.io.File
 
 class ReceiveRenBtcFragment :
     BaseMvpFragment<ReceiveRenBtcContract.View, ReceiveRenBtcContract.Presenter>(R.layout.fragment_receive_ren_btc),
-    ReceiveRenBtcContract.View {
+    ReceiveRenBtcContract.View,
+    PermissionsDialog.Callback {
 
     companion object {
         private const val REQUEST_KEY = "REQUEST_KEY_RECEIVE_REN_BTC"
@@ -54,6 +63,9 @@ class ReceiveRenBtcFragment :
                 presenter.onStatusReceivedClicked()
             }
 
+            receiveCardView.setOnRequestPermissions {
+                checkStatusAndRequestPermissionsIfNotGranted()
+            }
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
             }
@@ -75,6 +87,7 @@ class ReceiveRenBtcFragment :
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
             receiveCardView.setFaqVisibility(isVisible = false)
             receiveCardView.setQrWatermark(R.drawable.ic_btc)
+            receiveCardView.setTokenSymbol(Constants.REN_BTC_SYMBOL)
             receiveCardView.setNetworkName(getString(R.string.send_bitcoin_network))
 
             setFragmentResultListener(REQUEST_KEY) { _, bundle ->
@@ -168,5 +181,45 @@ class ReceiveRenBtcFragment :
 
     override fun showShareQr(qrImage: File, qrValue: String) {
         requireContext().shareScreenShot(qrImage, qrValue)
+    }
+
+    override fun onPermissionsResult(state: Map<String, PermissionState>, payload: Any?) {
+        onCameraPermissionResult(state[Manifest.permission.WRITE_EXTERNAL_STORAGE])
+    }
+
+    private fun checkStatusAndRequestPermissionsIfNotGranted(): Boolean {
+        return PermissionsUtil.isGranted(
+            requireContext(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ).also { isGranted ->
+            if (!isGranted) {
+                PermissionsDialog.requestPermissions(
+                    this,
+                    listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                )
+            }
+        }
+    }
+
+    private fun onCameraPermissionResult(state: PermissionState?) {
+        when (state) {
+            PermissionState.GRANTED -> {
+                with(binding.receiveCardView) {
+                    when (val action = getQrCodeLastAction()) {
+                        QrView.QrCodeAction.SHARE -> requestShare()
+                        QrView.QrCodeAction.SAVE -> requestSave()
+                        else -> {
+                            Timber.e("Unsupported QrCodeAction $action")
+                        }
+                    }
+                }
+            }
+            else -> PermissionDeniedDialog.show(
+                fragment = this,
+                permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                title = getString(R.string.storage_permission_alert_title),
+                message = getString(R.string.storage_permission_alert_message)
+            )
+        }
     }
 }
