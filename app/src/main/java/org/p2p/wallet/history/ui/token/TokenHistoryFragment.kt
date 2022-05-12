@@ -83,7 +83,7 @@ class TokenHistoryFragment :
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
 
-        refreshLayout.setOnRefreshListener { presenter.retry() }
+        refreshLayout.setOnRefreshListener { presenter.retryLoad() }
 
         actionButtonsView.setupListeners()
 

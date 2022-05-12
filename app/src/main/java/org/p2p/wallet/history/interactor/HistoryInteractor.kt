@@ -24,7 +24,7 @@ class HistoryInteractor(
     private val historyTransactionMapper: HistoryTransactionMapper
 ) {
 
-    suspend fun loadSignatureForAddress(
+    suspend fun loadSignaturesForAddress(
         tokenPublicKey: String,
         before: String? = null
     ): List<RpcTransactionSignature> {
@@ -55,7 +55,7 @@ class HistoryInteractor(
         if (localTransactions.size != signaturesWithStatus.size) {
             val remoteTransaction = transactionsRemoteRepository.getTransactions(
                 userPublicKey = tokenKeyProvider.publicKey,
-                signatures = signaturesWithStatus
+                transactionSignatures = signaturesWithStatus
             )
             transactionsLocalRepository.saveTransactions(remoteTransaction)
             return remoteTransaction.mapToHistoryTransactions(tokenPublicKey)

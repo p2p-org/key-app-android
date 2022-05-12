@@ -11,10 +11,12 @@ enum class TransactionStatus(@StringRes val resValue: Int) {
     ERROR(R.string.details_error);
 
     companion object {
-        fun from(response: TransactionDetails) = when {
-            response.status == ConfirmationStatus.CONFIRMED -> PENDING
-            response.error.isNullOrEmpty() -> COMPLETED
-            else -> ERROR
+        fun from(response: TransactionDetails): TransactionStatus {
+            return when {
+                response.status == ConfirmationStatus.CONFIRMED -> PENDING
+                response.error.isNullOrEmpty() -> COMPLETED
+                else -> ERROR
+            }
         }
     }
 }

@@ -10,7 +10,6 @@ import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.user.interactor.UserInteractor
-import timber.log.Timber
 
 class TransactionDetailsRpcRepository(
     private val rpcApi: RpcHistoryApi,
@@ -46,35 +45,31 @@ class TransactionDetailsRpcRepository(
     ): List<TransactionDetails> {
         val transactionDetails = mutableListOf<TransactionDetails>()
         transactions.forEach { transaction ->
-            try {
-                val signature = transaction.transaction?.getTransactionId() ?: return@forEach
-                when {
-                    OrcaSwapInstructionParser.isTransactionContainsOrcaSwap(transaction) -> {
-                        val orcaSwapDetails =
-                            OrcaSwapInstructionParser.parse(signature = signature, transactionRoot = transaction)
-                        transactionDetails.add(orcaSwapDetails.getOrThrow())
-                    }
-                    SerumSwapInstructionParser.isTransactionContainsSerumSwap(transaction) -> {
-                        val serumSwapDetails =
-                            SerumSwapInstructionParser.parse(signature = signature, transactionRoot = transaction)
-                        transactionDetails.add(serumSwapDetails.getOrThrow())
-                    }
-                    else -> {
-                        transactionDetails.addAll(
-                            SolanaInstructionParser.parse(
-                                signature = signature,
-                                transactionRoot = transaction,
-                                userInteractor = userInteractor,
-                                userPublicKey = tokenPublicKey
-                            )
+            val signature = transaction.transaction?.getTransactionId() ?: return@forEach
+            when {
+                OrcaSwapInstructionParser.isTransactionContainsOrcaSwap(transaction) -> {
+                    val orcaSwapDetails =
+                        OrcaSwapInstructionParser.parse(signature = signature, transactionRoot = transaction)
+                    transactionDetails.add(orcaSwapDetails.getOrThrow())
+                }
+                SerumSwapInstructionParser.isTransactionContainsSerumSwap(transaction) -> {
+                    val serumSwapDetails =
+                        SerumSwapInstructionParser.parse(signature = signature, transactionRoot = transaction)
+                    transactionDetails.add(serumSwapDetails.getOrThrow())
+                }
+                else -> {
+                    transactionDetails.addAll(
+                        SolanaInstructionParser.parse(
+                            signature = signature,
+                            transactionRoot = transaction,
+                            userInteractor = userInteractor,
+                            userPublicKey = tokenPublicKey
                         )
-                    }
+                    )
                 }
-                transactionDetails.forEach {
-                    it.error = transaction.meta.error?.instructionError
-                }
-            } catch (e: Exception) {
-                Timber.e("Error while parsing transaction from Rpc Api = $e")
+            }
+            transactionDetails.forEach {
+                it.error = transaction.meta.error?.instructionError
             }
         }
         return transactionDetails

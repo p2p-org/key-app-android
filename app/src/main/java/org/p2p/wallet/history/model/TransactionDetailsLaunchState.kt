@@ -8,6 +8,5 @@ sealed class TransactionDetailsLaunchState : Parcelable {
     data class Id(val tokenPublicKey: String, val transactionId: String) : TransactionDetailsLaunchState()
 
     @Parcelize
-    data class History(val transaction: HistoryTransaction) :
-        TransactionDetailsLaunchState()
+    data class History(val transaction: HistoryTransaction) : TransactionDetailsLaunchState()
 }

@@ -90,7 +90,7 @@ class HistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val signatures = historyInteractor.loadSignatureForAddress(
+            val signatures = historyInteractor.loadSignaturesForAddress(
                 tokenPublicKey = tokenKeyProvider.publicKey,
                 before = lastTransactionSignature
             )

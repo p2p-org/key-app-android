@@ -6,6 +6,6 @@ import org.p2p.wallet.history.model.RpcTransactionSignature
 interface TransactionDetailsRemoteRepository {
     suspend fun getTransactions(
         userPublicKey: String,
-        signatures: List<RpcTransactionSignature>
+        transactionSignatures: List<RpcTransactionSignature>
     ): List<TransactionDetails>
 }

@@ -78,7 +78,7 @@ class TokenHistoryPresenter(
         }
     }
 
-    override fun retry() {
+    override fun retryLoad() {
         launch {
             val pagingState = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
             view?.showPagingState(pagingState)
@@ -102,7 +102,7 @@ class TokenHistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val signatures = historyInteractor.loadSignatureForAddress(
+            val signatures = historyInteractor.loadSignaturesForAddress(
                 tokenPublicKey = token.publicKey,
                 before = lastTransactionSignature
             )
