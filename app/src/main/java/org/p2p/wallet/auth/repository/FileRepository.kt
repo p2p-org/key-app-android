@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -94,21 +93,4 @@ class FileRepository(private val context: Context) {
         return null
     }
 
-    private fun getUriFromPath(displayName: String): Uri? {
-        val photoId: Long
-        val photoUri = MediaStore.Images.Media.getContentUri("external")
-        val projection = arrayOf(MediaStore.Images.ImageColumns._ID)
-        val cursor = context.contentResolver.query(
-            photoUri,
-            projection,
-            MediaStore.Images.ImageColumns.DISPLAY_NAME + " LIKE ?",
-            arrayOf(displayName),
-            null
-        )!!
-        cursor.moveToFirst()
-        val columnIndex = cursor.getColumnIndex(projection[0])
-        photoId = cursor.getLong(columnIndex)
-        cursor.close()
-        return Uri.parse("$photoUri/$photoId")
-    }
 }
