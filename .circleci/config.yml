@@ -63,6 +63,7 @@ filter_release_branch_only: &filter_release_branch_only
     branches:
       only:
         - /(^release\/.+)/
+        - /(^hotfix\/.+)/
 
 jobs:
   android_lint:
