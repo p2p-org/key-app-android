@@ -7,11 +7,13 @@ import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
+import org.p2p.wallet.user.repository.UserLocalRepository
 
 class TransactionDetailsRpcRepository(
     private val rpcApi: RpcHistoryApi,
     private val dispatchers: CoroutineDispatchers,
     private val transactionDetailsNetworkMapper: TransactionDetailsNetworkMapper,
+    private val userLocalRepository: UserLocalRepository
 ) : TransactionDetailsRemoteRepository {
 
     override suspend fun getTransactions(signatures: List<String>): List<TransactionDetails> {
@@ -29,7 +31,9 @@ class TransactionDetailsRpcRepository(
             .map { it.result }
             .let {
                 withContext(dispatchers.io) {
-                    transactionDetailsNetworkMapper.fromNetworkToDomain(it)
+                    transactionDetailsNetworkMapper.fromNetworkToDomain(it) { mintAddress ->
+                        userLocalRepository.findTokenData(mintAddress)?.mintAddress.orEmpty()
+                    }
                 }
             }
     }

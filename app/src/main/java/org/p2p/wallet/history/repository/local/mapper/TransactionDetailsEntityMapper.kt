@@ -36,6 +36,7 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                         slot = it.identifiers.blockId,
                         blockTime = it.commonInformation.blockTimeSec,
                         fee = it.fee,
+                        mint = it.mint
                     )
                 }
                 is CloseAccountTransactionEntity -> {
@@ -80,7 +81,6 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                         signature = it.identifiers.signature,
                         blockTime = it.commonInformation.blockTimeSec,
                         slot = it.identifiers.blockId,
-                        typeStr = it.commonInformation.transactionDetailsType.typeStr,
                         fee = it.fee,
                         source = it.source?.value,
                         destination = it.destination?.value,
@@ -88,6 +88,8 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                         mint = it.mint,
                         amount = it.amount,
                         _decimals = it.decimals,
+                        programId = it.programId,
+                        typeStr = it.commonInformation.transactionDetailsType.typeStr
                     )
                 }
                 is UnknownTransactionEntity -> {
@@ -112,7 +114,8 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                     CreateAccountTransactionEntity(
                         identifiers = identifiers,
                         commonInformation = commonInformation,
-                        fee = it.fee
+                        fee = it.fee,
+                        mint = it.mint
                     )
                 }
                 is CloseAccountDetails -> {
@@ -163,7 +166,8 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                         mint = it.mint,
                         amount = it.amount,
                         decimals = it.decimals,
-                        fee = it.fee
+                        fee = it.fee,
+                        programId = it.programId
                     )
                 }
                 is UnknownDetails -> {

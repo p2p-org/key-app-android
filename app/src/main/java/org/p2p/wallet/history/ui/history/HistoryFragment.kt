@@ -15,6 +15,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -42,19 +43,21 @@ class HistoryFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+
+            historyRecyclerView.attachAdapter(adapter)
+            retryButton.setOnClickListener {
+                presenter.retry()
+            }
             val scrollListener = EndlessScrollListener(
                 layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
                 loadNextPage = { presenter.loadNextHistoryPage() }
             )
 
+            historyRecyclerView.addOnScrollListener(scrollListener)
+
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()
-            }
-            historyRecyclerView.addOnScrollListener(scrollListener)
-            historyRecyclerView.adapter = adapter
-            retryButton.setOnClickListener {
-                presenter.loadHistory()
             }
         }
         presenter.loadHistory()
@@ -66,7 +69,9 @@ class HistoryFragment :
             shimmerView.isVisible = state == PagingState.InitialLoading
             refreshLayout.isVisible = state != PagingState.InitialLoading
             errorStateLayout.isVisible = state is PagingState.Error
-            historyRecyclerView.isVisible = state == PagingState.Idle || state == PagingState.Loading
+            emptyStateLayout.isVisible = state == PagingState.Idle && adapter.isEmpty()
+            historyRecyclerView.isVisible =
+                (state == PagingState.Idle && !adapter.isEmpty()) || state == PagingState.Loading
         }
     }
 

@@ -1,5 +1,6 @@
 package org.p2p.wallet.updates
 
+import androidx.core.content.getSystemService
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 
 class ConnectionStateProvider(context: Context) {
-    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager: ConnectivityManager = context.getSystemService()!!
     private val networkState = MutableStateFlow(hasConnection())
     private var subscribersCount = 0
 
@@ -57,9 +58,11 @@ class ConnectionStateProvider(context: Context) {
     }
 
     private fun hasConnection(): Boolean = connectivityManager.allNetworks.any { network ->
-        connectivityManager.getNetworkCapabilities(network)?.run {
-            hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
-        } ?: false
+        connectivityManager.getNetworkCapabilities(network)
+            ?.run {
+                hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
+            }
+            ?: false
     }
 }

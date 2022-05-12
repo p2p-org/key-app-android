@@ -1,7 +1,7 @@
 package org.p2p.wallet.renbtc
 
-import android.content.Context
 import okhttp3.OkHttpClient
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
@@ -33,8 +33,9 @@ object RenBtcModule : InjectionModule {
             val client = OkHttpClient.Builder()
                 .apply { if (BuildConfig.DEBUG) addInterceptor(httpLoggingInterceptor("Blockstream")) }
                 .build()
+
             val api = Retrofit.Builder()
-                .baseUrl(get<Context>().getString(R.string.blockstreamUrl))
+                .baseUrl(androidContext().getString(R.string.blockstreamUrl))
                 .addConverterFactory(GsonConverterFactory.create(get()))
                 .client(client)
                 .build()
