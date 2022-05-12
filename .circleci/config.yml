@@ -68,6 +68,15 @@ commands:
               -F "file=@$(find app/build/outputs/apk/release -name 'p2p*')" \
               https://slack.com/api/files.upload
 
+  generate_build_version:
+    description: "Update BUILD_VERSION >> gradle.properties"
+    steps:
+      - run:
+          name: "Generate build version and write"
+          command: |
+            ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
+            echo "Set build version to ${CIRCLE_BUILD_NUM}"
+
 
 defaults: &defaults
   working_directory: ~/app
@@ -124,11 +133,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
-      - run:
-          name: "Generate build version"
-          command: |
-            ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
-            echo "Set build version to ${CIRCLE_BUILD_NUM}"
+      - generate_build_version
       - store_artifacts:
           path: "./app/gradle.properties"
           destination: gradle.properties
@@ -145,6 +150,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - generate_build_version
       - run:
           name: "Generate build version"
           command: |

@@ -37,6 +37,16 @@ def initApiKeys(defaultConfig) {
     }
 }
 
+String getVersionBuild() {
+    def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
+
+    if (buildNumberFromCi != null) {
+        return VERSION_BUILD as Integer + buildNumberFromCi.toInteger()
+    } else {
+        return VERSION_BUILD
+    }
+}
+
 android {
     compileSdkVersion sdkCompileVersion
 
@@ -92,7 +102,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
-            versionNameSuffix ".$VERSION_BUILD-debug"
+            versionNameSuffix ".${getVersionBuild()}-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
         }
 
@@ -102,7 +112,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled true
             shrinkResources true
-            versionNameSuffix ".$VERSION_BUILD-feature"
+            versionNameSuffix ".${getVersionBuild()}-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
@@ -146,7 +156,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.all {
             def apkName = "p2p_wallet" +
-                    "_${VERSION_CODE}" +
+                    "_${getVersionBuild()}" +
                     "_${VERSION_NAME}" +
                     "_${taskNumber()}" +
                     "_${variant.buildType.name}" +
