@@ -68,7 +68,6 @@ class FileRepository(private val context: Context) {
                 contentValues.clear()
                 contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
                 resolver.update(uri, contentValues, null, null)
-                resolver.openOutputStream(uri) ?: throw IOException("Unable to open OutputStream from uri: $uri")
                 File(uri.toString())
             } else {
                 val mainDir = File(
