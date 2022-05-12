@@ -64,8 +64,8 @@ commands:
               -S -s -o /dev/null \
               -F token="${SLACK_BOT_TOKEN}" \
               -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
-              -F initial_comment="Hey! Here is the release APK. Success :tada:" \
-              -F "file=@$(find app/build/outputs/apk/release -name 'p2p*')" \
+              -F initial_comment="Hey! Here is the release AAB. Success :tada:" \
+              -F "file=@$(find app/build/outputs/bundle/release -name 'app-*')" \
               https://slack.com/api/files.upload
 
   generate_build_version:
@@ -138,7 +138,7 @@ jobs:
           path: "./app/gradle.properties"
           destination: gradle.properties
       - run:
-          name: "Distribute to Firebase App Distribution"
+          name: "Assemble and upload to Firebase App Distribution"
           command: ./gradlew assembleFeature appDistributionUploadFeature
       - upload_feature_apk_to_slack
       - store_artifacts:
@@ -164,7 +164,7 @@ jobs:
           command: |
             echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
       - run:
-          name: "Distribute release to Firebase App Distribution"
+          name: "Bundle and upload release to Firebase App Distribution"
           command: ./gradlew bundleRelease appDistributionUploadRelease
       - upload_release_apk_to_slack
       - store_artifacts:
