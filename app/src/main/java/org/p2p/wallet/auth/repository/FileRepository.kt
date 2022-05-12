@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -47,12 +48,13 @@ class FileRepository(private val context: Context) {
     fun saveBitmapAsFile(bitmap: Bitmap, name: String? = null): File? {
         val fileName = name ?: Date().toString()
         val appName = context.getString(R.string.app_name)
+        val mimeType = "image/png"
         try {
             val file: File = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val resolver = context.contentResolver
                 val contentValues = ContentValues().apply {
                     put(MediaStore.Images.Media.DISPLAY_NAME, "$fileName.png")
-                    put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                    put(MediaStore.Images.Media.MIME_TYPE, mimeType)
                     put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$appName")
                     put(MediaStore.Images.Media.IS_PENDING, 1)
                 }
@@ -68,6 +70,8 @@ class FileRepository(private val context: Context) {
                 contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
                 resolver.update(uri, contentValues, null, null)
                 File(uri.toString())
+                File(Uri.parse("${MediaStore.Images.Media.EXTERNAL_CONTENT_URI}/$appName/$fileName.png").toString())
+                // TODO check paths!
             } else {
                 val mainDir = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
@@ -85,12 +89,16 @@ class FileRepository(private val context: Context) {
                 }
             }
             // Add image to gallery
-            MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
+            MediaScannerConnection.scanFile(
+                context,
+                arrayOf(file.toString()),
+                arrayOf(mimeType),
+                null
+            )
             return file
         } catch (e: IOException) {
             Timber.e(e, "Error on saving bitmap to file")
         }
         return null
     }
-
 }
