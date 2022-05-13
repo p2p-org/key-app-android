@@ -45,6 +45,7 @@ class ReceiveTokenFragment :
     }
 
     override val statusBarColor: Int = R.color.backgroundButtonPrimary
+    override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     private val binding: FragmentReceiveTokenBinding by viewBinding()
     override val presenter: ReceiveTokenContract.Presenter by inject {
@@ -156,6 +157,4 @@ class ReceiveTokenFragment :
     override fun showShareQr(qrImage: File, qrValue: String) {
         requireContext().shareScreenShot(qrImage, qrValue)
     }
-
-    override fun getReceiveCardView(): ReceiveCardView = binding.receiveCardView
 }

@@ -50,6 +50,7 @@ class ReceiveSolanaFragment :
     override val presenter: ReceiveSolanaContract.Presenter by inject {
         parametersOf(token)
     }
+    override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
@@ -142,6 +143,4 @@ class ReceiveSolanaFragment :
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
     }
-
-    override fun getReceiveCardView(): ReceiveCardView = binding.receiveCardView
 }

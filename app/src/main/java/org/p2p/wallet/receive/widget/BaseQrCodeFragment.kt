@@ -15,7 +15,7 @@ abstract class BaseQrCodeFragment<V : MvpView, P : MvpPresenter<V>>(
     @LayoutRes layoutRes: Int
 ) : BaseMvpFragment<V, P>(layoutRes), PermissionsDialog.Callback {
 
-    abstract fun getReceiveCardView(): ReceiveCardView
+    abstract val receiveCardView: ReceiveCardView
 
     override fun onPermissionsResult(state: Map<String, PermissionState>, payload: Any?) {
         onCameraPermissionResult(state[Manifest.permission.WRITE_EXTERNAL_STORAGE])
@@ -38,7 +38,7 @@ abstract class BaseQrCodeFragment<V : MvpView, P : MvpPresenter<V>>(
     private fun onCameraPermissionResult(state: PermissionState?) {
         when (state) {
             PermissionState.GRANTED -> {
-                with(getReceiveCardView()) {
+                with(receiveCardView) {
                     when (val action = getQrCodeLastAction()) {
                         QrView.QrCodeAction.SHARE -> requestShare()
                         QrView.QrCodeAction.SAVE -> requestSave()

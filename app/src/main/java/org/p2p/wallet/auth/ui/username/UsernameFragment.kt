@@ -34,6 +34,7 @@ class UsernameFragment :
     private val binding: FragmentUsernameBinding by viewBinding()
     private val receiveAnalytics: ReceiveAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,6 +92,4 @@ class UsernameFragment :
     override fun showShareQr(qrImage: File, qrValue: String) {
         requireContext().shareScreenShot(qrImage, qrValue)
     }
-
-    override fun getReceiveCardView(): ReceiveCardView = binding.receiveCardView
 }
