@@ -270,13 +270,14 @@ class HomePresenter(
         return if (usernameExists) {
             listOf(feedbackBanner)
         } else {
+            val usernameBanner = Banner(
+                R.string.main_username_banner_option,
+                R.string.main_username_banner_action,
+                R.drawable.ic_username,
+                R.color.backgroundBanner
+            )
             listOf(
-                Banner(
-                    R.string.main_username_banner_option,
-                    R.string.main_username_banner_action,
-                    R.drawable.ic_username,
-                    R.color.backgroundBanner
-                ),
+                usernameBanner,
                 feedbackBanner
             )
         }
