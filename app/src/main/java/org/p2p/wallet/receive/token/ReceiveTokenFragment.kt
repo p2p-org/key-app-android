@@ -158,5 +158,4 @@ class ReceiveTokenFragment :
     }
 
     override fun getReceiveCardView(): ReceiveCardView = binding.receiveCardView
-
 }
