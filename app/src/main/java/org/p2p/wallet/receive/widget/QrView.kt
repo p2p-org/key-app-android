@@ -27,7 +27,7 @@ class QrView @JvmOverloads constructor(
     private val binding = WidgetQrViewBinding.inflate(LayoutInflater.from(context), this)
     private var tokenSymbol: String? = null
 
-    var onShareClickListener: ((String, Bitmap) -> Unit)? = null
+    var onShareClickListener: ((String, Bitmap, String) -> Unit)? = null
     var onCopyClickListener: (() -> Unit)? = null
     var onSaveClickListener: ((String, Bitmap) -> Unit)? = null
     var onRequestPermissions: (() -> Boolean)? = null
@@ -132,7 +132,7 @@ class QrView @JvmOverloads constructor(
         val qrValue = binding.valueTextView.text.toString()
         val name = "$qrValue.${tokenSymbol.orEmpty()}"
         when (action) {
-            QrCodeAction.SHARE -> onShareClickListener?.invoke(name, bitmap)
+            QrCodeAction.SHARE -> onShareClickListener?.invoke(name, bitmap, qrValue)
             QrCodeAction.SAVE -> onSaveClickListener?.invoke(name, bitmap)
         }
     }

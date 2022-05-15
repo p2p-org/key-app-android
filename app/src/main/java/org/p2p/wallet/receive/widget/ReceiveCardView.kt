@@ -80,8 +80,8 @@ class ReceiveCardView @JvmOverloads constructor(
 
     fun requestSave() = binding.qrView.requestAction(QrView.QrCodeAction.SAVE)
 
-    fun setOnShareQrClickListener(block: (qrValue: String, qrImage: Bitmap) -> Unit) {
-        binding.qrView.onShareClickListener = { name, qrImage -> block(name, qrImage) }
+    fun setOnShareQrClickListener(block: (qrValue: String, qrImage: Bitmap, shareText: String) -> Unit) {
+        binding.qrView.onShareClickListener = { name, qrImage, shareText -> block(name, qrImage, shareText) }
     }
 
     fun requestShare() = binding.qrView.requestAction(QrView.QrCodeAction.SHARE)

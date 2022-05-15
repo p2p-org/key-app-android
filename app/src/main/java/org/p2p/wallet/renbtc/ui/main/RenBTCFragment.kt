@@ -62,8 +62,8 @@ class RenBTCFragment :
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
             }
-            receiveCardView.setOnShareQrClickListener { name, qrImage ->
-                presenter.saveQr(name, qrImage, shareAfter = true)
+            receiveCardView.setOnShareQrClickListener { name, qrImage, shareText ->
+                presenter.saveQr(name, qrImage, shareText)
             }
             receiveCardView.setOnNetworkClickListener {
                 presenter.onNetworkClicked()

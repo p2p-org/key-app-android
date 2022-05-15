@@ -75,8 +75,8 @@ class ReceiveRenBtcFragment :
                     )
                 )
             }
-            receiveCardView.setOnShareQrClickListener { name, qrImage ->
-                presenter.saveQr(name, qrImage, shareAfter = true)
+            receiveCardView.setOnShareQrClickListener { name, qrImage, shareText ->
+                presenter.saveQr(name, qrImage, shareText)
             }
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
             receiveCardView.setFaqVisibility(isVisible = false)

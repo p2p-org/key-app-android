@@ -69,8 +69,8 @@ class ReceiveSolanaFragment :
             receiveCardView.setOnRequestPermissions {
                 checkStatusAndRequestPermissionsIfNotGranted()
             }
-            receiveCardView.setOnShareQrClickListener { qrValue, qrImage ->
-                presenter.saveQr(qrValue, qrImage, shareAfter = true)
+            receiveCardView.setOnShareQrClickListener { qrValue, qrImage, shareText ->
+                presenter.saveQr(qrValue, qrImage, shareText)
                 receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
             }
             receiveCardView.setOnCopyQrClickListener {
