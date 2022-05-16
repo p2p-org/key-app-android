@@ -73,17 +73,21 @@ android {
             if (signingPropertiesFile.canRead()) {
                 logger.quiet "Using signing properties file"
                 secretProperties.load(new FileInputStream(signingPropertiesFile))
+                storeFile file(secretProperties['keystorePath'])
+                storePassword secretProperties['keystorePassword']
+                keyAlias secretProperties['keyAlias']
+                keyPassword secretProperties['keyPassword']
             } else {
                 logger.quiet "Using signing properties from CI"
                 secretProperties["KEYSTORE_PASSWORD"] = "${System.getenv('KEYSTORE_PASSWORD')}"
                 secretProperties["KEY_PASSWORD"] = "${System.getenv('KEY_PASSWORD')}"
                 secretProperties["KEY_ALIAS"] = "${System.getenv('KEY_ALIAS')}"
-            }
 
-            storeFile rootProject.file("p2p-wallet.jks")
-            storePassword secretProperties["KEYSTORE_PASSWORD"]
-            keyPassword secretProperties["KEY_PASSWORD"]
-            keyAlias secretProperties["KEY_ALIAS"]
+                storeFile rootProject.file("p2p-wallet.jks")
+                storePassword secretProperties["KEYSTORE_PASSWORD"]
+                keyPassword secretProperties["KEY_PASSWORD"]
+                keyAlias secretProperties["KEY_ALIAS"]
+            }
         }
     }
 
@@ -157,6 +161,8 @@ android {
 dependencies {
     implementation project(path: ':solanaj')
 
+    def lifecycle_version = "2.1.0"
+
     implementation "androidx.appcompat:appcompat:1.4.1"
     implementation "androidx.biometric:biometric:1.1.0"
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -217,7 +223,7 @@ dependencies {
     implementation 'com.caverock:androidsvg-aar:1.4'
 
     // Room
-    def roomVersion = '2.4.1'
+    def roomVersion = '2.4.2'
     implementation "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
@@ -225,8 +231,9 @@ dependencies {
     // seed value
     implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
 
+    def koinVersion = '3.1.5'
     // https://github.com/InsertKoinIO/koin
-    implementation "io.insert-koin:koin-android:3.1.5"
+    implementation "io.insert-koin:koin-android:$koinVersion"
 
     // GeeTest
     implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
@@ -237,6 +244,7 @@ dependencies {
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
     testImplementation 'androidx.test.ext:junit-ktx:1.1.3'
+    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
     // https://github.com/mockk/mockk
     testImplementation 'io.mockk:mockk:1.12.0'
     // https://mvnrepository.com/artifact/junit/junit
@@ -245,4 +253,8 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.5.1"
     // Coroutines support
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    // Koin Test features
+    testImplementation "io.insert-koin:koin-test:$koinVersion"
+    // Koin for JUnit 4
+    testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 }

@@ -3,12 +3,12 @@ package org.p2p.wallet.history.ui.token.adapter.holders
 import android.annotation.SuppressLint
 import android.view.ViewGroup
 import org.p2p.wallet.R
-import org.p2p.wallet.common.date.toTimeString
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.databinding.ItemTransactionSwapBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.viewbinding.getColor
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -39,11 +39,11 @@ class TransactionSwapViewHolder(
             )
 
             with(transactionData) {
-                addressTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
-                valueTextView withTextOrGone (transaction.getReceivedUsdAmount())
-                totalTextView.text = "+ ${transaction.amountB} ${transaction.destinationSymbol}"
-                totalTextView.setTextColor(getColor(R.color.colorGreen))
-                timeTextView.text = transaction.date.toTimeString()
+                valueTextView.withTextOrGone(transaction.getReceivedUsdAmount())
+                valueTextView.setTextColor(getColor(R.color.colorGreen))
+                totalTextView.text = "${transaction.amountB} ${transaction.destinationSymbol}"
+                titleTextView.text = getString(R.string.transaction_history_swap)
+                subtitleTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
             }
         }
     }

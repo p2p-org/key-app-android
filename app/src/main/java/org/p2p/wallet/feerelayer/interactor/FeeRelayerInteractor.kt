@@ -180,8 +180,8 @@ class FeeRelayerInteractor(
         // transfer sol back to feerelayer's feePayer
         val owner = Account(tokenKeyProvider.secretKey)
         val transaction = preparedTransaction.transaction
-        if (payingFeeToken.isSOL && paybackFee.isNotZero()) {
-            if (relayAccount.balance.orZero() < paybackFee) {
+        if (paybackFee.isNotZero()) {
+            if (payingFeeToken.isSOL && relayAccount.balance.orZero() < paybackFee) {
                 val instruction = SystemProgram.transfer(
                     fromPublicKey = owner.publicKey,
                     toPublicKey = feePayer,

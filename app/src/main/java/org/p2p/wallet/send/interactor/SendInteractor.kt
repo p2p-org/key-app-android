@@ -154,7 +154,13 @@ class SendInteractor(
             amount = lamports,
         )
 
-        return if (feePayerToken.mintAddress != WRAPPED_SOL_MINT) {
+        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
+            // send normally, paid by SOL
+            transactionInteractor.serializeAndSend(
+                preparedTransaction = preparedTransaction,
+                isSimulation = false
+            )
+        } else {
             // use fee relayer
             feeRelayerInteractor.topUpAndRelayTransaction(
                 preparedTransaction = preparedTransaction,
@@ -163,12 +169,6 @@ class SendInteractor(
             )
                 .firstOrNull()
                 .orEmpty()
-        } else {
-            // send normally, paid by SOL
-            transactionInteractor.serializeAndSend(
-                preparedTransaction = preparedTransaction,
-                isSimulation = false
-            )
         }
     }
 
@@ -198,7 +198,7 @@ class SendInteractor(
             error("You can not send tokens to yourself")
         }
 
-        val (feePayer, useFeeRelayer) = if (feePayerToken.isSOL) {
+        val (feePayer, useFeeRelayer) = if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             null to false
         } else {
             val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
@@ -343,5 +343,15 @@ class SendInteractor(
         )
 
         return preparedTransaction to realDestination
+    }
+
+    /*
+    * When free transaction is not available and user is paying with sol,
+    * let him do this the normal way (don't use fee relayer)
+    * */
+    private suspend fun shouldUseNativeSwap(payingTokenMint: String): Boolean {
+        val noFreeTransactionsLeft = feeRelayerAccountInteractor.getFreeTransactionFeeLimit().remaining == 0
+        val isSol = payingTokenMint == WRAPPED_SOL_MINT
+        return noFreeTransactionsLeft && isSol
     }
 }
