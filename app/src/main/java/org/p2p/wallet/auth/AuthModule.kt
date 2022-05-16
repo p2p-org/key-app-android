@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth
 
 import androidx.biometric.BiometricManager
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -33,7 +34,7 @@ import retrofit2.Retrofit
 object AuthModule {
 
     fun create() = module {
-        single { BiometricManager.from(get()) }
+        single { BiometricManager.from(androidContext()) }
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
         factory { AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

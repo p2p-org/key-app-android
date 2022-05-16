@@ -462,6 +462,14 @@
     <string name="transaction_details_done_button">@string/common_done</string>
     <string name="transaction_details_details_button">@string/common_transaction_details</string>
 
+    <!--TransactionHistory-->
+    <string name="transaction_history_unknown">Unknown</string>
+    <string name="transaction_history_swap">Swap</string>
+    <string name="transaction_history_send">Send</string>
+    <string name="transaction_history_receive">Receive</string>
+    <string name="transaction_history_create">Create</string>
+    <string name="transaction_history_closed">Closed</string>
+
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
     <string name="qr_scan_hint">Scan QR</string>

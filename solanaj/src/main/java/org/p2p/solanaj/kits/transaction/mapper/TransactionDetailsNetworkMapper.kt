@@ -12,22 +12,27 @@ import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
 import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
 import org.p2p.solanaj.utils.SolanjLogger
 
-class TransactionDetailsNetworkMapper {
+class TransactionDetailsNetworkMapper(
+    val userPublicKey: String
+) {
 
     private val confirmedTransactionMapper = ConfirmedTransactionRootMapper(
         orcaSwapInstructionParser = OrcaSwapInstructionParser(),
-        serumSwapInstructionParser = SerumSwapInstructionParser()
+        serumSwapInstructionParser = SerumSwapInstructionParser(),
+        userPublicKey = userPublicKey
     )
 
     fun fromNetworkToDomain(
-        confirmedTransactionRoots: List<ConfirmedTransactionRootResponse>
+        confirmedTransactionRoots: List<ConfirmedTransactionRootResponse>,
+        findMintAddress: (String) -> String,
     ): List<TransactionDetails> {
         val resultTransactions = mutableListOf<TransactionDetails>()
 
         confirmedTransactionRoots.forEach { confirmedTransaction ->
             val parsedTransactions = confirmedTransactionMapper.mapToDomain(
                 transactionRoot = confirmedTransaction,
-                onErrorLogger = { SolanjLogger.w(it) }
+                onErrorLogger = { SolanjLogger.w(it) },
+                findMintAddress = findMintAddress
             )
             parsedTransactions.forEach {
                 it.error = confirmedTransaction.meta.error?.instructionError
