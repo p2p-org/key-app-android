@@ -1,5 +1,10 @@
 package org.p2p.wallet.send.ui.main
 
+import androidx.annotation.ColorRes
+import androidx.core.text.buildSpannedString
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -11,11 +16,6 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.core.text.buildSpannedString
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -31,9 +31,9 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
@@ -58,6 +58,7 @@ import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -93,8 +94,6 @@ class SendFragment :
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val sendAnalytics: SendAnalytics by inject()
-
     private val address: String? by args(EXTRA_ADDRESS)
     private val token: Token? by args(EXTRA_TOKEN)
 
@@ -104,8 +103,7 @@ class SendFragment :
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_SEND,
-            viewLifecycleOwner
+            KEY_REQUEST_SEND, viewLifecycleOwner
         ) { _, result ->
             when {
                 result.containsKey(EXTRA_TOKEN) -> {
@@ -124,14 +122,20 @@ class SendFragment :
                     val ordinal = result.getInt(EXTRA_NETWORK, 0)
                     presenter.setNetworkDestination(NetworkType.values()[ordinal])
                 }
-                result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
-                    popBackStack()
-                }
             }
+        }
+
+        // childFragmentManager for BottomSheets
+        childFragmentManager.setFragmentResultListener(KEY_REQUEST_SEND, viewLifecycleOwner) { _, result ->
+            if (result.containsKey(EXTRA_RESULT_KEY_DISMISS)) closeScreenAndReturn()
         }
 
         presenter.loadInitialData()
         checkClipBoard()
+    }
+
+    private fun closeScreenAndReturn() {
+        if (backStackEntryCount() > 1) popBackStack() else replaceFragment(HomeFragment.create())
     }
 
     override fun onStop() {
@@ -459,9 +463,9 @@ class SendFragment :
 
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
-            ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SEND)
+            ProgressBottomSheet.show(childFragmentManager, data, KEY_REQUEST_SEND)
         } else {
-            ProgressBottomSheet.hide(parentFragmentManager)
+            ProgressBottomSheet.hide(childFragmentManager)
         }
     }
 
