@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.ui.search
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.View
@@ -53,6 +54,11 @@ class SearchFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.RECIPIENT_ADDRESS)
+
+        requireActivity().onBackPressedDispatcher.addCallback {
+            popBackStack()
+        }
+
         with(binding) {
             backImageView.setOnClickListener { popBackStack() }
             clearImageView.setOnClickListener { searchEditText.text.clear() }
