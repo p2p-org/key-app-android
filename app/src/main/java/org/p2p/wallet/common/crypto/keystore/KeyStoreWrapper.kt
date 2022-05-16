@@ -4,14 +4,14 @@ import org.p2p.solanaj.utils.crypto.Hex
 import java.security.KeyStore
 import javax.crypto.Cipher
 
-private const val ANDROID_KEY_STORE = "AndroidKeyStore"
-
-class KeyStoreWrapper(private val encoderDecoder: EncoderDecoder) {
-
-    private val keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEY_STORE).apply { load(null) }
+class KeyStoreWrapper(
+    private val encoderDecoder: EncoderDecoder,
+    private val keyStore: KeyStore
+) {
 
     init {
-        encoderDecoder.setKeyStore(keyStore, ANDROID_KEY_STORE)
+        keyStore.apply { load(null) }
+        encoderDecoder.setKeyStore(keyStore = keyStore, providerName = keyStore.type)
     }
 
     fun encode(keyAlias: String, data: String): String {

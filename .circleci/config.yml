@@ -8,7 +8,7 @@ commands:
     description: "Saves all test results into a single directory"
     steps:
       - run:
-          name: Save test results
+          name: "Save test results"
           command: |
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
@@ -18,6 +18,27 @@ commands:
       - store_artifacts:
           path: ~/test-results/junit
 
+  create_api_keys_file:
+    description: "Create apikey.properties"
+    steps:
+      - run:
+          name: "Create apikey.properties and fill them"
+          command: |
+            touch apikey.properties
+            echo 'rpcPoolApiKey="${RPC_POOL_API_KEY}"' >> apikey.properties
+            echo 'moonpayKey="${MOONPAY_KEY}"' >> apikey.properties
+            echo 'comparePublicKey="${COMPARE_PUBLIC_KEY}"' >> apikey.properties
+            echo 'intercomApiKey="${INTERCOM_API_KEY}"' >> apikey.properties
+            echo 'intercomAppId="${INTERCOM_APP_ID}"' >> apikey.properties
+            echo 'amplitudeKey="${AMPLITUDE_KEY}"' >> apikey.properties
+            echo "apikey.properties created succesfully"
+
+  restore_gradle_cache:
+    description: "Try and use .gradle cache"
+    steps:
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+
 defaults: &defaults
   working_directory: ~/app
   executor:
@@ -25,25 +46,55 @@ defaults: &defaults
     resource-class: large
     tag: 2021.10.1
 
+filter_feature_branch_only: &filter_feature_branch_only
+  filters:
+    branches:
+      only:
+        - /(^feature\/.+)/
+
+filter_develop_branch_only: &filter_develop_branch_only
+  filters:
+    branches:
+      only:
+        - develop
+
+filter_release_branch_only: &filter_release_branch_only
+  filters:
+    branches:
+      only:
+        - /(^release\/.+)/
+        - /(^hotfix\/.+)/
+
 jobs:
   android_lint:
     <<: *defaults
     steps:
       - checkout
+      - create_api_keys_file
       - run:
           name: "Static analysis"
           command: ./gradlew ktlint -PautoCorrect=0
+
   unit_tests:
     <<: *defaults
     steps:
       - checkout
+      - restore_gradle_cache
+      - create_api_keys_file
       - android/run-tests:
           test-command: ./gradlew testDebug
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - save_test_results
-  build_and_publish:
+
+  publish_feature:
     <<: *defaults
     steps:
       - checkout
+      - restore_gradle_cache
+      - create_api_keys_file
       - run:
           name: "Generate build version"
           command: |
@@ -57,6 +108,31 @@ jobs:
           command: ./gradlew assembleFeature appDistributionUploadFeature
       - store_artifacts:
           path: app/build/outputs/apk/feature
+
+  publish_release:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_gradle_cache
+      - create_api_keys_file
+      - run:
+          name: "Generate build version"
+          command: |
+            ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
+            echo "Set build version to ${CIRCLE_BUILD_NUM}"
+      - store_artifacts:
+          path: "./app/gradle.properties"
+          destination: gradle.properties
+      - run:
+          name: "Write signing jks file from env"
+          command: |
+            echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
+      - run:
+          name: "Distribute release to Firebase App Distribution"
+          command: ./gradlew bundleRelease appDistributionUploadRelease
+      - store_artifacts:
+          path: app/build/outputs/apk/release
+
 workflows:
   version: 2
 
@@ -64,68 +140,51 @@ workflows:
     jobs:
       - android_lint:
           context: feature
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
+          <<: *filter_feature_branch_only
       - unit_tests:
-          requires:
-            - android_lint
           context: feature
+          <<: *filter_feature_branch_only
       - approve-feature-build:
+          type: approval
           requires:
             - unit_tests
-          type: approval
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
-      - build_and_publish:
+            - android_lint
+      - publish_feature:
           context: feature
           requires:
             - approve-feature-build
-          filters:
-            branches:
-              only:
-                - /(^feature\/.+)/
 
-  lint_and_test:
+  lint_test_develop:
     jobs:
       - android_lint:
-          context: feature
-          filters:
-            branches:
-              only:
-                - develop
+          <<: *filter_develop_branch_only
       - unit_tests:
-          requires:
-            - android_lint
-          context: feature
+          <<: *filter_develop_branch_only
 
-  lint_and_test_release:
+  publish_develop:
     jobs:
-      - android_lint:
-          filters:
-            branches:
-              only:
-                - /(^release\/.+)/
-      - unit_tests:
-          requires:
-            - android_lint
-
-  build_develop_publish:
-    jobs:
-      - approve-feature-build:
+      - approve-develop-build:
           type: approval
-          filters:
-            branches:
-              only:
-                - develop
-      - build_and_publish:
-          context: develop
+          <<: *filter_develop_branch_only
+      - publish_feature:
+          context: feature
           requires:
-            - approve-feature-build
-          filters:
-            branches:
-              only:
-                - develop
+            - approve-develop-build
+
+  lint_test_and_publish_release:
+    jobs:
+      - android_lint:
+          context: release
+          <<: *filter_release_branch_only
+      - unit_tests:
+          context: release
+          <<: *filter_release_branch_only
+      - approve-release-build:
+          type: approval
+          requires:
+            - android_lint
+            - unit_tests
+      - publish_release:
+          context: release
+          requires:
+            - approve-release-build

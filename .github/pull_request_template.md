@@ -1,8 +1,8 @@
-## Jira Ticket (Mandatory)
+## Jira Ticket
 
 https://p2pvalidator.atlassian.net/browse/
 
-## Description of Work (Mandatory)
+## Description of Work
 
 [ what work was done in this ticket ]
 

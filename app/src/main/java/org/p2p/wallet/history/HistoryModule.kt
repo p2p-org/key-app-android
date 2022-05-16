@@ -10,16 +10,21 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.repository.TransactionDetailsDatabaseRepository
+import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetContract
+import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetPresenter
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
+import org.p2p.wallet.history.ui.token.TokenHistoryContract
+import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import retrofit2.Retrofit
@@ -47,7 +52,7 @@ object HistoryModule : InjectionModule {
             )
         }
         factory { (token: Token.Active) ->
-            HistoryPresenter(
+            TokenHistoryPresenter(
                 token = token,
                 historyInteractor = get(),
                 receiveAnalytics = get(),
@@ -57,15 +62,22 @@ object HistoryModule : InjectionModule {
                 renBtcInteractor = get(),
                 tokenInteractor = get()
             )
-        } bind HistoryContract.Presenter::class
+        } bind TokenHistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsPresenter(
+                resources = get(),
+                theme = get(),
                 state = state,
                 userLocalRepository = get(),
-                context = get(),
                 historyInteractor = get()
             )
         } bind TransactionDetailsContract.Presenter::class
+        factory { (state: TransactionDetailsLaunchState) ->
+            TransactionDetailsBottomSheetPresenter(
+                state = state,
+                historyInteractor = get()
+            )
+        } bind TransactionDetailsBottomSheetContract.Presenter::class
     }
 
     private fun Module.dataLayer() {
@@ -77,7 +89,7 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsLocalRepository::class
 
-        factory { TransactionDetailsNetworkMapper() }
+        factory { TransactionDetailsNetworkMapper(get<TokenKeyProvider>().publicKey) }
         single {
             val api = get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER))
                 .create(RpcHistoryApi::class.java)
@@ -85,8 +97,21 @@ object HistoryModule : InjectionModule {
             TransactionDetailsRpcRepository(
                 rpcApi = api,
                 dispatchers = get(),
-                transactionDetailsNetworkMapper = get()
+                transactionDetailsNetworkMapper = get(),
+                userLocalRepository = get()
             )
         } bind TransactionDetailsRemoteRepository::class
+
+        factory {
+            HistoryPresenter(
+                historyInteractor = get(),
+                renBtcInteractor = get(),
+                receiveAnalytics = get(),
+                swapAnalytics = get(),
+                analyticsInteractor = get(),
+                environmentManager = get(),
+                sendAnalytics = get()
+            )
+        } bind HistoryContract.Presenter::class
     }
 }
