@@ -2,6 +2,7 @@ package org.p2p.wallet.swap
 
 import android.content.Context
 import org.koin.android.ext.koin.androidApplication
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
@@ -34,12 +35,12 @@ object SwapModule : InjectionModule {
     override fun create() = module {
         single {
             val baseUrl = get<Context>().getString(R.string.p2pWebBaseUrl)
-            getRetrofit(baseUrl, "p2pWeb", null).create(InternalWebApi::class.java)
+            getRetrofit(baseUrl = baseUrl, tag = "p2pWeb", interceptor = null).create(InternalWebApi::class.java)
         }
 
         single {
-            val baseUrl = get<Context>().getString(R.string.orca_api_base_url)
-            getRetrofit(baseUrl, "Orca", null).create(OrcaApi::class.java)
+            val baseUrl = androidContext().getString(R.string.orca_api_base_url)
+            getRetrofit(baseUrl = baseUrl, tag = "Orca", interceptor = null).create(OrcaApi::class.java)
         }
 
         single {
