@@ -23,7 +23,7 @@ interface ReceiveSolanaContract {
 
     interface Presenter : MvpPresenter<View> {
         fun loadData()
-        fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean = false)
+        fun saveQr(name: String, bitmap: Bitmap, shareText: String? = null)
         fun onNetworkClicked()
         fun onBrowserClicked(publicKey: String)
     }
