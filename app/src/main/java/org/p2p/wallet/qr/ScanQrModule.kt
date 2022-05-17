@@ -1,21 +1,21 @@
 package org.p2p.wallet.qr
 
-import android.content.Context
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import org.p2p.wallet.qr.model.QrParams
-import org.koin.dsl.module
 
-object QrModule : InjectionModule {
+object ScanQrModule : InjectionModule {
 
     override fun create() = module {
         factory { QrCodeInteractor(get()) }
         single {
-            val context = get<Context>()
+            val context = androidContext()
             QrParams(
-                context.getColor(R.color.black),
-                context.getColor(R.color.white)
+                contentColor = context.getColor(R.color.black),
+                backgroundColor = context.getColor(R.color.white)
             )
         }
     }
