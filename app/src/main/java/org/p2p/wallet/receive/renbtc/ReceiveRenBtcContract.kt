@@ -28,7 +28,7 @@ interface ReceiveRenBtcContract {
         fun checkActiveSession(context: Context)
         fun startNewSession(context: Context)
         fun cancelTimer()
-        fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean = false)
+        fun saveQr(name: String, bitmap: Bitmap, shareText: String? = null)
         fun onNetworkClicked()
         fun onBrowserClicked(publicKey: String)
         fun onStatusReceivedClicked()

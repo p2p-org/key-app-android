@@ -10,7 +10,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
@@ -83,16 +82,8 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
         observeState()
     }
 
-    override fun onStop() {
-        lifecycleScope.launch {
-            // clearing state after transaction is viewed
-            transactionManager.emitTransactionState(TransactionState.Progress())
-        }
-        super.onStop()
-    }
-
     private fun observeState() {
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launchWhenCreated {
             transactionManager.getTransactionStateFlow().collect { state ->
                 TransitionManager.beginDelayedTransition(binding.root)
                 when (state) {
