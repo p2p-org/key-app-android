@@ -59,8 +59,8 @@ class FeeRelayerTopUpInteractor(
             targetAmount = targetAmount,
             expectedFee = expectedFee,
             blockhash = blockhash.recentBlockhash,
-            minimumRelayAccountBalance = info.minimumRelayAccountBalance,
-            minimumTokenAccountBalance = info.minimumTokenAccountBalance,
+            minimumRelayAccountBalance = info.minimumRelayAccountRent,
+            minimumTokenAccountBalance = info.minimumTokenAccountRent,
             needsCreateUserRelayAccount = needsCreateUserRelayAddress,
             feePayerAddress = info.feePayerAddress.toBase58(),
             lamportsPerSignature = info.lamportsPerSignature
@@ -165,7 +165,7 @@ class FeeRelayerTopUpInteractor(
             return neededAmount
         }
 
-        val minimumRelayAccountBalance = info.minimumRelayAccountBalance
+        val minimumRelayAccountBalance = info.minimumRelayAccountRent
 
         // check if relay account current balance can cover part of needed amount
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
@@ -208,7 +208,7 @@ class FeeRelayerTopUpInteractor(
 
         var expectedFee: BigInteger = BigInteger.ZERO
         if (!relayAccount.isCreated) {
-            expectedFee += info.minimumRelayAccountBalance
+            expectedFee += info.minimumRelayAccountRent
         }
 
         val transactionNetworkFee = BigInteger.valueOf(2) * info.lamportsPerSignature // feePayer, owner
@@ -216,7 +216,7 @@ class FeeRelayerTopUpInteractor(
             expectedFee += transactionNetworkFee
         }
 
-        expectedFee += info.minimumTokenAccountBalance
+        expectedFee += info.minimumTokenAccountRent
 
         return expectedFee
     }

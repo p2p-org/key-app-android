@@ -4,8 +4,8 @@ import org.p2p.solanaj.core.PublicKey
 import java.math.BigInteger
 
 class RelayInfo(
-    val minimumTokenAccountBalance: BigInteger,
-    val minimumRelayAccountBalance: BigInteger,
+    val minimumTokenAccountRent: BigInteger,
+    val minimumRelayAccountRent: BigInteger,
     val feePayerAddress: PublicKey,
     val lamportsPerSignature: BigInteger
 )
