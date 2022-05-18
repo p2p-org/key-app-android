@@ -134,9 +134,9 @@ class SendFragment :
         checkClipBoard()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
         AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        super.onDestroyView()
     }
 
     private fun setupViews() {
