@@ -177,6 +177,8 @@ class SendPresenter(
         if (!token.isRenBTC) return
 
         this.networkType = networkType
+        calculateRenBtcFeeIfNeeded()
+
         view?.showNetworkDestination(networkType)
     }
 
