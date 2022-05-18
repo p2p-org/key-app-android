@@ -7,10 +7,12 @@ import org.koin.core.component.inject
 import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.FcmPushNotificationData
+import org.p2p.wallet.notification.NotificationType
 import org.p2p.wallet.utils.NoOp
 import timber.log.Timber
 
 private const val TAG = "AppFirebaseMessagingService"
+private const val NOTIFICATION_TYPE = "eventType"
 
 class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
@@ -19,6 +21,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     private val appNotificationManager: AppNotificationManager by inject()
 
     override fun onNewToken(token: String) {
+        NoOp
         super.onNewToken(token)
     }
 
@@ -30,15 +33,20 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     private fun handleForegroundPush(message: RemoteMessage) {
         Timber.tag(TAG).d("From: ${message.from}")
 
+        var notificationType = NotificationType.DEFAULT
+
         if (message.data.isNotEmpty()) {
-            NoOp
+            notificationType = NotificationType.fromValue(
+                message.data[NOTIFICATION_TYPE].orEmpty()
+            )
         }
 
         message.notification?.let {
             appNotificationManager.showFcmPushNotification(
                 FcmPushNotificationData(
                     title = it.title.orEmpty(),
-                    body = it.body.orEmpty()
+                    body = it.body.orEmpty(),
+                    type = notificationType
                 )
             )
         }

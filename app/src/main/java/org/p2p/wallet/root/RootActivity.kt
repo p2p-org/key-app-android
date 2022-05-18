@@ -1,7 +1,5 @@
 package org.p2p.wallet.root
 
-import androidx.activity.addCallback
-import androidx.core.view.isVisible
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -9,7 +7,9 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.core.content.edit
+import androidx.core.view.isVisible
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import org.koin.android.ext.android.inject
@@ -25,6 +25,7 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.debugdrawer.DebugDrawer
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
@@ -41,6 +42,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
                 .apply { this.action = action }
     }
 
+    private val deeplinksManager: AppDeeplinksManager by inject()
+
     override val presenter: RootContract.Presenter by inject()
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
@@ -50,6 +53,11 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     private val crashLoggingService: CrashLoggingService by inject()
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleDeeplink(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
@@ -69,6 +77,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
 
         checkForGoogleServices()
+        handleDeeplink()
     }
 
     private fun logScreenOpenEvent() {
@@ -153,5 +162,12 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         super.onStop()
         if (intent.action == ACTION_RESTART) return
         adminAnalytics.logAppClosed(analyticsInteractor.getCurrentScreenName())
+    }
+
+    private fun handleDeeplink(newIntent: Intent? = null) {
+        val intentToHandle = newIntent ?: intent
+        if (intentToHandle.extras?.containsKey(AppDeeplinksManager.DEEPLINK_MAIN_SCREEN_EXTRA) == true) {
+            deeplinksManager.handleOrSaveDeeplinkIntent(intentToHandle)
+        }
     }
 }
