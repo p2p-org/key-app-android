@@ -1,21 +1,18 @@
-package org.p2p.solanaj.kits.transaction
+package org.p2p.wallet.history.model
 
+import org.p2p.solanaj.kits.transaction.TransactionDetailsType
 import org.p2p.solanaj.model.types.ConfirmationStatus
 import java.util.concurrent.TimeUnit
 
-sealed class TransactionDetails(
+sealed class HistoryTransactionItem(
     val signature: String,
     val blockTimeSeconds: Long,
     val slot: Int,
-    var error: List<Any>? = null,
-    var status: ConfirmationStatus? = null
+    val error: List<Any>? = null,
+    val confirmationStatus: ConfirmationStatus? = null
 ) {
     abstract val type: TransactionDetailsType
 
-    /*
-    * Since blocktime is time of when the transaction was processed in SECONDS
-    * we are converting it into milliseconds
-    * */
     val blockTimeMillis: Long
         get() = TimeUnit.SECONDS.toMillis(blockTimeSeconds)
 }
