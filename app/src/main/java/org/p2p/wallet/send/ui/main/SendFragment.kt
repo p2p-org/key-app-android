@@ -31,7 +31,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.NetworkType
@@ -53,12 +52,12 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -76,11 +75,11 @@ class SendFragment :
 
     companion object {
 
-        fun create(address: String? = null) = SendFragment().withArgs(
+        fun create(address: String? = null): SendFragment = SendFragment().withArgs(
             EXTRA_ADDRESS to address
         )
 
-        fun create(initialToken: Token) = SendFragment().withArgs(
+        fun create(initialToken: Token): SendFragment = SendFragment().withArgs(
             EXTRA_TOKEN to initialToken
         )
     }
@@ -103,39 +102,41 @@ class SendFragment :
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_SEND, viewLifecycleOwner
-        ) { _, result ->
-            when {
-                result.containsKey(EXTRA_TOKEN) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
-                    if (token != null) presenter.setSourceToken(token)
-                }
-                result.containsKey(EXTRA_FEE_PAYER) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
-                    if (token != null) presenter.setFeePayerToken(token)
-                }
-                result.containsKey(EXTRA_RESULT) -> {
-                    val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
-                    if (searchResult != null) presenter.setTargetResult(searchResult)
-                }
-                result.containsKey(EXTRA_NETWORK) -> {
-                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
-                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
-                }
-            }
-        }
+            KEY_REQUEST_SEND, this
+        ) { _, result -> handleFragmentResult(result) }
 
         // childFragmentManager for BottomSheets
-        childFragmentManager.setFragmentResultListener(KEY_REQUEST_SEND, viewLifecycleOwner) { _, result ->
-            if (result.containsKey(EXTRA_RESULT_KEY_DISMISS)) closeScreenAndReturn()
-        }
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND, this
+        ) { _, result -> handleFragmentResult(result) }
 
         presenter.loadInitialData()
         checkClipBoard()
     }
 
-    private fun closeScreenAndReturn() {
-        if (backStackEntryCount() > 1) popBackStack() else replaceFragment(HomeFragment.create())
+    private fun handleFragmentResult(result: Bundle) {
+        when {
+            result.containsKey(EXTRA_TOKEN) -> {
+                val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
+                if (token != null) presenter.setSourceToken(token)
+            }
+            result.containsKey(EXTRA_FEE_PAYER) -> {
+                val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
+                if (token != null) presenter.setFeePayerToken(token)
+            }
+            result.containsKey(EXTRA_RESULT) -> {
+                val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
+                if (searchResult != null) presenter.setTargetResult(searchResult)
+            }
+            result.containsKey(EXTRA_NETWORK) -> {
+                val ordinal = result.getInt(EXTRA_NETWORK, 0)
+                presenter.setNetworkDestination(NetworkType.values()[ordinal])
+            }
+            result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
+                clearScreenData()
+                activity?.onBackPressed()
+            }
+        }
     }
 
     override fun onStop() {
@@ -523,6 +524,13 @@ class SendFragment :
             title = TextContainer(R.string.main_send_wrong_wallet),
             message = TextContainer(R.string.main_send_wrong_wallet_message)
         )
+    }
+
+    private fun clearScreenData() {
+        with(binding) {
+            amountEditText.setText(emptyString())
+            clearImageView.callOnClick()
+        }
     }
 
     private fun checkClipBoard() {
