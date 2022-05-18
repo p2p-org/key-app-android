@@ -26,12 +26,12 @@ object FeeRelayerConverter {
             transferAuthoritySignature = signatures.transferAuthoritySignature
         )
 
-    fun toNetwork(info: FeeRelayerStatistics): FeeRelayerInfoRequest =
+    fun toNetwork(statistics: FeeRelayerStatistics): FeeRelayerInfoRequest =
         FeeRelayerInfoRequest(
-            operationType = info.operationType.stringValue,
-            currency = info.currency,
-            deviceType = info.deviceType,
-            build = info.build,
+            operationType = statistics.operationType.stringValue,
+            currency = statistics.currency,
+            deviceType = statistics.deviceType,
+            build = statistics.build,
         )
 
     private fun toNetwork(account: AccountMeta, pubkeys: List<String>): RequestAccountMeta =

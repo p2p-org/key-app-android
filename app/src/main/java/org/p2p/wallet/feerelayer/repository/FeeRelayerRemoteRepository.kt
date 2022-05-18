@@ -61,19 +61,14 @@ class FeeRelayerRemoteRepository(
             relayTransactionSignatures[index] = signature.signature
         }
 
-        val info = FeeRelayerInfoRequest(
-            operationType = statistics.operationType.stringValue,
-            deviceType = statistics.deviceType,
-            currency = statistics.currency,
-            build = statistics.build
-        )
+        val infoRequest = FeeRelayerConverter.toNetwork(statistics)
 
         val request = SendTransactionRequest(
             instructions = requestInstructions,
             signatures = relayTransactionSignatures,
             pubkeys = keys,
             blockHash = blockHash,
-            info = info
+            info = infoRequest
         )
         return if (environmentManager.isDevnet()) {
             devnetApi.relayTransactionV2(request)

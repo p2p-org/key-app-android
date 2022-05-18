@@ -116,18 +116,15 @@ class FeeRelayerInteractor(
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val info = feeRelayerAccountInteractor.getRelayInfo()
 
         // Check fee
         if (freeTransactionFeeLimit.isFreeTransactionFeeAvailable(expectedFee.transaction)) {
             expectedFee.transaction = BigInteger.ZERO
         }
 
-        val minRelayAccountBalance = relayAccount.balance.orZero() - info.minimumRelayAccountBalance
-        val topUpParams = if (expectedFee.total.isNotZero() && minRelayAccountBalance < expectedFee.total) {
-            val topUpAmount = expectedFee.total - minRelayAccountBalance
+        val topUpParams = if (expectedFee.total.isNotZero() && relayAccount.balance.orZero() < expectedFee.total) {
             feeRelayerTopUpInteractor.prepareForTopUp(
-                topUpAmount = topUpAmount,
+                topUpAmount = expectedFee.total,
                 payingFeeToken = payingFeeToken,
                 relayAccount = relayAccount,
                 freeTransactionFeeLimit = freeTransactionFeeLimit
@@ -188,8 +185,7 @@ class FeeRelayerInteractor(
         val owner = Account(tokenKeyProvider.secretKey)
         val transaction = preparedTransaction.transaction
         if (paybackFee.isNotZero()) {
-            val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountBalance)
-            if (payingFeeToken.isSOL && minRelayAccountBalance < paybackFee) {
+            if (payingFeeToken.isSOL && relayAccount.balance.orZero() < paybackFee) {
                 val instruction = SystemProgram.transfer(
                     fromPublicKey = owner.publicKey,
                     toPublicKey = feePayer,
