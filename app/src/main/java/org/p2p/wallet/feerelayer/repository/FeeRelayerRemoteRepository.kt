@@ -4,7 +4,6 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
-import org.p2p.wallet.feerelayer.api.FeeRelayerInfoRequest
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
 import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
