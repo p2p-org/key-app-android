@@ -6,6 +6,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.programs.SystemProgram
+import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -90,7 +91,8 @@ class FeeRelayerInteractor(
     suspend fun topUpAndRelayTransaction(
         preparedTransaction: PreparedTransaction,
         payingFeeToken: TokenInfo,
-        additionalPaybackFee: BigInteger
+        additionalPaybackFee: BigInteger,
+        statistics: FeeRelayerStatistics
     ): List<String> {
         checkAndTopUp(
             expectedFee = preparedTransaction.expectedFee,
@@ -100,7 +102,8 @@ class FeeRelayerInteractor(
         return relayTransaction(
             preparedTransaction = preparedTransaction,
             payingFeeToken = payingFeeToken,
-            additionalPaybackFee = additionalPaybackFee
+            additionalPaybackFee = additionalPaybackFee,
+            statistics = statistics
         )
     }
 
@@ -155,13 +158,14 @@ class FeeRelayerInteractor(
     private suspend fun relayTransaction(
         preparedTransaction: PreparedTransaction,
         payingFeeToken: TokenInfo,
-        additionalPaybackFee: BigInteger
+        additionalPaybackFee: BigInteger,
+        statistics: FeeRelayerStatistics
     ): List<String> {
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = info.feePayerAddress
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(useCache = false)
 
         // verify fee payer
         if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
@@ -208,7 +212,7 @@ class FeeRelayerInteractor(
         * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
         * */
         return retryRequest {
-            feeRelayerRepository.relayTransaction(transaction)
+            feeRelayerRepository.relayTransaction(transaction, statistics)
         }
     }
 }
