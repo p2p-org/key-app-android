@@ -4,9 +4,11 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
+import org.p2p.wallet.feerelayer.api.FeeRelayerInfoRequest
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
 import org.p2p.wallet.feerelayer.api.SendTransactionRequest
 import org.p2p.wallet.feerelayer.model.FeeRelayerConverter
+import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapDataConverter
@@ -44,7 +46,7 @@ class FeeRelayerRemoteRepository(
         )
     }
 
-    override suspend fun relayTransaction(transaction: Transaction): List<String> {
+    override suspend fun relayTransaction(transaction: Transaction, statistics: FeeRelayerStatistics): List<String> {
         val instructions = transaction.instructions
         val signatures = transaction.allSignatures
         val pubkeys = transaction.accountKeys
@@ -59,11 +61,19 @@ class FeeRelayerRemoteRepository(
             relayTransactionSignatures[index] = signature.signature
         }
 
+        val info = FeeRelayerInfoRequest(
+            operationType = statistics.operationType.stringValue,
+            deviceType = statistics.deviceType,
+            currency = statistics.currency,
+            build = statistics.build
+        )
+
         val request = SendTransactionRequest(
             instructions = requestInstructions,
             signatures = relayTransactionSignatures,
             pubkeys = keys,
             blockHash = blockHash,
+            info = info
         )
         return if (environmentManager.isDevnet()) {
             devnetApi.relayTransactionV2(request)
@@ -79,7 +89,8 @@ class FeeRelayerRemoteRepository(
         swapData: SwapData,
         feeAmount: BigInteger,
         signatures: SwapTransactionSignatures,
-        blockhash: String
+        blockhash: String,
+        info: FeeRelayerStatistics
     ): List<String> {
         val request = RelayTopUpSwapRequest(
             userSourceTokenAccountPubkey = userSourceTokenAccountPubkey,
@@ -89,6 +100,7 @@ class FeeRelayerRemoteRepository(
             feeAmount = feeAmount.toLong(),
             signatures = FeeRelayerConverter.toNetwork(signatures),
             blockhash = blockhash,
+            info = FeeRelayerConverter.toNetwork(info)
         )
 
         return if (environmentManager.isDevnet()) {

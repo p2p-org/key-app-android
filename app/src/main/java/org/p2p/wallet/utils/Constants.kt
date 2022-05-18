@@ -17,4 +17,6 @@ object Constants {
     const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ"
 
     const val SOL_NAME = "Solana"
+
+    const val DEVICE_TYPE = "Android"
 }
