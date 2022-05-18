@@ -24,7 +24,7 @@ class BurnBtcInteractor(
 
     companion object {
         private const val BURN_FEE_LENGTH = 97
-        private val BURN_FEE_VALUE = "0.000005"
+        private const val BURN_FEE_VALUE = "0.000005"
     }
 
     suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(Dispatchers.IO) {

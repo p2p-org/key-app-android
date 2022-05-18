@@ -22,12 +22,13 @@ import org.p2p.wallet.rpc.RpcConstants
 import timber.log.Timber
 import java.io.IOException
 
+private const val TAG = "RpcInterceptor"
+
 open class RpcInterceptor(
     private val gson: Gson,
     environmentManager: EnvironmentManager
 ) : Interceptor {
 
-    private val TAG = "RpcInterceptor"
     private var currentEnvironment = environmentManager.loadEnvironment()
 
     init {

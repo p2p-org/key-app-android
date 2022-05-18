@@ -82,7 +82,7 @@ class SwapDetailsView @JvmOverloads constructor(
             } else {
                 val spannedFee = SpanUtils.highlightText(
                     data.commonTransactionFee.orEmpty(),
-                    data.approxTransactionFeeUsd.orEmpty(),
+                    data.approxTransactionFeeUsd,
                     getColor(R.color.textIconSecondary)
                 )
                 transactionFeeTextView.text = spannedFee

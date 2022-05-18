@@ -14,7 +14,7 @@ class UserInMemoryRepository : UserLocalRepository {
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
     private val tokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
-    private val tokensSearchResultFlow = MutableStateFlow<TokenListData>(TokenListData())
+    private val tokensSearchResultFlow = MutableStateFlow(TokenListData())
     private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
 
     override fun setTokenPrices(prices: List<TokenPrice>) {

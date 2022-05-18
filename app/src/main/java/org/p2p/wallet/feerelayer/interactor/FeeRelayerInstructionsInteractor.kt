@@ -44,16 +44,16 @@ class FeeRelayerInstructionsInteractor(
             val pool = pools[0]
 
             val amountIn = inputAmount ?: pool.getInputAmount(minAmountOut!!, slippage)
-            val minAmountOut = minAmountOut ?: pool.getMinimumAmountOut(inputAmount!!, slippage)
+            val validMinAmountOut = minAmountOut ?: pool.getMinimumAmountOut(inputAmount!!, slippage)
 
-            if (amountIn == null || minAmountOut == null) {
+            if (amountIn == null || validMinAmountOut == null) {
                 throw IllegalStateException("Invalid amount")
             }
 
             return pool.getSwapData(
                 transferAuthorityPubkey = owner,
                 amountIn = amountIn,
-                minAmountOut = minAmountOut
+                minAmountOut = validMinAmountOut
             )
         } else {
             val firstPool = pools[0]

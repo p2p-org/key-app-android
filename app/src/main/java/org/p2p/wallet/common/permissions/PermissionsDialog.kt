@@ -22,7 +22,7 @@ class PermissionsDialog : DialogFragment() {
         fun requestPermissions(fragment: Fragment, permissions: List<String>, payload: Any? = null) {
             val allPermissionsAreGranted = permissions.all { PermissionsUtil.isGranted(fragment.requireContext(), it) }
             if (allPermissionsAreGranted) {
-                val status = permissions.map { it to PermissionState.GRANTED }.toMap()
+                val status = permissions.associateWith { PermissionState.GRANTED }
                 (fragment as? Callback)?.onPermissionsResult(status, payload)
             } else {
                 show(fragment.childFragmentManager, permissions, payload)
@@ -32,7 +32,7 @@ class PermissionsDialog : DialogFragment() {
         fun requestPermissions(activity: FragmentActivity, permissions: List<String>, payload: Any? = null) {
             val allPermissionsAreGranted = permissions.all { PermissionsUtil.isGranted(activity, it) }
             if (allPermissionsAreGranted) {
-                val status = permissions.map { it to PermissionState.GRANTED }.toMap()
+                val status = permissions.associateWith { PermissionState.GRANTED }
                 (activity as? Callback)?.onPermissionsResult(status, payload)
             } else {
                 show(activity.supportFragmentManager, permissions, payload)

@@ -269,20 +269,21 @@ class FeeRelayerTopUpInteractor(
         }
 
         // top up swap
-        val transitTokenMintPubkey = feeRelayerInstructionsInteractor.getTransitTokenMintPubkey(topUpPools)
-        if (transitTokenMintPubkey == null && topUpPools.size > 1) {
-            throw IllegalStateException("Transit mint is null")
+        val transitTokenMintPubKey = feeRelayerInstructionsInteractor.getTransitTokenMintPubkey(topUpPools)
+        if (transitTokenMintPubKey == null && topUpPools.size > 1) {
+            error("Transit mint is null")
         }
         val topUpSwap = feeRelayerInstructionsInteractor.prepareSwapData(
             pools = topUpPools,
             inputAmount = null,
             minAmountOut = targetAmount,
             slippage = Slippage.Percent.doubleValue,
-            transitTokenMintPubkey = transitTokenMintPubkey,
+            transitTokenMintPubkey = transitTokenMintPubKey,
             userAuthorityAddress = userAuthorityAddress,
         )
 
         val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(userAuthorityAddress)
+        // TODO do we even need this val?
         val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
         when (topUpSwap) {
             is SwapData.Direct -> {
@@ -347,7 +348,7 @@ class FeeRelayerTopUpInteractor(
         transaction.recentBlockHash = blockhash
 
         // calculate fee first
-        val expectedFee = FeeAmount(
+        val expectedFeeAmount = FeeAmount(
             transaction = transaction.calculateTransactionFee(lamportsPerSignature),
             accountBalances = accountCreationFee
         )
@@ -358,6 +359,6 @@ class FeeRelayerTopUpInteractor(
 
         transaction.sign(signers)
 
-        return topUpSwap to PreparedTransaction(transaction, signers, expectedFee)
+        return topUpSwap to PreparedTransaction(transaction, signers, expectedFeeAmount)
     }
 }

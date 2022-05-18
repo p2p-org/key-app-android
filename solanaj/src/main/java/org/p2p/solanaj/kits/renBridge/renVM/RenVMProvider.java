@@ -1,7 +1,5 @@
 package org.p2p.solanaj.kits.renBridge.renVM;
 
-import android.util.Log;
-
 import org.bitcoinj.core.Base58;
 import org.p2p.solanaj.kits.renBridge.NetworkConfig;
 import org.p2p.solanaj.kits.renBridge.renVM.types.ParamsSubmitMint;
@@ -13,6 +11,7 @@ import org.p2p.solanaj.rpc.RpcClient;
 import org.p2p.solanaj.rpc.RpcException;
 import org.p2p.solanaj.utils.ByteUtils;
 import org.p2p.solanaj.utils.Hash;
+import org.p2p.solanaj.utils.SolanjLogger;
 import org.p2p.solanaj.utils.Utils;
 import org.p2p.solanaj.utils.crypto.Base64UrlUtils;
 
@@ -20,17 +19,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Map;
 
 public class RenVMProvider {
-    private RpcClient client;
-    private HashMap<String, Object> emptyParams = new HashMap<String, Object>();
+    private final RpcClient client;
+    private final HashMap<String, Object> emptyParams = new HashMap<>();
 
     public RenVMProvider(NetworkConfig networkConfig) {
         this.client = new RpcClient(networkConfig.getLightNode());
     }
 
     public ResponseQueryTxMint queryMint(String txHash) throws RpcException {
-        HashMap params = new HashMap();
+        Map<String, Object> params = new HashMap<>();
         params.put("txHash", txHash);
         return client.callMap("ren_queryTx", params, ResponseQueryTxMint.class);
     }
@@ -43,10 +43,13 @@ public class RenVMProvider {
         return client.callMap("ren_queryConfig", emptyParams, ResponseQueryConfig.class);
     }
 
-    public ResponseSubmitTxMint submitTx(String hash, ParamsSubmitMint.MintTransactionInput mintTx, String selector)
-            throws RpcException {
+    public ResponseSubmitTxMint submitTx(
+            String hash,
+            ParamsSubmitMint.MintTransactionInput mintTx,
+            String selector
+    ) throws RpcException {
         ParamsSubmitMint params = new ParamsSubmitMint(hash, mintTx, selector);
-        HashMap map = new HashMap();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("tx", params);
         return client.callMap("ren_submitTx", map, ResponseSubmitTxMint.class);
     }
@@ -56,10 +59,20 @@ public class RenVMProvider {
         return Base64UrlUtils.fromURLBase64(pubKey);
     }
 
-    public String submitMint(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) throws RpcException {
+    public String submitMint(
+            byte[] gHash,
+            byte[] gPubKey,
+            byte[] nHash,
+            byte[] nonce,
+            String amount,
+            byte[] pHash,
+            String to,
+            String txIndex,
+            byte[] txid
+    ) throws RpcException {
         String selector = "BTC/toSolana";
-        ParamsSubmitMint.MintTransactionInput mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
+        ParamsSubmitMint.MintTransactionInput mintTx =
+                buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
         String hash = Utils.toURLBase64(hashTransactionMint(mintTx, selector));
 
         submitTx(hash, mintTx, selector);
@@ -67,10 +80,20 @@ public class RenVMProvider {
         return hash;
     }
 
-    public String submitBurn(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) throws RpcException {
+    public String submitBurn(
+            byte[] gHash,
+            byte[] gPubKey,
+            byte[] nHash,
+            byte[] nonce,
+            String amount,
+            byte[] pHash,
+            String to,
+            String txIndex,
+            byte[] txid
+    ) throws RpcException {
         String selector = "BTC/fromSolana";
-        ParamsSubmitMint.MintTransactionInput mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
+        ParamsSubmitMint.MintTransactionInput mintTx =
+                buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
         String hash = Utils.toURLBase64(hashTransactionMint(mintTx, selector));
 
         submitTx(hash, mintTx, selector);
@@ -78,15 +101,35 @@ public class RenVMProvider {
         return hash;
     }
 
-    public String mintTxHash(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) {
-        ParamsSubmitMint.MintTransactionInput mintTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
+    public String mintTxHash(
+            byte[] gHash,
+            byte[] gPubKey,
+            byte[] nHash,
+            byte[] nonce,
+            String amount,
+            byte[] pHash,
+            String to,
+            String txIndex,
+            byte[] txid
+    ) {
+        ParamsSubmitMint.MintTransactionInput mintTx =
+                buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
         return Utils.toURLBase64(hashTransactionMint(mintTx, "BTC/toSolana"));
     }
 
-    public String burnTxHash(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce, String amount, byte[] pHash,
-                             String to, String txIndex, byte[] txid) {
-        ParamsSubmitMint.MintTransactionInput burnTx = buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
+    public String burnTxHash(
+            byte[] gHash,
+            byte[] gPubKey,
+            byte[] nHash,
+            byte[] nonce,
+            String amount,
+            byte[] pHash,
+            String to,
+            String txIndex,
+            byte[] txid
+    ) {
+        ParamsSubmitMint.MintTransactionInput burnTx =
+                buildTransaction(gHash, gPubKey, nHash, nonce, amount, pHash, to, txIndex, txid);
         return Utils.toURLBase64(hashTransactionMint(burnTx, "BTC/fromSolana"));
     }
 
@@ -96,8 +139,17 @@ public class RenVMProvider {
                 .multiply(new BigInteger(queryBlockState.state.v.btc.gasCap));
     }
 
-    public static ParamsSubmitMint.MintTransactionInput buildTransaction(byte[] gHash, byte[] gPubKey, byte[] nHash, byte[] nonce,
-                                                                         String amount, byte[] pHash, String to, String txIndex, byte[] txid) {
+    public static ParamsSubmitMint.MintTransactionInput buildTransaction(
+            byte[] gHash,
+            byte[] gPubKey,
+            byte[] nHash,
+            byte[] nonce,
+            String amount,
+            byte[] pHash,
+            String to,
+            String txIndex,
+            byte[] txid
+    ) {
         ParamsSubmitMint.MintTransactionInput mintTx = new ParamsSubmitMint.MintTransactionInput();
         mintTx.txid = Utils.toURLBase64(txid);
         mintTx.txindex = txIndex;
@@ -122,8 +174,9 @@ public class RenVMProvider {
             out.write(marshalString(selector));
 
             // marshalledType MintTransactionInput
-            out.write(Base58.decode(
-                    "aHQBEVgedhqiYDUtzYKdu1Qg1fc781PEV4D1gLsuzfpHNwH8yK2A2BuZK4uZoMC6pp8o7GWQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1"));
+            out.write(
+                    Base58.decode("aHQBEVgedhqiYDUtzYKdu1Qg1fc781PEV4D1gLsuzfpHNwH8yK2A2BuZK4uZoMC6pp8o7GWQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1")
+            );
 
             out.write(marshalBytes(Utils.fromURLBase64(mintTx.txid)));
             out.write(ByteUtils.uint32ToByteArrayBE(Long.valueOf(mintTx.txindex)));
@@ -136,7 +189,7 @@ public class RenVMProvider {
             out.write(marshalBytes(Utils.fromURLBase64(mintTx.gpubkey)));
             out.write(Utils.fromURLBase64(mintTx.ghash));
         } catch (IOException e) {
-            e.printStackTrace();
+            SolanjLogger.INSTANCE.e(e);
         }
         return Hash.sha256(out.toByteArray());
     }

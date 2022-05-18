@@ -251,7 +251,6 @@ class SerumSwapInteractor(
 
         val signersAndInstructions = swap(params, isSimulation)
 
-        val instructions = signersAndInstructions.map { it.instructions }.flatten()
         val signers = signersAndInstructions.map { it.signers }.flatten().toMutableList()
 
         // TODO: If fee relayer is available, remove account as signer
@@ -717,6 +716,7 @@ class SerumSwapInteractor(
             signers.add(0, Account(tokenKeyProvider.secretKey))
         }
 
+// TODO: DELETE?
 //        val serializedTransaction = serializationInteractor.serializeTransaction(
 //            instructions = instructions,
 //            recentBlockhash = null,
