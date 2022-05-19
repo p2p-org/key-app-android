@@ -55,7 +55,7 @@ class SearchFragment :
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.RECIPIENT_ADDRESS)
 
-        requireActivity().onBackPressedDispatcher.addCallback {
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
             popBackStack()
         }
 
