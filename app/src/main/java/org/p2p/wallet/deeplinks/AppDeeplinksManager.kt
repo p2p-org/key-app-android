@@ -7,10 +7,12 @@ import androidx.core.content.getSystemService
 import org.p2p.wallet.R
 import org.p2p.wallet.notification.NotificationType
 import org.p2p.wallet.root.RootActivity
+import org.p2p.wallet.utils.toStringMap
 
 class AppDeeplinksManager(private val context: Context) {
 
     companion object {
+        const val NOTIFICATION_TYPE = "eventType"
         const val DEEPLINK_MAIN_SCREEN_EXTRA = "DEEPLINK_SCREEN_EXTRA"
     }
 
@@ -24,7 +26,7 @@ class AppDeeplinksManager(private val context: Context) {
             ?.firstOrNull()
             ?.taskInfo
             ?.baseIntent
-            ?: RootActivity.createIntent(context)
+            ?: Intent(context, RootActivity::class.java)
         return intent.apply {
             addDeeplinkDataToIntent(notificationType)
         }
@@ -36,10 +38,24 @@ class AppDeeplinksManager(private val context: Context) {
         }
     }
 
-    fun handleOrSaveDeeplinkIntent(intent: Intent) {
+    fun handleDeeplinks(intent: Intent) {
         val extras = intent.extras ?: return
-        if (extras.containsKey(DEEPLINK_MAIN_SCREEN_EXTRA)) {
-            mainTabsSwitcher?.navigate(extras.getInt(DEEPLINK_MAIN_SCREEN_EXTRA)) ?: savePendingIntent(intent)
+        // additional parsing when app been opened with notification from background
+        if (extras.containsKey(NOTIFICATION_TYPE)) {
+            val values = extras.toStringMap()
+            val notificationType = NotificationType.fromValue(
+                values[NOTIFICATION_TYPE].orEmpty()
+            )
+            intent.addDeeplinkDataToIntent(notificationType)
+        }
+        handleOrSaveDeeplinkIntent(intent)
+    }
+
+    private fun handleOrSaveDeeplinkIntent(intent: Intent) {
+        intent.extras?.apply {
+            if (containsKey(DEEPLINK_MAIN_SCREEN_EXTRA)) {
+                mainTabsSwitcher?.navigate(getInt(DEEPLINK_MAIN_SCREEN_EXTRA)) ?: savePendingIntent(intent)
+            }
         }
     }
 

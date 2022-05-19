@@ -5,6 +5,7 @@ import com.google.firebase.messaging.RemoteMessage
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.wallet.common.di.ServiceScope
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.FcmPushNotificationData
 import org.p2p.wallet.notification.NotificationType
@@ -12,7 +13,6 @@ import org.p2p.wallet.utils.NoOp
 import timber.log.Timber
 
 private const val TAG = "AppFirebaseMessagingService"
-private const val NOTIFICATION_TYPE = "eventType"
 
 class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
@@ -37,7 +37,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
         if (message.data.isNotEmpty()) {
             notificationType = NotificationType.fromValue(
-                message.data[NOTIFICATION_TYPE].orEmpty()
+                message.data[AppDeeplinksManager.NOTIFICATION_TYPE].orEmpty()
             )
         }
 
