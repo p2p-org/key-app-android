@@ -33,13 +33,9 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
     private fun handleForegroundPush(message: RemoteMessage) {
         Timber.tag(TAG).d("From: ${message.from}")
 
-        var notificationType = NotificationType.DEFAULT
-
-        if (message.data.isNotEmpty()) {
-            notificationType = NotificationType.fromValue(
-                message.data[AppDeeplinksManager.NOTIFICATION_TYPE].orEmpty()
-            )
-        }
+        val notificationType = message.data[AppDeeplinksManager.NOTIFICATION_TYPE]?.let {
+            NotificationType.fromValue(it)
+        } ?: NotificationType.DEFAULT
 
         message.notification?.let {
             appNotificationManager.showFcmPushNotification(
