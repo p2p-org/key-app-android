@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit
 
 object NetworkModule : InjectionModule {
 
-    const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 60L
-    const val DEFAULT_READ_TIMEOUT_SECONDS = 60L
+    const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 30L
+    const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
         single { EnvironmentManager(get(), get()) }
