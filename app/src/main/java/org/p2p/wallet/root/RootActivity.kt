@@ -166,6 +166,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
     private fun handleDeeplink(newIntent: Intent? = null) {
         val intentToHandle = newIntent ?: intent
-        deeplinksManager.handleDeeplinks(intentToHandle)
+        deeplinksManager.handleDeeplinkIntent(intentToHandle)
     }
 }
