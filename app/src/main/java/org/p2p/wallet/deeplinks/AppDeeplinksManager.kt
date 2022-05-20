@@ -27,7 +27,7 @@ class AppDeeplinksManager(private val context: Context) {
             ?.taskInfo
             ?.baseIntent
             ?: Intent(context, RootActivity::class.java)
-        return intent.apply {
+        return openedScreenOrRoot.apply {
             addDeeplinkDataToIntent(notificationType)
         }
     }
@@ -69,8 +69,4 @@ class AppDeeplinksManager(private val context: Context) {
     private fun savePendingIntent(intent: Intent) {
         pendingIntent = intent
     }
-}
-
-interface MainTabsSwitcher {
-    fun navigate(itemId: Int)
 }
