@@ -13,6 +13,8 @@ private const val SCALE_VALUE_SHORT = 2
 private const val SCALE_VALUE_MEDIUM = 6
 private const val SCALE_VALUE_LONG = 9
 
+private const val USD_DECIMALS = 2
+
 fun String?.toBigDecimalOrZero(): BigDecimal {
     val removedZeros = this?.replace("(?<=\\d)\\.?0+(?![\\d\\.])", emptyString())
     return removedZeros?.toBigDecimalOrNull() ?: BigDecimal.ZERO
@@ -58,6 +60,9 @@ fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
 
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.usdRate?.let { this.multiply(it).scaleShort() }
+
+fun BigDecimal.formatUsd(): String = DecimalFormatUtil.format(this, USD_DECIMALS)
+fun BigDecimal.formatToken(): String = DecimalFormatUtil.format(this, DEFAULT_DECIMAL)
 
 fun BigDecimal?.isNullOrZero() = this == null || this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
