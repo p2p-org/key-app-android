@@ -22,7 +22,7 @@ class AppDeeplinksManager(private val context: Context) {
 
     fun buildIntent(notificationType: NotificationType): Intent {
         val activityManager = context.getSystemService<ActivityManager>()
-        val intent = activityManager?.appTasks
+        val openedScreenOrRoot = activityManager?.appTasks
             ?.firstOrNull()
             ?.taskInfo
             ?.baseIntent
