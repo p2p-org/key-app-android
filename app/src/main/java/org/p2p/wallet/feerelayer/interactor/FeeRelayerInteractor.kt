@@ -6,6 +6,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.programs.SystemProgram
+import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -18,7 +19,6 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.retryRequest
 import java.math.BigInteger
 
@@ -90,7 +90,8 @@ class FeeRelayerInteractor(
     suspend fun topUpAndRelayTransaction(
         preparedTransaction: PreparedTransaction,
         payingFeeToken: TokenInfo,
-        additionalPaybackFee: BigInteger
+        additionalPaybackFee: BigInteger,
+        statistics: FeeRelayerStatistics
     ): List<String> {
         checkAndTopUp(
             expectedFee = preparedTransaction.expectedFee,
@@ -100,7 +101,8 @@ class FeeRelayerInteractor(
         return relayTransaction(
             preparedTransaction = preparedTransaction,
             payingFeeToken = payingFeeToken,
-            additionalPaybackFee = additionalPaybackFee
+            additionalPaybackFee = additionalPaybackFee,
+            statistics = statistics
         )
     }
 
@@ -113,15 +115,18 @@ class FeeRelayerInteractor(
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        val info = feeRelayerAccountInteractor.getRelayInfo()
 
         // Check fee
         if (freeTransactionFeeLimit.isFreeTransactionFeeAvailable(expectedFee.transaction)) {
             expectedFee.transaction = BigInteger.ZERO
         }
 
-        val topUpParams = if (expectedFee.total.isNotZero() && relayAccount.balance.orZero() < expectedFee.total) {
+        val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountRent)
+        val topUpParams = if (expectedFee.total.isNotZero() && minRelayAccountBalance < expectedFee.total) {
+            val topUpAmount = expectedFee.total - minRelayAccountBalance
             feeRelayerTopUpInteractor.prepareForTopUp(
-                topUpAmount = expectedFee.total,
+                topUpAmount = topUpAmount,
                 payingFeeToken = payingFeeToken,
                 relayAccount = relayAccount,
                 freeTransactionFeeLimit = freeTransactionFeeLimit
@@ -155,13 +160,14 @@ class FeeRelayerInteractor(
     private suspend fun relayTransaction(
         preparedTransaction: PreparedTransaction,
         payingFeeToken: TokenInfo,
-        additionalPaybackFee: BigInteger
+        additionalPaybackFee: BigInteger,
+        statistics: FeeRelayerStatistics
     ): List<String> {
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = info.feePayerAddress
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
+        val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount(useCache = false)
 
         // verify fee payer
         if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
@@ -181,7 +187,8 @@ class FeeRelayerInteractor(
         val owner = Account(tokenKeyProvider.secretKey)
         val transaction = preparedTransaction.transaction
         if (paybackFee.isNotZero()) {
-            if (payingFeeToken.isSOL && relayAccount.balance.orZero() < paybackFee) {
+            val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountRent)
+            if (payingFeeToken.isSOL && minRelayAccountBalance < paybackFee) {
                 val instruction = SystemProgram.transfer(
                     fromPublicKey = owner.publicKey,
                     toPublicKey = feePayer,
@@ -208,7 +215,7 @@ class FeeRelayerInteractor(
         * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
         * */
         return retryRequest {
-            feeRelayerRepository.relayTransaction(transaction)
+            feeRelayerRepository.relayTransaction(transaction, statistics)
         }
     }
 }

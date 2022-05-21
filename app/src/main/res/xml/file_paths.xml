@@ -3,6 +3,9 @@
     <external-path
         name="external_files"
         path="." />
+    <root-path
+        name="root"
+        path="." />
     <cache-path
         name="wallet_pdf"
         path="." />

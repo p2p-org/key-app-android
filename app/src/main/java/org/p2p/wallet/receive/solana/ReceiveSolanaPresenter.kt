@@ -58,17 +58,15 @@ class ReceiveSolanaPresenter(
         }
     }
 
-    override fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean) {
+    override fun saveQr(name: String, bitmap: Bitmap, shareText: String?) {
         launch {
             try {
                 val savedFile = usernameInteractor.saveQr(name, bitmap)
-                if (shareAfter) {
-                    savedFile?.let {
-                        view?.showShareQr(it, name)
+                shareText?.let { textToShare ->
+                    savedFile?.let { file ->
+                        view?.showShareQr(file, textToShare)
                     } ?: Timber.e("Error on saving QR file == null")
-                } else {
-                    view?.showToastMessage(R.string.auth_saved)
-                }
+                } ?: view?.showToastMessage(R.string.auth_saved)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on saving QR")
                 view?.showErrorMessage(e)

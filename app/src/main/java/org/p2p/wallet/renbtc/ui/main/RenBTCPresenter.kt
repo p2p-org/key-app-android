@@ -3,21 +3,20 @@ package org.p2p.wallet.renbtc.ui.main
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.CountDownTimer
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.qr.interactor.QrCodeInteractor
-import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.renbtc.service.RenVMService
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.model.RenBtcSession
+import org.p2p.wallet.renbtc.service.RenVMService
+import org.p2p.wallet.utils.fromLamports
+import org.p2p.wallet.utils.scaleMedium
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException
@@ -68,17 +67,15 @@ class RenBTCPresenter(
         RenVMService.startWithCheck(context)
     }
 
-    override fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean) {
+    override fun saveQr(name: String, bitmap: Bitmap, shareText: String?) {
         launch {
             try {
                 val savedFile = usernameInteractor.saveQr(name, bitmap)
-                if (shareAfter) {
-                    savedFile?.let {
-                        view?.showShareQr(it, name)
+                shareText?.let { textToShare ->
+                    savedFile?.let { file ->
+                        view?.showShareQr(file, textToShare)
                     } ?: Timber.e("Error on saving QR file == null")
-                } else {
-                    view?.showToastMessage(R.string.auth_saved)
-                }
+                } ?: view?.showToastMessage(R.string.auth_saved)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on saving QR")
                 view?.showErrorMessage(e)

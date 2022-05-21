@@ -52,6 +52,10 @@ class ReceiveCardView @JvmOverloads constructor(
         binding.qrView.setWatermarkIcon(iconUrl)
     }
 
+    fun setTokenSymbol(symbol: String) {
+        binding.qrView.setTokenSymbol(symbol)
+    }
+
     fun hideWatermark() = binding.qrView.hideWatermark()
 
     fun setNetworkName(newName: String) {
@@ -66,15 +70,25 @@ class ReceiveCardView @JvmOverloads constructor(
         binding.qrView.showLoading(isLoading)
     }
 
+    fun setOnRequestPermissions(isGranted: () -> Boolean) {
+        binding.qrView.onRequestPermissions = { isGranted() }
+    }
+
     fun setOnSaveQrClickListener(block: (name: String, qrImage: Bitmap) -> Unit) {
         binding.qrView.onSaveClickListener = { name, qrImage -> block(name, qrImage) }
     }
 
-    fun setOnShareQrClickListener(block: (qrValue: String, qrImage: Bitmap) -> Unit) {
-        binding.qrView.onShareClickListener = { name, qrImage -> block(name, qrImage) }
+    fun requestSave() = binding.qrView.requestAction(QrView.QrCodeAction.SAVE)
+
+    fun setOnShareQrClickListener(block: (qrValue: String, qrImage: Bitmap, shareText: String) -> Unit) {
+        binding.qrView.onShareClickListener = { name, qrImage, shareText -> block(name, qrImage, shareText) }
     }
+
+    fun requestShare() = binding.qrView.requestAction(QrView.QrCodeAction.SHARE)
 
     fun setOnCopyQrClickListener(block: () -> Unit) {
         binding.qrView.onCopyClickListener = { block() }
     }
+
+    fun getQrCodeLastAction(): QrView.QrCodeAction? = binding.qrView.qrCodeLastAction
 }

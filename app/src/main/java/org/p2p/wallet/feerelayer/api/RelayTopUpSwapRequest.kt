@@ -16,5 +16,7 @@ class RelayTopUpSwapRequest(
     @SerializedName("signatures")
     val signatures: SwapTransactionSignaturesRequest,
     @SerializedName("blockhash")
-    val blockhash: String
+    val blockhash: String,
+    @SerializedName("info")
+    val info: FeeRelayerInfoRequest
 )

@@ -1,14 +1,13 @@
 package org.p2p.wallet.auth.ui.username
 
 import android.graphics.Bitmap
-import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.wallet.common.mvp.BasePresenter
-
-import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.qr.interactor.QrCodeInteractor
 import timber.log.Timber
 import java.util.concurrent.CancellationException
 
@@ -44,17 +43,15 @@ class UsernamePresenter(
         }
     }
 
-    override fun saveQr(name: String, bitmap: Bitmap, shareAfter: Boolean) {
+    override fun saveQr(name: String, bitmap: Bitmap, shareText: String?) {
         launch {
             try {
                 val savedFile = usernameInteractor.saveQr(name, bitmap)
-                if (shareAfter) {
-                    savedFile?.let {
-                        view?.showShareQr(it, name)
+                shareText?.let { textToShare ->
+                    savedFile?.let { file ->
+                        view?.showShareQr(file, textToShare)
                     } ?: Timber.e("Error on saving QR file == null")
-                } else {
-                    view?.showToastMessage(R.string.auth_saved)
-                }
+                } ?: view?.showToastMessage(R.string.auth_saved)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on saving QR")
                 view?.showErrorMessage(e)

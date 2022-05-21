@@ -83,7 +83,7 @@ class FeeRelayerSwapInteractor(
             inputAmount = inputAmount,
             slippage = slippage,
             blockhash = recentBlockhash.recentBlockhash,
-            minimumTokenAccountBalance = info.minimumTokenAccountBalance,
+            minimumTokenAccountBalance = info.minimumTokenAccountRent,
             needsCreateDestinationTokenAccount = needsCreateDestinationTokenAccount,
             feePayerAddress = info.feePayerAddress,
             lamportsPerSignature = info.lamportsPerSignature
@@ -101,7 +101,7 @@ class FeeRelayerSwapInteractor(
         )
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val lamportsPerSignature = info.lamportsPerSignature
-        val minimumTokenAccountBalance = info.minimumTokenAccountBalance
+        val minimumTokenAccountBalance = info.minimumTokenAccountRent
 
         val needsCreateDestinationTokenAccount = destination.needsCreateDestinationTokenAccount
 

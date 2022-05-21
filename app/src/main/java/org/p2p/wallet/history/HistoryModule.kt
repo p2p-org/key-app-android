@@ -115,7 +115,8 @@ object HistoryModule : InjectionModule {
                 swapAnalytics = get(),
                 analyticsInteractor = get(),
                 environmentManager = get(),
-                sendAnalytics = get()
+                sendAnalytics = get(),
+                tokenKeyProvider = get()
             )
         } bind HistoryContract.Presenter::class
     }

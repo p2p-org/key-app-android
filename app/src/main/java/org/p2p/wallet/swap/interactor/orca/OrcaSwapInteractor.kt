@@ -1,9 +1,11 @@
 package org.p2p.wallet.swap.interactor.orca
 
 import org.p2p.solanaj.core.FeeAmount
+import org.p2p.solanaj.core.OperationType
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
+import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
@@ -135,10 +137,16 @@ class OrcaSwapInteractor(
             slippage = slippage,
         )
 
+        val statistics = FeeRelayerStatistics(
+            operationType = OperationType.SWAP,
+            currency = sourceTokenMint
+        )
+
         val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
             preparedTransaction = transaction,
             payingFeeToken = payingFeeToken,
-            additionalPaybackFee = additionalPaybackFee
+            additionalPaybackFee = additionalPaybackFee,
+            statistics = statistics
         )
             .firstOrNull().orEmpty()
 
