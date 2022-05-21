@@ -102,18 +102,18 @@ class TokenHistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val signatures = historyInteractor.loadSignaturesForAddress(
-                tokenPublicKey = token.publicKey,
-                before = lastTransactionSignature
-            )
-            val fetchedItems = historyInteractor.loadTransactionHistory(
-                tokenPublicKey = token.publicKey,
-                signaturesWithStatus = signatures,
-                forceRefresh = isRefresh
-            )
+//            val signatures = historyInteractor.loadSignaturesForAddress(
+//                tokenPublicKey = token.publicKey,
+//                before = lastTransactionSignature
+//            )
+//            val fetchedItems = historyInteractor.loadTransactionHistory(
+//                tokenPublicKey = token.publicKey,
+//                signaturesWithStatus = signatures,
+//                forceRefresh = isRefresh
+//            )
 
-            lastTransactionSignature = fetchedItems.last().signature
-            transactions.addAll(fetchedItems)
+//            lastTransactionSignature = fetchedItems.last().signature
+//            transactions.addAll(fetchedItems)
 
             view?.showHistory(transactions)
             view?.showPagingState(PagingState.Idle)

@@ -1,67 +1,45 @@
 package org.p2p.wallet.history.interactor
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
+import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
-import org.p2p.wallet.history.model.RpcTransactionSignature
+import org.p2p.wallet.history.interactor.buffer.TokensHistoryBuffer
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
-import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
-import org.p2p.wallet.utils.toPublicKey
-
-private const val PAGE_LIMIT = 20
+import org.p2p.wallet.user.interactor.UserInteractor
 
 class HistoryInteractor(
-    private val rpcSignatureRepository: RpcSignatureRepository,
     private val rpcAccountRepository: RpcAccountRepository,
-    private val transactionsRemoteRepository: TransactionDetailsRemoteRepository,
     private val transactionsLocalRepository: TransactionDetailsLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val historyTransactionMapper: HistoryTransactionMapper
+    private val historyTransactionMapper: HistoryTransactionMapper,
+    private val serviceScope: ServiceScope,
+    private val userInteractor: UserInteractor,
+    private val tokensHistoryBuffer: TokensHistoryBuffer
 ) {
 
-    suspend fun loadSignaturesForAddress(
-        tokenPublicKey: String,
-        before: String? = null
-    ): List<RpcTransactionSignature> {
+    suspend fun attachToHistoryFlow(): Flow<List<HistoryTransaction>> =
+        tokensHistoryBuffer.getHistoryFlow().map { it.mapToHistoryTransactions(tokenKeyProvider.publicKey) }
 
-        val signatures = rpcSignatureRepository.getConfirmedSignaturesForAddress(
-            userAccountAddress = tokenPublicKey.toPublicKey(),
-            before = before,
-            limit = PAGE_LIMIT
-        )
-        return signatures.map { RpcTransactionSignature(it.signature, it.confirmationStatus) }
+    suspend fun loadTransactionsHistory() = withContext(serviceScope.coroutineContext) {
+        if (tokensHistoryBuffer.isEmpty()) {
+            val userTokens = userInteractor.getUserTokens().map { it.publicKey }
+            tokensHistoryBuffer.setup(userTokens)
+        }
+        tokensHistoryBuffer.load()
     }
 
     suspend fun getHistoryTransaction(tokenPublicKey: String, transactionId: String) =
         transactionsLocalRepository.getTransactions(listOf(transactionId))
             .mapToHistoryTransactions(tokenPublicKey)
             .first()
-
-    suspend fun loadTransactionHistory(
-        tokenPublicKey: String,
-        signaturesWithStatus: List<RpcTransactionSignature>,
-        forceRefresh: Boolean
-    ): List<HistoryTransaction> {
-        if (forceRefresh) {
-            transactionsLocalRepository.deleteAll()
-        }
-        val localTransactions = transactionsLocalRepository.getTransactions(signaturesWithStatus.map { it.signature })
-
-        if (localTransactions.size != signaturesWithStatus.size) {
-            val remoteTransaction = transactionsRemoteRepository.getTransactions(
-                userPublicKey = tokenKeyProvider.publicKey,
-                transactionSignatures = signaturesWithStatus
-            )
-            transactionsLocalRepository.saveTransactions(remoteTransaction)
-            return remoteTransaction.mapToHistoryTransactions(tokenPublicKey)
-        }
-        return localTransactions.mapToHistoryTransactions(tokenPublicKey)
-    }
 
     private suspend fun List<TransactionDetails>.mapToHistoryTransactions(
         tokenPublicKey: String
