@@ -2,11 +2,9 @@ package org.p2p.wallet.history.interactor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
-import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.buffer.TokensHistoryBuffer
@@ -20,7 +18,6 @@ class HistoryInteractor(
     private val transactionsLocalRepository: TransactionDetailsLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyTransactionMapper: HistoryTransactionMapper,
-    private val serviceScope: ServiceScope,
     private val userInteractor: UserInteractor,
     private val tokensHistoryBuffer: TokensHistoryBuffer
 ) {
@@ -28,12 +25,20 @@ class HistoryInteractor(
     suspend fun attachToHistoryFlow(): Flow<List<HistoryTransaction>> =
         tokensHistoryBuffer.getHistoryFlow().map { it.mapToHistoryTransactions(tokenKeyProvider.publicKey) }
 
-    suspend fun loadTransactionsHistory() = withContext(serviceScope.coroutineContext) {
-        if (tokensHistoryBuffer.isEmpty()) {
-            val userTokens = userInteractor.getUserTokens().map { it.publicKey }
-            tokensHistoryBuffer.setup(userTokens)
+    suspend fun loadTransactionsHistory() {
+        when (tokensHistoryBuffer.getState()) {
+            TokensHistoryBuffer.BufferManagerState.IDLE -> {
+                tokensHistoryBuffer.load()
+            }
+            TokensHistoryBuffer.BufferManagerState.LOADING -> {
+                return
+            }
+            TokensHistoryBuffer.BufferManagerState.NONE -> {
+                val userTokens = userInteractor.getUserTokens().map { it.publicKey }
+                tokensHistoryBuffer.setup(userTokens)
+                tokensHistoryBuffer.load()
+            }
         }
-        tokensHistoryBuffer.load()
     }
 
     suspend fun getHistoryTransaction(tokenPublicKey: String, transactionId: String) =

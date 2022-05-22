@@ -1,8 +1,11 @@
 package org.p2p.wallet.history.ui.history
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -41,13 +44,15 @@ class HistoryPresenter(
             refreshHistory()
         }
         launch {
-            historyInteractor.attachToHistoryFlow().filterNot { it.isEmpty() }.collect { value ->
-                Timber.tag("History").d(value.size.toString())
-                transactions.clear()
-                transactions.addAll(value)
-                view.showHistory(transactions)
-                view.showPagingState(PagingState.Idle)
-            }
+            historyInteractor.attachToHistoryFlow().flowOn(Dispatchers.Main)
+                .catch { exception -> Timber.tag("TokenHistoryBuffer").d(exception) }
+                .collectLatest {
+                    Timber.tag("TokenHistoryBuffer").d("Size = ${it.size}")
+                    transactions.clear()
+                    transactions.addAll(it)
+                    view.showHistory(transactions)
+                    view.showPagingState(PagingState.Idle)
+                }
         }
     }
 

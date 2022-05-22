@@ -1,6 +1,7 @@
 package org.p2p.wallet.history.interactor.buffer
 
 import org.p2p.solanaj.kits.transaction.TransactionDetails
+import timber.log.Timber
 
 class TokenHistoryBuffer(
     private val tokenPublicKey: String,
@@ -29,7 +30,8 @@ class TokenHistoryBuffer(
             val cachedItems =
                 tokenTransactions.subList(indexOfLastRequestedTransaction, indexOfLastRequestedTransaction + itemCount)
             lastSignature = cachedItems.lastOrNull()?.signature
-            BufferState.Idle(cachedItems, needsToLoadMore = true)
+            transactionsLoadListener.onTransactionsLoaded(cachedItems)
+            BufferState.Idle(needsToLoadMore = true)
         } else {
             BufferState.Load(itemsCountToLoad = offset)
         }
@@ -37,16 +39,20 @@ class TokenHistoryBuffer(
 
     fun onTransactionsUploaded(newItems: List<TransactionDetails>) {
         tokenTransactions.addAll(newItems)
-        lastSignature = newItems.lastOrNull()?.signature
+        this.lastSignature = newItems.lastOrNull()?.signature
         transactionsLoadListener.onTransactionsLoaded(newItems)
     }
 
     fun setListener(listener: TransactionListener) {
         this.transactionsLoadListener = listener
     }
+
+    fun onFinish() {
+        Timber.tag("TokenBuffer").d("Transactions loading finish for token address $tokenPublicKey")
+    }
 }
 
 sealed class BufferState {
-    data class Idle(val items: List<TransactionDetails>, val needsToLoadMore: Boolean) : BufferState()
+    data class Idle(val needsToLoadMore: Boolean) : BufferState()
     data class Load(val itemsCountToLoad: Int) : BufferState()
 }

@@ -42,7 +42,8 @@ open class RpcInterceptor(
         return if (response.isSuccessful) {
             handleResponse(response)
         } else {
-            throw extractGeneralException(response.body!!.string())
+            val responseString = response.body!!.string()
+            throw extractGeneralException(responseString)
         }
     }
 
