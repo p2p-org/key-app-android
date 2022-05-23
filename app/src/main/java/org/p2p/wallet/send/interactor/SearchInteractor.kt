@@ -14,7 +14,17 @@ class SearchInteractor(
 
     suspend fun searchByName(username: String): List<SearchResult> {
         val usernames = usernameInteractor.resolveUsername(username)
-        return usernames.map { SearchResult.Full(SearchAddress(it.owner), it.name) }
+        return usernames.map {
+            val balance = userInteractor.getBalance(it.owner)
+            val hasEmptyBalance = balance == 0L
+            val result = if (hasEmptyBalance) {
+                SearchResult.EmptyBalance(SearchAddress(it.owner))
+            } else {
+                SearchResult.Full(SearchAddress(it.owner), it.name)
+            }
+
+            return listOf(result)
+        }
     }
 
     suspend fun searchByAddress(address: String): List<SearchResult> {
