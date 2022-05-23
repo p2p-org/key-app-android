@@ -21,5 +21,5 @@ object TokenHistoryBufferBuilder {
         return this
     }
 
-    fun build(): TokenHistoryBuffer = TokenHistoryBuffer(tokenPublicKey, lastSignature, payloadOffset)
+    fun build(): TokenHistoryBuffer = TokenHistoryBuffer(tokenPublicKey, lastSignature)
 }

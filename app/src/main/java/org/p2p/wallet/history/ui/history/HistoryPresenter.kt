@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -44,7 +45,7 @@ class HistoryPresenter(
             refreshHistory()
         }
         launch {
-            historyInteractor.attachToHistoryFlow().flowOn(Dispatchers.Main)
+            historyInteractor.attachToHistoryFlow().filterNot { it.isEmpty() }
                 .catch { exception -> Timber.tag("TokenHistoryBuffer").d(exception) }
                 .collectLatest {
                     Timber.tag("TokenHistoryBuffer").d("Size = ${it.size}")

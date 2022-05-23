@@ -10,6 +10,7 @@ import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.user.interactor.UserInteractor
+import timber.log.Timber
 
 class TransactionDetailsRpcRepository(
     private val rpcApi: RpcHistoryApi,
@@ -20,6 +21,7 @@ class TransactionDetailsRpcRepository(
         userPublicKey: String,
         transactionSignatures: List<RpcTransactionSignature>
     ): List<TransactionDetails> {
+        Timber.tag("TokenHistoryBuffer").d("signatures size = ${transactionSignatures.size}")
         val encoding = buildMap {
             this[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] =
                 RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
@@ -31,6 +33,7 @@ class TransactionDetailsRpcRepository(
             RpcRequest(method = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params = params)
         }
 
+        val requestString = requestsBatch.map { "\n" + it.params.toString() + "\n" }.toString()
         val transactions = rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
 
         return fromNetworkToDomain(userPublicKey, transactions).onEach { transactionDetails ->

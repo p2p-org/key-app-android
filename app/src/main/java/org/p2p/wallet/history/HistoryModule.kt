@@ -6,7 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.interactor.buffer.TokensHistoryBuffer
+import org.p2p.wallet.history.interactor.buffer.HistoryTransactionsManager
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -47,15 +47,16 @@ object HistoryModule : InjectionModule {
                 tokenKeyProvider = get(),
                 historyTransactionMapper = get(),
                 userInteractor = get(),
-                tokensHistoryBuffer = get()
+                historyTransactionsManager = get()
             )
         }
         single {
-            TokensHistoryBuffer(
+            HistoryTransactionsManager(
                 rpcSignatureRepository = get(),
                 transactionRepository = get(),
-                serviceScope = get(),
-                tokenKeyProvider = get()
+                tokenKeyProvider = get(),
+                historyTransactionMapper = get(),
+                rpcAccountRepository = get()
             )
         }
         factory { (token: Token.Active) ->

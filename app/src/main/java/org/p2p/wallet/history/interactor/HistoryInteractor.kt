@@ -7,11 +7,12 @@ import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
-import org.p2p.wallet.history.interactor.buffer.TokensHistoryBuffer
+import org.p2p.wallet.history.interactor.buffer.HistoryTransactionsManager
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.user.interactor.UserInteractor
+import timber.log.Timber
 
 class HistoryInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
@@ -19,24 +20,24 @@ class HistoryInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyTransactionMapper: HistoryTransactionMapper,
     private val userInteractor: UserInteractor,
-    private val tokensHistoryBuffer: TokensHistoryBuffer
+    private val historyTransactionsManager: HistoryTransactionsManager
 ) {
 
     suspend fun attachToHistoryFlow(): Flow<List<HistoryTransaction>> =
-        tokensHistoryBuffer.getHistoryFlow().map { it.mapToHistoryTransactions(tokenKeyProvider.publicKey) }
+        historyTransactionsManager.getHistoryFlow()
 
     suspend fun loadTransactionsHistory() {
-        when (tokensHistoryBuffer.getState()) {
-            TokensHistoryBuffer.BufferManagerState.IDLE -> {
-                tokensHistoryBuffer.load()
+        when (historyTransactionsManager.getState()) {
+            HistoryTransactionsManager.State.IDLE -> {
+                historyTransactionsManager.load()
             }
-            TokensHistoryBuffer.BufferManagerState.LOADING -> {
+            HistoryTransactionsManager.State.LOADING -> {
                 return
             }
-            TokensHistoryBuffer.BufferManagerState.NONE -> {
+            HistoryTransactionsManager.State.NONE -> {
                 val userTokens = userInteractor.getUserTokens().map { it.publicKey }
-                tokensHistoryBuffer.setup(userTokens)
-                tokensHistoryBuffer.load()
+                historyTransactionsManager.setup(userTokens)
+                historyTransactionsManager.load()
             }
         }
     }
@@ -46,7 +47,7 @@ class HistoryInteractor(
             .mapToHistoryTransactions(tokenPublicKey)
             .first()
 
-    private suspend fun List<TransactionDetails>.mapToHistoryTransactions(
+    suspend fun List<TransactionDetails>.mapToHistoryTransactions(
         tokenPublicKey: String
     ): List<HistoryTransaction> {
         return historyTransactionMapper.mapTransactionDetailsToHistoryTransactions(
@@ -73,7 +74,7 @@ class HistoryInteractor(
                     swapTransaction.alternateDestination
                 )
             }
-
+        Timber.tag("TokenHistoryBuffer").d("AccountInfoSize = " + accountsInfoIds.size.toString())
         return if (accountsInfoIds.isNotEmpty()) {
             rpcAccountRepository.getAccountsInfo(accountsInfoIds)
         } else {
