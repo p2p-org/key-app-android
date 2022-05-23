@@ -36,12 +36,12 @@ import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
@@ -547,7 +547,7 @@ class SendPresenter(
         val data = SendTotal(
             total = tokenAmount,
             totalUsd = usdAmount,
-            receive = "${AmountUtils.format(tokenAmount)} ${sourceToken.tokenSymbol}",
+            receive = "${tokenAmount.formatToken()} ${sourceToken.tokenSymbol}",
             receiveUsd = tokenAmount.toUsd(sourceToken),
             fee = sendFee,
             sourceSymbol = sourceToken.tokenSymbol
@@ -690,7 +690,7 @@ class SendPresenter(
             address.isNullOrBlank() ->
                 view?.showButtonText(R.string.send_enter_address)
             else -> {
-                val amountToSend = "$tokenAmount ${token?.tokenSymbol.orEmpty()}"
+                val amountToSend = "${tokenAmount.formatToken()} ${token?.tokenSymbol.orEmpty()}"
                 view?.showButtonText(R.string.send_format, R.drawable.ic_send_simple, amountToSend)
             }
         }
