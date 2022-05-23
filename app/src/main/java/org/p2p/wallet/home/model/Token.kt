@@ -5,7 +5,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
-import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_NAME
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
@@ -74,9 +73,9 @@ sealed class Token constructor(
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${AmountUtils.format(total)} $tokenSymbol"
+                "${total.formatToken()} $tokenSymbol"
             } else {
-                AmountUtils.format(total)
+                total.formatToken()
             }
 
         fun getTotal(includeSymbol: Boolean = false): String =
