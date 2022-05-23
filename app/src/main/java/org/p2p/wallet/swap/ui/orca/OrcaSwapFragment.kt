@@ -17,8 +17,8 @@ import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.AmountFractionTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
@@ -37,11 +37,11 @@ import org.p2p.wallet.swap.ui.settings.SwapSettingsFragment
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
@@ -270,7 +270,7 @@ class OrcaSwapFragment :
     override fun showAroundValue(aroundValue: BigDecimal) {
         binding.aroundTextView.text = getString(
             R.string.main_send_around_in_usd,
-            AmountUtils.format(aroundValue)
+            aroundValue.formatUsd()
         )
     }
 
