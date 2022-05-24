@@ -4,19 +4,19 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.DecimalFormatUtil
 import org.p2p.wallet.utils.emptyString
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
 /**
- * This Watcher is responsible for limitation input amount by the user.
+ * This Watcher is responsible for limitation input amount by the user and formatting
  * We prohibit entering the value after the dot if it's exceeded the max allowed length
- * For example: 0.1234456789123123 -> 0.123456789
+ * For example: 10000.1234456789123123 -> 10 000.123456789
  * */
 
 private const val SYMBOL_ZERO = "0"
 private const val SYMBOL_DOT = "."
-private const val EMPTY = ""
 private const val MAX_AMOUNT_ALLOWED_FRACTION_LENGTH = 9
 
 class AmountFractionTextWatcher(
@@ -46,7 +46,7 @@ class AmountFractionTextWatcher(
     private val field = WeakReference(editText)
 
     private var valueText: String by Delegates.observable(emptyString()) { _, oldValue, newValue ->
-        if (oldValue != newValue) onValueChanged.invoke(newValue)
+        if (oldValue != newValue) onValueChanged.invoke(newValue.dropSpaces())
     }
 
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
@@ -54,27 +54,38 @@ class AmountFractionTextWatcher(
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         val value = s.toString()
         valueText = when {
-            value == SYMBOL_ZERO && before == 1 -> EMPTY
+            value.isBlank() -> value
+            value == SYMBOL_ZERO && before == 1 -> emptyString()
             value == "$SYMBOL_ZERO$SYMBOL_ZERO" && start == 1 -> SYMBOL_ZERO
-            value.startsWith(SYMBOL_DOT) -> {
-                "$SYMBOL_ZERO$value"
-            }
+            value.startsWith(SYMBOL_DOT) -> "$SYMBOL_ZERO$value"
+            value.endsWith(SYMBOL_DOT) -> value.dropLast(1).dropSpaces().formatDecimal() + SYMBOL_DOT
             value.contains(SYMBOL_DOT) -> {
-                val indexOfDot = value.indexOfFirst { it.toString() == SYMBOL_DOT }
-                val valueAfterDelimiter = value.substring(indexOfDot).replace(SYMBOL_DOT, EMPTY)
-                val fractionValue = valueAfterDelimiter.take(maxLengthAllowed)
-                "${value.substring(0, indexOfDot)}$SYMBOL_DOT$fractionValue"
+                val dotPosition = value.indexOf(SYMBOL_DOT)
+                val intPart = value.substring(0, dotPosition)
+                // Shorten fractional part to maxLengthAllowed symbols
+                val fractionalPart = value.substring(dotPosition + 1).take(maxLengthAllowed)
+                intPart.dropSpaces().formatDecimal() + SYMBOL_DOT + fractionalPart
             }
-            else -> value
+            else -> value.dropSpaces().formatDecimal()
         }
     }
 
     override fun afterTextChanged(edit: Editable?) {
         field.get()?.apply {
             removeTextChangedListener(this@AmountFractionTextWatcher)
-            edit?.clear()
-            edit?.append(valueText)
+            field.get()?.let {
+                setText(valueText)
+                setSelection(valueText.length)
+            }
             addTextChangedListener(this@AmountFractionTextWatcher)
         }
+    }
+
+    private fun String.dropSpaces(): String {
+        return replace(" ", emptyString())
+    }
+
+    private fun String.formatDecimal(): String {
+        return DecimalFormatUtil.format(this.toBigDecimal(), MAX_AMOUNT_ALLOWED_FRACTION_LENGTH)
     }
 }
