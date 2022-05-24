@@ -47,13 +47,8 @@ class TransactionDetailsPresenter(
                  * therefore we are giving some time to make our request not fail
                  * */
                 delay(DELAY_IN_MS)
-                val details = historyInteractor.getHistoryTransaction(state.transactionId, state.transactionId)
-
-                if (details != null) {
-                    handleHistory(details)
-                } else {
-                    view?.showError(R.string.error_general_message)
-                }
+                val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey, state.transactionId)
+                handleHistory(details)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading transaction details")
                 view?.showError(R.string.details_transaction_not_found)

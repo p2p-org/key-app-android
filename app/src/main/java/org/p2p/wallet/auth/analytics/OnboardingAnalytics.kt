@@ -94,18 +94,18 @@ class OnboardingAnalytics(private val tracker: Analytics) {
 
     fun logWalletCreated(lastScreenName: String) {
         tracker.logEvent(
-            ONBOARD_WALLET_CREATED,
-            arrayOf(
-                Pair("Last_Screen", lastScreenName)
+            event = ONBOARD_WALLET_CREATED,
+            params = mapOf(
+                "Last_Screen" to lastScreenName
             )
         )
     }
 
     fun logWalletRestored(lastScreenName: String) {
         tracker.logEvent(
-            ONBOARD_WALLET_RESTORED,
-            arrayOf(
-                Pair("Last_Screen", lastScreenName)
+            event = ONBOARD_WALLET_RESTORED,
+            params = mapOf(
+                "Last_Screen" to lastScreenName
             )
         )
     }

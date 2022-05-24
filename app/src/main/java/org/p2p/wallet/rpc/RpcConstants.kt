@@ -8,4 +8,7 @@ object RpcConstants {
 
     const val REQUEST_PARAMETER_KEY_ENCODING = "encoding"
     const val REQUEST_PARAMETER_VALUE_JSON_PARSED = "jsonParsed"
+
+    const val REQUEST_PARAMETER_KEY_COMMITMENT = "commitment"
+    const val REQUEST_PARAMETER_VALUE_CONFIRMED = "confirmed"
 }

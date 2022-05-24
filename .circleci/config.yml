@@ -39,6 +39,44 @@ commands:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
+  upload_feature_apk_to_slack:
+    description: "Upload `feature` app to Slack channel"
+    steps:
+      - run:
+          name: "Upload using CURL request to Slack"
+          command: |
+            curl \
+              -S -s -o /dev/null \
+              -F token="${SLACK_BOT_TOKEN}" \
+              -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
+              -F initial_comment="Hey! Here is the feature APK. Success :tada:" \
+              -F "file=@$(find app/build/outputs/apk/feature -name 'p2p*')" \
+              https://slack.com/api/files.upload
+
+  upload_release_bundle_to_slack:
+    description: "Upload `release` app to Slack channel"
+    steps:
+      - run:
+          name: "Upload using CURL request to Slack"
+          command: |
+            curl \
+              -S -s -o /dev/null \
+              -F token="${SLACK_BOT_TOKEN}" \
+              -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
+              -F initial_comment="Hey! Here is the release AAB. Success :tada:" \
+              -F "file=@$(find app/build/outputs/bundle/release -name 'p2p*')" \
+              https://slack.com/api/files.upload
+
+  generate_build_version:
+    description: "Update BUILD_VERSION >> gradle.properties"
+    steps:
+      - run:
+          name: "Generate build version and write"
+          command: |
+            ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
+            echo "Set build version to ${CIRCLE_BUILD_NUM}"
+
+
 defaults: &defaults
   working_directory: ~/app
   executor:
@@ -63,6 +101,7 @@ filter_release_branch_only: &filter_release_branch_only
     branches:
       only:
         - /(^release\/.+)/
+        - /(^hotfix\/.+)/
 
 jobs:
   android_lint:
@@ -94,17 +133,14 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
-      - run:
-          name: "Generate build version"
-          command: |
-            ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
-            echo "Set build version to ${CIRCLE_BUILD_NUM}"
+      - generate_build_version
       - store_artifacts:
           path: "./app/gradle.properties"
           destination: gradle.properties
       - run:
-          name: "Distribute to Firebase App Distribution"
+          name: "Assemble and upload to Firebase App Distribution"
           command: ./gradlew assembleFeature appDistributionUploadFeature
+      - upload_feature_apk_to_slack
       - store_artifacts:
           path: app/build/outputs/apk/feature
 
@@ -114,6 +150,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - generate_build_version
       - run:
           name: "Generate build version"
           command: |
@@ -123,14 +160,15 @@ jobs:
           path: "./app/gradle.properties"
           destination: gradle.properties
       - run:
-          name: "Write signing jks file from env"
+          name: "Write signing JKS file from env"
           command: |
             echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
       - run:
-          name: "Distribute release to Firebase App Distribution"
+          name: "Bundle and upload release to Firebase App Distribution"
           command: ./gradlew bundleRelease appDistributionUploadRelease
+      - upload_release_bundle_to_slack
       - store_artifacts:
-          path: app/build/outputs/apk/release
+          path: app/build/outputs/bundle/release
 
 workflows:
   version: 2

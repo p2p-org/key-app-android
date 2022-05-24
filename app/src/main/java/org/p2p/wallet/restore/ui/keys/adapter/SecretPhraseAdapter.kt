@@ -40,7 +40,7 @@ class SecretPhraseAdapter(
         notifyItemInserted(data.size)
     }
 
-    fun removeSecretKey(index: Int) {
+    private fun removeSecretKey(index: Int) {
         if (index == -1) return
         data.removeAt(index)
         notifyItemRemoved(index)

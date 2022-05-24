@@ -68,9 +68,12 @@ class TransactionManager private constructor(
         return executor.getStateFlow()
     }
 
-    fun getTransactionStateFlow(): Flow<TransactionState> = transactionStateFlow
-
-    fun getTransactionState(): TransactionState = transactionStateFlow.value
+    fun getTransactionStateFlow(refresh: Boolean = true): Flow<TransactionState> {
+        if (refresh) {
+            transactionStateFlow.value = TransactionState.Progress()
+        }
+        return transactionStateFlow
+    }
 
     suspend fun emitTransactionState(state: TransactionState) {
         transactionStateFlow.emit(state)

@@ -26,7 +26,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
-import org.p2p.wallet.qr.QrModule
+import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
 import org.p2p.wallet.root.RootActivity
@@ -96,7 +96,7 @@ class App : Application() {
                     UserModule.create(),
                     HomeModule.create(),
                     RenBtcModule.create(),
-                    QrModule.create(),
+                    ScanQrModule.create(),
                     HistoryModule.create(),
                     SettingsModule.create(),
                     SwapModule.create(),

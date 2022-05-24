@@ -2,12 +2,14 @@ package org.p2p.wallet.feerelayer.interactor
 
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
+import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.programs.SystemProgram
+import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.SwapData
@@ -42,7 +44,7 @@ class FeeRelayerTopUpInteractor(
         sourceToken: TokenInfo,
         targetAmount: BigInteger,
         topUpPools: OrcaPoolsPair,
-        expectedFee: BigInteger
+        expectedFee: BigInteger,
     ): List<String> {
         val blockhash = rpcRepository.getRecentBlockhash()
         val info = feeRelayerAccountInteractor.getRelayInfo()
@@ -80,6 +82,11 @@ class FeeRelayerTopUpInteractor(
             transferAuthoritySignature = ownerSignature
         )
 
+        val statistics = FeeRelayerStatistics(
+            operationType = OperationType.TOP_UP,
+            currency = sourceToken.mint
+        )
+
         return feeRelayerRepository.relayTopUpSwap(
             userSourceTokenAccountPubkey = sourceToken.address,
             sourceTokenMintPubkey = sourceToken.mint,
@@ -87,7 +94,8 @@ class FeeRelayerTopUpInteractor(
             swapData = swapData,
             feeAmount = expectedFee,
             signatures = topUpSignatures,
-            blockhash = blockhash.recentBlockhash
+            blockhash = blockhash.recentBlockhash,
+            info = statistics
         )
     }
 
