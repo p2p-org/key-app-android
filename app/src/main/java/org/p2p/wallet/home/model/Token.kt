@@ -9,8 +9,8 @@ import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_NAME
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.asUsd
 import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
@@ -69,7 +69,7 @@ sealed class Token constructor(
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
-        fun getFormattedUsdTotal(): String? = totalInUsd?.let { "$${totalInUsd.scaleShort().formatUsd()}" }
+        fun getFormattedUsdTotal(): String? = totalInUsd?.scaleShort()?.asUsd()
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
