@@ -17,13 +17,11 @@ class SearchInteractor(
         return usernames.map {
             val balance = userInteractor.getBalance(it.owner)
             val hasEmptyBalance = balance == 0L
-            val result = if (hasEmptyBalance) {
+            return@map if (hasEmptyBalance) {
                 SearchResult.EmptyBalance(SearchAddress(it.owner))
             } else {
                 SearchResult.Full(SearchAddress(it.owner), it.name)
             }
-
-            return listOf(result)
         }
     }
 

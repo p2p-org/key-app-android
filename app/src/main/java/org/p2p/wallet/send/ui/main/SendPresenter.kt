@@ -359,16 +359,15 @@ class SendPresenter(
             is CurrencyMode.Usd -> token.totalInUsd
             is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
-        view?.setMaxButtonVisibility(inputAmount != totalAvailable.toString())
+        view?.setMaxButtonVisibility(isVisible = inputAmount != totalAvailable.toString())
     }
 
     private fun validateSelectedNetwork(networkType: NetworkType) {
-        target?.let { target ->
-            if (target.searchAddress.networkType != networkType) {
-                view?.showWrongAddressTarget(target.searchAddress.address)
-            } else {
-                view?.showAddressOnlyTarget(target.searchAddress.address)
-            }
+        val target = target ?: return
+        if (target.searchAddress.networkType != networkType) {
+            view?.showWrongAddressTarget(target.searchAddress.address)
+        } else {
+            view?.showAddressOnlyTarget(target.searchAddress.address)
         }
     }
 
@@ -580,7 +579,7 @@ class SendPresenter(
         )
 
         val amount = tokenAmount.toLamports(sourceToken.decimals)
-        val shouldShowAmountWarning = showShowAmountWarning(amount)
+        val shouldShowAmountWarning = shouldShowAmountWarning(amount)
 
         updateButton(
             amount = amount,
@@ -592,9 +591,10 @@ class SendPresenter(
         view?.showTotal(data)
     }
 
-    private fun showShowAmountWarning(amount: BigInteger): Boolean {
-        val isSourceSol = token!!.isSOL
-        val shouldShowAmountWarning = isSourceSol && target is SearchResult.EmptyBalance && amount < minRentExemption
+    private fun shouldShowAmountWarning(amount: BigInteger): Boolean {
+        val isSourceTokenSol = token!!.isSOL
+        val shouldShowAmountWarning =
+            isSourceTokenSol && target is SearchResult.EmptyBalance && amount < minRentExemption
         if (shouldShowAmountWarning) {
             view?.showWarning(R.string.send_min_required_amount_warning)
         } else {
@@ -694,11 +694,7 @@ class SendPresenter(
 
     private fun updateButton(amount: BigInteger, total: BigInteger, fee: SendFee?, shouldShowAmountWarning: Boolean) {
         val isAmountMoreThanBalance = amount.isMoreThan(total)
-        val isAmountWithFeeMoreThanBalance = if (fee == null) {
-            false
-        } else {
-            isAmountWithFeeMoreThanBalance(fee, amount, total)
-        }
+        val isAmountWithFeeMoreThanBalance = fee != null && isAmountWithFeeMoreThanBalance(fee, amount, total)
 
         val address = target?.searchAddress?.address
         val isMaxAmount = amount == total
@@ -706,7 +702,7 @@ class SendPresenter(
         val isNotZero = !amount.isZero()
         val isValidAddress = isAddressValid(address)
 
-        val isEnabled = isNotZero &&
+        val isSendButtonEnabled = isNotZero &&
             !isAmountMoreThanBalance &&
             !isAmountWithFeeMoreThanBalance &&
             isValidAddress &&
@@ -735,7 +731,7 @@ class SendPresenter(
             else -> R.color.textIconSecondary
         }
         view?.updateAvailableTextColor(availableColor)
-        view?.showButtonEnabled(isEnabled)
+        view?.showButtonEnabled(isSendButtonEnabled)
     }
 
     private fun isAmountWithFeeMoreThanBalance(sendFee: SendFee, amount: BigInteger, total: BigInteger): Boolean =
