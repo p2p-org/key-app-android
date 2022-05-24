@@ -38,7 +38,7 @@ class AppDeeplinksManager(private val context: Context) {
         }
     }
 
-    fun handleDeeplinks(intent: Intent) {
+    fun handleDeeplinkIntent(intent: Intent) {
         val extras = intent.extras ?: return
         // additional parsing when app been opened with notification from background
         if (extras.containsKey(NOTIFICATION_TYPE)) {
