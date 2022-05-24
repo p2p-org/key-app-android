@@ -13,6 +13,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
+import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
@@ -87,7 +88,18 @@ object HomeModule : InjectionModule {
 
     private fun Module.initPresentationLayer() {
         /* Cached data exists, therefore creating singleton */
-        factoryOf(::HomePresenter) bind HomeContract.Presenter::class
+        factory<HomeContract.Presenter> {
+            HomePresenter(
+                appFeatureFlags = get(),
+                updatesManager = get(),
+                userInteractor = get(),
+                settingsInteractor = get(),
+                usernameInteractor = get(),
+                environmentManager = get(),
+                tokenKeyProvider = get(),
+                homeElementItemMapper = HomeElementItemMapper()
+            )
+        }
 
         factory<ReceiveSolanaContract.Presenter> { (token: Token.Active?) ->
             ReceiveSolanaPresenter(
