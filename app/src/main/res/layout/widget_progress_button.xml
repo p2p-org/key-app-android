@@ -34,7 +34,7 @@
             android:layout_marginHorizontal="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
             android:textColor="@color/textIconButtonPrimary"
-            tools:text="Very long test with line breaks line breaks line breaks" />
+            tools:text="Action" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/endImageView"

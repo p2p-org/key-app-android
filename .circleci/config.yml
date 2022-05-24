@@ -39,7 +39,6 @@ commands:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-
   upload_feature_apk_to_slack:
     description: "Upload `feature` app to Slack channel"
     steps:
@@ -54,7 +53,7 @@ commands:
               -F "file=@$(find app/build/outputs/apk/feature -name 'p2p*')" \
               https://slack.com/api/files.upload
 
-  upload_release_apk_to_slack:
+  upload_release_bundle_to_slack:
     description: "Upload `release` app to Slack channel"
     steps:
       - run:
@@ -161,15 +160,15 @@ jobs:
           path: "./app/gradle.properties"
           destination: gradle.properties
       - run:
-          name: "Write signing jks file from env"
+          name: "Write signing JKS file from env"
           command: |
             echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
       - run:
           name: "Bundle and upload release to Firebase App Distribution"
           command: ./gradlew bundleRelease appDistributionUploadRelease
-      - upload_release_apk_to_slack
+      - upload_release_bundle_to_slack
       - store_artifacts:
-          path: app/build/outputs/apk/release
+          path: app/build/outputs/bundle/release
 
 workflows:
   version: 2

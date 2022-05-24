@@ -1,10 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import androidx.annotation.ColorRes
-import androidx.core.text.buildSpannedString
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -16,6 +11,11 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.ColorRes
+import androidx.core.text.buildSpannedString
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -524,6 +524,15 @@ class SendFragment :
             title = TextContainer(R.string.main_send_wrong_wallet),
             message = TextContainer(R.string.main_send_wrong_wallet_message)
         )
+    }
+
+    override fun showWarning(messageRes: Int?) {
+        if (messageRes != null) {
+            binding.warningView.isVisible = true
+            binding.warningTextView.setText(messageRes)
+        } else {
+            binding.warningView.isVisible = false
+        }
     }
 
     private fun clearScreenData() {
