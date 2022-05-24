@@ -6,6 +6,8 @@ import org.p2p.wallet.send.model.SearchAddress
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
 
+private const val ZERO_BALANCE = 0L
+
 class SearchInteractor(
     private val usernameInteractor: UsernameInteractor,
     private val userInteractor: UserInteractor,
@@ -16,7 +18,7 @@ class SearchInteractor(
         val usernames = usernameInteractor.resolveUsername(username)
         return usernames.map {
             val balance = userInteractor.getBalance(it.owner)
-            val hasEmptyBalance = balance == 0L
+            val hasEmptyBalance = balance == ZERO_BALANCE
             return@map if (hasEmptyBalance) {
                 SearchResult.EmptyBalance(SearchAddress(it.owner))
             } else {
@@ -27,7 +29,7 @@ class SearchInteractor(
 
     suspend fun searchByAddress(address: String): List<SearchResult> {
         val balance = userInteractor.getBalance(address.trim())
-        val hasEmptyBalance = balance == 0L
+        val hasEmptyBalance = balance == ZERO_BALANCE
         val result = if (hasEmptyBalance) {
             SearchResult.EmptyBalance(SearchAddress(address))
         } else {
