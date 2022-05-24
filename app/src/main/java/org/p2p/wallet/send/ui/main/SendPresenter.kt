@@ -45,6 +45,7 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
+import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleLong
@@ -699,7 +700,7 @@ class SendPresenter(
         val address = target?.searchAddress?.address
         val isMaxAmount = amount == total
 
-        val isNotZero = !amount.isZero()
+        val isNotZero = amount.isNotZero()
         val isValidAddress = isAddressValid(address)
         val isEnabled = isNotZero && !isAmountMoreThanBalance && !isAmountWithFeeMoreThanBalance && isValidAddress
 

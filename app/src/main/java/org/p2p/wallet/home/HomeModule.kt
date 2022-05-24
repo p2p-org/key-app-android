@@ -2,7 +2,9 @@ package org.p2p.wallet.home
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -11,7 +13,6 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
-import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
@@ -86,18 +87,7 @@ object HomeModule : InjectionModule {
 
     private fun Module.initPresentationLayer() {
         /* Cached data exists, therefore creating singleton */
-        factory<HomeContract.Presenter> {
-            HomePresenter(
-                appFeatureFlags = get(),
-                updatesManager = get(),
-                userInteractor = get(),
-                settingsInteractor = get(),
-                usernameInteractor = get(),
-                environmentManager = get(),
-                tokenKeyProvider = get(),
-                homeElementItemMapper = HomeElementItemMapper()
-            )
-        }
+        factoryOf(::HomePresenter) bind HomeContract.Presenter::class
 
         factory<ReceiveSolanaContract.Presenter> { (token: Token.Active?) ->
             ReceiveSolanaPresenter(
@@ -152,13 +142,7 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get()
             )
         }
-        factory<TokenListContract.Presenter> {
-            TokenListPresenter(
-                interactor = get(),
-                browseAnalytics = get(),
-                analyticsInteractor = get()
-            )
-        }
+        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
                 defaultToken = token,
@@ -169,15 +153,7 @@ object HomeModule : InjectionModule {
             )
         }
 
-        factory<ReceiveRenBtcContract.Presenter> {
-            ReceiveRenBtcPresenter(
-                interactor = get(),
-                qrCodeInteractor = get(),
-                usernameInteractor = get(),
-                receiveAnalytics = get(),
-                context = get()
-            )
-        }
+        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
