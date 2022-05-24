@@ -1,0 +1,55 @@
+package org.p2p.wallet.debug.featuretoggles
+
+import android.os.Bundle
+import android.view.View
+import androidx.annotation.StringRes
+import org.koin.android.ext.android.inject
+import org.p2p.wallet.R
+import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
+import org.p2p.wallet.debugdrawer.CustomLogDialog
+import org.p2p.wallet.settings.model.SettingsRow
+import org.p2p.wallet.settings.ui.settings.SettingsAdapter
+import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.viewbinding.viewBinding
+
+class FeatureTogglesFragment :
+    BaseMvpFragment<FeatureTogglesContract.View, FeatureTogglesContract.Presenter>(R.layout.fragment_feature_toggles),
+    FeatureTogglesContract.View {
+
+    companion object {
+
+        fun create() = FeatureTogglesFragment()
+    }
+
+    override val presenter: FeatureTogglesContract.Presenter by inject()
+
+    private val binding: FragmentDebugSettingsBinding by viewBinding()
+    private val adapter = SettingsAdapter(::onItemClickListener) {}
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        with(binding) {
+            recyclerView.attachAdapter(adapter)
+            toolbar.setNavigationOnClickListener {
+                popBackStack()
+            }
+        }
+
+        presenter.loadData()
+    }
+
+    override fun showSettings(item: List<SettingsRow>) {
+        adapter.setData(item)
+    }
+
+    private fun onItemClickListener(@StringRes titleResId: Int) {
+        when (titleResId) {
+            R.string.debug_settings_logs_title -> {
+                // TODO add listener for toggles
+                CustomLogDialog(requireContext()).show()
+            }
+        }
+    }
+}

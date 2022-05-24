@@ -10,6 +10,7 @@ import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.requireContext
+import org.p2p.wallet.utils.withTextOrGone
 
 class SettingsAdapter(
     private val onItemClickListener: (titleResId: Int) -> Unit,
@@ -36,7 +37,7 @@ class SettingsAdapter(
         when (holder) {
             is ViewHolder -> holder.bind(data[position] as SettingsRow.Section)
             is TitleViewHolder -> holder.bind(data[position] as SettingsRow.Title)
-            is LogoutViewHolder -> holder.bind(data[position])
+            is LogoutViewHolder -> holder.bind()
         }
     }
 
@@ -82,9 +83,7 @@ class SettingsAdapter(
             item.subtitleRes?.let {
                 subtitleTextView.setText(it)
             }
-            item.subtitle?.let {
-                subtitleTextView.text = it
-            }
+            subtitleTextView.withTextOrGone(item.subtitle)
             item.subtitleTextColorRes?.let {
                 subtitleTextView.setTextColor(requireContext().getColor(it))
             }
@@ -104,7 +103,7 @@ class SettingsAdapter(
 
         private val actionButton = binding.actionButton
 
-        fun bind(item: SettingsRow) {
+        fun bind() {
             actionButton.setOnClickListener { listener.invoke() }
         }
     }
