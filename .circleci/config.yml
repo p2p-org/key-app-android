@@ -39,7 +39,6 @@ commands:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-
   upload_feature_apk_to_slack:
     description: "Upload `feature` app to Slack channel"
     steps:
