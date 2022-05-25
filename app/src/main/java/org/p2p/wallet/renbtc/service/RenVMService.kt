@@ -7,6 +7,7 @@ import android.os.IBinder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
@@ -109,7 +110,7 @@ class RenVMService : Service(), CoroutineScope {
 
         Timber.tag(TAG).d("Generating new session")
 
-        renVMJob = launch {
+        renVMJob = launch(NonCancellable) {
             try {
                 renBtcInteractor.setSessionSate(RenBtcSession.Loading)
                 val session = renBtcInteractor.generateSession()

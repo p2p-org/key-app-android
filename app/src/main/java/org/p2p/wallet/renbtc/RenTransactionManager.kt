@@ -6,6 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.rpc.Environment
@@ -47,47 +48,46 @@ class RenTransactionManager(
 
     private var queuedTransactions = mutableListOf<RenTransaction>()
 
-    suspend fun initializeSession(existingSession: LockAndMint.Session?, signer: String): LockAndMint.Session {
-        lockAndMint = if (existingSession == null || !existingSession.isValid) {
-            val session = LockAndMint.Session(signer.toPublicKey())
-            Timber.tag(REN_TAG).d("No existing session found, building new one")
-            LockAndMint.buildSession(
-                renVMRepository = renVMRepository,
-                session = session,
-                solanaChain = solanaChain,
-                state = LockAndMint.State()
-            )
-        } else {
-            Timber.tag(REN_TAG).d("Active session found, fetching information")
-            LockAndMint.getSession(
-                renVMRepository = renVMRepository,
-                session = existingSession,
-                solanaChain = solanaChain,
-                state = LockAndMint.State()
-            )
+    suspend fun initializeSession(existingSession: LockAndMint.Session?, signer: String): LockAndMint.Session =
+        withContext(scope.coroutineContext) {
+            lockAndMint = if (existingSession == null || !existingSession.isValid) {
+                val session = LockAndMint.Session(signer.toPublicKey())
+                Timber.tag(REN_TAG).d("No existing session found, building new one")
+                LockAndMint.buildSession(
+                    renVMRepository = renVMRepository,
+                    session = session,
+                    solanaChain = solanaChain,
+                    state = LockAndMint.State()
+                )
+            } else {
+                Timber.tag(REN_TAG).d("Active session found, fetching information")
+                LockAndMint.getSession(
+                    renVMRepository = renVMRepository,
+                    session = existingSession,
+                    solanaChain = solanaChain,
+                    state = LockAndMint.State()
+                )
+            }
+
+            val gatewayAddress = lockAndMint.generateGatewayAddress(environmentManager.loadRpcEnvironment())
+            Timber.tag(REN_TAG).d("Gateway address generated: $gatewayAddress")
+
+            val fee = lockAndMint.estimateTransactionFee()
+            Timber.tag(REN_TAG).d("Fee calculated: $fee")
+
+            return@withContext lockAndMint.getSession()
         }
 
-        val gatewayAddress = lockAndMint.generateGatewayAddress(environmentManager.loadRpcEnvironment())
-        Timber.tag(REN_TAG).d("Gateway address generated: $gatewayAddress")
+    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) = withContext(scope.coroutineContext) {
+        if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
+        Timber.tag(REN_TAG).d("Starting blockstream polling")
 
-        val fee = lockAndMint.estimateTransactionFee()
-        Timber.tag(REN_TAG).d("Fee calculated: $fee")
+        val environment = environmentManager.loadEnvironment()
 
-        return lockAndMint.getSession()
-    }
-
-    suspend fun startPolling(session: LockAndMint.Session, secretKey: ByteArray) {
-        scope.launch {
-            if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
-            Timber.tag(REN_TAG).d("Starting blockstream polling")
-
-            val environment = environmentManager.loadEnvironment()
-
-            /* Caching value, since it's being called multiple times inside the loop */
-            while (session.isValid) {
-                pollPaymentData(environment, session, secretKey)
-                delay(SESSION_POLLING_DELAY)
-            }
+        /* Caching value, since it's being called multiple times inside the loop */
+        while (session.isValid) {
+            pollPaymentData(environment, session, secretKey)
+            delay(SESSION_POLLING_DELAY)
         }
     }
 
@@ -124,8 +124,8 @@ class RenTransactionManager(
         }
     }
 
-    private suspend fun handlePaymentData(data: List<RenBTCPayment>, secretKey: ByteArray) {
-        scope.launch {
+    private suspend fun handlePaymentData(data: List<RenBTCPayment>, secretKey: ByteArray) =
+        withContext(scope.coroutineContext) {
             Timber.tag(REN_TAG).d("Payment data received: ${data.size}")
 
             /*
@@ -144,7 +144,7 @@ class RenTransactionManager(
 
             /* Making sure we have transactions that should be executed */
             val awaitingTransactions = queuedTransactions.filter { it.isAwaiting() }
-            if (awaitingTransactions.isEmpty()) return@launch
+            if (awaitingTransactions.isEmpty()) return@withContext
 
             val executorsSize = executors.size
             Timber.tag(REN_TAG).d("Starting filter executors for finished one. Size: $executorsSize")
@@ -160,7 +160,7 @@ class RenTransactionManager(
             /* Making sure there are no any active executors, checking new executors size */
             if (executors.isNotEmpty()) {
                 Timber.tag(REN_TAG).d("Filter finished, there are still active executors exist, waiting")
-                return@launch
+                return@withContext
             }
 
             Timber.tag(REN_TAG).d("No active executors, adding new transaction executor")
@@ -177,5 +177,4 @@ class RenTransactionManager(
                 launch { it.execute() }
             }
         }
-    }
 }
