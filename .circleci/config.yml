@@ -54,10 +54,10 @@ commands:
               https://slack.com/api/files.upload
 
   upload_release_bundle_to_slack:
-    description: "Upload `release` app to Slack channel"
+    description: "Upload `release` bundle app to Slack channel"
     steps:
       - run:
-          name: "Upload using CURL request to Slack"
+          name: "Upload AAB using CURL request to Slack"
           command: |
             curl \
               -S -s -o /dev/null \
@@ -66,6 +66,21 @@ commands:
               -F initial_comment="Hey! Here is the release AAB. Success :tada:" \
               -F "file=@$(find app/build/outputs/bundle/release -name 'p2p*')" \
               https://slack.com/api/files.upload
+
+  upload_release_apk_to_slack:
+    description: "Upload `release` APK app to Slack channel"
+    steps:
+      - run:
+          name: "Upload APK using CURL request to Slack"
+          command: |
+            curl \
+              -S -s -o /dev/null \
+              -F token="${SLACK_BOT_TOKEN}" \
+              -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
+              -F initial_comment="Hey! Here is the release APK. Success :tada:" \
+              -F "file=@$(find app/build/outputs/apk/release -name 'p2p*')" \
+              https://slack.com/api/files.upload
+
 
   generate_build_version:
     description: "Update BUILD_VERSION >> gradle.properties"
@@ -165,8 +180,9 @@ jobs:
             echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
       - run:
           name: "Bundle and upload release to Firebase App Distribution"
-          command: ./gradlew bundleRelease appDistributionUploadRelease
+          command: ./gradlew assembleRelease bundleRelease appDistributionUploadRelease
       - upload_release_bundle_to_slack
+      - upload_release_apk_to_slack
       - store_artifacts:
           path: app/build/outputs/bundle/release
 
