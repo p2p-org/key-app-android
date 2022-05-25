@@ -24,7 +24,7 @@ class FeatureTogglesPresenter(
         }
     }
 
-    private fun getToggles(): List<SettingsRow> {
+    private fun getSettingsRows(): List<SettingsRow> {
         return listOf(
             SettingsRow.Toggle(
                 titleResId = R.string.feature_auto_update,
