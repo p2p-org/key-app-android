@@ -78,7 +78,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_COINS)
                     HomeFragment.create()
                 }
-
                 Tabs.HISTORY -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
                     HistoryFragment.create()

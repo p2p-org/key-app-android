@@ -16,6 +16,7 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.scaleShort
+import org.p2p.wallet.utils.scaleShortOrFirstNotZero
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -98,9 +99,14 @@ sealed class HistoryTransaction(
 
         fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
 
-        fun getValue(): String? = totalInUsd?.let { "${getSymbol(isSend)} $${it.scaleShort()}" }
+        fun getValue(): String? = totalInUsd?.let {
+            "${getSymbol(isSend)} $${it.scaleShortOrFirstNotZero().toPlainString()}"
+        }
 
-        fun getTotal(): String = "${getSymbol(isSend)} ${getFormattedTotal()}"
+        fun getTotal(): String = getFormattedTotal()
+
+        @StringRes
+        fun getTypeName(): Int = if (isSend) R.string.transaction_history_send else R.string.transaction_history_receive
 
         @ColorRes
         fun getTextColor() = if (isSend) {
@@ -162,8 +168,16 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val blockNumber: Int,
         override val status: TransactionStatus,
-        val fee: BigInteger
-    ) : HistoryTransaction(date)
+        val fee: BigInteger,
+        val tokenSymbol: String,
+    ) : HistoryTransaction(date) {
+
+        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
+            "$tokenSymbol $operationText"
+        } else {
+            operationText
+        }
+    }
 
     @Parcelize
     data class CloseAccount(
@@ -176,7 +190,11 @@ sealed class HistoryTransaction(
         val tokenSymbol: String,
     ) : HistoryTransaction(date) {
 
-        fun getInfo(): String = if (tokenSymbol.isNotBlank()) "$tokenSymbol Closed" else "Closed"
+        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
+            "$tokenSymbol $operationText"
+        } else {
+            operationText
+        }
     }
 
     @Parcelize

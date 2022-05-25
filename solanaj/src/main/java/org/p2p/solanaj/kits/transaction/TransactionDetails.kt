@@ -1,12 +1,14 @@
 package org.p2p.solanaj.kits.transaction
 
+import org.p2p.solanaj.model.types.ConfirmationStatus
 import java.util.concurrent.TimeUnit
 
 sealed class TransactionDetails(
     val signature: String,
     val blockTimeSeconds: Long,
     val slot: Int,
-    var error: List<Any>? = null
+    var error: List<Any>? = null,
+    var status: ConfirmationStatus? = null
 ) {
     abstract val type: TransactionDetailsType
 

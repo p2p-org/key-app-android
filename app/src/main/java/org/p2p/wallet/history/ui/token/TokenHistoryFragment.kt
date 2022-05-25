@@ -63,7 +63,7 @@ class TokenHistoryFragment :
         HistoryAdapter(
             glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
-            onRetryClicked = presenter::fetchNextPage
+            onRetryClicked = presenter::loadNextHistoryPage
         )
     }
 
@@ -83,7 +83,7 @@ class TokenHistoryFragment :
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
 
-        refreshLayout.setOnRefreshListener { presenter.refresh() }
+        refreshLayout.setOnRefreshListener { presenter.retryLoad() }
 
         actionButtonsView.setupListeners()
 
@@ -138,7 +138,7 @@ class TokenHistoryFragment :
 
         val scrollListener = EndlessScrollListener(
             layoutManager = layoutManager as LinearLayoutManager,
-            loadNextPage = { presenter.fetchNextPage() },
+            loadNextPage = { presenter.loadNextHistoryPage() },
         )
         addOnScrollListener(scrollListener)
     }
@@ -178,6 +178,12 @@ class TokenHistoryFragment :
                 )
             }
             else -> Timber.e("Unsupported transactionType: $transaction")
+        }
+    }
+
+    override fun scrollToTop() {
+        binding.historyRecyclerView.post {
+            binding.historyRecyclerView.smoothScrollToPosition(0)
         }
     }
 }

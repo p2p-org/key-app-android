@@ -7,7 +7,7 @@ import org.p2p.solanaj.programs.SerumSwapProgram
 import java.lang.Exception
 import java.math.BigInteger
 
-internal class SerumSwapInstructionParser {
+object SerumSwapInstructionParser {
 
     internal class SerumSwapParseError(message: String) : Exception(message)
 

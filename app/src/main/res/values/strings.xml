@@ -33,6 +33,8 @@
     <string name="common_transaction_details">Transaction details</string>
     <string name="common_error">Error</string>
 
+    <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
+    <string name="storage_permission_alert_title">Permission required</string>
     <string name="camera_permission_alert_message">The application needs camera permission to start scanning</string>
     <string name="camera_permission_alert_title">Permission required</string>
     <string name="camera_permission_not_granted">Camera permission denied</string>
@@ -365,6 +367,7 @@
     <string name="send_using_max_amount">Using the maximum %s amount</string>
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
     <string name="send_not_enough_funds">Not enough funds</string>
+    <string name="send_min_required_amount_warning">You can\'t send less than 0.0009 SOL</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -461,6 +464,14 @@
 
     <string name="transaction_details_done_button">@string/common_done</string>
     <string name="transaction_details_details_button">@string/common_transaction_details</string>
+
+    <!--TransactionHistory-->
+    <string name="transaction_history_unknown">Unknown</string>
+    <string name="transaction_history_swap">Swap</string>
+    <string name="transaction_history_send">Send</string>
+    <string name="transaction_history_receive">Receive</string>
+    <string name="transaction_history_create">Create</string>
+    <string name="transaction_history_closed">Closed</string>
 
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>

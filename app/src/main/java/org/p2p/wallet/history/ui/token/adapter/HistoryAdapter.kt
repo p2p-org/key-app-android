@@ -32,7 +32,7 @@ class HistoryAdapter(
     private val onRetryClicked: () -> Unit
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
 
-    private var currentItems = mutableListOf<HistoryItem>()
+    private val currentItems = mutableListOf<HistoryItem>()
     private val pagingController = HistoryAdapterPagingController(this)
 
     @SuppressLint("NotifyDataSetChanged")

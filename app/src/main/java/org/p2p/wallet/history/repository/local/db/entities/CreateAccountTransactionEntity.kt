@@ -17,11 +17,15 @@ class CreateAccountTransactionEntity(
     override val commonInformation: CommonTransactionInformationEntity,
 
     @ColumnInfo(name = COLUMN_FEE)
-    val fee: Long
+    val fee: Long,
+
+    @ColumnInfo(name = COLUMN_MINT)
+    val mint: String?
 ) : TransactionEntity {
     companion object {
         const val TABLE_NAME = "create_account_transactions"
 
         const val COLUMN_FEE = "fee"
+        const val COLUMN_MINT = "mint"
     }
 }

@@ -60,7 +60,7 @@ class SecretKeyViewHolder(
     }
 
     fun setKeyCompleted(secretKey: SecretKey) {
-        val span = SpannableString("${adapterPosition + 1}. ${secretKey.text}")
+        val span = SpannableString("${bindingAdapterPosition + 1}. ${secretKey.text}")
         span.setSpan(
             ForegroundColorSpan(Color.BLACK),
             span.length - secretKey.text.length,
@@ -80,7 +80,7 @@ class SecretKeyViewHolder(
         val isActionDown = event.action == KeyEvent.ACTION_DOWN
         val isEmpty = v.text.toString().isEmpty()
 
-        if (isDeletion && isActionDown && isEmpty && adapterPosition > 0) {
+        if (isDeletion && isActionDown && isEmpty && bindingAdapterPosition > 0) {
             onKeyRemoved()
             return true
         }
@@ -91,16 +91,18 @@ class SecretKeyViewHolder(
     private fun onSeedPhraseInserted(secretKeys: List<SecretKey>) {
         keyEditText.clearFocus()
         SeedPhraseWatcher.uninstallFrom(keyEditText)
+        keyEditText.text = null
         onInsertedListener(secretKeys)
     }
 
     private fun onKeyAdded(secretKey: SecretKey) {
         SeedPhraseWatcher.uninstallFrom(keyEditText)
+        keyEditText.text = null
         onUpdateKeyListener(secretKey)
     }
 
     private fun onKeyRemoved() {
         /* We don't need to remove text change listener here, because it's already deleted when the key was added */
-        onKeyRemovedListener(adapterPosition - 1)
+        onKeyRemovedListener(bindingAdapterPosition - 1)
     }
 }

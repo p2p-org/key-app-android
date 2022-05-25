@@ -21,6 +21,19 @@ fun String?.toBigDecimalOrZero(): BigDecimal {
 fun Int.toPowerValue(): BigDecimal =
     BigDecimal(POWER_VALUE.pow(this))
 
+fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
+    return if (isZero()) {
+        this
+    } else {
+        val scale = if (scale() > SCALE_VALUE_SHORT) {
+            scale() - (unscaledValue().toString().length - SCALE_VALUE_SHORT)
+        } else {
+            SCALE_VALUE_SHORT
+        }
+        setScale(scale, RoundingMode.HALF_EVEN).stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+    }
+}
+
 fun BigDecimal.scaleShort(): BigDecimal =
     this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2

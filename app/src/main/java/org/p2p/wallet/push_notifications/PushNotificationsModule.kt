@@ -22,7 +22,12 @@ object PushNotificationsModule : InjectionModule {
         }
 
         factory {
-            PushNotificationsInteractor(get(), get(), get(), get())
+            PushNotificationsInteractor(
+                deviceTokenRepository = get(),
+                pushTokenRepository = get(),
+                tokenKeyProvider = get(),
+                sharedPreferences = get()
+            )
         }
     }
 }

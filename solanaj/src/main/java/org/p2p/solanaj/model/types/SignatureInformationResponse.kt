@@ -13,13 +13,17 @@ data class SignatureInformationResponse constructor(
     val signature: String,
 
     @SerializedName("slot")
-    val slot: Long?
+    val slot: Long?,
+
+    @SerializedName("confirmationStatus")
+    val confirmationStatus: ConfirmationStatus
 ) {
 
     constructor(info: AbstractMap<String, Any?>) : this(
         info["err"],
         info["memo"],
         info["signature"] as String,
-        info["slot"] as Long
+        info["slot"] as Long,
+        info["confirmationStatus"] as ConfirmationStatus
     )
 }

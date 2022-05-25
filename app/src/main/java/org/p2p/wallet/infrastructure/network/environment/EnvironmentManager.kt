@@ -1,9 +1,9 @@
 package org.p2p.wallet.infrastructure.network.environment
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import androidx.core.content.edit
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.BuildConfig

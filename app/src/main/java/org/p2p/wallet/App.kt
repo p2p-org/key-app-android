@@ -1,10 +1,9 @@
 package org.p2p.wallet
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -27,7 +26,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
-import org.p2p.wallet.qr.QrModule
+import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
 import org.p2p.wallet.root.RootActivity
@@ -40,6 +39,7 @@ import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class App : Application() {
 
@@ -53,8 +53,7 @@ class App : Application() {
 
         setupTimber()
 
-        crashLoggingService.isLoggingEnabled = BuildConfig.CRASHLYTICS_ENABLED
-        crashLoggingService.setCustomKey(BuildConfig.TASK_NUMBER, "")
+        setupCrashLoggingService()
 
         AppNotificationManager.createNotificationChannels(this)
         IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
@@ -73,10 +72,23 @@ class App : Application() {
     private fun setupKoin() {
         GlobalContext.stopKoin()
         startKoin {
+            // crashes when using level != Level.Error
+            // do NOT use other than ERROR before bumping to Koin 3.1.6
+            // FIXME
             androidLogger(level = Level.ERROR)
             androidContext(this@App)
             modules(
                 listOf(
+                    // core modules
+                    NetworkModule.create(),
+                    RpcModule.create(),
+                    FeeRelayerModule.create(),
+                    InfrastructureModule.create(),
+                    TransactionModule.create(),
+                    AnalyticsModule.create(),
+                    AppModule.create(restartAction = ::restart),
+
+                    // feature screens
                     AuthModule.create(),
                     RootModule.create(),
                     PushNotificationsModule.create(),
@@ -84,17 +96,10 @@ class App : Application() {
                     UserModule.create(),
                     HomeModule.create(),
                     RenBtcModule.create(),
-                    NetworkModule.create(),
-                    QrModule.create(),
+                    ScanQrModule.create(),
                     HistoryModule.create(),
                     SettingsModule.create(),
                     SwapModule.create(),
-                    RpcModule.create(),
-                    FeeRelayerModule.create(),
-                    InfrastructureModule.create(),
-                    TransactionModule.create(),
-                    AnalyticsModule.create(),
-                    AppModule.create(application = this@App, restartAction = ::restart)
                 )
             )
         }
@@ -125,6 +130,13 @@ class App : Application() {
             kotlin.runCatching { pushTokenRepository.getPushToken().value }
                 .onSuccess { Timber.tag("App:device_token").d(it) }
                 .onFailure { Timber.e(it) }
+        }
+    }
+
+    private fun setupCrashLoggingService() {
+        crashLoggingService.apply {
+            isLoggingEnabled = BuildConfig.CRASHLYTICS_ENABLED
+            setCustomKey(BuildConfig.TASK_NUMBER, "")
         }
     }
 }

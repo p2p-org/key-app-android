@@ -48,6 +48,8 @@ interface SendContract {
         fun showAddressOnlyTarget(address: String)
         fun showSearchScreen(usernames: List<SearchResult>)
 
+        fun showWarning(@StringRes messageRes: Int?)
+
         fun showAccountFeeView(fee: SendFee? = null, notEnoughFunds: Boolean = false)
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 
