@@ -16,7 +16,7 @@ class AccountStreamSource(
     private val symbol: String,
     private val historyRepository: TransactionDetailsRemoteRepository,
     private val signatureRepository: RpcSignatureRepository
-) : HistoryStreamSource {
+) : AbstractStreamSource() {
 
     private var lastFetchedSignature: String? = null
     private var batchSize = 15
@@ -27,33 +27,27 @@ class AccountStreamSource(
 
     private val buffer = mutableListOf<RpcTransactionSignature>()
 
-    override suspend fun next(configuration: StreamSourceConfiguration): Pair<String, RpcTransactionSignature?> {
+    override suspend fun next(configuration: StreamSourceConfiguration): HistoryStreamItem? {
         if (buffer.isEmpty()) {
             fillBuffer()
         }
-        val signatureInfo = buffer.firstOrNull()
-        return Pair("", null)
+        val signatureInfo = buffer.first()
+
+        if (signatureInfo.blockTime >= configuration.timeStampEnd) {
+            buffer.removeAt(0)
+            return HistoryStreamItem(account, signatureInfo)
+        }
+        return null
     }
 
-    override suspend fun nextItems(
-        configuration: StreamSourceConfiguration
-    ): List<Pair<String, RpcTransactionSignature>> {
+    override suspend fun currentItem(): HistoryStreamItem? {
         if (buffer.isEmpty()) {
             fillBuffer()
         }
-        return emptyList()
-    }
-
-    override suspend fun currentItem(): Pair<String, RpcTransactionSignature?> {
-        if (buffer.isEmpty()) {
-            fillBuffer()
-        }
-        val signatureInfo = buffer.firstOrNull()
-        return account to signatureInfo
+        return HistoryStreamItem(account, buffer.firstOrNull())
     }
 
     override fun reset() {
-        TODO("Not yet implemented")
     }
 
     private suspend fun fillBuffer() = withContext(executor) {

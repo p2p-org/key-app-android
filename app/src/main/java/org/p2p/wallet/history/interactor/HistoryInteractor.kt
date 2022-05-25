@@ -8,15 +8,23 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.buffer.HistoryTransactionsManager
+import org.p2p.wallet.history.interactor.stream.AccountStreamSource
+import org.p2p.wallet.history.interactor.stream.MultipleStreamSource
+import org.p2p.wallet.history.interactor.stream.StreamSourceConfiguration
+import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
+import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
+import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 
 class HistoryInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
     private val transactionsLocalRepository: TransactionDetailsLocalRepository,
+    private val transactionsRemoteRepository: TransactionDetailsRemoteRepository,
+    private val signaturesRepository: RpcSignatureRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyTransactionMapper: HistoryTransactionMapper,
     private val userInteractor: UserInteractor,
@@ -26,19 +34,28 @@ class HistoryInteractor(
     fun attachToHistoryFlow(): Flow<List<HistoryTransaction>> =
         historyTransactionsManager.getHistoryFlow()
 
-    suspend fun loadTransactionsHistory() {
+    suspend fun loadTransactions() {
+        Timber.tag("________").d("signatures started to load")
+        val signatures = loadTransactionHistory()
+        Timber.tag("________").d("signatures loaded = ${signatures.size}")
+    }
 
-        when (historyTransactionsManager.getState()) {
-            HistoryTransactionsManager.State.IDLE -> {
-                historyTransactionsManager.load()
-            }
-            HistoryTransactionsManager.State.LOADING -> {
-                return
-            }
-            HistoryTransactionsManager.State.NONE -> {
-                val userTokens = userInteractor.getUserTokens().map { it.publicKey }
-                historyTransactionsManager.setup(userTokens)
-                historyTransactionsManager.load()
+    private suspend fun loadTransactionHistory(): MutableList<RpcTransactionSignature> {
+        val userAccounts = userInteractor.getUserTokens().map {
+            AccountStreamSource(it.publicKey, it.tokenSymbol, transactionsRemoteRepository, signaturesRepository)
+        }
+        val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
+        val multipleStreamSource = MultipleStreamSource(userAccounts)
+
+        while (true) {
+            val item = multipleStreamSource.currentItem() ?: return transactionsSignatures
+            val time = (item.streamSource?.blockTime ?: -1) - (60 * 60 * 24)
+            while (true) {
+                val item = multipleStreamSource.next(StreamSourceConfiguration(time))
+                transactionsSignatures.add(item?.streamSource ?: break)
+                if (transactionsSignatures.size >= 15) {
+                    return transactionsSignatures
+                }
             }
         }
     }

@@ -47,7 +47,9 @@ object HistoryModule : InjectionModule {
                 tokenKeyProvider = get(),
                 historyTransactionMapper = get(),
                 userInteractor = get(),
-                historyTransactionsManager = get()
+                historyTransactionsManager = get(),
+                transactionsRemoteRepository = get(),
+                signaturesRepository = get()
             )
         }
         single {

@@ -102,7 +102,7 @@ class HistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            historyInteractor.loadTransactionsHistory()
+            historyInteractor.loadTransactions()
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
         } catch (e: EmptyDataException) {
