@@ -11,10 +11,11 @@ import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.databinding.ItemSettingsToggleItemBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.requireContext
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 class SettingsAdapter(
-    private val onItemClickListener: (titleResId: Int) -> Unit = {},
+    private val onSettingsRowClickListener: (titleResId: Int) -> Unit = {},
     private val onToggleCheckedListener: (toggleId: Int, toggleChecked: Boolean) -> Unit = { _, _ -> },
     private val onLogoutClickListener: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -23,7 +24,7 @@ class SettingsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
         R.layout.item_settings_row_item -> {
-            ViewHolder(parent, onItemClickListener)
+            ViewHolder(parent, onSettingsRowClickListener)
         }
         R.layout.item_settings_logout -> {
             LogoutViewHolder(parent, onLogoutClickListener)
@@ -117,11 +118,7 @@ class SettingsAdapter(
     inner class TitleViewHolder(binding: ItemSettingsTitleBinding) : RecyclerView.ViewHolder(binding.root) {
 
         constructor(parent: ViewGroup) : this(
-            ItemSettingsTitleBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
+            parent.inflateViewBinding<ItemSettingsTitleBinding>(parent.context, attachToRoot = false)
         )
 
         private val textView = binding.topTextView

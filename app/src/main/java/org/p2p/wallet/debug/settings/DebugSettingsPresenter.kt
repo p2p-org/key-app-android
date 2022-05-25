@@ -17,8 +17,7 @@ class DebugSettingsPresenter(
 
     override fun loadData() {
         launch {
-            val settings = getMainSettings() +
-                getAppInfoSettings()
+            val settings = getMainSettings() + getAppInfoSettings()
             view?.showSettings(settings)
         }
     }

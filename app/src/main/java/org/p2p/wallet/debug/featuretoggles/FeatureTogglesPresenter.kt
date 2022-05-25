@@ -13,7 +13,7 @@ class FeatureTogglesPresenter(
 
     override fun loadData() {
         launch {
-            view?.showSettings(getToggles())
+            view?.showSettings(getSettingsRows())
         }
     }
 

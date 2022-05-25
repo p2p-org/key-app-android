@@ -18,8 +18,7 @@ class FeatureTogglesFragment :
     FeatureTogglesContract.View {
 
     companion object {
-
-        fun create(): FeatureTogglesFragment = FeatureTogglesFragment()
+        fun create() = FeatureTogglesFragment()
     }
 
     override val presenter: FeatureTogglesContract.Presenter by inject()

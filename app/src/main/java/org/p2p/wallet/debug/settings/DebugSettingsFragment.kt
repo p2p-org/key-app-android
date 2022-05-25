@@ -33,7 +33,7 @@ class DebugSettingsFragment :
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = SettingsAdapter(::onItemClickListener)
+    private val adapter = SettingsAdapter(::onSettingsRowClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,7 +61,7 @@ class DebugSettingsFragment :
         adapter.setData(item)
     }
 
-    private fun onItemClickListener(@StringRes titleResId: Int) {
+    private fun onSettingsRowClicked(@StringRes titleResId: Int) {
         when (titleResId) {
             R.string.settings_network -> {
                 addFragment(
