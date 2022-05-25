@@ -23,10 +23,11 @@ class HistoryInteractor(
     private val historyTransactionsManager: HistoryTransactionsManager
 ) {
 
-    suspend fun attachToHistoryFlow(): Flow<List<HistoryTransaction>> =
+    fun attachToHistoryFlow(): Flow<List<HistoryTransaction>> =
         historyTransactionsManager.getHistoryFlow()
 
     suspend fun loadTransactionsHistory() {
+
         when (historyTransactionsManager.getState()) {
             HistoryTransactionsManager.State.IDLE -> {
                 historyTransactionsManager.load()

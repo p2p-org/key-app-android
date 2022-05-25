@@ -17,7 +17,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
 import java.util.concurrent.atomic.AtomicInteger
 
 private const val TOKEN_PAGE_SIZE = 3
@@ -33,9 +32,7 @@ class HistoryTransactionsManager(
 ) : TransactionListener {
 
     private val tokensBuffer = mutableListOf<TokenHistoryBuffer>()
-
     private val transactionsFlow = MutableStateFlow<List<HistoryTransaction>>(mutableListOf())
-
     private val allTransactions = mutableListOf<HistoryTransaction>()
 
     private val sentRequestCount = AtomicInteger(0)
@@ -67,11 +64,12 @@ class HistoryTransactionsManager(
             state = State.LOADING
             tokensBuffer.forEach { buffer ->
                 async(this.coroutineContext + NonCancellable) {
+
                     sentRequestCount.incrementAndGet()
                     val transactions = loadTransactions(buffer.getTokenAddress(), buffer.getLastSignature())
                     buffer.onTransactionsUploaded(transactions)
-
                 }.invokeOnCompletion { throwable ->
+
                     if (throwable is EmptyDataException) {
                         sentRequestCount.decrementAndGet()
                         tokensBuffer.remove(buffer)
@@ -79,8 +77,8 @@ class HistoryTransactionsManager(
                     } else {
                         receivedResponseCount.incrementAndGet()
                     }
-
                     if (sentRequestCount.get() == receivedResponseCount.get()) {
+
                         transactionsFlow.value =
                             allTransactions.sortedByDescending { it.date.toInstant().toEpochMilli() }
                         sentRequestCount.set(0)
@@ -102,6 +100,7 @@ class HistoryTransactionsManager(
                 lastSignature,
                 TOKEN_PAGE_SIZE
             ).map { RpcTransactionSignature(it.signature, it.confirmationStatus, it.blockTime) }
+
         return transactionRepository.getTransactions(tokenKeyProvider.publicKey, signatures)
             .mapToHistoryTransactions(tokenKeyProvider.publicKey)
     }
@@ -133,7 +132,6 @@ class HistoryTransactionsManager(
                     swapTransaction.alternateDestination
                 )
             }
-        Timber.tag("TokenHistoryBuffer").d("AccountInfoSize = " + accountsInfoIds.size.toString())
         return if (accountsInfoIds.isNotEmpty()) {
             rpcAccountRepository.getAccountsInfo(accountsInfoIds)
         } else {
