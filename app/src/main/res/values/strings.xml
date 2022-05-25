@@ -368,6 +368,7 @@
     <string name="send_using_max_amount">Using the maximum %s amount</string>
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
     <string name="send_not_enough_funds">Not enough funds</string>
+    <string name="send_min_required_amount_warning">You can\'t send less than 0.0009 SOL</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
