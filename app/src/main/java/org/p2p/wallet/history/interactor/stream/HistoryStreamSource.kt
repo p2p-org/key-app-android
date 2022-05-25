@@ -10,5 +10,3 @@ interface HistoryStreamSource {
 
     fun reset()
 }
-
-class StreamSourceConfiguration(val timeStampEnd: Long)

@@ -2,9 +2,6 @@ package org.p2p.wallet.history.ui.history
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -41,17 +38,6 @@ class HistoryPresenter(
         super.attach(view)
         environmentManager.addEnvironmentListener(this::class) {
             refreshHistory()
-        }
-        launch {
-            historyInteractor.attachToHistoryFlow().filterNot { it.isEmpty() }
-                .catch { exception -> Timber.tag("TokenHistoryBuffer").d(exception) }
-                .collectLatest {
-                    Timber.tag("TokenHistoryBuffer").d("Size = ${it.size}")
-                    transactions.clear()
-                    transactions.addAll(it)
-                    view.showHistory(transactions)
-                    view.showPagingState(PagingState.Idle)
-                }
         }
     }
 
@@ -102,7 +88,10 @@ class HistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            historyInteractor.loadTransactions()
+            val fetchedItems = historyInteractor.loadTransactions()
+            transactions.addAll(fetchedItems)
+            view?.showHistory(transactions)
+            view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
         } catch (e: EmptyDataException) {

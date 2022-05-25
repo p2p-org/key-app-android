@@ -9,6 +9,7 @@ import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteReposito
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.utils.toPublicKey
+import timber.log.Timber
 import java.util.concurrent.Executors
 
 class AccountStreamSource(
@@ -53,6 +54,7 @@ class AccountStreamSource(
     private suspend fun fillBuffer() = withContext(executor) {
         async(
             CoroutineExceptionHandler { _, t ->
+                Timber.tag("HistoryInteractor").d(t)
                 if (t is EmptyDataException) {
                     isPagingEnded = true
                 }
