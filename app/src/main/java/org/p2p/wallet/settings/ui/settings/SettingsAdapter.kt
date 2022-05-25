@@ -8,15 +8,16 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
+import org.p2p.wallet.databinding.ItemSettingsToggleItemBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.requireContext
 import org.p2p.wallet.utils.withTextOrGone
 
 class SettingsAdapter(
-    private val onItemClickListener: (titleResId: Int) -> Unit,
-    private val onLogoutClickListener: () -> Unit
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val onItemClickListener: (titleResId: Int) -> Unit = {},
+    private val onToggleCheckedListener: (toggleId: Int, toggleChecked: Boolean) -> Unit = { _, _ -> },
+    private val onLogoutClickListener: () -> Unit = {}
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val data = mutableListOf<SettingsRow>()
 
@@ -30,6 +31,9 @@ class SettingsAdapter(
         R.layout.item_settings_title -> {
             TitleViewHolder(parent)
         }
+        R.layout.item_settings_toggle_item -> {
+            ToggleViewHolder(parent)
+        }
         else -> throw IllegalStateException("No view found for type $viewType")
     }
 
@@ -37,6 +41,7 @@ class SettingsAdapter(
         when (holder) {
             is ViewHolder -> holder.bind(data[position] as SettingsRow.Section)
             is TitleViewHolder -> holder.bind(data[position] as SettingsRow.Title)
+            is ToggleViewHolder -> holder.bind(data[position] as SettingsRow.Toggle)
             is LogoutViewHolder -> holder.bind()
         }
     }
@@ -49,6 +54,7 @@ class SettingsAdapter(
         when (data[position]) {
             is SettingsRow.Section -> R.layout.item_settings_row_item
             is SettingsRow.Title -> R.layout.item_settings_title
+            is SettingsRow.Toggle -> R.layout.item_settings_toggle_item
             is SettingsRow.Logout -> R.layout.item_settings_logout
         }
 
@@ -124,6 +130,28 @@ class SettingsAdapter(
         fun bind(item: SettingsRow.Title) {
             textView.setText(item.titleResId)
             topDivider.isVisible = item.isDivider
+        }
+    }
+
+    inner class ToggleViewHolder(binding: ItemSettingsToggleItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        constructor(parent: ViewGroup) : this(
+            ItemSettingsToggleItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+
+        private val toggle = binding.toggle
+
+        fun bind(item: SettingsRow.Toggle) {
+            toggle.setOnCheckedChangeListener(null)
+            toggle.setText(item.titleResId)
+            toggle.isChecked = item.toggleChecked
+            toggle.setOnCheckedChangeListener { _, isChecked ->
+                onToggleCheckedListener(item.toggleId, isChecked)
+            }
         }
     }
 }

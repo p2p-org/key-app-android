@@ -1,13 +1,14 @@
 package org.p2p.wallet.debug.featuretoggles
 
-import android.content.res.Resources
+import androidx.annotation.IdRes
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.model.SettingsRow
 
 class FeatureTogglesPresenter(
-    private val resources: Resources,
+    private val appFeatureFlags: AppFeatureFlags
 ) : BasePresenter<FeatureTogglesContract.View>(), FeatureTogglesContract.Presenter {
 
     override fun loadData() {
@@ -16,21 +17,25 @@ class FeatureTogglesPresenter(
         }
     }
 
+    override fun onToggleCheckedListener(@IdRes toggleId: Int, toggleChecked: Boolean) {
+        when (toggleId) {
+            R.id.enable_dev_net -> appFeatureFlags.setIsDevnetEnabled(toggleChecked)
+            R.id.polling_enabled -> appFeatureFlags.setPollingEnabled(toggleChecked)
+        }
+    }
+
     private fun getToggles(): List<SettingsRow> {
         return listOf(
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_deeplinks_title,
-                iconRes = R.drawable.ic_network
+            SettingsRow.Toggle(
+                titleResId = R.string.feature_auto_update,
+                toggleId = R.id.polling_enabled,
+                toggleChecked = appFeatureFlags.isPollingEnabled
             ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_feature_toggles_title,
-                iconRes = R.drawable.ic_home_settings
+            SettingsRow.Toggle(
+                titleResId = R.string.feature_dev_net,
+                toggleId = R.id.enable_dev_net,
+                toggleChecked = appFeatureFlags.isDevnetEnabled
             ),
-            SettingsRow.Section(
-                titleResId = R.string.debug_settings_logs_title,
-                subtitle = resources.getString(R.string.debug_settings_logs_subtitle),
-                iconRes = R.drawable.ic_settings_cloud
-            )
         )
     }
 }

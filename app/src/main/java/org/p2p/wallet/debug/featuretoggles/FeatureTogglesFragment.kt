@@ -2,12 +2,11 @@ package org.p2p.wallet.debug.featuretoggles
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
+import androidx.annotation.IdRes
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
-import org.p2p.wallet.debugdrawer.CustomLogDialog
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.settings.SettingsAdapter
 import org.p2p.wallet.utils.attachAdapter
@@ -26,7 +25,9 @@ class FeatureTogglesFragment :
     override val presenter: FeatureTogglesContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = SettingsAdapter(::onItemClickListener) {}
+    private val adapter = SettingsAdapter(
+        onToggleCheckedListener = ::onToggleCheckedListener
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,12 +45,7 @@ class FeatureTogglesFragment :
         adapter.setData(item)
     }
 
-    private fun onItemClickListener(@StringRes titleResId: Int) {
-        when (titleResId) {
-            R.string.debug_settings_logs_title -> {
-                // TODO add listener for toggles
-                CustomLogDialog(requireContext()).show()
-            }
-        }
+    private fun onToggleCheckedListener(@IdRes toggleId: Int, toggleChecked: Boolean) {
+        presenter.onToggleCheckedListener(toggleId, toggleChecked)
     }
 }

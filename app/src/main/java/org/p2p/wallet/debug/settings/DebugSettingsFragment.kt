@@ -33,7 +33,7 @@ class DebugSettingsFragment :
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = SettingsAdapter(::onItemClickListener) {}
+    private val adapter = SettingsAdapter(::onItemClickListener)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
