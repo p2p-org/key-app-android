@@ -63,8 +63,13 @@ fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.usdRate?.let { this.multiply(it).scaleShort() }
 
-fun BigDecimal.formatUsd(): String = DecimalFormatUtil.format(this, USD_DECIMALS)
-fun BigDecimal.formatToken(): String = DecimalFormatUtil.format(this, DEFAULT_DECIMAL)
+fun BigDecimal.formatUsd(): String = if (this.isZero()) this.toPlainString() else this.stripTrailingZeros().run {
+    DecimalFormatUtil.format(this, USD_DECIMALS)
+} // case: 1000.023000 -> 1 000.02
+
+fun BigDecimal.formatToken(): String = if (this.isZero()) this.toPlainString() else this.stripTrailingZeros().run {
+    DecimalFormatUtil.format(this, DEFAULT_DECIMAL)
+} // case: 10000.000000007900 -> 100 000.000000008
 
 fun BigDecimal?.isNullOrZero() = this == null || this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0

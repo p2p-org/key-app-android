@@ -40,9 +40,7 @@ import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
@@ -167,7 +165,7 @@ class OrcaSwapPresenter(
     }
 
     override fun calculateAvailableAmount() {
-        val amount = sourceToken.total.scaleLong().formatToken()
+        val amount = sourceToken.total.formatToken()
         setSourceAmount(amount)
         view?.showNewAmount(amount)
         isMaxClicked = true
@@ -439,10 +437,10 @@ class OrcaSwapPresenter(
         val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
         Timber.tag(TAG_SWAP).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
-        destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).scaleLong().formatToken()
+        destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).formatToken()
 
         val minReceive = pair.getMinimumAmountOut(inputAmount, slippage.doubleValue) ?: return
-        val minReceiveResult = minReceive.fromLamports(destination.decimals).scaleLong()
+        val minReceiveResult = minReceive.fromLamports(destination.decimals)
 
         val totalUsd = sourceAmount.toBigDecimalOrZero().multiply(source.usdRateOrZero)
 
@@ -452,7 +450,7 @@ class OrcaSwapPresenter(
         val data = SwapTotal(
             destinationAmount = destinationAmount,
             total = "${sourceAmount.toBigDecimalOrZero().formatToken()} ${source.tokenSymbol}",
-            totalUsd = totalUsd.scaleShort().formatUsd(),
+            totalUsd = totalUsd.formatUsd(),
             fee = fees?.transactionFeeString,
             approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
             receiveAtLeast = receiveAtLeast,
@@ -484,8 +482,8 @@ class OrcaSwapPresenter(
             destinationSymbol = destination.tokenSymbol,
             sourcePrice = "${inputPrice.formatToken()} ${source.tokenSymbol}",
             destinationPrice = "${outputPrice.formatToken()} ${destination.tokenSymbol}",
-            sourcePriceInUsd = inputPriceUsd?.scaleShort()?.formatUsd(),
-            destinationPriceInUsd = outputPriceUsd?.scaleShort()?.formatUsd()
+            sourcePriceInUsd = inputPriceUsd?.formatUsd(),
+            destinationPriceInUsd = outputPriceUsd?.formatUsd()
         )
         view?.showPrice(priceData)
     }

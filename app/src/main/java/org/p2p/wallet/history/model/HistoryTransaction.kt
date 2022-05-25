@@ -121,7 +121,7 @@ sealed class HistoryTransaction(
         fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
             "${total.scaleMedium().formatToken()} ${tokenData.symbol}"
         } else {
-            "${total.scaleLong().formatToken()} ${tokenData.symbol}"
+            "${total.formatToken()} ${tokenData.symbol}"
         }
 
         fun getFormattedAmount(): String? = totalInUsd?.scaleShort()?.asUsd()
