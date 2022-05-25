@@ -10,11 +10,12 @@ object DecimalFormatUtil {
 
     fun format(value: Number, decimals: Int): String {
         val format = DECIMAL_FORMAT + "#".repeat(decimals)
-        val formatSymbols = DecimalFormatSymbols(Locale.ENGLISH)
-        formatSymbols.decimalSeparator = '.'
-        formatSymbols.groupingSeparator = ' '
-        val formatter = DecimalFormat(format, formatSymbols)
-        // Setup RoundingMode if needed
-        return formatter.format(value)
+
+        val formatSymbols = DecimalFormatSymbols(Locale.ENGLISH).apply {
+            decimalSeparator = '.'
+            groupingSeparator = ' '
+        }
+
+        return DecimalFormat(format, formatSymbols).format(value)
     }
 }
