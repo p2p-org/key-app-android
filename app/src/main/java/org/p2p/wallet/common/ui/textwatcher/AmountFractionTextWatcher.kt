@@ -6,6 +6,7 @@ import android.widget.EditText
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.DecimalFormatUtil
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.orZero
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 
@@ -49,10 +50,13 @@ class AmountFractionTextWatcher(
         if (oldValue != newValue) onValueChanged.invoke(newValue.dropSpaces())
     }
 
+    private var cursorPosition: Int = 0
+
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         val value = s.toString()
+        val symbolsAfterCursor = value.length - field.get()?.selectionEnd.orZero()
         valueText = when {
             value.isBlank() -> value
             value == SYMBOL_ZERO && before == 1 -> emptyString()
@@ -62,6 +66,7 @@ class AmountFractionTextWatcher(
             value.contains(SYMBOL_DOT) -> handleValueWithDot(value)
             else -> value.dropSpaces().formatDecimal()
         }
+        cursorPosition = if (valueText.length < symbolsAfterCursor) 0 else valueText.length - symbolsAfterCursor
     }
 
     override fun afterTextChanged(edit: Editable?) {
@@ -69,7 +74,7 @@ class AmountFractionTextWatcher(
             removeTextChangedListener(this@AmountFractionTextWatcher)
             field.get()?.let {
                 setText(valueText)
-                setSelection(valueText.length)
+                setSelection(cursorPosition)
             }
             addTextChangedListener(this@AmountFractionTextWatcher)
         }

@@ -83,4 +83,6 @@ fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 fun BigDecimal.asUsd(): String = if (lessThenMinUsd()) "<$0.01" else "$${formatUsd()}"
 fun BigDecimal.asApproximateUsd(): String = "(~$${formatUsd()})"
 
+fun Int?.orZero(): Int = this ?: 0
+
 private fun BigDecimal.lessThenMinUsd() = isLessThan(USD_MIN_VALUE.toBigDecimal())
