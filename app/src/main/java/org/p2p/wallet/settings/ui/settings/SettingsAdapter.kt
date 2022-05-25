@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemSettingsInfoBinding
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
@@ -35,6 +36,9 @@ class SettingsAdapter(
         R.layout.item_settings_toggle_item -> {
             ToggleViewHolder(parent)
         }
+        R.layout.item_settings_info -> {
+            InfoViewHolder(parent)
+        }
         else -> throw IllegalStateException("No view found for type $viewType")
     }
 
@@ -43,6 +47,7 @@ class SettingsAdapter(
             is ViewHolder -> holder.bind(data[position] as SettingsRow.Section)
             is TitleViewHolder -> holder.bind(data[position] as SettingsRow.Title)
             is ToggleViewHolder -> holder.bind(data[position] as SettingsRow.Toggle)
+            is InfoViewHolder -> holder.bind(data[position] as SettingsRow.Info)
             is LogoutViewHolder -> holder.bind()
         }
     }
@@ -56,6 +61,7 @@ class SettingsAdapter(
             is SettingsRow.Section -> R.layout.item_settings_row_item
             is SettingsRow.Title -> R.layout.item_settings_title
             is SettingsRow.Toggle -> R.layout.item_settings_toggle_item
+            is SettingsRow.Info -> R.layout.item_settings_info
             is SettingsRow.Logout -> R.layout.item_settings_logout
         }
 
@@ -104,7 +110,7 @@ class SettingsAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         constructor(parent: ViewGroup, listener: () -> Unit) : this(
-            binding = ItemSettingsLogoutBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            binding = parent.inflateViewBinding<ItemSettingsLogoutBinding>(parent.context, attachToRoot = false),
             listener = listener
         )
 
@@ -133,11 +139,7 @@ class SettingsAdapter(
     inner class ToggleViewHolder(binding: ItemSettingsToggleItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         constructor(parent: ViewGroup) : this(
-            ItemSettingsToggleItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
+            parent.inflateViewBinding<ItemSettingsToggleItemBinding>(parent.context, attachToRoot = false)
         )
 
         private val toggle = binding.toggle
@@ -149,6 +151,21 @@ class SettingsAdapter(
             toggle.setOnCheckedChangeListener { _, isChecked ->
                 onToggleCheckedListener(item.toggleId, isChecked)
             }
+        }
+    }
+
+    inner class InfoViewHolder(binding: ItemSettingsInfoBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        constructor(parent: ViewGroup) : this(
+            parent.inflateViewBinding<ItemSettingsInfoBinding>(parent.context, attachToRoot = false)
+        )
+
+        private val title = binding.tvTitle
+        private val value = binding.tvValue
+
+        fun bind(item: SettingsRow.Info) {
+            title.setText(item.titleResId)
+            value.text = item.subtitle
         }
     }
 }

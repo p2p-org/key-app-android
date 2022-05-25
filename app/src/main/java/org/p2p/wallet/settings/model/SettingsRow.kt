@@ -31,4 +31,10 @@ sealed class SettingsRow(open val isDivider: Boolean = false) {
         val toggleChecked: Boolean,
         override val isDivider: Boolean = false,
     ) : SettingsRow(isDivider)
+
+    data class Info(
+        @StringRes override val titleResId: Int,
+        override val isDivider: Boolean = false,
+        val subtitle: String? = null,
+    ) : SettingsRow(isDivider)
 }

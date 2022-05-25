@@ -8,7 +8,6 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.databinding.ViewDebugDrawerCiConfigBinding
 import org.p2p.wallet.utils.appendBreakLine
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
-import java.lang.StringBuilder
 
 class CiConfigDrawerModule : DebugModuleAdapter() {
     override fun onCreateView(inflater: LayoutInflater, parent: ViewGroup): View {

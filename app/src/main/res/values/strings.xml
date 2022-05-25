@@ -558,6 +558,8 @@
     <string name="debug_settings_logs_title">Logs</string>
     <string name="debug_settings_feature_toggles_title">Feature Toggles</string>
     <string name="debug_settings_logs_subtitle">Tap to show Logs</string>
+    <string name="debug_settings_device_info">Device Info</string>
+    <string name="debug_settings_ci_info">CI Info</string>
     <string name="debug_settings_app_info">App Info</string>
 
     <!-- Debug Settings -> Feature Toggles -->
