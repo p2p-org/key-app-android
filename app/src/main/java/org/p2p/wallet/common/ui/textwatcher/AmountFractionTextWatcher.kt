@@ -59,13 +59,7 @@ class AmountFractionTextWatcher(
             value == "$SYMBOL_ZERO$SYMBOL_ZERO" && start == 1 -> SYMBOL_ZERO
             value.startsWith(SYMBOL_DOT) -> "$SYMBOL_ZERO$value"
             value.endsWith(SYMBOL_DOT) -> value.dropLast(1).dropSpaces().formatDecimal() + SYMBOL_DOT
-            value.contains(SYMBOL_DOT) -> {
-                val dotPosition = value.indexOf(SYMBOL_DOT)
-                val intPart = value.substring(0, dotPosition)
-                // Shorten fractional part to maxLengthAllowed symbols
-                val fractionalPart = value.substring(dotPosition + 1).take(maxLengthAllowed)
-                intPart.dropSpaces().formatDecimal() + SYMBOL_DOT + fractionalPart
-            }
+            value.contains(SYMBOL_DOT) -> handleValueWithDot(value)
             else -> value.dropSpaces().formatDecimal()
         }
     }
@@ -79,6 +73,18 @@ class AmountFractionTextWatcher(
             }
             addTextChangedListener(this@AmountFractionTextWatcher)
         }
+    }
+
+    private fun handleValueWithDot(value: String): String {
+        val dotPosition = value.indexOf(SYMBOL_DOT)
+        val intPart = value.substring(0, dotPosition).dropSpaces()
+        // Remove extra dots and Shorten fractional part to maxLengthAllowed symbols
+        val fractionalPart = value.substring(dotPosition + 1)
+            .replace(SYMBOL_DOT, emptyString())
+            .dropSpaces()
+            .take(maxLengthAllowed)
+
+        return intPart.formatDecimal() + SYMBOL_DOT + fractionalPart
     }
 
     private fun String.dropSpaces(): String {
