@@ -27,7 +27,7 @@ class DebugSettingsFragment :
 
     companion object {
 
-        fun create() = DebugSettingsFragment()
+        fun create(): DebugSettingsFragment = DebugSettingsFragment()
     }
 
     override val presenter: DebugSettingsContract.Presenter by inject()
