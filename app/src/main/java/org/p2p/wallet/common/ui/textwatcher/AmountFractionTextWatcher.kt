@@ -56,14 +56,15 @@ class AmountFractionTextWatcher(
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         val value = s.toString()
-        val spaceWasRemoved = value.dropSpaces() == valueText.dropSpaces()
+        val spaceWasRemoved = before == 1 && value.dropSpaces() == valueText.dropSpaces()
         var symbolsAfterCursor = value.length - field.get()?.selectionEnd.orZero()
 
         // Move cursor one char left if user tries to remove space
         if (spaceWasRemoved) symbolsAfterCursor++
 
         valueText = when {
-            value.isBlank() -> value
+            value.isEmpty() -> value
+            // Remove whole string if dot before zero was removed
             value == SYMBOL_ZERO && before == 1 -> emptyString()
             value == "$SYMBOL_ZERO$SYMBOL_ZERO" && start == 1 -> SYMBOL_ZERO
             value.startsWith(SYMBOL_DOT) -> "$SYMBOL_ZERO$value"
@@ -91,10 +92,10 @@ class AmountFractionTextWatcher(
         val dotPosition = value.indexOf(SYMBOL_DOT)
         val intPart = value.substring(0, dotPosition).dropSpaces()
 
-        // Remove extra dots and Shorten fractional part to maxLengthAllowed symbols
+        // Remove extra dots and shorten fractional part to maxLengthAllowed symbols
         val fractionalPart = value.substring(dotPosition + 1)
-            .replace(SYMBOL_DOT, emptyString())
             .dropSpaces()
+            .replace(SYMBOL_DOT, emptyString())
             .take(maxLengthAllowed)
 
         return intPart.formatDecimal() + SYMBOL_DOT + fractionalPart
