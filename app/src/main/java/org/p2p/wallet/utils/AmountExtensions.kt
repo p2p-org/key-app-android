@@ -40,19 +40,19 @@ fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
 
 fun BigDecimal.scaleShort(): BigDecimal =
     this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
-        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleMedium(): BigDecimal =
     if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN)
-        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleLong(): BigDecimal =
     if (this.isZero()) this else this.setScale(SCALE_VALUE_LONG, RoundingMode.HALF_EVEN)
-        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
     BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals)))
-        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+        .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
