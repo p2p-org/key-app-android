@@ -1,6 +1,7 @@
 package org.p2p.wallet.moonpay.model
 
-import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.asUsd
+import org.p2p.wallet.utils.emptyString
 import java.math.BigDecimal
 
 data class BuyViewData(
@@ -18,20 +19,20 @@ data class BuyViewData(
 ) {
 
     val priceText: String
-        get() = "${Constants.USD_SYMBOL}$price"
+        get() = price.asUsd()
 
     val processingFeeText: String
-        get() = "${Constants.USD_SYMBOL}$processingFee"
+        get() = processingFee.asUsd()
 
     val networkFeeText: String
-        get() = "${Constants.USD_SYMBOL}$networkFee"
+        get() = networkFee.asUsd()
 
     val extraFeeText: String
-        get() = "${Constants.USD_SYMBOL}$extraFee"
+        get() = extraFee.asUsd()
 
     val accountCreationCostText: String
-        get() = "${Constants.USD_SYMBOL}$accountCreationCost"
+        get() = accountCreationCost?.asUsd() ?: emptyString()
 
     val totalText: String
-        get() = "${Constants.USD_SYMBOL}$total"
+        get() = total.asUsd()
 }
