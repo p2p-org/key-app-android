@@ -534,6 +534,15 @@ class SendFragment :
         )
     }
 
+    override fun showWarning(messageRes: Int?) {
+        if (messageRes != null) {
+            binding.warningView.isVisible = true
+            binding.warningTextView.setText(messageRes)
+        } else {
+            binding.warningView.isVisible = false
+        }
+    }
+
     private fun clearScreenData() {
         with(binding) {
             amountEditText.setText(emptyString())
