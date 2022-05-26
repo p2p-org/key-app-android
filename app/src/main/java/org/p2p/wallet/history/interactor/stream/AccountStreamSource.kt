@@ -1,15 +1,10 @@
 package org.p2p.wallet.history.interactor.stream
 
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
 import java.lang.Exception
 import java.util.concurrent.Executors
 

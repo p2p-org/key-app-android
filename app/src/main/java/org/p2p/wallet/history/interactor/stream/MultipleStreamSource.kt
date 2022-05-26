@@ -1,16 +1,12 @@
 package org.p2p.wallet.history.interactor.stream
 
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
-import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.util.concurrent.Executors
-import kotlin.math.max
 
 class MultipleStreamSource(
     private val sources: List<HistoryStreamSource>
@@ -52,7 +48,6 @@ class MultipleStreamSource(
             Timber.tag("HistoryInteractor").d("4 Fill buffer")
             val items = sources.map {
                 async { it.nextItems(configuration) }
-
             }.awaitAll().flatten()
             val sortedItems = items.sortedWith(compareBy { it.streamSource?.blockTime }).asReversed()
             buffer.addAll(sortedItems)
