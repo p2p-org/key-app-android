@@ -13,6 +13,7 @@ import org.p2p.solanaj.kits.renBridge.RenProgram
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.Hash
+import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import java.math.BigInteger
@@ -31,14 +32,18 @@ class RpcSolanaInteractor(
 
     init {
         appScope.launch {
-            val pubk = PublicKey(rpcEnvironment.gatewayRegistry)
-            val stateKey = PublicKey.findProgramAddress(
-                seeds = listOf(GatewayRegistryStateKey.toByteArray()),
-                programId = pubk
-            )
-            val accountInfo = rpcSolanaRepository.getAccountInfo(stateKey = stateKey.address)
-            val base64Data = accountInfo.value.data?.get(0).orEmpty()
-            gatewayRegistryData = GatewayRegistryData.decode(Base64Utils.decode(base64Data))
+            try {
+                val pubk = PublicKey(rpcEnvironment.gatewayRegistry)
+                val stateKey = PublicKey.findProgramAddress(
+                    seeds = listOf(GatewayRegistryStateKey.toByteArray()),
+                    programId = pubk
+                )
+                val accountInfo = rpcSolanaRepository.getAccountInfo(stateKey = stateKey.address)
+                val base64Data = accountInfo.value.data?.get(0).orEmpty()
+                gatewayRegistryData = GatewayRegistryData.decode(Base64Utils.decode(base64Data))
+            } catch (e: Exception) {
+                SolanjLogger.e(e)
+            }
         }
     }
 
