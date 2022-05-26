@@ -41,7 +41,7 @@ class SettingsFragment :
 
     private val binding: FragmentSettingsBinding by viewBinding()
     private val adapter = SettingsAdapter(
-        ::onItemClickListener,
+        onSettingsRowClickListener = ::onItemClickListener,
         onLogoutClickListener = ::onLogoutClickListener
     )
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
