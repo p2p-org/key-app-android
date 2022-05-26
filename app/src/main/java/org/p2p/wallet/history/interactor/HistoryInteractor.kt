@@ -2,6 +2,8 @@ package org.p2p.wallet.history.interactor
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
@@ -9,6 +11,8 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.stream.AccountStreamSource
+import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
+import org.p2p.wallet.history.interactor.stream.HistoryStreamSource
 import org.p2p.wallet.history.interactor.stream.MultipleStreamSource
 import org.p2p.wallet.history.interactor.stream.StreamSourceConfiguration
 import org.p2p.wallet.history.model.RpcTransactionSignature
@@ -32,8 +36,24 @@ class HistoryInteractor(
     private val userInteractor: UserInteractor
 ) {
 
+    private val allSignatures = mutableListOf<RpcTransactionSignature>()
+    private lateinit var multipleStreamSource: HistoryStreamSource
+
+    private val historyStreamSources = mutableListOf<HistoryStreamSource>()
+
+    private suspend fun initStreamSources() {
+        historyStreamSources.addAll(userInteractor.getUserTokens().map {
+            AccountStreamSource(it.publicKey, it.tokenSymbol, transactionsRemoteRepository, rpcSignatureRepository)
+        })
+        multipleStreamSource = MultipleStreamSource(historyStreamSources)
+    }
+
     suspend fun loadTransactions(): List<HistoryTransaction> {
+        if (historyStreamSources.isEmpty()) {
+            initStreamSources()
+        }
         val signatures = loadTransactionHistory()
+        allSignatures.addAll(signatures)
         return loadTransactions(signatures)
     }
 
@@ -43,28 +63,20 @@ class HistoryInteractor(
                 Timber.tag(TAG).d("ERROR $t")
             }
         ) {
-            val userAccounts = userInteractor.getUserTokens().map {
-                AccountStreamSource(it.publicKey, it.tokenSymbol, transactionsRemoteRepository, rpcSignatureRepository)
-            }
             val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
-
-            val multipleStreamSource = MultipleStreamSource(userAccounts)
-
             while (true) {
                 val item = multipleStreamSource.currentItem() ?: break
-                Timber.tag(TAG).d("Fetched new item = ${item.streamSource}")
                 val time = (item.streamSource?.blockTime ?: -1) - (60 * 60 * 24)
-                Timber.tag(TAG).d("Signature time = ${item.streamSource?.blockTime}")
-                Timber.tag(TAG).d("RemainTime = ${(item.streamSource?.blockTime ?: -1) - (60 * 60 * 24)}")
+                Timber.tag(TAG).d("Configuration = $time")
+
                 while (true) {
                     val item = multipleStreamSource.next(StreamSourceConfiguration(time))
-                    Timber.tag(TAG).d("Found item for this time = $item")
-                    transactionsSignatures.add(item?.streamSource ?: break)
-                    if (transactionsSignatures.size >= 12) {
-                        Timber.tag("______").d("new items is added, size = ${transactionsSignatures.size}")
+                    if (!allSignatures.contains(item?.streamSource)) {
+                        transactionsSignatures.add(item?.streamSource ?: break)
+                    }
+                    if (transactionsSignatures.size >= 10) {
                         return@withContext transactionsSignatures
                     }
-                    Timber.tag(TAG).d("History size = ${transactionsSignatures.size}")
                 }
             }
             return@withContext transactionsSignatures

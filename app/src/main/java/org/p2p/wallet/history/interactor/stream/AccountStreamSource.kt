@@ -24,7 +24,6 @@ class AccountStreamSource(
     private var bufferSize = 15
     private val executor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
-    private var isPagingEnded = false
 
     private val buffer = mutableListOf<RpcTransactionSignature>()
 
@@ -32,11 +31,11 @@ class AccountStreamSource(
         if (buffer.isEmpty()) {
             fillBuffer()
         }
-        val signatureInfo = buffer.first()
+        val signatureInfo = buffer.firstOrNull() ?: return null
 
         if (signatureInfo.blockTime >= configuration.timeStampEnd) {
-            buffer.removeAt(0)
-            return HistoryStreamItem(account, signatureInfo)
+            val signature = buffer.removeAt(0)
+            return HistoryStreamItem(account, signature)
         }
         return null
     }
@@ -45,24 +44,17 @@ class AccountStreamSource(
         if (buffer.isEmpty()) {
             fillBuffer()
         }
-        return HistoryStreamItem(account, buffer.firstOrNull())
+        if (buffer.isEmpty()) {
+            return null
+        }
+        return HistoryStreamItem(account, buffer.first())
     }
 
     override fun reset() {
     }
 
     private suspend fun fillBuffer() = withContext(executor) {
-        async(
-            CoroutineExceptionHandler { _, t ->
-                Timber.tag("HistoryInteractor").d(t)
-                if (t is EmptyDataException) {
-                    isPagingEnded = true
-                }
-            }
-        ) {
-            if (isPagingEnded) {
-                return@async
-            }
+        async {
             val newSignatures = signatureRepository.getConfirmedSignaturesForAddress(
                 account.toPublicKey(),
                 lastFetchedSignature,
