@@ -31,7 +31,7 @@ class ReserveUsernamePresenter(
             return
         }
 
-        if (username.length >= USERNAME_MAX_LENGTH) {
+        if (username.length > USERNAME_MAX_LENGTH) {
             view?.showUsernameLengthError(username, USERNAME_MAX_LENGTH)
             return
         }
