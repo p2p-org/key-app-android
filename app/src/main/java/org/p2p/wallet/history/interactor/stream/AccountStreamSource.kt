@@ -1,15 +1,11 @@
 package org.p2p.wallet.history.interactor.stream
 
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.utils.toPublicKey
-import timber.log.Timber
 import java.util.concurrent.Executors
 
 class AccountStreamSource(
@@ -58,23 +54,19 @@ class AccountStreamSource(
     override fun reset() {
     }
 
-    private suspend fun fillBuffer() = withContext(executor) {
-        if (isPagingEnded) return@withContext
-        Timber.tag("FillBuffer").d(" Account = $account")
-        val newSignatures = async(
-            this.coroutineContext + CoroutineExceptionHandler { _, t ->
-                Timber.tag("FillBuffer").d(t)
-            }
-        ) {
-            signatureRepository.getConfirmedSignaturesForAddress(
+    private suspend fun fillBuffer() {
+        try {
+            if (isPagingEnded) return
+
+            val signatures = signatureRepository.getConfirmedSignaturesForAddress(
                 account.toPublicKey(),
                 lastFetchedSignature,
                 batchSize
             ).map { RpcTransactionSignature(it.signature, it.confirmationStatus, it.blockTime) }
-        }.await()
-        Timber.tag("FillBuffer").d(" Account = $account, size = ${newSignatures.size}")
-
-        lastFetchedSignature = newSignatures.lastOrNull()?.signature
-        buffer.addAll(newSignatures)
+            lastFetchedSignature = signatures.lastOrNull()?.signature
+            buffer.addAll(signatures)
+        } catch (e: EmptyDataException) {
+            isPagingEnded = true
+        }
     }
 }
