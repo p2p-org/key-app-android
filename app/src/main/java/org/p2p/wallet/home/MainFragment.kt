@@ -34,7 +34,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
                 navigate(R.id.itemHome)
                 binding.bottomNavigation.menu[0].isChecked = true
