@@ -10,6 +10,7 @@ import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
+import java.lang.Exception
 import java.util.concurrent.Executors
 
 class AccountStreamSource(
@@ -23,7 +24,7 @@ class AccountStreamSource(
     private var batchSize = 15
     private var bufferSize = 15
     private val executor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-
+    private var isEmpty = false
 
     private val buffer = mutableListOf<RpcTransactionSignature>()
 
@@ -53,15 +54,21 @@ class AccountStreamSource(
     override fun reset() {
     }
 
-    private suspend fun fillBuffer() = withContext(executor) {
-        async {
+    private suspend fun fillBuffer() {
+        try {
+            if (isEmpty) return
+
             val newSignatures = signatureRepository.getConfirmedSignaturesForAddress(
                 account.toPublicKey(),
                 lastFetchedSignature,
                 batchSize
             ).map { RpcTransactionSignature(it.signature, it.confirmationStatus, it.blockTime) }
+
+            isEmpty = newSignatures.isEmpty()
             lastFetchedSignature = newSignatures.lastOrNull()?.signature
             buffer.addAll(newSignatures)
-        }.await()
+        } catch (error: Exception) {
+            isEmpty = true
+        }
     }
 }
