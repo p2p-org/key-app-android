@@ -1,6 +1,7 @@
 package org.p2p.wallet.history.interactor.stream
 
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -24,20 +25,25 @@ class AccountStreamSource(
     private var bufferSize = 15
     private val executor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
-
+    private var isPagingEnded = false
     private val buffer = mutableListOf<RpcTransactionSignature>()
 
     override suspend fun next(configuration: StreamSourceConfiguration): HistoryStreamItem? {
-        if (buffer.isEmpty()) {
-            fillBuffer()
-        }
-        val signatureInfo = buffer.firstOrNull() ?: return null
+        try {
+            if (buffer.isEmpty()) {
+                fillBuffer()
+            }
+            val signatureInfo = buffer.firstOrNull() ?: return null
 
-        if (signatureInfo.blockTime >= configuration.timeStampEnd) {
-            val signature = buffer.removeAt(0)
-            return HistoryStreamItem(account, signature)
+            if (signatureInfo.blockTime >= configuration.timeStampEnd) {
+                val signature = buffer.removeAt(0)
+                return HistoryStreamItem(account, signature)
+            }
+            return null
+        } catch (e: EmptyDataException) {
+            isPagingEnded = true
+            return null
         }
-        return null
     }
 
     override suspend fun currentItem(): HistoryStreamItem? {
@@ -54,14 +60,20 @@ class AccountStreamSource(
     }
 
     private suspend fun fillBuffer() = withContext(executor) {
-        async {
-            val newSignatures = signatureRepository.getConfirmedSignaturesForAddress(
+        if (isPagingEnded) return@withContext
+        Timber.tag("FillBuffer").d(" Account = $account")
+        val newSignatures = async(this.coroutineContext + CoroutineExceptionHandler { _, t ->
+            Timber.tag("FillBuffer").d(t)
+        }) {
+            signatureRepository.getConfirmedSignaturesForAddress(
                 account.toPublicKey(),
                 lastFetchedSignature,
                 batchSize
             ).map { RpcTransactionSignature(it.signature, it.confirmationStatus, it.blockTime) }
-            lastFetchedSignature = newSignatures.lastOrNull()?.signature
-            buffer.addAll(newSignatures)
         }.await()
+        Timber.tag("FillBuffer").d(" Account = $account, size = ${newSignatures.size}")
+
+        lastFetchedSignature = newSignatures.lastOrNull()?.signature
+        buffer.addAll(newSignatures)
     }
 }

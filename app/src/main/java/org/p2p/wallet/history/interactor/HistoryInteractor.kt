@@ -2,8 +2,6 @@ package org.p2p.wallet.history.interactor
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
@@ -11,7 +9,6 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.stream.AccountStreamSource
-import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
 import org.p2p.wallet.history.interactor.stream.HistoryStreamSource
 import org.p2p.wallet.history.interactor.stream.MultipleStreamSource
 import org.p2p.wallet.history.interactor.stream.StreamSourceConfiguration
@@ -42,9 +39,11 @@ class HistoryInteractor(
     private val historyStreamSources = mutableListOf<HistoryStreamSource>()
 
     private suspend fun initStreamSources() {
-        historyStreamSources.addAll(userInteractor.getUserTokens().map {
-            AccountStreamSource(it.publicKey, it.tokenSymbol, transactionsRemoteRepository, rpcSignatureRepository)
-        })
+        historyStreamSources.addAll(
+            userInteractor.getUserTokens().map {
+                AccountStreamSource(it.publicKey, it.tokenSymbol, transactionsRemoteRepository, rpcSignatureRepository)
+            }
+        )
         multipleStreamSource = MultipleStreamSource(historyStreamSources)
     }
 
@@ -59,9 +58,7 @@ class HistoryInteractor(
 
     private suspend fun loadTransactionHistory(): MutableList<RpcTransactionSignature> =
         withContext(
-            Dispatchers.IO + CoroutineExceptionHandler { _, t ->
-                Timber.tag(TAG).d("ERROR $t")
-            }
+            Dispatchers.IO
         ) {
             val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
             while (true) {
