@@ -39,9 +39,11 @@ class HistoryInteractor(
     private val historyStreamSources = mutableListOf<HistoryStreamSource>()
 
     private suspend fun initStreamSources() {
-        historyStreamSources.addAll(userInteractor.getUserTokens().map {
-            AccountStreamSource(it.publicKey, it.tokenSymbol, transactionsRemoteRepository, rpcSignatureRepository)
-        })
+        historyStreamSources.addAll(
+            userInteractor.getUserTokens().map {
+                AccountStreamSource(it.publicKey, it.tokenSymbol, transactionsRemoteRepository, rpcSignatureRepository)
+            }
+        )
         multipleStreamSource = MultipleStreamSource(historyStreamSources)
     }
 
