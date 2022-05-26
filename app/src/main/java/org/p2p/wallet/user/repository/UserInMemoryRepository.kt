@@ -13,7 +13,7 @@ class UserInMemoryRepository : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
 
-    private val tokensSearchResultFlow = MutableStateFlow<TokenListData>(TokenListData())
+    private val tokensSearchResultFlow = MutableStateFlow(TokenListData())
     private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
 
     override fun setTokenPrices(prices: List<TokenPrice>) {
@@ -87,8 +87,6 @@ class UserInMemoryRepository : UserLocalRepository {
     }
 
     override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow
-
-    override fun getTokenList(): List<TokenData> = tokensFlow.value
 
     override fun findTokenData(mintAddress: String): TokenData? {
         val data = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }

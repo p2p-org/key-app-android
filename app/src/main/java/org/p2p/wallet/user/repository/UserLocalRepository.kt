@@ -12,7 +12,6 @@ interface UserLocalRepository {
     fun setTokenData(data: List<TokenData>)
     fun fetchTokens(searchText: String, count: Int, refresh: Boolean)
     fun getTokenListFlow(): Flow<TokenListData>
-    fun getTokenList(): List<TokenData>
     fun findTokenData(mintAddress: String): TokenData?
     fun findTokenDataBySymbol(symbol: String): TokenData?
 }
