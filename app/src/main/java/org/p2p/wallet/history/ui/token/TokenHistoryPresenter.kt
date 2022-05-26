@@ -20,8 +20,6 @@ import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
 
-private const val PAGE_SIZE = 20
-
 class TokenHistoryPresenter(
     private val token: Token.Active,
     private val historyInteractor: HistoryInteractor,
@@ -53,118 +51,83 @@ class TokenHistoryPresenter(
 
     private var pagingJob: Job? = null
     private var refreshJob: Job? = null
+    private var lastTransactionSignature: String? = null
 
     private var paginationEnded: Boolean = false
 
-    override fun loadHistory() {
-        if (transactions.isNotEmpty()) return
-
+    override fun refreshHistory() {
         paginationEnded = false
-
-        launch {
-            view?.showPagingState(PagingState.Loading)
-
-            runCatching {
-                historyInteractor.loadTransactionHistory(
-                    tokenPublicKey = token.publicKey,
-                    before = null,
-                    limit = PAGE_SIZE,
-                    forceRefresh = false
-                )
-            }
-                .onSuccess(::handleLoadHistorySuccess)
-                .onFailure(::handleLoadHistoryFailure)
-        }
-    }
-
-    private fun handleLoadHistorySuccess(historyTransactions: List<HistoryTransaction>) {
-        if (historyTransactions.isEmpty()) {
-            paginationEnded = true
-        } else {
-            transactions.addAll(historyTransactions)
-            view?.showHistory(transactions)
-        }
-
-        view?.showPagingState(PagingState.Idle)
-    }
-
-    private fun handleLoadHistoryFailure(e: Throwable) {
-        Timber.e(e, "Error getting transaction history")
-
-        if (e is EmptyDataException) {
-            view?.showPagingState(PagingState.Idle)
-            if (transactions.isEmpty()) view?.showHistory(emptyList())
-        } else {
-            view?.showPagingState(PagingState.Error(e))
-        }
-    }
-
-    override fun refresh() {
-        paginationEnded = false
-
+        lastTransactionSignature = null
         refreshJob?.cancel()
+
         refreshJob = launch {
-            try {
-                view?.showRefreshing(true)
-                transactions.clear()
-                val history = historyInteractor.loadTransactionHistory(token.publicKey, null, PAGE_SIZE, true)
-                if (history.isEmpty()) {
-                    paginationEnded = true
-                } else {
-                    transactions.addAll(history)
-                    view?.showHistory(transactions)
-                }
-                view?.showPagingState(PagingState.Idle)
-            } catch (e: CancellationException) {
-                Timber.w(e, "Cancelled history refresh")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error refreshing transaction history")
-                if (e is EmptyDataException) {
-                    view?.showPagingState(PagingState.Idle)
-                    if (transactions.isEmpty()) view?.showHistory(emptyList())
-                } else {
-                    view?.showPagingState(PagingState.Error(e))
-                }
-            } finally {
-                view?.showRefreshing(false)
-            }
+            view?.showRefreshing(isRefreshing = true)
+            fetchHistory(isRefresh = true)
+            view?.scrollToTop()
+            view?.showRefreshing(isRefreshing = false)
         }
     }
 
-    override fun fetchNextPage() {
+    override fun loadNextHistoryPage() {
         if (paginationEnded) return
 
         pagingJob?.cancel()
         pagingJob = launch {
-            try {
-                view?.showPagingState(PagingState.Loading)
+            view?.showPagingState(PagingState.Loading)
+            fetchHistory()
+        }
+    }
 
-                val lastSignature = transactions.lastOrNull()?.signature
-                val newHistoryPage = historyInteractor.loadTransactionHistory(
-                    tokenPublicKey = token.publicKey,
-                    before = lastSignature,
-                    limit = PAGE_SIZE,
-                    forceRefresh = false
-                )
-                if (newHistoryPage.isEmpty()) {
-                    paginationEnded = true
-                } else {
-                    transactions.addAll(newHistoryPage)
-                    view?.showHistory(transactions)
-                }
+    override fun retryLoad() {
+        launch {
+            val pagingState = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
+            view?.showPagingState(pagingState)
+            fetchHistory()
+        }
+    }
 
-                view?.showPagingState(PagingState.Idle)
-            } catch (e: CancellationException) {
-                Timber.w(e, "Cancelled history next page load")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error getting transaction history")
-                if (e is EmptyDataException) {
-                    paginationEnded = true
-                    view?.showPagingState(PagingState.Idle)
-                } else {
-                    view?.showPagingState(PagingState.Error(e))
-                }
+    override fun loadHistory() {
+        if (transactions.isNotEmpty()) {
+            view?.showHistory(transactions)
+            return
+        }
+        launch {
+            view?.showPagingState(PagingState.InitialLoading)
+            fetchHistory()
+        }
+    }
+
+    private suspend fun fetchHistory(isRefresh: Boolean = false) {
+        try {
+            if (isRefresh) {
+                transactions.clear()
             }
+            val signatures = historyInteractor.loadSignaturesForAddress(
+                tokenPublicKey = token.publicKey,
+                before = lastTransactionSignature
+            )
+            val fetchedItems = historyInteractor.loadTransactionHistory(
+                tokenPublicKey = token.publicKey,
+                signaturesWithStatus = signatures,
+                forceRefresh = isRefresh
+            )
+
+            lastTransactionSignature = fetchedItems.last().signature
+            transactions.addAll(fetchedItems)
+
+            view?.showHistory(transactions)
+            view?.showPagingState(PagingState.Idle)
+        } catch (e: CancellationException) {
+            Timber.w(e, "Cancelled history next page load")
+        } catch (e: EmptyDataException) {
+            if (transactions.isEmpty()) {
+                view?.showHistory(emptyList())
+                paginationEnded = true
+            }
+            view?.showPagingState(PagingState.Idle)
+        } catch (e: Throwable) {
+            view?.showPagingState(PagingState.Error(e))
+            Timber.e(e, "Error getting transaction history")
         }
     }
 

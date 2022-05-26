@@ -16,7 +16,7 @@ interface VerifySecurityKeyContract {
     interface Presenter : MvpPresenter<View> {
         fun load(selectedKeys: List<String>, shuffle: Boolean = true)
         fun onKeySelected(keyIndex: Int, selectedKey: String)
-        fun validate()
+        fun validateSecurityKey()
         fun retry()
     }
 }

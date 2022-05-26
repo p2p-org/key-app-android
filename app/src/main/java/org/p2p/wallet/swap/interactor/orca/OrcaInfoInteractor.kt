@@ -1,18 +1,17 @@
 package org.p2p.wallet.swap.interactor.orca
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.swap.model.orca.OrcaPools
 import org.p2p.wallet.swap.model.orca.OrcaRoute
 import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaTokens
-import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
+import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import timber.log.Timber
 
 class OrcaInfoInteractor(
-    private val internalRepository: OrcaSwapInternalRepository
+    private val orcaRepository: OrcaSwapRepository
 ) {
 
     private var info: OrcaSwapInfo? = null
@@ -23,26 +22,25 @@ class OrcaInfoInteractor(
     suspend fun load() = withContext(Dispatchers.IO) {
         if (info != null) return@withContext
 
-        val tokens = async { internalRepository.getTokens() }
+        val configs = orcaRepository.loadOrcaConfigs()
 
-        val pools = async { internalRepository.getPools() }
-        val programIds = async { internalRepository.getProgramID() }
+        val tokens = configs.tokens
+        val pools = configs.pools
+        val programIds = configs.programId
 
-        val tokensLoaded = tokens.await()
-        val poolsLoaded = pools.await()
-        val routes = findAllAvailableRoutes(tokensLoaded, poolsLoaded)
+        val routes = findAllAvailableRoutes(tokens, pools)
 
         val tokenNames = mutableMapOf<String, String>()
-        tokensLoaded.forEach { (key, value) -> tokenNames[value.mint] = key }
+        tokens.forEach { (key, value) -> tokenNames[value.mint] = key }
 
         Timber.d("Orca swap info loaded")
 
         info =
             OrcaSwapInfo(
                 routes = routes,
-                tokens = tokensLoaded,
-                pools = poolsLoaded,
-                programIds = programIds.await(),
+                tokens = tokens,
+                pools = pools,
+                programIds = programIds,
                 tokenNames = tokenNames
             )
     }
