@@ -1,7 +1,6 @@
 package org.p2p.wallet.history.interactor.stream
 
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -62,9 +61,11 @@ class AccountStreamSource(
     private suspend fun fillBuffer() = withContext(executor) {
         if (isPagingEnded) return@withContext
         Timber.tag("FillBuffer").d(" Account = $account")
-        val newSignatures = async(this.coroutineContext + CoroutineExceptionHandler { _, t ->
-            Timber.tag("FillBuffer").d(t)
-        }) {
+        val newSignatures = async(
+            this.coroutineContext + CoroutineExceptionHandler { _, t ->
+                Timber.tag("FillBuffer").d(t)
+            }
+        ) {
             signatureRepository.getConfirmedSignaturesForAddress(
                 account.toPublicKey(),
                 lastFetchedSignature,

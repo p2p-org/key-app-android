@@ -1,6 +1,5 @@
 package org.p2p.wallet.history.interactor
 
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.SwapDetails
