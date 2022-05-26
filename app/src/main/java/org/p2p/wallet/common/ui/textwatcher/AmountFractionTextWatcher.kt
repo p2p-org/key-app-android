@@ -68,9 +68,9 @@ class AmountFractionTextWatcher(
             value == SYMBOL_ZERO && before == 1 -> emptyString()
             value == "$SYMBOL_ZERO$SYMBOL_ZERO" && start == 1 -> SYMBOL_ZERO
             value.startsWith(SYMBOL_DOT) -> "$SYMBOL_ZERO$value"
-            value.endsWith(SYMBOL_DOT) -> value.dropLast(1).dropSpaces().formatDecimal() + SYMBOL_DOT
+            value.endsWith(SYMBOL_DOT) -> value.dropLast(1).dropSpaces().formatDecimal(maxLengthAllowed) + SYMBOL_DOT
             value.contains(SYMBOL_DOT) -> handleValueWithDot(value)
-            else -> value.dropSpaces().formatDecimal()
+            else -> value.dropSpaces().formatDecimal(maxLengthAllowed)
         }
 
         // Keep cursor in same place from the end
@@ -98,14 +98,14 @@ class AmountFractionTextWatcher(
             .replace(SYMBOL_DOT, emptyString())
             .take(maxLengthAllowed)
 
-        return intPart.formatDecimal() + SYMBOL_DOT + fractionalPart
+        return intPart.formatDecimal(maxLengthAllowed) + SYMBOL_DOT + fractionalPart
     }
 
     private fun String.dropSpaces(): String {
         return replace(" ", emptyString())
     }
 
-    private fun String.formatDecimal(): String {
-        return DecimalFormatUtil.format(this.toBigDecimal(), MAX_AMOUNT_ALLOWED_FRACTION_LENGTH)
+    private fun String.formatDecimal(fractionLength: Int): String {
+        return DecimalFormatUtil.format(this.toBigDecimal(), fractionLength)
     }
 }
