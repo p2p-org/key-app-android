@@ -32,8 +32,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         fun create(): MainFragment = MainFragment()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
                 navigate(R.id.itemHome)
@@ -42,10 +42,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                 requireActivity().finish()
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         with(binding) {
             bottomNavigation.setOnItemSelectedListener {
                 if (it.itemId == R.id.itemFeedback) {
