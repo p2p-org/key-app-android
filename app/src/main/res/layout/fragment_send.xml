@@ -471,8 +471,39 @@
                 android:id="@+id/sendDetailsView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
+                android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="32dp" />
+
+            <LinearLayout
+                android:id="@+id/warningView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <org.p2p.wallet.common.ui.widget.RoundedImageView
+                    android:id="@+id/warningImageView"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_error_rounded"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_warning"
+                    app:cornerRadius="8dp" />
+
+                <TextView
+                    android:id="@+id/warningTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="12dp"
+                    android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+                    android:textColor="@color/systemWarningMain"
+                    tools:text="@string/send_min_required_amount_warning" />
+
+            </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"

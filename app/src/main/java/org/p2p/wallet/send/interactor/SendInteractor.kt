@@ -179,6 +179,9 @@ class SendInteractor(
         }
     }
 
+    suspend fun getMinRelayRentExemption(): BigInteger =
+        feeRelayerAccountInteractor.getRelayInfo().minimumRelayAccountRent
+
     private suspend fun getFeesInPayingToken(
         feeInSOL: BigInteger
     ): BigInteger {
