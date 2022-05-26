@@ -109,7 +109,7 @@ class SettingsAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         constructor(parent: ViewGroup, listener: () -> Unit) : this(
-            binding = parent.inflateViewBinding<ItemSettingsLogoutBinding>(parent.context, attachToRoot = false),
+            binding = parent.inflateViewBinding<ItemSettingsLogoutBinding>(attachToRoot = false),
             listener = listener
         )
 
@@ -123,7 +123,7 @@ class SettingsAdapter(
     inner class TitleViewHolder(binding: ItemSettingsTitleBinding) : RecyclerView.ViewHolder(binding.root) {
 
         constructor(parent: ViewGroup) : this(
-            parent.inflateViewBinding<ItemSettingsTitleBinding>(parent.context, attachToRoot = false)
+            parent.inflateViewBinding<ItemSettingsTitleBinding>(attachToRoot = false)
         )
 
         private val textView = binding.topTextView
@@ -138,7 +138,7 @@ class SettingsAdapter(
     inner class ToggleViewHolder(binding: ItemSettingsToggleItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         constructor(parent: ViewGroup) : this(
-            parent.inflateViewBinding<ItemSettingsToggleItemBinding>(parent.context, attachToRoot = false)
+            parent.inflateViewBinding<ItemSettingsToggleItemBinding>(attachToRoot = false)
         )
 
         private val toggle = binding.toggle
@@ -156,7 +156,7 @@ class SettingsAdapter(
     inner class InfoViewHolder(binding: ItemSettingsInfoBinding) : RecyclerView.ViewHolder(binding.root) {
 
         constructor(parent: ViewGroup) : this(
-            parent.inflateViewBinding<ItemSettingsInfoBinding>(parent.context, attachToRoot = false)
+            parent.inflateViewBinding<ItemSettingsInfoBinding>(attachToRoot = false)
         )
 
         private val title = binding.titleTextView
