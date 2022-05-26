@@ -1,7 +1,6 @@
 package org.p2p.wallet.debug.featuretoggles
 
 import androidx.annotation.IdRes
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -12,9 +11,7 @@ class FeatureTogglesPresenter(
 ) : BasePresenter<FeatureTogglesContract.View>(), FeatureTogglesContract.Presenter {
 
     override fun loadData() {
-        launch {
-            view?.showSettings(getSettingsRows())
-        }
+        view?.showSettings(getSettingsRows())
     }
 
     override fun onToggleCheckedListener(@IdRes toggleId: Int, toggleChecked: Boolean) {

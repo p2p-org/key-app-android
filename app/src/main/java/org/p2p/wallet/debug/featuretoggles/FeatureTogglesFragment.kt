@@ -31,7 +31,7 @@ class FeatureTogglesFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            recyclerView.attachAdapter(adapter)
+            settingsRecyclerView.attachAdapter(adapter)
             toolbar.setNavigationOnClickListener {
                 popBackStack()
             }

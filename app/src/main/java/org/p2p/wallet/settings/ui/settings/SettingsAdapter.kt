@@ -159,8 +159,8 @@ class SettingsAdapter(
             parent.inflateViewBinding<ItemSettingsInfoBinding>(parent.context, attachToRoot = false)
         )
 
-        private val title = binding.tvTitle
-        private val value = binding.tvValue
+        private val title = binding.titleTextView
+        private val value = binding.valueTextView
 
         fun bind(item: SettingsRow.Info) {
             title.setText(item.titleResId)

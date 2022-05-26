@@ -3,7 +3,6 @@ package org.p2p.wallet.debug.settings
 import android.content.res.Resources
 import android.os.Build
 import android.util.DisplayMetrics
-import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -19,10 +18,8 @@ class DebugSettingsPresenter(
     private var networkName = environmentManager.loadEnvironment().name
 
     override fun loadData() {
-        launch {
-            val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
-            view?.showSettings(settings)
-        }
+        val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
+        view?.showSettings(settings)
     }
 
     override fun onNetworkChanged(newName: String) {
