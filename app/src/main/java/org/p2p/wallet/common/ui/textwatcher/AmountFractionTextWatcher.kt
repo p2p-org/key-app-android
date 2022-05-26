@@ -18,7 +18,8 @@ import kotlin.properties.Delegates
 
 private const val SYMBOL_ZERO = "0"
 private const val SYMBOL_DOT = "."
-private const val MAX_AMOUNT_ALLOWED_FRACTION_LENGTH = 9
+private const val MAX_INT_LENGTH = 12
+private const val MAX_FRACTION_LENGTH = 9
 
 class AmountFractionTextWatcher(
     editText: EditText,
@@ -29,7 +30,7 @@ class AmountFractionTextWatcher(
     companion object {
         fun installOn(
             editText: EditText,
-            maxSymbolsAllowed: Int = MAX_AMOUNT_ALLOWED_FRACTION_LENGTH,
+            maxSymbolsAllowed: Int = MAX_FRACTION_LENGTH,
             onValueChanged: (String) -> Unit
         ): AmountFractionTextWatcher {
             val textWatcher = AmountFractionTextWatcher(editText, maxSymbolsAllowed, onValueChanged)
@@ -68,9 +69,9 @@ class AmountFractionTextWatcher(
             value == SYMBOL_ZERO && before == 1 -> emptyString()
             value == "$SYMBOL_ZERO$SYMBOL_ZERO" && start == 1 -> SYMBOL_ZERO
             value.startsWith(SYMBOL_DOT) -> "$SYMBOL_ZERO$value"
-            value.endsWith(SYMBOL_DOT) -> value.dropLast(1).dropSpaces().formatDecimal(maxLengthAllowed) + SYMBOL_DOT
-            value.contains(SYMBOL_DOT) -> handleValueWithDot(value)
-            else -> value.dropSpaces().formatDecimal(maxLengthAllowed)
+            value.endsWith(SYMBOL_DOT) -> handleEndWithDotCase(value)
+            value.contains(SYMBOL_DOT) -> handleValueWithDotCase(value)
+            else -> handleGeneralCase(value)
         }
 
         // Keep cursor in same place from the end
@@ -88,9 +89,19 @@ class AmountFractionTextWatcher(
         }
     }
 
-    private fun handleValueWithDot(value: String): String {
+    private fun handleEndWithDotCase(value: String): String = value.dropLast(1)
+        .dropSpaces()
+        .formatDecimal(maxLengthAllowed) + SYMBOL_DOT
+
+    private fun handleGeneralCase(value: String): String = value.dropSpaces()
+        .take(MAX_INT_LENGTH)
+        .formatDecimal(maxLengthAllowed)
+
+    private fun handleValueWithDotCase(value: String): String {
         val dotPosition = value.indexOf(SYMBOL_DOT)
-        val intPart = value.substring(0, dotPosition).dropSpaces()
+        val intPart = value.substring(0, dotPosition)
+            .dropSpaces()
+            .take(MAX_INT_LENGTH)
 
         // Remove extra dots and shorten fractional part to maxLengthAllowed symbols
         val fractionalPart = value.substring(dotPosition + 1)
