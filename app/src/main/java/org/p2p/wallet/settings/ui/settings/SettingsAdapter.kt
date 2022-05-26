@@ -95,8 +95,7 @@ class SettingsAdapter(
             titleTextView.setText(item.titleResId)
             item.subtitleRes?.let {
                 subtitleTextView.setText(it)
-            }
-            subtitleTextView.withTextOrGone(item.subtitle)
+            } ?: subtitleTextView.withTextOrGone(item.subtitle)
             item.subtitleTextColorRes?.let {
                 subtitleTextView.setTextColor(requireContext().getColor(it))
             }
