@@ -5,8 +5,11 @@ import androidx.core.view.isVisible
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.TextView
+import androidx.core.content.edit
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import org.koin.android.ext.android.inject
@@ -20,11 +23,14 @@ import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
+import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
 import timber.log.Timber
+
+private const val KEY_DEBUG_HIDDEN = "KEY_DEBUG_HIDDEN"
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
@@ -38,6 +44,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     override val presenter: RootContract.Presenter by inject()
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val sharedPreferences: SharedPreferences by inject()
+    private val binding: ActivityRootBinding by lazy {
+        ActivityRootBinding.inflate(LayoutInflater.from(this))
+    }
 
     private val crashLoggingService: CrashLoggingService by inject()
 
@@ -56,19 +66,18 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }
-
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
 
         checkForGoogleServices()
     }
 
     private fun logScreenOpenEvent() {
-        val openedFragment = supportFragmentManager.findFragmentById(R.id.content) as? BaseFragment
+        val openedFragment = supportFragmentManager.findFragmentById(R.id.rootContainer) as? BaseFragment
         if (openedFragment != null) {
             analyticsInteractor.logScreenOpenEvent(openedFragment.getAnalyticsName())
         } else {
             val findFragmentError = ClassCastException(
-                "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.content)}"
+                "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.rootContainer)}"
             )
             Timber.w(findFragmentError)
         }
@@ -101,19 +110,24 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     @SuppressLint("SetTextI18n")
     private fun initializeDebugDrawer() {
         val devView = findViewById<TextView>(R.id.developTextView)
+        val isDebugViewHidden = sharedPreferences.getBoolean(KEY_DEBUG_HIDDEN, false)
 
         if (BuildConfig.DEBUG) {
             val drawer = DebugDrawer.install(this)
 
             devView.text = "${BuildConfig.BUILD_TYPE}-${BuildConfig.VERSION_NAME}"
             devView.isVisible = true
+
+            devView.alpha = if (isDebugViewHidden) 0f else 1f
             devView.setOnClickListener { drawer.openDrawer() }
             devView.setOnLongClickListener {
                 val currentAlpha = devView.alpha
                 if (currentAlpha == 0f) {
                     devView.alpha = 1f
+                    sharedPreferences.edit { putBoolean(KEY_DEBUG_HIDDEN, false) }
                 } else {
                     devView.alpha = 0f
+                    sharedPreferences.edit { putBoolean(KEY_DEBUG_HIDDEN, true) }
                 }
                 return@setOnLongClickListener true
             }

@@ -1,9 +1,11 @@
 package org.p2p.wallet.swap.interactor.orca
 
 import org.p2p.solanaj.core.FeeAmount
+import org.p2p.solanaj.core.OperationType
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
+import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
@@ -19,7 +21,6 @@ import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.wallet.utils.toUsd
 import java.math.BigDecimal
@@ -66,10 +67,6 @@ class OrcaSwapInteractor(
         return feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
     }
 
-    suspend fun initialize() {
-        feeRelayerInteractor.load()
-    }
-
     // Execute swap
     suspend fun swap(
         fromToken: Token.Active,
@@ -79,7 +76,7 @@ class OrcaSwapInteractor(
         slippage: Slippage
     ): OrcaSwapResult {
 
-        return if (isNativeSwap(fromToken.publicKey, feePayerToken.mintAddress)) {
+        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             swapNative(
                 poolsPair = bestPoolsPair,
                 sourceAddress = fromToken.publicKey,
@@ -129,7 +126,7 @@ class OrcaSwapInteractor(
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
 
         val payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
-        val transaction = feeRelayerSwapInteractor.prepareSwapTransaction(
+        val (transaction, additionalPaybackFee) = feeRelayerSwapInteractor.prepareSwapTransaction(
             feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = TokenInfo(sourceAddress, sourceTokenMint),
             destinationTokenMint = destinationTokenMint,
@@ -140,7 +137,17 @@ class OrcaSwapInteractor(
             slippage = slippage,
         )
 
-        val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(transaction, payingFeeToken)
+        val statistics = FeeRelayerStatistics(
+            operationType = OperationType.SWAP,
+            currency = sourceTokenMint
+        )
+
+        val transactionId = feeRelayerInteractor.topUpAndRelayTransaction(
+            preparedTransaction = transaction,
+            payingFeeToken = payingFeeToken,
+            additionalPaybackFee = additionalPaybackFee,
+            statistics = statistics
+        )
             .firstOrNull().orEmpty()
 
         // todo: find destination address
@@ -160,7 +167,12 @@ class OrcaSwapInteractor(
         )
 
         val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
-        val accountCreationFee = fee.total.fromLamports(feePayerToken.decimals).scaleMedium()
+        val accountCreationFee = if (feePayerToken.isSOL) {
+            fee.total.fromLamports(feePayerToken.decimals)
+        } else {
+            getFeesInPayingToken(fee.total).fromLamports(feePayerToken.decimals)
+        }
+            .scaleMedium()
         val accountCreationFeeUsd = accountCreationFee.toUsd(feePayerToken.usdRate)
 
         val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature
@@ -176,8 +188,7 @@ class OrcaSwapInteractor(
             accountCreationFeeUsd = accountCreationFeeUsd,
             transactionFee = transactionFee,
             transactionFeeUsd = transactionFeeUsd,
-            feePayerToken = feePayerToken.tokenSymbol,
-            totalLamports = fee.total + transactionNetworkFee
+            feePayerToken = feePayerToken.tokenSymbol
         )
     }
 
@@ -260,17 +271,13 @@ class OrcaSwapInteractor(
         ).total
     }
 
-    suspend fun feePayerHasEnoughBalance(feeInSOL: BigInteger): Boolean {
-        val feePayerLamports = feePayerToken.total.toLamports(feePayerToken.decimals)
-        val feeInPayingToken = getFeesInPayingToken(feeInSOL)
-        return feePayerLamports >= feeInPayingToken
-    }
-
-    private fun isNativeSwap(
-        sourceAddress: String,
-        payingTokenMint: String?
-    ): Boolean {
-        val account = tokenKeyProvider.publicKey
-        return sourceAddress == account || payingTokenMint == WRAPPED_SOL_MINT
+    /*
+    * When free transaction is not available and user is paying with sol,
+    * let him do this the normal way (don't use fee relayer)
+    * */
+    private suspend fun shouldUseNativeSwap(payingTokenMint: String): Boolean {
+        val noFreeTransactionsLeft = feeRelayerAccountInteractor.getFreeTransactionFeeLimit().remaining == 0
+        val isSol = payingTokenMint == WRAPPED_SOL_MINT
+        return noFreeTransactionsLeft && isSol
     }
 }

@@ -4,8 +4,7 @@ ext {
     sdkCompileVersion = 31
 
     // https://github.com/shyiko/ktlint
-    ktlintVersion = '0.40.0'
+    ktlintVersion = '0.45.2'
 
-    gradlePluginVersion = '4.1.0'
-    kotlinVersion = '1.6.10'
+    kotlinVersion = '1.6.21'
 }

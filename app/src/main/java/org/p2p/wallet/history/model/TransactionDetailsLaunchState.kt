@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 sealed class TransactionDetailsLaunchState : Parcelable {
     @Parcelize
-    data class Id(val transactionId: String) : TransactionDetailsLaunchState()
+    data class Id(val tokenPublicKey: String, val transactionId: String) : TransactionDetailsLaunchState()
 
     @Parcelize
     data class History(val transaction: HistoryTransaction) : TransactionDetailsLaunchState()

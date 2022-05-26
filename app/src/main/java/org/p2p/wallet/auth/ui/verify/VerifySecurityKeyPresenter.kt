@@ -74,9 +74,8 @@ class VerifySecurityKeyPresenter(
         Если ключи под выбранным индексом не сходятся с ключами пользователя
         возвращаем false иначе true
      */
-    private fun isValid(): Boolean {
+    private fun isKeysValid(): Boolean {
         // Преобразовываем ключи в структуру [индекс ключа, ключ]
-
         var isValid = true
         val selectedKeys = findSelectedKeys()
 
@@ -120,25 +119,27 @@ class VerifySecurityKeyPresenter(
         }
     }
 
-    override fun validate() {
+    override fun validateSecurityKey() {
         launch {
             view?.showLoading(isLoading = true)
-            if (isValid()) {
+            if (isKeysValid()) {
                 secretKeyInteractor.createAndSaveAccount(
                     path = DerivationPath.BIP44CHANGE,
                     keys = phrases,
                     lookup = false
                 )
                 view?.navigateToReserve()
+
+                onboardingAnalytics.logWalletCreated(lastScreenName = ScreenNames.OnBoarding.CREATE_MANUAL)
                 return@launch
             }
-            onboardingAnalytics.logWalletCreated(lastScreenName = ScreenNames.OnBoarding.CREATE_MANUAL)
             view?.showKeysDoesNotMatchError()
             onboardingAnalytics.logBackingUpRenew()
-        }.invokeOnCompletion {
-            clear()
-            view?.showLoading(isLoading = false)
         }
+            .invokeOnCompletion {
+                clear()
+                view?.showLoading(isLoading = false)
+            }
     }
 
     override fun retry() {
@@ -161,13 +162,11 @@ class VerifySecurityKeyPresenter(
         view?.showEnabled(findSelectedKeys().size == VERIFY_WORDS_COUNT)
     }
 
-    private fun findSelectedKeys(): List<Pair<Int, String>> =
-        try {
-            generatedPairs.map { (keyIndex, keys) ->
-                val entry = keys.entries.first { it.value }
-                Pair(keyIndex, entry.key)
-            }
-        } catch (e: NoSuchElementException) {
-            emptyList()
+    private fun findSelectedKeys(): List<Pair<Int, String>> = kotlin.runCatching {
+        generatedPairs.map { (keyIndex, keys) ->
+            val entry = keys.entries.first { it.value }
+            keyIndex to entry.key
         }
+    }
+        .getOrDefault(emptyList())
 }

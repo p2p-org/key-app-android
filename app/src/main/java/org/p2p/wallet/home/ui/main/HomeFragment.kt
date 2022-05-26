@@ -1,9 +1,9 @@
 package org.p2p.wallet.home.ui.main
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -14,7 +14,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
-import org.p2p.wallet.history.ui.history.HistoryFragment
+import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
@@ -182,7 +182,7 @@ class HomeFragment :
     }
 
     override fun onTokenClicked(token: Token.Active) {
-        replaceFragment(HistoryFragment.create(token))
+        replaceFragment(TokenHistoryFragment.create(token))
     }
 
     override fun onHideClicked(token: Token.Active) {

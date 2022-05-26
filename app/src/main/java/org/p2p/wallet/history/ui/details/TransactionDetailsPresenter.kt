@@ -1,6 +1,6 @@
 package org.p2p.wallet.history.ui.details
 
-import android.content.Context
+import android.content.res.Resources
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
@@ -19,9 +19,10 @@ import timber.log.Timber
 private const val DELAY_IN_MS = 5000L
 
 class TransactionDetailsPresenter(
+    private val resources: Resources,
+    private val theme: Resources.Theme,
     private val state: TransactionDetailsLaunchState,
     private val userLocalRepository: UserLocalRepository,
-    private val context: Context,
     private val historyInteractor: HistoryInteractor
 ) : BasePresenter<TransactionDetailsContract.View>(),
     TransactionDetailsContract.Presenter {
@@ -46,13 +47,8 @@ class TransactionDetailsPresenter(
                  * therefore we are giving some time to make our request not fail
                  * */
                 delay(DELAY_IN_MS)
-                val details = historyInteractor.getHistoryTransaction(state.transactionId, state.transactionId)
-
-                if (details != null) {
-                    handleHistory(details)
-                } else {
-                    view?.showError(R.string.error_general_message)
-                }
+                val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey, state.transactionId)
+                handleHistory(details)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading transaction details")
                 view?.showError(R.string.details_transaction_not_found)
@@ -99,7 +95,7 @@ class TransactionDetailsPresenter(
     }
 
     private fun parseTransfer(transaction: HistoryTransaction.Transfer) {
-        val title = transaction.getTitle(context)
+        val title = transaction.getTitle(resources)
         view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
         view?.showStatus(transaction.status)
@@ -128,14 +124,18 @@ class TransactionDetailsPresenter(
 
         val usdTotal = "(${transaction.getFormattedAmount()})"
         val total = "${transaction.getFormattedTotal()} $usdTotal"
-        val amount = SpanUtils.highlightText(total, usdTotal, context.getColor(R.color.textIconSecondary))
+        val amount = SpanUtils.highlightText(
+            commonText = total,
+            highlightedText = usdTotal,
+            color = resources.getColor(R.color.textIconSecondary, theme)
+        )
         view?.showAmount(R.string.details_received, amount)
         view?.showFee(null)
         view?.showBlockNumber(transaction.getBlockNumber())
     }
 
     private fun parseBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
-        val title = context.getString(transaction.getTitle())
+        val title = resources.getString(transaction.getTitle())
         view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
 
@@ -163,7 +163,11 @@ class TransactionDetailsPresenter(
 
         val usdTotal = "(${transaction.getFormattedAmount()})"
         val total = "${transaction.getFormattedTotal()} $usdTotal"
-        val amount = SpanUtils.highlightText(total, usdTotal, context.getColor(R.color.textIconSecondary))
+        val amount = SpanUtils.highlightText(
+            commonText = total,
+            highlightedText = usdTotal,
+            color = resources.getColor(R.color.textIconSecondary, theme)
+        )
         view?.showAmount(R.string.details_received, amount)
         view?.showFee(null)
         view?.showBlockNumber(transaction.getBlockNumber())

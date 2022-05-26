@@ -88,6 +88,8 @@ class UserInMemoryRepository : UserLocalRepository {
 
     override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow
 
+    override fun getTokenList(): List<TokenData> = tokensFlow.value
+
     override fun findTokenData(mintAddress: String): TokenData? {
         val data = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
         if (data == null) {

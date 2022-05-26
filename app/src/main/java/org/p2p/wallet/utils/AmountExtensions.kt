@@ -21,6 +21,19 @@ fun String?.toBigDecimalOrZero(): BigDecimal {
 fun Int.toPowerValue(): BigDecimal =
     BigDecimal(POWER_VALUE.pow(this))
 
+fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
+    return if (isZero()) {
+        this
+    } else {
+        val scale = if (scale() > SCALE_VALUE_SHORT) {
+            scale() - (unscaledValue().toString().length - SCALE_VALUE_SHORT)
+        } else {
+            SCALE_VALUE_SHORT
+        }
+        setScale(scale, RoundingMode.HALF_EVEN).stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
+    }
+}
+
 fun BigDecimal.scaleShort(): BigDecimal =
     this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.2
@@ -53,6 +66,7 @@ fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
 fun BigDecimal.isLessThan(value: BigDecimal) = this.compareTo(value) == -1
 
 fun BigDecimal?.orZero(): BigDecimal = this ?: BigDecimal.ZERO
+fun BigInteger?.orZero(): BigInteger = this ?: BigInteger.ZERO
 
 fun BigInteger.isZero() = this.compareTo(BigInteger.ZERO) == 0
 fun BigInteger.isNotZero() = this.compareTo(BigInteger.ZERO) != 0

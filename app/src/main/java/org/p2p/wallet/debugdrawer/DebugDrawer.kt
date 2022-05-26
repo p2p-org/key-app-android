@@ -49,16 +49,12 @@ object DebugDrawer : KoinComponent {
         return drawer
     }
 
-    private fun getDefaultModules(): Array<DebugModuleAdapter> {
-        val restartCallback = { appRestarter.restartApp() }
-        val clearDataCallback = { authLogoutInteractor.clearAppData() }
-
-        return arrayOf(
-            ConfigurationModule(),
-            CustomTimberModule(),
-            WipeDataModule(restartCallback, clearDataCallback),
-            BuildModule(),
-            DeviceModule()
-        )
-    }
+    private fun getDefaultModules(): Array<DebugModuleAdapter> = arrayOf(
+        ConfigurationModule(),
+        CustomTimberModule(),
+        WipeDataModule(restart = appRestarter::restartApp, clearData = authLogoutInteractor::clearAppData),
+        BuildModule(),
+        DeviceModule(),
+        CiConfigDrawerModule()
+    )
 }

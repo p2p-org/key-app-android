@@ -41,13 +41,16 @@ data class Target constructor(
     @IgnoredOnParcel
     val validation: Validation
         get() {
-            val formatted = trimmedUsername
             return when {
-                formatted.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
-                PublicKeyValidator.isValid(formatted) -> Validation.SOL_ADDRESS
-                BitcoinAddressValidator.isValid(formatted) -> Validation.BTC_ADDRESS
-                formatted.isEmpty() -> Validation.EMPTY
+                trimmedUsername.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
+                PublicKeyValidator.isValid(value) -> Validation.SOL_ADDRESS
+                BitcoinAddressValidator.isValid(value) -> Validation.BTC_ADDRESS
+                value.isEmpty() -> Validation.EMPTY
                 else -> Validation.INVALID
             }
         }
+
+    @IgnoredOnParcel
+    val networkType: NetworkType
+        get() = if (validation == Validation.BTC_ADDRESS) NetworkType.BITCOIN else NetworkType.SOLANA
 }

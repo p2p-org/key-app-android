@@ -1,16 +1,45 @@
 package org.p2p.wallet.common.mvp
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.CallSuper
+import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.snackbar
 
-abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>() :
-    BottomSheetDialogFragment(), MvpView {
+abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
+    @LayoutRes val layoutRes: Int
+) : BottomSheetDialogFragment(), MvpView {
 
     abstract val presenter: P
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(layoutRes, container, false)
+    }
+
+    @CallSuper
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        @Suppress("UNCHECKED_CAST")
+        presenter.attach(this as V)
+    }
+
+    @CallSuper
+    override fun onDestroyView() {
+        super.onDestroyView()
+        presenter.detach()
+    }
+
+    //region ErrorMessages
     override fun showErrorMessage(e: Throwable?) {
         showErrorDialog(e)
     }
@@ -50,4 +79,5 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>() :
                 .setAction(actionResId, block)
         }
     }
+    //endregion
 }

@@ -2,6 +2,7 @@ package org.p2p.wallet.send.interactor
 
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
+import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
@@ -10,6 +11,7 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
+import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.home.model.Token
@@ -154,22 +156,31 @@ class SendInteractor(
             amount = lamports,
         )
 
-        return if (feePayerToken.mintAddress != WRAPPED_SOL_MINT) {
-            // use fee relayer
-            feeRelayerInteractor.topUpAndRelayTransaction(
-                preparedTransaction = preparedTransaction,
-                payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
-            )
-                .firstOrNull()
-                .orEmpty()
-        } else {
+        return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             // send normally, paid by SOL
             transactionInteractor.serializeAndSend(
                 preparedTransaction = preparedTransaction,
                 isSimulation = false
             )
+        } else {
+            // use fee relayer
+            val statistics = FeeRelayerStatistics(
+                operationType = OperationType.TRANSFER,
+                currency = token.mintAddress
+            )
+            feeRelayerInteractor.topUpAndRelayTransaction(
+                preparedTransaction = preparedTransaction,
+                payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
+                additionalPaybackFee = BigInteger.ZERO,
+                statistics = statistics
+            )
+                .firstOrNull()
+                .orEmpty()
         }
     }
+
+    suspend fun getMinRelayRentExemption(): BigInteger =
+        feeRelayerAccountInteractor.getRelayInfo().minimumRelayAccountRent
 
     private suspend fun getFeesInPayingToken(
         feeInSOL: BigInteger
@@ -197,7 +208,7 @@ class SendInteractor(
             error("You can not send tokens to yourself")
         }
 
-        val (feePayer, useFeeRelayer) = if (feePayerToken.isSOL) {
+        val (feePayer, useFeeRelayer) = if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             null to false
         } else {
             val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
@@ -342,5 +353,15 @@ class SendInteractor(
         )
 
         return preparedTransaction to realDestination
+    }
+
+    /*
+    * When free transaction is not available and user is paying with sol,
+    * let him do this the normal way (don't use fee relayer)
+    * */
+    private suspend fun shouldUseNativeSwap(payingTokenMint: String): Boolean {
+        val noFreeTransactionsLeft = feeRelayerAccountInteractor.getFreeTransactionFeeLimit().remaining == 0
+        val isSol = payingTokenMint == WRAPPED_SOL_MINT
+        return noFreeTransactionsLeft && isSol
     }
 }

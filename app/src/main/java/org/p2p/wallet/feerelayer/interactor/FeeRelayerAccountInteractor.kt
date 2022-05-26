@@ -42,8 +42,8 @@ class FeeRelayerAccountInteractor(
             val lamportsPerSignature = async { amountRepository.getLamportsPerSignature() }
 
             relayInfo = RelayInfo(
-                minimumTokenAccountBalance = minimumTokenAccountBalance.await(),
-                minimumRelayAccountBalance = minimumRelayAccountBalance.await(),
+                minimumTokenAccountRent = minimumTokenAccountBalance.await(),
+                minimumRelayAccountRent = minimumRelayAccountBalance.await(),
                 feePayerAddress = feePayerAddress.await(),
                 lamportsPerSignature = lamportsPerSignature.await()
             )
@@ -52,8 +52,8 @@ class FeeRelayerAccountInteractor(
         return@withContext relayInfo!!
     }
 
-    suspend fun getUserRelayAccount(reuseCache: Boolean = true): RelayAccount = withContext(Dispatchers.IO) {
-        if (relayAccount == null || !reuseCache) {
+    suspend fun getUserRelayAccount(useCache: Boolean = true): RelayAccount = withContext(Dispatchers.IO) {
+        if (relayAccount == null || !useCache) {
             val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
             val userRelayAddress = getUserRelayAddress(userPublicKey)
             val account = userAccountRepository.getAccountInfo(userRelayAddress.toBase58(), useCache = false)

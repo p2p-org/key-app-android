@@ -9,6 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.send.model.SearchAddress
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.Target
 import timber.log.Timber
@@ -56,8 +57,11 @@ class SearchPresenter(
     }
 
     override fun onSearchResultClick(result: SearchResult) {
-        if (searchInteractor.isOwnPublicKey(result.address)) view?.showMessage(R.string.main_send_to_yourself_error)
-        else view?.submitSearchResult(result)
+        if (searchInteractor.isOwnPublicKey(result.searchAddress.address)) {
+            view?.showMessage(R.string.main_send_to_yourself_error)
+        } else {
+            view?.submitSearchResult(result)
+        }
     }
 
     private suspend fun validate(target: Target) {
@@ -101,7 +105,7 @@ class SearchPresenter(
     }
 
     private fun showBtcAddress(address: String) {
-        val searchResult = SearchResult.AddressOnly(address, NetworkType.BITCOIN)
+        val searchResult = SearchResult.AddressOnly(SearchAddress(address, NetworkType.BITCOIN))
         val resultList = listOf(searchResult)
         view?.showMessage(null)
         view?.showResult(resultList)
