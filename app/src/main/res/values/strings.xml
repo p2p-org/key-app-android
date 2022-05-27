@@ -251,6 +251,7 @@
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
+    <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
 
     <!-- receive -->
@@ -367,6 +368,7 @@
     <string name="send_using_max_amount">Using the maximum %s amount</string>
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
     <string name="send_not_enough_funds">Not enough funds</string>
+    <string name="send_min_required_amount_warning">You can\'t send less than 0.0009 SOL</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -550,6 +552,20 @@
 &#8226; Slippage can occur at any time, but it is most prevalent during periods of higher volatility\n\n
 &#8226; Transactions that exceed 20% slippage tolerance may be frontrun\n\n
 &#8226; Slippage tolerance cannot exceed 50%</string>
+
+    <!-- Debug Settings -->
+    <string name="debug_settings_deeplinks_title">Deeplinks</string>
+    <string name="debug_settings_logs_title">Logs</string>
+    <string name="debug_settings_feature_toggles_title">Feature Toggles</string>
+    <string name="debug_settings_logs_subtitle">Tap to show Logs</string>
+    <string name="debug_settings_device_info">Device Info</string>
+    <string name="debug_settings_ci_info">CI Info</string>
+    <string name="debug_settings_app_info">App Info</string>
+
+    <!-- Debug Settings -> Feature Toggles -->
+    <string name="feature_toggles_title">@string/debug_settings_feature_toggles_title</string>
+    <string name="feature_auto_update">Enable auto update</string>
+    <string name="feature_dev_net">Enable DevNet env</string>
 
     <!-- fixme: rename these resources by existing prefixes -->
     <string name="seed_info_the_definition">The definition</string>
