@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.interactor
 
+import kotlinx.coroutines.supervisorScope
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
@@ -16,7 +17,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
-import timber.log.Timber
 
 class HistoryInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
@@ -28,6 +28,7 @@ class HistoryInteractor(
     private val userInteractor: UserInteractor
 ) {
     private val allSignatures = mutableListOf<RpcTransactionSignature>()
+    private val tokenSignaturesMap = HashMap<String, MutableList<RpcTransactionSignature>>()
     private lateinit var multipleStreamSource: HistoryStreamSource
     private val accountsStreamSources = HashMap<String, HistoryStreamSource>()
     private val historyStreamSources = mutableListOf<HistoryStreamSource>()
@@ -43,52 +44,73 @@ class HistoryInteractor(
         multipleStreamSource = MultipleStreamSource(historyStreamSources)
     }
 
-    suspend fun loadTransactions(): List<HistoryTransaction> {
+    suspend fun loadTransactions(isRefresh: Boolean = false): List<HistoryTransaction> {
         if (historyStreamSources.isEmpty()) {
             initStreamSources()
+        }
+        if (isRefresh) {
+            allSignatures.clear()
+            tokenSignaturesMap.clear()
+            multipleStreamSource.reset()
         }
         val signatures = loadAllSignatures()
         allSignatures.addAll(signatures)
         return loadTransactions(signatures)
     }
 
-    suspend fun loadTransactions(account: String): List<HistoryTransaction> {
+    suspend fun loadTransactions(account: String, isRefresh: Boolean = false): List<HistoryTransaction> {
         if (historyStreamSources.isEmpty()) {
             initStreamSources()
         }
-        val signatures = loadSignaturesForAccount(account)
+        if (tokenSignaturesMap[account] == null) {
+            tokenSignaturesMap[account] = mutableListOf()
+        }
+        if (isRefresh) {
+            accountsStreamSources[account]?.reset()
+            tokenSignaturesMap[account]?.clear()
+        }
+
+        val signatures = loadSignaturesForAccount(account, accountsStreamSources[account]!!)
+        tokenSignaturesMap[account]?.addAll(signatures)
         return loadTransactions(signatures)
     }
 
     private suspend fun loadAllSignatures(): MutableList<RpcTransactionSignature> {
         val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
-        while (true) {
-            val firstItem = multipleStreamSource.currentItem() ?: break
-            val time = (firstItem.streamSource?.blockTime ?: -1) - (60 * 60 * 24)
-
+        supervisorScope {
             while (true) {
-                val currentItem = multipleStreamSource.next(StreamSourceConfiguration(time))
-                if (!allSignatures.contains(currentItem?.streamSource)) {
-                    transactionsSignatures.add(currentItem?.streamSource ?: break)
-                }
-                if (transactionsSignatures.size >= 10) {
-                    return transactionsSignatures
+                val firstItem = multipleStreamSource.currentItem() ?: break
+                val time = (firstItem.streamSource?.blockTime ?: -1) - (60 * 60 * 24)
+
+                while (true) {
+                    val currentItem = multipleStreamSource.next(StreamSourceConfiguration(time))
+                    if (!allSignatures.contains(currentItem?.streamSource)) {
+                        transactionsSignatures.add(currentItem?.streamSource ?: break)
+                    }
+                    if (transactionsSignatures.size >= 10) {
+                        return@supervisorScope transactionsSignatures
+                    }
                 }
             }
         }
         return transactionsSignatures
     }
 
-    private suspend fun loadSignaturesForAccount(account: String): List<RpcTransactionSignature> {
+    private suspend fun loadSignaturesForAccount(
+        account: String,
+        accountStreamSource: HistoryStreamSource
+    ): List<RpcTransactionSignature> {
         val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
-        val streamSource = accountsStreamSources[account]
+
+        val allTransactionSignatures = tokenSignaturesMap[account] ?: return emptyList()
+
         while (true) {
-            val firstItem = streamSource?.currentItem() ?: break
+            val firstItem = accountStreamSource.currentItem() ?: break
             val time = (firstItem.streamSource?.blockTime ?: -1) - (60 * 60 * 24)
 
             while (true) {
-                val currentItem = streamSource.next(StreamSourceConfiguration(time))
-                if (!allSignatures.contains(currentItem?.streamSource)) {
+                val currentItem = accountStreamSource.next(StreamSourceConfiguration(time))
+                if (!allTransactionSignatures.contains(currentItem?.streamSource)) {
                     transactionsSignatures.add(currentItem?.streamSource ?: break)
                 }
                 if (transactionsSignatures.size >= 10) {
@@ -136,7 +158,6 @@ class HistoryInteractor(
                     swapTransaction.alternateDestination
                 )
             }
-        Timber.tag("TokenHistoryBuffer").d("AccountInfoSize = " + accountsInfoIds.size.toString())
         return if (accountsInfoIds.isNotEmpty()) {
             rpcAccountRepository.getAccountsInfo(accountsInfoIds)
         } else {

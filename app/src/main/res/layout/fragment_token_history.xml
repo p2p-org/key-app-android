@@ -107,6 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="-16dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/actionButtonsView">
@@ -136,16 +137,16 @@
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmerView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="?actionBarSize"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/actionButtonsView"
             app:shimmer_auto_start="true"
             app:shimmer_base_alpha="1"
             app:shimmer_base_color="@color/backgroundAppStroke"
             app:shimmer_highlight_alpha="0"
-            app:shimmer_highlight_color="@color/backgroundAppStroke">
+            app:shimmer_highlight_color="@color/backgroundAppStroke"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"

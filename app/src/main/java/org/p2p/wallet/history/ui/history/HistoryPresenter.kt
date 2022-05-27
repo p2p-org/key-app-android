@@ -49,8 +49,8 @@ class HistoryPresenter(
         refreshJob = launch {
             view?.showRefreshing(isRefreshing = true)
             fetchHistory(isRefresh = true)
-            view?.scrollToTop()
             view?.showRefreshing(isRefreshing = false)
+            view?.scrollToTop()
         }
     }
 
@@ -60,14 +60,6 @@ class HistoryPresenter(
         pagingJob?.cancel()
         pagingJob = launch {
             view?.showPagingState(PagingState.Loading)
-            fetchHistory()
-        }
-    }
-
-    override fun retry() {
-        launch {
-            val pagingState = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
-            view?.showPagingState(pagingState)
             fetchHistory()
         }
     }
@@ -88,7 +80,7 @@ class HistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val fetchedItems = historyInteractor.loadTransactions()
+            val fetchedItems = historyInteractor.loadTransactions(isRefresh)
             transactions.addAll(fetchedItems)
             view?.showHistory(transactions)
             view?.showPagingState(PagingState.Idle)

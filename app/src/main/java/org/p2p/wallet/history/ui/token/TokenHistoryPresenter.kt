@@ -51,22 +51,8 @@ class TokenHistoryPresenter(
 
     private var pagingJob: Job? = null
     private var refreshJob: Job? = null
-    private var lastTransactionSignature: String? = null
 
     private var paginationEnded: Boolean = false
-
-    override fun refreshHistory() {
-        paginationEnded = false
-        lastTransactionSignature = null
-        refreshJob?.cancel()
-
-        refreshJob = launch {
-            view?.showRefreshing(isRefreshing = true)
-            fetchHistory(isRefresh = true)
-            view?.scrollToTop()
-            view?.showRefreshing(isRefreshing = false)
-        }
-    }
 
     override fun loadNextHistoryPage() {
         if (paginationEnded) return
@@ -79,10 +65,14 @@ class TokenHistoryPresenter(
     }
 
     override fun retryLoad() {
-        launch {
-            val pagingState = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
-            view?.showPagingState(pagingState)
-            fetchHistory()
+        paginationEnded = false
+        refreshJob?.cancel()
+
+        refreshJob = launch {
+            view?.showRefreshing(isRefreshing = true)
+            fetchHistory(isRefresh = true)
+            view?.showRefreshing(isRefreshing = false)
+            view?.scrollToTop()
         }
     }
 
@@ -102,10 +92,8 @@ class TokenHistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val fetchedItems = historyInteractor.loadTransactions(token.publicKey)
-            lastTransactionSignature = fetchedItems.last().signature
+            val fetchedItems = historyInteractor.loadTransactions(token.publicKey, isRefresh)
             transactions.addAll(fetchedItems)
-
             view?.showHistory(transactions)
             view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {

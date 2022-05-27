@@ -45,6 +45,8 @@ class AccountStreamSource(
     }
 
     override fun reset() {
+        lastFetchedSignature = null
+        buffer.clear()
     }
 
     private suspend fun fillBuffer() {

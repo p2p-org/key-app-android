@@ -45,7 +45,7 @@ class HistoryFragment :
         with(binding) {
 
             retryButton.setOnClickListener {
-                presenter.retry()
+                presenter.refreshHistory()
             }
             val scrollListener = EndlessScrollListener(
                 layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
