@@ -1,7 +1,6 @@
 package org.p2p.wallet.infrastructure.network
 
 import com.google.gson.GsonBuilder
-import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -99,7 +98,6 @@ object NetworkModule : InjectionModule {
 
                 if (BuildConfig.DEBUG) {
                     addInterceptor(httpLoggingInterceptor(tag))
-                    addInterceptor(OkHttpProfilerInterceptor())
                 }
             }
             .addNetworkInterceptor(ContentTypeInterceptor())

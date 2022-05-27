@@ -18,6 +18,8 @@ import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 
+private const val DAY_IN_MILLISECONDS = 60 * 60 * 24
+
 class HistoryInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
     private val transactionsLocalRepository: TransactionDetailsLocalRepository,
@@ -75,12 +77,23 @@ class HistoryInteractor(
         return loadTransactions(signatures)
     }
 
+    /*
+    Idea of loading history filtered by timestamp
+    1) First we load signatures of each token, and take first element, cause it's has latest timestamp
+    2) We try to find the latest transaction signature from loaded transactions signatures
+    3) Set period for transactions for one day, doing simple calculation
+    dayPeriod = lastSignatureTime - DAY_IN_MILLISECONDS
+    4)Loading signatures and filter them by this configuration
+    5)Doing 4 step before we don't upload one page size of signatures
+    6)Finally try to load transactions for this signatures
+     */
+
     private suspend fun loadAllSignatures(): MutableList<RpcTransactionSignature> {
         val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
         supervisorScope {
             while (true) {
                 val firstItem = multipleStreamSource.currentItem() ?: break
-                val time = (firstItem.streamSource?.blockTime ?: -1) - (60 * 60 * 24)
+                val time = (firstItem.streamSource?.blockTime ?: -1) - (DAY_IN_MILLISECONDS)
 
                 while (true) {
                     val currentItem = multipleStreamSource.next(StreamSourceConfiguration(time))

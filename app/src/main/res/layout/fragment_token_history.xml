@@ -139,7 +139,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/actionButtonsView"
             app:shimmer_auto_start="true"
             app:shimmer_base_alpha="1"
@@ -153,13 +152,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingVertical="16dp">
-
-                <ImageView
-                    android:layout_width="104dp"
-                    android:layout_height="16dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:background="@drawable/bg_stroke_rounded"
-                    android:backgroundTint="@color/backgroundAppStroke" />
 
                 <include
                     layout="@layout/item_history_shimmer"
