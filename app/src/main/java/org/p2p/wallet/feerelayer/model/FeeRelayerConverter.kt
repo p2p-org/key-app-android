@@ -2,6 +2,7 @@ package org.p2p.wallet.feerelayer.model
 
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.TransactionInstruction
+import org.p2p.wallet.feerelayer.api.FeeRelayerInfoRequest
 import org.p2p.wallet.feerelayer.api.RequestAccountMeta
 import org.p2p.wallet.feerelayer.api.RequestInstruction
 import org.p2p.wallet.feerelayer.api.SwapTransactionSignaturesRequest
@@ -23,6 +24,14 @@ object FeeRelayerConverter {
         SwapTransactionSignaturesRequest(
             userAuthoritySignature = signatures.userAuthoritySignature,
             transferAuthoritySignature = signatures.transferAuthoritySignature
+        )
+
+    fun toNetwork(statistics: FeeRelayerStatistics): FeeRelayerInfoRequest =
+        FeeRelayerInfoRequest(
+            operationType = statistics.operationType.stringValue,
+            currency = statistics.currency,
+            deviceType = statistics.deviceType,
+            build = statistics.build,
         )
 
     private fun toNetwork(account: AccountMeta, pubkeys: List<String>): RequestAccountMeta =

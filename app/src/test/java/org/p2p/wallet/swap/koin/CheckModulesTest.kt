@@ -1,18 +1,23 @@
 package org.p2p.wallet.swap.koin
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -28,6 +33,7 @@ import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
+import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.home.HomeModule
@@ -37,7 +43,7 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.push_notifications.PushNotificationsModule
-import org.p2p.wallet.qr.QrModule
+import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.renbtc.RenBtcModule
@@ -53,11 +59,6 @@ import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -161,9 +162,10 @@ class CheckModulesTest : KoinTest {
         HomeModule.create(),
         RenBtcModule.create(),
         NetworkModule.create(),
-        QrModule.create(),
+        ScanQrModule.create(),
         HistoryModule.create(),
         SettingsModule.create(),
+        DebugSettingsModule.create(),
         SwapModule.create(),
         RpcModule.create(),
         FeeRelayerModule.create(),

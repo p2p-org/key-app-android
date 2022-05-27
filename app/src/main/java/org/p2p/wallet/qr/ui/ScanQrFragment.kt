@@ -3,38 +3,35 @@ package org.p2p.wallet.qr.ui
 import android.Manifest
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import me.dm7.barcodescanner.zxing.ZXingScannerView
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.mvp.NoOpPresenter
 import org.p2p.wallet.common.permissions.PermissionDeniedDialog
 import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import me.dm7.barcodescanner.zxing.ZXingScannerView
-import org.koin.android.ext.android.inject
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.analytics.constants.ScreenNames
-import org.p2p.wallet.send.analytics.SendAnalytics
 
 class ScanQrFragment :
-    Fragment(R.layout.fragment_scan_qr),
+    BaseMvpFragment<ScanQrContract.View, NoOpPresenter<ScanQrContract.View>>(R.layout.fragment_scan_qr),
     PermissionsDialog.Callback {
 
     companion object {
-        fun create(
-            successCallback: (String) -> Unit
-        ) = ScanQrFragment().apply {
-            this.successCallback = successCallback
-        }
+        fun create(successCallback: (String) -> Unit): ScanQrFragment =
+            ScanQrFragment().apply { this.successCallback = successCallback }
     }
 
     private var successCallback: ((String) -> Unit)? = null
@@ -42,11 +39,14 @@ class ScanQrFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private var isPermissionsRequested = false
     private var isCameraStarted = false
-    private var onBackPressedCallback: OnBackPressedCallback? = null
     private val sendAnalytics: SendAnalytics by inject()
 
+    override val presenter = NoOpPresenter<ScanQrContract.View>()
+
     private val qrDecodeStartTimeout by lazy {
-        requireContext().resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        requireContext().resources
+            .getInteger(android.R.integer.config_mediumAnimTime)
+            .toLong()
     }
 
     private val barcodeCallback: ZXingScannerView.ResultHandler =
@@ -59,10 +59,11 @@ class ScanQrFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             onBackPressed()
         }
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.QR_CAMERA)
+
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
             closeImageView.setOnClickListener { onBackPressed() }

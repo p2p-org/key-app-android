@@ -7,14 +7,16 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
-import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentRenBtcBinding
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.widget.BaseQrCodeFragment
+import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -28,7 +30,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.io.File
 
 class ReceiveRenBtcFragment :
-    BaseMvpFragment<ReceiveRenBtcContract.View, ReceiveRenBtcContract.Presenter>(R.layout.fragment_receive_ren_btc),
+    BaseQrCodeFragment<ReceiveRenBtcContract.View, ReceiveRenBtcContract.Presenter>(R.layout.fragment_receive_ren_btc),
     ReceiveRenBtcContract.View {
 
     companion object {
@@ -38,6 +40,7 @@ class ReceiveRenBtcFragment :
     }
 
     override val statusBarColor: Int = R.color.backgroundButtonPrimary
+    override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     override val presenter: ReceiveRenBtcContract.Presenter by inject()
     private val binding: FragmentRenBtcBinding by viewBinding()
@@ -54,6 +57,9 @@ class ReceiveRenBtcFragment :
                 presenter.onStatusReceivedClicked()
             }
 
+            receiveCardView.setOnRequestPermissions {
+                checkStatusAndRequestPermissionsIfNotGranted()
+            }
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
             }
@@ -69,12 +75,13 @@ class ReceiveRenBtcFragment :
                     )
                 )
             }
-            receiveCardView.setOnShareQrClickListener { name, qrImage ->
-                presenter.saveQr(name, qrImage, shareAfter = true)
+            receiveCardView.setOnShareQrClickListener { name, qrImage, shareText ->
+                presenter.saveQr(name, qrImage, shareText)
             }
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
             receiveCardView.setFaqVisibility(isVisible = false)
             receiveCardView.setQrWatermark(R.drawable.ic_btc)
+            receiveCardView.setTokenSymbol(Constants.REN_BTC_SYMBOL)
             receiveCardView.setNetworkName(getString(R.string.send_bitcoin_network))
 
             setFragmentResultListener(REQUEST_KEY) { _, bundle ->

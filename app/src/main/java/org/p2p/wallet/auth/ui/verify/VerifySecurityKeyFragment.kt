@@ -42,7 +42,7 @@ class VerifySecurityKeyFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             progressButton.setOnClickListener {
-                presenter.validate()
+                presenter.validateSecurityKey()
             }
             toolbar.setNavigationOnClickListener { popBackStack() }
             keysRecyclerView.attachAdapter(adapter)

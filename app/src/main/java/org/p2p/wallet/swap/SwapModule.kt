@@ -2,6 +2,7 @@ package org.p2p.wallet.swap
 
 import android.content.Context
 import org.koin.android.ext.koin.androidApplication
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
@@ -10,6 +11,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.api.InternalWebApi
+import org.p2p.wallet.swap.api.OrcaApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
@@ -23,8 +25,6 @@ import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
-import org.p2p.wallet.swap.repository.OrcaSwapInternalRemoteRepository
-import org.p2p.wallet.swap.repository.OrcaSwapInternalRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
@@ -35,12 +35,13 @@ object SwapModule : InjectionModule {
     override fun create() = module {
         single {
             val baseUrl = get<Context>().getString(R.string.p2pWebBaseUrl)
-            getRetrofit(baseUrl, "p2pWeb", null).create(InternalWebApi::class.java)
+            getRetrofit(baseUrl = baseUrl, tag = "p2pWeb", interceptor = null).create(InternalWebApi::class.java)
         }
 
         single {
-            OrcaSwapInternalRemoteRepository(get(), get())
-        } bind OrcaSwapInternalRepository::class
+            val baseUrl = androidContext().getString(R.string.orca_api_base_url)
+            getRetrofit(baseUrl = baseUrl, tag = "Orca", interceptor = null).create(OrcaApi::class.java)
+        }
 
         single {
             SerumSwapInteractor(
@@ -82,7 +83,7 @@ object SwapModule : InjectionModule {
 
         factory { TransactionAddressInteractor(get(), get(), get()) }
 
-        factory { OrcaSwapRemoteRepository(get(), get(), get()) } bind OrcaSwapRepository::class
+        factory { OrcaSwapRemoteRepository(get(), get(), get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->
             OrcaSwapPresenter(

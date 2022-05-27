@@ -7,7 +7,7 @@ import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import java.lang.Exception
 
 private const val ZERO_AMOUNT = "0"
-internal class OrcaSwapInstructionParser {
+object OrcaSwapInstructionParser {
 
     private class ParsedInstructionDetails(
         val rootInstruction: InstructionResponse,
