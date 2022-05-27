@@ -3,6 +3,7 @@ package org.p2p.wallet.send.ui.search
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.View
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -12,8 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSearchBinding
 import org.p2p.wallet.send.model.SearchResult
@@ -53,6 +54,11 @@ class SearchFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.RECIPIENT_ADDRESS)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            popBackStack()
+        }
+
         with(binding) {
             backImageView.setOnClickListener { popBackStack() }
             clearImageView.setOnClickListener { searchEditText.text.clear() }

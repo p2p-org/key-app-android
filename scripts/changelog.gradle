@@ -36,7 +36,7 @@ ext.featureChangelog = {
 }
 
 ext.releaseChangelog = { releaseName ->
-    return "Release build v${releaseName}" +
+    return "Release build v${releaseName}\n" +
             "Release notes:\n" +
             branchChangelog()
 }

@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.username
 
+import org.json.JSONObject
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.json.JSONObject
 
 interface ReserveUsernameContract {
 
@@ -11,6 +11,7 @@ interface ReserveUsernameContract {
         fun navigateToUsername()
         fun showIdleState()
         fun showUnavailableName(name: String)
+        fun showUsernameLengthError(name: String, maxLength: Int)
         fun showAvailableName(name: String)
         fun showCaptcha(params: JSONObject)
         fun showCaptchaSucceeded()

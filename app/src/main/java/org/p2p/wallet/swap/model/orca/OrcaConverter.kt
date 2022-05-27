@@ -1,12 +1,22 @@
 package org.p2p.wallet.swap.model.orca
 
 import org.p2p.wallet.swap.api.OrcaAquafarmResponse
+import org.p2p.wallet.swap.api.OrcaConfigsResponse
 import org.p2p.wallet.swap.api.OrcaPoolResponse
 import org.p2p.wallet.swap.api.OrcaTokensResponse
+import org.p2p.wallet.swap.api.ProgramIdResponse
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 object OrcaConverter {
+
+    fun fromNetwork(response: OrcaConfigsResponse): OrcaConfigs =
+        OrcaConfigs(
+            tokens = response.tokens.mapValues { fromNetwork(it.value) } as OrcaTokens,
+            aquafarms = response.aquafarms.mapValues { fromNetwork(it.value) } as OrcaAquafarms,
+            pools = response.pools.mapValues { fromNetwork(it.value) } as OrcaPools,
+            programId = fromNetwork(response.programIds)
+        )
 
     fun fromNetwork(response: OrcaTokensResponse): OrcaToken =
         OrcaToken(
@@ -54,5 +64,14 @@ object OrcaConverter {
             amp = response.amp?.let { BigInteger.valueOf(it) },
             programVersion = response.programVersion,
             deprecated = response.deprecated == true,
+        )
+
+    private fun fromNetwork(response: ProgramIdResponse): OrcaProgramId =
+        OrcaProgramId(
+            serumTokenSwap = response.serumTokenSwap,
+            tokenSwapV2 = response.tokenSwapV2,
+            tokenSwap = response.tokenSwap,
+            token = response.token,
+            aquafarm = response.aquafarm
         )
 }

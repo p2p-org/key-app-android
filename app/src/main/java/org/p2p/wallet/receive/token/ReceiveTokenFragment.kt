@@ -9,11 +9,12 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveTokenBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
+import org.p2p.wallet.receive.widget.BaseQrCodeFragment
+import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
@@ -30,7 +31,7 @@ import java.io.File
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
 class ReceiveTokenFragment :
-    BaseMvpFragment<ReceiveTokenContract.View, ReceiveTokenContract.Presenter>(R.layout.fragment_receive_token),
+    BaseQrCodeFragment<ReceiveTokenContract.View, ReceiveTokenContract.Presenter>(R.layout.fragment_receive_token),
     ReceiveTokenContract.View {
 
     companion object {
@@ -44,6 +45,7 @@ class ReceiveTokenFragment :
     }
 
     override val statusBarColor: Int = R.color.backgroundButtonPrimary
+    override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     private val binding: FragmentReceiveTokenBinding by viewBinding()
     override val presenter: ReceiveTokenContract.Presenter by inject {
@@ -73,13 +75,17 @@ class ReceiveTokenFragment :
                     )
                 )
             }
+            receiveCardView.setOnRequestPermissions {
+                checkStatusAndRequestPermissionsIfNotGranted()
+            }
             receiveCardView.setOnSaveQrClickListener { name, qrImage ->
                 presenter.saveQr(name, qrImage)
             }
-            receiveCardView.setOnShareQrClickListener { name, qrImage ->
-                presenter.saveQr(name, qrImage, shareAfter = true)
+            receiveCardView.setOnShareQrClickListener { name, qrImage, shareText ->
+                presenter.saveQr(name, qrImage, shareText)
             }
             receiveCardView.setQrWatermark(token.iconUrl)
+            receiveCardView.setTokenSymbol(token.tokenSymbol)
             receiveCardView.showQrLoading(false)
             receiveCardView.setFaqVisibility(false)
             receiveCardView.setSelectNetworkVisibility(isVisible = token.isRenBTC)
