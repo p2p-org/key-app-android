@@ -56,6 +56,7 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getClipBoardText
 import org.p2p.wallet.utils.getColor
+import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
@@ -146,9 +147,16 @@ class SendFragment :
 
     private fun setupViews() {
         with(binding) {
-            if (backStackEntryCount() > 1) {
-                toolbar.setNavigationIcon(R.drawable.ic_back)
-                toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationIcon(R.drawable.ic_back)
+            toolbar.setNavigationOnClickListener {
+                if (backStackEntryCount() > 1) {
+                    popBackStack()
+                } else {
+                    requireActivity().apply {
+                        hideKeyboard()
+                        onBackPressed()
+                    }
+                }
             }
             sendButton.setOnClickListener { presenter.sendOrConfirm() }
 

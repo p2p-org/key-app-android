@@ -1,12 +1,14 @@
 package org.p2p.wallet.qr.ui
 
-import androidx.activity.addCallback
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import android.Manifest
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -22,8 +24,6 @@ import org.p2p.wallet.databinding.FragmentScanQrBinding
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ScanQrFragment :
     BaseMvpFragment<ScanQrContract.View, NoOpPresenter<ScanQrContract.View>>(R.layout.fragment_scan_qr),
@@ -59,7 +59,7 @@ class ScanQrFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             onBackPressed()
         }
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.QR_CAMERA)
