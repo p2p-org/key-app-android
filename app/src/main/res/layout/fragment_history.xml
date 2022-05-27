@@ -46,13 +46,6 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_transaction" />
 
-            <Button
-                android:id="@+id/fuckingButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Load More"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-
             <LinearLayout
                 android:id="@+id/emptyStateLayout"
                 android:layout_width="match_parent"

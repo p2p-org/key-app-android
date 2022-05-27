@@ -24,7 +24,6 @@ class MultipleStreamSource(
                 maxValue = item
             }
         }
-        maxValue
         return maxValue
     }
 

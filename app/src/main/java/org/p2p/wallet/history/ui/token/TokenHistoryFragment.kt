@@ -165,6 +165,13 @@ class TokenHistoryFragment :
 
     override fun showPagingState(newState: PagingState) {
         historyAdapter.setPagingState(newState)
+        with(binding) {
+            shimmerView.isVisible = newState == PagingState.InitialLoading
+            refreshLayout.isVisible = newState != PagingState.InitialLoading
+            emptyStateLayout.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
+            historyRecyclerView.isVisible =
+                (newState == PagingState.Idle && !historyAdapter.isEmpty()) || newState == PagingState.Loading
+        }
     }
 
     override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {

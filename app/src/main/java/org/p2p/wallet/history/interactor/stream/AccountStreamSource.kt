@@ -1,24 +1,17 @@
 package org.p2p.wallet.history.interactor.stream
 
-import kotlinx.coroutines.asCoroutineDispatcher
 import org.p2p.wallet.history.model.RpcTransactionSignature
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.utils.toPublicKey
-import java.util.concurrent.Executors
 
 class AccountStreamSource(
     private val account: String,
-    private val symbol: String,
-    private val historyRepository: TransactionDetailsRemoteRepository,
     private val signatureRepository: RpcSignatureRepository
 ) : AbstractStreamSource() {
 
     private var lastFetchedSignature: String? = null
     private var batchSize = 15
-    private var bufferSize = 15
-    private val executor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     private var isPagingEnded = false
     private val buffer = mutableListOf<RpcTransactionSignature>()

@@ -62,9 +62,6 @@ class HistoryFragment :
             retryButton.setOnClickListener {
                 presenter.loadHistory()
             }
-            binding.fuckingButton.setOnClickListener {
-                presenter.loadNextHistoryPage()
-            }
         }
         presenter.loadHistory()
     }
