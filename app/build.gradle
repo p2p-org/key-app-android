@@ -150,7 +150,7 @@ android {
             firebaseAppDistribution {
                 artifactType = "AAB"
                 releaseNotes = releaseChangelog(VERSION_NAME)
-                groups = "wallet.feature.test"
+                groups = "wallet.release.test"
             }
         }
     }
