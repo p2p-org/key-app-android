@@ -189,14 +189,6 @@ class FeeRelayerTopUpInteractor(
                 // if relayAccountBalance has enough balance to cover transaction fee
                 if (relayAccountBalance >= neededAmount.transaction) {
                     neededAmount.transaction = BigInteger.ZERO
-
-                    // if relayAccountBalance has enough balance to cover accountBalances fee too
-                    if (relayAccountBalance - neededAmount.transaction >= neededAmount.accountBalances) {
-                        neededAmount.accountBalances = BigInteger.ZERO
-                    } else {
-                        // Relay account balance can cover part of account creation fee
-                        neededAmount.accountBalances -= (relayAccountBalance - neededAmount.transaction)
-                    }
                 } else {
                     // if not, relayAccountBalance can cover part of transaction fee
                     neededAmount.transaction -= relayAccountBalance
