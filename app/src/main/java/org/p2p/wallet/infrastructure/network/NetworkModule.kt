@@ -118,18 +118,16 @@ object NetworkModule : InjectionModule {
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
-                var sslContext: SSLContext? = null
                 try {
-                    sslContext = createCertificate(resources.openRawResource(R.raw.cert))
+                    createCertificate(resources.openRawResource(R.raw.cert))?.let { sslContext ->
+                        systemDefaultTrustManager()?.let { trustManager ->
+                            Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
+                            sslSocketFactory(sslContext.socketFactory, trustManager)
+                        }
+                    }
                 } catch (e: Exception) {
                     if (!BuildConfig.DEBUG) {
                         Timber.tag(SSL_CERT_TAG).e(e, "Error on opening SSL cert")
-                    }
-                }
-                if (sslContext != null) {
-                    systemDefaultTrustManager()?.let { trustManager ->
-                        Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
-                        sslSocketFactory(sslContext.socketFactory, trustManager)
                     }
                 }
                 if (BuildConfig.CRASHLYTICS_ENABLED) {
