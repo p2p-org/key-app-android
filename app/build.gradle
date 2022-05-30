@@ -70,6 +70,7 @@ android {
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
+        buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
 
         javaCompileOptions {
@@ -146,6 +147,7 @@ android {
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
+            buildConfigField("boolean", "SSL_PINNING_ENABLED", "true")
 
             firebaseAppDistribution {
                 artifactType = "AAB"

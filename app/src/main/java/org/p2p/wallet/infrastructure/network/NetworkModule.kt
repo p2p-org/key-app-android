@@ -11,6 +11,7 @@ import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.AppFeatureFlags
 import org.p2p.wallet.common.crashlytics.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
@@ -118,16 +119,19 @@ object NetworkModule : InjectionModule {
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
-                try {
-                    createCertificate(resources.openRawResource(R.raw.cert))?.let { sslContext ->
-                        systemDefaultTrustManager()?.let { trustManager ->
-                            Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
-                            sslSocketFactory(sslContext.socketFactory, trustManager)
+                val appFeatureFlags: AppFeatureFlags = get()
+                if (appFeatureFlags.isSslPinningEnabled) {
+                    try {
+                        createCertificate(resources.openRawResource(R.raw.cert))?.let { sslContext ->
+                            systemDefaultTrustManager()?.let { trustManager ->
+                                Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
+                                sslSocketFactory(sslContext.socketFactory, trustManager)
+                            }
                         }
-                    }
-                } catch (e: Exception) {
-                    if (!BuildConfig.DEBUG) {
-                        Timber.tag(SSL_CERT_TAG).e(e, "Error on opening SSL cert")
+                    } catch (e: Exception) {
+                        if (!BuildConfig.DEBUG) {
+                            Timber.tag(SSL_CERT_TAG).e(e, "Error on opening SSL cert")
+                        }
                     }
                 }
                 if (BuildConfig.CRASHLYTICS_ENABLED) {
