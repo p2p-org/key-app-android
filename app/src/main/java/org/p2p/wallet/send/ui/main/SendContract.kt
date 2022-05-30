@@ -40,7 +40,8 @@ interface SendContract {
         fun navigateToNetworkSelection(currentNetworkType: NetworkType)
         fun navigateToTokenSelection(tokens: List<Token.Active>)
 
-        fun showSearchLoading(isLoading: Boolean)
+        fun showAccountFeeViewLoading(isLoading: Boolean)
+        fun showIndeterminateLoading(isLoading: Boolean)
         fun showIdleTarget()
         fun showWrongAddressTarget(address: String)
         fun showFullTarget(address: String, username: String)
@@ -50,7 +51,11 @@ interface SendContract {
 
         fun showWarning(@StringRes messageRes: Int?)
 
-        fun showAccountFeeView(fee: SendFee? = null, notEnoughFunds: Boolean = false)
+        fun hideAccountFeeView()
+        fun showAccountFeeView(fee: SendFee)
+
+        fun showInsufficientFundsView(tokenSymbol: String, feeUsd: String?)
+
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 
         fun showBiometricConfirmationPrompt(data: SendConfirmData)

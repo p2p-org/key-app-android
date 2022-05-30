@@ -13,8 +13,10 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
+import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
+import java.math.BigInteger
 
 sealed class Token constructor(
     open val publicKey: String?,
@@ -56,6 +58,10 @@ sealed class Token constructor(
         isWrapped = isWrapped,
         usdRate = usdRate
     ) {
+
+        @IgnoredOnParcel
+        val totalInLamports: BigInteger
+            get() = total.toLamports(decimals)
 
         @IgnoredOnParcel
         val isZero: Boolean

@@ -19,6 +19,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.model.AddressValidation
+import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
@@ -27,6 +28,7 @@ import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchAddress
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
@@ -43,10 +45,8 @@ import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
@@ -101,11 +101,13 @@ class SendPresenter(
 
     private var target: SearchResult? = null
 
-    private var fee: SendFee? = null
+    private var sendFee: SendFee? = null
 
     private var calculationJob: Job? = null
-    private var feeJob: Job? = null
     private var checkAddressJob: Job? = null
+
+    private var feeJob: Job? = null
+    private var feePayerJob: Job? = null
 
     override fun loadInitialData() {
         launch {
@@ -143,14 +145,13 @@ class SendPresenter(
             view?.showNetworkSelectionView(false)
         }
 
-        val feePayerToken = userTokens.firstOrNull { it.isSOL } ?: newToken
-        sendInteractor.setFeePayerToken(feePayerToken)
-
         calculateRenBtcFeeIfNeeded(hideTotal = true)
         calculateData(newToken)
         checkAddress(target?.searchAddress?.address)
         updateMaxButtonVisibility(newToken)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
+
+        recalculate(feePayerToken = newToken, autoSelect = true)
     }
 
     override fun setTargetResult(result: SearchResult?) {
@@ -188,7 +189,7 @@ class SendPresenter(
     override fun validateTarget(value: String) {
         launch {
             try {
-                view?.showSearchLoading(true)
+                view?.showIndeterminateLoading(true)
 
                 val target = Target(value)
                 selectNetworkType(target.networkType)
@@ -205,7 +206,7 @@ class SendPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error validating target: $value")
             } finally {
-                view?.showSearchLoading(false)
+                view?.showIndeterminateLoading(false)
             }
         }
     }
@@ -217,6 +218,11 @@ class SendPresenter(
         updateMaxButtonVisibility(token)
         calculateRenBtcFeeIfNeeded()
         calculateData(token)
+
+        /*
+        * Calculating if we can pay with current token instead of already selected fee payer token
+        * */
+        recalculate(feePayerToken = token, autoSelect = true)
     }
 
     override fun setNetworkDestination(networkType: NetworkType) {
@@ -230,7 +236,7 @@ class SendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = target?.searchAddress?.address ?: error("Target address cannot be null!")
 
-        sendAnalytics.logSendStarted(networkType, tokenAmount, token, fee, usdAmount)
+        sendAnalytics.logSendStarted(networkType, tokenAmount, token, sendFee, usdAmount)
 
         when (networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
@@ -242,7 +248,7 @@ class SendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = target?.searchAddress?.address ?: error("Target address cannot be null!")
 
-        sendAnalytics.logUserConfirmedSend(networkType, tokenAmount, token, fee, usdAmount)
+        sendAnalytics.logUserConfirmedSend(networkType, tokenAmount, token, sendFee, usdAmount)
 
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
@@ -312,7 +318,7 @@ class SendPresenter(
         launch {
             try {
                 sendInteractor.setFeePayerToken(feePayerToken)
-                calculateFeeRelayerFee(feePayerToken)
+                recalculate(feePayerToken = feePayerToken, autoSelect = false)
             } catch (e: Throwable) {
                 Timber.e(e, "Error updating fee payer token")
             }
@@ -388,15 +394,15 @@ class SendPresenter(
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
         view?.showWrongAddressTarget(result.searchAddress.address.cutEnd())
-        view?.showAccountFeeView()
+        view?.hideAccountFeeView()
     }
 
     private fun handleIdleTarget() {
         view?.showIdleTarget()
         view?.showTotal(data = null)
-        view?.showAccountFeeView()
+        view?.hideAccountFeeView()
 
-        fee = null
+        sendFee = null
         calculateTotal(sendFee = null)
     }
 
@@ -407,7 +413,7 @@ class SendPresenter(
         checkAddressJob?.cancel()
         checkAddressJob = launch {
             try {
-                view?.showSearchLoading(true)
+                view?.showIndeterminateLoading(true)
                 val checkAddressResult = sendInteractor.checkAddress(address.toPublicKey(), token)
                 handleCheckAddressResult(checkAddressResult)
             } catch (e: CancellationException) {
@@ -415,19 +421,19 @@ class SendPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error checking address")
             } finally {
-                view?.showSearchLoading(false)
+                view?.showIndeterminateLoading(false)
             }
         }
     }
 
-    private suspend fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
+    private fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
         when (checkAddressResult) {
             is CheckAddressResult.NewAccountNeeded ->
-                calculateFeeRelayerFee(checkAddressResult.feePayerToken)
+                recalculate(feePayerToken = null, autoSelect = true)
             is CheckAddressResult.AccountExists,
             is CheckAddressResult.InvalidAddress -> {
                 calculateTotal(sendFee = null)
-                view?.showAccountFeeView()
+                view?.hideAccountFeeView()
             }
         }
     }
@@ -440,7 +446,7 @@ class SendPresenter(
                 val transactionId = burnBtcInteractor.submitBurnTransaction(address, amountLamports)
 
                 Timber.d("Bitcoin successfully burned and released! $transactionId")
-                sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
+                sendAnalytics.logSendCompleted(networkType, tokenAmount, token, sendFee, usdAmount)
 
                 val transaction = buildTransaction(transactionId)
                 view?.showTransactionDetails(transaction)
@@ -506,7 +512,7 @@ class SendPresenter(
         val transaction = buildTransaction(result)
         val state = TransactionState.SendSuccess(transaction, token.tokenSymbol)
         transactionManager.emitTransactionState(state)
-        sendAnalytics.logSendCompleted(networkType, tokenAmount, token, fee, usdAmount)
+        sendAnalytics.logSendCompleted(networkType, tokenAmount, token, sendFee, usdAmount)
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =
@@ -527,14 +533,12 @@ class SendPresenter(
     private fun calculateData(token: Token.Active) {
         if (calculationJob?.isActive == true) return
 
-        calculationJob = launch {
+        launch {
             when (mode) {
                 is CurrencyMode.Token -> calculateByToken(token)
                 is CurrencyMode.Usd -> calculateByUsd(token)
             }
-
-            calculateTotal(fee)
-        }
+        }.also { calculationJob = it }
     }
 
     private fun calculateByUsd(token: Token.Active) {
@@ -611,46 +615,126 @@ class SendPresenter(
 
         if (feeJob?.isActive == true) return
         val sourceToken = token ?: return
+        view?.hideAccountFeeView()
 
         launch {
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(SendFee.RenBtcFee(fee, sourceToken, sourceToken.tokenSymbol))
+            calculateTotal(SendFee.RenBtcFee(sourceToken, fee))
         }
     }
 
     /*
     * Assume this to be called only if associated account address creation needed
     * */
-    private suspend fun calculateFeeRelayerFee(feePayer: Token.Active) {
+    private suspend fun calculateFeeRelayerFee(feePayerToken: Token.Active): FeeRelayerSendFee? {
         val source = token ?: throw IllegalStateException("Source token is null")
-        val receiver = target?.searchAddress?.address
+        val receiver = target?.searchAddress?.address ?: throw IllegalStateException("Target is null")
 
-        val fees = sendInteractor.calculateFeesForFeeRelayer(
+        return sendInteractor.calculateFeesForFeeRelayer(
+            feePayerToken = feePayerToken,
             token = source,
             receiver = receiver,
             networkType = networkType
         )
+    }
 
-        if (fees == null) {
-            view?.showAccountFeeView()
+    private suspend fun showFeeDetails(
+        fees: FeeRelayerSendFee?,
+        feePayerToken: Token.Active,
+        autoSelect: Boolean = true
+    ) {
+        val source = token ?: throw IllegalStateException("Source token is null")
+
+        /*
+         * Checking if fee or feeInPayingToken are null
+         * feeInPayingToken can be null only for renBTC network
+         * */
+        if (fees?.feeInPayingToken == null) {
+            sendFee = null
+            view?.hideAccountFeeView()
             return
         }
 
-        val feeAmount = if (!feePayer.isSOL && fees.feeInPayingToken != null) {
-            fees.feeInPayingToken.fromLamports(feePayer.decimals).scaleMedium()
+        val fee = SendFee.SolanaFee(
+            feePayerToken = feePayerToken,
+            sourceTokenSymbol = source.tokenSymbol,
+            feeLamports = fees.feeInSol,
+            feeInPayingToken = fees.feeInPayingToken
+        ).also { sendFee = it }
+
+        if (autoSelect) {
+            validateAndSelectFeePayer(fee)
         } else {
-            fees.feeInSol.fromLamports(feePayer.decimals).scaleMedium()
+            showFees(source, fee)
         }
 
-        fee = SendFee.SolanaFee(feeAmount, feePayer, source.tokenSymbol)
-        val notEnoughFunds = fee?.let { sendFee ->
-            sendFee.feePayerToken.total.orZero() < sendFee.fee.orZero()
-        } ?: false
-        view?.showAccountFeeView(
-            fee = fee,
-            notEnoughFunds = notEnoughFunds
-        )
         calculateTotal(fee)
+    }
+
+    private fun showFees(source: Token.Active, fee: SendFee.SolanaFee) {
+        val inputAmount = tokenAmount.toLamports(source.decimals)
+        val isEnoughToCoverExpenses = fee.isEnoughToCoverExpenses(
+            sourceTokenTotal = source.totalInLamports,
+            inputAmount = inputAmount
+        )
+        Timber.tag("###").d("show fees $isEnoughToCoverExpenses")
+        if (isEnoughToCoverExpenses) {
+            view?.showAccountFeeView(fee = fee)
+        } else {
+            view?.showInsufficientFundsView(source.tokenSymbol, fee.feeUsd?.toPlainString())
+        }
+    }
+
+    private suspend fun validateAndSelectFeePayer(fee: SendFee.SolanaFee) {
+        val token = token ?: error("Source token cannot be null")
+        // no auto selection when SOL is being sent
+        if (token.isSOL) {
+            sendFee = null
+            view?.hideAccountFeeView()
+            return
+        }
+
+        // Assuming token is not SOL
+        val inputAmount = tokenAmount.toLamports(token.decimals)
+        val tokenTotal = token.total.toLamports(token.decimals)
+
+        /*
+         * Checking if fee payer is SOL, otherwise fee payer is already correctly set up
+         * - if there are enough SPL balance to cover fee, setting the default fee payer as SPL token
+         * - if there are not enough SPL balance to cover fee, we are doing nothing, since SOL is already selected
+         * */
+        when (fee.calculateFeePayerState(tokenTotal, inputAmount)) {
+            is FeePayerState.UpdateFeePayer -> {
+                sendInteractor.setFeePayerToken(token)
+            }
+            is FeePayerState.SwitchToSol -> {
+                sendInteractor.switchFeePayerToSol()
+            }
+        }
+
+        recalculate(feePayerToken = null, autoSelect = false)
+    }
+
+    /**
+     * Launches the auto-selection mechanism
+     * Selects automatically the fee payer token if there is enough balance
+     * Shows loading during the calculation
+     * */
+    private fun recalculate(feePayerToken: Token.Active?, autoSelect: Boolean) {
+        val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
+
+        feePayerJob?.cancel()
+        launch {
+            try {
+                view?.showAccountFeeViewLoading(isLoading = true)
+                val fees = calculateFeeRelayerFee(feePayer)
+                showFeeDetails(fees, feePayer, autoSelect)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error during FeeRelayer fee calculation")
+            } finally {
+                view?.showAccountFeeViewLoading(isLoading = false)
+            }
+        }.also { feePayerJob = it }
     }
 
     private suspend fun searchByUsername(username: String) {
@@ -694,7 +778,7 @@ class SendPresenter(
 
     private fun updateButton(amount: BigInteger, total: BigInteger, fee: SendFee?, shouldShowAmountWarning: Boolean) {
         val isAmountMoreThanBalance = amount.isMoreThan(total)
-        val isAmountWithFeeMoreThanBalance = fee != null && isAmountWithFeeMoreThanBalance(fee, amount, total)
+        val isEnoughToCoverExpenses = fee != null && fee.isEnoughToCoverExpenses(total, amount)
 
         val address = target?.searchAddress?.address
         val isMaxAmount = amount == total
@@ -704,12 +788,12 @@ class SendPresenter(
 
         val isSendButtonEnabled = isNotZero &&
             !isAmountMoreThanBalance &&
-            !isAmountWithFeeMoreThanBalance &&
+            isEnoughToCoverExpenses &&
             isValidAddress &&
             !shouldShowAmountWarning
 
         when {
-            isAmountWithFeeMoreThanBalance ->
+            !isEnoughToCoverExpenses ->
                 view?.showButtonText(R.string.send_insufficient_funds)
             isAmountMoreThanBalance ->
                 view?.showButtonText(R.string.swap_funds_not_enough)
@@ -733,13 +817,6 @@ class SendPresenter(
         view?.updateAvailableTextColor(availableColor)
         view?.showButtonEnabled(isSendButtonEnabled)
     }
-
-    private fun isAmountWithFeeMoreThanBalance(sendFee: SendFee, amount: BigInteger, total: BigInteger): Boolean =
-        if (sendFee.feePayerSymbol == sendFee.sourceTokenSymbol) {
-            total < amount + sendFee.feeLamports
-        } else {
-            total < amount && sendFee.feeTotalLamports < sendFee.feeLamports
-        }
 
     private fun isAddressValid(address: String?): Boolean =
         !address.isNullOrBlank() && address.trim().length >= VALID_ADDRESS_LENGTH

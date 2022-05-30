@@ -1,54 +1,122 @@
 package org.p2p.wallet.send.model
 
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
+import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.fromLamports
+import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import java.math.BigDecimal
 import java.math.BigInteger
 
-sealed class SendFee(
-    open val fee: BigDecimal,
-    open val feePayerToken: Token.Active,
-    open val sourceTokenSymbol: String
-) {
+sealed interface SendFee {
 
-    val feeLamports: BigInteger
-        get() = fee.toLamports(feePayerToken.decimals)
-
-    val feeTotalLamports: BigInteger
-        get() = feePayerToken.total.toLamports(feePayerToken.decimals)
-
-    val feeUsd: BigDecimal?
-        get() = fee.toUsd(feePayerToken)
-
+    val feePayerToken: Token.Active
     val formattedFee: String
-        get() = "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
+    val sourceTokenSymbol: String
+    val feeUsd: BigDecimal?
+    val feeDecimals: BigDecimal
 
-    val feePayerSymbol: String
-        get() = feePayerToken.tokenSymbol
+    fun isEnoughToCoverExpenses(sourceTokenTotal: BigInteger, inputAmount: BigInteger): Boolean
 
-    data class RenBtcFee(
-        override val fee: BigDecimal,
+    class RenBtcFee(
         override val feePayerToken: Token.Active,
+        private val feeLamports: BigInteger
+    ) : SendFee {
+
         override val sourceTokenSymbol: String
-    ) : SendFee(fee, feePayerToken, sourceTokenSymbol) {
+            get() = feePayerToken.tokenSymbol
+
+        override val formattedFee: String
+            get() = "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
+
+        override val feeDecimals: BigDecimal
+            get() = fee
+
+        override val feeUsd: BigDecimal?
+            get() = fee.toUsd(feePayerToken)
+
+        override fun isEnoughToCoverExpenses(
+            sourceTokenTotal: BigInteger,
+            inputAmount: BigInteger
+        ): Boolean =
+            sourceTokenTotal > inputAmount + feeLamports
+
+        val feePayerSymbol: String
+            get() = feePayerToken.tokenSymbol
 
         val fullFee: String
-            get() = "$fee $feePayerSymbol ${approxFeeUsd.orEmpty()}"
+            get() = "$fee ${feePayerToken.tokenSymbol} ${approxFeeUsd.orEmpty()}"
 
-        val approxFeeUsd: String? get() = fee.toUsd(feePayerToken)?.let { "(~$$it)" }
+        val approxFeeUsd: String?
+            get() = fee.toUsd(feePayerToken)?.let { "(~$$it)" }
+
+        val fee: BigDecimal
+            get() = feeLamports.fromLamports(feePayerToken.decimals).scaleMedium()
     }
 
-    data class SolanaFee(
-        override val fee: BigDecimal,
+    /*
+    * feeLamports is only in SOL
+    * */
+    class SolanaFee(
+        override val sourceTokenSymbol: String,
         override val feePayerToken: Token.Active,
-        override val sourceTokenSymbol: String
-    ) : SendFee(fee, feePayerToken, sourceTokenSymbol) {
+        val feeLamports: BigInteger,
+        val feeInPayingToken: BigInteger
+    ) : SendFee {
+
+        override val feeDecimals: BigDecimal
+            get() = currentDecimals.scaleMedium()
+
+        override val formattedFee: String
+            get() = "${currentDecimals.toPlainString()} ${feePayerToken.tokenSymbol}"
+
+        override val feeUsd: BigDecimal?
+            get() = currentDecimals.toUsd(feePayerToken)
+
+        override fun isEnoughToCoverExpenses(
+            sourceTokenTotal: BigInteger,
+            inputAmount: BigInteger
+        ): Boolean = when {
+            // if source is SOL, then fee payer is SOL as well
+            sourceTokenSymbol == SOL_SYMBOL ->
+                sourceTokenTotal >= inputAmount + feeLamports
+            // assuming that source token is not SOL
+            feePayerToken.isSOL ->
+                sourceTokenTotal >= inputAmount && feePayerTotalLamports > feeLamports
+            else ->
+                // assuming that source token and fee payer are same
+                sourceTokenTotal >= inputAmount + feeInPayingToken
+        }
+
+        fun calculateFeePayerState(
+            sourceTokenTotal: BigInteger,
+            inputAmount: BigInteger
+        ): FeePayerState = when {
+            // if there is enough SPL token balance to cover amount and fee
+            sourceTokenSymbol != SOL_SYMBOL && sourceTokenTotal > feeInPayingToken + inputAmount ->
+                UpdateFeePayer
+            else ->
+                SwitchToSol
+        }
+
+        val feePayerSymbol: String
+            get() = feePayerToken.tokenSymbol
 
         val accountCreationFullFee: String
-            get() = "$fee $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"
+            get() = "$feeDecimals $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"
 
         val approxAccountCreationFeeUsd: String?
-            get() = fee.toUsd(feePayerToken)?.let { "(~$$it)" }
+            get() = feeDecimals.toUsd(feePayerToken)?.let { "(~$$it)" }
+
+        private val feePayerTotalLamports: BigInteger
+            get() = feePayerToken.total.toLamports(feePayerToken.decimals)
+
+        private val currentDecimals: BigDecimal =
+            (if (feePayerToken.isSOL) feeLamports else feeInPayingToken)
+                .fromLamports(feePayerToken.decimals)
+                .scaleMedium()
     }
 }

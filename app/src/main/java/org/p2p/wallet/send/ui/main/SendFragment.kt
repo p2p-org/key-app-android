@@ -342,32 +342,28 @@ class SendFragment :
         }
     }
 
-    override fun showAccountFeeView(fee: SendFee?, notEnoughFunds: Boolean) {
+    override fun showAccountFeeView(fee: SendFee) {
         with(binding) {
-            if (fee == null) {
-                accountCardView.isVisible = false
-                accountInfoTextView.isVisible = false
-                return
-            }
-
             val tokenSymbol = fee.sourceTokenSymbol
             accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
             accountInfoTextView.isVisible = true
             accountCardView.isVisible = true
 
-            val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
-            accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
-            if (notEnoughFunds) {
-                accountImageView.setBackgroundResource(R.drawable.bg_error_rounded)
-                accountImageView.setImageResource(R.drawable.ic_error)
-                accountFeeValueTextView.text = getString(R.string.send_not_enough_funds)
-                accountFeeValueTextView.setTextColor(getColor(R.color.systemErrorMain))
-            } else {
-                accountImageView.background = null
-                accountFeeValueTextView.text = fee.formattedFee
-                accountFeeValueTextView.setTextColor(getColor(R.color.textIconPrimary))
-                glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
-            }
+            accountFeeView.showFee(fee)
+        }
+    }
+
+    override fun hideAccountFeeView() {
+        binding.accountCardView.isVisible = false
+        binding.accountInfoTextView.isVisible = false
+    }
+
+    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: String?) {
+        with(binding) {
+            accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
+            accountInfoTextView.isVisible = true
+            accountCardView.isVisible = true
+            accountFeeView.showInsufficientView(feeUsd)
         }
     }
 
@@ -482,8 +478,12 @@ class SendFragment :
         binding.maxTextView.isVisible = isVisible
     }
 
-    override fun showSearchLoading(isLoading: Boolean) {
+    override fun showIndeterminateLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
+    }
+
+    override fun showAccountFeeViewLoading(isLoading: Boolean) {
+        binding.accountFeeView.setLoading(isLoading)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {
@@ -495,7 +495,6 @@ class SendFragment :
         setTextDrawableColor(availableColor)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
         binding.availableTextView.text = AmountUtils.format(available)
     }
