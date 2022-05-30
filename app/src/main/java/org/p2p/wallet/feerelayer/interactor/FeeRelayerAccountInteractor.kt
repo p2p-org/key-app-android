@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
@@ -33,13 +34,15 @@ class FeeRelayerAccountInteractor(
     suspend fun getRelayInfo(): RelayInfo = withContext(Dispatchers.IO) {
         if (relayInfo == null) {
             // get minimum token account balance
-            val minimumTokenAccountBalance = async { amountRepository.getMinBalanceForRentExemption() }
+            val minimumTokenAccountBalance = async {
+                amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
+            }
             // get minimum relay account balance
             val minimumRelayAccountBalance = async { amountRepository.getMinBalanceForRentExemption(0) }
             // get fee payer address
             val feePayerAddress = async { feeRelayerRepository.getFeePayerPublicKey() }
             // get lamportsPerSignature
-            val lamportsPerSignature = async { amountRepository.getLamportsPerSignature() }
+            val lamportsPerSignature = async { amountRepository.getLamportsPerSignature(commitment = null) }
 
             relayInfo = RelayInfo(
                 minimumTokenAccountRent = minimumTokenAccountBalance.await(),

@@ -10,6 +10,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
@@ -86,7 +87,7 @@ class SendInteractor(
         }
 
         val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
-        val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption()
+        val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
         var transactionFee: BigInteger = BigInteger.ZERO
 
@@ -290,7 +291,7 @@ class SendInteractor(
         val feePayer = feePayerPublicKey ?: account.publicKey
 
         val minRentExemption =
-            minBalanceForRentExemption ?: amountRepository.getMinBalanceForRentExemption()
+            minBalanceForRentExemption ?: amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
             destinationAddress = destinationAddress.toPublicKey(),

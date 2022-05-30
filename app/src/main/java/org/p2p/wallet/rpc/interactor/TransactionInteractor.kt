@@ -30,7 +30,8 @@ class TransactionInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null
     ): PreparedTransaction {
-        val actualLamportsPerSignature = lamportsPerSignature ?: rpcAmountInteractor.getLamportsPerSignature()
+        val actualLamportsPerSignature =
+            lamportsPerSignature ?: rpcAmountInteractor.getLamportsPerSignature(commitment = null)
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)

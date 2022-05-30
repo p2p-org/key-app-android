@@ -1,6 +1,7 @@
 package org.p2p.wallet.receive.network
 
 import kotlinx.coroutines.launch
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
@@ -135,7 +136,7 @@ class ReceiveNetworkTypePresenter(
     }
 
     private suspend fun createBtcWallet(sol: Token.Active) {
-        val btcMinPrice = transactionAmountRepository.getMinBalanceForRentExemption()
+        val btcMinPrice = transactionAmountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - btcMinPrice) >= BigInteger.ZERO
         if (isAmountEnough) {

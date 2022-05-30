@@ -146,11 +146,11 @@ class SendPresenter(
         }
 
         calculateRenBtcFeeIfNeeded(hideTotal = true)
-        calculateData(newToken)
+        calculateByMode(newToken)
         updateMaxButtonVisibility(newToken)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
 
-        recalculate(feePayerToken = newToken, autoSelect = true)
+        findValidFeePayer(feePayerToken = newToken, autoSelect = true)
     }
 
     override fun setTargetResult(result: SearchResult?) {
@@ -173,7 +173,7 @@ class SendPresenter(
         }
 
         val sourceToken = token ?: return
-        calculateData(sourceToken)
+        calculateByMode(sourceToken)
     }
 
     private fun selectNetworkType(networkType: NetworkType) {
@@ -216,12 +216,12 @@ class SendPresenter(
         val token = token ?: return
         updateMaxButtonVisibility(token)
         calculateRenBtcFeeIfNeeded()
-        calculateData(token)
+        calculateByMode(token)
 
         /*
         * Calculating if we can pay with current token instead of already selected fee payer token
         * */
-        recalculate(feePayerToken = token, autoSelect = true)
+        findValidFeePayer(feePayerToken = token, autoSelect = true)
     }
 
     override fun setNetworkDestination(networkType: NetworkType) {
@@ -317,7 +317,7 @@ class SendPresenter(
         launch {
             try {
                 sendInteractor.setFeePayerToken(feePayerToken)
-                recalculate(feePayerToken = feePayerToken, autoSelect = false)
+                findValidFeePayer(feePayerToken = feePayerToken, autoSelect = false)
             } catch (e: Throwable) {
                 Timber.e(e, "Error updating fee payer token")
             }
@@ -356,7 +356,7 @@ class SendPresenter(
         }
         sendAnalytics.logSendChangingCurrency(sendCurrency)
         updateMaxButtonVisibility(token)
-        calculateData(token)
+        calculateByMode(token)
     }
 
     private fun updateMaxButtonVisibility(token: Token.Active) {
@@ -428,7 +428,7 @@ class SendPresenter(
     private fun handleCheckAddressResult(checkAddressResult: SolanaAddress) {
         when (checkAddressResult) {
             is SolanaAddress.NewAccountNeeded ->
-                recalculate(feePayerToken = null, autoSelect = true)
+                findValidFeePayer(feePayerToken = null, autoSelect = true)
             is SolanaAddress.AccountExists,
             is SolanaAddress.InvalidAddress -> {
                 calculateTotal(sendFee = null)
@@ -529,7 +529,7 @@ class SendPresenter(
             status = TransactionStatus.PENDING
         )
 
-    private fun calculateData(token: Token.Active) {
+    private fun calculateByMode(token: Token.Active) {
         if (calculationJob?.isActive == true) return
 
         launch {
@@ -571,6 +571,7 @@ class SendPresenter(
 
     private fun calculateTotal(sendFee: SendFee?) {
         val sourceToken = token ?: return
+        val amount = tokenAmount.toLamports(sourceToken.decimals)
 
         val data = SendTotal(
             total = tokenAmount,
@@ -581,7 +582,6 @@ class SendPresenter(
             sourceSymbol = sourceToken.tokenSymbol
         )
 
-        val amount = tokenAmount.toLamports(sourceToken.decimals)
         val shouldShowAmountWarning = shouldShowAmountWarning(amount)
 
         updateButton(
@@ -622,6 +622,25 @@ class SendPresenter(
         }
     }
 
+    /**
+     * Launches the auto-selection mechanism
+     * Selects automatically the fee payer token if there is enough balance
+     * Shows loading during the calculation
+     * */
+    private fun findValidFeePayer(feePayerToken: Token.Active?, autoSelect: Boolean) {
+        val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
+
+        feePayerJob?.cancel()
+        launch {
+            try {
+                val fees = calculateFeeRelayerFee(feePayer)
+                showFeeDetails(fees, feePayer, autoSelect)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error during FeeRelayer fee calculation")
+            }
+        }.also { feePayerJob = it }
+    }
+
     /*
     * Assume this to be called only if associated account address creation needed
     * */
@@ -640,34 +659,52 @@ class SendPresenter(
     private suspend fun showFeeDetails(
         fees: FeeRelayerSendFee?,
         feePayerToken: Token.Active,
-        autoSelect: Boolean = true
+        autoSelect: Boolean
     ) {
         val source = token ?: throw IllegalStateException("Source token is null")
-
-        /*
-         * Checking if fee or feeInPayingToken are null
-         * feeInPayingToken can be null only for renBTC network
-         * */
-        if (fees?.feeInPayingToken == null) {
-            sendFee = null
-            view?.hideAccountFeeView()
-            return
-        }
-
-        val fee = SendFee.SolanaFee(
-            feePayerToken = feePayerToken,
-            sourceTokenSymbol = source.tokenSymbol,
-            feeLamports = fees.feeInSol,
-            feeInPayingToken = fees.feeInPayingToken
-        ).also { sendFee = it }
+        val fee = buildSolanaFee(feePayerToken, source, fees) ?: return
 
         if (autoSelect) {
             validateAndSelectFeePayer(fee)
         } else {
             showFees(source, fee)
+            calculateTotal(fee)
+        }
+    }
+
+    private suspend fun recalculate() {
+        /*
+         * Optimized recalculation and UI update
+         * */
+        val source = token ?: throw IllegalStateException("Source token is null")
+        val newFeePayer = sendInteractor.getFeePayerToken()
+        val feeRelayerFee = calculateFeeRelayerFee(newFeePayer)
+        val fee = buildSolanaFee(newFeePayer, source, feeRelayerFee) ?: return
+        showFees(source, fee)
+        calculateTotal(fee)
+    }
+
+    private fun buildSolanaFee(
+        newFeePayer: Token.Active,
+        source: Token.Active,
+        fees: FeeRelayerSendFee?
+    ): SendFee.SolanaFee? {
+        /*
+        * Checking if fee or feeInPayingToken are null
+        * feeInPayingToken can be null only for renBTC network
+        * */
+        if (fees?.feeInPayingToken == null) {
+            sendFee = null
+            view?.hideAccountFeeView()
+            return null
         }
 
-        calculateTotal(fee)
+        return SendFee.SolanaFee(
+            feePayerToken = newFeePayer,
+            sourceTokenSymbol = source.tokenSymbol,
+            feeLamports = fees.feeInSol,
+            feeInPayingToken = fees.feeInPayingToken
+        ).also { sendFee = it }
     }
 
     private fun showFees(source: Token.Active, fee: SendFee.SolanaFee) {
@@ -707,38 +744,7 @@ class SendPresenter(
             is FeePayerState.SwitchToSol -> sendInteractor.switchFeePayerToSol()
         }
 
-        /*
-        * Optimized recalculation and UI update
-        * */
-        val newFeePayer = sendInteractor.getFeePayerToken()
-        val fees = calculateFeeRelayerFee(newFeePayer)
-        showFeeDetails(
-            fees = fees,
-            feePayerToken = newFeePayer,
-            autoSelect = false
-        )
-    }
-
-    /**
-     * Launches the auto-selection mechanism
-     * Selects automatically the fee payer token if there is enough balance
-     * Shows loading during the calculation
-     * */
-    private fun recalculate(feePayerToken: Token.Active?, autoSelect: Boolean) {
-        val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
-
-        feePayerJob?.cancel()
-        launch {
-            try {
-                view?.showAccountFeeViewLoading(isLoading = true)
-                val fees = calculateFeeRelayerFee(feePayer)
-                showFeeDetails(fees, feePayer, autoSelect)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error during FeeRelayer fee calculation")
-            } finally {
-                view?.showAccountFeeViewLoading(isLoading = false)
-            }
-        }.also { feePayerJob = it }
+        recalculate()
     }
 
     private suspend fun searchByUsername(username: String) {

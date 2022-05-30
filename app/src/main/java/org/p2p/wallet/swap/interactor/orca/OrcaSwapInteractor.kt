@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.interactor.orca
 
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
@@ -205,8 +206,8 @@ class OrcaSwapInteractor(
     ): Pair<BigInteger, List<BigInteger>> {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
 
-        val lamportsPerSignature = rpcAmountRepository.getLamportsPerSignature()
-        val minRentExempt = rpcAmountRepository.getMinBalanceForRentExemption()
+        val lamportsPerSignature = rpcAmountRepository.getLamportsPerSignature(commitment = null)
+        val minRentExempt = rpcAmountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
         var transactionFees: BigInteger = BigInteger.ZERO
 
