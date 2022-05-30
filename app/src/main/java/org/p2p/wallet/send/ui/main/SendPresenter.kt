@@ -560,7 +560,7 @@ class SendPresenter(
         tokenAmount = inputAmount.toBigDecimalOrZero()
         usdAmount = tokenAmount.multiply(token.usdRateOrZero)
 
-        val usdAround = tokenAmount.times(token.usdRateOrZero).scaleMedium()
+        val usdAround = tokenAmount.times(token.usdRateOrZero)
         val total = token.total.scaleLong()
         view?.showUsdAroundValue(usdAround)
         view?.showAvailableValue(total, token.tokenSymbol)
