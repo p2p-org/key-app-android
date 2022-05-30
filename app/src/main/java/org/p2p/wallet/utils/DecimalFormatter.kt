@@ -6,7 +6,7 @@ import java.util.Locale
 
 private const val DECIMAL_FORMAT = "###,###."
 
-object DecimalFormatUtil {
+object DecimalFormatter {
 
     fun format(value: Number, decimals: Int): String {
         val format = DECIMAL_FORMAT + "#".repeat(decimals)

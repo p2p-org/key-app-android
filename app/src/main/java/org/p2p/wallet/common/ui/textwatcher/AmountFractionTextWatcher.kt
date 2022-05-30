@@ -4,7 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import org.p2p.wallet.R
-import org.p2p.wallet.utils.DecimalFormatUtil
+import org.p2p.wallet.utils.DecimalFormatter
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.orZero
 import java.lang.ref.WeakReference
@@ -117,6 +117,6 @@ class AmountFractionTextWatcher(
     }
 
     private fun String.formatDecimal(fractionLength: Int): String {
-        return DecimalFormatUtil.format(this.toBigDecimal(), fractionLength)
+        return DecimalFormatter.format(this.toBigDecimal(), fractionLength)
     }
 }
