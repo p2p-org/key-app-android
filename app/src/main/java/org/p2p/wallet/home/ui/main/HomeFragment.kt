@@ -87,7 +87,7 @@ class HomeFragment :
         actionButtonsView.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
-            presenter.refreshTokenAndPrices()
+            presenter.refreshTokens()
         }
 
         appBarLayout.addOnOffsetChangedListener(
