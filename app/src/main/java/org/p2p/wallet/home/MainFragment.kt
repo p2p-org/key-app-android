@@ -32,9 +32,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         fun create(): MainFragment = MainFragment()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
                 navigate(R.id.itemHome)
                 binding.bottomNavigation.menu[0].isChecked = true
@@ -42,10 +42,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                 requireActivity().finish()
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         with(binding) {
             bottomNavigation.setOnItemSelectedListener {
                 if (it.itemId == R.id.itemFeedback) {
@@ -78,7 +74,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_COINS)
                     HomeFragment.create()
                 }
-
                 Tabs.HISTORY -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
                     HistoryFragment.create()
