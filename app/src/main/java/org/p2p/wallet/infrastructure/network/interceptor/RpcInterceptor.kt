@@ -52,7 +52,7 @@ open class RpcInterceptor(
         val json = getRequestJson(request)
 
         val url = request.url
-
+        Timber.tag("____________").d(json.toString())
         val key = RpcConstants.REQUEST_METHOD_KEY
         val historyEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS
         val signaturesEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_SIGNATURES
