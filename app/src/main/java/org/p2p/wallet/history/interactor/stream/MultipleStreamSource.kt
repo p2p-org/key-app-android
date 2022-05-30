@@ -12,15 +12,19 @@ class MultipleStreamSource(
     private val sources: List<HistoryStreamSource>
 ) : AbstractStreamSource() {
     private val buffer = mutableListOf<HistoryStreamItem>()
-    private val executor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val executor =
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     override suspend fun currentItem(): HistoryStreamItem? =
-        withContext(
-            executor + CoroutineExceptionHandler { h, t ->
-            }
-        ) {
+        withContext(executor + CoroutineExceptionHandler { _, _ -> }) {
             var maxValue: HistoryStreamItem?
-            val items = sources.map { async(this.coroutineContext) { it.currentItem() } }.awaitAll().filterNotNull()
+
+            val items = sources.map {
+                async(this.coroutineContext) { it.currentItem() }
+            }
+                .awaitAll()
+                .filterNotNull()
+
             if (items.isEmpty()) {
                 return@withContext null
             }

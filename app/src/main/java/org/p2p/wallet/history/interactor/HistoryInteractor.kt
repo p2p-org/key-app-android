@@ -19,6 +19,7 @@ import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private const val DAY_IN_MILLISECONDS = 60 * 60 * 24
+private const val PAGE_SIZE = 10
 
 class HistoryInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
@@ -30,9 +31,9 @@ class HistoryInteractor(
     private val userInteractor: UserInteractor
 ) {
     private val allSignatures = mutableListOf<RpcTransactionSignature>()
-    private val tokenSignaturesMap = HashMap<String, MutableList<RpcTransactionSignature>>()
+    private val tokenSignaturesMap = mutableMapOf<String, MutableList<RpcTransactionSignature>>()
     private lateinit var multipleStreamSource: HistoryStreamSource
-    private val accountsStreamSources = HashMap<String, HistoryStreamSource>()
+    private val accountsStreamSources = mutableMapOf<String, HistoryStreamSource>()
     private val historyStreamSources = mutableListOf<HistoryStreamSource>()
 
     private suspend fun initStreamSources() {
@@ -64,7 +65,7 @@ class HistoryInteractor(
         if (historyStreamSources.isEmpty()) {
             initStreamSources()
         }
-        if (tokenSignaturesMap[account] == null) {
+        if (account !in tokenSignaturesMap) {
             tokenSignaturesMap[account] = mutableListOf()
         }
         if (isRefresh) {
@@ -83,9 +84,9 @@ class HistoryInteractor(
     2) We try to find the latest transaction signature from loaded transactions signatures
     3) Set period for transactions for one day, doing simple calculation
     dayPeriod = lastSignatureTime - DAY_IN_MILLISECONDS
-    4)Loading signatures and filter them by this configuration
-    5)Doing 4 step before we don't upload one page size of signatures
-    6)Finally try to load transactions for this signatures
+    4) Loading signatures and filter them by this configuration
+    5) Doing 4 step before we don't upload one page size of signatures
+    6) Finally try to load transactions for this signatures
      */
 
     private suspend fun loadAllSignatures(): MutableList<RpcTransactionSignature> {
@@ -100,7 +101,7 @@ class HistoryInteractor(
                     if (!allSignatures.contains(currentItem?.streamSource)) {
                         transactionsSignatures.add(currentItem?.streamSource ?: break)
                     }
-                    if (transactionsSignatures.size >= 10) {
+                    if (transactionsSignatures.size >= PAGE_SIZE) {
                         return@supervisorScope transactionsSignatures
                     }
                 }
@@ -119,7 +120,7 @@ class HistoryInteractor(
 
         while (true) {
             val firstItem = accountStreamSource.currentItem() ?: break
-            val time = (firstItem.streamSource?.blockTime ?: -1) - (60 * 60 * 24)
+            val time = (firstItem.streamSource?.blockTime ?: -1) - (DAY_IN_MILLISECONDS)
 
             while (true) {
                 val currentItem = accountStreamSource.next(StreamSourceConfiguration(time))

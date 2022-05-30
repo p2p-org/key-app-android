@@ -42,8 +42,6 @@ open class RpcInterceptor(
         return if (response.isSuccessful) {
             handleResponse(response)
         } else {
-            val json = getRequestJson(request)
-            Timber.tag("TokenHistoryBuffer").d(json.toString())
             val responseString = response.body!!.string()
             throw extractGeneralException(responseString)
         }

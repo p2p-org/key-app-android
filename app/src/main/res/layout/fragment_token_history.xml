@@ -134,115 +134,13 @@
             android:background="@drawable/bg_buttons"
             app:layout_constraintTop_toBottomOf="@id/emptyStateLayout" />
 
-        <com.facebook.shimmer.ShimmerFrameLayout
+        <include
             android:id="@+id/shimmerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            layout="@layout/view_history_shimmer"
             app:layout_constraintTop_toBottomOf="@id/actionButtonsView"
-            app:shimmer_auto_start="true"
-            app:shimmer_base_alpha="1"
-            app:shimmer_base_color="@color/backgroundAppStroke"
-            app:shimmer_highlight_alpha="0"
-            app:shimmer_highlight_color="@color/backgroundAppStroke"
-            >
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="16dp">
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <ImageView
-                    android:layout_width="104dp"
-                    android:layout_height="16dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_stroke_rounded"
-                    android:backgroundTint="@color/backgroundAppStroke" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <ImageView
-                    android:layout_width="104dp"
-                    android:layout_height="16dp"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_stroke_rounded"
-                    android:backgroundTint="@color/backgroundAppStroke" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-
-                <include
-                    layout="@layout/item_history_shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
-            </LinearLayout>
-
-        </com.facebook.shimmer.ShimmerFrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

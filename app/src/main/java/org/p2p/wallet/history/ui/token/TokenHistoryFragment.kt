@@ -166,7 +166,7 @@ class TokenHistoryFragment :
     override fun showPagingState(newState: PagingState) {
         historyAdapter.setPagingState(newState)
         with(binding) {
-            shimmerView.isVisible = newState == PagingState.InitialLoading
+            shimmerView.root.isVisible = newState == PagingState.InitialLoading
             refreshLayout.isVisible = newState != PagingState.InitialLoading
             emptyStateLayout.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
             historyRecyclerView.isVisible =
