@@ -1,5 +1,7 @@
 package org.p2p.wallet.send.interactor
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
@@ -20,8 +22,8 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
@@ -59,9 +61,9 @@ class SendInteractor(
         orcaInfoInteractor.load()
     }
 
-    fun setFeePayerToken(newToken: Token.Active) {
-        if (!this::feePayerToken.isInitialized) error("PayToken is not initialized")
-        if (newToken.publicKey.equals(feePayerToken)) return
+    suspend fun setFeePayerToken(newToken: Token.Active) = withContext(Dispatchers.Default) {
+        if (!::feePayerToken.isInitialized) error("FeePayerToken is not initialized")
+        if (newToken.publicKey.equals(feePayerToken)) return@withContext
 
         feePayerToken = newToken
     }
@@ -124,11 +126,11 @@ class SendInteractor(
     suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit =
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
-    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): CheckAddressResult =
+    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): SolanaAddress =
         try {
             val isSolAddress = addressInteractor.isSolAddress(destinationAddress.toBase58())
             if (isSolAddress && token.isSOL) {
-                CheckAddressResult.AccountExists
+                SolanaAddress.AccountExists
             } else {
                 val address = addressInteractor.findSplTokenAddressData(
                     destinationAddress = destinationAddress,
@@ -138,14 +140,14 @@ class SendInteractor(
                 val accountAddress = address.destinationAddress.toBase58()
                 if (address.shouldCreateAccount) {
                     Timber.tag("Address").d("Account should be created: $accountAddress")
-                    CheckAddressResult.NewAccountNeeded
+                    SolanaAddress.NewAccountNeeded
                 } else {
                     Timber.tag("Address").d("Account exists: $accountAddress")
-                    CheckAddressResult.AccountExists
+                    SolanaAddress.AccountExists
                 }
             }
         } catch (e: IllegalStateException) {
-            CheckAddressResult.InvalidAddress
+            SolanaAddress.InvalidAddress
         }
 
     suspend fun sendTransaction(

@@ -23,15 +23,15 @@ import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.send.model.CheckAddressResult
 import org.p2p.wallet.send.model.CurrencyMode
+import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchAddress
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
+import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.send.model.Target
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.transaction.TransactionManager
@@ -147,7 +147,6 @@ class SendPresenter(
 
         calculateRenBtcFeeIfNeeded(hideTotal = true)
         calculateData(newToken)
-        checkAddress(target?.searchAddress?.address)
         updateMaxButtonVisibility(newToken)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
 
@@ -426,12 +425,12 @@ class SendPresenter(
         }
     }
 
-    private fun handleCheckAddressResult(checkAddressResult: CheckAddressResult) {
+    private fun handleCheckAddressResult(checkAddressResult: SolanaAddress) {
         when (checkAddressResult) {
-            is CheckAddressResult.NewAccountNeeded ->
+            is SolanaAddress.NewAccountNeeded ->
                 recalculate(feePayerToken = null, autoSelect = true)
-            is CheckAddressResult.AccountExists,
-            is CheckAddressResult.InvalidAddress -> {
+            is SolanaAddress.AccountExists,
+            is SolanaAddress.InvalidAddress -> {
                 calculateTotal(sendFee = null)
                 view?.hideAccountFeeView()
             }
@@ -677,7 +676,7 @@ class SendPresenter(
             sourceTokenTotal = source.totalInLamports,
             inputAmount = inputAmount
         )
-        Timber.tag("###").d("show fees $isEnoughToCoverExpenses")
+
         if (isEnoughToCoverExpenses) {
             view?.showAccountFeeView(fee = fee)
         } else {
@@ -704,15 +703,20 @@ class SendPresenter(
          * - if there are not enough SPL balance to cover fee, we are doing nothing, since SOL is already selected
          * */
         when (fee.calculateFeePayerState(tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                sendInteractor.setFeePayerToken(token)
-            }
-            is FeePayerState.SwitchToSol -> {
-                sendInteractor.switchFeePayerToSol()
-            }
+            is FeePayerState.UpdateFeePayer -> sendInteractor.setFeePayerToken(token)
+            is FeePayerState.SwitchToSol -> sendInteractor.switchFeePayerToSol()
         }
 
-        recalculate(feePayerToken = null, autoSelect = false)
+        /*
+        * Optimized recalculation and UI update
+        * */
+        val newFeePayer = sendInteractor.getFeePayerToken()
+        val fees = calculateFeeRelayerFee(newFeePayer)
+        showFeeDetails(
+            fees = fees,
+            feePayerToken = newFeePayer,
+            autoSelect = false
+        )
     }
 
     /**
