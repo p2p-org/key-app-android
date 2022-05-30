@@ -10,8 +10,8 @@ class FeatureTogglesPresenter(
     private val appFeatureFlags: AppFeatureFlags
 ) : BasePresenter<FeatureTogglesContract.View>(), FeatureTogglesContract.Presenter {
 
-    override fun loadData() {
-        view?.showSettings(getSettingsRows())
+    override fun loadFeatureToggles() {
+        view?.showFeatureToggles(getFeatureToggles())
     }
 
     override fun onToggleCheckedListener(@IdRes toggleId: Int, toggleChecked: Boolean) {
@@ -21,7 +21,7 @@ class FeatureTogglesPresenter(
         }
     }
 
-    private fun getSettingsRows(): List<SettingsRow> {
+    private fun getFeatureToggles(): List<SettingsRow.Toggle> {
         return listOf(
             SettingsRow.Toggle(
                 titleResId = R.string.feature_auto_update,
