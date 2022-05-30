@@ -16,8 +16,9 @@ class FeatureTogglesPresenter(
 
     override fun onToggleCheckedListener(@IdRes toggleId: Int, toggleChecked: Boolean) {
         when (toggleId) {
-            R.id.enable_dev_net -> appFeatureFlags.setIsDevnetEnabled(toggleChecked)
-            R.id.polling_enabled -> appFeatureFlags.setPollingEnabled(toggleChecked)
+            R.id.enable_dev_net -> appFeatureFlags.isDevnetEnabled = toggleChecked
+            R.id.polling_enabled -> appFeatureFlags.isPollingEnabled = toggleChecked
+            R.id.coin_gecko_enabled -> appFeatureFlags.useCoinGeckoForPrices = toggleChecked
         }
     }
 
@@ -32,6 +33,11 @@ class FeatureTogglesPresenter(
                 titleResId = R.string.feature_dev_net,
                 toggleId = R.id.enable_dev_net,
                 toggleChecked = appFeatureFlags.isDevnetEnabled
+            ),
+            SettingsRow.Toggle(
+                titleResId = R.string.feature_coin_gecko,
+                toggleId = R.id.coin_gecko_enabled,
+                toggleChecked = appFeatureFlags.useCoinGeckoForPrices
             ),
         )
     }

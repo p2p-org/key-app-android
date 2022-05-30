@@ -8,4 +8,5 @@
     <!--feature toggle ids-->
     <item name="enable_dev_net" type="id" />
     <item name="polling_enabled" type="id" />
+    <item name="coin_gecko_enabled" type="id" />
 </resources>

@@ -1,8 +1,7 @@
 package org.p2p.wallet.user.interactor
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
-import kotlinx.coroutines.flow.Flow
+import android.content.SharedPreferences
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
@@ -12,6 +11,7 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.emptyString
+import kotlinx.coroutines.flow.Flow
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
