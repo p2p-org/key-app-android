@@ -1,5 +1,6 @@
 package org.p2p.wallet.renbtc.interactor
 
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flattenMerge
@@ -7,7 +8,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.model.RenBtcSession
@@ -22,8 +22,7 @@ class RenBtcInteractor(
     private val databaseRepository: RenLoaclRepository,
     private val localRepository: RenStateLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val renTransactionManager: RenTransactionManager,
-    private val appScope: AppScope
+    private val renTransactionManager: RenTransactionManager
 ) {
 
     fun getAllTransactions(): List<RenTransaction> = renTransactionManager.getAllTransactions()
@@ -52,14 +51,14 @@ class RenBtcInteractor(
         databaseRepository.clearSessionData()
     }
 
-    suspend fun generateSession(): LockAndMint.Session = with(appScope) {
+    suspend fun generateSession(): LockAndMint.Session = coroutineScope {
         databaseRepository.clearSessionData()
         val session = renTransactionManager.initializeSession(null, tokenKeyProvider.publicKey)
         setSessionSate(RenBtcSession.Active(session))
         session
     }
 
-    suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session = with(appScope) {
+    suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session = coroutineScope {
         databaseRepository.clearSessionData()
         val session = renTransactionManager.initializeSession(session, tokenKeyProvider.publicKey)
         setSessionSate(RenBtcSession.Active(session))
