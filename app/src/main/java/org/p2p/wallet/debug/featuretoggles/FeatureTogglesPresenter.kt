@@ -18,6 +18,7 @@ class FeatureTogglesPresenter(
         when (toggleId) {
             R.id.enable_dev_net -> appFeatureFlags.setIsDevnetEnabled(toggleChecked)
             R.id.polling_enabled -> appFeatureFlags.setPollingEnabled(toggleChecked)
+            R.id.ssl_pinning_enabled -> appFeatureFlags.setIsSslPinningEnabled(toggleChecked)
         }
     }
 
@@ -27,6 +28,11 @@ class FeatureTogglesPresenter(
                 titleResId = R.string.feature_auto_update,
                 toggleId = R.id.polling_enabled,
                 toggleChecked = appFeatureFlags.isPollingEnabled
+            ),
+            SettingsRow.Toggle(
+                titleResId = R.string.feature_ssl_pinning,
+                toggleId = R.id.ssl_pinning_enabled,
+                toggleChecked = appFeatureFlags.isSslPinningEnabled
             ),
             SettingsRow.Toggle(
                 titleResId = R.string.feature_dev_net,

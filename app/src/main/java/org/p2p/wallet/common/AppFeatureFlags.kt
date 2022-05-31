@@ -6,6 +6,7 @@ import org.p2p.wallet.BuildConfig
 
 private const val KEY_POLLING_ENABLED = "KEY_POLLING_ENABLED"
 private const val KEY_DEV_NET_ENABLED = "KEY_DEV_NET_ENABLED"
+private const val KEY_SSL_PINNING_ENABLED = "KEY_SSL_PINNING_ENABLED"
 
 class AppFeatureFlags(private val sharedPreferences: SharedPreferences) {
 
@@ -21,5 +22,12 @@ class AppFeatureFlags(private val sharedPreferences: SharedPreferences) {
 
     fun setIsDevnetEnabled(isDevnetEnabled: Boolean) {
         sharedPreferences.edit { putBoolean(KEY_DEV_NET_ENABLED, isDevnetEnabled) }
+    }
+
+    val isSslPinningEnabled: Boolean
+        get() = sharedPreferences.getBoolean(KEY_SSL_PINNING_ENABLED, BuildConfig.SSL_PINNING_ENABLED)
+
+    fun setIsSslPinningEnabled(isSslPinningEnabled: Boolean) {
+        sharedPreferences.edit { putBoolean(KEY_SSL_PINNING_ENABLED, isSslPinningEnabled) }
     }
 }
