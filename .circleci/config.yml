@@ -92,6 +92,15 @@ commands:
             echo "Set build version to ${CIRCLE_BUILD_NUM}"
 
 
+  fill_ssl_certificate:
+    description: "Create and fill cert.pem certificate for SSL pinning"
+    steps:
+      - run:
+          name: "Create and fill cert.pem"
+          command: |
+            touch app/src/main/res/raw/cert.pem
+            echo ${SSL_CERTIFICATE} >> app/src/main/res/raw/cert.pem
+
 defaults: &defaults
   working_directory: ~/app
   executor:
@@ -148,6 +157,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - fill_ssl_certificate
       - generate_build_version
       - store_artifacts:
           path: "./app/gradle.properties"
@@ -165,6 +175,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - fill_ssl_certificate
       - generate_build_version
       - run:
           name: "Generate build version"
