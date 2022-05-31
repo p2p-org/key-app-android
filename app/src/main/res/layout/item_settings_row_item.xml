@@ -39,10 +39,10 @@
         android:id="@+id/topTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
+        app:layout_constraintBottom_toTopOf="@+id/bottomTextView"
         app:layout_constraintStart_toEndOf="@id/imageView"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imageView"
         tools:text="Username" />
 
     <TextView
@@ -51,8 +51,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
         android:textColor="@color/textIconSecondary"
+        app:layout_constraintBottom_toBottomOf="@id/imageView"
         app:layout_constraintStart_toStartOf="@id/topTextView"
-        app:layout_constraintTop_toBottomOf="@id/topTextView"
         tools:text="Username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

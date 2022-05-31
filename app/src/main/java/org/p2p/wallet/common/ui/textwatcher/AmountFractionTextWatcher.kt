@@ -5,6 +5,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.DecimalFormatter
+import org.p2p.wallet.utils.NoOp
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.orZero
 import java.lang.ref.WeakReference
@@ -53,7 +54,7 @@ class AmountFractionTextWatcher(
 
     private var cursorPosition: Int = 0
 
-    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
+    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = NoOp
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
         val value = s.toString()

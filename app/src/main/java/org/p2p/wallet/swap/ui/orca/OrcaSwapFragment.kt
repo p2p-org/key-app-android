@@ -80,7 +80,7 @@ class OrcaSwapFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback {
+        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
         }
 

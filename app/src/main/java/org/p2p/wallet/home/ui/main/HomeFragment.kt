@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.model.Username
@@ -14,6 +15,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
@@ -86,7 +88,7 @@ class HomeFragment :
         actionButtonsView.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
-            presenter.refreshTokenAndPrices()
+            presenter.refreshTokens()
         }
 
         appBarLayout.addOnOffsetChangedListener(
@@ -95,6 +97,15 @@ class HomeFragment :
                 (actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
             }
         )
+
+        if (BuildConfig.DEBUG) {
+            with(debugButton) {
+                isVisible = true
+                setOnClickListener {
+                    replaceFragment(DebugSettingsFragment.create())
+                }
+            }
+        }
     }
 
     private fun ActionButtonsView.setupActionButtons() {
