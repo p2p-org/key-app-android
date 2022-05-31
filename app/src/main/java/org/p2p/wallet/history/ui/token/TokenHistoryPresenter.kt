@@ -57,7 +57,9 @@ class TokenHistoryPresenter(
     override fun loadNextHistoryPage() {
         if (paginationEnded) return
 
-        pagingJob?.cancel()
+        if(pagingJob?.isActive == true) {
+            return
+        }
         pagingJob = launch {
             view?.showPagingState(PagingState.Loading)
             fetchHistory()
