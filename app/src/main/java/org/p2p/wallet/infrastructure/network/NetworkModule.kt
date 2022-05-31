@@ -151,25 +151,25 @@ object NetworkModule : InjectionModule {
     }
 
     private fun createCertificate(trustedCertificateIS: InputStream): SSLContext? {
-        val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
-        val ca: Certificate = trustedCertificateIS.use { trustedCertificateIS ->
-            cf.generateCertificate(trustedCertificateIS)
+        val certificateFactory: CertificateFactory = CertificateFactory.getInstance("X.509")
+        val certificate: Certificate = trustedCertificateIS.use { trustedCertificateIS ->
+            certificateFactory.generateCertificate(trustedCertificateIS)
         }
 
         // creating a KeyStore containing our trusted CAs
         val keyStoreType: String = KeyStore.getDefaultType()
         val keyStore: KeyStore = KeyStore.getInstance(keyStoreType)
         keyStore.load(null, null)
-        keyStore.setCertificateEntry("ca", ca)
+        keyStore.setCertificateEntry("ca", certificate)
 
         // creating a TrustManager that trusts the CAs in our KeyStore
-        val tmfAlgorithm: String = TrustManagerFactory.getDefaultAlgorithm()
-        val tmf: TrustManagerFactory = TrustManagerFactory.getInstance(tmfAlgorithm)
-        tmf.init(keyStore)
+        val trustAlgorithm: String = TrustManagerFactory.getDefaultAlgorithm()
+        val trustManagerFactory: TrustManagerFactory = TrustManagerFactory.getInstance(trustAlgorithm)
+        trustManagerFactory.init(keyStore)
 
         // creating an SSLSocketFactory that uses our TrustManager
         val sslContext: SSLContext = SSLContext.getInstance("TLS")
-        sslContext.init(null, tmf.trustManagers, null)
+        sslContext.init(null, trustManagerFactory.trustManagers, null)
         return sslContext
     }
 
