@@ -4,6 +4,7 @@ import android.content.res.Resources
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.TlsVersion
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -168,24 +169,22 @@ object NetworkModule : InjectionModule {
         trustManagerFactory.init(keyStore)
 
         // creating an SSLSocketFactory that uses our TrustManager
-        val sslContext: SSLContext = SSLContext.getInstance("TLS")
-        sslContext.init(null, trustManagerFactory.trustManagers, null)
-        return sslContext
+        return SSLContext.getInstance(TlsVersion.TLS_1_2.javaName).also { sslContext ->
+            sslContext.init(null, trustManagerFactory.trustManagers, null)
+        }
     }
 
-    private fun systemDefaultTrustManager(): X509TrustManager? {
-        return try {
-            val trustManagerFactory: TrustManagerFactory =
-                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-            trustManagerFactory.init(null as KeyStore?)
-            val trustManagers: Array<TrustManager> = trustManagerFactory.trustManagers
-            check(!(trustManagers.size != 1 || trustManagers[0] !is X509TrustManager)) {
-                "Unexpected default trust managers:" + trustManagers.contentToString()
-            }
-            trustManagers[0] as X509TrustManager
-        } catch (e: GeneralSecurityException) {
-            // The system has no TLS. Just give up.
-            throw AssertionError()
+    private fun systemDefaultTrustManager(): X509TrustManager? = try {
+        val trustManagerFactory: TrustManagerFactory =
+            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        trustManagerFactory.init(null as KeyStore?)
+        val trustManagers: Array<TrustManager> = trustManagerFactory.trustManagers
+        check(!(trustManagers.size != 1 || trustManagers[0] !is X509TrustManager)) {
+            "Unexpected default trust managers:" + trustManagers.contentToString()
         }
+        trustManagers[0] as X509TrustManager
+    } catch (e: GeneralSecurityException) {
+        Timber.e(e, "Error on getting systemDefaultTrustManager")
+        throw AssertionError()
     }
 }
