@@ -3,7 +3,6 @@ package org.p2p.wallet.history.interactor
 import kotlinx.coroutines.supervisorScope
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
-import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
@@ -12,14 +11,12 @@ import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
 import org.p2p.wallet.history.interactor.stream.HistoryStreamSource
 import org.p2p.wallet.history.interactor.stream.MultipleStreamSource
 import org.p2p.wallet.history.interactor.stream.StreamSourceConfiguration
-import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
-import timber.log.Timber
 
 private const val DAY_IN_MILLISECONDS = (60 * 60 * 24) / 5
 private const val PAGE_SIZE = 10
