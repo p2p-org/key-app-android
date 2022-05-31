@@ -1,17 +1,17 @@
 package org.p2p.solanaj.kits.renBridge.renVM.types;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 public class ParamsSubmitMint {
     public static class In {
-        @Json(name = "t")
+        @SerializedName("t")
         public TypeIn typeIn = new TypeIn();
 
-        @Json(name = "v")
+        @SerializedName("v")
         public MintTransactionInput mintTransactionInput;
 
         public In(MintTransactionInput mintTransactionInput) {
@@ -21,45 +21,45 @@ public class ParamsSubmitMint {
     }
 
     public static class MintTransactionInput {
-        @Json(name = "txid")
+        @SerializedName("txid")
         public String txid;
-        @Json(name = "txindex")
+        @SerializedName("txindex")
         public String txindex;
-        @Json(name = "ghash")
+        @SerializedName("ghash")
         public String ghash = "";
-        @Json(name = "gpubkey")
+        @SerializedName("gpubkey")
         public String gpubkey;
-        @Json(name = "nhash")
+        @SerializedName("nhash")
         public String nhash;
-        @Json(name = "nonce")
+        @SerializedName("nonce")
         public String nonce;
-        @Json(name = "payload")
+        @SerializedName("payload")
         public String payload = "";
-        @Json(name = "phash")
+        @SerializedName("phash")
         public String phash;
-        @Json(name = "to")
+        @SerializedName("to")
         public String to;
-        @Json(name = "amount")
+        @SerializedName("amount")
         public String amount;
 
     }
 
     public static class TypeIn {
-        @Json(name = "struct")
-        public List<Object> struct = Arrays.asList(Map.of("txid", "bytes"), Map.of("txindex", "u32"),
-                Map.of("amount", "u256"), Map.of("payload", "bytes"), Map.of("phash", "bytes32"),
-                Map.of("to", "string"), Map.of("nonce", "bytes32"), Map.of("nhash", "bytes32"),
-                Map.of("gpubkey", "bytes"), Map.of("ghash", "bytes32"));
+        @SerializedName("struct")
+        public List<Object> struct = Arrays.asList(Collections.singletonMap("txid", "bytes"), Collections.singletonMap("txindex", "u32"),
+                Collections.singletonMap("amount", "u256"), Collections.singletonMap("payload", "bytes"), Collections.singletonMap("phash", "bytes32"),
+                Collections.singletonMap("to", "string"), Collections.singletonMap("nonce", "bytes32"), Collections.singletonMap("nhash", "bytes32"),
+                Collections.singletonMap("gpubkey", "bytes"), Collections.singletonMap("ghash", "bytes32"));
 
     }
 
-    @Json(name = "hash")
+    @SerializedName("hash")
     public String hash;
-    @Json(name = "selector")
+    @SerializedName("selector")
     public String selector;
-    @Json(name = "version")
+    @SerializedName("version")
     public String version = "1";
-    @Json(name = "in")
+    @SerializedName("in")
     public In in;
 
     public ParamsSubmitMint(String hash, MintTransactionInput mintTransactionInput, String selector) {

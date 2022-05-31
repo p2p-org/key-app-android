@@ -472,6 +472,8 @@ class SendPresenter(
                         handleValidAddress(token, destinationAddress, lamports)
                     }
                 }
+            } catch (e: CancellationException) {
+                Timber.e(e, "Sending was cancelled")
             } catch (serverError: ServerException) {
                 val state = TransactionState.Error(
                     serverError.getErrorMessage(resources).orEmpty()

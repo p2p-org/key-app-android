@@ -2,40 +2,40 @@ package org.p2p.solanaj.kits.renBridge.renVM.types;
 
 import java.util.List;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
 
 public class ResponseQueryConfig {
     public static class Confirmations {
-        @Json(name = "Bitcoin")
+        @SerializedName("Bitcoin")
         public String bitcoin;
-        @Json(name = "Ethereum")
+        @SerializedName("Ethereum")
         public String ethereum;
 
     }
 
     public static class MaxConfirmations {
-        @Json(name = "Bitcoin")
+        @SerializedName("Bitcoin")
         public String bitcoin;
-        @Json(name = "Ethereum")
+        @SerializedName("Ethereum")
         public String ethereum;
 
     }
 
     public static class Registries {
-        @Json(name = "Ethereum")
+        @SerializedName("Ethereum")
         public String ethereum;
 
     }
 
-    @Json(name = "confirmations")
+    @SerializedName("confirmations")
     public Confirmations confirmations;
-    @Json(name = "maxConfirmations")
+    @SerializedName("maxConfirmations")
     public MaxConfirmations maxConfirmations;
-    @Json(name = "network")
+    @SerializedName("network")
     public String network;
-    @Json(name = "registries")
+    @SerializedName("registries")
     public Registries registries;
-    @Json(name = "whitelist")
+    @SerializedName("whitelist")
     public List<String> whitelist = null;
 
 }

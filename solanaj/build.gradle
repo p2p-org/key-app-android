@@ -38,8 +38,10 @@ android {
         viewBinding true
     }
     testOptions {
-        unitTests.returnDefaultValues = true
-        unitTests.includeAndroidResources = true
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+        }
         animationsDisabled = true
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
@@ -51,12 +53,16 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.2"
     implementation "com.google.android.material:material:1.4.0"
     implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
-    implementation "com.squareup.retrofit2:converter-moshi:2.7.1"
     implementation "net.i2p.crypto:eddsa:0.3.0"
 
     def retrofitVersion = '2.9.0'
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+
+    def coroutinesVersion = '1.6.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:2.7.1"
 
     api 'org.java-websocket:Java-WebSocket:1.5.2'
 
@@ -68,5 +74,16 @@ dependencies {
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation 'junit:junit:4.13.2'
     // https://github.com/robolectric/robolectric
-    testImplementation "org.robolectric:robolectric:4.6.1"
+    testImplementation "org.robolectric:robolectric:4.7.3"
+
+
+    def koin_version= "3.1.5"
+    testImplementation "io.insert-koin:koin-test:$koin_version"
+    testImplementation "io.insert-koin:koin-test-junit5:$koin_version"
+
+    //https://github.com/mockito/mockito-kotlin
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    testImplementation "org.mockito:mockito-inline:3.8.0"
+    testImplementation "org.assertj:assertj-core:3.22.0"
+
 }
