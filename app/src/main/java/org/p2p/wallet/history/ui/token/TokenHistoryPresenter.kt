@@ -57,7 +57,7 @@ class TokenHistoryPresenter(
     override fun loadNextHistoryPage() {
         if (paginationEnded) return
 
-        if(pagingJob?.isActive == true) {
+        if (pagingJob?.isActive == true) {
             return
         }
         pagingJob = launch {
