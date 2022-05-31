@@ -28,6 +28,7 @@ class MultipleStreamSource(
             if (items.isEmpty()) {
                 return@withContext null
             }
+
             maxValue = items.firstOrNull()
             for (item in items) {
                 if (maxValue?.streamSource!!.blockTime <= item.streamSource!!.blockTime) {

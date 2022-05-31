@@ -3,10 +3,12 @@ package org.p2p.wallet.history.interactor
 import kotlinx.coroutines.supervisorScope
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
+import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.stream.AccountStreamSource
+import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
 import org.p2p.wallet.history.interactor.stream.HistoryStreamSource
 import org.p2p.wallet.history.interactor.stream.MultipleStreamSource
 import org.p2p.wallet.history.interactor.stream.StreamSourceConfiguration
@@ -17,8 +19,9 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
+import timber.log.Timber
 
-private const val DAY_IN_MILLISECONDS = 60 * 60 * 24
+private const val DAY_IN_MILLISECONDS = (60 * 60 * 24) / 5
 private const val PAGE_SIZE = 10
 
 class HistoryInteractor(
@@ -30,8 +33,8 @@ class HistoryInteractor(
     private val rpcSignatureRepository: RpcSignatureRepository,
     private val userInteractor: UserInteractor
 ) {
-    private val allSignatures = mutableListOf<RpcTransactionSignature>()
-    private val tokenSignaturesMap = mutableMapOf<String, MutableList<RpcTransactionSignature>>()
+    private val allSignatures = mutableListOf<HistoryStreamItem>()
+    private val tokenSignaturesMap = mutableMapOf<String, MutableList<HistoryStreamItem>>()
     private lateinit var multipleStreamSource: HistoryStreamSource
     private val accountsStreamSources = mutableMapOf<String, HistoryStreamSource>()
     private val historyStreamSources = mutableListOf<HistoryStreamSource>()
@@ -89,17 +92,18 @@ class HistoryInteractor(
     6) Finally try to load transactions for this signatures
      */
 
-    private suspend fun loadAllSignatures(): MutableList<RpcTransactionSignature> {
-        val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
+    private suspend fun loadAllSignatures(): MutableList<HistoryStreamItem> {
+        val transactionsSignatures = mutableListOf<HistoryStreamItem>()
         supervisorScope {
             while (true) {
                 val firstItem = multipleStreamSource.currentItem() ?: break
-                val time = (firstItem.streamSource?.blockTime ?: -1) - (DAY_IN_MILLISECONDS)
+                val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: break
+                val time = lastSignatureBlockTime - DAY_IN_MILLISECONDS
 
                 while (true) {
                     val currentItem = multipleStreamSource.next(StreamSourceConfiguration(time))
-                    if (!allSignatures.contains(currentItem?.streamSource)) {
-                        transactionsSignatures.add(currentItem?.streamSource ?: break)
+                    if (!allSignatures.contains(currentItem)) {
+                        transactionsSignatures.add(currentItem ?: break)
                     }
                     if (transactionsSignatures.size >= PAGE_SIZE) {
                         return@supervisorScope transactionsSignatures
@@ -113,8 +117,8 @@ class HistoryInteractor(
     private suspend fun loadSignaturesForAccount(
         account: String,
         accountStreamSource: HistoryStreamSource
-    ): List<RpcTransactionSignature> {
-        val transactionsSignatures = mutableListOf<RpcTransactionSignature>()
+    ): List<HistoryStreamItem> {
+        val transactionsSignatures = mutableListOf<HistoryStreamItem>()
 
         val allTransactionSignatures = tokenSignaturesMap[account] ?: return emptyList()
 
@@ -124,10 +128,10 @@ class HistoryInteractor(
 
             while (true) {
                 val currentItem = accountStreamSource.next(StreamSourceConfiguration(time))
-                if (!allTransactionSignatures.contains(currentItem?.streamSource)) {
-                    transactionsSignatures.add(currentItem?.streamSource ?: break)
+                if (!allTransactionSignatures.contains(currentItem)) {
+                    transactionsSignatures.add(currentItem ?: break)
                 }
-                if (transactionsSignatures.size >= 10) {
+                if (transactionsSignatures.size >= 20) {
                     return transactionsSignatures
                 }
             }
@@ -135,24 +139,21 @@ class HistoryInteractor(
         return transactionsSignatures
     }
 
-    suspend fun getHistoryTransaction(tokenPublicKey: String, transactionId: String) =
+    suspend fun getHistoryTransaction(transactionId: String) =
         transactionsLocalRepository.getTransactions(listOf(transactionId))
-            .mapToHistoryTransactions(tokenPublicKey)
+            .mapToHistoryTransactions()
             .first()
 
-    private suspend fun loadTransactions(signatures: List<RpcTransactionSignature>): List<HistoryTransaction> {
-        return transactionsRemoteRepository.getTransactions(tokenKeyProvider.publicKey, signatures)
-            .mapToHistoryTransactions(tokenKeyProvider.publicKey)
+    private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {
+        val transactionDetails = transactionsRemoteRepository.getTransactions(tokenKeyProvider.publicKey, signatures)
+        return transactionDetails.mapToHistoryTransactions()
     }
 
-    suspend fun List<TransactionDetails>.mapToHistoryTransactions(
-        tokenPublicKey: String
-    ): List<HistoryTransaction> {
+    private suspend fun List<TransactionDetails>.mapToHistoryTransactions(): List<HistoryTransaction> {
         return historyTransactionMapper.mapTransactionDetailsToHistoryTransactions(
             transactions = this,
             accountsInfo = getAccountsInfo(this),
-            userPublicKey = tokenKeyProvider.publicKey,
-            tokenPublicKey = tokenPublicKey
+            userPublicKey = tokenKeyProvider.publicKey
         )
     }
 
