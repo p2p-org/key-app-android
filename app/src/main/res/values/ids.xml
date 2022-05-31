@@ -4,4 +4,9 @@
     <item name="seed_phrase_watcher_tag_id" type="id" />
     <item name="prefix_watcher_tag_id" type="id" />
     <item name="length_watcher_tag_id" type="id" />
+
+    <!--feature toggle ids-->
+    <item name="enable_dev_net" type="id" />
+    <item name="polling_enabled" type="id" />
+    <item name="ssl_pinning_enabled" type="id" />
 </resources>

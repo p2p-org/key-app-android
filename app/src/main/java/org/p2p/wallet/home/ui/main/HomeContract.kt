@@ -24,7 +24,7 @@ interface HomeContract {
     interface Presenter : MvpPresenter<View> {
         fun onBuyClicked()
         fun subscribeToUserTokensFlow()
-        fun refreshTokenAndPrices()
+        fun refreshTokens()
         fun toggleTokenVisibility(token: Token.Active)
         fun toggleTokenVisibilityState()
         fun clearTokensCache()

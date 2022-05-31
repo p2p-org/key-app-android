@@ -40,6 +40,9 @@ proguard/
 # Android Studio captures folder
 captures/
 
+# SSL cert
+/app/src/main/res/raw/cert.pem
+
 # Intellij
 *.iml
 .idea/*

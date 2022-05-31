@@ -18,8 +18,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.InputTextView
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
@@ -95,6 +95,14 @@ class ReserveUsernameFragment :
 
     override fun showIdleState() {
         binding.inputTextView.setMessageWithState(getString(R.string.auth_use_any_latin), InputTextView.State.Idle)
+    }
+
+    override fun showUsernameLengthError(name: String, maxLength: Int) {
+        with(binding) {
+            usernameButton.isEnabled = false
+            val message = getString(R.string.auth_username_length_error, maxLength)
+            inputTextView.setMessageWithState(message, InputTextView.State.Error)
+        }
     }
 
     override fun showUnavailableName(name: String) {
