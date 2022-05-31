@@ -51,6 +51,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
 
+private const val TAG_SWAP = "SWAP_STATE"
+
 // TODO: Refactor, make simpler
 class OrcaSwapPresenter(
     private val resources: Resources,
@@ -65,10 +67,6 @@ class OrcaSwapPresenter(
     private val swapAnalytics: SwapAnalytics,
     private val transactionManager: TransactionManager
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
-
-    companion object {
-        private const val TAG_SWAP = "SWAP_STATE"
-    }
 
     private val poolPairs = mutableListOf<OrcaPoolsPair>()
 
@@ -214,7 +212,7 @@ class OrcaSwapPresenter(
             }
             view?.showSwapSettings(slippage, tokens, swapInteractor.getFeePayerToken())
             val feeSource = if (sourceToken.isSOL) SwapAnalytics.FeeSource.SOL else SwapAnalytics.FeeSource.OTHER
-            // TODO determine priceS lipaceExact
+            // TODO determine priceSlippageExact
             swapAnalytics.logSwapShowingSettings(
                 priceSlippage = slippage.doubleValue,
                 priceSlippageExact = false,
@@ -388,11 +386,15 @@ class OrcaSwapPresenter(
 
     private fun calculateData(source: Token.Active, destination: Token) {
         launch {
-            view?.showButtonText(R.string.swap_searching_swap_pair)
-            searchTradablePairs(source, destination)
-            view?.showButtonText(R.string.swap_calculating_fees)
-            swapInteractor.setFeePayerToken(source)
-            recalculate()
+            try {
+                view?.showButtonText(R.string.swap_searching_swap_pair)
+                searchTradablePairs(source, destination)
+                view?.showButtonText(R.string.swap_calculating_fees)
+                swapInteractor.setFeePayerToken(source)
+                recalculate()
+            } catch (e: Throwable) {
+                Timber.e("Error calculating data")
+            }
         }
     }
 

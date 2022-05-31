@@ -33,7 +33,7 @@ interface SendContract {
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
         fun setMaxButtonVisibility(isVisible: Boolean)
-        fun setAvailableTextColor(@ColorRes availableColor: Int)
+        fun setTotalAmountTextColor(@ColorRes textColor: Int)
 
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelectionView(isVisible: Boolean)

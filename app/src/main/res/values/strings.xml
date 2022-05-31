@@ -236,6 +236,7 @@
     <string name="main_buy">Buy</string>
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
+    <string name="main_enter_incorrect_amount">Incorrect amount</string>
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>

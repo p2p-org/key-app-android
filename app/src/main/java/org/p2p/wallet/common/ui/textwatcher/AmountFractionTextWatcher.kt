@@ -69,11 +69,15 @@ class AmountFractionTextWatcher(
         }
     }
 
-    override fun afterTextChanged(edit: Editable?) {
+    override fun afterTextChanged(edit: Editable) {
         field.get()?.apply {
             removeTextChangedListener(this@AmountFractionTextWatcher)
-            edit?.clear()
-            edit?.append(valueText)
+            if (edit.length < valueText.length) {
+                edit.clear()
+                edit.append(valueText)
+            } else {
+                edit.replace(0, valueText.length, valueText)
+            }
             addTextChangedListener(this@AmountFractionTextWatcher)
         }
     }

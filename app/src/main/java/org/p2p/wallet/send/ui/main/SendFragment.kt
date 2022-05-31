@@ -496,9 +496,9 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun setAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
-        setTextColor(getColor(availableColor))
-        setTextDrawableColor(availableColor)
+    override fun setTotalAmountTextColor(@ColorRes textColor: Int) = with(binding.availableTextView) {
+        setTextColor(getColor(textColor))
+        setTextDrawableColor(textColor)
     }
 
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
