@@ -23,7 +23,6 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -71,21 +70,16 @@ class SendInteractor(
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-    suspend fun switchFeePayerToSol() {
-        userInteractor.getUserTokens().find(Token.Active::isSOL)?.let { setFeePayerToken(it) }
+    suspend fun switchFeePayerToSol(solToken: Token.Active?) {
+        solToken?.let { setFeePayerToken(it) }
     }
 
     // Fees calculator
     suspend fun calculateFeesForFeeRelayer(
         feePayerToken: Token.Active,
         token: Token.Active,
-        receiver: String,
-        networkType: NetworkType
+        receiver: String
     ): FeeRelayerSendFee? {
-        if (networkType == NetworkType.BITCOIN) {
-            return null
-        }
-
         val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
         val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 

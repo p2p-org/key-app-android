@@ -1,10 +1,14 @@
 package org.p2p.wallet.send.model
 
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.send.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
+import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
 import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.fromLamports
+import org.p2p.wallet.utils.isLessThan
+import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
@@ -92,14 +96,26 @@ sealed interface SendFee {
         }
 
         fun calculateFeePayerState(
+            strategy: FeePayerSelectionStrategy,
             sourceTokenTotal: BigInteger,
             inputAmount: BigInteger
-        ): FeePayerState = when {
-            // if there is enough SPL token balance to cover amount and fee
-            sourceTokenSymbol != SOL_SYMBOL && sourceTokenTotal > feeInPayingToken + inputAmount ->
-                UpdateFeePayer
-            else ->
-                SwitchToSol
+        ): FeePayerState {
+            val isSourceSol = sourceTokenSymbol == SOL_SYMBOL
+            val isAllowedToCorrectAmount = strategy == CORRECT_AMOUNT
+            val totalNeeded = feeInPayingToken + inputAmount
+            return when {
+                // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
+                isAllowedToCorrectAmount && !isSourceSol && sourceTokenTotal.isLessThan(totalNeeded) -> {
+                    val diff = totalNeeded - sourceTokenTotal
+                    val desiredAmount = if (diff.isLessThan(inputAmount)) inputAmount - diff else null
+                    if (desiredAmount != null) ReduceInputAmount(desiredAmount) else SwitchToSol
+                }
+                // if there is enough SPL token balance to cover amount and fee
+                !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) ->
+                    UpdateFeePayer
+                else ->
+                    SwitchToSol
+            }
         }
 
         val feePayerSymbol: String

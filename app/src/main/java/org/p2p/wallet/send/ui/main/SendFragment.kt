@@ -174,9 +174,7 @@ class SendFragment :
                 presenter.setTargetResult(null)
             }
 
-            AmountFractionTextWatcher.installOn(amountEditText) {
-                presenter.setNewSourceAmount(it)
-            }
+            installAmountWatcher()
 
             networkView.setOnClickListener {
                 presenter.loadCurrentNetwork()
@@ -225,13 +223,16 @@ class SendFragment :
             amountEditText.doOnTextChanged { text, _, _, _ ->
                 autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
                 amountEditText.post {
-                    val textSize =
-                        if (text.isNullOrBlank()) originalTextSize
-                        else autoSizeHelperTextView.textSize
-
+                    val textSize = if (text.isNullOrBlank()) originalTextSize else autoSizeHelperTextView.textSize
                     amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
                 }
             }
+        }
+    }
+
+    private fun installAmountWatcher() {
+        AmountFractionTextWatcher.installOn(binding.amountEditText) {
+            presenter.setNewSourceAmount(it)
         }
     }
 
@@ -452,13 +453,18 @@ class SendFragment :
         binding.sendDetailsView.showTotal(data)
     }
 
-    override fun showInputValue(value: BigDecimal) {
-        val textValue = "$value"
+    override fun showInputValue(value: BigDecimal, forced: Boolean) {
         with(binding.amountEditText) {
-            setText(textValue)
-            setSelection(
-                text.toString().length
-            )
+            val textValue = "$value"
+            if (forced) {
+                AmountFractionTextWatcher.uninstallFrom(this)
+                setText(textValue)
+                setSelection(textValue.length)
+                installAmountWatcher()
+            } else {
+                setText(textValue)
+                setSelection(textValue.length)
+            }
         }
     }
 
@@ -490,7 +496,7 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun updateAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
+    override fun setAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
         setTextColor(getColor(availableColor))
         setTextDrawableColor(availableColor)
     }

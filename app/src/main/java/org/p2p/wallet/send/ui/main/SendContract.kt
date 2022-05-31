@@ -24,7 +24,7 @@ interface SendContract {
         fun showTotal(data: SendTotal?)
         fun showWrongWalletError()
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
-        fun showInputValue(value: BigDecimal)
+        fun showInputValue(value: BigDecimal, forced: Boolean)
         fun showUsdAroundValue(usdValue: BigDecimal)
         fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String)
         fun showAvailableValue(available: BigDecimal, symbol: String)
@@ -33,7 +33,7 @@ interface SendContract {
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
         fun setMaxButtonVisibility(isVisible: Boolean)
-        fun updateAvailableTextColor(@ColorRes availableColor: Int)
+        fun setAvailableTextColor(@ColorRes availableColor: Int)
 
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelectionView(isVisible: Boolean)
