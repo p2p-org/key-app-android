@@ -157,7 +157,6 @@ android {
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
-            buildConfigField("boolean", "SSL_PINNING_ENABLED", "true")
 
             firebaseAppDistribution {
                 artifactType = "AAB"

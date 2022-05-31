@@ -122,10 +122,10 @@ object NetworkModule : InjectionModule {
                 val appFeatureFlags: AppFeatureFlags = get()
                 if (appFeatureFlags.isSslPinningEnabled) {
                     try {
-                        createCertificate(resources.openRawResource(R.raw.cert))?.let { sslContext ->
+                        createCertificate(resources.openRawResource(R.raw.cert)).apply {
                             systemDefaultTrustManager()?.let { trustManager ->
                                 Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
-                                sslSocketFactory(sslContext.socketFactory, trustManager)
+                                sslSocketFactory(socketFactory, trustManager)
                             }
                         }
                     } catch (e: Exception) {
@@ -150,10 +150,10 @@ object NetworkModule : InjectionModule {
             .build()
     }
 
-    private fun createCertificate(trustedCertificateIS: InputStream): SSLContext? {
+    private fun createCertificate(trustedCertificateIS: InputStream): SSLContext {
         val certificateFactory: CertificateFactory = CertificateFactory.getInstance("X.509")
-        val certificate: Certificate = trustedCertificateIS.use { trustedCertificateIS ->
-            certificateFactory.generateCertificate(trustedCertificateIS)
+        val certificate: Certificate = trustedCertificateIS.use { trustedCertificate ->
+            certificateFactory.generateCertificate(trustedCertificate)
         }
 
         // creating a KeyStore containing our trusted CAs
