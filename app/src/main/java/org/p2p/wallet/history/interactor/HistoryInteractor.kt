@@ -121,14 +121,16 @@ class HistoryInteractor(
 
         while (true) {
             val firstItem = accountStreamSource.currentItem() ?: break
-            val time = (firstItem.streamSource?.blockTime ?: -1) - (DAY_IN_MILLISECONDS)
+            val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: break
+
+            val time = lastSignatureBlockTime - DAY_IN_MILLISECONDS
 
             while (true) {
                 val currentItem = accountStreamSource.next(StreamSourceConfiguration(time))
                 if (!allTransactionSignatures.contains(currentItem)) {
                     transactionsSignatures.add(currentItem ?: break)
                 }
-                if (transactionsSignatures.size >= 20) {
+                if (transactionsSignatures.size >= PAGE_SIZE) {
                     return transactionsSignatures
                 }
             }
