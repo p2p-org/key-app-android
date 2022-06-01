@@ -1,4 +1,4 @@
-package org.p2p.wallet.user.repository.prices.sources
+package org.p2p.wallet.user.repository.prices.impl
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -6,17 +6,21 @@ import com.google.gson.reflect.TypeToken
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.model.TokenPrice
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
 import org.p2p.wallet.utils.scaleMedium
 import timber.log.Timber
+import kotlinx.coroutines.withContext
 
 private const val COIN_GECKO_TOKENS_FILE_NAME = "coin_gecko_tokens.json"
 
-class CoinGeckoApiClient(
+class TokenPricesCoinGeckoRepository(
     private val coinGeckoApi: CoinGeckoApi,
     private val fileRepository: FileRepository,
-    private val gson: Gson
-) {
+    private val gson: Gson,
+    private val dispatchers: CoroutineDispatchers
+) : TokenPricesRemoteRepository {
 
     private class CoinGeckoTokenInformation(
         @SerializedName("id")
@@ -25,10 +29,17 @@ class CoinGeckoApiClient(
         val tokenSymbol: String
     )
 
+    override suspend fun getTokenPricesBySymbols(
+        tokenSymbols: List<TokenSymbol>,
+        targetCurrency: String
+    ): List<TokenPrice> = withContext(dispatchers.io) {
+        loadPrices(tokenSymbols, targetCurrency)
+    }
+
     /**
      * CoinGecko has rate limit of 50 calls/minute FYI
      */
-    suspend fun loadPrices(tokenSymbols: List<TokenSymbol>, targetCurrencySymbol: String): List<TokenPrice> {
+    private suspend fun loadPrices(tokenSymbols: List<TokenSymbol>, targetCurrencySymbol: String): List<TokenPrice> {
         if (!fileRepository.isFileExists(COIN_GECKO_TOKENS_FILE_NAME)) {
             cacheCoinGeckoTokensSymbols()
         }

@@ -1,18 +1,35 @@
-package org.p2p.wallet.user.repository.prices.sources
+package org.p2p.wallet.user.repository.prices.impl
 
 import com.google.gson.JsonObject
 import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.home.model.TokenPrice
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.scaleMedium
+import kotlinx.coroutines.withContext
 
 private const val COMPARE_API_CHUNK_SIZE = 30
 private const val COMPARE_API_BODY_KEY = "Response"
 private const val COMPARE_API_BODY_ERROR_VALUE = "Error"
 
-class CryptoCompareApiClient(private val cryptoCompareApi: CryptoCompareApi) {
-    suspend fun loadPrices(tokenSymbols: List<TokenSymbol>, targetCurrencySymbol: String): List<TokenPrice> {
+class TokenPricesCryptoCompareRepository(
+    private val cryptoCompareApi: CryptoCompareApi,
+    private val dispatchers: CoroutineDispatchers
+) : TokenPricesRemoteRepository {
+
+    override suspend fun getTokenPricesBySymbols(
+        tokenSymbols: List<TokenSymbol>,
+        targetCurrency: String
+    ): List<TokenPrice> = withContext(dispatchers.io) {
+        loadPrices(
+            tokenSymbols = tokenSymbols,
+            targetCurrencySymbol = targetCurrency
+        )
+    }
+
+    private suspend fun loadPrices(tokenSymbols: List<TokenSymbol>, targetCurrencySymbol: String): List<TokenPrice> {
         return tokenSymbols.map { it.symbol }
             .chunked(COMPARE_API_CHUNK_SIZE)
             .flatMap { chunkedTokenSymbols ->

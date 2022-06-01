@@ -10,7 +10,7 @@ import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
-import org.p2p.wallet.user.repository.prices.TokenPricesRepository
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
     private val userLocalRepository: UserLocalRepository,
-    private val tokenPricesRepository: TokenPricesRepository,
+    private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val rpcRepository: RpcAccountRepository,
     private val rpcBalanceRepository: RpcBalanceRepository,
     private val environmentManager: EnvironmentManager,

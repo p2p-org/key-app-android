@@ -5,7 +5,7 @@ import org.p2p.wallet.BuildConfig
 
 private const val KEY_POLLING_ENABLED = "KEY_POLLING_ENABLED"
 private const val KEY_DEV_NET_ENABLED = "KEY_DEV_NET_ENABLED"
-private const val KEY_COIN_GECKO_ENABLED = "KEY_DEV_NET_ENABLED"
+private const val KEY_COIN_GECKO_ENABLED = "KEY_COIN_GECKO_ENABLED"
 
 class AppFeatureFlags(prefs: SharedPreferences) {
     var isPollingEnabled: Boolean by BooleanPreference(prefs, KEY_POLLING_ENABLED, true)

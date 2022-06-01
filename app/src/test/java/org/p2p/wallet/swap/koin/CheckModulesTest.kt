@@ -55,7 +55,7 @@ import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
-import org.p2p.wallet.user.repository.prices.TokenPricesModule
+import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
