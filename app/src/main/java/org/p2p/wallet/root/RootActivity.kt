@@ -1,14 +1,8 @@
 package org.p2p.wallet.root
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.TextView
-import androidx.activity.addCallback
-import androidx.core.content.edit
-import androidx.core.view.isVisible
 import androidx.activity.addCallback
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -22,8 +16,6 @@ import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
-import org.p2p.wallet.databinding.ActivityRootBinding
-import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
