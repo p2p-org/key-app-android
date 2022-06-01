@@ -12,7 +12,9 @@ import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
+import org.p2p.wallet.utils.asUsd
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.scaleShort
@@ -56,17 +58,18 @@ sealed class HistoryTransaction(
 
         fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
 
-        fun getReceivedUsdAmount(): String? = amountReceivedInUsd?.let { "+$$it" }
+        fun getReceivedUsdAmount(): String? = amountReceivedInUsd?.asUsd()
 
-        fun getSentUsdAmount(): String? = amountSentInUsd?.let { "~$$it" }
+        fun getSentUsdAmount(): String? = amountSentInUsd?.asUsd()
 
-        fun getFormattedAmount() = "$amountA $sourceSymbol to $amountB $destinationSymbol"
+        fun getFormattedAmount() =
+            "${amountA.formatToken()} $sourceSymbol to ${amountB.formatToken()} $destinationSymbol"
 
         fun getFormattedFee() = "$fee lamports"
 
-        fun getSourceTotal(): String = "$amountA $sourceSymbol"
+        fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
 
-        fun getDestinationTotal(): String = "$amountB $destinationSymbol"
+        fun getDestinationTotal(): String = "${amountB.formatToken()} $destinationSymbol"
     }
 
     @Parcelize
@@ -100,7 +103,7 @@ sealed class HistoryTransaction(
         fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
 
         fun getValue(): String? = totalInUsd?.let {
-            "${getSymbol(isSend)} $${it.scaleShortOrFirstNotZero().toPlainString()}"
+            "${getSymbol(isSend)} ${it.scaleShortOrFirstNotZero().asUsd()}"
         }
 
         fun getTotal(): String = getFormattedTotal()
@@ -116,12 +119,12 @@ sealed class HistoryTransaction(
         }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
-            "${total.scaleMedium().toPlainString()} ${tokenData.symbol}"
+            "${total.scaleMedium().formatToken()} ${tokenData.symbol}"
         } else {
-            "${total.scaleLong().toPlainString()} ${tokenData.symbol}"
+            "${total.formatToken()} ${tokenData.symbol}"
         }
 
-        fun getFormattedAmount(): String? = totalInUsd?.let { "~$${totalInUsd.scaleShort()}" }
+        fun getFormattedAmount(): String? = totalInUsd?.scaleShort()?.asUsd()
     }
 
     @Parcelize
@@ -150,7 +153,7 @@ sealed class HistoryTransaction(
 
         fun getValue(): String = "${getSymbol(isBurn)} ${getFormattedAmount()} $USD_SYMBOL"
 
-        fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium()} $REN_BTC_SYMBOL"
+        fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium().formatToken()} $REN_BTC_SYMBOL"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
@@ -159,7 +162,7 @@ sealed class HistoryTransaction(
                 "${total.scaleLong().toPlainString()} $REN_BTC_SYMBOL"
             }
 
-        fun getFormattedAmount(): String? = totalInUsd?.let { "~$${totalInUsd.scaleShort()}" }
+        fun getFormattedAmount(): String? = totalInUsd?.scaleShort()?.asUsd()
     }
 
     @Parcelize

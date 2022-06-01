@@ -12,9 +12,9 @@ task ktlint(type: JavaExec) {
     args "$rootDir/**/*.kt"
 
     if (project.hasProperty("autoCorrect") && project.property("autoCorrect") == "0") {
-        println("Ktlint auto correction is disabled")
+        logger.quiet("(KTLINT): auto correction is disabled")
     } else {
-        println("Ktlint auto correction is enabled")
+        logger.quiet("(KTLINT): auto correction is enabled")
         args "-F"
     }
 }

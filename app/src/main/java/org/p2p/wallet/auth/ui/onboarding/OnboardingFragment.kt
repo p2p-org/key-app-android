@@ -4,10 +4,10 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.VideoView
 import androidx.activity.addCallback
 import androidx.annotation.RawRes
 import androidx.core.view.isVisible
-import android.widget.VideoView
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
@@ -47,7 +47,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
     }

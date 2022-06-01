@@ -1,11 +1,12 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.model.Username
@@ -14,6 +15,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
@@ -27,6 +29,7 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -85,7 +88,7 @@ class HomeFragment :
         actionButtonsView.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
-            presenter.refreshTokenAndPrices()
+            presenter.refreshTokens()
         }
 
         appBarLayout.addOnOffsetChangedListener(
@@ -94,6 +97,15 @@ class HomeFragment :
                 (actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
             }
         )
+
+        if (BuildConfig.DEBUG) {
+            with(debugButton) {
+                isVisible = true
+                setOnClickListener {
+                    replaceFragment(DebugSettingsFragment.create())
+                }
+            }
+        }
     }
 
     private fun ActionButtonsView.setupActionButtons() {
@@ -131,7 +143,7 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {
-        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
+        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.formatUsd())
         if (username == null) {
             binding.balanceLabelTextView.setText(R.string.main_balance)
         } else {

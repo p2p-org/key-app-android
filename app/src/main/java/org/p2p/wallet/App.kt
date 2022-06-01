@@ -1,9 +1,10 @@
 package org.p2p.wallet
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -16,6 +17,7 @@ import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.TimberCrashTree
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
@@ -39,7 +41,6 @@ import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class App : Application() {
 
@@ -99,6 +100,7 @@ class App : Application() {
                     ScanQrModule.create(),
                     HistoryModule.create(),
                     SettingsModule.create(),
+                    DebugSettingsModule.create(),
                     SwapModule.create(),
                 )
             )

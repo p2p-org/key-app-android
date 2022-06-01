@@ -2,6 +2,7 @@ package org.p2p.wallet.settings.model
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
 
@@ -23,4 +24,17 @@ sealed class SettingsRow(open val isDivider: Boolean = false) {
     ) : SettingsRow(isDivider)
 
     data class Logout(override val titleResId: Int = R.string.settings_logout) : SettingsRow(isDivider = true)
+
+    data class Toggle(
+        @StringRes override val titleResId: Int,
+        @IdRes val toggleId: Int,
+        val toggleChecked: Boolean,
+        override val isDivider: Boolean = false,
+    ) : SettingsRow(isDivider)
+
+    data class Info(
+        @StringRes override val titleResId: Int,
+        override val isDivider: Boolean = false,
+        val subtitle: String? = null,
+    ) : SettingsRow(isDivider)
 }

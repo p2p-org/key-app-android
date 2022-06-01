@@ -3,17 +3,16 @@ package org.p2p.wallet.root
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.core.content.edit
 import androidx.core.view.isVisible
+import androidx.activity.addCallback
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
@@ -31,8 +30,6 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
 import timber.log.Timber
 
-private const val KEY_DEBUG_HIDDEN = "KEY_DEBUG_HIDDEN"
-
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
     companion object {
@@ -47,10 +44,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     override val presenter: RootContract.Presenter by inject()
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-    private val sharedPreferences: SharedPreferences by inject()
-    private val binding: ActivityRootBinding by lazy {
-        ActivityRootBinding.inflate(LayoutInflater.from(this))
-    }
 
     private val crashLoggingService: CrashLoggingService by inject()
 
@@ -70,7 +63,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         }
 
         presenter.loadPricesAndBids()
-        initializeDebugDrawer()
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }
@@ -113,35 +105,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
             super.onBackPressed()
         } else {
             popBackStack()
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun initializeDebugDrawer() {
-        val devView = findViewById<TextView>(R.id.developTextView)
-        val isDebugViewHidden = sharedPreferences.getBoolean(KEY_DEBUG_HIDDEN, false)
-
-        if (BuildConfig.DEBUG) {
-            val drawer = DebugDrawer.install(this)
-
-            devView.text = "${BuildConfig.BUILD_TYPE}-${BuildConfig.VERSION_NAME}"
-            devView.isVisible = true
-
-            devView.alpha = if (isDebugViewHidden) 0f else 1f
-            devView.setOnClickListener { drawer.openDrawer() }
-            devView.setOnLongClickListener {
-                val currentAlpha = devView.alpha
-                if (currentAlpha == 0f) {
-                    devView.alpha = 1f
-                    sharedPreferences.edit { putBoolean(KEY_DEBUG_HIDDEN, false) }
-                } else {
-                    devView.alpha = 0f
-                    sharedPreferences.edit { putBoolean(KEY_DEBUG_HIDDEN, true) }
-                }
-                return@setOnLongClickListener true
-            }
-        } else {
-            devView.isVisible = false
         }
     }
 

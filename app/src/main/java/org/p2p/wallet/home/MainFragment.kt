@@ -34,19 +34,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
         fun create(): MainFragment = MainFragment()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
                 navigate(R.id.itemHome)
             } else {
                 requireActivity().finish()
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         deeplinksManager.mainTabsSwitcher = this
         with(binding) {
             bottomNavigation.setOnItemSelectedListener {
