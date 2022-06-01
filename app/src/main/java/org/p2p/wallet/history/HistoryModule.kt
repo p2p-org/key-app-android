@@ -41,14 +41,16 @@ object HistoryModule : InjectionModule {
         }
         factory {
             HistoryInteractor(
-                rpcSignatureRepository = get(),
                 rpcAccountRepository = get(),
-                transactionsRemoteRepository = get(),
                 transactionsLocalRepository = get(),
                 tokenKeyProvider = get(),
-                historyTransactionMapper = get()
+                historyTransactionMapper = get(),
+                userInteractor = get(),
+                transactionsRemoteRepository = get(),
+                rpcSignatureRepository = get()
             )
         }
+
         factory { (token: Token.Active) ->
             TokenHistoryPresenter(
                 token = token,
@@ -105,8 +107,7 @@ object HistoryModule : InjectionModule {
                 swapAnalytics = get(),
                 analyticsInteractor = get(),
                 environmentManager = get(),
-                sendAnalytics = get(),
-                tokenKeyProvider = get()
+                sendAnalytics = get()
             )
         } bind HistoryContract.Presenter::class
     }

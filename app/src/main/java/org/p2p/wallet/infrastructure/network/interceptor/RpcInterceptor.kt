@@ -42,7 +42,8 @@ open class RpcInterceptor(
         return if (response.isSuccessful) {
             handleResponse(response)
         } else {
-            throw extractGeneralException(response.body!!.string())
+            val responseString = response.body!!.string()
+            throw extractGeneralException(responseString)
         }
     }
 
@@ -50,7 +51,6 @@ open class RpcInterceptor(
         val request = chain.request()
 
         val json = getRequestJson(request)
-
         val url = request.url
         Timber.tag("____________").d(json.toString())
         val key = RpcConstants.REQUEST_METHOD_KEY

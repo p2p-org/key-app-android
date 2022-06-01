@@ -16,7 +16,10 @@ data class SignatureInformationResponse constructor(
     val slot: Long?,
 
     @SerializedName("confirmationStatus")
-    val confirmationStatus: ConfirmationStatus
+    val confirmationStatus: ConfirmationStatus,
+
+    @SerializedName("blockTime")
+    val blockTime: Long
 ) {
 
     constructor(info: AbstractMap<String, Any?>) : this(
@@ -24,6 +27,7 @@ data class SignatureInformationResponse constructor(
         info["memo"],
         info["signature"] as String,
         info["slot"] as Long,
-        info["confirmationStatus"] as ConfirmationStatus
+        info["confirmationStatus"] as ConfirmationStatus,
+        info["blockTime"] as Long
     )
 }
