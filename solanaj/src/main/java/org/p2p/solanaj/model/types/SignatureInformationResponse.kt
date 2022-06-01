@@ -1,7 +1,6 @@
 package org.p2p.solanaj.model.types
 
 import com.google.gson.annotations.SerializedName
-import java.util.AbstractMap
 
 data class SignatureInformationResponse constructor(
     @SerializedName("memo")

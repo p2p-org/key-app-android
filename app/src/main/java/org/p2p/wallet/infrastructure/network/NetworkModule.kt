@@ -22,9 +22,11 @@ import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
+import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
+import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -43,8 +45,10 @@ import javax.net.ssl.X509TrustManager
 
 object NetworkModule : InjectionModule {
 
-    const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 60L
-    const val DEFAULT_READ_TIMEOUT_SECONDS = 60L
+    const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 30L
+    const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
+
+    private const val SSL_CERT_TAG = "SSL_CERT"
 
     private const val SSL_CERT_TAG = "SSL_CERT"
 
@@ -82,6 +86,11 @@ object NetworkModule : InjectionModule {
                 resources = get(),
                 interceptor = RpcInterceptor(get(), get())
             )
+        }
+        single(named(RPC_SOLANA_RETROFIT_QUALIFIER)) {
+            val environment = get<EnvironmentManager>().loadRpcEnvironment()
+            val rpcApiUrl = environment.endpoint
+            getRetrofit(rpcApiUrl, "RpcSolana", RpcSolanaInterceptor(get()))
         }
 
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {

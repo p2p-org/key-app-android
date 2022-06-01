@@ -5,13 +5,13 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
-import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_NAME
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.asUsd
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
@@ -68,20 +68,20 @@ sealed class Token constructor(
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
-        fun getFormattedUsdTotal(): String? = totalInUsd?.let { "$${totalInUsd.scaleShort()}" }
+        fun getFormattedUsdTotal(): String? = totalInUsd?.scaleShort()?.asUsd()
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${AmountUtils.format(total)} $tokenSymbol"
+                "${total.formatToken()} $tokenSymbol"
             } else {
-                AmountUtils.format(total)
+                total.formatToken()
             }
 
         fun getTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${total.scaleLong().toPlainString()} $tokenSymbol"
+                "${total.formatToken()} $tokenSymbol"
             } else {
-                total.scaleLong().toPlainString()
+                total.formatToken()
             }
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int {

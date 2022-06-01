@@ -46,7 +46,7 @@ import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.utils.AmountUtils
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
@@ -54,6 +54,8 @@ import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.hideKeyboard
@@ -422,7 +424,7 @@ class SendFragment :
         with(binding) {
             glideManager.load(sourceImageView, token.iconUrl)
             sourceTextView.text = token.tokenSymbol
-            availableTextView.text = token.getFormattedTotal()
+            availableTextView.text = token.getFormattedTotal(includeSymbol = true)
         }
     }
 
@@ -468,7 +470,13 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = AmountUtils.format(available)
+        val formatted = if (symbol == Constants.USD_READABLE_SYMBOL) {
+            getString(R.string.main_send_around_in_usd, available.formatUsd())
+        } else {
+            "${available.formatToken()} $symbol"
+        }
+
+        binding.availableTextView.text = formatted
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
@@ -484,11 +492,11 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
-        binding.aroundTextView.text = "${AmountUtils.format(tokenValue)} $symbol"
+        binding.aroundTextView.text = "${tokenValue.formatToken()} $symbol"
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, AmountUtils.format(usdValue))
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue.formatUsd())
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
