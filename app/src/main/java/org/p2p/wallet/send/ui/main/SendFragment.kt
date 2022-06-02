@@ -359,7 +359,7 @@ class SendFragment :
         binding.accountInfoTextView.isVisible = false
     }
 
-    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: String?) {
+    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?) {
         with(binding) {
             accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
             accountInfoTextView.isVisible = true

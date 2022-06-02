@@ -26,14 +26,14 @@ class SendTotal constructor(
         }
 
     val showAdditionalFee: Boolean
-        get() = fee != null && sourceSymbol != fee.feePayerToken.tokenSymbol
+        get() = fee != null && sourceSymbol != fee.feePayerSymbol
 
     val showAccountCreation: Boolean
         // SendFee.SolanaFee is not null only if account creation is needed
         get() = fee != null && fee is SendFee.SolanaFee
 
     val fullTotal: String
-        get() = if (sourceSymbol == fee?.feePayerToken?.tokenSymbol) {
+        get() = if (sourceSymbol == fee?.feePayerSymbol) {
             if (approxTotalUsd != null) "$totalSum $approxTotalUsd" else totalSum
         } else {
             if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted

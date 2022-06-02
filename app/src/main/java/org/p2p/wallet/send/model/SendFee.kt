@@ -18,6 +18,7 @@ import java.math.BigInteger
 sealed interface SendFee {
 
     val feePayerToken: Token.Active
+    val feePayerSymbol: String
     val formattedFee: String
     val sourceTokenSymbol: String
     val feeUsd: BigDecimal?
@@ -34,7 +35,7 @@ sealed interface SendFee {
             get() = feePayerToken.tokenSymbol
 
         override val formattedFee: String
-            get() = "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
+            get() =  "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
 
         override val feeDecimals: BigDecimal
             get() = fee
@@ -42,14 +43,14 @@ sealed interface SendFee {
         override val feeUsd: BigDecimal?
             get() = fee.toUsd(feePayerToken)
 
+        override val feePayerSymbol: String
+            get() = feePayerToken.tokenSymbol
+
         override fun isEnoughToCoverExpenses(
             sourceTokenTotal: BigInteger,
             inputAmount: BigInteger
         ): Boolean =
             sourceTokenTotal > inputAmount + feeLamports
-
-        val feePayerSymbol: String
-            get() = feePayerToken.tokenSymbol
 
         val fullFee: String
             get() = "$fee ${feePayerToken.tokenSymbol} ${approxFeeUsd.orEmpty()}"
@@ -80,6 +81,9 @@ sealed interface SendFee {
         override val feeUsd: BigDecimal?
             get() = currentDecimals.toUsd(feePayerToken)
 
+        override val feePayerSymbol: String
+            get() = feePayerToken.tokenSymbol
+
         override fun isEnoughToCoverExpenses(
             sourceTokenTotal: BigInteger,
             inputAmount: BigInteger
@@ -90,8 +94,8 @@ sealed interface SendFee {
             // assuming that source token is not SOL
             feePayerToken.isSOL ->
                 sourceTokenTotal >= inputAmount && feePayerTotalLamports > feeLamports
+            // assuming that source token and fee payer are same
             else ->
-                // assuming that source token and fee payer are same
                 sourceTokenTotal >= inputAmount + feeInPayingToken
         }
 
@@ -117,9 +121,6 @@ sealed interface SendFee {
                     SwitchToSol
             }
         }
-
-        val feePayerSymbol: String
-            get() = feePayerToken.tokenSymbol
 
         val accountCreationFullFee: String
             get() = "$feeDecimals $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"

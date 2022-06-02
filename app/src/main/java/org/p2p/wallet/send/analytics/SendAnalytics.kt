@@ -224,7 +224,7 @@ class SendAnalytics(private val tracker: Analytics) {
                 "Send_MAX" to (sendAmount == sendToken.total),
                 "Send_USD" to usdAmount,
                 "Send_Free" to (fee == null),
-                "Send_Account_Fee_Token" to (fee?.feePayerToken?.tokenSymbol ?: "None")
+                "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )
     }
@@ -245,7 +245,7 @@ class SendAnalytics(private val tracker: Analytics) {
                 "Send_MAX" to (sendAmount == sendToken.total),
                 "Send_USD" to usdAmount,
                 "Send_Free" to (fee == null),
-                "Send_Account_Fee_Token" to (fee?.feePayerToken?.tokenSymbol ?: "None")
+                "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )
     }
@@ -266,7 +266,7 @@ class SendAnalytics(private val tracker: Analytics) {
                 "Send_MAX" to (sendAmount == sendToken.total),
                 "Send_USD" to usdAmount,
                 "Send_Free" to (fee == null),
-                "Send_Account_Fee_Token" to (fee?.feePayerToken?.tokenSymbol ?: "None")
+                "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )
     }

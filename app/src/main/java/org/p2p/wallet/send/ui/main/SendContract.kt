@@ -54,7 +54,7 @@ interface SendContract {
         fun hideAccountFeeView()
         fun showAccountFeeView(fee: SendFee)
 
-        fun showInsufficientFundsView(tokenSymbol: String, feeUsd: String?)
+        fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?)
 
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 

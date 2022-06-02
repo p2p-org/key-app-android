@@ -59,7 +59,7 @@ fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.usdRate?.let { this.multiply(it).scaleShort() }
 
-fun BigDecimal?.isNullOrZero() = this == null || this.compareTo(BigDecimal.ZERO) == 0
+fun BigDecimal?.isNullOrZero(): Boolean = this == null || this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isNotZero() = this.compareTo(BigDecimal.ZERO) != 0
 fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
@@ -74,4 +74,8 @@ fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 
 fun BigDecimal.asUsd(): String = "$${AmountUtils.format(this)}"
-fun BigDecimal.asApproximateUsd(): String = "~($${AmountUtils.format(this)})"
+fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = if (withBraces) {
+    "~($${AmountUtils.format(this)})"
+} else {
+    "~$${AmountUtils.format(this)}"
+}

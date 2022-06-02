@@ -28,7 +28,7 @@ class RpcAmountRemoteRepository(
             }
             val rpcRequest = RpcRequest("getFees", params)
             val response = rpcApi.getFees(rpcRequest).result
-            val result = BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
+            val result = response.value.feeCalculator.lamportsPerSignature.toBigInteger()
             lamportsPerSignatureCache[commitment] = result
             return result
         }
