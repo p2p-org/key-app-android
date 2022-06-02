@@ -18,6 +18,7 @@ class FeatureTogglesPresenter(
         when (toggleId) {
             R.id.enable_dev_net -> appFeatureFlags.isDevnetEnabled = toggleChecked
             R.id.polling_enabled -> appFeatureFlags.isPollingEnabled = toggleChecked
+            R.id.ssl_pinning_enabled -> appFeatureFlags.isSslPinningEnabled = toggleChecked
             R.id.coin_gecko_enabled -> appFeatureFlags.useCoinGeckoForPrices = toggleChecked
         }
     }
@@ -28,6 +29,11 @@ class FeatureTogglesPresenter(
                 titleResId = R.string.feature_auto_update,
                 toggleId = R.id.polling_enabled,
                 toggleChecked = appFeatureFlags.isPollingEnabled
+            ),
+            SettingsRow.Toggle(
+                titleResId = R.string.feature_ssl_pinning,
+                toggleId = R.id.ssl_pinning_enabled,
+                toggleChecked = appFeatureFlags.isSslPinningEnabled
             ),
             SettingsRow.Toggle(
                 titleResId = R.string.feature_dev_net,

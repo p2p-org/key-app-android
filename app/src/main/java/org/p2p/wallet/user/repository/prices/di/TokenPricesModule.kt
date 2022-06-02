@@ -18,14 +18,24 @@ object TokenPricesModule : InjectionModule {
     override fun create() = module {
         single {
             val baseUrl = androidContext().getString(R.string.compareBaseUrl)
-            val compareApi = getRetrofit(baseUrl, "CryptoCompare", CompareTokenInterceptor())
+            val compareApi = getRetrofit(
+                baseUrl = baseUrl,
+                tag = "CryptoCompare",
+                interceptor = CompareTokenInterceptor(),
+                resources = get()
+            )
                 .create(CryptoCompareApi::class.java)
 
             TokenPricesCryptoCompareRepository(cryptoCompareApi = compareApi, dispatchers = get())
         }
         single {
             val baseUrl = androidContext().getString(R.string.coinGeckoBaseUrl)
-            val coinGeckoApi = getRetrofit(baseUrl, "CoinGecko", interceptor = null)
+            val coinGeckoApi = getRetrofit(
+                baseUrl = baseUrl,
+                tag = "CoinGecko",
+                interceptor = null,
+                resources = get()
+            )
                 .create(CoinGeckoApi::class.java)
 
             TokenPricesCoinGeckoRepository(

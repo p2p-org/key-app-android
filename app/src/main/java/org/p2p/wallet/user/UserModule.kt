@@ -19,7 +19,11 @@ object UserModule : InjectionModule {
 
     override fun create() = module {
         single<SolanaApi> {
-            getRetrofit(androidContext().getString(R.string.solanaTokensBaseUrl), interceptor = null)
+            getRetrofit(
+                baseUrl = androidContext().getString(R.string.solanaTokensBaseUrl),
+                interceptor = null,
+                resources = get()
+            )
                 .create(SolanaApi::class.java)
         }
 

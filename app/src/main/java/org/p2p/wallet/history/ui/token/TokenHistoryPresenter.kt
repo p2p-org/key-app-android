@@ -51,27 +51,15 @@ class TokenHistoryPresenter(
 
     private var pagingJob: Job? = null
     private var refreshJob: Job? = null
-    private var lastTransactionSignature: String? = null
 
     private var paginationEnded: Boolean = false
-
-    override fun refreshHistory() {
-        paginationEnded = false
-        lastTransactionSignature = null
-        refreshJob?.cancel()
-
-        refreshJob = launch {
-            view?.showRefreshing(isRefreshing = true)
-            fetchHistory(isRefresh = true)
-            view?.scrollToTop()
-            view?.showRefreshing(isRefreshing = false)
-        }
-    }
 
     override fun loadNextHistoryPage() {
         if (paginationEnded) return
 
-        pagingJob?.cancel()
+        if (pagingJob?.isActive == true) {
+            return
+        }
         pagingJob = launch {
             view?.showPagingState(PagingState.Loading)
             fetchHistory()
@@ -79,10 +67,14 @@ class TokenHistoryPresenter(
     }
 
     override fun retryLoad() {
-        launch {
-            val pagingState = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
-            view?.showPagingState(pagingState)
-            fetchHistory()
+        paginationEnded = false
+        refreshJob?.cancel()
+
+        refreshJob = launch {
+            view?.showRefreshing(isRefreshing = true)
+            fetchHistory(isRefresh = true)
+            view?.showRefreshing(isRefreshing = false)
+            view?.scrollToTop()
         }
     }
 
@@ -102,19 +94,8 @@ class TokenHistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val signatures = historyInteractor.loadSignaturesForAddress(
-                tokenPublicKey = token.publicKey,
-                before = lastTransactionSignature
-            )
-            val fetchedItems = historyInteractor.loadTransactionHistory(
-                tokenPublicKey = token.publicKey,
-                signaturesWithStatus = signatures,
-                forceRefresh = isRefresh
-            )
-
-            lastTransactionSignature = fetchedItems.last().signature
+            val fetchedItems = historyInteractor.loadTransactions(token.publicKey, isRefresh)
             transactions.addAll(fetchedItems)
-
             view?.showHistory(transactions)
             view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {

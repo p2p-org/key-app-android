@@ -101,11 +101,13 @@
 
         </LinearLayout>
 
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="-16dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/actionButtonsView">
@@ -120,6 +122,7 @@
                 android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 tools:listitem="@layout/item_transaction" />
 
+
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <org.p2p.wallet.common.ui.widget.ActionButtonsView
@@ -130,6 +133,15 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_buttons"
             app:layout_constraintTop_toBottomOf="@id/emptyStateLayout" />
+
+        <include
+            android:id="@+id/shimmerView"
+            layout="@layout/view_history_shimmer"
+            app:layout_constraintTop_toBottomOf="@id/actionButtonsView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

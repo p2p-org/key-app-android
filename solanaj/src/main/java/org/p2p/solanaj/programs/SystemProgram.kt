@@ -46,18 +46,4 @@ object SystemProgram {
         System.arraycopy(programId.asByteArray(), 0, data, 20, 32)
         return TransactionInstruction(PROGRAM_ID, keys, data)
     }
-
-    fun initializeAccountInstruction(
-        account: PublicKey,
-        mint: PublicKey,
-        owner: PublicKey
-    ): TransactionInstruction {
-        val keys = ArrayList<AccountMeta>()
-        keys.add(AccountMeta(account, isSigner = false, isWritable = true))
-        keys.add(AccountMeta(mint, isSigner = false, isWritable = false))
-        keys.add(AccountMeta(owner, isSigner = false, isWritable = false))
-        keys.add(AccountMeta(SYSVAR_RENT_ADDRESS, isSigner = false, isWritable = false))
-        val data = byteArrayOf(1)
-        return TransactionInstruction(SPL_TOKEN_PROGRAM_ID, keys, data)
-    }
 }
