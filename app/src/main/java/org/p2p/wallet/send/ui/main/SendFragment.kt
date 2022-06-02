@@ -46,7 +46,7 @@ import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
@@ -483,7 +483,7 @@ class SendFragment :
     }
 
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        val formatted = if (symbol == Constants.USD_READABLE_SYMBOL) {
+        val formatted = if (symbol == USD_READABLE_SYMBOL) {
             getString(R.string.main_send_around_in_usd, available.formatUsd())
         } else {
             "${available.formatToken()} $symbol"

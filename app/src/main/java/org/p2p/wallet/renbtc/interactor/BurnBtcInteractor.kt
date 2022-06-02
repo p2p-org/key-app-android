@@ -13,16 +13,15 @@ import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
-import java.math.BigDecimal
+import org.p2p.wallet.utils.toLamports
+import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 import java.nio.ByteBuffer
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val environmentManager: EnvironmentManager,
     private val rpcAmountRepository: RpcAmountRepository,
     private val renVMRepository: RenVMRepository,
     private val rpcSolanaInteractor: RpcSolanaInteractor,

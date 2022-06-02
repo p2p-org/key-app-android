@@ -53,7 +53,6 @@ import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
-import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey

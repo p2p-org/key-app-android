@@ -46,6 +46,7 @@ object FeeRelayerModule : InjectionModule {
                 amountRepository = get(),
                 userInteractor = get(),
                 feeRelayerRepository = get(),
+                dispatchers = get(),
                 tokenKeyProvider = get()
             )
         }

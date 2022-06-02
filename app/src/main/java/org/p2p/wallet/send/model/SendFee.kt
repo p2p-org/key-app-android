@@ -6,6 +6,7 @@ import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
 import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.isMoreThan
@@ -35,7 +36,7 @@ sealed interface SendFee {
             get() = feePayerToken.tokenSymbol
 
         override val formattedFee: String
-            get() = "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
+            get() = "${fee.formatToken()} ${feePayerToken.tokenSymbol}"
 
         override val feeDecimals: BigDecimal
             get() = fee
@@ -76,7 +77,7 @@ sealed interface SendFee {
             get() = currentDecimals.scaleMedium()
 
         override val formattedFee: String
-            get() = "${currentDecimals.toPlainString()} ${feePayerToken.tokenSymbol}"
+            get() = "${currentDecimals.formatToken()} ${feePayerToken.tokenSymbol}"
 
         override val feeUsd: BigDecimal?
             get() = currentDecimals.toUsd(feePayerToken)
