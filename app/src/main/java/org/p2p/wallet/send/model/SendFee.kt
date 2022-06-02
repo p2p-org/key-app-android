@@ -35,7 +35,7 @@ sealed interface SendFee {
             get() = feePayerToken.tokenSymbol
 
         override val formattedFee: String
-            get() =  "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
+            get() = "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
 
         override val feeDecimals: BigDecimal
             get() = fee
