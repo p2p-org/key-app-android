@@ -23,7 +23,6 @@ interface TokenHistoryContract {
         fun loadHistory()
         fun onItemClicked(transaction: HistoryTransaction)
         fun closeAccount()
-        fun refreshHistory()
         fun loadNextHistoryPage()
         fun retryLoad()
     }

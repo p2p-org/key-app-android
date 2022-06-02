@@ -8,7 +8,8 @@ sealed class TransactionDetails(
     val blockTimeSeconds: Long,
     val slot: Int,
     var error: List<Any>? = null,
-    var status: ConfirmationStatus? = null
+    var status: ConfirmationStatus? = null,
+    open var account: String? = null
 ) {
     abstract val type: TransactionDetailsType
 
