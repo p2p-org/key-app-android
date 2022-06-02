@@ -65,8 +65,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
                     is SettingsFragment -> fragments.put(R.id.itemSettings, fragment)
                 }
             }
+            binding.bottomNavigation.selectedItemId = R.id.itemHome
         }
-        binding.bottomNavigation.selectedItemId = R.id.itemHome
         deeplinksManager.handleSavedDeeplinkIntent()
     }
 

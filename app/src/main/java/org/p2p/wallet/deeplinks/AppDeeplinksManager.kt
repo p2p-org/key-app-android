@@ -4,7 +4,9 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.getSystemService
+import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.notification.NotificationType
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.utils.toStringMap
@@ -17,6 +19,7 @@ class AppDeeplinksManager(private val context: Context) {
     }
 
     var mainTabsSwitcher: MainTabsSwitcher? = null
+    var mainFragmentManager: FragmentManager? = null
 
     private var pendingIntent: Intent? = null
 
@@ -54,7 +57,19 @@ class AppDeeplinksManager(private val context: Context) {
     private fun handleOrSaveDeeplinkIntent(intent: Intent) {
         intent.extras?.apply {
             if (containsKey(DEEPLINK_MAIN_SCREEN_EXTRA)) {
+                popToMainScreen()
                 mainTabsSwitcher?.navigate(getInt(DEEPLINK_MAIN_SCREEN_EXTRA)) ?: savePendingIntent(intent)
+            }
+        }
+    }
+
+    private fun popToMainScreen() {
+        mainFragmentManager?.apply {
+            if (backStackEntryCount > 1) {
+                popBackStackImmediate(
+                    MainFragment::class.java.name,
+                    0
+                )
             }
         }
     }

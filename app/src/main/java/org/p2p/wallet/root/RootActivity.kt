@@ -61,6 +61,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
 
         checkForGoogleServices()
+        deeplinksManager.mainFragmentManager = supportFragmentManager
         handleDeeplink()
     }
 
@@ -117,6 +118,11 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         super.onStop()
         if (intent.action == ACTION_RESTART) return
         adminAnalytics.logAppClosed(analyticsInteractor.getCurrentScreenName())
+    }
+
+    override fun onDestroy() {
+        deeplinksManager.mainFragmentManager = null
+        super.onDestroy()
     }
 
     private fun handleDeeplink(newIntent: Intent? = null) {
