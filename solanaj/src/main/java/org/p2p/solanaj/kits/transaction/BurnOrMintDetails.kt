@@ -7,7 +7,7 @@ class BurnOrMintDetails(
     blockTime: Long,
     slot: Int,
     val fee: Long,
-    val account: String?,
+    override var account: String?,
     val authority: String?,
     val uiAmount: String?,
     private val _decimals: Int

@@ -1,8 +1,7 @@
 package org.p2p.wallet.send.model
 
-import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.asApproximateUsd
-import org.p2p.wallet.utils.orZero
+import org.p2p.wallet.utils.formatToken
 import java.math.BigDecimal
 
 class SendTotal constructor(
@@ -48,7 +47,7 @@ class SendTotal constructor(
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalFormatted: String
-        get() = "${AmountUtils.format(total)} $sourceSymbol"
+        get() = "${total.formatToken()} $sourceSymbol"
 
     private val totalSum: String
         get() = "${AmountUtils.format(total + fee?.feeDecimals.orZero())} $sourceSymbol"

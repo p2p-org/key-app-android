@@ -29,6 +29,7 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -142,7 +143,7 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {
-        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.toString())
+        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.formatUsd())
         if (username == null) {
             binding.balanceLabelTextView.setText(R.string.main_balance)
         } else {

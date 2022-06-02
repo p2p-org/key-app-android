@@ -45,7 +45,7 @@ class HistoryFragment :
         with(binding) {
 
             retryButton.setOnClickListener {
-                presenter.retry()
+                presenter.refreshHistory()
             }
             val scrollListener = EndlessScrollListener(
                 layoutManager = historyRecyclerView.layoutManager as LinearLayoutManager,
@@ -69,7 +69,7 @@ class HistoryFragment :
     override fun showPagingState(state: PagingState) {
         adapter.setPagingState(state)
         with(binding) {
-            shimmerView.isVisible = state == PagingState.InitialLoading
+            shimmerView.root.isVisible = state == PagingState.InitialLoading
             refreshLayout.isVisible = state != PagingState.InitialLoading
             errorStateLayout.isVisible = state is PagingState.Error
             emptyStateLayout.isVisible = state == PagingState.Idle && adapter.isEmpty()

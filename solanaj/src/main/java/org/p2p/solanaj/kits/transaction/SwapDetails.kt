@@ -13,6 +13,7 @@ class SwapDetails(
     val mintB: String?,
     val alternateSource: String?,
     val alternateDestination: String?,
+    override var account: String? = null
 ) : TransactionDetails(signature, blockTime, slot) {
     override val type: TransactionDetailsType = TransactionDetailsType.SWAP
 }

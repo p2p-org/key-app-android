@@ -4,7 +4,7 @@ class CloseAccountDetails(
     signature: String,
     blockTime: Long,
     slot: Int,
-    val account: String?,
+    override var account: String? = null,
     val mint: String?
 ) : TransactionDetails(signature, blockTime, slot) {
     override val type: TransactionDetailsType = TransactionDetailsType.CLOSE_ACCOUNT

@@ -12,8 +12,9 @@ class RenDatabaseRepository(
 ) : RenLoaclRepository {
 
     override suspend fun saveSession(session: LockAndMint.Session) {
+        val destinationAddress = session.destinationAddress ?: return
         val entity = SessionEntity(
-            destinationAddress = session.destinationAddress.toBase58(),
+            destinationAddress = destinationAddress.toBase58(),
             nonce = session.nonce,
             createdAt = session.createdAt,
             expiryTime = session.expiryTime,

@@ -56,7 +56,8 @@ class RenStatusExecutor(
         }
     }
 
-    private fun handleStatus(response: ResponseQueryTxMint, secretKey: ByteArray) {
+    private suspend fun handleStatus(response: ResponseQueryTxMint, secretKey: ByteArray) {
+        Timber.tag(REN_TAG).d("Handle status response: $response")
         val status = response.txStatus
         val transactionId = "TransactionId: ${transaction.statuses.lastOrNull()?.transactionId}"
         Timber
@@ -72,7 +73,7 @@ class RenStatusExecutor(
         }
     }
 
-    private fun handleDoneStatus(
+    private suspend fun handleDoneStatus(
         transactionHash: String,
         secretKey: ByteArray,
         response: ResponseQueryTxMint
