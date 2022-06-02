@@ -12,6 +12,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.send.model.FeePayerSelectionStrategy
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -81,27 +82,25 @@ class OrcaSwapPresenter(
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
-    private var fees: SwapFee? = null
-
     private var aroundValue: BigDecimal = BigDecimal.ZERO
     private var slippage: Slippage = Slippage.Percent
     private var isMaxClicked: Boolean = false
 
     private var calculationJob: Job? = null
+    private var feePayerJob: Job? = null
 
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
             try {
-                val userTokens = userInteractor.getUserTokens()
-                val sol = userTokens.firstOrNull { it.isSOL } ?: throw IllegalStateException("No SOL account found")
-
-                val token = initialToken ?: sol
+                val token = initialToken
+                    ?: userInteractor.getUserTokens().find { it.isSOL }
+                    ?: error("No SOL account found")
 
                 setSourceToken(token)
                 view?.showSlippage(slippage)
 
-                swapInteractor.initialize(sol)
+                swapInteractor.initialize(token)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading all data for swap")
                 view?.showErrorMessage(e)
@@ -185,21 +184,6 @@ class OrcaSwapPresenter(
         view?.showAroundValue(aroundValue)
 
         recalculate()
-    }
-
-    private fun recalculate() {
-        destinationToken?.let {
-            calculationJob?.cancel()
-            calculationJob = launch {
-                /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
-                calculateFees(sourceToken, it)
-
-                /* If pool is not null, then destination token is not null as well */
-                calculateAmount(sourceToken, it)
-
-                calculateRates(sourceToken, it)
-            }
-        }
     }
 
     override fun loadDataForSettings() {
@@ -384,6 +368,20 @@ class OrcaSwapPresenter(
         view?.showProgressDialog(null)
     }
 
+    private fun recalculate() {
+        val destination = destinationToken ?: return
+
+        calculationJob?.cancel()
+
+        launch {
+            /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
+            calculateFees(sourceToken, destination)
+
+            calculateRates(sourceToken, destination)
+        }.also { calculationJob = it }
+    }
+
+
     private fun calculateData(source: Token.Active, destination: Token) {
         launch {
             try {
@@ -417,19 +415,21 @@ class OrcaSwapPresenter(
             return
         }
 
-        fees = swapInteractor.calculateFeeAndNeededTopUpAmountForSwapping(
+        val fees = swapInteractor.calculateFeeAndTopUpAmount(
             sourceToken = source,
             destination = destination
         )
 
         view?.showFees(fees)
+
+        calculateAmount(sourceToken, destination, fees)
     }
 
-    private fun calculateAmount(source: Token.Active, destination: Token) {
+    private fun calculateAmount(source: Token.Active, destination: Token, fee: SwapFee) {
         val inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
 
         val pair = orcaPoolInteractor.findBestPoolsPairForInputAmount(inputAmount, poolPairs)
-        if (pair.isNullOrEmpty()) {
+        if (pair.isNullOrEmpty() || inputAmount.isZero()) {
             Timber.tag(TAG_SWAP).d("Best pair is empty")
             updateButtonState(source)
             return
@@ -439,6 +439,7 @@ class OrcaSwapPresenter(
 
         val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
         Timber.tag(TAG_SWAP).d("Best pair found, deprecation values: $deprecatedValues")
+
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
         destinationAmount = AmountUtils.format(estimatedOutputAmount.fromLamports(destination.decimals).scaleLong())
 
@@ -454,8 +455,8 @@ class OrcaSwapPresenter(
             destinationAmount = destinationAmount,
             total = "${AmountUtils.format(sourceAmount.toBigDecimalOrZero())} ${source.tokenSymbol}",
             totalUsd = AmountUtils.format(totalUsd.scaleShort()),
-            fee = fees?.transactionFeeString,
-            approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
+            fee = fee.transactionFeeString,
+            approxFeeUsd = fee.approxFeeUsd,
             receiveAtLeast = receiveAtLeast,
             receiveAtLeastUsd = receiveAtLeastUsd?.let { AmountUtils.format(it) }
         )

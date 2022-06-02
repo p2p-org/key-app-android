@@ -155,7 +155,7 @@ class OrcaSwapInteractor(
         return OrcaSwapResult.Finished(transactionId, destinationAddress.orEmpty())
     }
 
-    suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
+    suspend fun calculateFeeAndTopUpAmount(
         sourceToken: Token.Active,
         destination: Token
     ): SwapFee {
