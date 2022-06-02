@@ -114,7 +114,7 @@
                 tools:text="SOL" />
 
             <ImageView
-                android:id="@+id/downImageView"
+                android:id="@+id/source_down_image_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -135,11 +135,11 @@
                 android:maxLines="1"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
                 android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@id/downImageView"
+                app:layout_constraintBottom_toBottomOf="@id/source_down_image_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1"
-                app:layout_constraintStart_toEndOf="@id/downImageView"
-                app:layout_constraintTop_toTopOf="@id/downImageView" />
+                app:layout_constraintStart_toEndOf="@id/source_down_image_view"
+                app:layout_constraintTop_toTopOf="@id/source_down_image_view" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/amountEditText"
@@ -156,10 +156,10 @@
                 android:maxLines="1"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
                 android:textColorHint="@color/textIconSecondary"
-                app:layout_constraintBottom_toBottomOf="@id/downImageView"
+                app:layout_constraintBottom_toBottomOf="@id/source_down_image_view"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/downImageView"
-                app:layout_constraintTop_toTopOf="@id/downImageView" />
+                app:layout_constraintStart_toEndOf="@id/source_down_image_view"
+                app:layout_constraintTop_toTopOf="@id/source_down_image_view" />
 
             <TextView
                 android:id="@+id/aroundTextView"
