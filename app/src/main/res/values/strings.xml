@@ -574,6 +574,7 @@
     <string name="feature_auto_update">Enable auto update</string>
     <string name="feature_dev_net">Enable DevNet env</string>
     <string name="feature_ssl_pinning">Enable SSL pinning</string>
+    <string name="feature_coin_gecko">Enable CoinGecko as price source</string>
 
     <!-- fixme: rename these resources by existing prefixes -->
     <string name="seed_info_the_definition">The definition</string>

@@ -39,6 +39,7 @@ import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
 
@@ -95,6 +96,7 @@ class App : Application() {
                     PushNotificationsModule.create(),
                     BackupModule.create(),
                     UserModule.create(),
+                    TokenPricesModule.create(),
                     HomeModule.create(),
                     RenBtcModule.create(),
                     ScanQrModule.create(),
