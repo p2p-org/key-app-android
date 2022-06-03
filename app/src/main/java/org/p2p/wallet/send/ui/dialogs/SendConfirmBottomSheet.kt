@@ -81,6 +81,7 @@ class SendConfirmBottomSheet(
             amountTextView.text = data.getFormattedAmount()
             amountUsdTextView.text = data.getFormattedAmountUsd()
             destinationTextView.text = data.destination.highlightPublicKey(requireContext())
+            downImageView.setOnClickListener { dismissAllowingStateLoss() }
 
             val highlightText = getString(R.string.send_confirm_warning_highlight)
             val commonText = getString(R.string.send_confirm_warning)
