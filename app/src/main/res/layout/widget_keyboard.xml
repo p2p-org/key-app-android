@@ -116,7 +116,8 @@
             android:id="@+id/additionalLeftPinCodeButton"
             android:layout_width="62dp"
             android:layout_height="62dp"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            app:keyboard_button_image="@drawable/ic_fingerprint" />
 
         <org.p2p.wallet.common.ui.widget.NumberKeyboardButtonView
             android:id="@+id/zeroPinCodeButton"

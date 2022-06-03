@@ -99,8 +99,10 @@
     <string name="auth_almost_done_title">Almost done!</string>
     <string name="auth_quick_access">Quick Access</string>
     <string name="auth_biometric_question">Use biometric for quick access?</string>
+    <string name="auth_biometric_use_pin_code">Use pin code</string>
     <string name="auth_pin_codes_match_error">PIN doesn’t match. Try again</string>
     <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
+    <string name="auth_pin_code_wrong_pin">Wrong PIN-code</string>
     <string name="auth_pin_code_wrong">Wrong PIN. Try again or reset it</string>
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>

@@ -4,14 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogSendConfirmBinding
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.utils.BiometricPromptWrapper
@@ -19,11 +25,13 @@ import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.toast
+import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
 
 private const val EXTRA_DATA = "EXTRA_DATA"
+private const val VIBRATE_DURATION = 500L
 
 class SendConfirmBottomSheet(
     private val onConfirmed: () -> Unit
@@ -47,14 +55,15 @@ class SendConfirmBottomSheet(
 
     private val sendAnalytics: SendAnalytics by inject()
 
+    private val dispatchers: CoroutineDispatchers by inject()
+
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
             fragment = this,
+            negativeRes = R.string.auth_biometric_use_pin_code,
             onError = { toast(R.string.fingerprint_not_recognized) },
-            onSuccess = {
-                onConfirmed.invoke()
-                dismissAllowingStateLoss()
-            }
+            usePinCode = { binding.pinView.isVisible = true },
+            onSuccess = { confirm() }
         )
     }
 
@@ -66,6 +75,7 @@ class SendConfirmBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sendAnalytics.logSendVerificationInvoked(AuthAnalytics.AuthType.BIOMETRIC)
+        initPinView()
         with(binding) {
             glideManager.load(sourceImageView, data.token.iconUrl)
             amountTextView.text = data.getFormattedAmount()
@@ -80,6 +90,37 @@ class SendConfirmBottomSheet(
                 confirmBiometrics()
             }
         }
+    }
+
+    private fun initPinView() = with(binding) {
+        pinView.apply {
+            setFingerprintVisible(true)
+            onPinCompleted = ::checkPinCode
+            onBiometricClicked = {
+                isVisible = false
+                confirmBiometrics()
+            }
+        }
+    }
+
+    private fun confirm() {
+        onConfirmed.invoke()
+        dismissAllowingStateLoss()
+    }
+
+    private fun checkPinCode(pinCode: String) {
+        CoroutineScope(dispatchers.io).launch {
+            when (authInteractor.signInByPinCode(pinCode)) {
+                SignInResult.Success -> confirm()
+                SignInResult.WrongPin -> withContext(dispatchers.ui) { showWrongPinError() }
+            }
+        }
+    }
+
+    private fun showWrongPinError() {
+        val message = getString(R.string.auth_pin_code_wrong_pin)
+        context?.vibrate(VIBRATE_DURATION)
+        binding.pinView.startErrorAnimation(message)
     }
 
     private fun confirmBiometrics() {

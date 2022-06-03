@@ -14,18 +14,17 @@ class BiometricPromptWrapper(
     @StringRes private val descriptionRes: Int = R.string.auth_biometric_question,
     @StringRes private val negativeRes: Int = R.string.common_cancel,
     private val onError: ((CharSequence?) -> Unit)? = null,
+    private val usePinCode: (() -> Unit)? = null,
     private val onSuccess: (Cipher) -> Unit
 ) {
 
     private val biometricCallback = object : BiometricPrompt.AuthenticationCallback() {
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-            onError?.invoke(
-                errString.takeIf {
-                    errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
-                        errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON
-                }
-            )
+            when {
+                errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON -> usePinCode?.invoke()
+                errorCode != BiometricPrompt.ERROR_USER_CANCELED -> onError?.invoke(errString)
+            }
         }
 
         override fun onAuthenticationFailed() {

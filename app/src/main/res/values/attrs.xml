@@ -2,7 +2,7 @@
 <resources>
     <declare-styleable name="NumberKeyboardButtonView">
         <attr name="keyboard_button_text" format="string" />
-        <attr name="keyboard_button_image" format="integer" />
+        <attr name="keyboard_button_image" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="RoundedImageView">
