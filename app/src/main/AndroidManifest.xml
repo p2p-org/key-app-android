@@ -29,7 +29,7 @@
         <activity
             android:name="org.p2p.wallet.root.RootActivity"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"
             android:windowSoftInputMode="adjustPan"

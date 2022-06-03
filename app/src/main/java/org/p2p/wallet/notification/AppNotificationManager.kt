@@ -1,18 +1,14 @@
 package org.p2p.wallet.notification
 
-import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.getSystemService
-import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import org.p2p.wallet.R
-import org.p2p.wallet.root.RootActivity
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import java.util.UUID
 
 private const val P2P_WALLET_NOTIFICATION_CHANNEL_ID = "P2P_WALLET_CHANNEL_ID"
@@ -20,7 +16,10 @@ private const val P2P_WALLET_NOTIFICATION_CHANNEL_NAME = "P2P Wallet"
 
 private const val NOTIFICATION_MANAGER_REQUEST_CODE = 1
 
-class AppNotificationManager(private val context: Context) {
+class AppNotificationManager(
+    private val context: Context,
+    private val deeplinksManager: AppDeeplinksManager
+) {
     companion object {
         fun createNotificationChannels(context: Context) {
             val channels = getNotificationChannels()
@@ -28,7 +27,6 @@ class AppNotificationManager(private val context: Context) {
             channels.forEach { channel -> notificationManager.createNotificationChannel(channel) }
         }
 
-        @RequiresApi(Build.VERSION_CODES.O)
         private fun getNotificationChannels(): Set<NotificationChannel> = setOf(
             NotificationChannel(
                 P2P_WALLET_NOTIFICATION_CHANNEL_ID,
@@ -67,7 +65,7 @@ class AppNotificationManager(private val context: Context) {
     }
 
     fun showFcmPushNotification(data: FcmPushNotificationData) {
-        val contentIntent = createPendingContentIntent()
+        val contentIntent = createPendingContentIntent(data.type)
 
         val notification = createDefaultNotificationBuilder(contentIntent)
             .setContentTitle(data.title)
@@ -85,8 +83,8 @@ class AppNotificationManager(private val context: Context) {
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-    private fun createPendingContentIntent(): PendingIntent? {
-        val pushIntent = buildPushIntent(context)
+    private fun createPendingContentIntent(type: NotificationType = NotificationType.DEFAULT): PendingIntent? {
+        val pushIntent = deeplinksManager.buildIntent(type)
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         return PendingIntent.getActivity(
             context,
@@ -94,14 +92,5 @@ class AppNotificationManager(private val context: Context) {
             pushIntent,
             flags
         )
-    }
-
-    private fun buildPushIntent(context: Context): Intent {
-        val activityManager = context.getSystemService<ActivityManager>()
-        return activityManager?.appTasks
-            ?.firstOrNull()
-            ?.taskInfo
-            ?.baseIntent
-            ?: RootActivity.createIntent(context)
     }
 }

@@ -16,6 +16,7 @@ import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toast
@@ -30,11 +31,18 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
                 .apply { this.action = action }
     }
 
+    private val deeplinksManager: AppDeeplinksManager by inject()
+
     override val presenter: RootContract.Presenter by inject()
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val crashLoggingService: CrashLoggingService by inject()
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleDeeplink(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
@@ -53,6 +61,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
 
         checkForGoogleServices()
+        deeplinksManager.mainFragmentManager = supportFragmentManager
+        handleDeeplink()
     }
 
     private fun logScreenOpenEvent() {
@@ -108,5 +118,15 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         super.onStop()
         if (intent.action == ACTION_RESTART) return
         adminAnalytics.logAppClosed(analyticsInteractor.getCurrentScreenName())
+    }
+
+    override fun onDestroy() {
+        deeplinksManager.mainFragmentManager = null
+        super.onDestroy()
+    }
+
+    private fun handleDeeplink(newIntent: Intent? = null) {
+        val intentToHandle = newIntent ?: intent
+        deeplinksManager.handleDeeplinkIntent(intentToHandle)
     }
 }
