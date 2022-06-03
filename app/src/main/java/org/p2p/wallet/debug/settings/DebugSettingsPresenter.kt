@@ -30,6 +30,10 @@ class DebugSettingsPresenter(
     private fun getMainSettings(): List<SettingsRow> {
         return listOf(
             SettingsRow.Section(
+                titleResId = R.string.debug_settings_notifications_title,
+                iconRes = R.drawable.ic_settings_notification
+            ),
+            SettingsRow.Section(
                 titleResId = R.string.debug_settings_deeplinks_title,
                 iconRes = R.drawable.ic_network
             ),
