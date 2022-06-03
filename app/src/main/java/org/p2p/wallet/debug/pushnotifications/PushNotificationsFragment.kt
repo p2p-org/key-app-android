@@ -16,7 +16,8 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 class PushNotificationsFragment :
     BaseMvpFragment<PushNotificationsContract.View, PushNotificationsContract.Presenter>(
         R.layout.fragment_push_notifications
-    ), PushNotificationsContract.View {
+    ),
+    PushNotificationsContract.View {
 
     companion object {
         fun create(): PushNotificationsFragment = PushNotificationsFragment()
