@@ -738,7 +738,7 @@ class SendPresenter(
         if (isEnoughToCoverExpenses) {
             view?.showAccountFeeView(fee = fee)
         } else {
-            view?.showInsufficientFundsView(source.tokenSymbol, fee.feeUsd?.toPlainString())
+            view?.showInsufficientFundsView(source.tokenSymbol, fee.feeUsd)
         }
     }
 

@@ -12,7 +12,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.send.model.FeePayerSelectionStrategy
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -379,7 +378,6 @@ class OrcaSwapPresenter(
             calculateRates(sourceToken, destination)
         }.also { calculationJob = it }
     }
-
 
     private fun calculateData(source: Token.Active, destination: Token) {
         launch {
